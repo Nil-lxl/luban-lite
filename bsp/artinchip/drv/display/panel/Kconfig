@@ -1,0 +1,143 @@
+
+menu "Display Panels"
+
+    choice
+        prompt "ArtInChip Panel Drivers"
+        default AIC_SIMPLE_PANEL
+
+#
+# Simple Panel
+#
+    config AIC_SIMPLE_PANEL
+        bool "ArtInChip SIMPLE panel"
+        depends on AIC_DISP_RGB || AIC_DISP_LVDS
+        help
+            Simple Panel support general RGB or LVDS LCD
+
+if !AIC_DISP_PQ_TOOL
+#
+# MIPI-DSI Panel
+#
+    config AIC_PANEL_DSI_XM91080
+        bool "ArtInChip MIPI DSI XM91080 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_ST7797
+        bool "ArtInChip MIPI DSI ST7797 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_ST7703
+        bool "ArtInChip MIPI DSI ST7703 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_ILI9881C
+        bool "ArtInChip MIPI DSI ILI9881C panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_HX8394
+        bool "ArtInChip MIPI DSI HX8394 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_JD9365
+        bool "ArtInChip MIPI DSI JD9365 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_AXS15231B
+        bool "ArtInChip MIPI DSI AXS15231B panel"
+        depends on AIC_DISP_MIPI_DSI
+#
+# MIPI-DBI Type B I8080 Panel
+#
+    config AIC_PANEL_DBI_ILI9488
+        bool "ArtInChip MIPI DBI ILI9488 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type B, I8080_RGB666_16BIT_3CYCLE
+
+    config AIC_PANEL_DBI_ILI9486L
+        bool "ArtInChip MIPI DBI ILI9486L panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type B, I8080_RGB666_8BIT
+
+    config AIC_PANEL_DBI_ST7789
+        bool "ArtInChip MIPI DBI ST7789 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type B, I8080_RGB565_8BIT
+#
+# MIPI-DBI Type C SPI Panel
+#
+    config AIC_PANEL_DBI_ILI9341
+        bool "ArtInChip MIPI DBI ILI9341 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4LINE_RGB888
+
+    config AIC_PANEL_DBI_ST77903
+        bool "ArtInChip MIPI DBI ST77903 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4SDA_RGB666
+
+    config AIC_PANEL_DBI_ST7789V
+        bool "ArtInChip MIPI DBI ST7789V panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4LINE_RGB565
+
+    config AIC_PANEL_DBI_ILI9327
+        bool "ArtInChip MIPI DBI ILI9327 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4LINE_RGB565
+#
+# RGB Panel SPI Init
+#
+    config AIC_PANEL_RGB_ST7701S
+        bool "ArtInChip RGB ST7701S panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_GC9A01A
+        bool "ArtInChip RGB GC9A01A panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_NT35560
+        bool "ArtInChip RGB NT35560 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_ST77922
+        bool "ArtInChip RGB ST77922 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+#
+# SRGB Panel
+#
+    config AIC_PANEL_SRGB_HX8238
+        bool "ArtInChip SRGB HX8238 panel"
+        depends on AIC_DISP_RGB
+
+#
+# RGB Panel IIC Init
+#
+    config AIC_PANEL_LCOS_HX7033
+        bool "ArtInChip RGB HX7033 panel"
+        depends on AIC_I2C_DRV && AIC_DISP_RGB
+
+#
+# Bridge Panel
+#
+    config AIC_PANEL_BRIDGE_LT8911
+        bool "ArtInChip LT8911 LVDS-eDP bridge"
+        depends on AIC_DISP_LVDS
+endif
+    endchoice
+
+if AIC_SIMPLE_PANEL && !AIC_DISP_PQ_TOOL
+source "bsp/artinchip/drv/display/panel/Kconfig.timing"
+endif
+
+endmenu

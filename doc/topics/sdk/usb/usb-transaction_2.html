@@ -1,0 +1,215 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="USB Transactions 主要由四种 Packet 组成： Token Packet 、 Data Packet 、 Handshake Packet 和 Special Packet 。但通常的一次 Transaction 由 3 个 Packets 组成： Token -&gt; Data -&gt; Handshake 。 IN/Read/Upstream Transaction IN ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-02-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_transaction"/><meta name="DC.language" content="zh-CN"/><title>Transaction</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-transaction.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-transaction_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_transaction" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-transaction.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Transaction</h1><div class="date inPage">4 Feb 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d193626e22__20250121171631">USB Transactions 主要由四种 Packet 组成： <code class="+ topic/ph pr-d/codeph ph codeph">Token Packet</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Data
+                Packet</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Handshake Packet</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">Special
+                Packet</code> 。但通常的一次 <code class="+ topic/ph pr-d/codeph ph codeph">Transaction</code> 由 3 个 Packets 组成：
+                <code class="+ topic/ph pr-d/codeph ph codeph">Token</code> -&gt; <code class="+ topic/ph pr-d/codeph ph codeph">Data</code> -&gt; <code class="+ topic/ph pr-d/codeph ph codeph">Handshake</code>。</p><div class="- topic/p p" data-ofbid="d193626e49__20250121171631"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_transaction__image_mqk_rfq_g1c" src="../../../images/usb/usb_transaction_format.png" alt="image10"/></div><br/></div><section class="- topic/section section" id="usb_transaction__section_qm2_sfq_g1c" data-ofbid="usb_transaction__section_qm2_sfq_g1c"><h2 class="- topic/title title sectiontitle">IN/Read/Upstream Transaction</h2>
+            
+            <div class="- topic/p p" data-ofbid="d193626e58__20250121171631"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_transaction__image_rm2_sfq_g1c" src="../../../images/usb/transaction_in.png" alt="image11"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d193626e63__20250121171631">IN Transaction 主要用于 Device 向 Host 发送数据。</p>
+            <ul class="- topic/ul ul" id="usb_transaction__ul_sm2_sfq_g1c" data-ofbid="usb_transaction__ul_sm2_sfq_g1c"><li class="- topic/li li" data-ofbid="d193626e67__20250121171631">
+                    <p class="- topic/p p" data-ofbid="d193626e69__20250121171631">Host 向 Deivce 发送一个 <code class="+ topic/ph pr-d/codeph ph codeph">IN Token Packet</code></p>
+                </li><li class="- topic/li li" data-ofbid="d193626e74__20250121171631">
+                    <p class="- topic/p p" data-ofbid="d193626e76__20250121171631">Device 如果忙，则回复 <code class="+ topic/ph pr-d/codeph ph codeph">NAK Packet</code>, Host 在收到 <code class="+ topic/ph pr-d/codeph ph codeph">NAK
+                            Pakcet</code> 之后则持续向 Device 发送 <code class="+ topic/ph pr-d/codeph ph codeph">IN Token Packet</code> 。</p>
+                </li><li class="- topic/li li" data-ofbid="d193626e88__20250121171631">
+                    <p class="- topic/p p" data-ofbid="d193626e90__20250121171631">当 Device 准备好时，回复 <code class="+ topic/ph pr-d/codeph ph codeph">Data Packet</code>, Host 在收到 <code class="+ topic/ph pr-d/codeph ph codeph">Data
+                            packet</code> 之后回复一个 <code class="+ topic/ph pr-d/codeph ph codeph">ACK handshake</code> 。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_transaction__section_tm2_sfq_g1c" data-ofbid="usb_transaction__section_tm2_sfq_g1c"><h2 class="- topic/title title sectiontitle">OUT/Write/Downstream Transaction</h2>
+            
+            <div class="- topic/p p" data-ofbid="d193626e108__20250121171631"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_transaction__image_um2_sfq_g1c" src="../../../images/usb/transaction_out.png" alt="image12"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d193626e113__20250121171631">OUT Transaction 主要用于 Host 向 Device 发送数据。</p>
+            <ul class="- topic/ul ul" id="usb_transaction__ul_vm2_sfq_g1c" data-ofbid="usb_transaction__ul_vm2_sfq_g1c"><li class="- topic/li li" data-ofbid="d193626e117__20250121171631">
+                    <p class="- topic/p p" data-ofbid="d193626e119__20250121171631">Host 向 Deivce 发送一个 <code class="+ topic/ph pr-d/codeph ph codeph">OUT Token Packet</code> 和一个 <code class="+ topic/ph pr-d/codeph ph codeph">DATA
+                            Packet</code> 。</p>
+                </li><li class="- topic/li li" data-ofbid="d193626e128__20250121171631">
+                    <p class="- topic/p p" data-ofbid="d193626e130__20250121171631">Device 忙，则回 <code class="+ topic/ph pr-d/codeph ph codeph">NAK</code>, Host 则会复发 <code class="+ topic/ph pr-d/codeph ph codeph">OUT</code> 和
+                            <code class="+ topic/ph pr-d/codeph ph codeph">DATA</code></p>
+                </li><li class="- topic/li li" data-ofbid="d193626e141__20250121171631">
+                    <p class="- topic/p p" data-ofbid="d193626e143__20250121171631">Device 在成功收到数据后，回 <code class="+ topic/ph pr-d/codeph ph codeph">ACK handshake packet</code> 。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_transaction__section_wm2_sfq_g1c" data-ofbid="usb_transaction__section_wm2_sfq_g1c"><h2 class="- topic/title title sectiontitle">Control Transaction</h2>
+            
+            <p class="- topic/p p" data-ofbid="d193626e155__20250121171631"><code class="+ topic/ph pr-d/codeph ph codeph">Control Transaction</code> 最多由 3 个 Stage 组成： <code class="+ topic/ph pr-d/codeph ph codeph">Setup stage</code> 、
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Data stage</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Status stage</code> 。其中 <code class="+ topic/ph pr-d/codeph ph codeph">Data
+                    stage</code> 不是必需的，有的 <code class="+ topic/ph pr-d/codeph ph codeph">control transaction</code> 没有 <code class="+ topic/ph pr-d/codeph ph codeph">data
+                    stage</code> 。</p>
+            <ul class="- topic/ul ul" id="usb_transaction__ul_fsw_5fq_g1c" data-ofbid="usb_transaction__ul_fsw_5fq_g1c"><li class="- topic/li li" data-ofbid="d193626e180__20250121171631">Setup Stage (<code class="+ topic/ph pr-d/codeph ph codeph">Transaction</code>)<p class="- topic/p p" data-ofbid="d193626e185__20250121171631">Setup stage 中的 setup packet 只会出现在
+                        control transaction 中，Device 必须回 ACK, 不能回 NAK。</p><div class="- topic/p p" data-ofbid="d193626e187__20250121171631"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_transaction__image_ym2_sfq_g1c" src="../../../images/usb/transaction_ctl_setup.png" alt="image13"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d193626e191__20250121171631">Data Stage (<code class="+ topic/ph pr-d/codeph ph codeph">Transaction</code>)<p class="- topic/p p" data-ofbid="d193626e196__20250121171631">Data Stage 可以有若干的 Data
+                        transaction。这个 stage 只有在 Host 和 Device 需要 data 传输时才会存在，通常 setup stage 的
+                        payload 可以 cover , 这个时候就不需要 data stage。</p><div class="- topic/p p" data-ofbid="d193626e198__20250121171631"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_transaction__image_an2_sfq_g1c" src="../../../images/usb/transaction_ctl_data.png" alt="image14"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d193626e202__20250121171631">Status Stage (<code class="+ topic/ph pr-d/codeph ph codeph">Transaction</code>)<p class="- topic/p p" data-ofbid="d193626e207__20250121171631">以下是 control read transaction 和
+                        control write tranasaction 分别对应的 status stage。</p><div class="- topic/p p" data-ofbid="d193626e209__20250121171631"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_transaction__image_cn2_sfq_g1c" src="../../../images/usb/transaction_ctl_status.png" alt="image15"/></div><br/></div></li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_transaction__section_qm2_sfq_g1c" data-tocid="usb_transaction__section_qm2_sfq_g1c">IN/Read/Upstream Transaction</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_transaction__section_tm2_sfq_g1c" data-tocid="usb_transaction__section_tm2_sfq_g1c">OUT/Write/Downstream Transaction</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_transaction__section_wm2_sfq_g1c" data-tocid="usb_transaction__section_wm2_sfq_g1c">Control Transaction</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

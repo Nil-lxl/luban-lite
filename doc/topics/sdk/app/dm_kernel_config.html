@@ -1,0 +1,277 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="如需使用 Dynamic Module 功能，需要在内核中打开以下配置： 启用 POSIX 文件系统和 I/O ： Rt-Thread options ---&gt; RT-Thread Components ---&gt; C/C++ and POSIX layer ---&gt; POSIX (Portable Operating System Interface) layer ---&gt; [*] Enable ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/app/dm.html"/><meta name="DC.relation" content="../../../topics/sdk/app/dm.html"/><meta name="DC.relation" content="../../../topics/sdk/app/dm_app_dev.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="kernel_config"/><title>Kernel 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="kernel_config-d5856e1758"/><meta name="wh-source-relpath" content="topics/sdk/app/dm_kernel_config.dita"/><meta name="wh-out-relpath" content="topics/sdk/app/dm_kernel_config.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="kernel_config" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/app/dm.html">动态加载 (DM-APP)</a></div></div></li><li class="active"><div class="topicref" data-id="kernel_config"><div class="title"><a href="../../../topics/sdk/app/dm_kernel_config.html">Kernel 配置</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/app/dm.html" title="动态加载 (DM-APP)" aria-label="上一主题: 动态加载 (DM-APP)" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/app/dm_app_dev.html" title="DM-APP 开发" aria-label="下一主题: DM-APP 开发" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="kernel_config-d5856e1758" class="topicref" data-id="kernel_config" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm_kernel_config.html" id="kernel_config-d5856e1758-link">Kernel 配置</a></div></div></li><li role="treeitem"><div data-tocid="dm_app_dev-d5856e1770" class="topicref" data-id="dm_app_dev" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm_app_dev.html" id="dm_app_dev-d5856e1770-link">DM-APP 开发</a></div></div></li><li role="treeitem"><div data-tocid="dm_app_run_compile-d5856e1782" class="topicref" data-id="dm_app_run_compile" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm_app_run_compile.html" id="dm_app_run_compile-d5856e1782-link">编译和运行</a></div></div></li><li role="treeitem"><div data-tocid="dm_app_gdb_debug-d5856e1794" class="topicref" data-id="dm_app_gdb_debug" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm_app_gdb_debug.html" id="dm_app_gdb_debug-d5856e1794-link">GDB 调试</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/app/dm_kernel_config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Kernel 配置</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d271251e26__20250121171740">如需使用 <span class="+ topic/keyword pr-d/parmname keyword parmname">Dynamic Module</span> 功能，需要在内核中打开以下配置：<ol class="- topic/ol ol" id="kernel_config__ol_exd_tfs_vcc" data-ofbid="kernel_config__ol_exd_tfs_vcc"><li class="- topic/li li" data-ofbid="d271251e32__20250121171740">启用 <span class="+ topic/keyword pr-d/parmname keyword parmname">POSIX</span> 文件系统和
+                    <span class="+ topic/keyword pr-d/parmname keyword parmname">I/O</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_lnm_5fs_vcc" data-ofbid="kernel_config__codeblock_lnm_5fs_vcc">Rt-Thread options ---&gt;
+    RT-Thread Components ---&gt;
+        C/C++ and POSIX layer ---&gt;
+            POSIX (Portable Operating System Interface) layer ---&gt;
+                [*] Enable POSIX file system and I/O</pre></li><li class="- topic/li li" data-ofbid="d271251e42__20250121171740">启用动态模块
+                    API：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_tb5_yfs_vcc" data-ofbid="kernel_config__codeblock_tb5_yfs_vcc">Rt-Thread options ---&gt;
+    RT-Thread Components ---&gt;
+        C/C++ and POSIX layer ---&gt;
+            POSIX (Portable Operating System Interface) layer ---&gt;
+                [*] Enable dynamic module APIs, dlopen()/dlsym()/dlclose() etc</pre></li><li class="- topic/li li" data-ofbid="d271251e46__20250121171740">
+                    <p class="- topic/p p" data-ofbid="d271251e48__20250121171740">如有需要，可以选择 <span class="+ topic/keyword pr-d/parmname keyword parmname">dm-app</span> 动态加载时使用的内存堆
+                        (<span class="+ topic/keyword pr-d/parmname keyword parmname">heap</span>)，否则可跳过此步。</p>
+                    <div class="- topic/p p" data-ofbid="d271251e57__20250121171740">具体的可选堆会随不同平台的配置有所不同：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_smy_5l5_fdc" data-ofbid="kernel_config__codeblock_smy_5l5_fdc">Rt-Thread options  ---&gt;
+    RT-Thread Components  ---&gt;
+        C/C++ and POSIX layer  ---&gt;
+            POSIX (Portable Operating System Interface) layer  ---&gt;
+                [*] Enable dynamic module APIs, dlopen()/dlsym()/dlclose() etc
+                    Select dynamic module use mem (Prsam CMA heap)  ---&gt;
+                        (X) Sys Heap
+                        ( ) Prsam CMA heap</pre></div>
+                </li></ol></div><section class="- topic/section section" id="kernel_config__section_s1r_vl5_fdc" data-ofbid="kernel_config__section_s1r_vl5_fdc"><h2 class="- topic/title title sectiontitle">符号导出</h2>
+            
+            <p class="- topic/p p" data-ofbid="d271251e67__20250121171740">Kernel 中被 dm-app 访问到的符号需要使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">RTM_EXPORT()</span> 宏来进行声明，类似 Linux 中的
+                    <span class="+ topic/keyword pr-d/apiname keyword apiname">EXPORT_SYMBOL()</span> 宏。</p>
+            <div class="- topic/p p" data-ofbid="d271251e76__20250121171740">
+                <ul class="- topic/ul ul" id="kernel_config__ul_iv4_sn5_fdc" data-ofbid="kernel_config__ul_iv4_sn5_fdc"><li class="- topic/li li" data-ofbid="d271251e79__20250121171740">对于一些标准的 C 库函数，dm-app 可以直接使用 Kernel 中已经定义好的 <span class="+ topic/keyword pr-d/apiname keyword apiname">RTM_EXPORT()</span>
+                        声明，例如
+                            <span class="+ topic/ph sw-d/filepath ph filepath">luban-lite/kernel/rt-thread/components/libc/posix/libdl/dlsyms.c</span>。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_aws_sn5_fdc" data-ofbid="kernel_config__codeblock_aws_sn5_fdc">RTM_EXPORT(strcpy);
+RTM_EXPORT(strncpy);
+RTM_EXPORT(strlen);
+RTM_EXPORT(strcat);
+RTM_EXPORT(strstr);
+RTM_EXPORT(strchr);
+RTM_EXPORT(strcmp);
+RTM_EXPORT(strtol);
+RTM_EXPORT(strtoul);
+RTM_EXPORT(strncmp);
+...</pre></li><li class="- topic/li li" data-ofbid="d271251e89__20250121171740">对于 RT-Thread API 函数，dm-app 可以直接使用 Kernel 中已经定义好的
+                            <span class="+ topic/keyword pr-d/apiname keyword apiname">RTM_EXPORT()</span> 声明，例如
+                            <span class="+ topic/ph sw-d/filepath ph filepath">luban-lite/kernel/rt-thread/src/thread.c</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_v3k_vn5_fdc" data-ofbid="kernel_config__codeblock_v3k_vn5_fdc">RTM_EXPORT(rt_thread_create);
+RTM_EXPORT(rt_thread_yield);
+RTM_EXPORT(rt_thread_startup);
+RTM_EXPORT(rt_thread_detach);
+...</pre></li><li class="- topic/li li" data-ofbid="d271251e98__20250121171740">
+                        <div class="- topic/p p" data-ofbid="d271251e100__20250121171740">用户可以使用下列命令查看当前系统中使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">RTM_EXPORT()</span>
+                            声明的符号：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__pre_nrq_rdq_wcc" data-ofbid="kernel_config__pre_nrq_rdq_wcc">list_symbols</pre></div>
+                        <div class="- topic/p p" data-ofbid="d271251e108__20250121171740">系统输出结果示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_apm_kgs_vcc" data-ofbid="kernel_config__codeblock_apm_kgs_vcc">rt_critical_level=&gt; <span class="hl-number">0x40013cc0</span>
+rt_exit_critical=&gt; <span class="hl-number">0x40014090</span>
+rt_enter_critical=&gt; <span class="hl-number">0x40013ce0</span>
+rt_device_set_tx_complete=&gt; <span class="hl-number">0x40014220</span>
+rt_device_set_rx_indicate=&gt; <span class="hl-number">0x40014200</span>
+rt_device_control=&gt; <span class="hl-number">0x400141f0</span>
+rt_device_write=&gt; <span class="hl-number">0x40014370</span>
+rt_device_read=&gt; <span class="hl-number">0x40014330</span>
+rt_device_close=&gt; <span class="hl-number">0x400143b0</span></pre><div class="- topic/note note important note_important" id="kernel_config__note_zch_xl5_fdc" data-ofbid="kernel_config__note_zch_xl5_fdc"><span class="note__title">重要：</span> 
+                                <p class="- topic/p p" data-ofbid="d271251e114__20250121171740">未使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">RTM_EXPORT()</span> 声明的 Kernel 函数无法在 dm-app
+                                    中使用。如需在 dm-app 中使用自定义的 Kernel 函数，必须使用
+                                        <span class="+ topic/keyword pr-d/apiname keyword apiname">RTM_EXPORT()</span> 声明。</p>
+                            </div></div>
+                    </li></ul>
+            </div>
+        </section><section class="- topic/section section" id="kernel_config__section_n1z_hl5_fdc" data-ofbid="kernel_config__section_n1z_hl5_fdc"><h2 class="- topic/title title sectiontitle">GCC low-level 函数的符号导出</h2>
+            
+            <p class="- topic/p p" data-ofbid="d271251e131__20250121171740">在加载 dm-app 时，可能会遇到找不到某些 GCC low-level runtime library 中的函数符号的情况，如
+                    <span class="+ topic/keyword pr-d/apiname keyword apiname">__floatdidf </span>、
+                    <span class="+ topic/keyword pr-d/apiname keyword apiname">__umoddi3</span>、<span class="+ topic/keyword pr-d/apiname keyword apiname">__udivdi3</span>、<span class="+ topic/keyword pr-d/apiname keyword apiname">__fixdfdi</span>。这些函数是
+                GCC 基础运算库的一部分，用于实现 CPU 原生硬件指令无法完成的操作。例如，在 32bit 系统中实现 64bit (long long) 类型数据的除法，GCC
+                就会自动调用软件函数 <span class="+ topic/keyword pr-d/apiname keyword apiname">__umoddi3</span> 来实现。具体原理可以参考<a class="- topic/xref xref reference external" href="https://gcc.gnu.org/onlinedocs/gccint/Libgcc.html" target="_blank" rel="external noopener">The GCC low-level runtime
+                    library</a>。</p>
+            <p class="- topic/p p" data-ofbid="d271251e154__20250121171740">执行以下操作步骤，可解决这种问题：</p>
+            <ol class="- topic/ol ol arabic simple" id="kernel_config__ol_jg1_tdq_wcc" data-ofbid="kernel_config__ol_jg1_tdq_wcc"><li class="- topic/li li" data-ofbid="d271251e158__20250121171740">
+                    <div class="- topic/p p" data-ofbid="d271251e160__20250121171740">使用以下命令，在工具链中找出函数的原型声明：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_kxw_yn5_fdc" data-ofbid="kernel_config__codeblock_kxw_yn5_fdc">grep -r -A1 __umoddi3 luban-lite/toolchain/</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_uch_ypm_tdc" data-ofbid="kernel_config__codeblock_uch_ypm_tdc">toolchain/share/info/gccint.info: -- Runtime Function: <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> __umoddi3 (<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> A,
+toolchain/share/info/gccint.info-          <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> B)</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d271251e167__20250121171740">
+                    <div class="- topic/p p" data-ofbid="d271251e169__20250121171740">在 Kernel 中使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">RTM_EXPORT()</span>
+                        给函数加上符号导出声明：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="kernel_config__codeblock_bpd_zn5_fdc" data-ofbid="kernel_config__codeblock_bpd_zn5_fdc"><strong class="hl-keyword">extern</strong> <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> __umoddi3 (<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> a, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> b);
+RTM_EXPORT(__umoddi3);
+<strong class="hl-keyword">extern</strong> <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> __udivdi3 (<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> a, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> b);
+RTM_EXPORT(__udivdi3);
+<strong class="hl-keyword">extern</strong> <strong class="hl-keyword">double</strong> __floatdidf (<strong class="hl-keyword">long</strong> i);
+RTM_EXPORT(__floatdidf);
+<strong class="hl-keyword">extern</strong> <strong class="hl-keyword">long</strong> __fixdfdi (<strong class="hl-keyword">double</strong> a);
+RTM_EXPORT(__fixdfdi);</pre></div>
+                </li></ol>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#kernel_config__section_s1r_vl5_fdc" data-tocid="kernel_config__section_s1r_vl5_fdc">符号导出</a></div></li><li class="section-item"><div class="section-title"><a href="#kernel_config__section_n1z_hl5_fdc" data-tocid="kernel_config__section_n1z_hl5_fdc">GCC low-level 函数的符号导出</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="GE 模块数据结构如下： enum ge_pd_rules Porter/Duff alpha 混合规则枚举 /* * enum ge_pd_mode - graphics engine Porter/Duff alpha blending rules * * pixel = (source * fs + destination * fd) * sa = source alpha * da = ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-11-29"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ge_data_structure"/><meta name="DC.language" content="zh-CN"/><title>数据结构设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/ge/ge_data_structure.dita"/><meta name="wh-out-relpath" content="topics/sdk/ge/ge_data_structure.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ge_data_structure" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ge/ge_data_structure.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">数据结构设计</h1><div class="date inPage">29 Nov 2024</div><div style="color: gray;">
+                    Read time: 7 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d294968e22__20250121171801">GE 模块数据结构如下：<ul class="- topic/ul ul" id="ge_data_structure__ul_ogw_5cb_d1c" data-ofbid="ge_data_structure__ul_ogw_5cb_d1c"><li class="- topic/li li" data-ofbid="d294968e25__20250121171801"><strong class="+ topic/ph hi-d/b ph b">enum ge_pd_rules</strong><p class="- topic/p p" data-ofbid="d294968e28__20250121171801">Porter/Duff alpha
+                                        混合规则枚举</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_data_structure__codeblock_w2q_vcb_d1c" data-ofbid="ge_data_structure__codeblock_w2q_vcb_d1c"><em class="hl-comment">/*
+ * enum ge_pd_mode - graphics engine Porter/Duff alpha blending rules
+ *
+ * pixel = (source * fs + destination * fd)
+ * sa = source alpha
+ * da = destination alpha
+ *
+ * @GE_PD_NONE:           fs: sa      fd: 1.0-sa (defaults)
+ * @GE_PD_CLEAR:          fs: 0.0     fd: 0.0
+ * @GE_PD_SRC:            fs: 1.0     fd: 0.0
+ * @GE_PD_SRC_OVER:       fs: 1.0     fd: 1.0-sa
+ * @GE_PD_DST_OVER:       fs: 1.0-da  fd: 1.0
+ * @GE_PD_SRC_IN:         fs: da      fd: 0.0
+ * @GE_PD_DST_IN:         fs: 0.0     fd: sa
+ * @GE_PD_SRC_OUT:        fs: 1.0-da  fd: 0.0
+ * @GE_PD_DST_OUT:        fs: 0.0     fd: 1.0-sa
+ * @GE_PD_SRC_ATOP:       fs: da      fd: 1.0-sa
+ * @GE_PD_DST_ATOP:       fs: 1.0-da  fd: sa
+ * @GE_PD_ADD:            fs: 1.0     fd: 1.0
+ * @GE_PD_XOR:            fs: 1.0-da  fd: 1.0-sa
+ * @GE_PD_DST:            fs: 0.0     fd: 1.0
+ */</em>
+<strong class="hl-keyword">enum</strong> ge_pd_rules {
+        GE_PD_NONE           =  <span class="hl-number">0</span>,
+        GE_PD_CLEAR          =  <span class="hl-number">1</span>,
+        GE_PD_SRC            =  <span class="hl-number">2</span>,
+        GE_PD_SRC_OVER       =  <span class="hl-number">3</span>,
+        GE_PD_DST_OVER       =  <span class="hl-number">4</span>,
+        GE_PD_SRC_IN         =  <span class="hl-number">5</span>,
+        GE_PD_DST_IN         =  <span class="hl-number">6</span>,
+        GE_PD_SRC_OUT        =  <span class="hl-number">7</span>,
+        GE_PD_DST_OUT        =  <span class="hl-number">8</span>,
+        GE_PD_SRC_ATOP       =  <span class="hl-number">9</span>,
+        GE_PD_DST_ATOP       = <span class="hl-number">10</span>,
+        GE_PD_ADD            = <span class="hl-number">11</span>,
+        GE_PD_XOR            = <span class="hl-number">12</span>,
+        GE_PD_DST            = <span class="hl-number">13</span>,
+};</pre></li><li class="- topic/li li" data-ofbid="d294968e32__20250121171801"><strong class="+ topic/ph hi-d/b ph b">struct ge_ctrl</strong><p class="- topic/p p" data-ofbid="d294968e35__20250121171801">GE
+                                        控制结构体</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_data_structure__codeblock_jqp_bdb_d1c" data-ofbid="ge_data_structure__codeblock_jqp_bdb_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct ge_ctrl - ge ctrl functions
+ * @alpha_en
+ *  0: enable Porter/Duff alpha blending
+ *  1: disable Porter/Duff alpha blending
+ * @alpha_rules: Porter/Duff alpha blending rules
+ * @src_alpha_mode: source alpha mode
+ *  0: pixel alpha mode(src_alpha = src_pixel_alpha)
+ *  1: global alpha mode(src_alpha = src_global_alpha)
+ *  2: mixded alpha mode(src_alpha = src_pixel_alpha * src_global_alpha / 255)
+ * @src_global_alpha: source global alpha value (0~255)
+ *  used by global alpha mode and mixded alpha mode
+ * @dst_alpha_mode: destination alpha mode
+ *  0: pixel alpha mode(dst_alpha = dst_pixel_alpha)
+ *  1: global alpha mode(dst_alpha = dst_global_alpha)
+ *  2: mixded alpha mode(dst_alpha = dst_pixel_alpha * dst_global_alpha / 255)
+ * @dst_global_alpha: destination global alpha value (0~255)
+ *  used by global alpha mode and mixed alpha mode
+ * @ck_en
+ *  0: disable color key
+ *  1: enable color key
+ * @ck_value: rgb value of color key to match the source pixels
+ *  bit[31:24]: reserved
+ *  bit[23:16]: R value
+ *  bit[15:8]: G value
+ *  bit[7:0]: B value
+ * @dither_en(Not supported by IOC_GE_ROTATE)
+ *  0: disable dither
+ *  1: enable dither
+ * @flags: the flags of some functions, such as scan order, src H/V flip
+ *         and src 90/180/270 degree rotation, the H flip, V flip
+ *         and rotation can be enabled at the same time, the effect
+ *         of flip is in front of rotation, only supported by IOC_GE_BITBLT
+ *         the flags was defined in mpp_types.h
+ */</span>
+<strong class="hl-keyword">struct</strong> ge_ctrl {
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       alpha_en;
+        <strong class="hl-keyword">enum</strong> ge_pd_rules   alpha_rules;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       src_alpha_mode;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       src_global_alpha;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       dst_alpha_mode;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       dst_global_alpha;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       ck_en;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       ck_value;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       dither_en;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>       flags;
+};</pre></li><li class="- topic/li li" data-ofbid="d294968e39__20250121171801"><strong class="+ topic/ph hi-d/b ph b">enum
+                                        ge_fillrect_type</strong><p class="- topic/p p" data-ofbid="d294968e42__20250121171801">颜色填充类型枚举</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_data_structure__codeblock_rgb_cdb_d1c" data-ofbid="ge_data_structure__codeblock_rgb_cdb_d1c"><em class="hl-comment">/*
+ * enum ge_fillrect_type - the ge fill rectangle types:
+ *
+ * GE_NO_GRADIENT: No gradient is used, only use start_color to
+ *                  fill rectangle, ignore end_color
+ * GE_H_LINEAR_GRADIENT: Interpolates colors between start_color
+ *                  and end_color in the horizontal direction
+ *                  form left to right
+ * GE_V_LINEAR_GRADIENT: Interpolates colors between start_color and
+ *                  end_color in the vertical direction from top to
+ *                  buttom
+ */</em>
+<strong class="hl-keyword">enum</strong> ge_fillrect_type {
+        GE_NO_GRADIENT         = <span class="hl-number">0</span>,
+        GE_H_LINEAR_GRADIENT   = <span class="hl-number">1</span>,
+        GE_V_LINEAR_GRADIENT   = <span class="hl-number">2</span>,
+};</pre></li><li class="- topic/li li" data-ofbid="d294968e46__20250121171801"><strong class="+ topic/ph hi-d/b ph b">struct
+                                        ge_fillrect</strong>p<p class="- topic/p p" data-ofbid="d294968e50__20250121171801">矩形填充结构体</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_data_structure__codeblock_cbv_cdb_d1c" data-ofbid="ge_data_structure__codeblock_cbv_cdb_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct ge_fillrect - ge fill rectangle
+ * @type: fill rect type
+ * @start_color: start color(32 bits)
+ * bit[31:24] alpha value
+ * bit[23:16] r value
+ * bit[15:8]  g value
+ * bit[7:0]   b value
+ * @end_color: end color(32 bits)
+ * bit[31:24] alpha value
+ * bit[23:16] r value
+ * bit[15:8]  g value
+ * bit[7:0]   b value
+ * @dst_buf: the destination buffer
+ * @ctrl: ge ctrl functions
+ */</span>
+<strong class="hl-keyword">struct</strong> ge_fillrect {
+        <strong class="hl-keyword">enum</strong> ge_fillrect_type  type;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>           start_color;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>           end_color;
+        <strong class="hl-keyword">struct</strong> mpp_buf         dst_buf;
+        <strong class="hl-keyword">struct</strong> ge_ctrl         ctrl;
+};
+<span class="hl-number">6.1</span>.<span class="hl-number">5.4</span>.<span class="hl-number">5.</span> <strong class="hl-keyword">struct</strong> ge_b</pre></li><li class="- topic/li li" data-ofbid="d294968e54__20250121171801"><strong class="+ topic/ph hi-d/b ph b">struct
+                                        ge_bitblt</strong><p class="- topic/p p" data-ofbid="d294968e57__20250121171801">位块搬移结构体</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_data_structure__codeblock_xbm_2db_d1c" data-ofbid="ge_data_structure__codeblock_xbm_2db_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct ge_bitblt - ge bitblt
+ * @src_buf: the source buffer
+ * @dst_buf: the destination buffer
+ * @ctrl: ge ctrl functions
+ */</span>
+<strong class="hl-keyword">struct</strong> ge_bitblt {
+        <strong class="hl-keyword">struct</strong> mpp_buf   src_buf;
+        <strong class="hl-keyword">struct</strong> mpp_buf   dst_buf;
+        <strong class="hl-keyword">struct</strong> ge_ctrl   ctrl;
+};</pre></li><li class="- topic/li li" data-ofbid="d294968e61__20250121171801"><strong class="+ topic/ph hi-d/b ph b">struct
+                                        ge_bitblt</strong><p class="- topic/p p" data-ofbid="d294968e64__20250121171801">位块搬移结构体</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_data_structure__codeblock_syg_2db_d1c" data-ofbid="ge_data_structure__codeblock_syg_2db_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct ge_rotation - ge rotation
+ * @src_buf: the source buffer
+ * @dst_buf: the destination buffer
+ * @src_rot_center: left-top x/y coordinate of src center
+ * @dst_rot_center: left-top x/y coordinate of dst center
+ * @angle_sin: 2.12 fixed point, the sin value of rotation angle
+ * @angle_cos: 2.12 fixed point, the cos value of rotation angle
+ * @ctrl: ge ctrl functions
+ */</span>
+<strong class="hl-keyword">struct</strong> ge_rotation {
+        <strong class="hl-keyword">struct</strong> mpp_buf        src_buf;
+        <strong class="hl-keyword">struct</strong> mpp_buf        dst_buf;
+        <strong class="hl-keyword">struct</strong> mpp_point      src_rot_center;
+        <strong class="hl-keyword">struct</strong> mpp_point      dst_rot_center;
+        <strong class="hl-keyword">int</strong>                   angle_sin;
+        <strong class="hl-keyword">int</strong>                   angle_cos;
+        <strong class="hl-keyword">struct</strong> ge_ctrl        ctrl;
+};</pre></li><li class="- topic/li li" data-ofbid="d294968e68__20250121171801">enum ge_mode<p class="- topic/p p" data-ofbid="d294968e70__20250121171801">GE
+                                        模式枚举</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_data_structure__codeblock_zbp_2db_d1c" data-ofbid="ge_data_structure__codeblock_zbp_2db_d1c"><strong class="hl-keyword">enum</strong> ge_mode {
+        GE_MODE_NORMAL,
+        GE_MODE_CMDQ,
+};</pre></li></ul></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

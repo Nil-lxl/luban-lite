@@ -1,0 +1,588 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 源代码位于 bsp/artinchip/ ： bsp/artinchip/drv/mdi/drv_mdi.c ，MDI Driver 层实现 bsp/artinchip/hal/mdi/hal_mdi.c ，MDI HAL 层实现 bsp/artinchip/include/hal/hal_mdi.h ，MDI HAL 层接口头文件 模块架构 整个软件系统的架构图如下： MDI ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-05"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mdi/mdi_design.dita"/><meta name="wh-out-relpath" content="topics/sdk/mdi/mdi_design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">5 Dec 2024</div><div style="color: gray;">
+                    Read time: 12 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_i3c_ldy_2dc" data-ofbid="id__section_i3c_ldy_2dc"><strong class="+ topic/ph hi-d/b ph b">源码说明</strong><div class="- topic/div div">
+                <div class="- topic/div div section" id="id__id2">
+                    <p class="- topic/p p" data-ofbid="d264557e24__20250121171732">源代码位于 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/</span>：</p>
+                    <ul class="- topic/ul ul simple" id="id__ul_j3c_ldy_2dc" data-ofbid="id__ul_j3c_ldy_2dc"><li class="- topic/li li" data-ofbid="d264557e31__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e33__20250121171732"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/mdi/drv_mdi.c</span>，MDI Driver
+                                层实现</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e38__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e40__20250121171732"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/hal/mdi/hal_mdi.c</span>，MDI HAL 层实现</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e45__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e47__20250121171732"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_mdi.h</span>，MDI HAL
+                                层接口头文件</p>
+                        </li></ul>
+                </div>
+            </div></section><section class="- topic/section section" id="id__section_shh_mdy_2dc" data-ofbid="id__section_shh_mdy_2dc"><h2 class="- topic/title title sectiontitle">模块架构</h2>
+            
+            <div class="- topic/div div">
+                <div class="- topic/div div section" id="id__id3">
+                    <p class="- topic/p p" data-ofbid="d264557e63__20250121171732">整个软件系统的架构图如下：</p>
+                    <figure class="- topic/fig fig fignone" id="id__fig_k3c_ldy_2dc" data-ofbid="id__fig_k3c_ldy_2dc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_l3c_ldy_2dc" src="../../../images/mdi/sw_system11.png" alt="sw_system11"/></div><br/></figure>
+                    
+                    <ul class="- topic/ul ul simple" id="id__ul_m3c_ldy_2dc" data-ofbid="id__ul_m3c_ldy_2dc"><li class="- topic/li li" data-ofbid="d264557e74__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e76__20250121171732">MDI
+                                驱动需要和
+                                ArtInChip 自制的 MPP
+                                中间件配合使用，MDI
+                                Driver 层采用普通的 API
+                                方式向上提供接口。</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e79__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e81__20250121171732">MPP VIN 模块对 APP 提供类似 ioctl 的接口封装，类似 Linux 中的 ioctl
+                                接口定义。</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e84__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e86__20250121171732">MDI
+                                需要用到多任务并发，暂不支持在裸机环境中运行。</p>
+                        </li></ul>
+                </div>
+            </div>
+        </section></div><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title2" xml:lang="zh-CN" lang="zh-CN" id="topic_oxx_53y_2dc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_design.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title2">关键流程设计</h2><div class="- topic/body body"><section class="- topic/section section" id="topic_oxx_53y_2dc__section_ayb_ndy_2dc" data-ofbid="topic_oxx_53y_2dc__section_ayb_ndy_2dc"><h3 class="- topic/title title sectiontitle">初始化流程</h3>
+                    <p class="- topic/p p" data-ofbid="d264557e101__20250121171732">总体上看，MDI 驱动的初始化过程实现在 aic_mdi_open() 接口中，完成的操作有：</p><ol class="- topic/ol ol arabic simple" id="topic_oxx_53y_2dc__ol_n3c_ldy_2dc" data-ofbid="topic_oxx_53y_2dc__ol_n3c_ldy_2dc"><li class="- topic/li li" data-ofbid="d264557e104__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e106__20250121171732">使能 MDI 时钟</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e109__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e111__20250121171732">打卡 MDI 中断</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e114__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e116__20250121171732">初始化 VideoBuf 链表</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e119__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e121__20250121171732">使能 DVP 控制器</p>
+                        </li></ol></section><section class="- topic/section section" id="topic_oxx_53y_2dc__buffer" data-ofbid="topic_oxx_53y_2dc__buffer"><h3 class="- topic/title title sectiontitle">Buffer 队列管理</h3>
+                    
+                    <p class="- topic/p p" data-ofbid="d264557e129__20250121171732">Buffer 队列管理复用 MPP VIN Buffer 模块中的机制，通过三个链表来管理这些 Buffer。</p><div class="- topic/div div section" id="topic_oxx_53y_2dc__mdi-de-buffer">
+                        <strong class="+ topic/ph hi-d/b ph b">MDI-&gt;DE 场景的 Buffer 管理</strong>
+                        <p class="- topic/p p" data-ofbid="d264557e136__20250121171732">整个 Buffer 流转的过程如下图：</p><figure class="- topic/fig fig fignone" id="topic_oxx_53y_2dc__id10" data-ofbid="topic_oxx_53y_2dc__id10"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="topic_oxx_53y_2dc__image_o3c_ldy_2dc" src="../../../images/mdi/mdi_de_buf_flow.png" alt="mdi_de_buf_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">MDI-&gt;DE 场景中的 Buffer 流转过程</span></figcaption></figure></div><div class="- topic/div div section" id="topic_oxx_53y_2dc__mdi-ge-de-buffer">
+                        <strong class="+ topic/ph hi-d/b ph b">MDI-&gt;GE-&gt;DE 场景的 Buffer 管理</strong>
+                        <p class="- topic/p p" data-ofbid="d264557e149__20250121171732">整个 Buffer 流转的过程如下图：</p><figure class="- topic/fig fig fignone" id="topic_oxx_53y_2dc__id11" data-ofbid="topic_oxx_53y_2dc__id11"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="topic_oxx_53y_2dc__image_p3c_ldy_2dc" src="../../../images/mdi/mdi_ge_de_buf_flow.png" alt="mdi_ge_de_buf_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">MDI-&gt;GE-&gt;DE 场景中的 Buffer 流转过程</span></figcaption></figure></div><div class="- topic/div div section" id="topic_oxx_53y_2dc__id6">
+                    <strong class="+ topic/ph hi-d/b ph b"> 局部刷新场景中的 Buffer 管理</strong>
+                    <p class="- topic/p p" data-ofbid="d264557e162__20250121171732">在局部刷新场景中，为了节省带宽，通常采用以下流程：</p><ul class="- topic/ul ul simple" id="topic_oxx_53y_2dc__ul_qsl_jdy_2dc" data-ofbid="topic_oxx_53y_2dc__ul_qsl_jdy_2dc"><li class="- topic/li li" data-ofbid="d264557e165__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e167__20250121171732">先推一屏完整的数据。</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e170__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e172__20250121171732">后面帧都采用局部刷新方式，只推一个小图，位置信息由
+                                2A、2B 命令提供。</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e175__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e177__20250121171732">将小图数据填充到空的 Buffer 中，并将这个 Buffer 提交给 GE 模块进行处理。</p>
+                            <p class="- topic/p p" data-ofbid="d264557e180__20250121171732">GE 做数据搬运和局部填充。</p>
+                        </li><li class="- topic/li li" data-ofbid="d264557e183__20250121171732">
+                            <p class="- topic/p p" data-ofbid="d264557e185__20250121171732">将处理后的 Buffer 提交给 DE 模块进行显示。</p>
+                        </li></ul><div class="- topic/p p" data-ofbid="d264557e188__20250121171732">数据通路： MDI
+                        → GE
+                        →
+                            DE。<div class="- topic/note note note note_note" id="topic_oxx_53y_2dc__note_fbw_j4y_2dc" data-ofbid="topic_oxx_53y_2dc__note_fbw_j4y_2dc"><span class="note__title">注：</span> 运行时需要一直保持一个背景图的备份</div></div><figure class="- topic/fig fig fignone" id="topic_oxx_53y_2dc__id12" data-ofbid="topic_oxx_53y_2dc__id12"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="topic_oxx_53y_2dc__image_q3c_ldy_2dc" src="../../../images/mdi/mdi_part_refresh_flow.png" alt="mdi_part_refresh_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">MDI
+                            → GE → DE 局部刷新场景中的 Buffer 流转过程</span></figcaption></figure>
+                </div></section><section class="- topic/section section" id="topic_oxx_53y_2dc__id7" data-ofbid="topic_oxx_53y_2dc__id7"><h3 class="- topic/title title sectiontitle">中断处理流程</h3>
+                
+                <p class="- topic/p p" data-ofbid="d264557e204__20250121171732">MDI 的中断处理中需要处理
+                    Buf
+                    队列的流转和
+                    Display
+                    Buffer Interface
+                    (DBI)
+                    命令响应。</p>
+                <div class="- topic/p p" data-ofbid="d264557e207__20250121171732">对于图像数据的接收，MDI
+                        硬件提供以下关键的中断状态：<div class="- topic/note note note note_note" id="topic_oxx_53y_2dc__note_hhd_w4t_2dc" data-ofbid="topic_oxx_53y_2dc__note_hhd_w4t_2dc"><span class="note__title">注：</span> <span class="+ topic/ph ui-d/uicontrol ph uicontrol">HNUM Interrupt</span> 会先于
+                            <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Frame done</span> 发生。</div></div>
+                <ol class="- topic/ol ol arabic simple" id="topic_oxx_53y_2dc__ol_r3c_ldy_2dc" data-ofbid="topic_oxx_53y_2dc__ol_r3c_ldy_2dc"><li class="- topic/li li" data-ofbid="d264557e218__20250121171732">
+                        <dl class="- topic/dl dl simple" id="topic_oxx_53y_2dc__dl_s3c_ldy_2dc" data-ofbid="topic_oxx_53y_2dc__dl_s3c_ldy_2dc"><dt class="- topic/dt dt dlterm" data-ofbid="d264557e222__20250121171732">HNUM Interrupt</dt><dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d264557e226__20250121171732">用于判断当前
+                                        Register 是否可以修改。出现 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">HNUM
+                                        Interrupt</span>，表示当前图像帧已经完成 10
+                                        行（驱动中默认配置）数据的刷新，硬件已经读走了当前的
+                                        Register 值（影子寄存器），软件可以传入下一个 Buf 的参数了。</p>
+                                </dd></dl>
+                    </li><li class="- topic/li li" data-ofbid="d264557e233__20250121171732">
+                        <dl class="- topic/dl dl simple" id="topic_oxx_53y_2dc__dl_t3c_ldy_2dc" data-ofbid="topic_oxx_53y_2dc__dl_t3c_ldy_2dc"><dt class="- topic/dt dt dlterm" data-ofbid="d264557e237__20250121171732">Frame done</dt><dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d264557e241__20250121171732">用于判断当前
+                                        buf 是否完成（done 状态）。出现 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Frame
+                                        done</span>，表示当前帧的数据传输完成，此时该
+                                        buf 可以从 QBuf list 切换到 DQbuf list。</p>
+                                </dd></dl>
+                    </li></ol>
+                
+                <p class="- topic/p p" data-ofbid="d264557e249__20250121171732">按照 MDI 硬件设计的逻辑，<span class="+ topic/ph ui-d/uicontrol ph uicontrol">HNUM Interrupt</span> 和 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Frame
+                        done</span> 会间隔产生，如下所示：</p>
+                <p class="- topic/p p" data-ofbid="d264557e259__20250121171732">
+                    <code class="+ topic/ph pr-d/codeph ph codeph">HNUM Interrupt -&gt; Frame done-&gt; HNUM Interrupt -&gt; Frame
+                        done-&gt; HNUM Interrupt -&gt; Frame done...</code>
+                </p>
+                
+                <figure class="- topic/fig fig fignone" id="topic_oxx_53y_2dc__id13" data-ofbid="topic_oxx_53y_2dc__id13"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="topic_oxx_53y_2dc__image_u3c_ldy_2dc" src="../../../images/mdi/mdi_irq_flow.png" alt="mdi_irq_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">MDI
+                        驱动中 IRQ 处理流程</span></figcaption></figure>
+            </section></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title3" xml:lang="zh-CN" lang="zh-CN" id="topic_zfs_bjy_2dc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_design.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title3">自定义 DBI 命令设计</h2><div class="- topic/body body section" id="topic_zfs_bjy_2dc__dbi"><p class="- topic/p p" data-ofbid="d264557e276__20250121171732">Display Buffer Interface (DBI) 命令是用于控制显示设备（如液晶显示屏）的一组指令。这些命令通常由主控芯片 (MCU)
+                发送给显示控制器，以配置和控制显示参数。以下是一些常见的 DBI 命令及其功能：</p><section class="- topic/section section" id="topic_zfs_bjy_2dc__section_wnk_lqy_2dc" data-ofbid="topic_zfs_bjy_2dc__section_wnk_lqy_2dc"><h3 class="- topic/title title sectiontitle">0x3A：Interface Pixel Format</h3>
+                
+                <p class="- topic/p p" data-ofbid="d264557e283__20250121171732">0x3A 命令是一个标准的 DBI 命令，用于设置显示接口的像素格式。 </p>
+                        <figure class="- topic/fig fig fignone" id="topic_zfs_bjy_2dc__id14" data-ofbid="topic_zfs_bjy_2dc__id14"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="topic_zfs_bjy_2dc__image_v3c_ldy_2dc" src="../../../images/mdi/dbi_cmd_3a.png" alt="dbi_cmd_3a"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 5</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">0x3A 命令的原始定义</span></figcaption></figure>
+                        <p class="- topic/p p" data-ofbid="d264557e293__20250121171732">为了区分一些特殊格式，对 BIT3 新增了扩展定义。通过修改 BIT3，可以定义不同的颜色格式。</p>
+                        <div class="- topic/p p" data-ofbid="d264557e296__20250121171732">针对 BIT3
+                                的自定义如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_zfs_bjy_2dc__codeblock_k41_vdy_2dc" data-ofbid="topic_zfs_bjy_2dc__codeblock_k41_vdy_2dc"><em class="hl-comment">/* The flag is a extend bit of CMD 0x3A, which should be set by Host.
+ *
+ * Bus Mode        MCU Interface Flag RGB sequence
+ * ------------    ------------- ---- --------------
+ * SPI             16BIT         x    RGB565
+ * SPI             24BIT         0    RGB888
+ * SPI             24BIT         1    RGB888_2
+ * 8080/6080 x8    16BIT         x    X8 RGB565
+ * 8080/6080 x8    24BIT         x    X8 RGB888
+ * 8080/6080 x16   16BIT         x    X16 RGB565
+ * 8080/6080 x16   18BIT         0    X16 RGBX666
+ * 8080/6080 x16   18BIT         1    X16 XRGB666
+ * 8080/6080 x16   24BIT         0    X16 RGBX888
+ * 8080/6080 x16   24BIT         1    X16 RGBX
+ */</em></pre><div class="- topic/note note note note_note" id="topic_zfs_bjy_2dc__note_cts_2qy_2dc" data-ofbid="topic_zfs_bjy_2dc__note_cts_2qy_2dc"><span class="note__title">注：</span> 对应其中的 Flag 定义，代码详见
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">drv_mdi.c</span> 的接口
+                                    <span class="+ topic/keyword pr-d/apiname keyword apiname">aic_mdi_in_fmt_set()</span>）</div></div>
+            </section><section class="- topic/section section" id="topic_zfs_bjy_2dc__section_h5m_4qy_2dc" data-ofbid="topic_zfs_bjy_2dc__section_h5m_4qy_2dc"><h3 class="- topic/title title sectiontitle">0xAC：GE Control</h3>
+                
+                
+                
+                
+                <div class="- topic/div div section" id="topic_zfs_bjy_2dc__ge-control-0xac">
+                    0xAC
+                        命令用于配置图形引擎（GE）的控制参数，包括拉伸、镜像和旋转等操作。<div class="- topic/p p" data-ofbid="d264557e316__20250121171732">0xAC
+                        命令定义如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_zfs_bjy_2dc__codeblock_x5l_vdy_2dc" data-ofbid="topic_zfs_bjy_2dc__codeblock_x5l_vdy_2dc">#<span class="hl-directive">define</span> DBI_CMD_GE_H_FLIP           BIT(<span class="hl-number">6</span>)
+#<span class="hl-directive">define</span> DBI_CMD_GE_V_FLIP           BIT(<span class="hl-number">5</span>)
+#<span class="hl-directive">define</span> DBI_CMD_GE_SCALE            BIT(<span class="hl-number">4</span>)
+#<span class="hl-directive">define</span> DBI_CMD_GE_ROT_MASK         GENMASK(<span class="hl-number">1</span>, <span class="hl-number">0</span>)</pre>
+                    </div><div class="- topic/p p" data-ofbid="d264557e321__20250121171732">Rotation
+                        的角度定义，复用 MPP
+                        中的定义：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_zfs_bjy_2dc__codeblock_ycq_vdy_2dc" data-ofbid="topic_zfs_bjy_2dc__codeblock_ycq_vdy_2dc"><em class="hl-comment">/* rotate flags for GE/VE ctrl */</em>
+#<span class="hl-directive">define</span> MPP_ROTATION_<span class="hl-number">0</span>            (<span class="hl-number">0</span> &lt;&lt; <span class="hl-number">0</span>)
+#<span class="hl-directive">define</span> MPP_ROTATION_<span class="hl-number">90</span>           (<span class="hl-number">1</span> &lt;&lt; <span class="hl-number">0</span>)
+#<span class="hl-directive">define</span> MPP_ROTATION_<span class="hl-number">180</span>          (<span class="hl-number">2</span> &lt;&lt; <span class="hl-number">0</span>)
+#<span class="hl-directive">define</span> MPP_ROTATION_<span class="hl-number">270</span>          (<span class="hl-number">3</span> &lt;&lt; <span class="hl-number">0</span>)</pre></div></div>
+            </section></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title4" xml:lang="zh-CN" lang="zh-CN" id="topic_udm_2jy_2dc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_design.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title4">数据结构设计</h2><div class="- topic/body body"><section class="- topic/section section" id="topic_udm_2jy_2dc__id8" data-ofbid="topic_udm_2jy_2dc__id8"><h3 class="- topic/title title sectiontitle">struct aic_mdi_cfg</h3>
+                
+                <div class="- topic/p p" data-ofbid="d264557e335__20250121171732">属于 MPP VIN Dev 层的接口，定义了输入信号、显示输出的配置信息，由 APP
+                    层在初始化时传入，包含以下字段：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_udm_2jy_2dc__codeblock_sfz_vdy_2dc" data-ofbid="topic_udm_2jy_2dc__codeblock_sfz_vdy_2dc"><strong class="hl-keyword">struct</strong> aic_mdi_cfg {
+    <em class="hl-comment">/* Input format, should be decided by some GPIO */</em>
+    <strong class="hl-keyword">enum</strong> mdi_bus_mode       bus_mode;
+    <strong class="hl-keyword">enum</strong> mdi_dat_endian     big_endian;
+    <strong class="hl-keyword">struct</strong> mdi_bus_<span class="hl-number">8080</span>_cfg bus_<span class="hl-number">8080</span>;
+    <strong class="hl-keyword">struct</strong> mdi_bus_spi_cfg  bus_spi;
+
+    <em class="hl-comment">/* Input pixel format, set by Host write command */</em>
+    u32 width;
+    u32 height;
+
+    <em class="hl-comment">/* Output pixel format, depends on the panel */</em>
+    u32 stride;
+    u32 sizeimage;
+};</pre></div>
+                
+                <div class="- topic/p p" data-ofbid="d264557e342__20250121171732">其中，引用到了关于 DBI
+                    BUS
+                    的配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_udm_2jy_2dc__codeblock_n3b_c2y_2dc" data-ofbid="topic_udm_2jy_2dc__codeblock_n3b_c2y_2dc"><em class="hl-comment">/* Information of SPI bus */</em>
+<strong class="hl-keyword">struct</strong> mdi_bus_spi_cfg {
+    <strong class="hl-keyword">enum</strong> mdi_spi_mode       mode;
+    <strong class="hl-keyword">enum</strong> mdi_spi_disp_fmt   seq;
+    <strong class="hl-keyword">enum</strong> mdi_spi_rd_fmt     rd_fmt;
+};
+
+<em class="hl-comment">/* Information of 8080/6800 bus */</em>
+<strong class="hl-keyword">struct</strong> mdi_bus_<span class="hl-number">8080</span>_cfg {
+    <strong class="hl-keyword">enum</strong> mdi_pin_ctl        pin;
+    <strong class="hl-keyword">union</strong> {
+        <strong class="hl-keyword">enum</strong> mdi_x8_seq x8;
+        <strong class="hl-keyword">enum</strong> mdi_x16_seq x16;
+    } seq;
+};</pre></div>
+            </section><section class="- topic/section section" id="topic_udm_2jy_2dc__dbi-bus" data-ofbid="topic_udm_2jy_2dc__dbi-bus"><h3 class="- topic/title title sectiontitle">DBI Bus 的格式定义</h3>
+                    
+                    <div class="- topic/p p" data-ofbid="d264557e353__20250121171732">属于 MPP VIN Dev 层的接口，定义了 DBI
+                    BUS
+                    相关的数据格式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_udm_2jy_2dc__codeblock_dbx_d2y_2dc" data-ofbid="topic_udm_2jy_2dc__codeblock_dbx_d2y_2dc"><strong class="hl-keyword">enum</strong> mdi_bus_mode {
+    MDI_BUS_MODE_<span class="hl-number">8080</span> = <span class="hl-number">0</span>,
+    MDI_BUS_MODE_<span class="hl-number">6800</span> = <span class="hl-number">1</span>,
+    MDI_BUS_MODE_SPI = <span class="hl-number">2</span>
+};
+
+<strong class="hl-keyword">enum</strong> mdi_spi_disp_fmt {
+    MDI_SPI_DISP_FMT_RGB888 = <span class="hl-number">0</span>,
+    MDI_SPI_DISP_FMT_RGB565 = <span class="hl-number">1</span>,
+    MDI_SPI_DISP_FMT_RGB888_<span class="hl-number">2</span> = <span class="hl-number">2</span>, <em class="hl-comment">// only for 2SDA</em>
+};
+
+<strong class="hl-keyword">enum</strong> mdi_spi_rd_fmt {
+    MDI_SPI_RD_FMT_<span class="hl-number">8</span>BIT = <span class="hl-number">0</span>,
+    MDI_SPI_RD_FMT_<span class="hl-number">24</span>BIT = <span class="hl-number">1</span>,
+    MDI_SPI_RD_FMT_<span class="hl-number">32</span>BIT = <span class="hl-number">2</span>
+};
+
+<strong class="hl-keyword">enum</strong> mdi_spi_mode {
+    MDI_SPI_MODE_<span class="hl-number">3</span>WIRE = <span class="hl-number">0</span>,
+    MDI_SPI_MODE_<span class="hl-number">4</span>WIRE = <span class="hl-number">1</span>,
+    MDI_SPI_MODE_<span class="hl-number">2</span>SDA = <span class="hl-number">2</span>,
+    MDI_SPI_MODE_<span class="hl-number">4</span>SDA = <span class="hl-number">3</span>
+};
+
+<strong class="hl-keyword">enum</strong> mdi_x16_seq {
+    MDI_X16_SEQ_RGB888 = <span class="hl-number">0</span>,
+    MDI_X16_SEQ_RGBX = <span class="hl-number">1</span>,
+    MDI_X16_SEQ_RGBX666 = <span class="hl-number">2</span>,
+    MDI_X16_SEQ_XRGB666 = <span class="hl-number">3</span>,
+    MDI_X16_SEQ_RGB565 = <span class="hl-number">4</span>
+};
+
+<strong class="hl-keyword">enum</strong> mdi_x8_seq {
+    MDI_X8_SEQ_RGB888 = <span class="hl-number">0</span>,
+    MDI_X8_SEQ_RGB565 = <span class="hl-number">1</span>
+};
+
+<strong class="hl-keyword">enum</strong> mdi_dat_endian {
+    MDI_DAT_ENDIAN_LOW_<span class="hl-number">8</span> = <span class="hl-number">0</span>,
+    MDI_DAT_ENDIAN_HIGH_<span class="hl-number">8</span> = <span class="hl-number">1</span>
+};
+
+<strong class="hl-keyword">enum</strong> mdi_pin_ctl {
+    MDI_PIN_CTL_X8 = <span class="hl-number">0</span>,
+    MDI_PIN_CTL_X16 = <span class="hl-number">1</span>
+};</pre></div></section><section class="- topic/section section" id="topic_udm_2jy_2dc__id9" data-ofbid="topic_udm_2jy_2dc__id9"><h3 class="- topic/title title sectiontitle">DBI 命令的回调信息</h3>
+                
+                <div class="- topic/div div">
+                    <div class="- topic/p p" data-ofbid="d264557e364__20250121171732">属于 MPP VIN Dev 层的接口，定义了一个 DBI
+                        命令对应的数据内容及处理函数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_udm_2jy_2dc__codeblock_nvn_22y_2dc" data-ofbid="topic_udm_2jy_2dc__codeblock_nvn_22y_2dc"><strong class="hl-keyword">struct</strong> aic_dbi_cmd {
+    u8 code;
+    u8 data_len;
+    <strong class="hl-keyword">char</strong> name[<span class="hl-number">16</span>];
+    <strong class="hl-keyword">int</strong> (*proc)(u8 code, u8 *data);
+};</pre></div>
+                </div>
+            </section><section class="- topic/section section" id="topic_udm_2jy_2dc__section_spl_1ry_2dc" data-ofbid="topic_udm_2jy_2dc__section_spl_1ry_2dc"><h3 class="- topic/title title sectiontitle">struct aic_mdi</h3>
+                
+                <div class="- topic/p p" data-ofbid="d264557e375__20250121171732">属于 Driver 层内部接口，定义了 MDI 控制器的设备管理信息：
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_udm_2jy_2dc__codeblock_tt2_wdy_2dc" data-ofbid="topic_udm_2jy_2dc__codeblock_tt2_wdy_2dc"><strong class="hl-keyword">struct</strong> aic_mdi {
+    <strong class="hl-keyword">enum</strong> aic_mdi_status     status;
+    <strong class="hl-keyword">struct</strong> aic_mdi_cfg      cfg; <em class="hl-comment">/* The configuration of MDI HW */</em>
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            busy_pin_g;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            busy_pin_p;
+    bdi_cmd_cb              cmd_cb;
+
+    <em class="hl-comment">/* Videobuf */</em>
+    <strong class="hl-keyword">struct</strong> vb_queue         queue;
+    <strong class="hl-keyword">struct</strong> list_head        active_list;
+    aicos_mutex_t           active_lock; <em class="hl-comment">/* lock of active buf list */</em>
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            hw_used_cnt;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            sequence;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            streaming;
+
+    aicos_mutex_t           lock;
+};</pre></div>
+            </section></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title5" xml:lang="zh-CN" lang="zh-CN" id="topic_alp_zjy_2dc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_design.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title5">MPP VIN Dev 层接口设计</h2><div class="- topic/body body"><div class="table-container"><table class="- topic/table table frame-all" id="topic_alp_zjy_2dc__table_w3c_ldy_2dc" data-ofbid="topic_alp_zjy_2dc__table_w3c_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_vin_dev_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__2">int mpp_vin_dev_init(u32 cnt, struct aic_mdi_cfg
+                                    *cfg)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__2">完成 MDI VIN Dev 的状态初始化等</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">cnt - 指定接收多少帧图像，传 0 表示数量不限</div>
+                                        <div class="- topic/div div">cfg - 配置 DBI Bus 的格式信息，如 8080、X16/X8 等</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_alp_zjy_2dc__table_w3c_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_alp_zjy_2dc__table_x3c_ldy_2dc" data-ofbid="topic_alp_zjy_2dc__table_x3c_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_vin_dev_deinit</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__2">void mpp_vin_dev_deinit(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__2">MDI VIN Dev 的资源释放</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_alp_zjy_2dc__table_x3c_ldy_2dc__entry__2">- </td></tr></tbody></table></div></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title6" xml:lang="zh-CN" lang="zh-CN" id="topic_vcy_qky_2dc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_design.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title6">Driver 层接口设计</h2><div class="- topic/body body"><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_y3c_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_y3c_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_open</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__2">int aic_mdi_open(bdi_cmd_cb cb, struct aic_mdi_cfg *cfg)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__2">完成 MDI 的时钟设置、中断申请、Buf 状态初始化等</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">cb - 当收到 DBI 命令时，处理 DBI 命令的回调函数</div>
+                                    <div class="- topic/div div">cfg - 配置 DBI Bus 的格式信息，如 8080、X16/X8 等</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_y3c_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_z3c_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_z3c_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_close</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__2">int aic_mdi_close(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__2">关闭时钟、关闭 MDI 控制器</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_z3c_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_ajc_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_ajc_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_in_fmt_set</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__2">int aic_mdi_in_fmt_set(enum dbi_mcu_if fmt, u8 flag)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__2">设置 MDI 的输入视频格式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">fmt - MCU 接口的位宽格式</div>
+                                    <div class="- topic/div div">flag - 为了区分一些特殊格式，用此参数作为标记</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_ajc_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_bjc_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_bjc_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_out_pixel_set</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__2">void aic_mdi_out_pixel_set(u32 stride, u32 imagesize)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__2">设置 MDI 的输出图像格式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">stride - 一行图像数据需要占用的字节个数</div>
+                                    <div class="- topic/div div">imagesize - 一帧图像数据需要占用的字节个数</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_bjc_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_cjc_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_cjc_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_stream_on</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__2">int aic_mdi_stream_on(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__2">启动视频流</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_cjc_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_djc_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_djc_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_stream_off</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__2">int aic_mdi_stream_off(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__2">关闭视频流</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_djc_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_ejc_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_ejc_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_req_buf</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__2">int aic_mdi_req_buf(char *buf, u32 size, struct vin_video_buf
+                                *vbuf)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__2">按照给定的 Video Buf 配置信息从内存池中申请 Buf</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">buf - 指向内存池的指针</div>
+                                    <div class="- topic/div div">size - 内存池的总大小</div>
+                                    <div class="- topic/div div">vbuf - Video Buf 的配置信息</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_ejc_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_fjc_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_fjc_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_q_buf</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__2">int aic_mdi_q_buf(u32 index)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__2">释放指定 index 的 Buf 进入空闲队列（queued_list）</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__2">index - Buf 的索引号</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_fjc_ldy_2dc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="topic_vcy_qky_2dc__table_gjc_ldy_2dc" data-ofbid="topic_vcy_qky_2dc__table_gjc_ldy_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_mdi_dq_buf</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__2">int aic_mdi_dq_buf(u32 *pindex)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__2">从 DVP 处理完成后的队列（done_list）中获取一个 Buf</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__2">pindex - 用于保存获取到的 Buf 索引号</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_vcy_qky_2dc__table_gjc_ldy_2dc__entry__2">-</td></tr></tbody></table></div></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title7" xml:lang="zh-CN" lang="zh-CN" id="topic_rxk_gry_2dc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_design.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title7">APP Demo</h2><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d264557e803__20250121171732"><code class="+ topic/ph pr-d/codeph ph codeph">test_mdi</code> 命令的实现代码可以作为 APP 的设计参考，详见
+                    <span class="+ topic/ph sw-d/filepath ph filepath">bsp/examples/test-mdi/test_mdi.c</span>：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_rxk_gry_2dc__codeblock_r5c_ydy_2dc" data-ofbid="topic_rxk_gry_2dc__codeblock_r5c_ydy_2dc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> sopts[] = <span class="hl-string">"c:h"</span>;
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> option lopts[] = {
+    {<span class="hl-string">"count"</span>,       required_argument, NULL, <span class="hl-string">'c'</span>},
+    {<span class="hl-string">"help"</span>,              no_argument, NULL, <span class="hl-string">'h'</span>},
+    {<span class="hl-number">0</span>, <span class="hl-number">0</span>, <span class="hl-number">0</span>, <span class="hl-number">0</span>}
+};
+
+<em class="hl-comment">/* Functions */</em>
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> usage(<strong class="hl-keyword">char</strong> *program)
+{
+    printf(<span class="hl-string">"Compile time: %s %s\n"</span>, __DATE__, __TIME__);
+    printf(<span class="hl-string">"Usage: %s [options]: \n"</span>, program);
+    printf(<span class="hl-string">"\t -c, --count\t\tthe number of capture frame \n"</span>);
+    printf(<span class="hl-string">"\t -h, --help \n"</span>);
+    printf(<span class="hl-string">"\n"</span>);
+    printf(<span class="hl-string">"Example: %s -c 1\n"</span>, program);
+}
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">long</strong> <strong class="hl-keyword">long</strong> <strong class="hl-keyword">int</strong> str2int(<strong class="hl-keyword">char</strong> *_str)
+{
+    <strong class="hl-keyword">if</strong> (_str == NULL) {
+        pr_err(<span class="hl-string">"The string is empty!\n"</span>);
+        <strong class="hl-keyword">return</strong> -<span class="hl-number">1</span>;
+    }
+
+    <strong class="hl-keyword">if</strong> (strncmp(_str, <span class="hl-string">"0x"</span>, <span class="hl-number">2</span>))
+        <strong class="hl-keyword">return</strong> atoi(_str);
+    <strong class="hl-keyword">else</strong>
+        <strong class="hl-keyword">return</strong> strtoll(_str, NULL, <span class="hl-number">16</span>);
+}
+
+#<span class="hl-directive">define</span> MDI_USE_<span class="hl-number">8080</span>_X16
+<em class="hl-comment">// #define MDI_USE_8080_X8</em>
+<em class="hl-comment">// #define MDI_USE_6800_X16</em>
+<em class="hl-comment">// #define MDI_USE_6800_X8</em>
+<em class="hl-comment">// #define MDI_USE_SPI</em>
+
+<em class="hl-comment">/* TODO: Should parse the input format from three GPIO
+ *
+ * GPIO1 GPIO2 GPIO3 Bus Mode
+ * ----- ----- ----- ---------
+ * 0     0     0     8080 X16
+ * 0     0     1     8080 X8
+ * 0     1     0     6800 X16
+ * 0     1     1     6800 X8
+ * 1     0     0     SPI 3-Wire
+ * 1     0     1     SPI 4-Wire
+ * 1     1     0     SPI 2-SDA
+ * 1     1     1     SPI 4-SDA
+ */</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> aic_mdi_bus_fmt_load(<strong class="hl-keyword">struct</strong> aic_mdi_cfg *cfg)
+{
+    <strong class="hl-keyword">char</strong> *bus_mode[] = {<span class="hl-string">"8080"</span>, <span class="hl-string">"6800"</span>, <span class="hl-string">"SPI"</span>};
+
+#ifdef MDI_USE_SPI
+    <strong class="hl-keyword">char</strong> *spi_mode[] = {<span class="hl-string">"3-Wire"</span>, <span class="hl-string">"4-Wire"</span>, <span class="hl-string">"2-SDA"</span>, <span class="hl-string">"4-SDA"</span>};
+
+    <em class="hl-comment">/* For SPI bus */</em>
+    cfg-&gt;bus_mode = MDI_BUS_MODE_SPI;
+    cfg-&gt;big_endian = MDI_DAT_ENDIAN_HIGH_<span class="hl-number">8</span>;
+    cfg-&gt;bus_spi.mode = MDI_SPI_MODE_<span class="hl-number">4</span>SDA;
+
+    printf(<span class="hl-string">"Bus mode: %s %s, Big endian: %d\n"</span>, bus_mode[cfg-&gt;bus_mode],
+           spi_mode[cfg-&gt;bus_spi.mode], cfg-&gt;big_endian);
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+#endif
+
+#ifdef MDI_USE_<span class="hl-number">8080</span>_X16
+    <em class="hl-comment">/* For 8080 bus */</em>
+    cfg-&gt;bus_mode = MDI_BUS_MODE_<span class="hl-number">8080</span>;
+    cfg-&gt;bus_<span class="hl-number">8080.</span>pin = MDI_PIN_CTL_X16;
+#endif
+
+#ifdef MDI_USE_<span class="hl-number">8080</span>_X8
+    cfg-&gt;bus_mode = MDI_BUS_MODE_<span class="hl-number">8080</span>;
+    cfg-&gt;bus_<span class="hl-number">8080.</span>pin = MDI_PIN_CTL_X8;
+    cfg-&gt;big_endian = MDI_DAT_ENDIAN_HIGH_<span class="hl-number">8</span>;
+#endif
+
+    printf(<span class="hl-string">"Bus mode: %s, Pin: %s, Big endian: %d\n"</span>, bus_mode[cfg-&gt;bus_mode],
+           cfg-&gt;bus_<span class="hl-number">8080.</span>pin ? <span class="hl-string">"X16"</span> : <span class="hl-string">"X8"</span>, cfg-&gt;big_endian);
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> cmd_test_mdi(<strong class="hl-keyword">int</strong> argc, <strong class="hl-keyword">char</strong> **argv)
+{
+    <strong class="hl-keyword">int</strong> c;
+    u32 frame_cnt = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">struct</strong> aic_mdi_cfg cfg = {<span class="hl-number">0</span>};
+
+    optind = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">while</strong> ((c = getopt_long(argc, argv, sopts, lopts, NULL)) != -<span class="hl-number">1</span>) {
+        <strong class="hl-keyword">switch</strong> (c) {
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'c'</span>:
+            frame_cnt = str2int(optarg);
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'h'</span>:
+            usage(argv[<span class="hl-number">0</span>]);
+            <strong class="hl-keyword">return</strong>;
+
+        <strong class="hl-keyword">default</strong>:
+            <strong class="hl-keyword">break</strong>;
+        }
+    }
+
+    <strong class="hl-keyword">if</strong> (frame_cnt)
+        pr_info(<span class="hl-string">"Capture %d frames from DBI\n"</span>, frame_cnt);
+
+    <strong class="hl-keyword">if</strong> (aic_mdi_bus_fmt_load(&amp;cfg) &lt; <span class="hl-number">0</span>) {
+        pr_err(<span class="hl-string">"Failed to get the BUS format of MDI\n"</span>);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    mpp_vin_dev_init(frame_cnt, &amp;cfg);
+}
+MSH_CMD_EXPORT_ALIAS(cmd_test_mdi, test_mdi, Test MDI module);</pre></div></article></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_shh_mdy_2dc" data-tocid="id__section_shh_mdy_2dc">模块架构</a></div></li><li class="topic-item"><a href="#topic_oxx_53y_2dc" data-tocid="topic_oxx_53y_2dc">关键流程设计</a><ul><li class="section-item"><div class="section-title"><a href="#topic_oxx_53y_2dc__section_ayb_ndy_2dc" data-tocid="topic_oxx_53y_2dc__section_ayb_ndy_2dc">初始化流程</a></div></li><li class="section-item"><div class="section-title"><a href="#topic_oxx_53y_2dc__buffer" data-tocid="topic_oxx_53y_2dc__buffer">Buffer 队列管理</a></div></li><li class="section-item"><div class="section-title"><a href="#topic_oxx_53y_2dc__id7" data-tocid="topic_oxx_53y_2dc__id7">中断处理流程</a></div></li></ul></li><li class="topic-item"><a href="#topic_zfs_bjy_2dc" data-tocid="topic_zfs_bjy_2dc">自定义 DBI 命令设计</a><ul><li class="section-item"><div class="section-title"><a href="#topic_zfs_bjy_2dc__section_wnk_lqy_2dc" data-tocid="topic_zfs_bjy_2dc__section_wnk_lqy_2dc">0x3A：Interface Pixel Format</a></div></li><li class="section-item"><div class="section-title"><a href="#topic_zfs_bjy_2dc__section_h5m_4qy_2dc" data-tocid="topic_zfs_bjy_2dc__section_h5m_4qy_2dc">0xAC：GE Control</a></div></li></ul></li><li class="topic-item"><a href="#topic_udm_2jy_2dc" data-tocid="topic_udm_2jy_2dc">数据结构设计</a><ul><li class="section-item"><div class="section-title"><a href="#topic_udm_2jy_2dc__id8" data-tocid="topic_udm_2jy_2dc__id8">struct aic_mdi_cfg</a></div></li><li class="section-item"><div class="section-title"><a href="#topic_udm_2jy_2dc__dbi-bus" data-tocid="topic_udm_2jy_2dc__dbi-bus">DBI Bus 的格式定义</a></div></li><li class="section-item"><div class="section-title"><a href="#topic_udm_2jy_2dc__id9" data-tocid="topic_udm_2jy_2dc__id9">DBI 命令的回调信息</a></div></li><li class="section-item"><div class="section-title"><a href="#topic_udm_2jy_2dc__section_spl_1ry_2dc" data-tocid="topic_udm_2jy_2dc__section_spl_1ry_2dc">struct aic_mdi</a></div></li></ul></li><li class="topic-item"><a href="#topic_alp_zjy_2dc" data-tocid="topic_alp_zjy_2dc">MPP VIN Dev 层接口设计</a></li><li class="topic-item"><a href="#topic_vcy_qky_2dc" data-tocid="topic_vcy_qky_2dc">Driver 层接口设计</a></li><li class="topic-item"><a href="#topic_rxk_gry_2dc" data-tocid="topic_rxk_gry_2dc">APP Demo</a></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

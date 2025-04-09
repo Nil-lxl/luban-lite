@@ -1,0 +1,256 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="一般开发板的首要工作是调试。 准备工作： 硬件： PC：用于和开发板进行交互 测试板：3 个以上 UART 端口的测试板 连接线：用于连接 UART 的 RX/TX 端口 软件 PC 串口软件：用于 PC 和开发板进行串口通信 test_uart：AIC 的 UART 测试工具，内嵌在 SDK 中，在根目录下通过 make menuconfig 可以选择编译到系统 ArtInChip ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-24"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="uart_test_guide"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/uart/uart_test.dita"/><meta name="wh-out-relpath" content="topics/sdk/uart/uart_test.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="uart_test_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/uart/uart_test.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">24 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d284258e22__20250121171753">一般开发板的首要工作是调试。</p><div class="- topic/p p" data-ofbid="d284258e24__20250121171753">准备工作：<ul class="- topic/ul ul" id="uart_test_guide__ol_eg1_51z_21c" data-ofbid="uart_test_guide__ol_eg1_51z_21c"><li class="- topic/li li" data-ofbid="d284258e27__20250121171753">硬件：<ul class="- topic/ul ul" id="uart_test_guide__ul_vnm_v1z_21c" data-ofbid="uart_test_guide__ul_vnm_v1z_21c"><li class="- topic/li li" data-ofbid="d284258e30__20250121171753">PC：用于和开发板进行交互</li><li class="- topic/li li" data-ofbid="d284258e32__20250121171753">测试板：3 个以上 UART 端口的测试板</li><li class="- topic/li li" data-ofbid="d284258e34__20250121171753">连接线：用于连接 UART 的 RX/TX 端口</li></ul></li><li class="- topic/li li" data-ofbid="d284258e36__20250121171753">软件<ul class="- topic/ul ul" id="uart_test_guide__ul_ps5_x1z_21c" data-ofbid="uart_test_guide__ul_ps5_x1z_21c"><li class="- topic/li li" data-ofbid="d284258e39__20250121171753">PC 串口软件：用于 PC 和开发板进行串口通信</li><li class="- topic/li li" data-ofbid="d284258e41__20250121171753">test_uart：AIC 的 UART 测试工具，内嵌在 SDK 中，在根目录下通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make menuconfig</span>
+                            可以选择编译到系统<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_test_guide__codeblock_d41_z1z_21c" data-ofbid="uart_test_guide__codeblock_d41_z1z_21c">ArtInChip packages
+  Sample code
+    [*] test-uart</pre></li></ul></li></ul></div><div class="- topic/p p" data-ofbid="d284258e48__20250121171753">遵照以下步骤执行测试：<ol class="- topic/ol ol" id="uart_test_guide__ol_p45_z1z_21c" data-ofbid="uart_test_guide__ol_p45_z1z_21c"><li class="- topic/li li" data-ofbid="d284258e51__20250121171753">单端口的环路测试：<span class="- topic/ph ph">UARTn TX to UARTn RX</span><div class="- topic/p p" data-ofbid="d284258e55__20250121171753"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="uart_test_guide__image_nsy_r1z_21c" src="../../../images/uart/test-cycle.jpg" alt="test-cycle1"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d284258e59__20250121171753">双端口的环路测试<p class="- topic/p p" data-ofbid="d284258e61__20250121171753">UARTn to UARTm</p><div class="- topic/p p" data-ofbid="d284258e63__20250121171753"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="uart_test_guide__image_psy_r1z_21c" src="../../../images/uart/test-topo.jpg" alt="test-topo"/></div><br/></div></li></ol></div><section class="- topic/section section" id="uart_test_guide__section_osy_r1z_21c" data-ofbid="uart_test_guide__section_osy_r1z_21c"><h2 class="- topic/title title sectiontitle">RS232 功能测试</h2>
+            
+            <ul class="- topic/ul ul" id="uart_test_guide__ul_dty_bbz_21c" data-ofbid="uart_test_guide__ul_dty_bbz_21c"><li class="- topic/li li" data-ofbid="d284258e73__20250121171753">单端口收发<ul class="- topic/ul ul" id="uart_test_guide__ul_qsy_r1z_21c" data-ofbid="uart_test_guide__ul_qsy_r1z_21c"><li class="- topic/li li" data-ofbid="d284258e76__20250121171753">
+                            <p class="- topic/p p" data-ofbid="d284258e78__20250121171753">按单端口的环路测试组网，环路 UART4 的 RX/TX</p>
+                        </li><li class="- topic/li li" data-ofbid="d284258e81__20250121171753">
+                            <div class="- topic/p p" data-ofbid="d284258e83__20250121171753">使用 test_uart
+                                工具进行测试<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_test_guide__codeblock_y5p_cbz_21c" data-ofbid="uart_test_guide__codeblock_y5p_cbz_21c">test_uart -C /dev/ttyS1  <span class="hl-number">9600</span>
+Test Mode: <span class="hl-number">3</span>:Circle
+Send Device     : /dev/ttyS1
+Receive Device  : /dev/ttyS1
+m_Baudrate      : <span class="hl-number">9600</span>
+send data is:    <span class="hl-number">1234567890</span>artinchip0987654321
+receive data is: <span class="hl-number">1234567890</span>artinchip0987654321</pre></div>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d284258e88__20250121171753">双端口收发<ul class="- topic/ul ul" id="uart_test_guide__ul_wdh_dbz_21c" data-ofbid="uart_test_guide__ul_wdh_dbz_21c"><li class="- topic/li li" data-ofbid="d284258e91__20250121171753">
+                            <p class="- topic/p p" data-ofbid="d284258e93__20250121171753">按双端口的环路测试组网，环路 UART4 和 UART5 的 RX/TX</p>
+                        </li><li class="- topic/li li" data-ofbid="d284258e96__20250121171753">
+                            <div class="- topic/p p" data-ofbid="d284258e98__20250121171753">使用 test_uart
+                                工具进行测试<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_test_guide__codeblock_l2n_dbz_21c" data-ofbid="uart_test_guide__codeblock_l2n_dbz_21c">test_uart -N /dev/ttyS4 /dev/ttyS5 <span class="hl-number">115200</span>
+Test Mode: <span class="hl-number">0</span>:Normal Test
+Device     : /dev/ttyS4
+Receive Device  : /dev/ttyS5
+m_Baudrate      : <span class="hl-number">115200</span>
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">24</span>:<span class="hl-number">46</span>   =============================================
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">24</span>:<span class="hl-number">46</span>   Please input messages you want to send
+thisisatest
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">24</span>:<span class="hl-number">49</span>   send data:thisisatest.
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">24</span>:<span class="hl-number">49</span>   receive data: len = <span class="hl-number">11</span>: thisisatest</pre></div>
+                        </li></ul></li></ul>
+        </section><section class="- topic/section section" id="uart_test_guide__section_usy_r1z_21c" data-ofbid="uart_test_guide__section_usy_r1z_21c"><h2 class="- topic/title title sectiontitle">RS485 功能测试</h2>
+            
+            <p class="- topic/p p" data-ofbid="d284258e109__20250121171753">RS485 的测试方式和 RS232 类似，有几点不同：</p>
+            <ul class="- topic/ul ul" id="uart_test_guide__ul_vsy_r1z_21c" data-ofbid="uart_test_guide__ul_vsy_r1z_21c"><li class="- topic/li li" data-ofbid="d284258e113__20250121171753">
+                    <p class="- topic/p p" data-ofbid="d284258e115__20250121171753">端口需要配置为 RS485</p>
+                </li><li class="- topic/li li" data-ofbid="d284258e118__20250121171753">
+                    <p class="- topic/p p" data-ofbid="d284258e120__20250121171753">RS485 需要有外接驱动芯片</p>
+                </li><li class="- topic/li li" data-ofbid="d284258e123__20250121171753">
+                    <p class="- topic/p p" data-ofbid="d284258e125__20250121171753">RS485 为差分信号，因此需要 B+ 对 B+ 环路，B- 对 B- 环路</p>
+                </li><li class="- topic/li li" data-ofbid="d284258e128__20250121171753">
+                    <p class="- topic/p p" data-ofbid="d284258e130__20250121171753">RS485 不能 B+ 环路 B-</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d284258e134__20250121171753"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="uart_test_guide__image_wsy_r1z_21c" src="../../../images/uart/test-rs485.jpg" alt="test-rs4851"/></div><br/></div>
+        </section><section class="- topic/section section" id="uart_test_guide__section_xsy_r1z_21c" data-ofbid="uart_test_guide__section_xsy_r1z_21c"><h2 class="- topic/title title sectiontitle">兼容性测试</h2>
+            
+            <div class="- topic/p p" data-ofbid="d284258e144__20250121171753">
+                <ul class="- topic/ul ul" id="uart_test_guide__ul_blv_2bz_21c" data-ofbid="uart_test_guide__ul_blv_2bz_21c"><li class="- topic/li li" data-ofbid="d284258e147__20250121171753">串口工具兼容性测试：应该测试在 RS232 模式下，调试口和如下工具的兼容性<ul class="- topic/ul ul" id="uart_test_guide__ul_ysy_r1z_21c" data-ofbid="uart_test_guide__ul_ysy_r1z_21c"><li class="- topic/li li" data-ofbid="d284258e150__20250121171753">
+                                <p class="- topic/p p" data-ofbid="d284258e152__20250121171753">MobaXterm</p>
+                            </li><li class="- topic/li li" data-ofbid="d284258e155__20250121171753">
+                                <p class="- topic/p p" data-ofbid="d284258e157__20250121171753">SecureCRT</p>
+                            </li><li class="- topic/li li" data-ofbid="d284258e160__20250121171753">
+                                <p class="- topic/p p" data-ofbid="d284258e162__20250121171753">XShell</p>
+                            </li><li class="- topic/li li" data-ofbid="d284258e165__20250121171753">
+                                <p class="- topic/p p" data-ofbid="d284258e167__20250121171753">sscom</p>
+                            </li></ul></li><li class="- topic/li li" data-ofbid="d284258e170__20250121171753">RS485 兼容性测试：应测试在 RS485 模式下，SoC 和通用 RS485 模组的兼容性</li></ul>
+            </div>
+        </section><section class="- topic/section section" id="uart_test_guide__section_aty_r1z_21c" data-ofbid="uart_test_guide__section_aty_r1z_21c"><h2 class="- topic/title title sectiontitle">压力测试</h2>
+            
+            <p class="- topic/p p" data-ofbid="d284258e179__20250121171753">可借助于 test_uart 工具， 采用环路 UART4 和 UART5 的组网，进行压力测试。</p>
+            <div class="- topic/p p" data-ofbid="d284258e182__20250121171753">测试方法是短时间内进行大量数据的收发，因为 CPU 的读写速度远远高于 UART
+                的收发，因此可能会有丢包，但模块不应该出现卡死现象。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_test_guide__codeblock_elx_gbz_21c" data-ofbid="uart_test_guide__codeblock_elx_gbz_21c">test_uart -P  /dev/ttyS4 /dev/ttyS5 <span class="hl-number">115200</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_test_guide__codeblock_thr_hds_5dc" data-ofbid="uart_test_guide__codeblock_thr_hds_5dc">Test Mode: <span class="hl-number">1</span>:Pressure Test
+Send Device     : /dev/ttyS4
+Receive Device  : /dev/ttyS5
+m_Baudrate      : <span class="hl-number">115200</span>
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">55</span>:<span class="hl-number">22</span>   type any key to send <span class="hl-number">100</span>KB</pre></div>
+        </section><section class="- topic/section section" id="uart_test_guide__section_cty_r1z_21c" data-ofbid="uart_test_guide__section_cty_r1z_21c"><h2 class="- topic/title title sectiontitle">稳定性测试</h2>
+            
+            <p class="- topic/p p" data-ofbid="d284258e194__20250121171753">可借助于 test_uart 工具，采用环路 UART4 和 UART5 的组网，进行长时间的稳定性验证。</p>
+            <p class="- topic/p p" data-ofbid="d284258e197__20250121171753">测试方法是循环进行长时间的数据收发，确认模块是否正常工作和是否有丢包。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_test_guide__codeblock_pjb_hbz_21c" data-ofbid="uart_test_guide__codeblock_pjb_hbz_21c">test_uart -S  /dev/ttyS4 /dev/ttyS5  <span class="hl-number">115200</span></pre>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_test_guide__codeblock_r3y_hds_5dc" data-ofbid="uart_test_guide__codeblock_r3y_hds_5dc">Test Mode: <span class="hl-number">2</span>:Stability
+Send Device     : /dev/ttyS4
+Receive Device  : /dev/ttyS5
+m_Baudrate      : <span class="hl-number">115200</span>
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">09</span>:<span class="hl-number">08</span>:<span class="hl-number">13</span>   =============== sending =====================
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">09</span>:<span class="hl-number">08</span>:<span class="hl-number">13</span>   =============== receiving =====================
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">09</span>:<span class="hl-number">08</span>:<span class="hl-number">21</span>   send <span class="hl-number">64</span>K
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">09</span>:<span class="hl-number">08</span>:<span class="hl-number">21</span>   receive <span class="hl-number">64</span>K
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">09</span>:<span class="hl-number">08</span>:<span class="hl-number">29</span>   send <span class="hl-number">128</span>K
+<span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">09</span>:<span class="hl-number">08</span>:<span class="hl-number">29</span>   receive <span class="hl-number">128</span>K</pre>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#uart_test_guide__section_osy_r1z_21c" data-tocid="uart_test_guide__section_osy_r1z_21c">RS232 功能测试</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_test_guide__section_usy_r1z_21c" data-tocid="uart_test_guide__section_usy_r1z_21c">RS485 功能测试</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_test_guide__section_xsy_r1z_21c" data-tocid="uart_test_guide__section_xsy_r1z_21c">兼容性测试</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_test_guide__section_aty_r1z_21c" data-tocid="uart_test_guide__section_aty_r1z_21c">压力测试</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_test_guide__section_cty_r1z_21c" data-tocid="uart_test_guide__section_cty_r1z_21c">稳定性测试</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="SPI 在 U-Boot 中主要用于支持 SPI NAND/NOR 存储设备。目前 ArtInChip 平台上 SPI 的实现只支持半双工模式(Half-duplex)。 驱动框架 U-Boot 驱动模型支持 SPI，ArtInChip 平台中 SPI 驱动基于该框架进行实现。 相关配置为： CONFIG_DM_SPI CONFIG_SPI CONFIG_SPL_SPI_SUPPORT ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-16"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="spi_divers"/><meta name="DC.language" content="zh-CN"/><title>SPI</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/spi-divers.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/spi-divers.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="spi_divers" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/spi-divers.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SPI</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d291565e23__20250121171757">SPI 在 U-Boot 中主要用于支持 SPI NAND/NOR 存储设备。目前 ArtInChip 平台上 SPI 的实现只支持半双工模式(Half-duplex)。</p><section class="- topic/section section" id="spi_divers__section_dzf_vnr_c1c" data-ofbid="spi_divers__section_dzf_vnr_c1c"><h2 class="- topic/title title sectiontitle">驱动框架</h2>
+            
+            <p class="- topic/p p" data-ofbid="d291565e30__20250121171757">U-Boot 驱动模型支持 SPI，ArtInChip 平台中 SPI 驱动基于该框架进行实现。 相关配置为：</p>
+            <ul class="- topic/ul ul" id="spi_divers__ul_fzf_vnr_c1c" data-ofbid="spi_divers__ul_fzf_vnr_c1c"><li class="- topic/li li" data-ofbid="d291565e34__20250121171757">
+                    <p class="- topic/p p" data-ofbid="d291565e36__20250121171757">CONFIG_DM_SPI</p>
+                </li><li class="- topic/li li" data-ofbid="d291565e39__20250121171757">
+                    <p class="- topic/p p" data-ofbid="d291565e41__20250121171757">CONFIG_SPI</p>
+                </li><li class="- topic/li li" data-ofbid="d291565e44__20250121171757">
+                    <p class="- topic/p p" data-ofbid="d291565e46__20250121171757">CONFIG_SPL_SPI_SUPPORT</p>
+                </li><li class="- topic/li li" data-ofbid="d291565e49__20250121171757">
+                    <p class="- topic/p p" data-ofbid="d291565e51__20250121171757">CONFIG_ARTINCHIP_SPI</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d291565e55__20250121171757">相关源码有：</p>
+            <ul class="- topic/ul ul" id="spi_divers__ul_hzf_vnr_c1c" data-ofbid="spi_divers__ul_hzf_vnr_c1c"><li class="- topic/li li" data-ofbid="d291565e59__20250121171757">
+                    <p class="- topic/p p" data-ofbid="d291565e61__20250121171757"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/spi/spi-uclass.c</span></p>
+                </li><li class="- topic/li li" data-ofbid="d291565e65__20250121171757">
+                    <p class="- topic/p p" data-ofbid="d291565e67__20250121171757"><span class="+ topic/ph sw-d/filepath ph filepath">include/spi.h</span></p>
+                </li><li class="- topic/li li" data-ofbid="d291565e71__20250121171757">
+                    <p class="- topic/p p" data-ofbid="d291565e73__20250121171757"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/spi/artinchip_spi.c</span></p>
+                </li></ul>
+        </section><section class="- topic/section section" id="spi_divers__section_izf_vnr_c1c" data-ofbid="spi_divers__section_izf_vnr_c1c"><h2 class="- topic/title title sectiontitle">驱动接口</h2>
+            
+            <div class="- topic/p p" data-ofbid="d291565e83__20250121171757">常用接口：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_divers__codeblock_rrw_wnr_c1c" data-ofbid="spi_divers__codeblock_rrw_wnr_c1c"><strong class="hl-keyword">int</strong> dm_spi_claim_bus(<strong class="hl-keyword">struct</strong> udevice *dev);
+<strong class="hl-keyword">void</strong> dm_spi_release_bus(<strong class="hl-keyword">struct</strong> udevice *dev);
+<strong class="hl-keyword">int</strong> dm_spi_xfer(<strong class="hl-keyword">struct</strong> udevice *dev, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> bitlen,
+                <strong class="hl-keyword">const</strong> <strong class="hl-keyword">void</strong> *dout, <strong class="hl-keyword">void</strong> *din, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> flags);
+<strong class="hl-keyword">int</strong> spi_claim_bus(<strong class="hl-keyword">struct</strong> spi_slave *slave);
+<strong class="hl-keyword">void</strong> spi_release_bus(<strong class="hl-keyword">struct</strong> spi_slave *slave);
+<strong class="hl-keyword">int</strong>  spi_xfer(<strong class="hl-keyword">struct</strong> spi_slave *slave, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> bitlen, <strong class="hl-keyword">const</strong> <strong class="hl-keyword">void</strong> *dout,
+              <strong class="hl-keyword">void</strong> *din, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> flags);</pre></div>
+        </section><section class="- topic/section section" id="spi_divers__section_kzf_vnr_c1c" data-ofbid="spi_divers__section_kzf_vnr_c1c"><h2 class="- topic/title title sectiontitle">初始化流程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d291565e93__20250121171757">SPI 设备挂载在 SPI 总线上，当 SPI 设备初始化时，如果父设备还没有被初始化， 则会自动触发父设备的初始化。下面是 SPI NAND 初始化时触发 SPI
+                初始化的流程。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_divers__codeblock_lnm_xnr_c1c" data-ofbid="spi_divers__codeblock_lnm_xnr_c1c">mtd_probe(dev)
+|-&gt; device_probe(dev)
+    |   <em class="hl-comment">// 此时 SPI 还没有 probe，则先 probe SPI</em>
+    |-&gt; device_probe(dev-&gt;parent); <em class="hl-comment">// drivers/core/device.c</em>
+    |   |-&gt; drv-&gt;probe(dev);
+    |       aic_spi_probe(dev); <em class="hl-comment">// drivers/spi/artinchip_spi.c</em>
+    |
+    |-&gt; drv-&gt;probe(dev);
+        spinand_probe(dev) <em class="hl-comment">// drivers/mtd/nand/spi/core.c</em></pre></div>
+        </section><section class="- topic/section section" id="spi_divers__section_mzf_vnr_c1c" data-ofbid="spi_divers__section_mzf_vnr_c1c"><h2 class="- topic/title title sectiontitle">DMA 的支持</h2>
+            
+            <p class="- topic/p p" data-ofbid="d291565e103__20250121171757">ArtInChip SPI 驱动支持使用 DMA 收发数据和使用 FIFO 通过 CPU 读写的方式收发数据， 在 DMA 使能的情况下，对于数据长度大于等于
+                    <span class="+ topic/keyword pr-d/parmname keyword parmname">SPI_FIFO_DEPTH</span> 的传输，驱动自动切换使用 DMA 进行传输，否则默认使用 FIFO 模式。</p>
+            <p class="- topic/p p" data-ofbid="d291565e109__20250121171757">如果系统没有使能 DMA，则所有传输都使用 FIFO 模式。</p>
+            <p class="- topic/p p" data-ofbid="d291565e112__20250121171757">使能 DMA 的 Kconfig 配置为：</p>
+            <ul class="- topic/ul ul" id="spi_divers__ul_ozf_vnr_c1c" data-ofbid="spi_divers__ul_ozf_vnr_c1c"><li class="- topic/li li" data-ofbid="d291565e116__20250121171757">
+                    <p class="- topic/p p" data-ofbid="d291565e118__20250121171757">CONFIG_ARTINCHIP_DMA</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="spi_divers__section_pzf_vnr_c1c" data-ofbid="spi_divers__section_pzf_vnr_c1c"><h2 class="- topic/title title sectiontitle">QUAD SPI 的支持</h2>
+            
+            <p class="- topic/p p" data-ofbid="d291565e127__20250121171757">对于非存储 SPI 设备，SPI 驱动只支持标准 SPI 模式，即 Single Mode，数据传输都使用一根线进行(MOSI 和 MISO)。 对于 SPI
+                存储设备(SPI NAND/SPI NOR)，通过对接 <code class="+ topic/ph pr-d/codeph ph codeph">spi-mem</code> 框架，可以支持 DUAL SPI 和 QUAD
+                SPI。</p>
+            <div class="- topic/p p" data-ofbid="d291565e133__20250121171757">相关代码：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_divers__codeblock_tmj_ynr_c1c" data-ofbid="spi_divers__codeblock_tmj_ynr_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> spi_controller_mem_ops aic_spi_mem_ops = {
+    .supports_op = aic_spi_mem_supports_op,
+    .exec_op = aic_spi_mem_exec_op,
+};
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> dm_spi_ops aic_spi_ops = {
+    .claim_bus   = aic_spi_claim_bus,
+    .release_bus = aic_spi_release_bus,
+    .xfer        = aic_spi_xfer,
+    .set_speed   = aic_spi_set_speed,
+    .set_mode    = aic_spi_set_mode,
+    .mem_ops     = &amp;aic_spi_mem_ops,
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d291565e138__20250121171757">通过设置 <span class="+ topic/keyword pr-d/apiname keyword apiname">.exec_op</span> ，SPI MEM 设备的所有操作都由
+                    <span class="+ topic/keyword pr-d/apiname keyword apiname">aic_spi_mem_exec_op</span> 进行处理。 由于该接口可以获取到 SPI
+                操作的数据位宽等详细信息，驱动可以为每一个传输操作设置准确的模式(Single/Dual/Quad)。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#spi_divers__section_dzf_vnr_c1c" data-tocid="spi_divers__section_dzf_vnr_c1c">驱动框架</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_divers__section_izf_vnr_c1c" data-tocid="spi_divers__section_izf_vnr_c1c">驱动接口</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_divers__section_kzf_vnr_c1c" data-tocid="spi_divers__section_kzf_vnr_c1c">初始化流程</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_divers__section_mzf_vnr_c1c" data-tocid="spi_divers__section_mzf_vnr_c1c">DMA 的支持</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_divers__section_pzf_vnr_c1c" data-tocid="spi_divers__section_pzf_vnr_c1c">QUAD SPI 的支持</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

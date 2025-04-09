@@ -1,0 +1,200 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="CE 是一个独立的硬件加解密算法引擎，是一个独立的硬件加解密算法引擎，支持多种算法模式。这些算法模式可以单独或组合使用，以满足不同的安全需求和应用场景。 表 1 . 术语定义 术语 定义 注释说明 CE Crypto Engine 硬件加解密算法引擎 DES Data Encryption Standard 一种对称分组密码算法 AES Advanced Encryption Standard ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ce_user_guide"/><meta name="DC.language" content="zh-CN"/><title>CE 使用指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/ce/ce_user_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/ce/ce_user_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ce_user_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ce/ce_user_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">CE 使用指南</h1><div class="date inPage">9 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d323119e22__20250121171827">CE 是一个独立的硬件加解密算法引擎，是一个独立的硬件加解密算法引擎，支持多种算法模式。这些算法模式可以单独或组合使用，以满足不同的安全需求和应用场景。</p><div class="- topic/p p" data-ofbid="d323119e24__20250121171827">
+            <div class="table-container"><table class="- topic/table table frame-all" id="ce_user_guide__table_e5w_sc3_bdc" data-ofbid="ce_user_guide__table_e5w_sc3_bdc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">术语定义</span></caption><colgroup><col style="width:19.685039370078737%"/><col style="width:48.62204724409449%"/><col style="width:31.69291338582677%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ce_user_guide__table_e5w_sc3_bdc__entry__1">术语</th><th class="- topic/entry entry colsep-1 rowsep-1" id="ce_user_guide__table_e5w_sc3_bdc__entry__2">定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ce_user_guide__table_e5w_sc3_bdc__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">CE</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Crypto Engine</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">硬件加解密算法引擎</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">DES</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Data Encryption Standard</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">一种对称分组密码算法</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">AES</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Advanced Encryption Standard</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">一种对称分组密钥算法</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">ECB</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Electronic Code Book</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">电子密码本模式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">CBC</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Cipher Block Chaining</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">密码分组链模式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">CTR</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Counter</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">计数器模式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">XTS</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">XEX Tweakable Block Cipher with Ciphertext Stealing</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">一种对称分组密码算法模式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">CTS</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Ciphertext Stealing</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">一种对称分组密码算法模式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">RSA</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Rivest-Shamir-Adleman</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">一种非对称密钥算法</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">MD5</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Message Digest Algorithm</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">消息摘要算法</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">SHA</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Secure Hash Algorithm</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">安全散列算法</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">TRNG</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">True Random Number Generator</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">真随机数生成器</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">SSK</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Symmetric Secret Key</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">对称密钥</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">HUK</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Hardware Unique Key</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">硬件唯一密钥</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">PNK</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Part Number Key</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">芯片型号密钥</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ce_user_guide__table_e5w_sc3_bdc__entry__1">PSK</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="ce_user_guide__table_e5w_sc3_bdc__entry__2">Partner Secret Key</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ce_user_guide__table_e5w_sc3_bdc__entry__3">合作伙伴密钥</td></tr></tbody></table></div>
+        </div><section class="- topic/section section" id="ce_user_guide__id3" data-ofbid="ce_user_guide__id3"><h2 class="- topic/title title sectiontitle">模块特性</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="ce_user_guide__table_f5w_sc3_bdc" data-ofbid="ce_user_guide__table_f5w_sc3_bdc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">CE 支持的算法模式</span></caption><colgroup><col style="width:33.33333333333333%"/><col style="width:33.33333333333333%"/><col style="width:33.33333333333333%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ce_user_guide__table_f5w_sc3_bdc__entry__1">算法类型</th><th class="- topic/entry entry colsep-1 rowsep-1" id="ce_user_guide__table_f5w_sc3_bdc__entry__2">算法列表</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ce_user_guide__table_f5w_sc3_bdc__entry__3">密钥位宽</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__1" rowspan="9">对称密钥算法</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">AES ECB</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">128/256</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">AES CBC</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">128/256</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">AES CTR</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">128/256</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">AES CTS</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">128/256</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">AES XTS</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">256/512</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">DES ECB</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">64</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">DES CBC</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">64</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">TDES ECB</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">192</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">TDES CBC</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">192</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__1">非对称密钥算法</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">RSA</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">512/1024/2048</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ce_user_guide__table_f5w_sc3_bdc__entry__1" rowspan="6">消息摘要算法</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">MD5</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">SHA-1</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">SHA-224</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">SHA-256</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">SHA-384</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ce_user_guide__table_f5w_sc3_bdc__entry__2">SHA-512</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ce_user_guide__table_f5w_sc3_bdc__entry__3">-</td></tr></tbody></table></div>
+            <div class="- topic/p p" data-ofbid="d323119e265__20250121171827">同时具备下列功能：<ul class="- topic/ul ul simple" id="ce_user_guide__ul_h5w_sc3_bdc" data-ofbid="ce_user_guide__ul_h5w_sc3_bdc"><li class="- topic/li li" data-ofbid="d323119e268__20250121171827">
+                        <p class="- topic/p p" data-ofbid="d323119e270__20250121171827">真随机数产生器(TRNG)</p>
+                    </li><li class="- topic/li li" data-ofbid="d323119e273__20250121171827">
+                        <p class="- topic/p p" data-ofbid="d323119e275__20250121171827">安全访问 eFuse 密钥: eFuse 密钥仅 CE 可访问</p>
+                    </li><li class="- topic/li li" data-ofbid="d323119e278__20250121171827">
+                        <p class="- topic/p p" data-ofbid="d323119e280__20250121171827">安全 SRAM: 保护密钥安全</p>
+                    </li><li class="- topic/li li" data-ofbid="d323119e283__20250121171827">
+                        <p class="- topic/p p" data-ofbid="d323119e285__20250121171827">本地数据安全：加密的数据仅当前设备可解密，其他设备无法解密</p>
+                    </li><li class="- topic/li li" data-ofbid="d323119e288__20250121171827">
+                        <p class="- topic/p p" data-ofbid="d323119e290__20250121171827">硬件设备身份认证：软件可识别当前设备是否合法</p>
+                    </li><li class="- topic/li li" data-ofbid="d323119e293__20250121171827">
+                        <p class="- topic/p p" data-ofbid="d323119e295__20250121171827">可支持实现加密启动</p>
+                    </li><li class="- topic/li li" data-ofbid="d323119e298__20250121171827">
+                        <p class="- topic/p p" data-ofbid="d323119e300__20250121171827">可支持实现安全启动</p>
+                    </li><li class="- topic/li li" data-ofbid="d323119e303__20250121171827">
+                        <p class="- topic/p p" data-ofbid="d323119e305__20250121171827">可支持实现文件系统加密</p>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="ce_user_guide__id4" data-ofbid="ce_user_guide__id4"><h2 class="- topic/title title sectiontitle">原理框图</h2>
+            
+            <figure class="- topic/fig fig fignone" id="ce_user_guide__id5" data-ofbid="ce_user_guide__id5"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ce_user_guide__image_i5w_sc3_bdc" src="../../../images/ce/ce_block_diagram.png" alt="ce_block_diagram"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">CE 原理框图</span></figcaption></figure>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#ce_user_guide__id3" data-tocid="ce_user_guide__id3">模块特性</a></div></li><li class="section-item"><div class="section-title"><a href="#ce_user_guide__id4" data-tocid="ce_user_guide__id4">原理框图</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

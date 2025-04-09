@@ -1,0 +1,1263 @@
+menu "Board options"
+
+#---------------------------
+# cmu device global option
+#---------------------------
+
+#---------------------------
+# gpio device global option
+#---------------------------
+
+source "bsp/artinchip/drv/gpio/Kconfig.dev"
+
+#================================================
+# Interface Class
+#================================================
+
+comment "Interface Related:"
+
+#---------------------------
+# uart device global option
+#---------------------------
+
+config AIC_USING_UART0
+    bool "Using Uart0"
+    default n
+    select AIC_UART_DRV
+
+config AIC_USING_UART1
+    bool "Using Uart1"
+    default n
+    select AIC_UART_DRV
+
+config AIC_USING_UART2
+    bool "Using Uart2"
+    default n
+    select AIC_UART_DRV
+
+config AIC_USING_UART3
+    bool "Using Uart3"
+    default n
+    select AIC_UART_DRV
+
+config AIC_USING_UART4
+    bool "Using Uart4"
+    default n
+    select AIC_UART_DRV
+
+config AIC_USING_UART5
+    bool "Using Uart5"
+    default n
+    select AIC_UART_DRV
+
+config AIC_USING_UART6
+    bool "Using Uart6"
+    default n
+    select AIC_UART_DRV
+
+config AIC_USING_UART7
+    bool "Using Uart7"
+    default n
+    select AIC_UART_DRV
+
+source "bsp/artinchip/drv/uart/Kconfig.dev"
+
+#---------------------------
+# i2c device global option
+#---------------------------
+
+config AIC_USING_SOFT_I2C
+    bool "Using SOFT_I2C"
+    default n
+    select RT_USING_I2C_BITOPS
+    select AIC_I2C_DRV
+
+config AIC_USING_I2C0
+    bool "Using I2C0"
+    default n
+    select AIC_I2C_DRV
+
+config AIC_USING_I2C1
+    bool "Using I2C1"
+    default n
+    select AIC_I2C_DRV
+
+config AIC_USING_I2C2
+    bool "Using I2C2"
+    default n
+    select AIC_I2C_DRV
+
+
+source "bsp/artinchip/drv/i2c/Kconfig.dev"
+
+#---------------------------
+# PWM device global option
+#---------------------------
+
+config AIC_USING_PWM0
+    bool "Using PWM0"
+    default n
+    select AIC_PWM_DRV
+
+config AIC_USING_PWM1
+    bool "Using PWM1"
+    default n
+    select AIC_PWM_DRV
+
+config AIC_USING_PWM2
+    bool "Using PWM2"
+    default n
+    select AIC_PWM_DRV
+
+config AIC_USING_PWM3
+    bool "Using PWM3"
+    default n
+    select AIC_PWM_DRV
+
+#---------------------------
+# EPWM device global option
+#---------------------------
+
+menu "Using EPWM"
+
+config AIC_USING_EPWM0
+    bool "Using EPWM0"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM1
+    bool "Using EPWM1"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM2
+    bool "Using EPWM2"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM3
+    bool "Using EPWM3"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM4
+    bool "Using EPWM4"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM5
+    bool "Using EPWM5"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM6
+    bool "Using EPWM6"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM7
+    bool "Using EPWM7"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM8
+    bool "Using EPWM8"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM9
+    bool "Using EPWM9"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM10
+    bool "Using EPWM10"
+    default n
+    select AIC_EPWM_DRV
+
+config AIC_USING_EPWM11
+    bool "Using EPWM11"
+    default n
+    select AIC_EPWM_DRV
+
+source "bsp/artinchip/drv/epwm/Kconfig.dev"
+
+endmenu
+
+#---------------------------
+# HRTimer device global option
+#---------------------------
+
+menu "Using HRTIMER"
+
+config AIC_USING_HRTIMER0
+    bool "Using HRTimer0"
+    default n
+    select AIC_HRTIMER_DRV
+
+config AIC_USING_HRTIMER1
+    bool "Using HRTimer1"
+    default n
+    select AIC_HRTIMER_DRV
+
+config AIC_USING_HRTIMER2
+    bool "Using HRTimer2"
+    default n
+    select AIC_HRTIMER_DRV
+
+config AIC_USING_HRTIMER3
+    bool "Using HRTimer3"
+    default n
+    select AIC_HRTIMER_DRV
+
+config AIC_USING_HRTIMER4
+    bool "Using HRTimer4"
+    default n
+    select AIC_HRTIMER_DRV
+
+config AIC_USING_HRTIMER5
+    bool "Using HRTimer5"
+    default n
+    select AIC_HRTIMER_DRV
+
+endmenu
+
+#---------------------------
+# CAP device global option
+#---------------------------
+
+menu "Using CAP"
+
+config AIC_USING_CAP0
+    bool "Using cap0"
+    default n
+    select AIC_CAP_DRV
+
+config AIC_USING_CAP1
+    bool "Using cap1"
+    default n
+    select AIC_CAP_DRV
+
+config AIC_USING_CAP2
+    bool "Using cap2"
+    default n
+    select AIC_CAP_DRV
+
+config AIC_USING_CAP3
+    bool "Using cap3"
+    default n
+    select AIC_CAP_DRV
+
+config AIC_USING_CAP4
+    bool "Using cap4"
+    default n
+    select AIC_CAP_DRV
+
+config AIC_USING_CAP5
+    bool "Using cap5"
+    default n
+    select AIC_CAP_DRV
+
+source "bsp/artinchip/drv/cap/Kconfig"
+
+endmenu
+
+
+#---------------------------
+# CAN device global option
+#---------------------------
+
+config AIC_USING_CAN0
+    bool "Using CAN0"
+    default n
+    select AIC_CAN_DRV
+    select RT_USING_CAN
+    select RT_CAN_USING_HDR
+
+config AIC_USING_CAN1
+    bool "Using CAN1"
+    default n
+    select AIC_CAN_DRV
+    select RT_USING_CAN
+    select RT_CAN_USING_HDR
+
+#---------------------------
+# CIR device global option
+#---------------------------
+
+config AIC_USING_CIR
+    bool "Using CIR"
+    default n
+    select AIC_CIR_DRV
+
+source "bsp/artinchip/drv/cir/Kconfig"
+
+#---------------------------
+# usb device global option
+#---------------------------
+
+config AIC_USB_OTG_DRV
+    bool
+    default n
+
+config AIC_USING_USB0
+    bool "Using Usb0"
+    default n
+
+if AIC_USING_USB0
+    choice
+        prompt "Select Usb0 mode"
+	default AIC_USING_USB0_OTG if AICUPG_UDISK_ENABLE || AICUPG_USB_ENABLE
+        default AIC_USING_USB0_DEVICE
+        config AIC_USING_USB0_HOST
+            bool "Host"
+            select AIC_USB_HOST_EHCI_DRV
+        config AIC_USING_USB0_DEVICE
+            bool "Device"
+            select AIC_USB_DEVICE_DRV
+        config AIC_USING_USB0_OTG
+            bool "OTG"
+            select AIC_USB_DEVICE_DRV
+            select AIC_USB_HOST_EHCI_DRV
+            select AIC_USB_OTG_DRV
+    endchoice
+endif
+
+#---------------------------
+# gmac device global option
+#---------------------------
+
+config AIC_USING_GMAC0
+    bool "Using Gmac0"
+    default n
+    select AIC_GMAC_DRV
+
+source "bsp/artinchip/hal/mac/Kconfig.dev"
+
+#================================================
+# Storage Class
+#================================================
+
+comment "Storage Related:"
+
+#--------------------------------------------
+# qspi device global option
+#--------------------------------------------
+
+config AIC_USING_QSPI0
+    bool "Using SPI0"
+    default n
+    select AIC_QSPI_DRV
+
+menu "SPI0 Parameter"
+    depends on AIC_USING_QSPI0
+
+    config AIC_DEV_QSPI0_MAX_SRC_FREQ_HZ
+        int "Max frequency(Hz)"
+        default 100000000
+
+    choice
+        prompt "Set SPI0 bus width"
+        default AIC_QSPI0_BUS_WIDTH_4
+        config AIC_QSPI0_BUS_WIDTH_1
+            bool "Standard"
+        config AIC_QSPI0_BUS_WIDTH_4
+            bool "Quad"
+    endchoice
+
+    config AIC_QSPI0_BUS_WIDTH
+        int
+        default 1 if AIC_QSPI0_BUS_WIDTH_1
+        default 4 if AIC_QSPI0_BUS_WIDTH_4
+
+    config AIC_DEV_QSPI0_DELAY_MODE
+        int "RX Data Sample Delay"
+        default 2
+        range 0 4
+
+endmenu
+
+config AIC_USING_QSPI1
+    bool "Using SPI1"
+    default n
+    select AIC_QSPI_DRV
+
+menu "SPI1 Parameter"
+    depends on AIC_USING_QSPI1
+
+    config AIC_DEV_QSPI1_MAX_SRC_FREQ_HZ
+        int "Max frequency(Hz)"
+        default 100000000
+
+    choice
+        prompt "Set SPI1 bus width"
+        default AIC_QSPI1_BUS_WIDTH_4
+        config AIC_QSPI1_BUS_WIDTH_1
+            bool "Standard"
+        config AIC_QSPI1_BUS_WIDTH_4
+            bool "Quad"
+    endchoice
+
+    config AIC_QSPI1_BUS_WIDTH
+        int
+        default 1 if AIC_QSPI1_BUS_WIDTH_1
+        default 4 if AIC_QSPI1_BUS_WIDTH_4
+
+    config AIC_DEV_QSPI1_DELAY_MODE
+        int "RX Data Sample Delay"
+        default 2
+        range 0 4
+
+    config AIC_QSPI1_DYNAMIC_DMA
+        depends on AIC_USING_DMA
+        bool "Dynamic DMA channel SPI1"
+        default n
+
+    config AIC_QSPI1_BUS_SPI
+        bool "Work in SPI BUS Mode"
+        default n
+        select AIC_QSPI_DRV
+        depends on AIC_QSPI1_BUS_WIDTH_1
+
+endmenu
+
+config AIC_USING_QSPI2
+    bool "Using SPI2"
+    default n
+    select AIC_QSPI_DRV
+
+menu "SPI2 Parameter"
+    depends on AIC_USING_QSPI2
+
+    config AIC_DEV_QSPI2_MAX_SRC_FREQ_HZ
+        int "Max frequency(Hz)"
+        default 100000000
+
+    choice
+        prompt "Set SPI2 bus width"
+        default AIC_QSPI2_BUS_WIDTH_1
+        config AIC_QSPI2_BUS_WIDTH_1
+            bool "Standard"
+    endchoice
+
+    config AIC_QSPI2_BUS_WIDTH
+        int
+        default 1 if AIC_QSPI2_BUS_WIDTH_1
+
+    config AIC_DEV_QSPI2_DELAY_MODE
+        int "RX Data Sample Delay"
+        default 2
+        range 0 4
+
+    config AIC_QSPI2_DYNAMIC_DMA
+        depends on AIC_USING_DMA
+        bool "Dynamic DMA channel SPI2"
+        default n
+
+    config AIC_QSPI2_BUS_SPI
+        bool "Work in SPI BUS Mode"
+        default y
+        select AIC_QSPI_DRV
+
+endmenu
+
+config AIC_USING_QSPI3
+    bool "Using SPI3"
+    default n
+    select AIC_QSPI_DRV
+
+menu "SPI3 Parameter"
+    depends on AIC_USING_QSPI3
+
+    config AIC_DEV_QSPI3_MAX_SRC_FREQ_HZ
+        int "Max frequency(Hz)"
+        default 100000000
+
+    choice
+        prompt "Set SPI3 bus width"
+        default AIC_QSPI3_BUS_WIDTH_1
+        config AIC_QSPI3_BUS_WIDTH_1
+            bool "Standard"
+    endchoice
+
+    config AIC_QSPI3_BUS_WIDTH
+        int
+        default 1 if AIC_QSPI3_BUS_WIDTH_1
+
+    config AIC_DEV_QSPI3_DELAY_MODE
+        int "RX Data Sample Delay"
+        default 2
+        range 0 4
+
+    config AIC_QSPI3_DYNAMIC_DMA
+        depends on AIC_USING_DMA
+        bool "Dynamic DMA channel SPI3"
+        default n
+
+    config AIC_QSPI3_BUS_SPI
+        bool "Work in SPI BUS Mode"
+        default y
+        select AIC_QSPI_DRV
+
+endmenu
+
+source "bsp/artinchip/drv/qspi/Kconfig.dev"
+
+#---------------------------
+# SDMC device global option
+#---------------------------
+
+config AIC_USING_SDMC0
+    bool "Using SDMC0"
+    default n
+    select AIC_SDMC_DRV
+
+config AIC_USING_SDMC1
+    bool "Using SDMC1"
+    default y
+    select AIC_SDMC_DRV
+
+source "bsp/artinchip/drv/sdmc/Kconfig"
+
+#---------------------------
+# WLAN device global option
+#---------------------------
+comment "WLAN Related:"
+
+menuconfig AIC_WIRELESS_LAN
+        bool "Using Wireless LAN"
+        default n
+
+source "bsp/peripheral/wireless/Kconfig"
+
+#================================================
+# Analog Class
+#================================================
+
+comment "Analog Related:"
+
+#---------------------------
+# TSEN device global option
+#---------------------------
+
+config AIC_USING_TSEN
+    bool "Using TSensor"
+    default n
+    select AIC_TSEN_DRV
+
+menu "TSENS options"
+    depends on AIC_USING_TSEN
+
+config AIC_USING_TSEN_CPU
+    bool "Using TSEN_CPU"
+    depends on AIC_USING_TSEN
+    default n
+    select AIC_TSEN_DRV
+
+config AIC_USING_TSEN_GPAI
+    bool "Using TSEN_GPAI"
+    depends on AIC_USING_TSEN
+    default n
+    select AIC_TSEN_DRV
+
+source "bsp/artinchip/drv/tsen/Kconfig.dev"
+endmenu
+
+#---------------------------
+# GPAI device global option
+#---------------------------
+
+config AIC_USING_GPAI
+    bool "Using GPAI"
+    default n
+    select AIC_GPAI_DRV
+
+menu "GPAI options"
+    depends on AIC_USING_GPAI
+
+config AIC_USING_GPAI0
+    bool "Using GPAI0"
+    default n
+    select AIC_GPAI_DRV
+
+config AIC_USING_GPAI1
+    bool "Using GPAI1"
+    default n
+    select AIC_GPAI_DRV
+
+config AIC_USING_GPAI2
+    bool "Using GPAI2"
+    default n
+    select AIC_GPAI_DRV
+
+config AIC_USING_GPAI3
+    bool "Using GPAI3"
+    default n
+    select AIC_GPAI_DRV
+
+config AIC_USING_GPAI4
+    bool "Using GPAI4"
+    default n
+    select AIC_GPAI_DRV
+
+config AIC_USING_GPAI5
+    bool "Using GPAI5"
+    default n
+    select AIC_GPAI_DRV
+
+config AIC_USING_GPAI6
+    bool "Using GPAI6"
+    default n
+    select AIC_GPAI_DRV
+
+config AIC_USING_GPAI7
+    bool "Using GPAI7"
+    default n
+    select AIC_GPAI_DRV
+
+source "bsp/artinchip/hal/gpai/Kconfig.dev"
+endmenu
+
+#================================================
+# MutiMedia Class
+#================================================
+
+comment "MutiMedia Related:"
+
+#--------------------------------------------
+# DE device global option
+#--------------------------------------------
+
+config AIC_USING_DE
+    bool "Using Display Engine (DE)"
+    default y
+    select AIC_DE_DRV
+
+menu "Display Parameter"
+    depends on AIC_DE_DRV
+    source "bsp/artinchip/drv/display/Kconfig"
+endmenu
+
+#--------------------------------------------
+# GE device global option
+#--------------------------------------------
+
+config AIC_USING_GE
+    bool "Using Graphics Engine (GE)"
+    default y
+    select AIC_GE_DRV
+
+source "bsp/artinchip/drv/ge/Kconfig"
+
+#--------------------------------------------
+# VE device global option
+#--------------------------------------------
+
+config AIC_USING_VE
+    bool "Using Video Engine (VE)"
+    default y
+    select AIC_VE_DRV
+
+#---------------------------
+# DVP device global option
+#---------------------------
+
+config AIC_USING_DVP
+    bool "Using DVP"
+    default n
+    select AIC_DVP_DRV
+
+#---------------------------
+# I2S global option
+#---------------------------
+
+config AIC_USING_I2S0
+    bool "Using I2S0"
+    default n
+    select AIC_I2S_DRV
+
+#---------------------------
+# AUDIO device global option
+#---------------------------
+
+config AIC_USING_AUDIO
+    bool "Using Audio"
+    default n
+    select AIC_AUDIO_DRV
+
+source "bsp/artinchip/drv/audio/Kconfig"
+
+#---------------------------
+# TOUCH device global option
+#---------------------------
+
+if KERNEL_BAREMETAL
+
+    config AIC_USING_BARE_TOUCH
+        bool "Using Touch"
+        default n
+        select AIC_TOUCH_DRV
+
+    source "bsp/artinchip/drv_bare/touch/Kconfig"
+
+endif
+
+#---------------------------
+# xxx device global option
+#---------------------------
+
+
+#================================================
+# System Class
+#================================================
+
+comment "System Related:"
+
+#---------------------------
+# DMA device global option
+#---------------------------
+
+config AIC_USING_DMA
+    bool "Using DMA"
+    default n
+    select AIC_DMA_DRV
+
+#---------------------------
+# WRI device global option
+#---------------------------
+
+config AIC_USING_WRI
+    bool "Using WRI"
+    default n
+    select AIC_WRI_DRV
+
+#---------------------------
+# RTC device global option
+#---------------------------
+
+config AIC_USING_RTC
+    bool "Using RTC"
+    default n
+    select AIC_RTC_DRV
+
+source "bsp/artinchip/drv/rtc/Kconfig"
+
+#---------------------------
+# WDT device global option
+#---------------------------
+
+config AIC_USING_WDT
+    bool "Using Watchdog"
+    default n
+    select AIC_WDT_DRV
+
+#---------------------------
+# Mem options
+#---------------------------
+
+menu "Mem Options"
+
+# 1. sram region
+menu "SRAM parameter"
+    config AIC_SRAM_TOTAL_SIZE
+        hex "SRAM Total Size"
+        default 0x100000
+
+    # 1.1 tcm region
+    # itcm: section(".tcm_code") + itcm_heap "MEM_ITCM"
+    # itcm: section(".tcm_data") + dtcm_heap "MEM_DTCM"
+
+    config AIC_TCM_EN
+        bool "Enable TCM (Tightly Coupled Memory) "
+        default n
+
+    config AIC_ITCM_SIZE
+        hex
+        range 0 AIC_SRAM_TOTAL_SIZE
+        default 0x0 if !AIC_TCM_EN
+        default 0x20000 if AIC_TCM_EN
+
+    config AIC_DTCM_SIZE
+        hex
+        range 0 AIC_SRAM_TOTAL_SIZE
+        default 0x0 if !AIC_TCM_EN
+        default 0x20000 if AIC_TCM_EN
+
+    # 1.2 sram_s0 region
+    # sram_sw: section(".text" + ".data" + ".bss") + sram_sw_heap ‘MEM_DEFAULT’
+
+    # 1.3 sram_s1 region
+
+    choice
+        prompt "SRAM_S1 Size"
+        default AIC_SRAM_S1_SIZE_0K
+        help
+            Select the package version
+
+        config AIC_SRAM_S1_SIZE_0K
+            bool "0K"
+        config AIC_SRAM_S1_SIZE_128K
+            bool "128K"
+        config AIC_SRAM_S1_SIZE_256K
+            bool "256K"
+        config AIC_SRAM_S1_SIZE_384K
+            bool "384K"
+        config AIC_SRAM_S1_SIZE_512K
+            bool "512K"
+        config AIC_SRAM_S1_SIZE_640K
+            bool "640K"
+        config AIC_SRAM_S1_SIZE_768K
+            bool "768K"
+    endchoice
+
+    config AIC_SRAM_S1_SIZE
+       hex
+       range 0 AIC_SRAM_TOTAL_SIZE
+       default 0        if AIC_SRAM_S1_SIZE_0K
+       default 0x20000  if AIC_SRAM_S1_SIZE_128K
+       default 0x40000  if AIC_SRAM_S1_SIZE_256K
+       default 0x60000  if AIC_SRAM_S1_SIZE_384K
+       default 0x80000  if AIC_SRAM_S1_SIZE_512K
+       default 0xA0000  if AIC_SRAM_S1_SIZE_640K
+       default 0xC0000  if AIC_SRAM_S1_SIZE_768K
+
+    config AIC_SRAM_S1_REG_SIZE
+       hex
+       range 0 AIC_SRAM_TOTAL_SIZE
+       default 0x00  if AIC_SRAM_S1_SIZE_0K
+       default 0x10  if AIC_SRAM_S1_SIZE_128K
+       default 0x20  if AIC_SRAM_S1_SIZE_256K
+       default 0x30  if AIC_SRAM_S1_SIZE_384K
+       default 0x40  if AIC_SRAM_S1_SIZE_512K
+       default 0x50  if AIC_SRAM_S1_SIZE_640K
+       default 0x60  if AIC_SRAM_S1_SIZE_768K
+
+    config AIC_SRAM1_EN
+        bool
+        default y if !AIC_SRAM_S1_SIZE_0K
+        select AIC_SRAM1_CMA_EN
+
+    config AIC_SRAM1_CMA_EN
+        bool
+
+    config AIC_SRAM1_SW_SIZE
+        hex "Software size in SRAM_S1"
+        range 0 AIC_SRAM_S1_SIZE
+        default 0x0
+
+    config AIC_SRAM1_SW_EN
+        bool
+        default y if AIC_SRAM1_SW_SIZE > 0
+
+    config AIC_BOOTLOADER_RESERVE_SIZE
+        hex "Bootloader reserve size"
+        help
+            This area is used only during the boot phase and is used as the heap after boot.
+        range 0 AIC_SRAM_TOTAL_SIZE
+        default 0x40000
+endmenu
+
+# 2. psram region
+
+menu "PSRAM parameter"
+    config AIC_PSRAM_SIZE
+        hex "PSRAM size"
+        default 0x800000
+
+    # 2.1 psram cma: section(".psram_cma_data") + psram_cma_heap ‘MEM_PSRAM_CMA’
+
+    config AIC_PSRAM_CMA_EN
+        bool
+        default y if AIC_PSRAM_SIZE > 0
+
+    # 2.2 psram sw: section(".psram_sw_data") + psram_sw_heap ‘MEM_PSRAM_SW’
+    config AIC_PSRAM_SW_SIZE
+        hex "Software size in PSRAM"
+        range 0 AIC_PSRAM_SIZE
+        default 0x100000
+
+    config AIC_PSRAM_SW_EN
+        bool
+        default y if AIC_PSRAM_SW_SIZE > 0
+endmenu
+
+# 3. XIP
+
+config AIC_XIP
+    bool "Enable XIP"
+    default n
+
+menu "XIP parameter"
+    depends on AIC_XIP
+    config AIC_XIP_FW_OFFSET
+    hex "XIP fw start addr"
+    default 0x0
+endmenu
+
+# 4. Sections memory location
+
+menu "ELF Sections memory location"
+    depends on !AIC_BOOTLOADER
+    choice
+        prompt "Section .text"
+        default AIC_SEC_TEXT_XIP if AIC_XIP
+        default AIC_SEC_TEXT_PSRAM if LPKG_USING_AWTK || AIC_MPP_PLAYER_INTERFACE || AIC_WIRELESS_LAN
+        help
+            Select the memory location for section .text.
+        config AIC_SEC_TEXT_SRAM_S0
+            bool "SRAM_S0"
+        config AIC_SEC_TEXT_SRAM_S1
+            depends on AIC_SRAM1_EN
+            bool "SRAM_S1"
+        config AIC_SEC_TEXT_PSRAM
+            depends on AIC_PSRAM_CMA_EN
+            bool "PSRAM"
+        config AIC_SEC_TEXT_XIP
+            depends on AIC_XIP
+            bool "XIP_FLASH"
+    endchoice
+
+    choice
+        prompt "Section .rodata"
+        default AIC_SEC_RODATA_XIP if AIC_XIP
+        default AIC_SEC_RODATA_PSRAM if LPKG_USING_AWTK || AIC_MPP_PLAYER_INTERFACE || AIC_WIRELESS_LAN
+        help
+            Select the memory location for section .rodata.
+        config AIC_SEC_RODATA_SRAM_S0
+            bool "SRAM_S0"
+        config AIC_SEC_RODATA_SRAM_S1
+            depends on AIC_SRAM1_EN
+            bool "SRAM_S1"
+        config AIC_SEC_RODATA_PSRAM
+            depends on AIC_PSRAM_CMA_EN
+            bool "PSRAM"
+        config AIC_SEC_RODATA_XIP
+            depends on AIC_XIP
+            bool "XIP_FLASH"
+    endchoice
+
+    choice
+        prompt "Section .data"
+        default AIC_SEC_DATA_PSRAM if LPKG_USING_AWTK || AIC_MPP_PLAYER_INTERFACE || AIC_WIRELESS_LAN
+        help
+            Select the memory location for section .data.
+        config AIC_SEC_DATA_SRAM_S0
+            bool "SRAM_S0"
+        config AIC_SEC_DATA_SRAM_S1
+            depends on AIC_SRAM1_EN
+            bool "SRAM_S1"
+        config AIC_SEC_DATA_PSRAM
+            depends on AIC_PSRAM_CMA_EN
+            bool "PSRAM"
+    endchoice
+
+    choice
+        prompt "Section .bss"
+        default AIC_SEC_BSS_PSRAM
+        default AIC_SEC_BSS_PSRAM if LPKG_USING_AWTK || AIC_MPP_PLAYER_INTERFACE || AIC_WIRELESS_LAN
+        help
+            Select the memory location for section .data.
+        config AIC_SEC_BSS_SRAM_S0
+            bool "SRAM_S0"
+        config AIC_SEC_BSS_SRAM_S1
+            depends on AIC_SRAM1_EN
+            bool "SRAM_S1"
+        config AIC_SEC_BSS_PSRAM
+            depends on AIC_PSRAM_CMA_EN
+            bool "PSRAM"
+    endchoice
+endmenu
+
+# 5. Interrupt Stack Size
+
+config AIC_INTERRUPTSTACK_SIZE
+    int "Interrupt stack size"
+    help
+        Interrupt stack size reserve in 'Section .bss'
+    range 0 AIC_SRAM_TOTAL_SIZE
+    default 4096
+
+# 6. Support seconed Flash
+
+    menu "Support another Flash"
+        choice
+            prompt "Number of Flash"
+            default AIC_FLASH_NUM_ONE
+            help
+                Whether support another flash
+            config AIC_FLASH_NUM_ONE
+                bool "only 1 flash"
+            config AIC_FLASH_NUM_TWO
+                bool "support 2 flashes"
+        endchoice
+        choice
+            prompt "Seconed Flash type"
+            depends on AIC_FLASH_NUM_TWO
+            default AIC_SECONED_FLASH_NOR
+            help
+                Type of seconed Flash
+            config AIC_SECONED_FLASH_NOR
+                bool "norflash"
+            config AIC_SECONED_FLASH_NAND
+                bool "nandflash"
+        endchoice
+
+    endmenu
+
+endmenu
+
+#---------------------------
+# Clock options
+#---------------------------
+
+menu "Clocks options"
+
+config AIC_CLK_PLL_INT0_FREQ
+    int "Clk int0 pll frequence"
+    default 480000000
+
+config AIC_CLK_PLL_INT1_FREQ
+    int "Clk int1 pll frequence"
+    default 1200000000
+
+config AIC_CLK_PLL_FRA0_FREQ
+    int "Clk fra0 pll frequence"
+    default 0
+
+config AIC_CLK_PLL_FRA0_SSC_DIS
+    bool "Disable fra0 pll spread spectrum"
+    default n
+
+config AIC_CLK_PLL_FRA2_FREQ
+    int "Clk fra2 pll frequence"
+    default 0
+
+config AIC_CLK_PLL_FRA2_SSC_DIS
+    bool "Disable fra2 pll spread spectrum"
+    default n
+
+config AIC_CLK_CPU_FREQ
+    int "Clk cpu frequence"
+    default 480000000
+
+config AIC_CLK_AXI0_FREQ
+    int "Clk axi0 frequence"
+    default 200000000
+
+config AIC_CLK_AHB0_FREQ
+    int "Clk ahb0 frequence"
+    default 200000000
+
+config AIC_CLK_APB0_FREQ
+    int "Clk apb0 frequence"
+    default 100000000
+
+config AIC_USING_CLK_OUT0
+    bool "Enable CLK_OUT0"
+    default n
+
+if AIC_USING_CLK_OUT0
+    config AIC_CLK_OUT0_FREQ
+        int "Clk CLK_OUT0 frequence"
+        default 25000000
+endif
+
+config AIC_USING_CLK_OUT1
+    bool "Enable CLK_OUT1"
+    default n
+
+if AIC_USING_CLK_OUT1
+    config AIC_CLK_OUT1_FREQ
+        int "Clk CLK_OUT1 frequence"
+        default 24000000
+endif
+
+config AIC_USING_CLK_OUT2
+    bool "Enable CLK_OUT2"
+    default n
+
+if AIC_USING_CLK_OUT2
+    config AIC_CLK_OUT2_FREQ
+        int "Clk CLK_OUT2 frequence"
+        default 25000000
+endif
+
+config AIC_USING_CLK_OUT3
+    bool "Enable CLK_OUT3"
+    default n
+
+if AIC_USING_CLK_OUT3
+    config AIC_CLK_OUT3_FREQ
+        int "Clk CLK_OUT3 frequence"
+        default 25000000
+endif
+
+endmenu
+
+#---------------------------
+# PM options
+#---------------------------
+
+config AIC_USING_PM
+    bool "Using Power Management"
+    default n
+    select AIC_PM_DRV
+
+source "bsp/artinchip/drv/pm/Kconfig"
+
+#================================================
+# Security Class
+#================================================
+
+comment "Security Related:"
+
+#--------------------------------------------
+# spienc device global option
+#--------------------------------------------
+
+config AIC_USING_SPIENC
+    bool "Using Spienc"
+    default n
+    select AIC_QSPI_DRV
+    select AIC_SPIENC_DRV
+
+source "bsp/artinchip/drv/spienc/Kconfig"
+
+#---------------------------
+# efuse/sid device global option
+#---------------------------
+
+config AIC_USING_SID
+    bool "Using Efuse/SID"
+    default n
+    select AIC_SID_DRV
+
+source "bsp/artinchip/drv/efuse/Kconfig.dev"
+
+#---------------------------
+# ce device global option
+#---------------------------
+
+config AIC_USING_CE
+    bool "Using Crypto Engine"
+    default n
+    select AIC_CE_DRV
+    select RT_USING_HWCRYPTO
+
+source "bsp/artinchip/drv/ce/Kconfig"
+
+#---------------------------
+# syscfg global option
+#---------------------------
+
+config AIC_USING_SYSCFG
+    bool "Using Syscfg"
+    default y
+
+source "bsp/artinchip/drv/syscfg/Kconfig.dev"
+
+#---------------------------
+# mtop device global option
+#---------------------------
+
+config AIC_USING_MTOP
+    bool "Using MTOP"
+    default n
+    select AIC_MTOP_DRV
+
+#---------------------------
+# PSADC device global option
+#---------------------------
+
+config AIC_USING_PSADC
+    bool "Using PSADC"
+    default n
+    select AIC_PSADC_DRV
+
+menu "PSADC options"
+    depends on AIC_USING_PSADC
+
+source "bsp/artinchip/drv/psadc/Kconfig.dev"
+
+config AIC_USING_PSADC0
+    bool "Using PSADC0"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC1
+    bool "Using PSADC1"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC2
+    bool "Using PSADC2"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC3
+    bool "Using PSADC3"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC4
+    bool "Using PSADC4"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC5
+    bool "Using PSADC5"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC6
+    bool "Using PSADC6"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC7
+    bool "Using PSADC7"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC8
+    bool "Using PSADC8"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC9
+    bool "Using PSADC9"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC10
+    bool "Using PSADC10"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC11
+    bool "Using PSADC11"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC12
+    bool "Using PSADC12"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC13
+    bool "Using PSADC13"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC14
+    bool "Using PSADC14"
+    default n
+    select AIC_PSADC_DRV
+
+config AIC_USING_PSADC15
+    bool "Using PSADC15"
+    default n
+    select AIC_PSADC_DRV
+
+endmenu
+endmenu

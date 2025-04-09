@@ -1,0 +1,290 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="SDMC 数据类型及其结构描述如下： enum artinchip_mmc_state ：定义了 SDMC 控制器的状态。 enum artinchip_mmc_state { STATE_IDLE = 0 , STATE_SENDING_CMD, STATE_SENDING_DATA, STATE_DATA_BUSY, STATE_SENDING_STOP, STATE_DATA_ERROR, ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-07-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="sdmc_data_structure_design"/><meta name="DC.language" content="zh-CN"/><title>数据结构设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/sdmc/sdmc-data_structure_design.dita"/><meta name="wh-out-relpath" content="topics/sdk/sdmc/sdmc-data_structure_design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="sdmc_data_structure_design" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/sdmc/sdmc-data_structure_design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">数据结构设计</h1><div class="date inPage">15 Jul 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d81533e22__20250121171525">SDMC 数据类型及其结构描述如下：<ul class="- topic/ul ul" id="sdmc_data_structure_design__ol_tcb_tst_c1c" data-ofbid="sdmc_data_structure_design__ol_tcb_tst_c1c"><li class="- topic/li li" data-ofbid="d81533e25__20250121171525"><strong class="+ topic/ph hi-d/b ph b">enum
+                    artinchip_mmc_state</strong>：定义了 SDMC 控制器的状态。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_data_structure_design__codeblock_s25_5st_c1c" data-ofbid="sdmc_data_structure_design__codeblock_s25_5st_c1c"><strong class="hl-keyword">enum</strong> artinchip_mmc_state {
+    STATE_IDLE = <span class="hl-number">0</span>,
+    STATE_SENDING_CMD,
+    STATE_SENDING_DATA,
+    STATE_DATA_BUSY,
+    STATE_SENDING_STOP,
+    STATE_DATA_ERROR,
+    STATE_SENDING_CMD11,
+    STATE_WAITING_CMD11_DONE,
+};</pre></li><li class="- topic/li li" data-ofbid="d81533e31__20250121171525"><strong class="+ topic/ph hi-d/b ph b">artinchip_mmc</strong>：记录了 SDMC 控制器的设备信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_data_structure_design__codeblock_yjs_vst_c1c" data-ofbid="sdmc_data_structure_design__codeblock_yjs_vst_c1c"><strong class="hl-keyword">struct</strong> artinchip_mmc {
+    spinlock_t      lock;
+    spinlock_t      irq_lock;
+    <strong class="hl-keyword">void</strong> __iomem        *regs;
+    <strong class="hl-keyword">void</strong> __iomem        *fifo_reg;
+    bool            wm_aligned;
+
+    <strong class="hl-keyword">struct</strong> scatterlist  *sg;
+    <strong class="hl-keyword">struct</strong> sg_mapping_iter  sg_miter;
+
+    <strong class="hl-keyword">struct</strong> mmc_request  *mrq;
+    <strong class="hl-keyword">struct</strong> mmc_command  *cmd;
+    <strong class="hl-keyword">struct</strong> mmc_data     *data;
+    <strong class="hl-keyword">struct</strong> mmc_command  stop_abort;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>        prev_blksz;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong>       timing;
+
+    <em class="hl-comment">/* DMA interface members*/</em>
+    bool            use_dma;
+    bool            using_dma;
+
+    dma_addr_t      sg_dma;
+    <strong class="hl-keyword">void</strong>            *sg_cpu;
+    <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> artinchip_mmc_dma_ops  *dma_ops;
+    <em class="hl-comment">/* For idmac */</em>
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>        ring_size;
+
+    <em class="hl-comment">/* Registers's physical base address */</em>
+    resource_size_t     phy_regs;
+
+    u32         cmd_status;
+    u32         data_status;
+    u32         stop_cmdr;
+    u32         dir_status;
+    <strong class="hl-keyword">struct</strong> tasklet_struct   tasklet;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>       pending_events;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>       completed_events;
+    <strong class="hl-keyword">enum</strong> artinchip_mmc_state    state;
+    <strong class="hl-keyword">struct</strong> list_head    queue;
+
+    u32         bus_hz;
+    u32         current_speed;
+    u32         fifoth_val;
+    u16         verid;
+    <strong class="hl-keyword">struct</strong> device       *dev;
+    <strong class="hl-keyword">struct</strong> artinchip_mmc_board  *pdata;
+    <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> artinchip_mmc_drv_data *drv_data;
+    <strong class="hl-keyword">void</strong>            *priv;
+    <strong class="hl-keyword">struct</strong> clk      *biu_clk;
+    <strong class="hl-keyword">struct</strong> clk      *ciu_clk;
+    <strong class="hl-keyword">struct</strong> artinchip_mmc_slot   *slot;
+
+    <em class="hl-comment">/* FIFO push and pull */</em>
+    <strong class="hl-keyword">int</strong>         fifo_depth;
+    <strong class="hl-keyword">int</strong>         data_shift;
+    u8          part_buf_start;
+    u8          part_buf_count;
+    <strong class="hl-keyword">enum</strong> data_width data_width;
+    <strong class="hl-keyword">union</strong> {
+        u16     part_buf16;
+        u32     part_buf32;
+        u64     part_buf;
+    };
+
+    bool            vqmmc_enabled;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>       irq_flags; <em class="hl-comment">/* IRQ flags */</em>
+    <strong class="hl-keyword">int</strong>         irq;
+
+    <strong class="hl-keyword">struct</strong> timer_list       cmd11_timer;
+    <strong class="hl-keyword">struct</strong> timer_list       cto_timer;
+    <strong class="hl-keyword">struct</strong> timer_list       dto_timer;
+};</pre></li><li class="- topic/li li" data-ofbid="d81533e37__20250121171525"><strong class="+ topic/ph hi-d/b ph b">artinchip_mmc_board</strong>：记录了 Board 相关的配置信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_data_structure_design__codeblock_hn2_1tt_c1c" data-ofbid="sdmc_data_structure_design__codeblock_hn2_1tt_c1c"><strong class="hl-keyword">struct</strong> artinchip_mmc_board {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> bus_hz; <em class="hl-comment">/* Clock speed at the cclk_in pad */</em>
+
+    u32 caps;   <em class="hl-comment">/* Capabilities */</em>
+    u32 caps2;  <em class="hl-comment">/* More capabilities */</em>
+    u32 pm_caps;    <em class="hl-comment">/* PM capabilities */</em>
+    <em class="hl-comment">/*
+     * Override fifo depth. If 0, autodetect it from the FIFOTH register,
+     * but note that this may not be reliable after a bootloader has used
+     * it.
+     */</em>
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> fifo_depth;
+
+    <em class="hl-comment">/* delay in mS before detecting cards after interrupt */</em>
+    u32 detect_delay_ms;
+
+    <strong class="hl-keyword">struct</strong> reset_control *rstc;
+    <strong class="hl-keyword">struct</strong> artinchip_mmc_dma_ops *dma_ops;
+    <strong class="hl-keyword">struct</strong> dma_pdata *data;
+};</pre></li><li class="- topic/li li" data-ofbid="d81533e43__20250121171525"><strong class="+ topic/ph hi-d/b ph b">artinchip_mmc_slot</strong>：记录了 slot 相关的配置信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_data_structure_design__codeblock_ayj_1tt_c1c" data-ofbid="sdmc_data_structure_design__codeblock_ayj_1tt_c1c"><strong class="hl-keyword">struct</strong> artinchip_mmc_slot {
+    <strong class="hl-keyword">struct</strong> mmc_host     *mmc;
+    <strong class="hl-keyword">struct</strong> artinchip_mmc        *host;
+
+    u32         ctype;
+
+    <strong class="hl-keyword">struct</strong> mmc_request  *mrq;
+    <strong class="hl-keyword">struct</strong> list_head    queue_node;
+
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>        clock;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>        __clk_old;
+
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>       flags;
+#<span class="hl-directive">define</span> ARTINCHIP_MMC_CARD_PRESENT  <span class="hl-number">0</span>
+#<span class="hl-directive">define</span> ARTINCHIP_MMC_CARD_NEED_INIT    <span class="hl-number">1</span>
+#<span class="hl-directive">define</span> ARTINCHIP_MMC_CARD_NO_LOW_PWR   <span class="hl-number">2</span>
+#<span class="hl-directive">define</span> ARTINCHIP_MMC_CARD_NO_USE_HOLD <span class="hl-number">3</span>
+#<span class="hl-directive">define</span> ARTINCHIP_MMC_CARD_NEEDS_POLL   <span class="hl-number">4</span>
+};</pre></li><li class="- topic/li li" data-ofbid="d81533e49__20250121171525"><strong class="+ topic/ph hi-d/b ph b">artinchip_mmc_drv_data</strong>：记录了 AIC SDMC
+                    驱动的特有数据。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_data_structure_design__codeblock_hbp_1tt_c1c" data-ofbid="sdmc_data_structure_design__codeblock_hbp_1tt_c1c"><strong class="hl-keyword">struct</strong> artinchip_mmc_drv_data {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>   *caps;
+    u32     num_caps;
+    <strong class="hl-keyword">int</strong>     (*init)(<strong class="hl-keyword">struct</strong> artinchip_mmc *host);
+    <strong class="hl-keyword">int</strong>     (*parse_dt)(<strong class="hl-keyword">struct</strong> artinchip_mmc *host);
+    <strong class="hl-keyword">int</strong>     (*execute_tuning)(<strong class="hl-keyword">struct</strong> artinchip_mmc_slot *slot, u32 opcode);
+    <strong class="hl-keyword">int</strong>     (*switch_voltage)(<strong class="hl-keyword">struct</strong> mmc_host *mmc,
+                      <strong class="hl-keyword">struct</strong> mmc_ios *ios);
+};</pre></li></ul></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="表 1 . aic_spienc_alg_init 函数原型 int aic_spienc_alg_init(struct crypto_skcipher *tfm) 功能说明 对称密钥算法的初始化函数 参数定义 struct crypto_skcipher *tfm 算法实例指针 返回值 0: 成功 其他: 失败 注意事项 - 表 2 . aic_spienc_probe 函数原型 int ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-11-05"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="spi_enc_interface_design"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/spienc/spi-enc-interface_design.dita"/><meta name="wh-out-relpath" content="topics/sdk/spienc/spi-enc-interface_design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="spi_enc_interface_design" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/spienc/spi-enc-interface_design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">接口设计</h1><div class="date inPage">5 Nov 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_nnb_5yx_21c" data-ofbid="spi_enc_interface_design__table_nnb_5yx_21c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_spienc_alg_init</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">函数原型</td><td class="- topic/entry entry colsep-0 rowsep-1">int aic_spienc_alg_init(struct crypto_skcipher *tfm)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1">对称密钥算法的初始化函数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1">struct crypto_skcipher *tfm 算法实例指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1">0: 成功<p class="- topic/p p" data-ofbid="d174671e49__20250121171622">其他: 失败</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_onb_5yx_21c" data-ofbid="spi_enc_interface_design__table_onb_5yx_21c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_spienc_probe</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">函数原型</td><td class="- topic/entry entry colsep-0 rowsep-1">int aic_spienc_probe(struct platform_device *pdev)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1">驱动的初始化函数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1">struct platform_device *pdev 设备指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1">0: 成功<p class="- topic/p p" data-ofbid="d174671e83__20250121171622">其他: 失败</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_pnb_5yx_21c" data-ofbid="spi_enc_interface_design__table_pnb_5yx_21c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_spienc_attach_bus</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">函数原型</td><td class="- topic/entry entry colsep-0 rowsep-1">int aic_spienc_attach_bus(struct aic_spienc_drvdata *drvdata, u32
+                                bus)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1">将 SPI ENC 连接到指定的 SPI 控制器</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1">struct aic_spienc_drvdata *drvdata 设备驱动数据指针 busSPI  控制器
+                                ID</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1">0: 成功<p class="- topic/p p" data-ofbid="d174671e117__20250121171622">其他: 失败</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_qnb_5yx_21c" data-ofbid="spi_enc_interface_design__table_qnb_5yx_21c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_spienc_encrypt</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">函数原型</td><td class="- topic/entry entry colsep-0 rowsep-1">int aic_spienc_encrypt(struct skcipher_request *req)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1">配置 SPI_ENC 启动数据加密</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1">struct skcipher_request *req 加密请求指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1">0: 成功<p class="- topic/p p" data-ofbid="d174671e151__20250121171622">其他: 失败</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_rnb_5yx_21c" data-ofbid="spi_enc_interface_design__table_rnb_5yx_21c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_spienc_decrypt</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">函数原型</td><td class="- topic/entry entry colsep-0 rowsep-1">int aic_spienc_decrypt(struct skcipher_request *req)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1">配置 SPI_ENC 启动数据解密</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1">struct skcipher_request *req 解密请求指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1">0: 成功<p class="- topic/p p" data-ofbid="d174671e185__20250121171622">其他: 失败</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0">-</td></tr></tbody></table></div><section class="- topic/section section" id="spi_enc_interface_design__section_qbw_tzq_g1c" data-ofbid="spi_enc_interface_design__section_qbw_tzq_g1c"><h2 class="- topic/title title sectiontitle">Driver 层接口设计</h2>
+            
+            
+                <div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_qqk_5zq_g1c" data-ofbid="spi_enc_interface_design__table_qqk_5zq_g1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_spienc_set_cfg</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_enc_interface_design__table_qqk_5zq_g1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="spi_enc_interface_design__table_qqk_5zq_g1c__entry__2">void drv_spienc_set_cfg(u32 spi_bus, u32 addr, u32 cpos, u32
+                                    clen)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_qqk_5zq_g1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_qqk_5zq_g1c__entry__2">配置加密数据信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_qqk_5zq_g1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_qqk_5zq_g1c__entry__2">
+                                    <ul class="- topic/ul ul" id="spi_enc_interface_design__ul_ntx_1x3_zbc" data-ofbid="spi_enc_interface_design__ul_ntx_1x3_zbc"><li class="- topic/li li" data-ofbid="d174671e221__20250121171622">spi_bus - 选择需要配置的 QSPI 设备 </li><li class="- topic/li li" data-ofbid="d174671e223__20250121171622">addr - 本次传输数据的起始地址 </li><li class="- topic/li li" data-ofbid="d174671e225__20250121171622">cpos - 本次传输密文数据的开始位置 </li><li class="- topic/li li" data-ofbid="d174671e227__20250121171622">clen - 本次传输密文的数据长度</li></ul>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_qqk_5zq_g1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_qqk_5zq_g1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_enc_interface_design__table_qqk_5zq_g1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="spi_enc_interface_design__table_qqk_5zq_g1c__entry__2">-</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_rqk_5zq_g1c" data-ofbid="spi_enc_interface_design__table_rqk_5zq_g1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_spienc_start</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_enc_interface_design__table_rqk_5zq_g1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="spi_enc_interface_design__table_rqk_5zq_g1c__entry__2">void drv_spienc_start(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_rqk_5zq_g1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_rqk_5zq_g1c__entry__2">启动 SPI_ENC</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_rqk_5zq_g1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_rqk_5zq_g1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_rqk_5zq_g1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_rqk_5zq_g1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_enc_interface_design__table_rqk_5zq_g1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="spi_enc_interface_design__table_rqk_5zq_g1c__entry__2">-</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_sqk_5zq_g1c" data-ofbid="spi_enc_interface_design__table_sqk_5zq_g1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_spienc_stop</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_enc_interface_design__table_sqk_5zq_g1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="spi_enc_interface_design__table_sqk_5zq_g1c__entry__2">void drv_spienc_stop(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_sqk_5zq_g1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_sqk_5zq_g1c__entry__2">停止 SPI_ENC</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_sqk_5zq_g1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_sqk_5zq_g1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_sqk_5zq_g1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_sqk_5zq_g1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_enc_interface_design__table_sqk_5zq_g1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="spi_enc_interface_design__table_sqk_5zq_g1c__entry__2">-</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="spi_enc_interface_design__table_tqk_5zq_g1c" data-ofbid="spi_enc_interface_design__table_tqk_5zq_g1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_spienc_check_empty</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_enc_interface_design__table_tqk_5zq_g1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="spi_enc_interface_design__table_tqk_5zq_g1c__entry__2">int drv_spienc_check_empty(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_tqk_5zq_g1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_tqk_5zq_g1c__entry__2">检查本次读取数据是否全为空</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_tqk_5zq_g1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_tqk_5zq_g1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_enc_interface_design__table_tqk_5zq_g1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_enc_interface_design__table_tqk_5zq_g1c__entry__2">0，本次传输数据不全为空。1，本次传输数据全为空</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_enc_interface_design__table_tqk_5zq_g1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="spi_enc_interface_design__table_tqk_5zq_g1c__entry__2">-</td></tr></tbody></table></div>
+            
+        </section><section class="- topic/section section" id="spi_enc_interface_design__section_hj1_zzq_g1c" data-ofbid="spi_enc_interface_design__section_hj1_zzq_g1c"><h2 class="- topic/title title sectiontitle">HAL 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d174671e348__20250121171622">HAL 层的函数接口声明存放在 <span class="+ topic/ph sw-d/filepath ph filepath">hal_spienc.h</span>
+                中，主要接口有：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_enc_interface_design__codeblock_djw_zzq_g1c" data-ofbid="spi_enc_interface_design__codeblock_djw_zzq_g1c"><strong class="hl-keyword">int</strong> hal_spienc_init(<strong class="hl-keyword">void</strong>);
+<strong class="hl-keyword">void</strong> hal_spienc_set_cfg(u32 spi_bus, u32 addr, u32 cpos, u32 clen);
+<strong class="hl-keyword">void</strong> hal_spienc_start(<strong class="hl-keyword">void</strong>);
+<strong class="hl-keyword">void</strong> hal_spienc_stop(<strong class="hl-keyword">void</strong>);
+<strong class="hl-keyword">int</strong> hal_spienc_check_empty(<strong class="hl-keyword">void</strong>);</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#spi_enc_interface_design__section_qbw_tzq_g1c" data-tocid="spi_enc_interface_design__section_qbw_tzq_g1c">Driver 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_enc_interface_design__section_hj1_zzq_g1c" data-tocid="spi_enc_interface_design__section_hj1_zzq_g1c">HAL 层接口设计</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

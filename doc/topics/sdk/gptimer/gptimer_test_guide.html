@@ -1,0 +1,308 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="测试环境 硬件 FPGA 验证版 USB 转串口的线缆 信号源（用于测试触发模式） 示波器（用于观察引脚输出） 软件 PC 端的串口终端软件，用于 PC 和 开发板进行串口通信 Luban-Lite 自带的 test_gptimer 命令行工具 软件配置 在 SDK 根目录下执行 scons --menuconfig ，进入 menuconfig 的功能配置界面。 按如下选择，打开 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-20"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/gptimer/gptimer_test_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/gptimer/gptimer_test_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/gptimer/gptimer_test_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">20 Dec 2024</div><div style="color: gray;">
+                    Read time: 5 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">测试环境</h2>
+            
+            <ul class="- topic/ul ul" data-ofbid="d324420e22__20250121171828"><li class="- topic/li li" data-ofbid="d324420e23__20250121171828"><strong class="+ topic/ph hi-d/b ph b">硬件</strong><ul class="- topic/ul ul simple" id="id__ul_ult_m3d_bdc" data-ofbid="id__ul_ult_m3d_bdc"><li class="- topic/li li" data-ofbid="d324420e27__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e29__20250121171828">FPGA 验证版</p>
+                        </li><li class="- topic/li li" data-ofbid="d324420e32__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e34__20250121171828">USB 转串口的线缆</p>
+                        </li><li class="- topic/li li" data-ofbid="d324420e37__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e39__20250121171828">信号源（用于测试触发模式）</p>
+                        </li><li class="- topic/li li" data-ofbid="d324420e42__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e44__20250121171828">示波器（用于观察引脚输出）</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d324420e47__20250121171828"><strong class="+ topic/ph hi-d/b ph b">软件</strong><ul class="- topic/ul ul simple" id="id__ul_vlt_m3d_bdc" data-ofbid="id__ul_vlt_m3d_bdc"><li class="- topic/li li" data-ofbid="d324420e51__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e53__20250121171828">PC 端的串口终端软件，用于 PC 和 开发板进行串口通信</p>
+                        </li><li class="- topic/li li" data-ofbid="d324420e56__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e58__20250121171828"><span class="- topic/ph ph">Luban-Lite</span> 自带的 <code class="+ topic/ph pr-d/codeph ph codeph">test_gptimer</code> 命令行工具</p>
+                        </li></ul></li></ul>
+        </section><section class="- topic/section section" id="id__id5" data-ofbid="id__id5"><h2 class="- topic/title title sectiontitle">软件配置</h2>
+            
+            <ol class="- topic/ol ol" id="id__ul_xb3_rtn_tdc" data-ofbid="id__ul_xb3_rtn_tdc"><li class="- topic/li li" data-ofbid="d324420e73__20250121171828">
+                    <p class="- topic/p p" data-ofbid="d324420e75__20250121171828">在 SDK 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig 的功能配置界面。</p>
+                </li><li class="- topic/li li" data-ofbid="d324420e81__20250121171828">
+                    <div class="- topic/p p" data-ofbid="d324420e83__20250121171828">按如下选择，打开 <code class="+ topic/ph pr-d/codeph ph codeph">test_gptimer</code>
+                        命令行工具：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wlt_m3d_bdc" data-ofbid="id__codeblock_wlt_m3d_bdc">Drivers options ---&gt;
+    Drivers examples ---&gt;
+        [*]  Enable GPTimer driver test command
+</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d324420e91__20250121171828">
+                    <div class="- topic/p p" data-ofbid="d324420e93__20250121171828">同时，按如下选择，打开中断打印配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xlt_m3d_bdc" data-ofbid="id__codeblock_xlt_m3d_bdc">Rt-Thread options ---&gt;
+    RT-Thread Components ---&gt;
+                    Utilities ---&gt;
+        [*] Enable ISR log.
+</pre></div>
+                </li></ol>
+        </section><section class="- topic/section section" id="id__section_zjd_1r4_tdc" data-ofbid="id__section_zjd_1r4_tdc"><h2 class="- topic/title title sectiontitle">GPTimer 常见测试</h2>
+            
+            <div class="- topic/p p" data-ofbid="d324420e104__20250121171828"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_gptimer</span> 的常见测试场景和流程如下所示：<div class="- topic/note note note note_note" id="id__note_fky_jt4_tdc" data-ofbid="id__note_fky_jt4_tdc"><span class="note__title">注：</span> 关于命令参数详细描述，可查看 <a class="- topic/xref xref" href="gptimer_test_guide.html#id__gptimer">test_gptimer 参数详解</a>。</div><ul class="- topic/ul ul simple" id="id__ul_zlt_m3d_bdc" data-ofbid="id__ul_zlt_m3d_bdc"><li class="- topic/li li" data-ofbid="d324420e115__20250121171828">
+                        <p class="- topic/p p" data-ofbid="d324420e117__20250121171828">单次自动计数模式</p>
+                        <div class="- topic/p p" data-ofbid="d324420e120__20250121171828">使用下列命令配置 GPTimer0 的单次自动计数模式，以设置一个超时时间是 1.000003 秒（即 1 秒 3
+                            微秒）的定时器为例，并启用调试日志：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_amt_m3d_bdc" data-ofbid="id__codeblock_amt_m3d_bdc">test_gptimer -m oneshot -c <span class="hl-number">0</span> -s <span class="hl-number">1</span> -u <span class="hl-number">3</span> -g count -a <strong class="hl-keyword">auto</strong> -f <span class="hl-number">1000</span> -d</pre></div>
+                        <div class="- topic/p p" data-ofbid="d324420e125__20250121171828">输出示例如下，表示创建成功：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ukw_c5n_tdc" data-ofbid="id__codeblock_ukw_c5n_tdc">gptimer0: Create a timer of <span class="hl-number">1.000003</span> sec, Oneshot mode</pre></div>
+                        <p class="- topic/p p" data-ofbid="d324420e130__20250121171828">当计时器超时时，可以看到如下调试日志输出：</p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_bl3_d5n_tdc" data-ofbid="id__codeblock_bl3_d5n_tdc"><span class="hl-number">0</span>/<span class="hl-number">0</span> gptimer0 timeout callback! Elapsed <span class="hl-number">1001154</span> us</pre>
+                    </li><li class="- topic/li li" data-ofbid="d324420e136__20250121171828">
+                        <p class="- topic/p p" data-ofbid="d324420e138__20250121171828">循环自动计数模式 </p>
+                        <div class="- topic/p p" data-ofbid="d324420e141__20250121171828">使用下列命令配置 GPTimer0 的循环自动计数模式，超时时间是 1 秒 3 微秒的定时器，并启用调试日志，会循环输出 59
+                            次超时回调：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_cmt_m3d_bdc" data-ofbid="id__codeblock_cmt_m3d_bdc">test_gptimer -m period -c <span class="hl-number">0</span> -s <span class="hl-number">1</span> -u <span class="hl-number">3</span> -g count -a <strong class="hl-keyword">auto</strong> -f <span class="hl-number">1000</span> -d</pre></div>
+                        <div class="- topic/p p" data-ofbid="d324420e146__20250121171828">输出示例如下，表示创建成功：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wgc_hb4_tdc" data-ofbid="id__codeblock_wgc_hb4_tdc">gptimer0: Create a timer of <span class="hl-number">1.000003</span> sec, Period mode
+    Will loop <span class="hl-number">59</span>times</pre></div>
+                        <div class="- topic/p p" data-ofbid="d324420e151__20250121171828">当计时器每次超时时，调试日志输出如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_s4z_xd4_tdc" data-ofbid="id__codeblock_s4z_xd4_tdc"><span class="hl-number">0</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">1001142</span> us
+<span class="hl-number">1</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995703</span> us
+<span class="hl-number">2</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995912</span> us
+<span class="hl-number">3</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995923</span> us
+<span class="hl-number">4</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995929</span> us
+<span class="hl-number">5</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995922</span> us
+<span class="hl-number">6</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995918</span> us
+<span class="hl-number">7</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995915</span> us
+<span class="hl-number">8</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995922</span> us
+......
+<span class="hl-number">59</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">995797</span> us</pre></div>
+                        <p class="- topic/p p" data-ofbid="d324420e156__20250121171828">本循环计数模式示例仅供演示使用，在持续大约 60
+                            秒后自动停止定时器。在实际使用过程中，如果配置了循环输出模式，则会不断输出直至配置为其他模式。</p>
+                    </li><li class="- topic/li li" data-ofbid="d324420e159__20250121171828">
+                        <p class="- topic/p p" data-ofbid="d324420e161__20250121171828">单次触发计数模式</p>
+                        <p class="- topic/p p" data-ofbid="d324420e164__20250121171828">触发模式下日志打印的时间包含启动定时器到有信号触发的时间。</p>
+                        <div class="- topic/p p" data-ofbid="d324420e167__20250121171828">使用下列命令配置 GPTimer0 的单次触发计数模式，超时时间是 1 秒 3
+                            微秒的定时器，并启用双边沿触发模式和调试日志：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_emt_m3d_bdc" data-ofbid="id__codeblock_emt_m3d_bdc">test_gptimer -m oneshot -c <span class="hl-number">0</span> -s <span class="hl-number">1</span> -u <span class="hl-number">3</span> -g count -a bil -f <span class="hl-number">1000</span> -d</pre></div>
+                        <div class="- topic/p p" data-ofbid="d324420e172__20250121171828">输出示例如下，表示创建成功：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wjm_hb4_tdc" data-ofbid="id__codeblock_wjm_hb4_tdc">gptimer0: Create a timer of <span class="hl-number">1.000003</span> sec, Oneshot mode</pre></div>
+                        <div class="- topic/p p" data-ofbid="d324420e177__20250121171828">当信号源或其他方式往 GPTimer
+                            输入引脚产生一个信号变化时，定时器将被触发启动。输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_lpz_hb4_tdc" data-ofbid="id__codeblock_lpz_hb4_tdc"><span class="hl-number">0</span>/<span class="hl-number">59</span> gptimer0 timeout callback! Elapsed <span class="hl-number">25708887</span></pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d324420e182__20250121171828">
+                        <p class="- topic/p p" data-ofbid="d324420e184__20250121171828">单次自动输出模式</p>
+                        <div class="- topic/p p" data-ofbid="d324420e187__20250121171828">使用下列命令配置 GPTimer0 的单次自动输出模式，超时时间是 1 秒 3
+                            微秒的定时器：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_gmt_m3d_bdc" data-ofbid="id__codeblock_gmt_m3d_bdc">test_gptimer -m oneshot -c <span class="hl-number">0</span> -s <span class="hl-number">1</span> -u <span class="hl-number">3</span> -g match -a <strong class="hl-keyword">auto</strong> -f <span class="hl-number">1000</span></pre></div>
+                        <div class="- topic/p p" data-ofbid="d324420e192__20250121171828">输出示例如下，表示创建成功：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_c1q_3b4_tdc" data-ofbid="id__codeblock_c1q_3b4_tdc">gptimer0: Create a timer of <span class="hl-number">1.000003</span> sec, Oneshot mode</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d324420e197__20250121171828">
+                        <p class="- topic/p p" data-ofbid="d324420e199__20250121171828">自动输出模式</p>
+                        <div class="- topic/p p" data-ofbid="d324420e202__20250121171828">使用下列命令配置 GPTimer0 的循环自动输出模式，超时时间是 1 秒 3
+                            微秒的定时器：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_imt_m3d_bdc" data-ofbid="id__codeblock_imt_m3d_bdc">test_gptimer -m period -c <span class="hl-number">0</span> -s <span class="hl-number">1</span> -u <span class="hl-number">3</span> -g match -a <strong class="hl-keyword">auto</strong> -f <span class="hl-number">1000</span></pre></div>
+                        <div class="- topic/p p" data-ofbid="d324420e207__20250121171828">输出示例如下，表示创建成功：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_fxy_3b4_tdc" data-ofbid="id__codeblock_fxy_3b4_tdc">gptimer0: Create a timer of <span class="hl-number">1.000003</span> sec, Period mode</pre></div>
+                    </li></ul><div class="- topic/note note tip note_tip" id="id__note_rms_qn3_ddc" data-ofbid="id__note_rms_qn3_ddc"><span class="note__title">提示：</span> 
+                    <ul class="- topic/ul ul arabic simple" id="id__ol_jmt_m3d_bdc" data-ofbid="id__ol_jmt_m3d_bdc"><li class="- topic/li li" data-ofbid="d324420e215__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e217__20250121171828">示例中的运行 log 出现了一些误差，属于合理现象。这是因为 GPTimer 的精度是微秒级，RTOS
+                                的调度和调试信息输出都会干扰到定时器的精度。</p>
+                        </li><li class="- topic/li li" data-ofbid="d324420e220__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e222__20250121171828">输出模式下可以使用示波器观察波形。</p>
+                        </li><li class="- topic/li li" data-ofbid="d324420e225__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e227__20250121171828">为了简化 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_gptimer</span> 命令，可在
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">test_gptimer.c</span> 文件的
+                                    <span class="+ topic/keyword pr-d/parmname keyword parmname">g_outval</span> 结构体中修改输出引脚的配置参数。</p>
+                        </li><li class="- topic/li li" data-ofbid="d324420e239__20250121171828">
+                            <p class="- topic/p p" data-ofbid="d324420e241__20250121171828">GPTimer 达到比较值后默认继续计数，可在 <span class="+ topic/ph sw-d/filepath ph filepath">test_gptimer.c</span> 中的
+                                    <span class="+ topic/keyword pr-d/parmname keyword parmname">g_cmpa(b)_act</span> 变量修改为停止计数或清零计数。</p>
+                        </li></ul>
+                </div></div>
+        </section><section class="- topic/section section" id="id__gptimer" data-ofbid="id__gptimer"><h2 class="- topic/title title sectiontitle">test_gptimer 参数详解</h2>
+            
+            <div class="- topic/p p" data-ofbid="d324420e257__20250121171828">以下是一个 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_gptimer</span> 命令示例，配置 GPTimer0 为循环自动计数模式，并设置超时时间为 1 秒 3
+                微秒，同时启用调试日志：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_kbp_ng4_tdc" data-ofbid="id__codeblock_kbp_ng4_tdc">test_gptimer -m period -c <span class="hl-number">0</span> -s <span class="hl-number">1</span> -u <span class="hl-number">3</span> -g count -a <strong class="hl-keyword">auto</strong> -f <span class="hl-number">1000</span> -d</pre></div>
+            <div class="- topic/p p" data-ofbid="d324420e265__20250121171828"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_gptimer</span>
+                    命令参数解释及示例如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_crz_2p4_tdc" data-ofbid="id__codeblock_crz_2p4_tdc">test_gptimer <var class="+ topic/keyword sw-d/varname keyword varname">parameter</var></pre><ul class="- topic/ul ul" id="id__ul_ctz_qg4_tdc" data-ofbid="id__ul_ctz_qg4_tdc"><li class="- topic/li li" data-ofbid="d324420e274__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">-m <var class="+ topic/keyword sw-d/varname keyword varname">mode</var></code><div class="- topic/p p" data-ofbid="d324420e279__20250121171828">创建定时器类型，支持创建两类 Timer：<ul class="- topic/ul ul arabic simple" id="id__ol_mnc_s3d_bdc" data-ofbid="id__ol_mnc_s3d_bdc"><li class="- topic/li li" data-ofbid="d324420e282__20250121171828">
+                                    <div class="- topic/p p" data-ofbid="d324420e284__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">oneshot</code>
+                                        类型定时器：单次触发，默认值。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_rnd_jp4_tdc" data-ofbid="id__codeblock_rnd_jp4_tdc">-m oneshot</pre></div>
+                                    <p class="- topic/p p" data-ofbid="d324420e291__20250121171828">只触发一次超时，随后 Timer 会被注销。适用于需要一次性触发的任务，例如超时报警、单次事件等。</p>
+                                </li><li class="- topic/li li" data-ofbid="d324420e294__20250121171828">
+                                    <div class="- topic/p p" data-ofbid="d324420e296__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">period</code>
+                                        类型定时器：循环触发<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_rql_jp4_tdc" data-ofbid="id__codeblock_rql_jp4_tdc">-m period</pre></div>
+                                    <p class="- topic/p p" data-ofbid="d324420e303__20250121171828">循环触发超时，适用于需要周期性触发的任务，例如心跳包发送、定时数据采集等。</p>
+                                </li></ul></div></li><li class="- topic/li li" data-ofbid="d324420e306__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">-c <var class="+ topic/keyword sw-d/varname keyword varname">GPTimer channel number</var></code><p class="- topic/p p" data-ofbid="d324420e311__20250121171828">选择 GPTimer
+                            通道编号，可选参数范围是  [0, 2]。</p><p class="- topic/p p" data-ofbid="d324420e313__20250121171828">示例：<code class="+ topic/ph pr-d/codeph ph codeph">-c 0</code> 或 <code class="+ topic/ph pr-d/codeph ph codeph">-c
+                                2</code></p></li><li class="- topic/li li" data-ofbid="d324420e320__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">-s <var class="+ topic/keyword sw-d/varname keyword varname">second</var></code>:
+                                设<p class="- topic/p p" data-ofbid="d324420e326__20250121171828">设置计数器的秒数，必须大于 0。</p><p class="- topic/p p" data-ofbid="d324420e328__20250121171828">示例：<code class="+ topic/ph pr-d/codeph ph codeph">-s 1</code>。</p></li><li class="- topic/li li" data-ofbid="d324420e333__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">-u <var class="+ topic/keyword sw-d/varname keyword varname">microsecon</var></code><p class="- topic/p p" data-ofbid="d324420e338__20250121171828">设置计时器的微秒数，必须大于
+                                0。</p><p class="- topic/p p" data-ofbid="d324420e340__20250121171828">示例：<code class="+ topic/ph pr-d/codeph ph codeph">-u 3</code></p></li><li class="- topic/li li" data-ofbid="d324420e344__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">-g <var class="+ topic/keyword sw-d/varname keyword varname">gptmode</var></code><div class="- topic/p p" data-ofbid="d324420e349__20250121171828">设置计时器的模式，可选模式包括：<ul class="- topic/ul ul" id="id__ul_p44_mq4_tdc" data-ofbid="id__ul_p44_mq4_tdc"><li class="- topic/li li" data-ofbid="d324420e352__20250121171828">
+                                    <p class="- topic/p p" data-ofbid="d324420e354__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">count</code>：计数</p>
+                                </li><li class="- topic/li li" data-ofbid="d324420e359__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">match</code>：匹配</li></ul></div></li><li class="- topic/li li" data-ofbid="d324420e363__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">-a <var class="+ topic/keyword sw-d/varname keyword varname">triggermode</var></code><div class="- topic/p p" data-ofbid="d324420e368__20250121171828">设置 GPTimer
+                                的触发模式，可选模式包括：<ul class="- topic/ul ul" id="id__ul_cmy_pq4_tdc" data-ofbid="id__ul_cmy_pq4_tdc"><li class="- topic/li li" data-ofbid="d324420e371__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">auto</code>：自动</li><li class="- topic/li li" data-ofbid="d324420e375__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">rsi</code>：上升沿</li><li class="- topic/li li" data-ofbid="d324420e379__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">fall</code>：下降沿</li><li class="- topic/li li" data-ofbid="d324420e383__20250121171828">
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">bil</code>：双边沿。</li></ul></div></li><li class="- topic/li li" data-ofbid="d324420e388__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">-f <var class="+ topic/keyword sw-d/varname keyword varname">frequency</var></code><p class="- topic/p p" data-ofbid="d324420e393__20250121171828">设置 GPTimer 的频率，必须大于
+                            0。</p><p class="- topic/p p" data-ofbid="d324420e395__20250121171828">示例：<code class="+ topic/ph pr-d/codeph ph codeph">-f 1000</code>。</p></li><li class="- topic/li li" data-ofbid="d324420e400__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">-d</code>:  显示超时日志，用于调试目的。<p class="- topic/p p" data-ofbid="d324420e404__20250121171828"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_gptimer</span>
+                            命令默认不打印定时器的超时信息，需要使用 <code class="+ topic/ph pr-d/codeph ph codeph">-d</code> 参数打开日志。</p></li><li class="- topic/li li" data-ofbid="d324420e411__20250121171828">
+                        <p class="- topic/p p" data-ofbid="d324420e413__20250121171828"><code class="+ topic/ph pr-d/codeph ph codeph">h</code></p>
+                        <p class="- topic/p p" data-ofbid="d324420e417__20250121171828">显示帮助信息。</p>
+                        <div class="- topic/p p" data-ofbid="d324420e420__20250121171828">
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_sqm_xq4_tdc" data-ofbid="id__codeblock_sqm_xq4_tdc">test_gptimer -h</pre>
+                        </div>
+                        <div class="- topic/p p" data-ofbid="d324420e426__20250121171828">输出结果如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_vc1_vq4_tdc" data-ofbid="id__codeblock_vc1_vq4_tdc">Usage: test_gptimer [options]:
+     -m, --mode     mode of timer, oneshot/period
+     -c, --channel      the number of gptimer [<span class="hl-number">0</span>, <span class="hl-number">2</span>]
+     -s, --second       the second of timer (must &gt; <span class="hl-number">0</span>)
+     -u, --microsecond  the microsecond of timer (must &gt; <span class="hl-number">0</span>)
+     -g, --gptmode      he mode of gptimer, count/match
+     -a, --triggermode  the trigger mode of gptimer, <strong class="hl-keyword">auto</strong>/rsi/fall/bil
+     -f, --frequency    the frequncy of the gptimer (must &gt; <span class="hl-number">0</span>)
+     -d, --debug        show the timeout log
+     -h, --usage</pre></div>
+                    </li></ul></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">测试环境</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id5" data-tocid="id__id5">软件配置</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_zjd_1r4_tdc" data-tocid="id__section_zjd_1r4_tdc">GPTimer 常见测试</a></div></li><li class="section-item"><div class="section-title"><a href="#id__gptimer" data-tocid="id__gptimer">test_gptimer 参数详解</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本章节描述 ArtInChip 平台的 U-Boot 时钟配置相关内容。 驱动框架 U-Boot 驱动模型支持 Clock，ArtInChip 平台中 Clock 驱动基于该框架进行实现。 相关配置为： CONFIG_CLK CONFIG_CLK_ARTINCHIP CONFIG_CLK_ARTINCHIP_CMU CONFIG_SPL_CLK_ARTINCHIP ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="clock"/><meta name="DC.language" content="zh-CN"/><title>Clock</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/uboot-clock-drivers.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/uboot-clock-drivers.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="clock" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/uboot-clock-drivers.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Clock</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d50638e22__20250121171518">本章节描述 ArtInChip 平台的 U-Boot 时钟配置相关内容。</p><section class="- topic/section section" id="clock__section_tpj_zbh_bzb" data-ofbid="clock__section_tpj_zbh_bzb"><h2 class="- topic/title title sectiontitle">驱动框架</h2>
+            
+            <p class="- topic/p p" data-ofbid="d50638e29__20250121171518">U-Boot 驱动模型支持 Clock，ArtInChip 平台中 Clock 驱动基于该框架进行实现。 相关配置为：</p>
+            <ul class="- topic/ul ul" id="clock__ul_vpj_zbh_bzb" data-ofbid="clock__ul_vpj_zbh_bzb"><li class="- topic/li li" data-ofbid="d50638e33__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e35__20250121171518">CONFIG_CLK</p>
+                </li><li class="- topic/li li" data-ofbid="d50638e38__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e40__20250121171518">CONFIG_CLK_ARTINCHIP</p>
+                </li><li class="- topic/li li" data-ofbid="d50638e43__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e45__20250121171518">CONFIG_CLK_ARTINCHIP_CMU</p>
+                </li><li class="- topic/li li" data-ofbid="d50638e48__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e50__20250121171518">CONFIG_SPL_CLK_ARTINCHIP</p>
+                </li><li class="- topic/li li" data-ofbid="d50638e53__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e55__20250121171518">CONFIG_SPL_CLK_ARTINCHIP_CMU</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d50638e59__20250121171518">相关源码有：</p>
+            <ul class="- topic/ul ul" id="clock__ul_xpj_zbh_bzb" data-ofbid="clock__ul_xpj_zbh_bzb"><li class="- topic/li li" data-ofbid="d50638e63__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e65__20250121171518"><span class="+ topic/ph sw-d/filepath ph filepath">include/clk.h</span></p>
+                </li><li class="- topic/li li" data-ofbid="d50638e69__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e71__20250121171518"><span class="+ topic/ph sw-d/filepath ph filepath">include/clk-uclass.h</span></p>
+                </li><li class="- topic/li li" data-ofbid="d50638e75__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e77__20250121171518"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/clk/clk.c</span></p>
+                </li><li class="- topic/li li" data-ofbid="d50638e81__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e83__20250121171518"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/clk/clk-uclass.c</span></p>
+                </li><li class="- topic/li li" data-ofbid="d50638e87__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e89__20250121171518"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/clk/artinchip/clk-aic.h</span></p>
+                </li><li class="- topic/li li" data-ofbid="d50638e93__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e95__20250121171518"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/clk/artinchip/clk-artinchip.c</span></p>
+                </li><li class="- topic/li li" data-ofbid="d50638e99__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e101__20250121171518"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/clk/artinchip/clk-cmu.c</span></p>
+                </li></ul>
+        </section><section class="- topic/section section" id="clock__section_ypj_zbh_bzb" data-ofbid="clock__section_ypj_zbh_bzb"><h2 class="- topic/title title sectiontitle">驱动接口</h2>
+            
+            <div class="- topic/p p" data-ofbid="d50638e111__20250121171518">相关的 Clock
+                驱动接口有：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="clock__codeblock_wmw_rmr_c1c" data-ofbid="clock__codeblock_wmw_rmr_c1c"><strong class="hl-keyword">int</strong> clk_get_by_index_platdata(<strong class="hl-keyword">struct</strong> udevice *dev, <strong class="hl-keyword">int</strong> index,
+                              <strong class="hl-keyword">struct</strong> phandle_<span class="hl-number">1</span>_arg *cells, <strong class="hl-keyword">struct</strong> clk *clk);
+<strong class="hl-keyword">int</strong> clk_get_by_index(<strong class="hl-keyword">struct</strong> udevice *dev, <strong class="hl-keyword">int</strong> index, <strong class="hl-keyword">struct</strong> clk *clk);
+<strong class="hl-keyword">int</strong> clk_get_by_index_nodev(ofnode node, <strong class="hl-keyword">int</strong> index, <strong class="hl-keyword">struct</strong> clk *clk);
+<strong class="hl-keyword">int</strong> clk_get_bulk(<strong class="hl-keyword">struct</strong> udevice *dev, <strong class="hl-keyword">struct</strong> clk_bulk *bulk);
+<strong class="hl-keyword">int</strong> clk_get_by_name(<strong class="hl-keyword">struct</strong> udevice *dev, <strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *name, <strong class="hl-keyword">struct</strong> clk *clk);
+<strong class="hl-keyword">int</strong> clk_release_all(<strong class="hl-keyword">struct</strong> clk *clk, <strong class="hl-keyword">int</strong> count);
+<strong class="hl-keyword">int</strong> clk_enable(<strong class="hl-keyword">struct</strong> clk *clk);
+<strong class="hl-keyword">int</strong> clk_disable(<strong class="hl-keyword">struct</strong> clk *clk);
+ulong clk_set_rate(<strong class="hl-keyword">struct</strong> clk *clk, ulong rate);
+ulong clk_get_rate(<strong class="hl-keyword">struct</strong> clk *clk);</pre></div>
+        </section><section class="- topic/section section" id="clock__section_aqj_zbh_bzb" data-ofbid="clock__section_aqj_zbh_bzb"><h2 class="- topic/title title sectiontitle">初始化和使用</h2>
+            
+            <div class="- topic/p p" data-ofbid="d50638e121__20250121171518">通常硬件设备初始化时，需要配置对应的时钟。Clock 驱动的 probe
+                在时钟设备第一次被获取时触发。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="clock__codeblock_qvy_smr_c1c" data-ofbid="clock__codeblock_qvy_smr_c1c">clk_get_by_index(); <em class="hl-comment">// drivers/clk/clk-uclass.c</em>
+|-&gt; clk_get_by_index_tail();
+    |-&gt; uclass_get_device_by_ofnode(UCLASS_CLK, args-&gt;node, &amp;dev_clk);
+        |-&gt; uclass_find_device_by_ofnode(id, node, &amp;dev);
+        |-&gt; uclass_get_device_tail(dev, ret, devp); <em class="hl-comment">// drivers/core/uclass.c</em>
+            |-&gt; device_probe(dev); <em class="hl-comment">// drivers/core/device.c</em>
+                |-&gt; drv-&gt;probe(dev);
+                    aic_clk_probe(dev);
+                    <em class="hl-comment">// drivers/clk/artinchip/clk-cmu.c</em></pre></div>
+            <p class="- topic/p p" data-ofbid="d50638e126__20250121171518">设备使用的时钟通过时钟树进行管理。在时钟树中，每一个时钟都被分配一个具体的 ID， 并且在 DTS 中配置给需要的硬件设备。设备初始化时，通过 FDT
+                获取对应的时钟设备。</p>
+            <p class="- topic/p p" data-ofbid="d50638e129__20250121171518">DTS 中时钟配置示例：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="clock__codeblock_cqj_zbh_bzb" data-ofbid="clock__codeblock_cqj_zbh_bzb">dma: dma-controller@<span class="hl-number">10000000</span> {
+    compatible = <span class="hl-string">"artinchip,aic-dma"</span>;
+    ...
+    clocks = &lt;&amp;ccu CLK_DMA&gt;;
+    ...
+};
+</pre>
+            <p class="- topic/p p" data-ofbid="d50638e136__20250121171518">相关 ID 定义可参考：</p>
+            <ul class="- topic/ul ul" id="clock__ul_eqj_zbh_bzb" data-ofbid="clock__ul_eqj_zbh_bzb"><li class="- topic/li li" data-ofbid="d50638e140__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d50638e142__20250121171518"><span class="+ topic/ph sw-d/filepath ph filepath">include/dt-bindings/clock/artinchip,aic-cmu.h</span></p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d50638e147__20250121171518">获取时钟设备的流程：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="clock__codeblock_aln_5mr_c1c" data-ofbid="clock__codeblock_aln_5mr_c1c">clk_get_by_index(dev, index, clk); <em class="hl-comment">// drivers/clk/clk-uclass.c</em>
+|   <em class="hl-comment">// 此处 index 是 DTS 中配置给该设备的第几个时钟</em>
+|
+|-&gt; clk_get_by_index_tail();
+    |-&gt; uclass_get_device_by_ofnode(UCLASS_CLK, args-&gt;node, &amp;dev_clk);
+    |-&gt; clk_of_xlate_default(clk, args);
+        |-&gt; clk-&gt;id = args-&gt;args[<span class="hl-number">0</span>]; <em class="hl-comment">// 获取到具体的时钟 ID</em></pre></div>
+            <div class="- topic/p p" data-ofbid="d50638e152__20250121171518">需要设置和获取相关时钟信息时，通过 <code class="+ topic/ph pr-d/codeph ph codeph">clk-&gt;id</code>
+                访问时钟树。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="clock__codeblock_r25_5mr_c1c" data-ofbid="clock__codeblock_r25_5mr_c1c">clk_set_rate(clk, rate); <em class="hl-comment">// drivers/clk/clk-uclass.c</em>
+|-&gt; ops-&gt;set_rate(clk, rate);
+    artinchip_clk_set_rate(clk, rate); <em class="hl-comment">// drivers/clk/artinchip/clk-artinchip.c</em>
+    |-&gt; aic_get_clk_info(priv-&gt;tree, clk-&gt;id, &amp;index);
+        <em class="hl-comment">// 驱动内部，使用 clk-id 获取对应的时钟节点</em></pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#clock__section_tpj_zbh_bzb" data-tocid="clock__section_tpj_zbh_bzb">驱动框架</a></div></li><li class="section-item"><div class="section-title"><a href="#clock__section_ypj_zbh_bzb" data-tocid="clock__section_ypj_zbh_bzb">驱动接口</a></div></li><li class="section-item"><div class="section-title"><a href="#clock__section_aqj_zbh_bzb" data-tocid="clock__section_aqj_zbh_bzb">初始化和使用</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

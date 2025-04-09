@@ -1,0 +1,58 @@
+config AIC_USING_CAMERA
+    bool "Camera device support"
+    depends on AIC_USING_DVP && AIC_I2C_DRV
+    default n
+
+choice
+    prompt "Select camera device"
+    default AIC_USING_CAMERA_OV5640
+    depends on AIC_USING_CAMERA
+
+    config AIC_USING_CAMERA_OV7670
+        bool "Using camera OV7670"
+
+    config AIC_USING_CAMERA_OV5640
+        bool "Using camera OV5640"
+
+    config AIC_USING_CAMERA_OV2659
+        bool "Using camera OV2659"
+
+    config AIC_USING_CAMERA_OV2640
+        bool "Using camera OV2640"
+
+    config AIC_USING_CAMERA_GC0308
+        bool "Using camera GC0308"
+
+    config AIC_USING_CAMERA_GC032A
+        bool "Using camera GC032A"
+
+    config AIC_USING_CAMERA_GM7150
+        bool "Using camera GM7150"
+
+    config AIC_USING_CAMERA_SC030IOT
+        bool "Using camera SC030IOT"
+
+    config AIC_USING_CAMERA_SC031GS
+        bool "Using camera SC031GS"
+
+    config AIC_USING_CAMERA_SC035HGS
+        bool "Using camera SC035HGS"
+
+    config AIC_USING_CAMERA_TP2825
+        bool "Using camera TP2825"
+endchoice
+
+config AIC_CAMERA_I2C_CHAN
+    int "The No. of I2C channel"
+    depends on AIC_USING_CAMERA && AIC_I2C_DRV
+    default 0
+
+config AIC_CAMERA_RST_PIN
+    string "The reset pin of Camera"
+    depends on AIC_USING_CAMERA
+    default "PE.14"
+
+config AIC_CAMERA_PWDN_PIN
+    string "The power down pin of Camera"
+    depends on AIC_USING_CAMERA
+    default "PE.15"

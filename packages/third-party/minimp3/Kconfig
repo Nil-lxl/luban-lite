@@ -1,0 +1,5 @@
+
+menuconfig LPKG_USING_MINIMP3
+    bool "minimp3: A lightweight MP3 decoding library."
+    default y
+

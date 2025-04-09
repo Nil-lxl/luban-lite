@@ -1,0 +1,1352 @@
+#-----------------------------
+# UART devices local parameter
+#-----------------------------
+
+# UART0 parameter
+
+menu "UART0 Parameter"
+    depends on AIC_USING_UART0
+
+    config AIC_CLK_UART0_FREQ
+        int "UART0 clk frequence"
+        default 48000000
+
+    config AIC_DEV_UART0_BAUDRATE
+        int "UART0 baudrate"
+        default 115200
+
+    config AIC_DEV_UART0_DATABITS
+        int "UART0 data bits"
+        range 0 15
+        default 8
+
+    config AIC_DEV_UART0_STOPBITS
+        int "UART0 stop bits"
+        range 0 3
+        default 1
+
+    config AIC_DEV_UART0_PARITY
+        int "UART0 parity (0=none, 1=odd, 2=even)"
+        range 0 2
+        default 0
+
+    choice
+        prompt "UART0 protocol"
+        default AIC_DEV_UART0_RS232
+        help
+            Select the UART0 mode
+
+    config AIC_DEV_UART0_RS232
+        bool "RS232"
+
+    config AIC_DEV_UART0_RS485
+        bool "RS485"
+    endchoice
+
+    choice
+        prompt "UART0 mode"
+        default AIC_DEV_UART0_MODE_RS232 if AIC_DEV_UART0_RS232
+        default AIC_DEV_UART0_MODE_RS485 if AIC_DEV_UART0_RS485
+        help
+            Select the package version
+
+        config AIC_DEV_UART0_MODE_RS232
+            bool "RS232 normal"
+            depends on AIC_DEV_UART0_RS232
+
+        config AIC_DEV_UART0_MODE_RS232_AUTO_FLOW_CTRL
+            bool "RS232 auto flow control"
+            depends on AIC_DEV_UART0_RS232
+
+        config AIC_DEV_UART0_MODE_RS232_UNAUTO_FLOW_CTRL
+            bool "RS232 unauto flow control"
+            depends on AIC_DEV_UART0_RS232
+
+        config AIC_DEV_UART0_MODE_RS232_SW_FLOW_CTRL
+            bool "RS232 software flow control"
+            depends on AIC_DEV_UART0_RS232
+
+        config AIC_DEV_UART0_MODE_RS232_SW_HW_FLOW_CTRL
+            bool "RS232 software and hardware flow control"
+            depends on AIC_DEV_UART0_RS232
+
+        config AIC_DEV_UART0_MODE_RS485
+            bool "RS485 normal"
+            depends on AIC_DEV_UART0_RS485
+
+        config AIC_DEV_UART0_MODE_RS485_COMPACT_IO
+            bool "RS485 compact io"
+            depends on AIC_DEV_UART0_RS485
+
+        config AIC_DEV_UART0_MODE_RS485_SIMULATION
+            bool "RS485 simulation "
+            depends on AIC_DEV_UART0_RS485
+    endchoice
+
+    config AIC_DEV_UART0_MODE
+       int
+       default 0     if AIC_DEV_UART0_MODE_RS232
+       default 1     if AIC_DEV_UART0_MODE_RS485
+       default 2     if AIC_DEV_UART0_MODE_RS485_COMPACT_IO
+       default 3     if AIC_DEV_UART0_MODE_RS232_AUTO_FLOW_CTRL
+       default 4     if AIC_DEV_UART0_MODE_RS232_UNAUTO_FLOW_CTRL
+       default 5     if AIC_DEV_UART0_MODE_RS232_SW_FLOW_CTRL
+       default 6     if AIC_DEV_UART0_MODE_RS232_SW_HW_FLOW_CTRL
+       default 7     if AIC_DEV_UART0_MODE_RS485_SIMULATION
+
+    config AIC_SERIAL_USING_FLOWCTRL
+       bool
+       default y     if AIC_DEV_UART0_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART0_MODE_RS232_SW_FLOW_CTRL || AIC_DEV_UART0_MODE_RS232_SW_HW_FLOW_CTRL
+
+   menuconfig AIC_UART0_RTS_ENABLE
+        bool
+        prompt "Enable RTS"
+        default n
+        depends on AIC_DEV_UART0_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART0_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART0_RTS_ENABLE
+
+            config AIC_UART0_RTS_NAME
+                string "UART0 rts pin"
+                default "PA.3"
+        endif
+
+    menuconfig AIC_UART0_CTS_ENABLE
+        bool
+        prompt "Enable CTS"
+        default n
+        depends on AIC_DEV_UART0_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART0_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART0_CTS_ENABLE
+
+            config AIC_UART0_CTS_NAME
+                string "UART0 cts pin"
+                default "PA.2"
+        endif
+
+    config AIC_UART0_RTS_NAME
+        string "UART0 rts pin"
+        default "PA.3"
+        depends on AIC_DEV_UART0_MODE_RS485_SIMULATION
+
+    config AIC_UART0_DMA_ENABLE_FLAG
+        bool "Enable UART0 dma mode"
+        default n
+
+    config AIC_SERIAL_USING_DMA
+        bool
+        default y     if AIC_UART0_DMA_ENABLE_FLAG
+
+    config AIC_UART0_FLAG
+       int
+       default 2819     if AIC_UART0_DMA_ENABLE_FLAG
+       default 259
+
+    if DRIVER_BARE_DRV_EN
+        choice
+            prompt "UART0 Rx mode"
+            default AIC_DEV_UART0_RX_MODE_POLL
+            help
+                Select the package version
+
+            config AIC_DEV_UART0_RX_MODE_POLL
+                bool "poll"
+
+            config AIC_DEV_UART0_RX_MODE_INT
+                bool "interrupt"
+        endchoice
+
+        config AIC_DEV_UART0_RX_MODE
+           int
+           default 0     if AIC_DEV_UART0_RX_MODE_POLL
+           default 1     if AIC_DEV_UART0_RX_MODE_INT
+           default 2     if AIC_DEV_UART0_RX_MODE_DMA
+
+        if AIC_DEV_UART0_RX_MODE_INT
+            config AIC_DEV_UART0_RX_BUFSZ
+                int "UART0 rx buffer size"
+                default 64
+        endif
+    endif
+endmenu
+
+# UART1 parameter
+
+menu "UART1 Parameter"
+    depends on AIC_USING_UART1
+
+    config AIC_CLK_UART1_FREQ
+        int "UART1 clk frequence"
+        default 48000000
+
+    config AIC_DEV_UART1_BAUDRATE
+        int "UART1 baudrate"
+        default 115200
+
+    config AIC_DEV_UART1_DATABITS
+        int "UART1 data bits"
+        range 0 15
+        default 8
+
+    config AIC_DEV_UART1_STOPBITS
+        int "UART1 stop bits"
+        range 0 3
+        default 1
+
+    config AIC_DEV_UART1_PARITY
+        int "UART1 parity (0=none, 1=odd, 2=even)"
+        range 0 2
+        default 0
+
+    choice
+        prompt "UART1 protocol"
+        default AIC_DEV_UART1_RS232
+        help
+            Select the UART1 mode
+
+    config AIC_DEV_UART1_RS232
+        bool "RS232"
+
+    config AIC_DEV_UART1_RS485
+        bool "RS485"
+    endchoice
+
+    choice
+        prompt "UART1 mode"
+        default AIC_DEV_UART1_MODE_RS232 if AIC_DEV_UART1_RS232
+        default AIC_DEV_UART1_MODE_RS485 if AIC_DEV_UART1_RS485
+        help
+            Select the package version
+
+        config AIC_DEV_UART1_MODE_RS232
+            bool "RS232 normal"
+            depends on AIC_DEV_UART1_RS232
+
+        config AIC_DEV_UART1_MODE_RS232_AUTO_FLOW_CTRL
+            bool "RS232  auto flow control"
+            depends on AIC_DEV_UART1_RS232
+
+        config AIC_DEV_UART1_MODE_RS232_UNAUTO_FLOW_CTRL
+            bool "RS232 unauto flow control"
+            depends on AIC_DEV_UART1_RS232
+
+        config AIC_DEV_UART1_MODE_RS232_SW_FLOW_CTRL
+            bool "RS232 software flow control"
+            depends on AIC_DEV_UART1_RS232
+
+        config AIC_DEV_UART1_MODE_RS232_SW_HW_FLOW_CTRL
+            bool "RS232 software and hardware flow control"
+            depends on AIC_DEV_UART1_RS232
+
+        config AIC_DEV_UART1_MODE_RS485
+            bool "RS485 normal"
+            depends on AIC_DEV_UART1_RS485
+
+        config AIC_DEV_UART1_MODE_RS485_COMPACT_IO
+            bool "RS485 compact io"
+            depends on AIC_DEV_UART1_RS485
+
+        config AIC_DEV_UART1_MODE_RS485_SIMULATION
+            bool "RS485 simulation "
+            depends on AIC_DEV_UART1_RS485
+    endchoice
+
+    config AIC_DEV_UART1_MODE
+       int
+       default 0     if AIC_DEV_UART1_MODE_RS232
+       default 1     if AIC_DEV_UART1_MODE_RS485
+       default 2     if AIC_DEV_UART1_MODE_RS485_COMPACT_IO
+       default 3     if AIC_DEV_UART1_MODE_RS232_AUTO_FLOW_CTRL
+       default 4     if AIC_DEV_UART1_MODE_RS232_UNAUTO_FLOW_CTRL
+       default 5     if AIC_DEV_UART1_MODE_RS232_SW_FLOW_CTRL
+       default 6     if AIC_DEV_UART1_MODE_RS232_SW_HW_FLOW_CTRL
+       default 7     if AIC_DEV_UART1_MODE_RS485_SIMULATION
+
+    config AIC_SERIAL_USING_FLOWCTRL
+       bool
+       default y     if AIC_DEV_UART1_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART1_MODE_RS232_SW_FLOW_CTRL || AIC_DEV_UART1_MODE_RS232_SW_HW_FLOW_CTRL
+
+    menuconfig AIC_UART1_RTS_ENABLE
+        bool
+        prompt "Enable RTS"
+        default n
+        depends on AIC_DEV_UART1_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART1_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART1_RTS_ENABLE
+
+            config AIC_UART1_RTS_NAME
+                string "UART1 rts pin"
+                default "PA.3"
+        endif
+
+    menuconfig AIC_UART1_CTS_ENABLE
+        bool
+        prompt "Enable CTS"
+        default n
+        depends on AIC_DEV_UART1_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART1_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART1_CTS_ENABLE
+
+            config AIC_UART1_CTS_NAME
+                string "UART1 cts pin"
+                default "PA.2"
+        endif
+
+    config AIC_UART1_RTS_NAME
+        string "UART1 rts pin"
+        default "PA.3"
+        depends on AIC_DEV_UART1_MODE_RS485_SIMULATION
+
+    config AIC_UART1_DMA_ENABLE_FLAG
+        bool "Enable UART1 dma mode"
+        default n
+
+    config AIC_SERIAL_USING_DMA
+        bool
+        default y     if AIC_UART1_DMA_ENABLE_FLAG
+
+    config AIC_UART1_FLAG
+       int
+       default 2819     if AIC_UART1_DMA_ENABLE_FLAG
+       default 259
+
+    if DRIVER_BARE_DRV_EN
+        choice
+            prompt "UART1 Rx mode"
+            default AIC_DEV_UART1_RX_MODE_POLL
+            help
+                Select the package version
+
+            config AIC_DEV_UART1_RX_MODE_POLL
+                bool "poll"
+
+            config AIC_DEV_UART1_RX_MODE_INT
+                bool "interrupt"
+        endchoice
+
+        config AIC_DEV_UART1_RX_MODE
+           int
+           default 0     if AIC_DEV_UART1_RX_MODE_POLL
+           default 1     if AIC_DEV_UART1_RX_MODE_INT
+           default 2     if AIC_DEV_UART1_RX_MODE_DMA
+
+        if AIC_DEV_UART1_RX_MODE_INT
+            config AIC_DEV_UART1_RX_BUFSZ
+                int "UART1 rx buffer size"
+                default 64
+        endif
+    endif
+endmenu
+
+# UART2 parameter
+
+menu "UART2 Parameter"
+    depends on AIC_USING_UART2
+
+    config AIC_CLK_UART2_FREQ
+        int "UART2 clk frequence"
+        default 48000000
+
+    config AIC_DEV_UART2_BAUDRATE
+        int "UART2 baudrate"
+        default 115200
+
+    config AIC_DEV_UART2_DATABITS
+        int "UART2 data bits"
+        range 0 15
+        default 8
+
+    config AIC_DEV_UART2_STOPBITS
+        int "UART2 stop bits"
+        range 0 3
+        default 1
+
+    config AIC_DEV_UART2_PARITY
+        int "UART2 parity (0=none, 1=odd, 2=even)"
+        range 0 2
+        default 0
+
+    choice
+        prompt "UART2 protocol"
+        default AIC_DEV_UART2_RS232
+        help
+            Select the UART2 mode
+
+    config AIC_DEV_UART2_RS232
+        bool "RS232"
+
+    config AIC_DEV_UART2_RS485
+        bool "RS485"
+    endchoice
+
+    choice
+        prompt "UART2 mode"
+        default AIC_DEV_UART2_MODE_RS232 if AIC_DEV_UART2_RS232
+        default AIC_DEV_UART2_MODE_RS485 if AIC_DEV_UART2_RS485
+        help
+            Select the package version
+
+        config AIC_DEV_UART2_MODE_RS232
+            bool "RS232 normal"
+            depends on AIC_DEV_UART2_RS232
+
+        config AIC_DEV_UART2_MODE_RS232_AUTO_FLOW_CTRL
+            bool "RS232 auto flow control"
+            depends on AIC_DEV_UART2_RS232
+
+        config AIC_DEV_UART2_MODE_RS232_UNAUTO_FLOW_CTRL
+            bool "RS232 unauto flow control"
+            depends on AIC_DEV_UART2_RS232
+
+        config AIC_DEV_UART2_MODE_RS232_SW_FLOW_CTRL
+            bool "RS232 software flow control"
+            depends on AIC_DEV_UART2_RS232
+
+        config AIC_DEV_UART2_MODE_RS232_SW_HW_FLOW_CTRL
+            bool "RS232 software and hardware flow control"
+            depends on AIC_DEV_UART2_RS232
+
+        config AIC_DEV_UART2_MODE_RS485
+            bool "RS485 normal"
+            depends on AIC_DEV_UART2_RS485
+
+        config AIC_DEV_UART2_MODE_RS485_COMPACT_IO
+            bool "RS485 compact io"
+            depends on AIC_DEV_UART2_RS485
+
+        config AIC_DEV_UART2_MODE_RS485_SIMULATION
+            bool "RS485 simulation "
+            depends on AIC_DEV_UART2_RS485
+    endchoice
+
+    config AIC_DEV_UART2_MODE
+       int
+       default 0     if AIC_DEV_UART2_MODE_RS232
+       default 1     if AIC_DEV_UART2_MODE_RS485
+       default 2     if AIC_DEV_UART2_MODE_RS485_COMPACT_IO
+       default 3     if AIC_DEV_UART2_MODE_RS232_AUTO_FLOW_CTRL
+       default 4     if AIC_DEV_UART2_MODE_RS232_UNAUTO_FLOW_CTRL
+       default 5     if AIC_DEV_UART2_MODE_RS232_SW_FLOW_CTRL
+       default 6     if AIC_DEV_UART2_MODE_RS232_SW_HW_FLOW_CTRL
+       default 7     if AIC_DEV_UART2_MODE_RS485_SIMULATION
+
+    config AIC_SERIAL_USING_FLOWCTRL
+       bool
+       default y     if AIC_DEV_UART2_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART2_MODE_RS232_SW_FLOW_CTRL || AIC_DEV_UART2_MODE_RS232_SW_HW_FLOW_CTRL
+
+    menuconfig AIC_UART2_RTS_ENABLE
+        bool
+        prompt "Enable RTS"
+        default n
+        depends on AIC_DEV_UART2_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART2_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART2_RTS_ENABLE
+
+            config AIC_UART2_RTS_NAME
+                string "UART2 rts pin"
+                default "PA.3"
+        endif
+
+    menuconfig AIC_UART2_CTS_ENABLE
+        bool
+        prompt "Enable CTS"
+        default n
+        depends on AIC_DEV_UART2_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART2_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART2_CTS_ENABLE
+
+            config AIC_UART2_CTS_NAME
+                string "UART2 cts pin"
+                default "PA.2"
+        endif
+
+
+    config AIC_UART2_RTS_NAME
+        string "UART2 rts pin"
+        default "PA.3"
+        depends on AIC_DEV_UART2_MODE_RS485_SIMULATION
+
+    config AIC_UART2_DMA_ENABLE_FLAG
+        bool "Enable UART2 dma mode"
+        default n
+
+    config AIC_SERIAL_USING_DMA
+        bool
+        default y     if AIC_UART2_DMA_ENABLE_FLAG
+
+    config AIC_UART2_FLAG
+       int
+       default 2819     if AIC_UART2_DMA_ENABLE_FLAG
+       default 259
+
+    if DRIVER_BARE_DRV_EN
+        choice
+            prompt "UART2 Rx mode"
+            default AIC_DEV_UART2_RX_MODE_POLL
+            help
+                Select the package version
+
+            config AIC_DEV_UART2_RX_MODE_POLL
+                bool "poll"
+
+            config AIC_DEV_UART2_RX_MODE_INT
+                bool "interrupt"
+        endchoice
+
+        config AIC_DEV_UART2_RX_MODE
+           int
+           default 0     if AIC_DEV_UART2_RX_MODE_POLL
+           default 1     if AIC_DEV_UART2_RX_MODE_INT
+           default 2     if AIC_DEV_UART2_RX_MODE_DMA
+
+        if AIC_DEV_UART2_RX_MODE_INT
+            config AIC_DEV_UART2_RX_BUFSZ
+                int "UART2 rx buffer size"
+                default 64
+        endif
+    endif
+endmenu
+
+# UART3 parameter
+
+menu "UART3 Parameter"
+    depends on AIC_USING_UART3
+
+    config AIC_CLK_UART3_FREQ
+        int "UART3 clk frequence"
+        default 48000000
+
+    config AIC_DEV_UART3_BAUDRATE
+        int "UART3 baudrate"
+        default 115200
+
+    config AIC_DEV_UART3_DATABITS
+        int "UART3 data bits"
+        range 0 15
+        default 8
+
+    config AIC_DEV_UART3_STOPBITS
+        int "UART3 stop bits"
+        range 0 3
+        default 1
+
+    config AIC_DEV_UART3_PARITY
+        int "UART3 parity (0=none, 1=odd, 2=even)"
+        range 0 2
+        default 0
+
+    choice
+        prompt "UART3 protocol"
+        default AIC_DEV_UART3_RS232
+        help
+            Select the UART3 mode
+
+    config AIC_DEV_UART3_RS232
+        bool "RS232"
+
+    config AIC_DEV_UART3_RS485
+        bool "RS485"
+    endchoice
+
+    choice
+        prompt "UART3 mode"
+        default AIC_DEV_UART3_MODE_RS232 if AIC_DEV_UART3_RS232
+        default AIC_DEV_UART3_MODE_RS485 if AIC_DEV_UART3_RS485
+        help
+            Select the package version
+
+        config AIC_DEV_UART3_MODE_RS232
+            bool "RS232 normal"
+            depends on AIC_DEV_UART3_RS232
+
+        config AIC_DEV_UART3_MODE_RS232_AUTO_FLOW_CTRL
+            bool "RS232 auto flow control"
+            depends on AIC_DEV_UART3_RS232
+
+        config AIC_DEV_UART3_MODE_RS232_UNAUTO_FLOW_CTRL
+            bool "RS232 unauto flow control"
+            depends on AIC_DEV_UART3_RS232
+
+        config AIC_DEV_UART3_MODE_RS232_SW_FLOW_CTRL
+            bool "RS232 software flow control"
+            depends on AIC_DEV_UART3_RS232
+
+        config AIC_DEV_UART3_MODE_RS232_SW_HW_FLOW_CTRL
+            bool "RS232 software and hardware flow control"
+            depends on AIC_DEV_UART3_RS232
+
+        config AIC_DEV_UART3_MODE_RS485
+            bool "RS485 normal"
+            depends on AIC_DEV_UART3_RS485
+
+        config AIC_DEV_UART3_MODE_RS485_COMPACT_IO
+            bool "RS485 compact io"
+            depends on AIC_DEV_UART3_RS485
+
+        config AIC_DEV_UART3_MODE_RS485_SIMULATION
+            bool "RS485 simulation "
+            depends on AIC_DEV_UART3_RS485
+    endchoice
+
+    config AIC_DEV_UART3_MODE
+       int
+       default 0     if AIC_DEV_UART3_MODE_RS232
+       default 1     if AIC_DEV_UART3_MODE_RS485
+       default 2     if AIC_DEV_UART3_MODE_RS485_COMPACT_IO
+       default 3     if AIC_DEV_UART3_MODE_RS232_AUTO_FLOW_CTRL
+       default 4     if AIC_DEV_UART3_MODE_RS232_UNAUTO_FLOW_CTRL
+       default 5     if AIC_DEV_UART3_MODE_RS232_SW_FLOW_CTRL
+       default 6     if AIC_DEV_UART3_MODE_RS232_SW_HW_FLOW_CTRL
+       default 7     if AIC_DEV_UART3_MODE_RS485_SIMULATION
+
+    config AIC_SERIAL_USING_FLOWCTRL
+       bool
+       default y     if AIC_DEV_UART3_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART3_MODE_RS232_SW_FLOW_CTRL || AIC_DEV_UART3_MODE_RS232_SW_HW_FLOW_CTRL
+
+   menuconfig AIC_UART3_RTS_ENABLE
+        bool
+        prompt "Enable RTS"
+        default n
+        depends on AIC_DEV_UART3_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART3_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART3_RTS_ENABLE
+
+            config AIC_UART3_RTS_NAME
+                string "UART3 rts pin"
+                default "PA.3"
+        endif
+
+    menuconfig AIC_UART3_CTS_ENABLE
+        bool
+        prompt "Enable CTS"
+        default n
+        depends on AIC_DEV_UART3_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART3_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART3_CTS_ENABLE
+
+            config AIC_UART3_CTS_NAME
+                string "UART3 cts pin"
+                default "PA.2"
+        endif
+
+    config AIC_UART3_RTS_NAME
+        string "UART3 rts pin"
+        default "PA.3"
+        depends on AIC_DEV_UART3_MODE_RS485_SIMULATION
+
+    config AIC_UART3_DMA_ENABLE_FLAG
+        bool "Enable UART3 dma mode"
+        default n
+
+    config AIC_SERIAL_USING_DMA
+        bool
+        default y     if AIC_UART3_DMA_ENABLE_FLAG
+
+    config AIC_UART3_FLAG
+       int
+       default 2819     if AIC_UART3_DMA_ENABLE_FLAG
+       default 259
+
+    if DRIVER_BARE_DRV_EN
+        choice
+            prompt "UART3 Rx mode"
+            default AIC_DEV_UART3_RX_MODE_POLL
+            help
+                Select the package version
+
+            config AIC_DEV_UART3_RX_MODE_POLL
+                bool "poll"
+
+            config AIC_DEV_UART3_RX_MODE_INT
+                bool "interrupt"
+        endchoice
+
+        config AIC_DEV_UART3_RX_MODE
+           int
+           default 0     if AIC_DEV_UART3_RX_MODE_POLL
+           default 1     if AIC_DEV_UART3_RX_MODE_INT
+           default 2     if AIC_DEV_UART3_RX_MODE_DMA
+
+        if AIC_DEV_UART3_RX_MODE_INT
+            config AIC_DEV_UART3_RX_BUFSZ
+                int "UART3 rx buffer size"
+                default 64
+        endif
+    endif
+endmenu
+
+# UART4 parameter
+
+menu "UART4 Parameter"
+    depends on AIC_USING_UART4
+
+    config AIC_CLK_UART4_FREQ
+        int "UART4 clk frequence"
+        default 48000000
+
+    config AIC_DEV_UART4_BAUDRATE
+        int "UART4 baudrate"
+        default 115200
+
+    config AIC_DEV_UART4_DATABITS
+        int "UART4 data bits"
+        range 0 15
+        default 8
+
+    config AIC_DEV_UART4_STOPBITS
+        int "UART4 stop bits"
+        range 0 3
+        default 1
+
+    config AIC_DEV_UART4_PARITY
+        int "UART4 parity (0=none, 1=odd, 2=even)"
+        range 0 2
+        default 0
+
+    choice
+        prompt "UART4 protocol"
+        default AIC_DEV_UART4_RS232
+        help
+            Select the UART4 mode
+
+    config AIC_DEV_UART4_RS232
+        bool "RS232"
+
+    config AIC_DEV_UART4_RS485
+        bool "RS485"
+    endchoice
+
+    choice
+        prompt "UART4 mode"
+        default AIC_DEV_UART4_MODE_RS232 if AIC_DEV_UART4_RS232
+        default AIC_DEV_UART4_MODE_RS485 if AIC_DEV_UART4_RS485
+        help
+            Select the package version
+
+        config AIC_DEV_UART4_MODE_RS232
+            bool "RS232 normal"
+            depends on AIC_DEV_UART4_RS232
+
+        config AIC_DEV_UART4_MODE_RS232_AUTO_FLOW_CTRL
+            bool "RS232 auto flow control"
+            depends on AIC_DEV_UART4_RS232
+
+        config AIC_DEV_UART4_MODE_RS232_UNAUTO_FLOW_CTRL
+            bool "RS232 unauto flow control"
+            depends on AIC_DEV_UART4_RS232
+
+        config AIC_DEV_UART4_MODE_RS232_SW_FLOW_CTRL
+            bool "RS232 software flow control"
+            depends on AIC_DEV_UART4_RS232
+
+        config AIC_DEV_UART4_MODE_RS232_SW_HW_FLOW_CTRL
+            bool "RS232 software and hardware flow control"
+            depends on AIC_DEV_UART4_RS232
+
+        config AIC_DEV_UART4_MODE_RS485
+            bool "RS485 normal"
+            depends on AIC_DEV_UART4_RS485
+
+        config AIC_DEV_UART4_MODE_RS485_COMPACT_IO
+            bool "RS485 compact io"
+            depends on AIC_DEV_UART4_RS485
+
+        config AIC_DEV_UART4_MODE_RS485_SIMULATION
+            bool "RS485 simulation "
+            depends on AIC_DEV_UART4_RS485
+    endchoice
+
+    config AIC_DEV_UART4_MODE
+       int
+       default 0     if AIC_DEV_UART4_MODE_RS232
+       default 1     if AIC_DEV_UART4_MODE_RS485
+       default 2     if AIC_DEV_UART4_MODE_RS485_COMPACT_IO
+       default 3     if AIC_DEV_UART4_MODE_RS232_AUTO_FLOW_CTRL
+       default 4     if AIC_DEV_UART4_MODE_RS232_UNAUTO_FLOW_CTRL
+       default 5     if AIC_DEV_UART4_MODE_RS232_SW_FLOW_CTRL
+       default 6     if AIC_DEV_UART4_MODE_RS232_SW_HW_FLOW_CTRL
+       default 7     if AIC_DEV_UART4_MODE_RS485_SIMULATION
+
+    config AIC_SERIAL_USING_FLOWCTRL
+       bool
+       default y     if AIC_DEV_UART4_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART4_MODE_RS232_SW_FLOW_CTRL || AIC_DEV_UART4_MODE_RS232_SW_HW_FLOW_CTRL
+
+   menuconfig AIC_UART4_RTS_ENABLE
+        bool
+        prompt "Enable RTS"
+        default n
+        depends on AIC_DEV_UART4_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART4_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART4_RTS_ENABLE
+
+            config AIC_UART4_RTS_NAME
+                string "UART4 rts pin"
+                default "PA.3"
+        endif
+
+    menuconfig AIC_UART4_CTS_ENABLE
+        bool
+        prompt "Enable CTS"
+        default n
+        depends on AIC_DEV_UART4_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART4_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART4_CTS_ENABLE
+
+            config AIC_UART4_CTS_NAME
+                string "UART4 cts pin"
+                default "PA.2"
+        endif
+
+    config AIC_UART4_RTS_NAME
+        string "UART4 rts pin"
+        default "PC.6"
+        depends on AIC_DEV_UART4_MODE_RS485_SIMULATION
+
+    config AIC_UART4_DMA_ENABLE_FLAG
+        bool "Enable UART4 dma mode"
+        default n
+
+    config AIC_SERIAL_USING_DMA
+        bool
+        default y     if AIC_UART4_DMA_ENABLE_FLAG
+        default n
+
+    config AIC_UART4_FLAG
+       int
+       default 2819     if AIC_UART4_DMA_ENABLE_FLAG
+       default 259
+
+    if DRIVER_BARE_DRV_EN
+        choice
+            prompt "UART4 Rx mode"
+            default AIC_DEV_UART4_RX_MODE_POLL
+            help
+                Select the package version
+
+            config AIC_DEV_UART4_RX_MODE_POLL
+                bool "poll"
+
+            config AIC_DEV_UART4_RX_MODE_INT
+                bool "interrupt"
+        endchoice
+
+        config AIC_DEV_UART4_RX_MODE
+           int
+           default 0     if AIC_DEV_UART4_RX_MODE_POLL
+           default 1     if AIC_DEV_UART4_RX_MODE_INT
+           default 2     if AIC_DEV_UART4_RX_MODE_DMA
+
+        if AIC_DEV_UART4_RX_MODE_INT
+            config AIC_DEV_UART4_RX_BUFSZ
+                int "UART4 rx buffer size"
+                default 64
+        endif
+    endif
+endmenu
+
+# UART5 parameter
+
+menu "UART5 Parameter"
+    depends on AIC_USING_UART5
+
+    config AIC_CLK_UART5_FREQ
+        int "UART5 clk frequence"
+        default 48000000
+
+    config AIC_DEV_UART5_BAUDRATE
+        int "UART5 baudrate"
+        default 115200
+
+    config AIC_DEV_UART5_DATABITS
+        int "UART5 data bits"
+        range 0 15
+        default 8
+
+    config AIC_DEV_UART5_STOPBITS
+        int "UART5 stop bits"
+        range 0 3
+        default 1
+
+    config AIC_DEV_UART5_PARITY
+        int "UART5 parity (0=none, 1=odd, 2=even)"
+        range 0 2
+        default 0
+
+    choice
+        prompt "UART5 protocol"
+        default AIC_DEV_UART5_RS232
+        help
+            Select the UART5 mode
+
+    config AIC_DEV_UART5_RS232
+        bool "RS232"
+
+    config AIC_DEV_UART5_RS485
+        bool "RS485"
+    endchoice
+
+    choice
+        prompt "UART5 mode"
+        default AIC_DEV_UART5_MODE_RS232 if AIC_DEV_UART5_RS232
+        default AIC_DEV_UART5_MODE_RS485 if AIC_DEV_UART5_RS485
+        help
+            Select the package version
+
+        config AIC_DEV_UART5_MODE_RS232
+            bool "RS232 normal"
+            depends on AIC_DEV_UART5_RS232
+
+        config AIC_DEV_UART5_MODE_RS232_AUTO_FLOW_CTRL
+            bool "RS232 auto flow control"
+            depends on AIC_DEV_UART5_RS232
+
+        config AIC_DEV_UART5_MODE_RS232_UNAUTO_FLOW_CTRL
+            bool "RS232 unauto flow control"
+            depends on AIC_DEV_UART5_RS232
+
+        config AIC_DEV_UART5_MODE_RS232_SW_FLOW_CTRL
+            bool "RS232 software flow control"
+            depends on AIC_DEV_UART5_RS232
+
+        config AIC_DEV_UART5_MODE_RS232_SW_HW_FLOW_CTRL
+            bool "RS232 software and hardware flow control"
+            depends on AIC_DEV_UART5_RS232
+
+        config AIC_DEV_UART5_MODE_RS485
+            bool "RS485 normal"
+            depends on AIC_DEV_UART5_RS485
+
+        config AIC_DEV_UART5_MODE_RS485_COMPACT_IO
+            bool "RS485 compact io"
+            depends on AIC_DEV_UART5_RS485
+
+        config AIC_DEV_UART5_MODE_RS485_SIMULATION
+            bool "RS485 simulation "
+            depends on AIC_DEV_UART5_RS485
+    endchoice
+
+    config AIC_DEV_UART5_MODE
+       int
+       default 0     if AIC_DEV_UART5_MODE_RS232
+       default 1     if AIC_DEV_UART5_MODE_RS485
+       default 2     if AIC_DEV_UART5_MODE_RS485_COMPACT_IO
+       default 3     if AIC_DEV_UART5_MODE_RS232_AUTO_FLOW_CTRL
+       default 4     if AIC_DEV_UART5_MODE_RS232_UNAUTO_FLOW_CTRL
+       default 5     if AIC_DEV_UART5_MODE_RS232_SW_FLOW_CTRL
+       default 6     if AIC_DEV_UART5_MODE_RS232_SW_HW_FLOW_CTRL
+       default 7     if AIC_DEV_UART5_MODE_RS485_SIMULATION
+
+    config AIC_SERIAL_USING_FLOWCTRL
+       bool
+       default y     if AIC_DEV_UART5_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART5_MODE_RS232_SW_FLOW_CTRL || AIC_DEV_UART5_MODE_RS232_SW_HW_FLOW_CTRL
+
+   menuconfig AIC_UART5_RTS_ENABLE
+        bool
+        prompt "Enable RTS"
+        default n
+        depends on AIC_DEV_UART5_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART5_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART5_RTS_ENABLE
+
+            config AIC_UART5_RTS_NAME
+                string "UART5 rts pin"
+                default "PA.3"
+        endif
+
+    menuconfig AIC_UART5_CTS_ENABLE
+        bool
+        prompt "Enable CTS"
+        default n
+        depends on AIC_DEV_UART5_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART5_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART5_CTS_ENABLE
+
+            config AIC_UART5_CTS_NAME
+                string "UART5 cts pin"
+                default "PA.2"
+        endif
+
+    config AIC_UART5_RTS_NAME
+        string "UART5 rts pin"
+        default "PA.3"
+        depends on AIC_DEV_UART5_MODE_RS485_SIMULATION
+
+    config AIC_UART5_DMA_ENABLE_FLAG
+        bool "Enable UART5 dma mode"
+        default n
+
+    config AIC_SERIAL_USING_DMA
+        bool
+        default y     if AIC_UART5_DMA_ENABLE_FLAG
+
+    config AIC_UART5_FLAG
+       int
+       default 2819     if AIC_UART5_DMA_ENABLE_FLAG
+       default 259
+
+    if DRIVER_BARE_DRV_EN
+        choice
+            prompt "UART5 Rx mode"
+            default AIC_DEV_UART5_RX_MODE_POLL
+            help
+                Select the package version
+
+            config AIC_DEV_UART5_RX_MODE_POLL
+                bool "poll"
+
+            config AIC_DEV_UART5_RX_MODE_INT
+                bool "interrupt"
+        endchoice
+
+        config AIC_DEV_UART5_RX_MODE
+           int
+           default 0     if AIC_DEV_UART5_RX_MODE_POLL
+           default 1     if AIC_DEV_UART5_RX_MODE_INT
+           default 2     if AIC_DEV_UART5_RX_MODE_DMA
+
+        if AIC_DEV_UART5_RX_MODE_INT
+            config AIC_DEV_UART5_RX_BUFSZ
+                int "UART5 rx buffer size"
+                default 64
+        endif
+    endif
+endmenu
+
+# UART6 parameter
+
+menu "UART6 Parameter"
+    depends on AIC_USING_UART6
+
+    config AIC_CLK_UART6_FREQ
+        int "UART6 clk frequence"
+        default 48000000
+
+    config AIC_DEV_UART6_BAUDRATE
+        int "UART6 baudrate"
+        default 115200
+
+    config AIC_DEV_UART6_DATABITS
+        int "UART6 data bits"
+        range 0 15
+        default 8
+
+    config AIC_DEV_UART6_STOPBITS
+        int "UART6 stop bits"
+        range 0 3
+        default 1
+
+    config AIC_DEV_UART6_PARITY
+        int "UART6 parity (0=none, 1=odd, 2=even)"
+        range 0 2
+        default 0
+
+    choice
+        prompt "UART6 protocol"
+        default AIC_DEV_UART6_RS232
+        help
+            Select the UART6 mode
+
+    config AIC_DEV_UART6_RS232
+        bool "RS232"
+
+    config AIC_DEV_UART6_RS485
+        bool "RS485"
+    endchoice
+
+    choice
+        prompt "UART6 mode"
+        default AIC_DEV_UART6_MODE_RS232 if AIC_DEV_UART6_RS232
+        default AIC_DEV_UART6_MODE_RS485 if AIC_DEV_UART6_RS485
+        help
+            Select the package version
+
+        config AIC_DEV_UART6_MODE_RS232
+            bool "RS232 normal"
+            depends on AIC_DEV_UART6_RS232
+
+        config AIC_DEV_UART6_MODE_RS232_AUTO_FLOW_CTRL
+            bool "RS232 auto flow control"
+            depends on AIC_DEV_UART6_RS232
+
+        config AIC_DEV_UART6_MODE_RS232_UNAUTO_FLOW_CTRL
+            bool "RS232 unauto flow control"
+            depends on AIC_DEV_UART6_RS232
+
+        config AIC_DEV_UART6_MODE_RS232_SW_FLOW_CTRL
+            bool "RS232 software flow control"
+            depends on AIC_DEV_UART6_RS232
+
+        config AIC_DEV_UART6_MODE_RS232_SW_HW_FLOW_CTRL
+            bool "RS232 software and hardware flow control"
+            depends on AIC_DEV_UART6_RS232
+
+        config AIC_DEV_UART6_MODE_RS485
+            bool "RS485 normal"
+            depends on AIC_DEV_UART6_RS485
+
+        config AIC_DEV_UART6_MODE_RS485_COMPACT_IO
+            bool "RS485 compact io"
+            depends on AIC_DEV_UART6_RS485
+
+        config AIC_DEV_UART6_MODE_RS485_SIMULATION
+            bool "RS485 simulation "
+            depends on AIC_DEV_UART6_RS485
+    endchoice
+
+    config AIC_DEV_UART6_MODE
+       int
+       default 0     if AIC_DEV_UART6_MODE_RS232
+       default 1     if AIC_DEV_UART6_MODE_RS485
+       default 2     if AIC_DEV_UART6_MODE_RS485_COMPACT_IO
+       default 3     if AIC_DEV_UART6_MODE_RS232_AUTO_FLOW_CTRL
+       default 4     if AIC_DEV_UART6_MODE_RS232_UNAUTO_FLOW_CTRL
+       default 5     if AIC_DEV_UART6_MODE_RS232_SW_FLOW_CTRL
+       default 6     if AIC_DEV_UART6_MODE_RS232_SW_HW_FLOW_CTRL
+       default 7     if AIC_DEV_UART6_MODE_RS485_SIMULATION
+
+    config AIC_SERIAL_USING_FLOWCTRL
+       bool
+       default y     if AIC_DEV_UART6_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART6_MODE_RS232_SW_FLOW_CTRL || AIC_DEV_UART6_MODE_RS232_SW_HW_FLOW_CTRL
+
+    menuconfig AIC_UART6_RTS_ENABLE
+        bool
+        prompt "Enable RTS"
+        default n
+        depends on AIC_DEV_UART6_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART6_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART6_RTS_ENABLE
+
+            config AIC_UART6_RTS_NAME
+                string "UART6 rts pin"
+                default "PA.3"
+        endif
+
+    menuconfig AIC_UART6_CTS_ENABLE
+        bool
+        prompt "Enable CTS"
+        default n
+        depends on AIC_DEV_UART6_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART6_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART6_CTS_ENABLE
+
+            config AIC_UART6_CTS_NAME
+                string "UART6 cts pin"
+                default "PA.2"
+        endif
+
+    config AIC_UART6_RTS_NAME
+        string "UART6 rts pin"
+        default "PA.3"
+        depends on AIC_DEV_UART6_MODE_RS485_SIMULATION
+
+    config AIC_UART6_DMA_ENABLE_FLAG
+        bool "Enable UART6 dma mode"
+        default n
+
+    config AIC_SERIAL_USING_DMA
+        bool
+        default y     if AIC_UART6_DMA_ENABLE_FLAG
+
+    config AIC_UART6_FLAG
+       int
+       default 2819     if AIC_UART6_DMA_ENABLE_FLAG
+       default 259
+
+    if DRIVER_BARE_DRV_EN
+        choice
+            prompt "UART6 Rx mode"
+            default AIC_DEV_UART6_RX_MODE_POLL
+            help
+                Select the package version
+
+            config AIC_DEV_UART6_RX_MODE_POLL
+                bool "poll"
+
+            config AIC_DEV_UART6_RX_MODE_INT
+                bool "interrupt"
+        endchoice
+
+        config AIC_DEV_UART6_RX_MODE
+           int
+           default 0     if AIC_DEV_UART6_RX_MODE_POLL
+           default 1     if AIC_DEV_UART6_RX_MODE_INT
+           default 2     if AIC_DEV_UART6_RX_MODE_DMA
+
+        if AIC_DEV_UART6_RX_MODE_INT
+            config AIC_DEV_UART6_RX_BUFSZ
+                int "UART6 rx buffer size"
+                default 64
+        endif
+    endif
+endmenu
+
+# UART7 parameter
+
+menu "UART7 Parameter"
+    depends on AIC_USING_UART7
+
+    config AIC_CLK_UART7_FREQ
+        int "UART7 clk frequence"
+        default 48000000
+
+    config AIC_DEV_UART7_BAUDRATE
+        int "UART7 baudrate"
+        default 115200
+
+    config AIC_DEV_UART7_DATABITS
+        int "UART7 data bits"
+        range 0 15
+        default 8
+
+    config AIC_DEV_UART7_STOPBITS
+        int "UART7 stop bits"
+        range 0 3
+        default 1
+
+    config AIC_DEV_UART7_PARITY
+        int "UART7 parity (0=none, 1=odd, 2=even)"
+        range 0 2
+        default 0
+
+    choice
+        prompt "UART7 protocol"
+        default AIC_DEV_UART7_RS232
+        help
+            Select the UART7 mode
+
+    config AIC_DEV_UART7_RS232
+        bool "RS232"
+
+    config AIC_DEV_UART7_RS485
+        bool "RS485"
+    endchoice
+
+    choice
+        prompt "UART7 mode"
+        default AIC_DEV_UART7_MODE_RS232 if AIC_DEV_UART7_RS232
+        default AIC_DEV_UART7_MODE_RS485 if AIC_DEV_UART7_RS485
+        help
+            Select the package version
+
+        config AIC_DEV_UART7_MODE_RS232
+            bool "RS232 normal"
+            depends on AIC_DEV_UART7_RS232
+
+        config AIC_DEV_UART7_MODE_RS232_AUTO_FLOW_CTRL
+            bool "RS232 auto flow control"
+            depends on AIC_DEV_UART7_RS232
+
+        config AIC_DEV_UART7_MODE_RS232_UNAUTO_FLOW_CTRL
+            bool "RS232 unauto flow control"
+            depends on AIC_DEV_UART7_RS232
+
+        config AIC_DEV_UART7_MODE_RS232_SW_FLOW_CTRL
+            bool "RS232 software flow control"
+            depends on AIC_DEV_UART7_RS232
+
+        config AIC_DEV_UART7_MODE_RS232_SW_HW_FLOW_CTRL
+            bool "RS232 software and hardware flow control"
+            depends on AIC_DEV_UART7_RS232
+
+        config AIC_DEV_UART7_MODE_RS485
+            bool "RS485 normal"
+            depends on AIC_DEV_UART7_RS485
+
+        config AIC_DEV_UART7_MODE_RS485_COMPACT_IO
+            bool "RS485 compact io"
+            depends on AIC_DEV_UART7_RS485
+
+        config AIC_DEV_UART7_MODE_RS485_SIMULATION
+            bool "RS485 simulation "
+            depends on AIC_DEV_UART7_RS485
+    endchoice
+
+    config AIC_DEV_UART7_MODE
+       int
+       default 0     if AIC_DEV_UART7_MODE_RS232
+       default 1     if AIC_DEV_UART7_MODE_RS485
+       default 2     if AIC_DEV_UART7_MODE_RS485_COMPACT_IO
+       default 3     if AIC_DEV_UART7_MODE_RS232_AUTO_FLOW_CTRL
+       default 4     if AIC_DEV_UART7_MODE_RS232_UNAUTO_FLOW_CTRL
+       default 5     if AIC_DEV_UART7_MODE_RS232_SW_FLOW_CTRL
+       default 6     if AIC_DEV_UART7_MODE_RS232_SW_HW_FLOW_CTRL
+       default 7     if AIC_DEV_UART7_MODE_RS485_SIMULATION
+
+    config AIC_SERIAL_USING_FLOWCTRL
+       bool
+       default y     if AIC_DEV_UART7_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART7_MODE_RS232_SW_FLOW_CTRL || AIC_DEV_UART7_MODE_RS232_SW_HW_FLOW_CTRL
+
+    menuconfig AIC_UART7_RTS_ENABLE
+        bool
+        prompt "Enable RTS"
+        default n
+        depends on AIC_DEV_UART7_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART7_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART7_RTS_ENABLE
+
+            config AIC_UART7_RTS_NAME
+                string "UART7 rts pin"
+                default "PA.3"
+        endif
+
+    menuconfig AIC_UART7_CTS_ENABLE
+        bool
+        prompt "Enable CTS"
+        default n
+        depends on AIC_DEV_UART7_MODE_RS232_UNAUTO_FLOW_CTRL || AIC_DEV_UART7_MODE_RS232_SW_HW_FLOW_CTRL
+
+        if AIC_UART7_CTS_ENABLE
+
+            config AIC_UART7_CTS_NAME
+                string "UART7 cts pin"
+                default "PA.2"
+        endif
+
+    config AIC_UART7_RTS_NAME
+        string "UART7 rts pin"
+        default "PA.3"
+        depends on AIC_DEV_UART7_MODE_RS485_SIMULATION
+
+    config AIC_UART7_DMA_ENABLE_FLAG
+        bool "Enable UART7 dma mode"
+        default n
+
+    config AIC_SERIAL_USING_DMA
+        bool
+        default y     if AIC_UART7_DMA_ENABLE_FLAG
+
+    config AIC_UART7_FLAG
+       int
+       default 2819     if AIC_UART7_DMA_ENABLE_FLAG
+       default 259
+
+    if DRIVER_BARE_DRV_EN
+        choice
+            prompt "UART7 Rx mode"
+            default AIC_DEV_UART7_RX_MODE_POLL
+            help
+                Select the package version
+
+            config AIC_DEV_UART7_RX_MODE_POLL
+                bool "poll"
+
+            config AIC_DEV_UART7_RX_MODE_INT
+                bool "interrupt"
+        endchoice
+
+        config AIC_DEV_UART7_RX_MODE
+           int
+           default 0     if AIC_DEV_UART7_RX_MODE_POLL
+           default 1     if AIC_DEV_UART7_RX_MODE_INT
+           default 2     if AIC_DEV_UART7_RX_MODE_DMA
+
+        if AIC_DEV_UART7_RX_MODE_INT
+            config AIC_DEV_UART7_RX_BUFSZ
+                int "UART7 rx buffer size"
+                default 64
+        endif
+    endif
+endmenu
+
+# common parameter
+

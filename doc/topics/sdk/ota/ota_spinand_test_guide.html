@@ -1,0 +1,298 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="测试环境 硬件 开发板（本文以 d211_demo128_nand 为例） 软件 PC 端的串口终端软件, 用于 PC 和开发板进行串口通信 HTTP 或 FTP 服务器, 网络升级方式需要使用 FTP 服务器窗口如下所示： 注： 编译两份 OTA 升级包（Kernel 和 RootFS 不同），测试升级是否成功。 编译 OTA 升级包 执行 lunch d211_demo128_nand ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-11-01"/><meta name="DC.date.modified" content="2024-12-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><title>SPI NAND 平台测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/ota/ota_spinand_test_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/ota/ota_spinand_test_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ota/ota_spinand_test_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SPI NAND 平台测试指南</h1><div class="date inPage">25 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id1" data-ofbid="id__id1"><h2 class="- topic/title title sectiontitle">测试环境</h2>
+            
+            <ul class="- topic/ul ul" id="id__ul_o1p_bj4_hdc" data-ofbid="id__ul_o1p_bj4_hdc"><li class="- topic/li li" data-ofbid="d120764e26__20250121171558">
+                    <div class="- topic/div div section" id="id__id2">
+                        <strong class="+ topic/ph hi-d/b ph b">硬件</strong>
+                        <ul class="- topic/ul ul simple" id="id__ul_cvq_bj4_hdc" data-ofbid="id__ul_cvq_bj4_hdc"><li class="- topic/li li" data-ofbid="d120764e34__20250121171558">
+                                <p class="- topic/p p" data-ofbid="d120764e36__20250121171558"> 开发板（本文以 <span class="+ topic/ph sw-d/filepath ph filepath">d211_demo128_nand</span> 为例）</p>
+                            </li></ul></div>
+                </li><li class="- topic/li li" data-ofbid="d120764e43__20250121171558">
+                    <div class="- topic/div div section" id="id__id3">
+                        <strong class="+ topic/ph hi-d/b ph b">软件</strong>
+                        <ul class="- topic/ul ul" id="id__ul_tj1_cj4_hdc" data-ofbid="id__ul_tj1_cj4_hdc"><li class="- topic/li li" data-ofbid="d120764e51__20250121171558">
+                                <p class="- topic/p p" data-ofbid="d120764e53__20250121171558">PC 端的串口终端软件, 用于 PC 和开发板进行串口通信</p>
+                            </li><li class="- topic/li li" data-ofbid="d120764e56__20250121171558">
+                                <p class="- topic/p p" data-ofbid="d120764e58__20250121171558">HTTP 或 FTP 服务器, 网络升级方式需要使用</p>
+                                <p class="- topic/p p" data-ofbid="d120764e61__20250121171558">FTP 服务器窗口如下所示：</p>
+                                <figure class="- topic/fig fig fignone" id="id__fig_uj1_cj4_hdc" data-ofbid="id__fig_uj1_cj4_hdc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_vj1_cj4_hdc" src="../../../images/ota/ftp_nand.png" alt="ftp_nand"/></div><br/></figure>
+                            </li></ul><div class="- topic/note note note note_note admonition" id="id__note_wj1_cj4_hdc" data-ofbid="id__note_wj1_cj4_hdc"><span class="note__title">注：</span> 
+                            <p class="- topic/p p" data-ofbid="d120764e71__20250121171558">编译两份 OTA 升级包（Kernel 和 RootFS 不同），测试升级是否成功。</p>
+                        </div></div>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__ota" data-ofbid="id__ota"><h2 class="- topic/title title sectiontitle">编译 OTA 升级包</h2>
+            
+            <p class="- topic/p p" data-ofbid="d120764e81__20250121171558">执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">lunch d211_demo128_nand</span> 命令进入<strong class="+ topic/ph hi-d/b ph b">主系统</strong>，执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">m</span>
+                命令编译整个主系统获得 Luban 镜像 和 OTA 升级包。</p>
+            <p class="- topic/p p" data-ofbid="d120764e93__20250121171558">生成 OTA 升级包地址为
+                    <span class="+ topic/ph sw-d/filepath ph filepath">output/d211_demo128_nand/images/swupdate/d211_demo128_nand.swu</span>。在<span class="+ topic/ph sw-d/filepath ph filepath">post-image.sh</span>
+                文件中 <span class="+ topic/keyword pr-d/apiname keyword apiname">swupdate_pack_swu</span> 函数用于编译生成 OTA 升级包。</p>
+        </section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">本地升级方式</h2>
+            
+            <ol class="- topic/ol ol" id="id__ol_emv_hj4_hdc" data-ofbid="id__ol_emv_hj4_hdc"><li class="- topic/li li" data-ofbid="d120764e111__20250121171558">
+                    <div class="- topic/div div section" id="id__id5">
+                        <strong class="+ topic/ph hi-d/b ph b">烧录 OTA 升级包到 OTA 分区</strong>
+                        <ol class="- topic/ol ol" type="a" id="id__ol_jyy_kj4_hdc" data-ofbid="id__ol_jyy_kj4_hdc"><li class="- topic/li li" data-ofbid="d120764e119__20250121171558">
+                                <div class="- topic/p p" data-ofbid="d120764e121__20250121171558">将
+                                    OTA
+                                    升级包拷贝到
+                                        <code class="+ topic/ph pr-d/codeph ph codeph">target/d211/demo128_nand/ota</code>
+                                    目录下面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_ixx_hj4_hdc" data-ofbid="id__pre_ixx_hj4_hdc">cp ~/Luban/output/d211_demo128_nand/images/swupdate/d211_demo128_nand.swu ~/Luban/target/d211/demo128_nand/ota
+</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d120764e133__20250121171558">
+                                <p class="- topic/p p" data-ofbid="d120764e135__20250121171558">执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">m</span> 命令编译 <span class="+ topic/keyword pr-d/parmname keyword parmname">ota 分区</span> 镜像
+                                        <code class="+ topic/ph pr-d/codeph ph codeph">ota*.ubifs</code> 到 Luban 烧录镜像
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">d211_demo128_nand_page_2k_block_128k_v1.0.0.img</span>
+                                    中。</p>
+                            </li><li class="- topic/li li" data-ofbid="d120764e150__20250121171558">
+                                <p class="- topic/p p" data-ofbid="d120764e152__20250121171558">通过 AiBurn 方式单独烧录 <code class="+ topic/ph pr-d/codeph ph codeph">ota*.ubifs</code> 到 <span class="+ topic/keyword pr-d/parmname keyword parmname">ota
+                                        分区</span>中，如下图所示：</p>
+                                <figure class="- topic/fig fig fignone" id="id__fig_kxx_hj4_hdc" data-ofbid="id__fig_kxx_hj4_hdc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_lxx_hj4_hdc" src="../../../images/tool/burn_ota_nand_partition.png" alt="burn_ota_nand_partition"/></div><br/></figure>
+                            </li><li class="- topic/li li" data-ofbid="d120764e166__20250121171558">
+                                <div class="- topic/div div section" id="id__id6">
+                                    <strong class="+ topic/ph hi-d/b ph b">挂载 OTA 分区</strong>
+                                    <p class="- topic/p p" data-ofbid="d120764e173__20250121171558">重新上电，挂载 <span class="+ topic/keyword pr-d/parmname keyword parmname">ota 分区</span> 到
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">mnt/ota</span>
+                                        目录下：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_mxx_hj4_hdc" data-ofbid="id__pre_mxx_hj4_hdc">/etc/swupdate_main start
+</pre><p class="- topic/p p" data-ofbid="d120764e183__20250121171558">检查 OTA 升级包是否存在, 默认应该存在
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">d211_demo128_nand.swu</span> 和
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">this_is_a_test_file</span> 两个文件</p></div>
+                            </li></ol>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d120764e194__20250121171558">
+                    <div class="- topic/div div section" id="id__id7">
+                        <strong class="+ topic/ph hi-d/b ph b">主系统下启动升级命令</strong>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_z1b_3j4_hdc" data-ofbid="id__pre_z1b_3j4_hdc">./usr/lib/swupdate/swupdate_cmd.sh -i /mnt/ota/d211_demo128_nand.swu -e stable,upgrade_recovery
+</pre><ul class="- topic/ul ul arabic simple" id="id__ol_bbb_3j4_hdc" data-ofbid="id__ol_bbb_3j4_hdc"><li class="- topic/li li" data-ofbid="d120764e204__20250121171558">
+                                <p class="- topic/p p" data-ofbid="d120764e206__20250121171558"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-i</span>：本地升级文件的路径，根据具体路径配置。</p>
+                            </li><li class="- topic/li li" data-ofbid="d120764e211__20250121171558">
+                                <p class="- topic/p p" data-ofbid="d120764e213__20250121171558"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-e</span>：需升级的项目。</p>
+                            </li></ul></div>
+                    <p class="- topic/p p" data-ofbid="d120764e219__20250121171558">执行该命令后，系统自动完成升级。</p>
+                </li></ol>
+        </section><section class="- topic/section section" id="id__sd" data-ofbid="id__sd"><h2 class="- topic/title title sectiontitle">SD 卡升级方式</h2>
+            
+            <ol class="- topic/ol ol arabic simple" data-ofbid="d120764e228__20250121171558"><li class="- topic/li li" data-ofbid="d120764e229__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e231__20250121171558">将 OTA 升级包拷贝到 SD 卡根目录下。</p>
+                </li><li class="- topic/li li" data-ofbid="d120764e234__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e236__20250121171558">插入 SD 卡，Luban 中会自动挂载 SD 卡。</p>
+                </li><li class="- topic/li li" data-ofbid="d120764e239__20250121171558">
+                    <div class="- topic/p p" data-ofbid="d120764e241__20250121171558">执行以下命令启动 OTA 升级：<div class="- topic/div div highlight-shell notranslate">
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_yby_4j4_hdc" data-ofbid="id__pre_yby_4j4_hdc">./usr/lib/swupdate/swupdate_cmd.sh -i /mnt/sdcard/d211_demo128_nand.swu -e stable,upgrade_recovery
+</pre>
+                        </div></div>
+                </li></ol>
+        </section><section class="- topic/section section" id="id__id8" data-ofbid="id__id8"><h2 class="- topic/title title sectiontitle">网络升级方式</h2>
+            
+            <p class="- topic/p p" data-ofbid="d120764e255__20250121171558">网络升级方式：</p>
+            <ul class="- topic/ul ul simple" data-ofbid="d120764e258__20250121171558"><li class="- topic/li li" data-ofbid="d120764e259__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e261__20250121171558">设备端为服务器, 电脑为用户端；</p>
+                </li><li class="- topic/li li" data-ofbid="d120764e264__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e266__20250121171558">设备端为用户端, 电脑为服务器；</p>
+                    <p class="- topic/p p" data-ofbid="d120764e269__20250121171558">实际生产过程中, 使用第二种方式</p>
+                    <ol class="- topic/ol ol" id="id__ul_agm_pj4_hdc" data-ofbid="id__ul_agm_pj4_hdc"><li class="- topic/li li" data-ofbid="d120764e273__20250121171558"><strong class="+ topic/ph hi-d/b ph b">准备工作</strong>
+                            <p class="- topic/p p" data-ofbid="d120764e277__20250121171558">主系统和 Recovery 系统在启动时自动搭建好网络环境,
+                            需要在启动脚本里面添加好对应的配置</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_pff_pj4_hdc" data-ofbid="id__pre_pff_pj4_hdc">ifconfig eth0 up
+ifconfig eth0 <span class="hl-number">192.168</span>.<span class="hl-number">1.200</span>
+</pre>
+                        </li><li class="- topic/li li" data-ofbid="d120764e282__20250121171558"><strong class="+ topic/ph hi-d/b ph b">主系统下启动升级命令</strong>
+                            <p class="- topic/p p" data-ofbid="d120764e286__20250121171558">主系统自动联网完成，执行下面命令启动升级</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_rsw_pj4_hdc" data-ofbid="id__pre_rsw_pj4_hdc">./usr/lib/swupdate/swupdate_cmd.sh -d -uftp:<em class="hl-comment">//192.168.1.100/d211_demo128_nand.swu -e stable,upgrade_recovery</em>
+</pre><p class="- topic/p p" data-ofbid="d120764e290__20250121171558"> 如果搭建的是 HTTP
+                            服务器，启动命令如下：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_ssw_pj4_hdc" data-ofbid="id__pre_ssw_pj4_hdc">./usr/lib/swupdate/swupdate_cmd.sh -d -uhttp:<em class="hl-comment">//192.168.1.100/d211_demo128_nand.swu -e stable,upgrade_recovery</em>
+</pre>
+                        </li></ol>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__id11" data-ofbid="id__id11"><h2 class="- topic/title title sectiontitle">升级过程说明</h2>
+            
+            <p class="- topic/p p" data-ofbid="d120764e302__20250121171558">参考 <span class="+ topic/ph sw-d/filepath ph filepath">sw-description</span> 和 <span class="+ topic/ph sw-d/filepath ph filepath">swupdate_cmd.sh</span>
+                文件，升级过程会进行两次重启，具体过程如下所示：</p>
+            <ol class="- topic/ol ol arabic simple" data-ofbid="d120764e311__20250121171558"><li class="- topic/li li" data-ofbid="d120764e312__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e314__20250121171558">运行主系统。</p>
+                </li><li class="- topic/li li" data-ofbid="d120764e317__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e319__20250121171558">启动升级命令，升级 <code class="+ topic/ph pr-d/codeph ph codeph">recovery 分区</code> 、引导等。</p>
+                </li><li class="- topic/li li" data-ofbid="d120764e325__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e327__20250121171558">重启，进入 Recovery 系统。</p>
+                </li><li class="- topic/li li" data-ofbid="d120764e330__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e332__20250121171558">升级 Kernel、RootFS 等。</p>
+                </li><li class="- topic/li li" data-ofbid="d120764e335__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d120764e337__20250121171558">重启，进入主系统，升级完成。</p>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d120764e341__20250121171558">具体参考 OTA 设计部分。</p>
+        </section><section class="- topic/section section" id="id__id12" data-ofbid="id__id12"><h2 class="- topic/title title sectiontitle">升级判断</h2>
+            
+            <p class="- topic/p p" data-ofbid="d120764e349__20250121171558">从程序打印 log 差异和 RootFS 中文件差异判断当前运行的版本。Recovery
+                系统启动内核时打开了内核信息，主系统默认关闭，通过内核打印信息可以判断程序运行的系统。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id1" data-tocid="id__id1">测试环境</a></div></li><li class="section-item"><div class="section-title"><a href="#id__ota" data-tocid="id__ota">编译 OTA 升级包</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">本地升级方式</a></div></li><li class="section-item"><div class="section-title"><a href="#id__sd" data-tocid="id__sd">SD 卡升级方式</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id8" data-tocid="id__id8">网络升级方式</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id11" data-tocid="id__id11">升级过程说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id12" data-tocid="id__id12">升级判断</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

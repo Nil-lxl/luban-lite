@@ -1,0 +1,242 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 表 1 . tinySPL 源码结构 Sys bsp/artinchip/sys/&lt;chip&gt;/ SoC 初始化相关代码，与应用共用 Board target/&lt;chip&gt;/&lt;board&gt;/ 板子初始化相关代码，与应用共用 HAL bsp/artinchip/hal/ HAL 驱动代码，与应用共用 Boot application/baremetal/bootloader/ ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/boot/lite_boot_direct.html"/><meta name="DC.relation" content="../../../topics/sdk/boot/lite_boot_test_guide.html"/><meta name="DC.relation" content="../../../topics/chapter-title/chapter-system.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e2423"/><meta name="wh-source-relpath" content="topics/sdk/boot/lite_boot_design_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/lite_boot_design_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="_0"><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/boot/lite_boot_design_guide.html">设计说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/boot/lite_boot_test_guide.html" title="测试指南" aria-label="上一主题: 测试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/chapter-title/chapter-system.html" title="系统" aria-label="下一主题: 系统" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e2375" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_introduction.html" id="id-d5856e2375-link">Boot 介绍</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2387" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_config_guide.html" id="id-d5856e2387-link">Boot 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2399" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_debug_guide.html" id="id-d5856e2399-link">启用调试</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2411" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_test_guide.html" id="id-d5856e2411-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e2423" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_design_guide.html" id="id-d5856e2423-link">设计说明</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/lite_boot_design_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_uxk_qsm_qdc" data-ofbid="id__section_uxk_qsm_qdc"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+            
+            <div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_cyv_jpc_bdc" data-ofbid="id__table_cyv_jpc_bdc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">tinySPL 源码结构</span></caption><colgroup><col style="width:12.406947890818858%"/><col style="width:46.40198511166253%"/><col style="width:41.191066997518604%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">Sys</td><td class="- topic/entry entry colsep-1 rowsep-1"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/sys/&lt;chip&gt;/</span></td><td class="- topic/entry entry colsep-0 rowsep-1">SoC 初始化相关代码，与应用共用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">Board</td><td class="- topic/entry entry colsep-1 rowsep-1"><span class="+ topic/ph sw-d/filepath ph filepath">target/&lt;chip&gt;/&lt;board&gt;/</span></td><td class="- topic/entry entry colsep-0 rowsep-1">板子初始化相关代码，与应用共用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">HAL</td><td class="- topic/entry entry colsep-1 rowsep-1"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/hal/</span></td><td class="- topic/entry entry colsep-0 rowsep-1">HAL 驱动代码，与应用共用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">Boot</td><td class="- topic/entry entry colsep-1 rowsep-0"><span class="+ topic/ph sw-d/filepath ph filepath">application/baremetal/bootloader/</span></td><td class="- topic/entry entry colsep-0 rowsep-0">Bootloader 代码</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">软件架构</h2>
+            
+            <p class="- topic/p p" data-ofbid="d272360e70__20250121171742"><span class="- topic/ph ph">Luban-Lite</span> 使用 tinySPL 作为启动引导程序 (Bootloader)，可以实现加载启动应用程序、 烧录和升级等功能。</p>
+            <p class="- topic/p p" data-ofbid="d272360e75__20250121171742">tinySPL 是基于 <span class="- topic/ph ph">Luban-Lite</span> 的 HAL 构建的裸机 (Baremetal) 程序。</p>
+            <figure class="- topic/fig fig fignone" id="id__fig_mln_mwc_bdc" data-ofbid="id__fig_mln_mwc_bdc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_dyv_jpc_bdc" src="../../../images/sdk/boot_arch1.png" alt="boot_arch1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">软件架构</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d272360e88__20250121171742">上图中， <code class="+ topic/ph pr-d/codeph ph codeph">HAL</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Board</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Sys</code> 与 <span class="- topic/ph ph">Luban-Lite</span> SDK 中的应用程序共用同一份代码， 以简化 Boot 对不同板子的支持。</p>
+            <div class="- topic/p p" data-ofbid="d272360e104__20250121171742">由于 Boot 的功能和应用场景比较确定和单一，因此这里将 Boot 设计为一个 Baremetal 版本的应用，具有以下特点：<ol class="- topic/ol ol arabic simple" id="id__ol_fyv_jpc_bdc" data-ofbid="id__ol_fyv_jpc_bdc"><li class="- topic/li li" data-ofbid="d272360e107__20250121171742">
+                        <p class="- topic/p p" data-ofbid="d272360e109__20250121171742">与应用共用部分代码，简化开发和板级配置</p>
+                    </li><li class="- topic/li li" data-ofbid="d272360e112__20250121171742">
+                        <p class="- topic/p p" data-ofbid="d272360e114__20250121171742">无线程、无中断处理，只针对单一任务</p>
+                    </li><li class="- topic/li li" data-ofbid="d272360e117__20250121171742">
+                        <p class="- topic/p p" data-ofbid="d272360e119__20250121171742">支持命令行模式，可根据需要，定义不同的命令</p>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">关键流程</h2>
+            
+            <ul class="- topic/ul ul" id="id__ul_qzh_dtm_qdc" data-ofbid="id__ul_qzh_dtm_qdc"><li class="- topic/li li" data-ofbid="d272360e129__20250121171742">
+                    <strong class="+ topic/ph hi-d/b ph b">系统初始化</strong>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ekt_w55_hdc" data-ofbid="id__codeblock_ekt_w55_hdc">_start <em class="hl-comment">//bsp/artinchip/sys/d21x/startup_gcc.S</em>
+|-&gt; save_boot_params <em class="hl-comment">// bsp/artinchip/sys/d21x/boot_param_gcc.S</em>
+|-&gt; icache_enable();
+|-&gt; dcache_enable();  <em class="hl-comment">// bsp/artinchip/sys/d21x/system.c</em>
+|-&gt; SystemInit();
+|-&gt; main(); <em class="hl-comment">// application/baremetal/bootloader/main.c</em>
+    |-&gt; board_init();
+    |   |-&gt; heap_init();
+    |   |-&gt; aic_board_sysclk_init(); <em class="hl-comment">// target/d21x/&lt;board&gt;/board.c</em>
+    |   |-&gt; aic_board_pinmux_init();
+    |   |-&gt; uart_init(cons_uart);
+    |   |-&gt; stdio_set_uart(cons_uart);
+    |-&gt; console_init();</pre><p class="- topic/p p" data-ofbid="d272360e136__20250121171742">系统初始化的过程中，并不会设计不必要的驱动等模块的初始化。所有的驱动和模块，
+                        都只在需要使用时进行初始化，这样可以减少启动过程中的不必要时间消耗，加快启动速度。</p></li><li class="- topic/li li" data-ofbid="d272360e138__20250121171742">
+                    <div class="- topic/p p" data-ofbid="d272360e140__20250121171742">
+                        <strong class="+ topic/ph hi-d/b ph b">启动和升级</strong>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_js2_x55_hdc" data-ofbid="id__codeblock_js2_x55_hdc">main(); <em class="hl-comment">// application/baremetal/bootloader/main.c</em>
+|-&gt; board_init();
+|-&gt; console_init();
+|-&gt; bd = aic_get_boot_device();
+|   <em class="hl-comment">// 根据启动参数，判断当前的启动设备</em>
+|
+|-&gt; console_set_bootcmd(<span class="hl-string">"nor_boot"</span>);
+|   <em class="hl-comment">// 此处根据 boot_device 的类型，设置不同的 bootcmd，比如 aicupg usb 0</em>
+|
+|-&gt; console_loop();
+    |-&gt; console_run_cmd(g_console-&gt;bootcmd);
+    |-&gt; _console_loop(g_console);
+        <em class="hl-comment">// 当执行 bootcmd 失败时，会进入串口控制台，等待用户交互</em></pre></div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_uxk_qsm_qdc" data-tocid="id__section_uxk_qsm_qdc">源码说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">软件架构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">关键流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

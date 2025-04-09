@@ -1,0 +1,200 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="CMU 调试包含以下步骤： 确保打开 Debugfs 。SDK 中默认已打开 Debugfs ，也可以通过以下配置打开： Kernel hacking---&gt; Generic Kernel Debugging Instruments---&gt; Debug Filesystem Debugfs default access(Access normal)---&gt; 内核的 CCF ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_jq3_rn3_pzb"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/cmu/cmu-debug-guide-lb.dita"/><meta name="wh-out-relpath" content="topics/sdk/cmu/cmu-debug-guide-lb.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_jq3_rn3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/cmu/cmu-debug-guide-lb.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d348416e22__20250121172123">CMU 调试包含以下步骤：<ol class="- topic/ol ol" id="concept_jq3_rn3_pzb__ol_ykn_4xr_c1c" data-ofbid="concept_jq3_rn3_pzb__ol_ykn_4xr_c1c"><li class="- topic/li li" data-ofbid="d348416e25__20250121172123">确保打开 <span class="+ topic/keyword pr-d/parmname keyword parmname">Debugfs</span>。SDK 中默认已打开
+                    <span class="+ topic/keyword pr-d/parmname keyword parmname">Debugfs</span>，也可以通过以下配置打开：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_jq3_rn3_pzb__codeblock_z3x_4ht_q1c" data-ofbid="concept_jq3_rn3_pzb__codeblock_z3x_4ht_q1c">Kernel hacking---&gt;
+    Generic Kernel Debugging Instruments---&gt;
+        Debug Filesystem
+            Debugfs <strong class="hl-keyword">default</strong> access(Access normal)---&gt;</pre><p class="- topic/p p" data-ofbid="d348416e35__20250121172123">内核的 CCF
+                框架中定义了用于调试的接口，如需调试，仅需打开 <span class="+ topic/keyword pr-d/parmname keyword parmname">Debugfs</span> 开关即可。</p></li><li class="- topic/li li" data-ofbid="d348416e40__20250121172123">保存配置并重新编译内核。</li><li class="- topic/li li" data-ofbid="d348416e42__20250121172123">通过以下命令将 <span class="+ topic/keyword pr-d/parmname keyword parmname">Debugfs</span>
+                            挂载到<span class="+ topic/ph sw-d/filepath ph filepath">/sys/kernel/debug</span>。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_jq3_rn3_pzb__codeblock_hw2_pht_q1c" data-ofbid="concept_jq3_rn3_pzb__codeblock_hw2_pht_q1c">mount -t debugfs none /sys/kernel/debug</pre><p class="- topic/p p" data-ofbid="d348416e52__20250121172123">内核启动后，<code class="+ topic/ph pr-d/codeph ph codeph">Debugfs</code>
+                        默认未挂载。</p></li><li class="- topic/li li" data-ofbid="d348416e57__20250121172123">按以下步骤调试 Clock Debugfs：<ol class="- topic/ol ol" type="a" id="concept_jq3_rn3_pzb__ol_ash_sxr_c1c" data-ofbid="concept_jq3_rn3_pzb__ol_ash_sxr_c1c"><li class="- topic/li li" data-ofbid="d348416e60__20250121172123">打开 <span class="+ topic/keyword pr-d/parmname keyword parmname">Debugfs</span>
+                                目录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_jq3_rn3_pzb__codeblock_hg3_pht_q1c" data-ofbid="concept_jq3_rn3_pzb__codeblock_hg3_pht_q1c">cd /sys/kernel/debug/clk</pre><p class="- topic/p p" data-ofbid="d348416e67__20250121172123">该目录存储了内核中注册的所有时钟。使用
+                                    <span class="+ topic/keyword sw-d/cmdname keyword cmdname">ls</span> 命令可查看所有注册的时钟：</p><div class="- topic/p p" data-ofbid="d348416e72__20250121172123">
+                                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_jq3_rn3_pzb__image_w1q_mxr_c1c" src="../../../images/cmu/cmu_clk_debugfs_dir.png" width="384" alt="clk_dir"/></div><br/>
+                            </div></li><li class="- topic/li li" data-ofbid="d348416e78__20250121172123">通过 summary
+                                结点打印系统的时钟树。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_jq3_rn3_pzb__codeblock_h2p_pht_q1c" data-ofbid="concept_jq3_rn3_pzb__codeblock_h2p_pht_q1c">cat clk_summary</pre><p class="- topic/p p" data-ofbid="d348416e82__20250121172123">Summary
+                                结点位于 <span class="+ topic/ph sw-d/filepath ph filepath">/sys/kernel/debug/clk</span>
+                                目录下。系统时钟树会显示系统中各个时钟的父子关系、频率和使能计数等信息：</p><div class="- topic/p p" data-ofbid="d348416e87__20250121172123">
+                                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_jq3_rn3_pzb__image_z1q_mxr_c1c" src="../../../images/cmu/cmu_clock_tree.png" width="480" alt="clock_tree1"/></div><br/>
+                            </div></li><li class="- topic/li li" data-ofbid="d348416e93__20250121172123">除了在时钟树中查看时钟的频率，也可以通过各个时钟，单独查询其时钟频率。以 uart0 为例进行：<ol class="- topic/ol ol" type="i" id="concept_jq3_rn3_pzb__ol_gk1_b14_mdc" data-ofbid="concept_jq3_rn3_pzb__ol_gk1_b14_mdc"><li class="- topic/li li" data-ofbid="d348416e96__20250121172123">在 <span class="+ topic/ph sw-d/filepath ph filepath">/sys/kernel/debug/clk</span> 目录中，打开
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">uart0</span> 目录。<p class="- topic/p p" data-ofbid="d348416e104__20250121172123">在
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">uart0</span> 目录中，可以看到一系列结点，并能显示 uart0
+                                        时钟的各个属性。</p><div class="- topic/p p" data-ofbid="d348416e109__20250121172123">
+                                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_jq3_rn3_pzb__image_bbq_mxr_c1c" src="../../../images/uart/uart0_node.png" width="432" alt="uart0_node"/></div><br/>
+                                    </div></li><li class="- topic/li li" data-ofbid="d348416e115__20250121172123">
+                                    <p class="- topic/p p" data-ofbid="d348416e117__20250121172123">执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">cat clk_rate</span> 命令读取 uart0 的时钟频率：</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_jq3_rn3_pzb__codeblock_xyw_pht_q1c" data-ofbid="concept_jq3_rn3_pzb__codeblock_xyw_pht_q1c"></pre>
+                                    <div class="- topic/p p" data-ofbid="d348416e125__20250121172123">
+                                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_jq3_rn3_pzb__image_dbq_mxr_c1c" src="../../../images/uart/uart0_rate.png" width="240" alt="uart0_rate"/></div><br/>
+                                    </div>
+                                </li></ol></li><li class="- topic/li li" data-ofbid="d348416e132__20250121172123">设置 <span class="+ topic/keyword pr-d/parmname keyword parmname">clk_rate</span>。<div class="- topic/p p" data-ofbid="d348416e137__20250121172123">默认情况下，<span class="+ topic/keyword pr-d/parmname keyword parmname">clk_rate</span>
+                        结点为只读，即只能读取时钟频率而不能设置频率。如需设置频率，需将 <span class="+ topic/keyword pr-d/parmname keyword parmname">clk_rate</span>
+                                    的属性改为读写属性。具体设置如下：<ol class="- topic/ol ol" type="i" id="concept_jq3_rn3_pzb__ol_hzj_yxr_c1c" data-ofbid="concept_jq3_rn3_pzb__ol_hzj_yxr_c1c"><li class="- topic/li li" data-ofbid="d348416e146__20250121172123">打开 menuconfig 中的下列配置，生成宏
+                                            DEBUG：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_jq3_rn3_pzb__codeblock_sr1_qht_q1c" data-ofbid="concept_jq3_rn3_pzb__codeblock_sr1_qht_q1c">Kernel hacking---&gt;
+    ArtInChip Debug---&gt;
+        [*] CMU driver debug</pre><p class="- topic/p p" data-ofbid="d348416e150__20250121172123">在编译时，会根据该宏在
+                                            gcc 的-D 选项参数后定义宏 DEBUGFS。</p></li><li class="- topic/li li" data-ofbid="d348416e152__20250121172123">
+                                        <p class="- topic/p p" data-ofbid="d348416e154__20250121172123">在源码 <span class="+ topic/ph sw-d/filepath ph filepath">drivers/clk/clk.c</span> 文件中，注释
+                                            <span class="+ topic/keyword pr-d/parmname keyword parmname">//#undef
+                                            CLOCK_ALLOW_WRITE_DEBUGFS</span>。</p>
+                                    </li><li class="- topic/li li" data-ofbid="d348416e163__20250121172123">修改源码后重新编译内核，<span class="+ topic/keyword pr-d/parmname keyword parmname">clk_rate</span> 结点的属性即变为可读写。</li><li class="- topic/li li" data-ofbid="d348416e168__20250121172123">通过以下命令，设置模块的时钟频率：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_jq3_rn3_pzb__codeblock_u52_qht_q1c" data-ofbid="concept_jq3_rn3_pzb__codeblock_u52_qht_q1c">echo target-frequency &gt; clk_rate</pre></li></ol></div></li></ol></li></ol></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

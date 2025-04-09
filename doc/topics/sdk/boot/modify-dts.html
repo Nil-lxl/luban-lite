@@ -1,0 +1,182 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="启动内核时，会通过参数 r2 将 FDT 传递给 Kernel。Bootargs 等信息也会通过 FDT 传递给 Kernel。 由于 bootargs 是在 U-Boot 运行时生成，如果需要传递 initrd 信息，也是通过 FDT 传递。 do_bootm(); // cmd/bootm.c |-&gt; do_bootm_states(); // common/bootm.c |-&gt; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="dts_0"/><meta name="DC.language" content="zh-CN"/><title>修改 DTS</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/modify-dts.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/modify-dts.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="dts_0" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/modify-dts.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">修改 DTS</h1><div class="date inPage">25 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d212693e22__20250121171640">启动内核时，会通过参数 <span class="+ topic/keyword pr-d/parmname keyword parmname">r2</span> 将 FDT 传递给 Kernel。Bootargs 等信息也会通过 FDT 传递给 Kernel。</p><div class="- topic/p p" data-ofbid="d212693e27__20250121171640">由于 bootargs 是在 U-Boot 运行时生成，如果需要传递 initrd 信息，也是通过 FDT
+            传递。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dts_0__codeblock_v4h_lpr_c1c" data-ofbid="dts_0__codeblock_v4h_lpr_c1c">do_bootm(); <em class="hl-comment">// cmd/bootm.c</em>
+|-&gt; do_bootm_states(); <em class="hl-comment">// common/bootm.c</em>
+    |-&gt; bootm_os_get_boot_func(); common/bootm_os.c
+        |-&gt; do_bootm_linux(); <em class="hl-comment">// arch/riscv/lib/bootm.c</em>
+            |-&gt; boot_prep_linux(); <em class="hl-comment">// arch/riscv/lib/bootm.c</em>
+            |   |-&gt; image_setup_linux(); <em class="hl-comment">// common/image.c</em>
+            |       |-&gt; image_setup_libfdt(); <em class="hl-comment">// common/image-fdt.c</em>
+            |           |-&gt; fdt_chosen(fdt); <em class="hl-comment">// common/fdt_support.c</em>
+            |           |   |-&gt; str = env_get(<span class="hl-string">"bootargs"</span>);
+            |           |   |-&gt; fdt_setprop(fdt, nodeoffset, <span class="hl-string">"bootargs"</span>,
+            |           |                   str, ...);
+            |           |       <em class="hl-comment">// 修改 chosen  的 bootargs</em>
+            |           |-&gt; fdt_initrd(blob, start, end); <em class="hl-comment">// common/fdt_support.c</em>
+            |               <em class="hl-comment">// "linux,initrd-start"</em>
+            |               <em class="hl-comment">// "linux,initrd-end"</em>
+            |
+            |-&gt; boot_jump_linux(images, flag); <em class="hl-comment">// arch/riscv/lib/bootm.c</em>
+                |-&gt; kernel(gd-&gt;arch.boot_hart, images-&gt;ft_addr);
+</pre></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

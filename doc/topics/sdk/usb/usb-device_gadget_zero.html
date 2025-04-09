@@ -1,0 +1,363 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="提供测试需要的 Device 设备有很多种方式，例如可用使用专门的测试 Device 里面烧录专有的测试 Firmware。节约成本的方式还是使用 Linux gadget 功能来动态模拟 USB Device 设备。针对 USB 测试，Linux 专门提供了 gadget zero 设备。 Device 创建 gadget zero 的核心是创建一个 Composite Device ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-24"/><meta name="DC.date.modified" content="2024-12-24"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_device_gadget_zero"/><meta name="DC.language" content="zh-CN"/><title>Device 侧 gadget zero</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-device_gadget_zero.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-device_gadget_zero.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_device_gadget_zero" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-device_gadget_zero.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Device 侧 gadget zero</h1><div class="date inPage">24 Dec 2024</div><div style="color: gray;">
+                    Read time: 6 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d344556e23__20250121172118">提供测试需要的 Device 设备有很多种方式，例如可用使用专门的测试 Device 里面烧录专有的测试 Firmware。节约成本的方式还是使用 Linux gadget
+            功能来动态模拟 USB Device 设备。针对 USB 测试，Linux 专门提供了 <code class="+ topic/ph pr-d/codeph ph codeph">gadget zero</code> 设备。</p><section class="- topic/section section" id="usb_device_gadget_zero__section_apx_wjz_21c" data-ofbid="usb_device_gadget_zero__section_apx_wjz_21c"><h2 class="- topic/title title sectiontitle">Device 创建</h2>
+            
+            <p class="- topic/p p" data-ofbid="d344556e33__20250121172118"><code class="+ topic/ph pr-d/codeph ph codeph">gadget zero</code> 的核心是创建一个 <code class="+ topic/ph pr-d/codeph ph codeph">Composite Device</code> ，其包含了两个
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Configuration</code> ，其中一个 <code class="+ topic/ph pr-d/codeph ph codeph">Configuration 0</code> 包含
+                    <code class="+ topic/ph pr-d/codeph ph codeph">SourceSink Function/Interface</code> ，另一个 <code class="+ topic/ph pr-d/codeph ph codeph">Configuration
+                    1</code> 包含 <code class="+ topic/ph pr-d/codeph ph codeph">Loopback Function/Interface</code> 。某一时刻只能选择使用一个
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Configuration</code> ，通常情况下使用 <code class="+ topic/ph pr-d/codeph ph codeph">Configuration 0</code> 即
+                    <code class="+ topic/ph pr-d/codeph ph codeph">SourceSink</code> 的功能。</p>
+            <p class="- topic/p p" data-ofbid="d344556e66__20250121172118"><code class="+ topic/ph pr-d/codeph ph codeph">gadget zero</code> Device 由两种方式创建：</p>
+            <ul class="- topic/ul ul" id="usb_device_gadget_zero__ul_bpx_wjz_21c" data-ofbid="usb_device_gadget_zero__ul_bpx_wjz_21c"><li class="- topic/li li" data-ofbid="d344556e72__20250121172118">
+                    <p class="- topic/p p" data-ofbid="d344556e74__20250121172118">1、通过 <code class="+ topic/ph pr-d/codeph ph codeph">zero_driver</code> 创建，只要把对应驱动文件
+                            <code class="+ topic/ph pr-d/codeph ph codeph">drivers\usb\gadget\legacy\zero.c</code> 编译进内核即可。</p>
+                </li><li class="- topic/li li" data-ofbid="d344556e83__20250121172118">
+                    <div class="- topic/p p" data-ofbid="d344556e85__20250121172118">2、通过 <code class="+ topic/ph pr-d/codeph ph codeph">functionfs</code>
+                        动态创建，这种方式更灵活，实例命令如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_device_gadget_zero__pre_cpx_wjz_21c" data-ofbid="usb_device_gadget_zero__pre_cpx_wjz_21c">mount -t configfs none /sys/kernel/config
+cd /sys/kernel/config/usb_gadget
+
+mkdir g2
+cd g2
+
+echo <span class="hl-string">"0x04e8"</span> &gt; idVendor
+echo <span class="hl-string">"0x2d01"</span> &gt; idProduct
+
+mkdir configs/c.<span class="hl-number">1</span>
+mkdir configs/c.<span class="hl-number">2</span>
+mkdir functions/Loopback.<span class="hl-number">0</span>
+mkdir functions/SourceSink.<span class="hl-number">0</span>
+
+mkdir strings/<span class="hl-number">0x409</span>
+mkdir configs/c.<span class="hl-number">1</span>/strings/<span class="hl-number">0x409</span>
+mkdir configs/c.<span class="hl-number">2</span>/strings/<span class="hl-number">0x409</span>
+
+echo <span class="hl-string">"0x0525"</span> &gt; idVendor
+echo <span class="hl-string">"0xa4a0"</span> &gt; idProduct
+
+echo <span class="hl-string">"0123456789"</span> &gt; strings/<span class="hl-number">0x409</span>/serialnumber
+echo <span class="hl-string">"Samsung Inc."</span> &gt; strings/<span class="hl-number">0x409</span>/manufacturer
+echo <span class="hl-string">"Bar Gadget"</span> &gt; strings/<span class="hl-number">0x409</span>/product
+
+echo <span class="hl-string">"Conf 1"</span> &gt; configs/c.<span class="hl-number">1</span>/strings/<span class="hl-number">0x409</span>/configuration
+echo <span class="hl-string">"Conf 2"</span> &gt; configs/c.<span class="hl-number">2</span>/strings/<span class="hl-number">0x409</span>/configuration
+echo <span class="hl-number">120</span> &gt; configs/c.<span class="hl-number">1</span>/MaxPower
+
+<em class="hl-comment">// SourceSink：驱动 set configuration 会选取 第一个 configuration</em>
+ln -s functions/Loopback.<span class="hl-number">0</span> configs/c.<span class="hl-number">2</span>
+ln -s functions/SourceSink.<span class="hl-number">0</span> configs/c.<span class="hl-number">1</span>
+
+echo <span class="hl-number">4100000.u</span>dc-controller &gt; UDC
+</pre></div>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d344556e94__20250121172118">整个过程就是创建了一个 <code class="+ topic/ph pr-d/codeph ph codeph">Vendor ID = 0x0525</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Product ID =
+                    0xa4a0</code> 的 <code class="+ topic/ph pr-d/codeph ph codeph">Composite Device</code> ，在 Host
+                侧可以查看这个设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_device_gadget_zero__pre_dpx_wjz_21c" data-ofbid="usb_device_gadget_zero__pre_dpx_wjz_21c">lsusb -s <span class="hl-number">1</span>:<span class="hl-number">3</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_device_gadget_zero__codeblock_rdx_qyr_5dc" data-ofbid="usb_device_gadget_zero__codeblock_rdx_qyr_5dc">Bus <span class="hl-number">001</span> Device <span class="hl-number">003</span>: ID <span class="hl-number">0525</span>:a4a0 Netchip Technology, Inc. Linux-USB <span class="hl-string">"Gadget Zero"</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_device_gadget_zero__codeblock_jj1_ryr_5dc" data-ofbid="usb_device_gadget_zero__codeblock_jj1_ryr_5dc">lsusb -v -s <span class="hl-number">1</span>:<span class="hl-number">3</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_device_gadget_zero__codeblock_chh_ryr_5dc" data-ofbid="usb_device_gadget_zero__codeblock_chh_ryr_5dc">Bus <span class="hl-number">001</span> Device <span class="hl-number">003</span>: ID <span class="hl-number">0525</span>:a4a0 Netchip Technology, Inc. Linux-USB <span class="hl-string">"Gadget Zero"</span>
+Couldn<span class="hl-string">'t open device, some information will be missing
+</span>Device Descriptor:
+bLength                <span class="hl-number">18</span>
+bDescriptorType         <span class="hl-number">1</span>
+bcdUSB               <span class="hl-number">2.00</span>
+bDeviceClass            <span class="hl-number">0</span>
+bDeviceSubClass         <span class="hl-number">0</span>
+bDeviceProtocol         <span class="hl-number">0</span>
+bMaxPacketSize0        <span class="hl-number">64</span>
+idVendor           <span class="hl-number">0x0525</span> Netchip Technology, Inc.
+idProduct          <span class="hl-number">0xa4a0</span> Linux-USB <span class="hl-string">"Gadget Zero"</span>
+bcdDevice            <span class="hl-number">5.10</span>
+iManufacturer           <span class="hl-number">1</span>
+iProduct                <span class="hl-number">2</span>
+iSerial                 <span class="hl-number">3</span>
+bNumConfigurations      <span class="hl-number">2</span>
+Configuration Descriptor:
+    bLength                 <span class="hl-number">9</span>
+    bDescriptorType         <span class="hl-number">2</span>
+    wTotalLength       <span class="hl-number">0x0045</span>
+    bNumInterfaces          <span class="hl-number">1</span>
+    bConfigurationValue     <span class="hl-number">1</span>
+    iConfiguration          <span class="hl-number">4</span>
+    bmAttributes         <span class="hl-number">0x80</span>
+    (Bus Powered)
+    MaxPower              <span class="hl-number">120</span>mA
+    Interface Descriptor:
+    bLength                 <span class="hl-number">9</span>
+    bDescriptorType         <span class="hl-number">4</span>
+    bInterfaceNumber        <span class="hl-number">0</span>
+    bAlternateSetting       <span class="hl-number">0</span>
+    bNumEndpoints           <span class="hl-number">2</span>
+    bInterfaceClass       <span class="hl-number">255</span> Vendor Specific Class
+    bInterfaceSubClass      <span class="hl-number">0</span>
+    bInterfaceProtocol      <span class="hl-number">0</span>
+    iInterface              <span class="hl-number">0</span>
+    Endpoint Descriptor:
+        bLength                 <span class="hl-number">7</span>
+        bDescriptorType         <span class="hl-number">5</span>
+        bEndpointAddress     <span class="hl-number">0x81</span>  EP <span class="hl-number">1</span> IN
+        bmAttributes            <span class="hl-number">2</span>
+        Transfer Type            Bulk
+        Synch Type               None
+        Usage Type               Data
+        wMaxPacketSize     <span class="hl-number">0x0200</span>  <span class="hl-number">1</span>x <span class="hl-number">512</span> bytes
+        bInterval               <span class="hl-number">0</span>
+    Endpoint Descriptor:
+        bLength                 <span class="hl-number">7</span>
+        bDescriptorType         <span class="hl-number">5</span>
+        bEndpointAddress     <span class="hl-number">0x01</span>  EP <span class="hl-number">1</span> OUT
+        bmAttributes            <span class="hl-number">2</span>
+        Transfer Type            Bulk
+        Synch Type               None
+        Usage Type               Data
+        wMaxPacketSize     <span class="hl-number">0x0200</span>  <span class="hl-number">1</span>x <span class="hl-number">512</span> bytes
+        bInterval               <span class="hl-number">0</span>
+    Interface Descriptor:
+    bLength                 <span class="hl-number">9</span>
+    bDescriptorType         <span class="hl-number">4</span>
+    bInterfaceNumber        <span class="hl-number">0</span>
+    bAlternateSetting       <span class="hl-number">1</span>
+    bNumEndpoints           <span class="hl-number">4</span>
+    bInterfaceClass       <span class="hl-number">255</span> Vendor Specific Class
+    bInterfaceSubClass      <span class="hl-number">0</span>
+    bInterfaceProtocol      <span class="hl-number">0</span>
+    iInterface              <span class="hl-number">0</span>
+    Endpoint Descriptor:
+        bLength                 <span class="hl-number">7</span>
+        bDescriptorType         <span class="hl-number">5</span>
+        bEndpointAddress     <span class="hl-number">0x81</span>  EP <span class="hl-number">1</span> IN
+        bmAttributes            <span class="hl-number">2</span>
+        Transfer Type            Bulk
+        Synch Type               None
+        Usage Type               Data
+        wMaxPacketSize     <span class="hl-number">0x0200</span>  <span class="hl-number">1</span>x <span class="hl-number">512</span> bytes
+        bInterval               <span class="hl-number">0</span>
+    Endpoint Descriptor:
+        bLength                 <span class="hl-number">7</span>
+        bDescriptorType         <span class="hl-number">5</span>
+        bEndpointAddress     <span class="hl-number">0x01</span>  EP <span class="hl-number">1</span> OUT
+        bmAttributes            <span class="hl-number">2</span>
+        Transfer Type            Bulk
+        Synch Type               None
+        Usage Type               Data
+        wMaxPacketSize     <span class="hl-number">0x0200</span>  <span class="hl-number">1</span>x <span class="hl-number">512</span> bytes
+        bInterval               <span class="hl-number">0</span>
+    Endpoint Descriptor:
+        bLength                 <span class="hl-number">7</span>
+        bDescriptorType         <span class="hl-number">5</span>
+        bEndpointAddress     <span class="hl-number">0x82</span>  EP <span class="hl-number">2</span> IN
+        bmAttributes            <span class="hl-number">1</span>
+        Transfer Type            Isochronous
+        Synch Type               None
+        Usage Type               Data
+        wMaxPacketSize     <span class="hl-number">0x0400</span>  <span class="hl-number">1</span>x <span class="hl-number">1024</span> bytes
+        bInterval               <span class="hl-number">4</span>
+    Endpoint Descriptor:
+        bLength                 <span class="hl-number">7</span>
+        bDescriptorType         <span class="hl-number">5</span>
+        bEndpointAddress     <span class="hl-number">0x02</span>  EP <span class="hl-number">2</span> OUT
+        bmAttributes            <span class="hl-number">1</span>
+        Transfer Type            Isochronous
+        Synch Type               None
+        Usage Type               Data
+        wMaxPacketSize     <span class="hl-number">0x0400</span>  <span class="hl-number">1</span>x <span class="hl-number">1024</span> bytes
+        bInterval               <span class="hl-number">4</span>
+Configuration Descriptor:
+    bLength                 <span class="hl-number">9</span>
+    bDescriptorType         <span class="hl-number">2</span>
+    wTotalLength       <span class="hl-number">0x0020</span>
+    bNumInterfaces          <span class="hl-number">1</span>
+    bConfigurationValue     <span class="hl-number">2</span>
+    iConfiguration          <span class="hl-number">5</span>
+    bmAttributes         <span class="hl-number">0x80</span>
+    (Bus Powered)
+    MaxPower                <span class="hl-number">2</span>mA
+    Interface Descriptor:
+    bLength                 <span class="hl-number">9</span>
+    bDescriptorType         <span class="hl-number">4</span>
+    bInterfaceNumber        <span class="hl-number">0</span>
+    bAlternateSetting       <span class="hl-number">0</span>
+    bNumEndpoints           <span class="hl-number">2</span>
+    bInterfaceClass       <span class="hl-number">255</span> Vendor Specific Class
+    bInterfaceSubClass      <span class="hl-number">0</span>
+    bInterfaceProtocol      <span class="hl-number">0</span>
+    iInterface              <span class="hl-number">6</span>
+    Endpoint Descriptor:
+        bLength                 <span class="hl-number">7</span>
+        bDescriptorType         <span class="hl-number">5</span>
+        bEndpointAddress     <span class="hl-number">0x81</span>  EP <span class="hl-number">1</span> IN
+        bmAttributes            <span class="hl-number">2</span>
+        Transfer Type            Bulk
+        Synch Type               None
+        Usage Type               Data
+        wMaxPacketSize     <span class="hl-number">0x0200</span>  <span class="hl-number">1</span>x <span class="hl-number">512</span> bytes
+        bInterval               <span class="hl-number">0</span>
+    Endpoint Descriptor:
+        bLength                 <span class="hl-number">7</span>
+        bDescriptorType         <span class="hl-number">5</span>
+        bEndpointAddress     <span class="hl-number">0x01</span>  EP <span class="hl-number">1</span> OUT
+        bmAttributes            <span class="hl-number">2</span>
+        Transfer Type            Bulk
+        Synch Type               None
+        Usage Type               Data
+        wMaxPacketSize     <span class="hl-number">0x0200</span>  <span class="hl-number">1</span>x <span class="hl-number">512</span> bytes
+        bInterval               <span class="hl-number">0</span></pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

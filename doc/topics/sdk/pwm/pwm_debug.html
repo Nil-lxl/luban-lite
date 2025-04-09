@@ -1,0 +1,378 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="调试开关 在 SDK 根目录下，执行下列命令，进入 kernel 的功能配置界面： make kernel-menuconfig 或使用简写命令 make km 在内核配置界面，打开 PWM 模块的 DEBUG 选项： Linux Kernel hacking Artinchip Debug [*] PWM driver debug 打开 DEBUG 选项后： 驱动以 -O0 编译。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-18"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="pwm_debug_guide"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/pwm/pwm_debug.dita"/><meta name="wh-out-relpath" content="topics/sdk/pwm/pwm_debug.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="pwm_debug_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/pwm/pwm_debug.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">18 Dec 2024</div><div style="color: gray;">
+                    Read time: 9 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="pwm_debug_guide__section_tnj_ljs_21c" data-ofbid="pwm_debug_guide__section_tnj_ljs_21c"><h2 class="- topic/title title sectiontitle">调试开关</h2>
+            
+            <div class="- topic/p p" data-ofbid="d309715e27__20250121171815">
+                <ol class="- topic/ol ol" id="pwm_debug_guide__ul_qhh_btr_sdc" data-ofbid="pwm_debug_guide__ul_qhh_btr_sdc"><li class="- topic/li li" data-ofbid="d309715e30__20250121171815">
+                        <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d309715e34__20250121171815">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_wg1_3ml_sdc" data-ofbid="pwm_debug_guide__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d309715e39__20250121171815">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d309715e42__20250121171815">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_uss_hml_sdc" data-ofbid="pwm_debug_guide__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                    </li><li class="- topic/li li" data-ofbid="d309715e49__20250121171815">
+                        <p class="- topic/p p" data-ofbid="d309715e51__20250121171815">在内核配置界面，打开 PWM 模块的 DEBUG 选项：</p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__pre_unj_ljs_21c" data-ofbid="pwm_debug_guide__pre_unj_ljs_21c">Linux
+    Kernel hacking
+        Artinchip Debug
+            [*] PWM driver debug</pre>
+                        <div class="- topic/p p" data-ofbid="d309715e57__20250121171815">打开 DEBUG 选项后：<ul class="- topic/ul ul" id="pwm_debug_guide__ol_ucp_mss_c1c" data-ofbid="pwm_debug_guide__ol_ucp_mss_c1c"><li class="- topic/li li" data-ofbid="d309715e60__20250121171815">
+                        <p class="- topic/p p" data-ofbid="d309715e62__20250121171815">驱动以<code class="+ topic/ph pr-d/codeph ph codeph">-O0</code> 编译。</p>
+                    </li><li class="- topic/li li" data-ofbid="d309715e68__20250121171815">
+                        <p class="- topic/p p" data-ofbid="d309715e70__20250121171815"><span class="+ topic/keyword pr-d/parmname keyword parmname">pr_dbg()</span> 和 <span class="+ topic/keyword pr-d/parmname keyword parmname">dev_dbg()</span> 调试信息会被编译。</p>
+                        <div class="- topic/p p" id="pwm_debug_guide__p_wvf_n3w_mdc" data-ofbid="pwm_debug_guide__p_wvf_n3w_mdc">在系统运行时，如果要打印 <span class="+ topic/keyword pr-d/parmname keyword parmname">pr_dbg()</span> 和
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">dev_dbg()</span> 信息，还需要调整 <span class="+ topic/keyword pr-d/parmname keyword parmname">loglevel</span> 为
+                                8，可以通过以下两种方式实现：<ul class="- topic/ul ul" id="pwm_debug_guide__ol_vcp_mss_c1c" data-ofbid="pwm_debug_guide__ol_vcp_mss_c1c"><li class="- topic/li li" data-ofbid="d309715e90__20250121171815">
+                                    <p class="- topic/p p" data-ofbid="d309715e92__20250121171815">在 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中修改
+                                            <span class="+ topic/keyword pr-d/parmname keyword parmname">bootargs</span>，增加
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">“loglevel=8”</span></p>
+                                </li><li class="- topic/li li" data-ofbid="d309715e103__20250121171815">
+                                    <div class="- topic/p p" data-ofbid="d309715e105__20250121171815">在板子启动到 Linux Shell
+                                        后，执行下列命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__pre_wcp_mss_c1c" data-ofbid="pwm_debug_guide__pre_wcp_mss_c1c">echo8 &gt; /proc/sys/kernel/printk</pre></div>
+                                </li></ul></div>
+                    </li></ul></div>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="pwm_debug_guide__section_ynj_ljs_21c" data-ofbid="pwm_debug_guide__section_ynj_ljs_21c"><h2 class="- topic/title title sectiontitle">查看 Sysfs 中的状态信息</h2>
+            
+            <div class="- topic/p p" data-ofbid="d309715e119__20250121171815">在 PWM/EPWM 驱动初始化成功后，会在 Sysfs 中注册生成一个 <code class="+ topic/ph pr-d/codeph ph codeph">status</code> 状态节点，其中打印了当前的 PWM/ EPWM
+                    配置及状态信息：<ul class="- topic/ul ul" id="pwm_debug_guide__ul_l4s_dtr_sdc" data-ofbid="pwm_debug_guide__ul_l4s_dtr_sdc"><li class="- topic/li li" data-ofbid="d309715e125__20250121171815">
+                        <div class="- topic/p p" data-ofbid="d309715e127__20250121171815">查看 PWM
+                            状态节点：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_zmc_xjs_21c" data-ofbid="pwm_debug_guide__codeblock_zmc_xjs_21c">cat /sys/devices/platform/soc/<span class="hl-number">19240000.</span>pwm/status</pre></div>
+                        <div class="- topic/p p" data-ofbid="d309715e132__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_k1k_dtr_sdc" data-ofbid="pwm_debug_guide__codeblock_k1k_dtr_sdc">In PWM V1.<span class="hl-number">00</span>:
+Module Enable: <span class="hl-number">1</span>, IRQ Enable: <span class="hl-number">0x0</span>
+Ch En Mode Tb-clk-rate Def CBD CBU CAD CAU PRD ZRO
+ <span class="hl-number">0</span>  <span class="hl-number">0</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                             -   -   -   -   -   -
+ <span class="hl-number">1</span>  <span class="hl-number">0</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                             -   -   -   -   -   -
+ <span class="hl-number">2</span>  <span class="hl-number">1</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">0</span>   -   -   - Hgh Low   -
+                             -   -   - Low Hgh   -
+ <span class="hl-number">3</span>  <span class="hl-number">0</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                             -   -   -   -   -   -</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d309715e137__20250121171815">
+                        <div class="- topic/p p" data-ofbid="d309715e139__20250121171815">查看 EPWM
+                            状态节点：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_wgx_xjs_21c" data-ofbid="pwm_debug_guide__codeblock_wgx_xjs_21c">cat /sys/devices/platform/soc/<span class="hl-number">18200000.e</span>pwm/status</pre></div>
+                        <div class="- topic/p p" data-ofbid="d309715e144__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_zgb_ftr_sdc" data-ofbid="pwm_debug_guide__codeblock_zgb_ftr_sdc">Ch Mode Tb-clk-rate Def CBD CBU CAD CAU PRD ZRO
+ <span class="hl-number">0</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">1</span>   -   -   - Hgh   - Low
+                          - Hgh   -   -   - Low
+ <span class="hl-number">1</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">1</span>   -   -   - Hgh   - Low
+                          - Hgh   -   -   - Low
+ <span class="hl-number">2</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">1</span>   -   -   - Hgh   - Low
+                          - Hgh   -   -   - Low
+ <span class="hl-number">3</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                          -   -   -   -   -   -
+ <span class="hl-number">4</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                          -   -   -   -   -   -
+ <span class="hl-number">5</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                          -   -   -   -   -   -</pre></div>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="pwm_debug_guide__section_zvv_b5r_sdc" data-ofbid="pwm_debug_guide__section_zvv_b5r_sdc"><h2 class="- topic/title title sectiontitle">查看 Sysfs 中的背光设置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d309715e155__20250121171815">Linux 背光子系统提供了用来获取和设置当前背光的 Sysfs 节点。例如，执行下列命令可以查看和修改 Linux 系统中背光的当前亮度和最大亮度：<ol class="- topic/ol ol" id="pwm_debug_guide__ol_rb5_w5r_sdc" data-ofbid="pwm_debug_guide__ol_rb5_w5r_sdc"><li class="- topic/li li" data-ofbid="d309715e158__20250121171815">
+                        <div class="- topic/p p" data-ofbid="d309715e160__20250121171815">查看背光配置：<ul class="- topic/ul ul" id="pwm_debug_guide__ol_tgx_4tr_sdc" data-ofbid="pwm_debug_guide__ol_tgx_4tr_sdc"><li class="- topic/li li" data-ofbid="d309715e163__20250121171815">进入背光配置目录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_xsq_4js_21c" data-ofbid="pwm_debug_guide__codeblock_xsq_4js_21c">cd /sys/class/backlight/backlight/</pre></li><li class="- topic/li li" data-ofbid="d309715e167__20250121171815">
+                                    <div class="- topic/p p" data-ofbid="d309715e169__20250121171815">列出当前所有背光配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_qgs_ptr_sdc" data-ofbid="pwm_debug_guide__codeblock_qgs_ptr_sdc">ls /sys/class/backlight/backlight/</pre></div>
+                                    <div class="- topic/p p" data-ofbid="d309715e174__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_c2g_qtr_sdc" data-ofbid="pwm_debug_guide__codeblock_c2g_qtr_sdc">actual_brightness  device/            subsystem/
+bl_power           max_brightness     type
+brightness         scale              uevent</pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d309715e179__20250121171815">
+                                    <div class="- topic/p p" data-ofbid="d309715e181__20250121171815">查看最大亮度<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_l1w_qtr_sdc" data-ofbid="pwm_debug_guide__codeblock_l1w_qtr_sdc">cat max_brightness</pre></div>
+                                    <div class="- topic/p p" data-ofbid="d309715e186__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_azg_rtr_sdc" data-ofbid="pwm_debug_guide__codeblock_azg_rtr_sdc"><span class="hl-number">10</span></pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d309715e191__20250121171815">查看当前亮度<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_dcd_rtr_sdc" data-ofbid="pwm_debug_guide__codeblock_dcd_rtr_sdc">cat brightness</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_shl_vtr_sdc" data-ofbid="pwm_debug_guide__codeblock_shl_vtr_sdc"><span class="hl-number">8</span></pre></li></ul></div>
+                    </li><li class="- topic/li li" id="pwm_debug_guide__li_ms1_2h1_tdc" data-ofbid="pwm_debug_guide__li_ms1_2h1_tdc">
+                        <div class="- topic/p p" data-ofbid="d309715e200__20250121171815">修改背光配置：<ul class="- topic/ul ul" id="pwm_debug_guide__ul_xs1_2h1_tdc" data-ofbid="pwm_debug_guide__ul_xs1_2h1_tdc"><li class="- topic/li li" data-ofbid="d309715e203__20250121171815">
+                                    <div class="- topic/p p" data-ofbid="d309715e205__20250121171815">将亮度设置为
+                                        9：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_c2r_vtr_sdc" data-ofbid="pwm_debug_guide__codeblock_c2r_vtr_sdc">echo <span class="hl-number">9</span> &gt; brightness</pre></div>
+                                    <div class="- topic/p p" data-ofbid="d309715e210__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_hls_v5r_sdc" data-ofbid="pwm_debug_guide__codeblock_hls_v5r_sdc">[  <span class="hl-number">146.913635</span>] backlight: set brightness to <span class="hl-number">9</span>
+[  <span class="hl-number">154.054433</span>] aic-pwm <span class="hl-number">19240000.</span>pwm: ch0 duty <span class="hl-number">900000</span> period <span class="hl-number">1000000</span></pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d309715e215__20250121171815">
+                                    <p class="- topic/p p" data-ofbid="d309715e217__20250121171815">将亮度设置为 10：</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_ntn_wtr_sdc" data-ofbid="pwm_debug_guide__codeblock_ntn_wtr_sdc">echo <span class="hl-number">10</span> &gt; brightness</pre>
+                                    <div class="- topic/p p" data-ofbid="d309715e223__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_hnb_1vr_sdc" data-ofbid="pwm_debug_guide__codeblock_hnb_1vr_sdc">[  <span class="hl-number">192.145595</span>] backlight: set brightness to <span class="hl-number">10</span>
+[  <span class="hl-number">192.151118</span>] aic-pwm <span class="hl-number">19240000.</span>pwm: ch0 duty <span class="hl-number">1000000</span> period <span class="hl-number">1000000</span></pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d309715e228__20250121171815">
+                                    <div class="- topic/p p" data-ofbid="d309715e230__20250121171815">将亮度重新设置为
+                                        9<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_uqx_wtr_sdc" data-ofbid="pwm_debug_guide__codeblock_uqx_wtr_sdc">echo <span class="hl-number">9</span> &gt; brightness</pre></div>
+                                    <div class="- topic/p p" data-ofbid="d309715e235__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_yqq_bvr_sdc" data-ofbid="pwm_debug_guide__codeblock_yqq_bvr_sdc">
+[  <span class="hl-number">194.681923</span>] backlight: set brightness to <span class="hl-number">9</span>
+[  <span class="hl-number">194.687264</span>] aic-pwm <span class="hl-number">19240000.</span>pwm: ch0 duty <span class="hl-number">900000</span> period <span class="hl-number">1000000</span></pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d309715e240__20250121171815">
+                                    <div class="- topic/p p" data-ofbid="d309715e242__20250121171815">将亮度设置为
+                                        8<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_zxk_xtr_sdc" data-ofbid="pwm_debug_guide__codeblock_zxk_xtr_sdc">echo <span class="hl-number">8</span> &gt; brightness</pre></div>
+                                    <div class="- topic/p p" data-ofbid="d309715e247__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_d1z_cvr_sdc" data-ofbid="pwm_debug_guide__codeblock_d1z_cvr_sdc">[  <span class="hl-number">197.748816</span>] backlight: set brightness to <span class="hl-number">8</span>
+[  <span class="hl-number">197.753606</span>] aic-pwm <span class="hl-number">19240000.</span>pwm: ch0 duty <span class="hl-number">800000</span> period <span class="hl-number">1000000</span></pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d309715e252__20250121171815">
+                                    <p class="- topic/p p" data-ofbid="d309715e254__20250121171815">将亮度设置为 7</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_n3v_xtr_sdc" data-ofbid="pwm_debug_guide__codeblock_n3v_xtr_sdc">echo <span class="hl-number">7</span> &gt; brightness</pre>
+                                </li></ul></div>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="pwm_debug_guide__section_czn_c5r_sdc" data-ofbid="pwm_debug_guide__section_czn_c5r_sdc"><h2 class="- topic/title title sectiontitle">动态配置 PWM 通道</h2>
+            
+            <p class="- topic/p p" data-ofbid="d309715e267__20250121171815">为了提供调试的效率，PWM/ EPWM 驱动都包含一个 <span class="+ topic/ph sw-d/filepath ph filepath">config</span> 节点，可在系统运行时动态修改任意 PWM 或 EPWM
+                通道的任意参数 ，且修改可立即生效。动态配置 PWM 通道，允许开发者在不重新编译固件或重启设备的情况下调整 PWM 参数。</p>
+            <div class="- topic/p p" data-ofbid="d309715e273__20250121171815">假设需要动态配置一个 PWM 通道，设备路径为
+                    <span class="+ topic/ph sw-d/filepath ph filepath">/sys/devices/platform/soc/1924000.pwm/config</span>，以及一个 EPWM
+                通道，设备路径为 <span class="+ topic/ph sw-d/filepath ph filepath">/sys/devices/platform/soc/18200000.epwm/config</span>：<div class="- topic/note note note note_note" id="pwm_debug_guide__note_mft_fwr_sdc" data-ofbid="pwm_debug_guide__note_mft_fwr_sdc"><span class="note__title">注：</span> 关于<span class="+ topic/ph sw-d/filepath ph filepath">config</span> 节点参数，详情可查看 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_debug.html#pwm_debug_guide__section_xhp_3wr_sdc">config 节点参数描述</a>。</div></div>
+            <div class="- topic/p p" data-ofbid="d309715e291__20250121171815">
+                <ol class="- topic/ol ol" id="pwm_debug_guide__ol_e4j_ljs_21c" data-ofbid="pwm_debug_guide__ol_e4j_ljs_21c"><li class="- topic/li li" data-ofbid="d309715e294__20250121171815">使用一步 Shell 中的 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">echo</span> 操作，修改 <span class="+ topic/ph sw-d/filepath ph filepath">dts</span>
+                            中的通道参数。<ul class="- topic/ul ul" id="pwm_debug_guide__ul_gl2_vwr_sdc" data-ofbid="pwm_debug_guide__ul_gl2_vwr_sdc"><li class="- topic/li li" data-ofbid="d309715e303__20250121171815">PWM：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_utb_bks_21c" data-ofbid="pwm_debug_guide__codeblock_utb_bks_21c">echo <span class="hl-string">"0 1 0 24000000 1 0 2 0 0 1 0"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">1924000.</span>pwm/config</pre></li><li class="- topic/li li" data-ofbid="d309715e307__20250121171815">
+                                <div class="- topic/p p" data-ofbid="d309715e309__20250121171815">EPWM<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_iqv_wwr_sdc" data-ofbid="pwm_debug_guide__codeblock_iqv_wwr_sdc">echo <span class="hl-string">"0 0 0 24000000 0 0 0 0 1 0 2"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">18200000.e</span>pwm/config</pre></div>
+                            </li></ul></li><li class="- topic/li li" data-ofbid="d309715e314__20250121171815">
+                        <p class="- topic/p p" data-ofbid="d309715e316__20250121171815">修改完配置后，查看 <code class="+ topic/ph pr-d/codeph ph codeph">status</code> 文件确认配置是否生效：</p>
+                        <ul class="- topic/ul ul" id="pwm_debug_guide__ul_vpv_ywr_sdc" data-ofbid="pwm_debug_guide__ul_vpv_ywr_sdc"><li class="- topic/li li" data-ofbid="d309715e323__20250121171815">PWM<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_tyz_dwr_sdc" data-ofbid="pwm_debug_guide__codeblock_tyz_dwr_sdc">cat /sys/devices/platform/soc/<span class="hl-number">19240000.</span>pwm/status</pre><div class="- topic/p p" data-ofbid="d309715e327__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_x3x_swr_sdc" data-ofbid="pwm_debug_guide__codeblock_x3x_swr_sdc">In PWM V1.<span class="hl-number">00</span>:
+Module Enable: <span class="hl-number">1</span>, IRQ Enable: <span class="hl-number">0x0</span>
+Ch En Mode Tb-clk-rate Def CBD CBU CAD CAU PRD ZRO
+ <span class="hl-number">0</span>  <span class="hl-number">1</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">1</span>   -   -   - Hgh Low   -
+                             - Hgh   -   - Low   -
+ <span class="hl-number">1</span>  <span class="hl-number">0</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">1</span>   -   -   - Hgh Low Low
+                             -   -   -   -   -   -
+ <span class="hl-number">2</span>  <span class="hl-number">0</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                             -   -   -   -   -   -
+ <span class="hl-number">3</span>  <span class="hl-number">0</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                             -   -   -   -   -   -</pre></div></li><li class="- topic/li li" data-ofbid="d309715e331__20250121171815">
+                                <p class="- topic/p p" data-ofbid="d309715e333__20250121171815">EPWM</p>
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_bs2_bks_21c" data-ofbid="pwm_debug_guide__codeblock_bs2_bks_21c">cat /sys/devices/platform/soc/<span class="hl-number">18200000.e</span>pwm/status</pre>
+                                <div class="- topic/p p" data-ofbid="d309715e339__20250121171815">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_zjy_zwr_sdc" data-ofbid="pwm_debug_guide__codeblock_zjy_zwr_sdc">Ch Mode Tb-clk-rate Def CBD CBU CAD CAU PRD ZRO
+ <span class="hl-number">0</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">0</span>   -   -   - Low   - Hgh
+                          - Hgh   -   -   - Low
+ <span class="hl-number">1</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">1</span>   -   -   - Hgh   - Low
+                          - Hgh   -   -   - Low
+ <span class="hl-number">2</span>   Up    <span class="hl-number">24000000</span>   <span class="hl-number">1</span>   -   -   - Hgh   - Low
+                          - Hgh   -   -   - Low
+ <span class="hl-number">3</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                          -   -   -   -   -   -
+ <span class="hl-number">4</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                          -   -   -   -   -   -
+ <span class="hl-number">5</span>   Up           <span class="hl-number">0</span>   <span class="hl-number">0</span>   -   -   -   -   -   -
+                          -   -   -   -   -   -</pre></div>
+                            </li></ul>
+                    </li><li class="- topic/li li" data-ofbid="d309715e345__20250121171815">编译 U-Boot 和镜像文件。</li><li class="- topic/li li" data-ofbid="d309715e347__20250121171815">重启板子后下载最新镜像。</li><li class="- topic/li li" data-ofbid="d309715e349__20250121171815">使用示波器查看该 PWM 通道的信号输出是否符合预期。   </li><li class="- topic/li li" data-ofbid="d309715e351__20250121171815">配置 PWM 输出占空比。<div class="- topic/p p" data-ofbid="d309715e353__20250121171815">同一 PWW 中的两个 action 输出不同占空比。配置不同占空比需要依赖两个 action
+                                在不同时间发生变化：<ol class="- topic/ol ol" type="a" id="pwm_debug_guide__ol_zzr_kxr_sdc" data-ofbid="pwm_debug_guide__ol_zzr_kxr_sdc"><li class="- topic/li li" data-ofbid="d309715e356__20250121171815">在 <code class="+ topic/ph pr-d/codeph ph codeph">config</code> 节点中，配置 PWMx,action0 在 CAU、ZRO
+                                    动作，action1 在 CBU、ZRO 动作。</li><li class="- topic/li li" data-ofbid="d309715e361__20250121171815"><p class="- topic/p p" data-ofbid="d309715e362__20250121171815">分别控制 <code class="+ topic/ph pr-d/codeph ph codeph">output0</code> 和
+                                        <code class="+ topic/ph pr-d/codeph ph codeph">output1</code>。</p><code class="+ topic/ph pr-d/codeph ph codeph">output0</code> 修改的是
+                                    CMPA 寄存器，此处对应 action0，<code class="+ topic/ph pr-d/codeph ph codeph">output1</code> 修改的是 CMPB
+                                    寄存器，此处对应 action1<ul class="- topic/ul ul" id="pwm_debug_guide__ul_i53_nxr_sdc" data-ofbid="pwm_debug_guide__ul_i53_nxr_sdc"><li class="- topic/li li" data-ofbid="d309715e377__20250121171815">配置 PWM 输出占空比，例如配置通道 3
+                                            的输出占空比：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_tqp_cks_21c" data-ofbid="pwm_debug_guide__codeblock_tqp_cks_21c">echo <span class="hl-string">"3 1000000 800000"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">1924000.</span>pwm/output0</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_as5_sxr_sdc" data-ofbid="pwm_debug_guide__codeblock_as5_sxr_sdc">echo <span class="hl-string">"3 1000000 200000"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">1924000.</span>pwm/output1</pre></li><li class="- topic/li li" data-ofbid="d309715e383__20250121171815">
+                                            <div class="- topic/p p" data-ofbid="d309715e385__20250121171815">配置 EPWM 输出占空比，例如配置通道 0
+                                                的输出占空比：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_p3s_cks_21c" data-ofbid="pwm_debug_guide__codeblock_p3s_cks_21c">echo <span class="hl-string">"0 1000000 800000"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">18200000.e</span>pwm/output0</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_sjk_vxr_sdc" data-ofbid="pwm_debug_guide__codeblock_sjk_vxr_sdc">echo <span class="hl-string">"0 1000000 200000"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">18200000.e</span>pwm/output1</pre></div>
+                                        </li></ul></li></ol></div></li><li class="- topic/li li" data-ofbid="d309715e393__20250121171815">
+                        <p class="- topic/p p" data-ofbid="d309715e395__20250121171815">如果需要指定数目的脉冲输出，可以使用以下命令：</p>
+                        <div class="- topic/p p" data-ofbid="d309715e398__20250121171815">以下示例表示配置输出 8 个脉冲：<ul class="- topic/ul ul" id="pwm_debug_guide__ul_i3y_wxr_sdc" data-ofbid="pwm_debug_guide__ul_i3y_wxr_sdc"><li class="- topic/li li" data-ofbid="d309715e401__20250121171815">PWM<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_khx_cks_21c" data-ofbid="pwm_debug_guide__codeblock_khx_cks_21c">echo <span class="hl-string">"3 0 1000000 800000 8"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">1924000.</span>pwm/pulse</pre></li><li class="- topic/li li" data-ofbid="d309715e405__20250121171815">EPWM<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_zwz_cks_21c" data-ofbid="pwm_debug_guide__codeblock_zwz_cks_21c">echo <span class="hl-string">"0 0 1000000 500000 8"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">18200000.e</span>pwm/pulse</pre></li></ul></div>
+                        <div class="- topic/note note note note_note" id="pwm_debug_guide__note_skq_vzr_sdc" data-ofbid="pwm_debug_guide__note_skq_vzr_sdc"><span class="note__title">注：</span> 脉冲输出方向与 <code class="+ topic/ph pr-d/codeph ph codeph">action</code>
+                            配置有关，并且指定脉冲数目输出依赖中断，中断模式需要与 <code class="+ topic/ph pr-d/codeph ph codeph">action</code> 配置相对应，详情可查看<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_debug.html#pwm_debug_guide__section_b2t_hyr_sdc">脉冲输出方向与 Action 配置</a>和<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_debug.html#pwm_debug_guide__section_cyc_kzr_sdc">指定脉冲数目输出依赖中断</a></div>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="pwm_debug_guide__section_xhp_3wr_sdc" data-ofbid="pwm_debug_guide__section_xhp_3wr_sdc"><h2 class="- topic/title title sectiontitle"><span class="+ topic/ph sw-d/filepath ph filepath">config</span> 节点参数描述</h2>
+            
+            <div class="- topic/p p" data-ofbid="d309715e436__20250121171815"><code class="+ topic/ph pr-d/codeph ph codeph">config</code> 的参数格式定义如下（按从左到右的输入顺序）：<div class="table-container"><table class="- topic/table table frame-all" id="pwm_debug_guide__table_h4j_ljs_21c" data-ofbid="pwm_debug_guide__table_h4j_ljs_21c" data-cols="3"><caption></caption><colgroup><col style="width:22.47191011235955%"/><col style="width:23.370786516853933%"/><col style="width:54.157303370786515%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_debug_guide__table_h4j_ljs_21c__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_debug_guide__table_h4j_ljs_21c__entry__2">取值范围</th><th class="- topic/entry entry colsep-0 rowsep-1" id="pwm_debug_guide__table_h4j_ljs_21c__entry__3">含义</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">channel No.</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__2">[0, 3]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__3">通道号</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">action No.</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__2">[0, 1]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__3">0 和 1 分别代表 action0、action1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">mode</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__2">[0, 2]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__3">0, up-count; 1, down-count; 2, up-down-count</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">tb-clk-rate</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__2">[0, 24000000]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__3">时基计数器的工作时钟</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">default level</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__2">[0, 1]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__3">初始电平</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">CBD</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__2" rowspan="6">[0, 3]</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__3" rowspan="6">
+                                    <p class="- topic/p p" data-ofbid="d309715e496__20250121171815">0, none;</p>
+                                    <p class="- topic/p p" data-ofbid="d309715e499__20250121171815">1, low;</p>
+                                    <p class="- topic/p p" data-ofbid="d309715e502__20250121171815">2, high;</p>
+                                    <p class="- topic/p p" data-ofbid="d309715e505__20250121171815">3, inverse</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">CBU</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">CAD</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">CAU</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">PRD</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_debug_guide__table_h4j_ljs_21c__entry__1">ZRO</td></tr></tbody></table></div></div>
+        </section><section class="- topic/section section" id="pwm_debug_guide__section_b2t_hyr_sdc" data-ofbid="pwm_debug_guide__section_b2t_hyr_sdc"><h2 class="- topic/title title sectiontitle">脉冲输出方向与 Action 配置</h2>
+            
+            <p class="- topic/p p" data-ofbid="d309715e529__20250121171815">在 PWM 和 EPWM 中，脉冲输出的方向和行为可以通过配置不同的 <code class="+ topic/ph pr-d/codeph ph codeph">action</code> 来实现。每个
+                    <code class="+ topic/ph pr-d/codeph ph codeph">action</code> 可以独立配置其触发条件、输出电平以及是否产生中断等。</p>
+            <div class="- topic/p p" data-ofbid="d309715e538__20250121171815">假设需要动态配置一个 PWM 通道，设备路径为
+                    <span class="+ topic/ph sw-d/filepath ph filepath">/sys/devices/platform/soc/1924000.pwm/config</span>，执行下列命令，可配置两个
+                    <code class="+ topic/ph pr-d/codeph ph codeph">action</code>，分别用于控制脉冲输出的方向和行为：<ul class="- topic/ul ul" id="pwm_debug_guide__ul_t4n_qyr_sdc" data-ofbid="pwm_debug_guide__ul_t4n_qyr_sdc"><li class="- topic/li li" data-ofbid="d309715e547__20250121171815">配置 action
+                        0<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_km1_qyr_sdc" data-ofbid="pwm_debug_guide__codeblock_km1_qyr_sdc">echo <span class="hl-string">"0 1 0 24000000 1 0 2 0 0 1 0"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">1924000.</span>pwm/config
+</pre></li><li class="- topic/li li" data-ofbid="d309715e551__20250121171815">配置 action
+                        1<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_dw3_qyr_sdc" data-ofbid="pwm_debug_guide__codeblock_dw3_qyr_sdc">echo <span class="hl-string">"1 1 0 24040000 1 0 2 0 0 1 0"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">1924000.</span>pwm/config
+</pre></li></ul></div>
+        </section><section class="- topic/section section" id="pwm_debug_guide__section_cyc_kzr_sdc" data-ofbid="pwm_debug_guide__section_cyc_kzr_sdc"><h2 class="- topic/title title sectiontitle">指定脉冲数目输出依赖中断</h2>
+            
+            <p class="- topic/p p" data-ofbid="d309715e561__20250121171815">指定脉冲数目输出通常需要配置中断，以便在达到指定的脉冲数时触发中断处理程序。中断模式需要与 <code class="+ topic/ph pr-d/codeph ph codeph">action</code>
+                配置相对应，以确保正确的事件触发。</p>
+            <div class="- topic/p p" data-ofbid="d309715e567__20250121171815">以下示例中，配置了一个中断，当计数器达到某个值时触发中断。需要确保中断模式与 <code class="+ topic/ph pr-d/codeph ph codeph">action</code>
+                    配置相匹配。例如：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pwm_debug_guide__codeblock_chj_mzr_sdc" data-ofbid="pwm_debug_guide__codeblock_chj_mzr_sdc">echo <span class="hl-string">"3 1000000 800000 8"</span> &gt; /sys/devices/platform/soc/<span class="hl-number">1924000.</span>pwm/pulse
+</pre><ul class="- topic/ul ul" id="pwm_debug_guide__ul_rq4_qzr_sdc" data-ofbid="pwm_debug_guide__ul_rq4_qzr_sdc"><li class="- topic/li li" data-ofbid="d309715e575__20250121171815">
+                        <p class="- topic/p p" data-ofbid="d309715e577__20250121171815"><code class="+ topic/ph pr-d/codeph ph codeph">mode</code> 设置为 <code class="+ topic/ph pr-d/codeph ph codeph">3</code>，表示  TBCTR=CMPB
+                            且计数器正在递减时触发事件。确保与 <code class="+ topic/ph pr-d/codeph ph codeph">action</code> 的配置相匹配。</p>
+                    </li><li class="- topic/li li" data-ofbid="d309715e588__20250121171815">
+                        <div class="- topic/p p" data-ofbid="d309715e590__20250121171815"><code class="+ topic/ph pr-d/codeph ph codeph">mode</code> 取值范围如下：<ul class="- topic/ul ul" id="pwm_debug_guide__ul_o4j_ljs_21c" data-ofbid="pwm_debug_guide__ul_o4j_ljs_21c"><li class="- topic/li li" data-ofbid="d309715e595__20250121171815">
+                                    <p class="- topic/p p" data-ofbid="d309715e597__20250121171815">0: TBCTR=CMPA 且计数器正在递增时触发事件</p>
+                                </li><li class="- topic/li li" data-ofbid="d309715e600__20250121171815">
+                                    <p class="- topic/p p" data-ofbid="d309715e602__20250121171815">1: TBCTR=CMPA 且计数器正在递减时触发事件</p>
+                                </li><li class="- topic/li li" data-ofbid="d309715e605__20250121171815">
+                                    <p class="- topic/p p" data-ofbid="d309715e607__20250121171815">2: TBCTR=CMPB 且计数器正在递增时触发事件</p>
+                                </li><li class="- topic/li li" data-ofbid="d309715e610__20250121171815">
+                                    <p class="- topic/p p" data-ofbid="d309715e612__20250121171815">3: TBCTR=CMPB 且计数器正在递减时触发事件</p>
+                                </li></ul></div>
+                    </li></ul></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#pwm_debug_guide__section_tnj_ljs_21c" data-tocid="pwm_debug_guide__section_tnj_ljs_21c">调试开关</a></div></li><li class="section-item"><div class="section-title"><a href="#pwm_debug_guide__section_ynj_ljs_21c" data-tocid="pwm_debug_guide__section_ynj_ljs_21c">查看 Sysfs 中的状态信息</a></div></li><li class="section-item"><div class="section-title"><a href="#pwm_debug_guide__section_zvv_b5r_sdc" data-tocid="pwm_debug_guide__section_zvv_b5r_sdc">查看 Sysfs 中的背光设置</a></div></li><li class="section-item"><div class="section-title"><a href="#pwm_debug_guide__section_czn_c5r_sdc" data-tocid="pwm_debug_guide__section_czn_c5r_sdc">动态配置 PWM 通道</a></div></li><li class="section-item"><div class="section-title"><a href="#pwm_debug_guide__section_xhp_3wr_sdc" data-tocid="pwm_debug_guide__section_xhp_3wr_sdc"><span class="+ topic/ph sw-d/filepath ph filepath">config</span> 节点参数描述</a></div></li><li class="section-item"><div class="section-title"><a href="#pwm_debug_guide__section_b2t_hyr_sdc" data-tocid="pwm_debug_guide__section_b2t_hyr_sdc">脉冲输出方向与 Action 配置</a></div></li><li class="section-item"><div class="section-title"><a href="#pwm_debug_guide__section_cyc_kzr_sdc" data-tocid="pwm_debug_guide__section_cyc_kzr_sdc">指定脉冲数目输出依赖中断</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

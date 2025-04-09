@@ -1,0 +1,219 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="SDFAT32 启动方式更为简单，不需要专业的烧录工具进行烧写，只需要将镜像文件复制到 SD 卡即可。 图 1 . MMC 与 SD 卡启动差异 SDFAT32 是基于 MMC 建立的，加载程序也在 spl_mmc.c 中实现： 使用下列宏参数将 spl_mmc_load_image 函数添加到 .u_boot_list_2_spl_image_loader_* 段。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="sdfat32"/><meta name="DC.language" content="zh-CN"/><title>SDFAT32 加载</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/load-SDFAT32.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/load-SDFAT32.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="sdfat32" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/load-SDFAT32.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SDFAT32 加载</h1><div class="date inPage">25 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d270588e22__20250121171740">SDFAT32 启动方式更为简单，不需要专业的烧录工具进行烧写，只需要将镜像文件复制到 SD 卡即可。</p><div class="- topic/p p" data-ofbid="d270588e24__20250121171740">
+            <figure class="- topic/fig fig fignone" id="sdfat32__fig_vhv_tbx_5dc" data-ofbid="sdfat32__fig_vhv_tbx_5dc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="sdfat32__image_igl_w1h_bzb" src="../../../images/boot/load_diff.png"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">MMC 与 SD 卡启动差异</span></figcaption></figure>
+        </div><div class="- topic/p p" data-ofbid="d270588e31__20250121171740">SDFAT32 是基于 MMC 建立的，加载程序也在 <span class="+ topic/ph sw-d/filepath ph filepath">spl_mmc.c</span> 中实现：<ol class="- topic/ol ol" id="sdfat32__ol_mft_vbx_5dc" data-ofbid="sdfat32__ol_mft_vbx_5dc"><li class="- topic/li li" data-ofbid="d270588e37__20250121171740">使用下列宏参数将 <span class="+ topic/keyword pr-d/apiname keyword apiname">spl_mmc_load_image</span> 函数添加到
+                    .u_boot_list_2_spl_image_loader_*
+                    段。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdfat32__codeblock_tx1_xbx_5dc" data-ofbid="sdfat32__codeblock_tx1_xbx_5dc">SPL_LOAD_IMAGE_METHOD(“MMC2”, <span class="hl-number">0</span>, BOOT_DEVICE_MMC2, spl_mmc_load_image);</pre></li><li class="- topic/li li" data-ofbid="d270588e44__20250121171740">
+                    <div class="- topic/p p" data-ofbid="d270588e46__20250121171740">在 <code class="+ topic/ph pr-d/codeph ph codeph">board_init_r(gd_t *dummy1, ulong dummy2)</code> 函数中，调用
+                            <span class="+ topic/keyword pr-d/apiname keyword apiname">boot_from_devices</span> 从 device
+                        中选择启动介质，通过启动介质选择对应的加载程序，获取启动镜像。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdfat32__codeblock_t2y_ksy_c1c" data-ofbid="sdfat32__codeblock_t2y_ksy_c1c"><em class="hl-comment">// source/uboot-2021.10/common/spl/spl.c</em>
+boot_from_devices
+|   <em class="hl-comment">// 这里会传递一个空的 info 结构体，以及传递一个启动设备的列表，这里为第一个值为 BOOT_DEVICE_MMC2</em>
+|-&gt;spl_ll_find_loader(bootdev); <em class="hl-comment">// bootdev=BOOT_DEVICE_MMC2,根据 bootdev 查找 spl_load_image 指针</em>
+|-&gt;spl_load_image(spl_image, loader); <em class="hl-comment">// 这里已经获取到对应启动设备的加载器</em>
+        |-&gt;loader-&gt;load_image(spl_image, &amp;bootdev); <em class="hl-comment">// 调用加载器的实现函数 spl_mmc_load_image</em></pre></div>
+                </li><li class="- topic/li li" data-ofbid="d270588e57__20250121171740">
+                    <div class="- topic/p p" data-ofbid="d270588e59__20250121171740">进入到对应启动介质的加载程序中，通过 NAME 指定启动镜像配置文件，从中获取镜像在 SD
+                        卡中的实际地址。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdfat32__codeblock_dyf_lsy_c1c" data-ofbid="sdfat32__codeblock_dyf_lsy_c1c"><em class="hl-comment">// source/uboot-2021.10/common/spl/spl_fat.c</em>
+spl_mmc_load_image
+|-&gt;spl_mmc_load(spl_image, bootdev,...); <em class="hl-comment">// 这里 CONFIG_SPL_FS_LOAD_PAYLOAD_NAME=bootcfg.txt</em>
+    |-&gt;spl_mmc_find_device(&amp;mmc, bootdev-&gt;boot_device); <em class="hl-comment">// 先找 mmc 设备</em>
+    |-&gt;mmc_init(mmc); <em class="hl-comment">// 再进行 mmc 设备的初始化</em>
+    |-&gt;spl_mmc_boot_mode(bootdev-&gt;boot_device);
+    |       <em class="hl-comment">// 选择启动方式，这里获取到的是 FS 方式启动</em>
+    |-&gt;spl_mmc_do_fs_boot(spl_image, mmc, filename); <em class="hl-comment">// filename 为 bootcfg.txt</em>
+        |-&gt;aic_spl_load_image_fat(spl_image, mmc_get_blk_desc(mmc), filename);
+            |-&gt;blk_dread(cur_dev, <span class="hl-number">0</span>, <span class="hl-number">1</span>, header);
+            |       <em class="hl-comment">// 读取 SD 卡的第 0 块。</em>
+            |-&gt;check_identifier(header); <em class="hl-comment">// 检测 SD 卡的分区类型选择启动方式</em>
+            |-&gt;load_image_from_mbr_part_fat32(header, filename); <em class="hl-comment">// 以 MBR 分区格式去加载镜像</em>
+                |-&gt;blk_dread(cur_dev, part.lba_start, <span class="hl-number">1</span>, header);
+                |   <em class="hl-comment">// 读取 LBA 起始地址</em>
+                |-&gt;check_identifier(header); <em class="hl-comment">// 检测 SD 卡分区类型是否为 FAT32</em>
+                |-&gt;load_image_from_raw_volume_fat32(part.lba_start, header, filename);
+                |   <em class="hl-comment">// 获取 BPB 内容</em>
+                    |-&gt;load_image_file(header, filename);
+                        |-&gt;aic_fat_read_file(filename, (u8 *)header, <span class="hl-number">0</span>, <span class="hl-number">1024</span>, &amp;actread);
+                        |   <em class="hl-comment">// 查找并读取 txt 文件内容到 header 地址</em>
+                        |-&gt;boot_cfg_parse_file((u8 *)header, actread, <span class="hl-string">"boot1"</span>, ...);
+                        |   <em class="hl-comment">// 解析 txt 信息，获取 image 名称，解析 Boot 的大小，以及相对</em>
+                        |   <em class="hl-comment">// image 文件中 Boot 所在的偏移地址</em>
+                        |-&gt;aic_fat_read_file(imgname, header, ...); <em class="hl-comment">//读取 image 文件的 header</em>
+                        |-&gt;spl_parse_image_header(spl_image, header);
+                        |   <em class="hl-comment">// 解析 Boot 中前 64 个字节内容，设置加载地址</em>
+                        |-&gt;aic_fat_read_file(imgname, (u8 *)spl_image-&gt;load_addr, ...);
+                        |   <em class="hl-comment">// 读取 Boot 镜像到 spl_image-&gt;load_addr 地址。</em>
+                        |-&gt;board_init_r(); <em class="hl-comment">// 跳转回 board_init_r()继续执行</em></pre></div>
+                </li><li class="- topic/li li" data-ofbid="d270588e64__20250121171740">
+                    <div class="- topic/p p" data-ofbid="d270588e66__20250121171740">读取 Boot 镜像到内存后，跳转回
+                        board_init_r()继续执行<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdfat32__codeblock_ukk_lsy_c1c" data-ofbid="sdfat32__codeblock_ukk_lsy_c1c"><em class="hl-comment">// source/uboot-2021.10/common/spl/spl.c</em>
+board_init_r()
+|-&gt;spl_perform_fixups <em class="hl-comment">// vendor hook，用于修改 tree 传递参数</em>
+|-&gt;jump_to_image_no_args(&amp;spl_image);
+    |-&gt;image_entry = (image_entry_withargs_t)spl_image-&gt;entry_point; <em class="hl-comment">// 获取 Boot 加载地址</em>
+    |-&gt;set_boot_device(boot_param, aic_get_boot_device()); <em class="hl-comment">// 设置启动介质</em>
+    |-&gt;set_boot_reason(boot_param, aic_get_boot_reason()); <em class="hl-comment">// 设置启动原因（冷启动或者热启动）</em>
+    |-&gt;image_entry(boot_param, cur_tm); <em class="hl-comment">// 进入 Boot 执行，并传递一些参数</em>
+</pre></div>
+                </li></ol></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

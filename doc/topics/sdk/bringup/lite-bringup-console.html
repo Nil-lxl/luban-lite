@@ -1,0 +1,263 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="BootLoader 和 RT-Thread 均用到调试端口。在 Bringup 过程中，正确配置调试端口至关重要，可以帮助开发者快速发现问题的根本原因，从而快速解决问题。 以 d21x demo128_nand 工程为例， 使用 uart0 端口作为调试口，详细配置流程如下： 通过 list 命令查看所有可用的配置，包括 BootLoader 和 RT-Thread。 Built-in ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/bringup/chapter-bringup.html"/><meta name="DC.relation" content="../../../topics/sdk/bringup/lite-bringup-storage.html"/><meta name="DC.relation" content="../../../topics/sdk/bringup/lite-bringup-display.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>调试配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e2309"/><meta name="wh-source-relpath" content="topics/sdk/bringup/lite-bringup-console.dita"/><meta name="wh-out-relpath" content="topics/sdk/bringup/lite-bringup-console.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-console.html">调试配置</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/bringup/lite-bringup-storage.html" title="存储配置" aria-label="上一主题: 存储配置" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/bringup/lite-bringup-display.html" title="屏幕配置" aria-label="下一主题: 屏幕配置" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e2259" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-prepare.html" id="id-d5856e2259-link">准备工作</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2273" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-soc.html" id="id-d5856e2273-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2285" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-ram.html" id="id-d5856e2285-link">内存配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2297" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-storage.html" id="id-d5856e2297-link">存储配置</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e2309" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-console.html" id="id-d5856e2309-link">调试配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2321" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-display.html" id="id-d5856e2321-link">屏幕配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2333" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-samples.html" id="id-d5856e2333-link">示例程序</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/bringup/lite-bringup-console.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试配置</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d277734e19__20250121171750">BootLoader 和 RT-Thread 均用到调试端口。在 Bringup
+            过程中，正确配置调试端口至关重要，可以帮助开发者快速发现问题的根本原因，从而快速解决问题。</p><div class="- topic/p p" data-ofbid="d277734e21__20250121171750">以 <span class="+ topic/ph sw-d/filepath ph filepath">d21x demo128_nand</span> 工程为例， 使用 <span class="+ topic/keyword pr-d/parmname keyword parmname">uart0</span>
+                端口作为调试口，详细配置流程如下：<ol class="- topic/ol ol" id="id__ol_rfm_5gk_5dc" data-ofbid="id__ol_rfm_5gk_5dc"><li class="- topic/li li" data-ofbid="d277734e30__20250121171750">通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">list</span> 命令查看所有可用的配置，包括 BootLoader 和
+                    RT-Thread。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_sfm_5gk_5dc" data-ofbid="id__codeblock_sfm_5gk_5dc">Built-in configs:
+<span class="hl-number">0.</span> d12x_demo68-nand_baremetal_BootLoader
+<span class="hl-number">1.</span> d12x_demo68-nand_rt-thread_helloworld
+<span class="hl-number">2.</span> d12x_demo68-nor_baremetal_BootLoader
+<span class="hl-number">3.</span> d12x_demo68-nor_rt-thread_helloworld
+<span class="hl-number">4.</span> d12x_hmi-nor_baremetal_BootLoader
+<span class="hl-number">5.</span> d12x_hmi-nor_rt-thread_helloworld
+<span class="hl-number">6.</span> d13x_demo88-nand_baremetal_BootLoader
+<span class="hl-number">7.</span> d13x_demo88-nand_rt-thread_helloworld
+<span class="hl-number">8.</span> d13x_demo88-nor_baremetal_BootLoader
+<span class="hl-number">9.</span> d13x_demo88-nor_rt-thread_helloworld
+<span class="hl-number">10.</span> d13x_kunlunpi88-nor_baremetal_BootLoader
+<span class="hl-number">11.</span> d13x_kunlunpi88-nor_rt-thread_helloworld
+<span class="hl-number">12.</span> d21x_demo128-nand_baremetal_BootLoader
+<span class="hl-number">13.</span> d21x_demo128-nand_rt-thread_helloworld
+<span class="hl-number">14.</span> g73x_demo100-nor_baremetal_BootLoader
+<span class="hl-number">15.</span> g73x_demo100-nor_rt-thread_helloworld</pre></li><li class="- topic/li li" data-ofbid="d277734e37__20250121171750"><strong class="+ topic/ph hi-d/b ph b">配置 BootLoader</strong><ol class="- topic/ol ol" type="a" id="id__ol_tfm_5gk_5dc" data-ofbid="id__ol_tfm_5gk_5dc"><li class="- topic/li li" data-ofbid="d277734e41__20250121171750">
+                            <div class="- topic/p p" data-ofbid="d277734e43__20250121171750">选择并使用下列命令进入所需的 BootLoader
+                                配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_lsv_3gk_5dc" data-ofbid="id__codeblock_lsv_3gk_5dc">lunch <var class="+ topic/keyword sw-d/varname keyword varname">list number</var></pre></div>
+                            <div class="- topic/p p" data-ofbid="d277734e50__20250121171750">例如，<span class="+ topic/ph sw-d/filepath ph filepath">d21x_demo128_nand</span> 位于第 12 列，则使用下列命令选择
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">d21x_demo128_nand BootLoader</span>
+                                配置文件。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_r11_kgk_5dc" data-ofbid="id__codeblock_r11_kgk_5dc">lunch <span class="hl-number">12</span></pre></div>
+                        </li><li class="- topic/li li" data-ofbid="d277734e61__20250121171750">
+                            <p class="- topic/p p" data-ofbid="d277734e63__20250121171750">输入 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">me</span> 命令进入 menuconfig 配置界面。</p>
+                        </li><li class="- topic/li li" data-ofbid="d277734e69__20250121171750">
+                            <div class="- topic/p p" data-ofbid="d277734e71__20250121171750">在 menuconfig 界面中，选择 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using Uart0</span>
+                                选项，并设置相应的参数。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ufm_5gk_5dc" data-ofbid="id__codeblock_ufm_5gk_5dc">Board options --&gt;
+    [*] Using Uart0
+        Uart0 Parameter  ---&gt; <em class="hl-comment">//设置对应的参数</em>
+BootLoader options  ---&gt;
+    Console  ---&gt;
+        (<span class="hl-number">0</span>) Console UART ID <em class="hl-comment">//选择对应的串口号</em></pre></div>
+                        </li><li class="- topic/li li" data-ofbid="d277734e82__20250121171750">
+                            <p class="- topic/p p" data-ofbid="d277734e84__20250121171750">保存配置并退出。</p>
+                        </li><li class="- topic/li li" data-ofbid="d277734e87__20250121171750">
+                            <p class="- topic/p p" data-ofbid="d277734e89__20250121171750">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">m</span> 命令编译 BootLoader。</p>
+                        </li></ol></li><li class="- topic/li li" data-ofbid="d277734e95__20250121171750"><strong class="+ topic/ph hi-d/b ph b">配置 RT-Thread</strong><ol class="- topic/ol ol" type="a" id="id__ol_vfm_5gk_5dc" data-ofbid="id__ol_vfm_5gk_5dc"><li class="- topic/li li" data-ofbid="d277734e99__20250121171750">
+                            <div class="- topic/p p" data-ofbid="d277734e101__20250121171750">选择并使用下列命令进入所需的 RT-Thread
+                                配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_jtt_lgk_5dc" data-ofbid="id__codeblock_jtt_lgk_5dc">lunch <var class="+ topic/keyword sw-d/varname keyword varname">list number</var></pre></div>
+                            <div class="- topic/p p" data-ofbid="d277734e108__20250121171750">例如，<span class="+ topic/ph sw-d/filepath ph filepath">d21x_demo128_nand</span> 位于第 13 列，则使用下列命令选择
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">d21x_demo128-nand_rt-thread_helloworld</span>
+                                配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_l53_ngk_5dc" data-ofbid="id__codeblock_l53_ngk_5dc">lunch <span class="hl-number">13</span></pre></div>
+                        </li><li class="- topic/li li" data-ofbid="d277734e119__20250121171750">
+                            <p class="- topic/p p" data-ofbid="d277734e121__20250121171750">输入 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">me</span> 命令进入 menuconfig 配置界面。</p>
+                        </li><li class="- topic/li li" data-ofbid="d277734e127__20250121171750">
+                            <div class="- topic/p p" data-ofbid="d277734e129__20250121171750">在 menuconfig 界面中，选择 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using Uart0</span>
+                                选项，并设置相应的参数。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wfm_5gk_5dc" data-ofbid="id__codeblock_wfm_5gk_5dc">Board options --&gt;
+    [*] Using Uart0
+        Uart0 Parameter  ---&gt; <em class="hl-comment">//设置对应的参数</em>
+
+Rt-Thread options  ---&gt;
+    RT-Thread Kernel  ---&gt;
+        Kernel Device Object  ---&gt;
+            (uart0) the device name <strong class="hl-keyword">for</strong> console  <em class="hl-comment">//设置对应的串口号</em></pre></div>
+                        </li><li class="- topic/li li" data-ofbid="d277734e137__20250121171750">
+                            <p class="- topic/p p" data-ofbid="d277734e139__20250121171750">保存配置并退出。</p>
+                        </li><li class="- topic/li li" data-ofbid="d277734e142__20250121171750">
+                            <p class="- topic/p p" data-ofbid="d277734e144__20250121171750">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">m</span> 命令编译 RT-Thread。</p>
+                        </li></ol></li><li class="- topic/li li" data-ofbid="d277734e150__20250121171750">
+                    <p class="- topic/p p" data-ofbid="d277734e152__20250121171750"><strong class="+ topic/ph hi-d/b ph b">pinmux 设置</strong>：配置串口对应的硬件复用功能。</p>
+                    <div class="- topic/p p" data-ofbid="d277734e157__20250121171750">以 <span class="+ topic/ph sw-d/filepath ph filepath">d21x demo128_nand</span> 工程为例， 在
+                            <span class="+ topic/ph sw-d/filepath ph filepath">target/d211/demo128-nand/pinmux.c</span> 文件中配置
+                            pinmux。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_c1m_nr5_hdc" data-ofbid="id__codeblock_c1m_nr5_hdc"><strong class="hl-keyword">struct</strong> aic_pinmux aic_pinmux_config[] = {
+#ifdef AIC_USING_UART0
+    <em class="hl-comment">/* uart0 */</em>
+    {<span class="hl-number">5</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.0"</span>},
+    {<span class="hl-number">5</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.1"</span>},
+#endif</pre><ul class="- topic/ul ul simple" id="id__ul_d1m_nr5_hdc" data-ofbid="id__ul_d1m_nr5_hdc"><li class="- topic/li li" data-ofbid="d277734e168__20250121171750">
+                                <p class="- topic/p p" data-ofbid="d277734e170__20250121171750"><span class="+ topic/keyword pr-d/parmname keyword parmname">5</span>：复用功能，可以查看芯片手册.引脚复用功能说明。</p>
+                            </li><li class="- topic/li li" data-ofbid="d277734e175__20250121171750">
+                                <p class="- topic/p p" data-ofbid="d277734e177__20250121171750"><span class="+ topic/keyword pr-d/parmname keyword parmname">PIN_PULL_DIS</span>：禁止上拉下拉,根据需要选择是否上下拉，有的串口工具无上拉，且主板这边也没做上拉，可以使用上拉。</p>
+                            </li><li class="- topic/li li" data-ofbid="d277734e182__20250121171750">
+                                <p class="- topic/p p" data-ofbid="d277734e184__20250121171750"><span class="+ topic/keyword pr-d/parmname keyword parmname">3</span>：驱动强度，默认即可。</p>
+                            </li><li class="- topic/li li" data-ofbid="d277734e189__20250121171750">
+                                <p class="- topic/p p" data-ofbid="d277734e191__20250121171750"><span class="+ topic/keyword pr-d/parmname keyword parmname">"PA.0"</span>：引脚名称，根据硬件设计的原理图选择。</p>
+                            </li></ul></div>
+                </li><li class="- topic/li li" data-ofbid="d277734e199__20250121171750">
+                    <p class="- topic/p p" data-ofbid="d277734e201__20250121171750">保存，使用命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">m</span> 编译烧写固件。</p>
+                </li><li class="- topic/li li" data-ofbid="d277734e207__20250121171750">
+                    <p class="- topic/p p" data-ofbid="d277734e209__20250121171750">重启开发板，即可使用串口调试。</p>
+                </li></ol></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="DMA 源代码位于 drivers/dma/artinchip-dma.c 。 Linux 提供了一个 DMA Engine 子系统，可封装不同类型的 DMA 控制器驱动，便于 DMA 用户了解硬件细节。 图 1 . Linux DMA Engine 子系统架构 Linux DMA Engine 子系统架构 展示了 DMA Engine 中的下列组成部分： DMA Device 对应物理上的一个 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_xwt_1sf_h1c"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/dma/dma-design-guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/dma/dma-design-guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_xwt_1sf_h1c" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/dma/dma-design-guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/div div">
+            <p class="- topic/p p" data-ofbid="d77570e24__20250121171524">DMA 源代码位于 <span class="+ topic/ph sw-d/filepath ph filepath">drivers/dma/artinchip-dma.c</span>。</p>
+            <p class="- topic/p p" data-ofbid="d77570e30__20250121171524">Linux 提供了一个 DMA Engine 子系统，可封装不同类型的 DMA 控制器驱动，便于 DMA 用户了解硬件细节。</p>
+            <div class="- topic/p p" data-ofbid="d77570e33__20250121171524">
+                <figure class="- topic/fig fig fignone" id="concept_xwt_1sf_h1c__fig_cdz_kms_c1c" data-ofbid="concept_xwt_1sf_h1c__fig_cdz_kms_c1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_xwt_1sf_h1c__image_isk_3ms_c1c" src="../../../images/dma/dma_sw_system_lb.png" alt="sw_system20"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">Linux DMA Engine 子系统架构</span></figcaption></figure>
+            </div>
+            <div class="- topic/p p" data-ofbid="d77570e43__20250121171524"><a class="- topic/xref xref" href="dma-design-guide.html#concept_xwt_1sf_h1c__fig_cdz_kms_c1c">Linux DMA Engine 子系统架构</a> 展示了 DMA Engine 中的下列组成部分：<ul class="- topic/ul ul" id="concept_xwt_1sf_h1c__ul_jsk_3ms_c1c" data-ofbid="concept_xwt_1sf_h1c__ul_jsk_3ms_c1c"><li class="- topic/li li" data-ofbid="d77570e49__20250121171524"><strong class="+ topic/ph hi-d/b ph b">DMA Device</strong><ul class="- topic/ul ul" id="concept_xwt_1sf_h1c__ul_tqk_xrt_mdc" data-ofbid="concept_xwt_1sf_h1c__ul_tqk_xrt_mdc"><li class="- topic/li li" data-ofbid="d77570e53__20250121171524">对应物理上的一个 Controller。</li><li class="- topic/li li" data-ofbid="d77570e55__20250121171524">DMA Driver 需要提供 Controller 的属性和接口，并注册成为 DMA Device，供后续 DMA Engine
+                                框架来调用。</li><li class="- topic/li li" data-ofbid="d77570e57__20250121171524">支持注册多个 DMA Device，并使用一个链表 <span class="+ topic/keyword pr-d/parmname keyword parmname">dma_device_list</span>
+                                来进行管理。</li></ul></li><li class="- topic/li li" data-ofbid="d77570e62__20250121171524"><strong class="+ topic/ph hi-d/b ph b">DMA channel</strong><ul class="- topic/ul ul" id="concept_xwt_1sf_h1c__ul_oqq_2st_mdc" data-ofbid="concept_xwt_1sf_h1c__ul_oqq_2st_mdc"><li class="- topic/li li" data-ofbid="d77570e66__20250121171524">对应物理上的 DMA 通道，如图中 DMA Controller 的 Chx。</li><li class="- topic/li li" data-ofbid="d77570e68__20250121171524">物理 DMA 通道也是通过一个链表进行管理，归属于同一个 DMA Device。</li></ul></li><li class="- topic/li li" data-ofbid="d77570e70__20250121171524"><strong class="+ topic/ph hi-d/b ph b">VC（Virtual channel）</strong><ul class="- topic/ul ul" id="concept_xwt_1sf_h1c__ul_upc_gst_mdc" data-ofbid="concept_xwt_1sf_h1c__ul_upc_gst_mdc"><li class="- topic/li li" data-ofbid="d77570e74__20250121171524">VC，即虚拟通道</li><li class="- topic/li li" data-ofbid="d77570e76__20250121171524">基于物理的 DMA 通道，DMA Engine 提供了一种 VC。</li><li class="- topic/li li" data-ofbid="d77570e78__20250121171524">VC 数目往往多于物理通道数，比如 VC 有 48 个而物理通道只有 8 个，便于提供一种动态的物理通道分配机制。</li></ul></li><li class="- topic/li li" data-ofbid="d77570e80__20250121171524"><strong class="+ topic/ph hi-d/b ph b">DMA Client</strong><ul class="- topic/ul ul" id="concept_xwt_1sf_h1c__ul_srt_jst_mdc" data-ofbid="concept_xwt_1sf_h1c__ul_srt_jst_mdc"><li class="- topic/li li" data-ofbid="d77570e84__20250121171524">DMA 模块的使用者。</li><li class="- topic/li li" data-ofbid="d77570e86__20250121171524">DMA 用户仅限内核中的其他模块，如 SPI、Audio Codec、UART 等。</li><li class="- topic/li li" data-ofbid="d77570e88__20250121171524">暂未提供用户态的使用接口。</li></ul></li></ul></div>
+        </div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

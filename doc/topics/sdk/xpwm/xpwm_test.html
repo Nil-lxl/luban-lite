@@ -1,0 +1,352 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="测试环境 硬件 FPGA 验证版 示波器，用于观察输出 XPWM/PWM 信号的波形 软件 PC 端的串口终端软件，用于 PC 和开发板进行串口通信 RT-Thread 系统自带的 pwm 命令行工具 软件配置 当打开 RT-Thread 系统的 PWM 设备驱动框架，就会在启动时注册生成 pwm 命令。 测试 XPWM/PWM pwm 命令帮助信息如下： spss /&gt; pwm Usage: ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/xpwm/xpwm_test.dita"/><meta name="wh-out-relpath" content="topics/sdk/xpwm/xpwm_test.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/xpwm/xpwm_test.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 7 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">测试环境</h2>
+            
+            <ul class="- topic/ul ul" id="id__ul_mdt_jj3_fdc" data-ofbid="id__ul_mdt_jj3_fdc"><li class="- topic/li li" data-ofbid="d155459e23__20250121171615"><strong class="+ topic/ph hi-d/b ph b">硬件</strong><ul class="- topic/ul ul simple" id="id__ul_kvn_pyh_ddc" data-ofbid="id__ul_kvn_pyh_ddc"><li class="- topic/li li" data-ofbid="d155459e27__20250121171615">
+                            <p class="- topic/p p" data-ofbid="d155459e29__20250121171615">FPGA 验证版</p>
+                        </li><li class="- topic/li li" data-ofbid="d155459e32__20250121171615">
+                            <p class="- topic/p p" data-ofbid="d155459e34__20250121171615">示波器，用于观察输出 XPWM/PWM 信号的波形</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d155459e37__20250121171615"><strong class="+ topic/ph hi-d/b ph b">软件</strong><ul class="- topic/ul ul simple" id="id__ul_lvn_pyh_ddc" data-ofbid="id__ul_lvn_pyh_ddc"><li class="- topic/li li" data-ofbid="d155459e41__20250121171615">
+                            <p class="- topic/p p" data-ofbid="d155459e43__20250121171615">PC 端的串口终端软件，用于 PC 和开发板进行串口通信</p>
+                        </li><li class="- topic/li li" data-ofbid="d155459e46__20250121171615">
+                            <p class="- topic/p p" data-ofbid="d155459e48__20250121171615">RT-Thread 系统自带的 <code class="+ topic/ph pr-d/codeph ph codeph">pwm</code> 命令行工具</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d155459e54__20250121171615"><strong class="+ topic/ph hi-d/b ph b">软件配置</strong><p class="- topic/p p" data-ofbid="d155459e57__20250121171615">当打开 RT-Thread 系统的 PWM 设备驱动框架，就会在启动时注册生成 <code class="+ topic/ph pr-d/codeph ph codeph">pwm</code>
+                        命令。</p></li></ul></section><section class="- topic/section section" id="id__xpwm-pwm" data-ofbid="id__xpwm-pwm"><h2 class="- topic/title title sectiontitle">测试 XPWM/PWM</h2>
+            
+            <p class="- topic/p p" data-ofbid="d155459e67__20250121171615"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">pwm</span> 命令帮助信息如下：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_mvn_pyh_ddc" data-ofbid="id__codeblock_mvn_pyh_ddc">spss /&gt; pwm
+Usage:
+pwm probe   &lt;device name&gt;                - probe pwm by name
+pwm enable  &lt;channel&gt;                    - enable pwm channel
+pwm disable &lt;channel&gt;                    - disable pwm channel
+pwm get     &lt;channel&gt;                    - get pwm channel info
+pwm set          &lt;channel&gt; &lt;period&gt; &lt;pulse&gt; &lt;pulse cnt&gt;               - set pwm channel info
+pwm set_fifo_num &lt;channel&gt; &lt;fifo_num&gt;                                 - set xpwm fifo count
+pwm set_fifo     &lt;channel&gt; &lt;fifo_index&gt; &lt;period&gt; &lt;pulse&gt; &lt;pulse cnt&gt;  - set xpwm fifo info
+pwm get_fifo      &lt;channel&gt;                                           - get xpwm fifo info
+pwm dma_test     &lt;channel&gt; &lt;loop_times&gt;                               - xpwm dma test</pre>
+            <p class="- topic/p p" data-ofbid="d155459e75__20250121171615">测试前应先注册设备：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_nvn_pyh_ddc" data-ofbid="id__codeblock_nvn_pyh_ddc">aic&gt; pwm probe xpwm
+probe xpwm success
+</pre>
+            <p class="- topic/p p" data-ofbid="d155459e82__20250121171615">
+                <strong class="+ topic/ph hi-d/b ph b">- 使用举例 1： XPWM 自由方式演示。</strong>
+            </p>
+            <ol class="- topic/ol ol arabic simple" id="id__ol_ovn_pyh_ddc" data-ofbid="id__ol_ovn_pyh_ddc"><li class="- topic/li li" data-ofbid="d155459e89__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e91__20250121171615">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig
+                        的功能配置界面，将 XPWM
+                        配置为普通模式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_pvn_pyh_ddc" data-ofbid="id__codeblock_pvn_pyh_ddc">Board options ---&gt;
+    Select ALL XPWM MODE (normal mode)  ---&gt;
+</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e102__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e104__20250121171615">配置输出频率为 1KHz，占空比为 80% 的 7
+                        个脉冲。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_rvn_pyh_ddc" data-ofbid="id__codeblock_rvn_pyh_ddc">aic&gt; pwm set010000008000007
+pwm info set on xpwm at channel <span class="hl-number">0</span></pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e109__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d155459e111__20250121171615">观察示波器，可以见到输出了 7 个脉冲。</p>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d155459e115__20250121171615">
+                <strong class="+ topic/ph hi-d/b ph b">- 使用举例 2： XPWM 持续输出功能演示。</strong>
+            </p>
+            <ol class="- topic/ol ol arabic simple" id="id__ol_tvn_pyh_ddc" data-ofbid="id__ol_tvn_pyh_ddc"><li class="- topic/li li" data-ofbid="d155459e122__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e124__20250121171615">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig
+                        的功能配置界面，将 XPWM
+                        配置为连续模式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_uvn_pyh_ddc" data-ofbid="id__codeblock_uvn_pyh_ddc">Board options ---&gt;
+    Select ALL XPWM MODE (continuous mode)  ---&gt;
+</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e135__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e137__20250121171615">配置输出中断频率为 1KHz，占空比为
+                        30%，任意个数脉冲。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wvn_pyh_ddc" data-ofbid="id__codeblock_wvn_pyh_ddc">aic&gt; pwm set010000003000007
+pwm info set on xpwm at channel <span class="hl-number">0</span></pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e142__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d155459e144__20250121171615">观察示波器，可以见到连续输出的 PWM。</p>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d155459e148__20250121171615">
+                <strong class="+ topic/ph hi-d/b ph b">- 使用举例 3： XPWM 中断配置 FIFO 方式演示。</strong>
+            </p>
+            <ol class="- topic/ol ol arabic simple" id="id__ol_yvn_pyh_ddc" data-ofbid="id__ol_yvn_pyh_ddc"><li class="- topic/li li" data-ofbid="d155459e155__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e157__20250121171615">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig
+                        的功能配置界面，将 XPWM 配置为使用 FIFO 模式，同时关闭 DMA
+                        支持：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_zvn_pyh_ddc" data-ofbid="id__codeblock_zvn_pyh_ddc">Board options ---&gt;
+    Select ALL XPWM MODE (fifo mode)  ---&gt;
+......
+[ ] Using DMA
+</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e168__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e170__20250121171615">XPWM 最大支持 8 组 FIFO，其中每组深度为 3*32bits。 此处演示 XPWM 通道 0 设置 5 组 FIFO，通道 1 设置 1 组
+                        FIFO，通道 2 设置 1 组 FIFO，通道 3 设置 2 组
+                        FIFO。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_bwn_pyh_ddc" data-ofbid="id__codeblock_bwn_pyh_ddc">aic&gt; pwm set_fifo <span class="hl-number">0010000001000001</span>
+pwm set fifo on xpwm at channel <span class="hl-number">0</span>
+aic&gt; pwm set_fifo <span class="hl-number">015000002000002</span>
+pwm set fifo on xpwm at channel <span class="hl-number">0</span>
+aic&gt; pwm set_fifo <span class="hl-number">025000003000003</span>
+pwm set fifo on xpwm at channel <span class="hl-number">0</span>
+aic&gt; pwm set_fifo <span class="hl-number">032000001000001</span>
+pwm set fifo on xpwm at channel <span class="hl-number">0</span>
+aic&gt; pwm set_fifo <span class="hl-number">043000002000002</span>
+pwm set fifo on xpwm at channel <span class="hl-number">0</span>
+aic&gt; pwm set_fifo_num <span class="hl-number">05</span>
+pwm set fifo num on xpwm at channel <span class="hl-number">0</span>
+aic&gt; pwm set_fifo <span class="hl-number">1010000005000001</span>
+pwm set fifo on xpwm at channel <span class="hl-number">1</span>
+aic&gt; pwm set_fifo_num <span class="hl-number">11</span>
+pwm set fifo num on xpwm at channel <span class="hl-number">1</span>
+aic&gt; pwm set_fifo <span class="hl-number">2010000003000001</span>
+pwm set fifo on xpwm at channel <span class="hl-number">2</span>
+aic&gt; pwm set_fifo_num <span class="hl-number">21</span>
+pwm set fifo num on xpwm at channel <span class="hl-number">2</span>
+aic&gt; pwm set_fifo <span class="hl-number">3010000001000002</span>
+pwm set fifo on xpwm at channel <span class="hl-number">3</span>
+aic&gt; pwm set_fifo <span class="hl-number">3110000002000003</span>
+pwm set fifo on xpwm at channel <span class="hl-number">3</span>
+aic&gt; pwm set_fifo_num <span class="hl-number">32</span>
+pwm set fifo num on xpwm at channel <span class="hl-number">3</span></pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e175__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e177__20250121171615">使能通道 0/1/2/3。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_dwn_pyh_ddc" data-ofbid="id__codeblock_dwn_pyh_ddc">aic&gt;pwm enable0
+aic&gt;pwm enable1
+aic&gt;pwm enable2
+aic&gt;pwm enable3</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e182__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e184__20250121171615">可以获取当前 XPWM 通道的 FIFO
+                        信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_fwn_pyh_ddc" data-ofbid="id__codeblock_fwn_pyh_ddc">aic&gt; pwm get_fifo <span class="hl-number">0</span>[<span class="hl-number">179795</span>] I/XPWM: ch0 fifo valid count: <span class="hl-number">5</span>[<span class="hl-number">179800</span>] I/XPWM: fifo_idx <span class="hl-number">0</span>: prd:<span class="hl-number">1000000</span> pulse:<span class="hl-number">100000</span> pulse cnt:<span class="hl-number">1</span>
+[<span class="hl-number">179808</span>] I/XPWM: fifo_idx <span class="hl-number">1</span>: prd:<span class="hl-number">500000</span> pulse:<span class="hl-number">200000</span> pulse cnt:<span class="hl-number">2</span>
+[<span class="hl-number">179815</span>] I/XPWM: fifo_idx <span class="hl-number">2</span>: prd:<span class="hl-number">500000</span> pulse:<span class="hl-number">300000</span> pulse cnt:<span class="hl-number">3</span>
+[<span class="hl-number">179823</span>] I/XPWM: fifo_idx <span class="hl-number">3</span>: prd:<span class="hl-number">200000</span> pulse:<span class="hl-number">100000</span> pulse cnt:<span class="hl-number">1</span>
+[<span class="hl-number">179830</span>] I/XPWM: fifo_idx <span class="hl-number">4</span>: prd:<span class="hl-number">300000</span> pulse:<span class="hl-number">200000</span> pulse cnt:<span class="hl-number">2</span>
+</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e189__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d155459e191__20250121171615">观察示波器，可以看到 XPWM 在不断输出 FIFO 中的脉冲组合。</p>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d155459e196__20250121171615">
+                <strong class="+ topic/ph hi-d/b ph b">- 使用举例 4： XPWM DMA 配置 FIFO 方式演示。</strong>
+            </p>
+            <ol class="- topic/ol ol arabic simple" id="id__ol_hwn_pyh_ddc" data-ofbid="id__ol_hwn_pyh_ddc"><li class="- topic/li li" data-ofbid="d155459e203__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e205__20250121171615">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig
+                        的功能配置界面，将 XPWM 配置为使用 FIFO 模式，同时打开 DMA
+                        支持：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_iwn_pyh_ddc" data-ofbid="id__codeblock_iwn_pyh_ddc">Board options ---&gt;
+    Select ALL XPWM MODE (fifo mode)  ---&gt;
+......
+[*] Using DMA
+</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e216__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e218__20250121171615">先使能通道 0/1/2/3。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_kwn_pyh_ddc" data-ofbid="id__codeblock_kwn_pyh_ddc">aic&gt;pwm enable0
+aic&gt;pwm enable1
+aic&gt;pwm enable2
+aic&gt;pwm enable3</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e223__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e225__20250121171615">手动设置 FIFO。 FIFO INDEX 参数将会被忽略，此处只能设置一个 FIFO
+                        进行测试。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_mwn_pyh_ddc" data-ofbid="id__codeblock_mwn_pyh_ddc">aic &gt; pwm set_fifo <span class="hl-number">0010000003000005</span>
+pwm set fifo on xpwm at channel <span class="hl-number">0</span>
+aic &gt; pwm set_fifo <span class="hl-number">106000005000003</span>
+pwm set fifo on xpwm at channel <span class="hl-number">1</span>
+aic &gt; pwm set_fifo <span class="hl-number">208000005000007</span>
+pwm set fifo on xpwm at channel <span class="hl-number">2</span>
+aic &gt; pwm set_fifo <span class="hl-number">3020003807</span>
+pwm set fifo on xpwm at channel <span class="hl-number">3</span></pre></div>
+                </li><li class="- topic/li li" data-ofbid="d155459e230__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d155459e232__20250121171615">观察示波器。</p>
+                </li><li class="- topic/li li" data-ofbid="d155459e235__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d155459e237__20250121171615">进行 DMA 循环测试，循环输出代码中的组合 N 次，此处演示 3
+                        次。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_own_pyh_ddc" data-ofbid="id__codeblock_own_pyh_ddc">aic &gt; pwm dma_test <span class="hl-number">03</span>
+xpwm ch0 will loop <span class="hl-number">3</span>times</pre></div>
+                    <div class="- topic/note note tip note_tip" id="id__note_xnn_qn3_ddc" data-ofbid="id__note_xnn_qn3_ddc"><span class="note__title">提示：</span> 
+                        <ol class="- topic/ol ol arabic simple" type="a" id="id__ol_pwn_pyh_ddc" data-ofbid="id__ol_pwn_pyh_ddc"><li class="- topic/li li" data-ofbid="d155459e245__20250121171615">
+                                <p class="- topic/p p" data-ofbid="d155459e247__20250121171615"><code class="+ topic/ph pr-d/codeph ph codeph">dma_test</code> 中，会将 BUFF 中的数据循环输出，此处作演示，仅使用了一个 BUFF
+                                    空间，没有区分通道，故每个通道不能同时调用 <code class="+ topic/ph pr-d/codeph ph codeph">dma_test</code> 。</p>
+                            </li><li class="- topic/li li" data-ofbid="d155459e255__20250121171615">
+                                <p class="- topic/p p" data-ofbid="d155459e257__20250121171615"><code class="+ topic/ph pr-d/codeph ph codeph">dma_test</code> 中输出的测试组合，在源码 rt_drv_pwm.c 中。</p>
+                            </li><li class="- topic/li li" data-ofbid="d155459e262__20250121171615">
+                                <p class="- topic/p p" data-ofbid="d155459e264__20250121171615">由于单组 FIFO 数据大小为 3*32bits,不符合清 CACHE
+                                    数据大小对齐，会出现相关警告为正常现象，不影响使用。</p>
+                                <p class="- topic/p p" data-ofbid="d155459e267__20250121171615">测试组合如下：</p>
+                            </li></ol>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d155459e272__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d155459e274__20250121171615">观察示波器。</p>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d155459e278__20250121171615">
+                <strong class="+ topic/ph hi-d/b ph b">- 使用举例 5： XPWM 中断配置 FIFO 方式演示。</strong>
+            </p>
+            <ol class="- topic/ol ol arabic simple" id="id__ol_rwn_pyh_ddc" data-ofbid="id__ol_rwn_pyh_ddc"><li class="- topic/li li" data-ofbid="d155459e285__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d155459e287__20250121171615">PWM 功能下 <code class="+ topic/ph pr-d/codeph ph codeph">pulse_cnt</code> 参数将被忽略,配置输出频率为 1KHz，占空比为 80%。</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_swn_pyh_ddc" data-ofbid="id__codeblock_swn_pyh_ddc">aic&gt; pwm set810000008000000
+pwm info set on xpwm at channel <span class="hl-number">8</span></pre>
+                </li><li class="- topic/li li" data-ofbid="d155459e296__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d155459e298__20250121171615">观察示波器，可以见到相应的 PWM 波。</p>
+                    <div class="- topic/note note tip note_tip" id="id__note_ynn_qn3_ddc" data-ofbid="id__note_ynn_qn3_ddc"><span class="note__title">提示：</span> 
+                        <p class="- topic/p p" data-ofbid="d155459e303__20250121171615">XPWM 通道为 0-7，PWM 通道为 8-23。</p>
+                    </div>
+                </li></ol>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">测试环境</a></div></li><li class="section-item"><div class="section-title"><a href="#id__xpwm-pwm" data-tocid="id__xpwm-pwm">测试 XPWM/PWM</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

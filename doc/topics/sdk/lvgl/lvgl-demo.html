@@ -1,0 +1,355 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="LVGL demo 示例目前支持下列常见的示例： Base Demo ：LVGL 的基础演示示例，展示了如何使用 LVGL 创建基本的 UI 元素，通常用于展示 LVGL 的基本功能和使用方法，包括： 创建按钮并响应点击事件 显示文本标签 使用滑块调整数值 简单的动画效果 Meter Demo ：演示如何使用 LVGL 创建仪表盘（meter）， ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/lvgl/lvgl_design_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/lvgl/lvgl-freetype.html"/><meta name="DC.relation" content="../../../topics/sdk/lvgl/lvgl_add_app.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="lvgl-demo"/><title>LVGL Demo</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="lvgl-demo-d5856e4820"/><meta name="wh-source-relpath" content="topics/sdk/lvgl/lvgl-demo.dita"/><meta name="wh-out-relpath" content="topics/sdk/lvgl/lvgl-demo.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="lvgl-demo" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html">LVGL 使用指南</a></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_design_guide.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="lvgl-demo"><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-demo.html">LVGL Demo</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/lvgl/lvgl-freetype.html" title="第三方 FreeType 库支持" aria-label="上一主题: 第三方 FreeType 库支持" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/lvgl/lvgl_add_app.html" title="添加应用" aria-label="下一主题: 添加应用" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e4736" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_configure.html" id="id-d5856e4736-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4748" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_debug_guide.html" id="id-d5856e4748-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4760" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_test_guide.html" id="id-d5856e4760-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e4772" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e4772-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_design_guide.html" id="id-d5856e4772-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="lvgl-connecting-display-d5856e4784" class="topicref" data-id="lvgl-connecting-display" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-connecting-display.html" id="lvgl-connecting-display-d5856e4784-link">显示对接</a></div></div></li><li role="treeitem"><div data-tocid="lvgl-hw-decoder-d5856e4796" class="topicref" data-id="lvgl-hw-decoder" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-hw-decoder.html" id="lvgl-hw-decoder-d5856e4796-link">硬件解码对接</a></div></div></li><li role="treeitem"><div data-tocid="lvgl-freetype-d5856e4808" class="topicref" data-id="lvgl-freetype" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-freetype.html" id="lvgl-freetype-d5856e4808-link">第三方 FreeType 库支持</a></div></div></li><li role="treeitem" class="active"><div data-tocid="lvgl-demo-d5856e4820" class="topicref" data-id="lvgl-demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-demo.html" id="lvgl-demo-d5856e4820-link">LVGL Demo</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e4832" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_add_app.html" id="id-d5856e4832-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4844" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_special_func.html" id="id-d5856e4844-link">屏幕旋转</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4856" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_faq.html" id="id-d5856e4856-link">常见问题</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/lvgl/lvgl-demo.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">LVGL Demo</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 5 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d308076e24__20250121171814">LVGL demo 示例目前支持下列常见的示例：<ul class="- topic/ul ul" id="lvgl-demo__ul_orj_z3h_fdc" data-ofbid="lvgl-demo__ul_orj_z3h_fdc"><li class="- topic/li li" data-ofbid="d308076e27__20250121171814"><a class="- topic/xref xref" href="lvgl-demo.html#lvgl-demo__section_fyy_jjh_fdc">Base Demo</a>：LVGL 的基础演示示例，展示了如何使用 LVGL 创建基本的
+                    UI 元素，通常用于展示 LVGL 的基本功能和使用方法，包括：<ul class="- topic/ul ul" id="lvgl-demo__ul_wr4_cjh_fdc" data-ofbid="lvgl-demo__ul_wr4_cjh_fdc"><li class="- topic/li li" data-ofbid="d308076e33__20250121171814">创建按钮并响应点击事件</li><li class="- topic/li li" data-ofbid="d308076e35__20250121171814">显示文本标签</li><li class="- topic/li li" data-ofbid="d308076e37__20250121171814">使用滑块调整数值</li><li class="- topic/li li" data-ofbid="d308076e39__20250121171814">简单的动画效果</li></ul></li><li class="- topic/li li" data-ofbid="d308076e41__20250121171814"><a class="- topic/xref xref" href="lvgl-demo.html#lvgl-demo__section_xgg_ljh_fdc">Meter Demo</a>：演示如何使用 LVGL 创建仪表盘（meter），
+                        常用于需要显示数据变化的场景，如速度表、温度计等。功能包括：<ul class="- topic/ul ul" id="lvgl-demo__ul_zsw_2jh_fdc" data-ofbid="lvgl-demo__ul_zsw_2jh_fdc"><li class="- topic/li li" data-ofbid="d308076e47__20250121171814">创建仪表盘并添加指针</li><li class="- topic/li li" data-ofbid="d308076e49__20250121171814">动态更新指针位置</li><li class="- topic/li li" data-ofbid="d308076e51__20250121171814">显示刻度和标签</li><li class="- topic/li li" data-ofbid="d308076e53__20250121171814">支持多种样式和颜色</li></ul></li><li class="- topic/li li" data-ofbid="d308076e55__20250121171814">Widgets demo：展示 LVGL 提供的各种 UI 控件，可以帮助开发者了解如何使用不同的控件来构建复杂的用户界面。UI 控件包括：<ul class="- topic/ul ul" id="lvgl-demo__ul_j23_gjh_fdc" data-ofbid="lvgl-demo__ul_j23_gjh_fdc"><li class="- topic/li li" data-ofbid="d308076e58__20250121171814">列表视图</li><li class="- topic/li li" data-ofbid="d308076e60__20250121171814">下拉菜单</li><li class="- topic/li li" data-ofbid="d308076e62__20250121171814">复选框和单选按钮</li><li class="- topic/li li" data-ofbid="d308076e64__20250121171814">开关按钮</li><li class="- topic/li li" data-ofbid="d308076e66__20250121171814">日期选择器</li></ul></li><li class="- topic/li li" data-ofbid="d308076e68__20250121171814">Benchmark demo：展示 LVGL 在不同硬件平台上的表现，用于测试和评估 LVGL 的性能，包括渲染速度、内存占用指标以及帧率统计。</li></ul></div><p class="- topic/p p" data-ofbid="d308076e70__20250121171814">本节主要介绍 <a class="- topic/xref xref" href="lvgl-demo.html#lvgl-demo__section_fyy_jjh_fdc">Base Demo</a> 和 <a class="- topic/xref xref" href="lvgl-demo.html#lvgl-demo__section_xgg_ljh_fdc">Meter Demo</a>。</p><section class="- topic/section section" id="lvgl-demo__section_fyy_jjh_fdc" data-ofbid="lvgl-demo__section_fyy_jjh_fdc"><h2 class="- topic/title title sectiontitle">Base Demo</h2>
+            
+            <div class="- topic/p p" data-ofbid="d308076e85__20250121171814">Base Demo 演示了如何使用 LVGL 创建基本的 UI 元素，包括 PNG 和 JPG 图片的硬件解码，内置图片的使用方式以及通过滑动操作切换页面。UI
+                    界面示例如下：<figure class="- topic/fig fig fignone" id="lvgl-demo__id22" data-ofbid="lvgl-demo__id22"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="lvgl-demo__image_w1h_1zf_fdc" src="../../../images/lvgl/base_demo1.png" alt="base_demo1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">Base Demo 界面示例</span></figcaption></figure></div>
+            <div class="- topic/p p" data-ofbid="d308076e94__20250121171814">Base demo 一共有四个页面， 分别为仪表演示、音乐播放演示、菜单演示以及播放器演示。播放器演示页面需要打开 base_ui.c 中的宏定义
+                VIDEO_PLAYER。以下是 base demo 页面的基本布局和特性说明：<ol class="- topic/ol ol arabic simple" id="lvgl-demo__ol_x1h_1zf_fdc" data-ofbid="lvgl-demo__ol_x1h_1zf_fdc"><li class="- topic/li li" data-ofbid="d308076e97__20250121171814">
+                        <div class="- topic/p p" data-ofbid="d308076e99__20250121171814">每个页面都可以通过滑动操作切换。页面滑动使用了 tabview 控件，每个页面都是一个
+                            tab。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-demo__codeblock_n3b_q1g_fdc" data-ofbid="lvgl-demo__codeblock_n3b_q1g_fdc">lv_obj_set_size(main_tabview, <span class="hl-number">1024</span>, <span class="hl-number">600</span>);
+lv_obj_set_pos(main_tabview, <span class="hl-number">0</span>, <span class="hl-number">0</span>);
+lv_obj_set_style_bg_opa(main_tabview, LV_OPA_<span class="hl-number">0</span>, <span class="hl-number">0</span>);
+
+lv_obj_t *main_tab0 = lv_tabview_add_tab(main_tabview, <span class="hl-string">"main page 0"</span>);
+lv_obj_t *main_tab1 = lv_tabview_add_tab(main_tabview, <span class="hl-string">"main page 1"</span>);
+
+lv_obj_set_style_bg_opa(main_tab0, LV_OPA_<span class="hl-number">0</span>, <span class="hl-number">0</span>);
+lv_obj_set_style_bg_opa(main_tab1, LV_OPA_<span class="hl-number">0</span>, <span class="hl-number">0</span>);
+lv_obj_set_size(main_tab0, <span class="hl-number">1024</span>, <span class="hl-number">600</span>);
+lv_obj_set_size(main_tab1, <span class="hl-number">1024</span>, <span class="hl-number">600</span>);
+
+lv_obj_set_pos(main_tab0, <span class="hl-number">0</span>, <span class="hl-number">0</span>);
+lv_obj_set_pos(main_tab1, <span class="hl-number">0</span>, <span class="hl-number">0</span>);</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d308076e104__20250121171814">
+                        <div class="- topic/p p" data-ofbid="d308076e106__20250121171814">背景图片通过 image 控件来创建，是一个名字为 <span class="+ topic/ph sw-d/filepath ph filepath">global_bg</span> 的 PNG
+                            图片。此图片会采用注册的硬件解码器进行解码：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-demo__codeblock_qsp_q1g_fdc" data-ofbid="lvgl-demo__codeblock_qsp_q1g_fdc"><strong class="hl-keyword">static</strong> lv_obj_t *img_bg = NULL;
+img_bg = lv_img_create(lv_scr_act());
+lv_img_set_src(img_bg, LVGL_PATH(global_bg));
+lv_obj_set_pos(img_bg, <span class="hl-number">0</span>, <span class="hl-number">0</span>);</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d308076e114__20250121171814">
+                        <div class="- topic/p p" data-ofbid="d308076e116__20250121171814">菜单图片也通过 image 控件来创建，也是一个 PNG
+                            图片，且此图片也会采用注册的硬件解码器进行解码：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-demo__codeblock_ogc_r1g_fdc" data-ofbid="lvgl-demo__codeblock_ogc_r1g_fdc">lv_obj_t *sub_image00 = lv_img_create(sub_tab0);
+lv_img_set_src(sub_image00, LVGL_PATH(cook_<span class="hl-number">0.</span>jpg));
+lv_obj_set_pos(sub_image00, <span class="hl-number">36</span>, <span class="hl-number">100</span>);</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d308076e121__20250121171814">
+                        <p class="- topic/p p" data-ofbid="d308076e123__20250121171814">Fake image</p>
+                        <div class="- topic/p p" data-ofbid="d308076e126__20250121171814">Fake image 不是一个真实的图片，通过此方式可以方便的对一个矩形区域进行填充，包括
+                            alpha、red、green、blue：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-demo__codeblock_knx_r1g_fdc" data-ofbid="lvgl-demo__codeblock_knx_r1g_fdc"><strong class="hl-keyword">static</strong> lv_obj_t *img_bg = NULL;
+FAKE_IMAGE_DECLARE(bg_dark)  <em class="hl-comment">// 声明（bg_dark 名字可修改）</em>
+
+<em class="hl-comment">/* 最后一个参数为要设置的颜色值：bit31:24 为 alpha */</em>
+FAKE_IMAGE_INIT(bg_dark, <span class="hl-number">1024</span>, <span class="hl-number">600</span>, <span class="hl-number">0</span>, <span class="hl-number">0x00000000</span>);
+
+lv_img_set_src(img_bg, FAKE_IMAGE_NAME(bg_dark)); <em class="hl-comment">// 设置 fake image 数据源</em></pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d308076e131__20250121171814">
+                        <p class="- topic/p p" data-ofbid="d308076e133__20250121171814">Build-in image 是通过数组变量在程序中表示图像。</p>
+                        <div class="- topic/p p" data-ofbid="d308076e136__20250121171814">图片转换成 <span class="+ topic/ph sw-d/filepath ph filepath">.c</span> 文件的工具，参考官网：<a class="- topic/xref xref reference external" href="http://lvgl.io/tools/imageconverter" target="_blank" rel="external noopener">http://lvgl.io/tools/imageconverter</a><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-demo__codeblock_hb5_s1g_fdc" data-ofbid="lvgl-demo__codeblock_hb5_s1g_fdc">uint8_t circle_white_map[] = {
+        <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0x50</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0x7f</span>, <span class="hl-number">0xff</span>,
+        ........................................................};
+
+<strong class="hl-keyword">const</strong> lv_img_dsc_t circle_white = {
+    .header.cf = LV_IMG_CF_TRUE_COLOR_ALPHA,
+    .header.always_zero = <span class="hl-number">0</span>,
+    .header.reserved = <span class="hl-number">0</span>,
+    .header.w = <span class="hl-number">20</span>,
+    .header.h = <span class="hl-number">20</span>,
+    .data_size = <span class="hl-number">400</span> * LV_IMG_PX_SIZE_ALPHA_BYTE,
+    .data = circle_white_map,
+};
+
+<strong class="hl-keyword">static</strong> lv_obj_t * circle_<span class="hl-number">0</span> = lv_img_create(img_bg);
+lv_img_set_src(circle_<span class="hl-number">0</span>, &amp;circle_white);
+lv_obj_align(circle_<span class="hl-number">0</span>, LV_ALIGN_BOTTOM_MID, -<span class="hl-number">16</span>, -<span class="hl-number">28</span>);</pre></div>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="lvgl-demo__section_xgg_ljh_fdc" data-ofbid="lvgl-demo__section_xgg_ljh_fdc"><h2 class="- topic/title title sectiontitle">Meter Demo</h2>
+            
+            <p class="- topic/p p" data-ofbid="d308076e153__20250121171814">Meter demo 演示了硬件旋转，以及仪表盘的设计参考。</p>
+            <figure class="- topic/fig fig fignone" id="lvgl-demo__id23" data-ofbid="lvgl-demo__id23"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="lvgl-demo__image_dbh_1zf_fdc" src="../../../images/lvgl/meter_demo.png" width="384" alt="meter_demo"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">Meter Demo 界面示例</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d308076e163__20250121171814">Meter demo 的详细说明及特点如下：</p>
+            <ol class="- topic/ol ol arabic simple" id="lvgl-demo__ol_ebh_1zf_fdc" data-ofbid="lvgl-demo__ol_ebh_1zf_fdc"><li class="- topic/li li" data-ofbid="d308076e167__20250121171814">
+                    <div class="- topic/p p" data-ofbid="d308076e169__20250121171814">各种控件的动作通过 timer
+                        来实现，每间隔一定的时间执行相应的回调函数。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-demo__codeblock_a4b_51g_fdc" data-ofbid="lvgl-demo__codeblock_a4b_51g_fdc">lv_timer_create(point_callback, <span class="hl-number">10</span>, <span class="hl-number">0</span>);
+lv_timer_create(fps_callback, <span class="hl-number">1000</span>, <span class="hl-number">0</span>);
+lv_timer_create(speed_callback, <span class="hl-number">100</span>, <span class="hl-number">0</span>);
+lv_timer_create(time_callback, <span class="hl-number">1000</span> * <span class="hl-number">60</span>, <span class="hl-number">0</span>);</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d308076e174__20250121171814">
+                    <div class="- topic/p p" data-ofbid="d308076e176__20250121171814">指针和光影通过贴图和硬件任意角度旋转来实现。其中，前 74 张指针通过切换 74 张图片来实现， 从第 75
+                        张开始的红色指针，采用硬件任意角度旋转来实现。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-demo__codeblock_fck_51g_fdc" data-ofbid="lvgl-demo__codeblock_fck_51g_fdc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> point_callback(lv_timer_t *tmr)
+{
+    <strong class="hl-keyword">char</strong> data_str[<span class="hl-number">64</span>];
+    (<strong class="hl-keyword">void</strong>)tmr;
+
+    <strong class="hl-keyword">static</strong> bool first = true;
+    <strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> id = <span class="hl-number">1</span>;
+    <strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> direct = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> mode_id = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> mode_num = <strong class="hl-keyword">sizeof</strong>(rot_mode_list) / <strong class="hl-keyword">sizeof</strong>(rot_mode_list[<span class="hl-number">0</span>]);
+    <strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> start_id = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> end_id = <span class="hl-number">0</span>;
+
+    <strong class="hl-keyword">if</strong> (first) {
+        first = false;
+        start_id = rot_mode_list[mode_id].start_id;
+        end_id = rot_mode_list[mode_id].end_id;
+    }
+
+    direct = start_id &lt; end_id ? <span class="hl-number">0</span>: <span class="hl-number">1</span>;
+
+    <strong class="hl-keyword">if</strong> (id &lt; <span class="hl-number">75</span>) {
+    lv_img_set_src(img_circle, LVGL_PATH(bg/small_blue));
+    lv_obj_clear_flag(img_circle, LV_OBJ_FLAG_HIDDEN);
+    } <strong class="hl-keyword">else</strong> {
+    lv_obj_add_flag(img_circle, LV_OBJ_FLAG_HIDDEN);
+    }
+
+    <strong class="hl-keyword">if</strong> (id &lt; <span class="hl-number">75</span>) {
+        sprintf(data_str, <span class="hl-string">"%spoint/point_%05d"</span>, LVGL_DIR, id);
+        lv_img_set_src(img_point, data_str);
+        lv_img_set_angle(img_point, <span class="hl-number">0</span>);
+
+    } <strong class="hl-keyword">else</strong> {
+        <em class="hl-comment">// id to angle</em>
+        <strong class="hl-keyword">float</strong> rot_angle = ((<strong class="hl-keyword">float</strong>)(id - <span class="hl-number">75</span>) * <span class="hl-number">2</span> * <span class="hl-number">10</span>) * <span class="hl-number">0.84</span>;
+        sprintf(data_str, <span class="hl-string">"%spoint/point_%05d"</span>, LVGL_DIR, <span class="hl-number">75</span>);
+        lv_img_set_src(img_point, data_str);
+        lv_img_set_pivot(img_point, <span class="hl-number">210</span>, <span class="hl-number">210</span>);
+        lv_img_set_angle(img_point, (int16_t)rot_angle);
+    }
+
+    <strong class="hl-keyword">if</strong> (direct == <span class="hl-number">0</span>) {
+        id++;
+    } <strong class="hl-keyword">else</strong> {
+        id--;
+    }
+
+    <strong class="hl-keyword">if</strong> ((!direct &amp;&amp; (id &gt; end_id) ) ||
+        (direct &amp;&amp; (id &lt; end_id))) {
+        id = end_id;
+        mode_id++;
+        mode_id %= mode_num;
+        start_id = rot_mode_list[mode_id].start_id;
+        end_id = rot_mode_list[mode_id].end_id;
+    }
+
+    <strong class="hl-keyword">return</strong>;
+}</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d308076e181__20250121171814">
+                    <p class="- topic/p p" data-ofbid="d308076e183__20250121171814">UI 设计方案比较。</p>
+                    <p class="- topic/p p" data-ofbid="d308076e186__20250121171814">针对本 demo 场景，有以下 UI 设计方案可供选择。其中 UI 设计方案 2 更高效，实现同样的界面效果，简化流程速度可以提升一倍以上：</p>
+                    <ol class="- topic/ol ol arabic" type="a" id="lvgl-demo__ol_gbh_1zf_fdc" data-ofbid="lvgl-demo__ol_gbh_1zf_fdc"><li class="- topic/li li" data-ofbid="d308076e190__20250121171814">
+                            <p class="- topic/p p" data-ofbid="d308076e192__20250121171814">UI 设计方案 1</p>
+                            <figure class="- topic/fig fig fignone" id="lvgl-demo__id24" data-ofbid="lvgl-demo__id24"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="lvgl-demo__image_hbh_1zf_fdc" src="../../../images/lvgl/meter_draw_1.png" width="480" alt="meter_draw_1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">UI 设计方案 1 示例</span></figcaption></figure>
+                            <ul class="- topic/ul ul simple" id="lvgl-demo__ul_ibh_1zf_fdc" data-ofbid="lvgl-demo__ul_ibh_1zf_fdc"><li class="- topic/li li" data-ofbid="d308076e203__20250121171814">
+                                    <p class="- topic/p p" data-ofbid="d308076e205__20250121171814">准备光条、指针、光圈、底图四张图片。</p>
+                                </li><li class="- topic/li li" data-ofbid="d308076e208__20250121171814">
+                                    <p class="- topic/p p" data-ofbid="d308076e210__20250121171814">按照先后顺序，依次对光圈和背景、光条和背景以及指针和背景进行 alpha blending。</p>
+                                </li><li class="- topic/li li" data-ofbid="d308076e213__20250121171814">
+                                    <p class="- topic/p p" data-ofbid="d308076e215__20250121171814">每一个角度的旋转都需要进行三次 alpha blending。</p>
+                                </li></ul>
+                        </li><li class="- topic/li li" data-ofbid="d308076e219__20250121171814">
+                            <p class="- topic/p p" data-ofbid="d308076e221__20250121171814">UI 设计方案 2</p>
+                            <figure class="- topic/fig fig fignone" id="lvgl-demo__id25" data-ofbid="lvgl-demo__id25"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="lvgl-demo__image_jbh_1zf_fdc" src="../../../images/lvgl/meter_draw_2.png" width="480" alt="meter_draw_2"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title"> UI 设计方案 2 示例</span></figcaption></figure>
+                            <ul class="- topic/ul ul simple" id="lvgl-demo__ul_kbh_1zf_fdc" data-ofbid="lvgl-demo__ul_kbh_1zf_fdc"><li class="- topic/li li" data-ofbid="d308076e232__20250121171814">
+                                    <p class="- topic/p p" data-ofbid="d308076e234__20250121171814">光条和指针合并为一张图片。</p>
+                                </li><li class="- topic/li li" data-ofbid="d308076e237__20250121171814">
+                                    <p class="- topic/p p" data-ofbid="d308076e239__20250121171814">光圈合并到背景图中。</p>
+                                </li><li class="- topic/li li" data-ofbid="d308076e242__20250121171814">
+                                    <p class="- topic/p p" data-ofbid="d308076e244__20250121171814">准备光条和指针图片和底图。</p>
+                                </li><li class="- topic/li li" data-ofbid="d308076e247__20250121171814">
+                                    <p class="- topic/p p" data-ofbid="d308076e249__20250121171814">每一个角度的旋转都只需要对光条和指针图片与背景图进行一次 alpha blending。</p>
+                                </li></ul>
+                        </li></ol>
+                </li></ol>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#lvgl-demo__section_fyy_jjh_fdc" data-tocid="lvgl-demo__section_fyy_jjh_fdc">Base Demo</a></div></li><li class="section-item"><div class="section-title"><a href="#lvgl-demo__section_xgg_ljh_fdc" data-tocid="lvgl-demo__section_xgg_ljh_fdc">Meter Demo</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

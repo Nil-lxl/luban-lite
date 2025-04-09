@@ -1,0 +1,221 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="ehci driver 负责把 echi 功能封装成标准的 hcd 驱动。它主要完成两项工作： 注册标准的 hcd 驱动。把 Client Software 传送下来的 urb 映射到 EHCI 的链表中进行传输。 创建一个虚拟的根 hub 设备，即 roothub。 URB Transfer ehci 注册 hcd 驱动： static int ehci_platform_probe( ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-24"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_host_ehci_driver"/><meta name="DC.language" content="zh-CN"/><title>EHCI Driver</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-host-ehci_driver.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-host-ehci_driver.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_host_ehci_driver" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-host-ehci_driver.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">EHCI Driver</h1><div class="date inPage">24 Jan 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d253031e22__20250121171704">ehci driver 负责把 echi 功能封装成标准的 hcd 驱动。它主要完成两项工作：</p><ul class="- topic/ul ul" id="usb_host_ehci_driver__ul_djm_rpz_21c" data-ofbid="usb_host_ehci_driver__ul_djm_rpz_21c"><li class="- topic/li li" data-ofbid="d253031e25__20250121171704">
+                <p class="- topic/p p" data-ofbid="d253031e27__20250121171704">注册标准的 hcd 驱动。把 <code class="+ topic/ph pr-d/codeph ph codeph">Client Software</code> 传送下来的 <code class="+ topic/ph pr-d/codeph ph codeph">urb</code> 映射到
+                    EHCI 的链表中进行传输。</p>
+            </li><li class="- topic/li li" data-ofbid="d253031e36__20250121171704">
+                <p class="- topic/p p" data-ofbid="d253031e38__20250121171704">创建一个虚拟的根 hub 设备，即 roothub。</p>
+            </li></ul><section class="- topic/section section" id="usb_host_ehci_driver__section_ejm_rpz_21c" data-ofbid="usb_host_ehci_driver__section_ejm_rpz_21c"><h2 class="- topic/title title sectiontitle">URB Transfer</h2>
+            
+            <p class="- topic/p p" data-ofbid="d253031e46__20250121171704">ehci 注册 hcd 驱动：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_host_ehci_driver__pre_fjm_rpz_21c" data-ofbid="usb_host_ehci_driver__pre_fjm_rpz_21c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> ehci_platform_probe(<strong class="hl-keyword">struct</strong> platform_device *dev)
+{
+
+    <em class="hl-comment">/* (1) 分配 hcd，并且把 hcd-&gt;driver 初始化成 ehci_hc_driver */</em>
+    ehci_init_driver(&amp;ehci_platform_hc_driver, &amp;platform_overrides);
+    hcd = usb_create_hcd(&amp;ehci_platform_hc_driver, &amp;dev-&gt;dev,
+                dev_name(&amp;dev-&gt;dev));
+
+    <em class="hl-comment">/* (2) 注册标准的 hcd 驱动 */</em>
+    err = usb_add_hcd(hcd, irq, IRQF_SHARED);
+}
+</pre>
+            <p class="- topic/p p" data-ofbid="d253031e52__20250121171704">hcd 驱动向上提供了标准接口，最终的实现会调用到 <code class="+ topic/ph pr-d/codeph ph codeph">ehci_hc_driver</code> 当中。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_host_ehci_driver__pre_gjm_rpz_21c" data-ofbid="usb_host_ehci_driver__pre_gjm_rpz_21c">staticconststructhc_driverehci_hc_driver={.description=hcd_name,.product_desc=<span class="hl-string">"EHCI Host Controller"</span>,.hcd_priv_size=<strong class="hl-keyword">sizeof</strong>(structehci_hcd),<span class="hl-tag-doctype-comment">/**generichardwarelinkage*/</span>.irq=ehci_irq,.flags=HCD_MEMORY|HCD_DMA|HCD_USB2|HCD_BH,<span class="hl-tag-doctype-comment">/**basiclifecycleoperations*/</span>.reset=ehci_setup,.start=ehci_run,.stop=ehci_stop,.shutdown=ehci_shutdown,<span class="hl-tag-doctype-comment">/**managingi/orequests</span><strong class="+ topic/ph hi-d/b ph b">and</strong>associateddeviceresources*/.urb_enqueue=ehci_urb_enqueue,.urb_dequeue=ehci_urb_dequeue,.endpoint_disable=ehci_endpoint_disable,.endpoint_reset=ehci_endpoint_reset,.clear_tt_buffer_complete=ehci_clear_tt_buffer_complete,<span class="hl-tag-doctype-comment">/**schedulingsupport*/</span>.get_frame_number=ehci_get_frame,<span class="hl-tag-doctype-comment">/**roothubsupport*/</span>.hub_status_data=ehci_hub_status_data,.hub_control=ehci_hub_control,.bus_suspend=ehci_bus_suspend,.bus_resume=ehci_bus_resume,.relinquish_port=ehci_relinquish_port,.port_handed_over=ehci_port_handed_over,.get_resuming_ports=ehci_get_resuming_ports,<span class="hl-tag-doctype-comment">/**devicesupport*/</span>.free_dev=ehci_remove_device,};</pre>
+            <p class="- topic/p p" data-ofbid="d253031e65__20250121171704">在 urb transfer 过程中，最核心的是调用上述的 <code class="+ topic/ph pr-d/codeph ph codeph">ehci_urb_enqueue()</code> 和
+                    <code class="+ topic/ph pr-d/codeph ph codeph">ehci_urb_dequeue()</code> 函数。</p>
+        </section><section class="- topic/section section" id="usb_host_ehci_driver__section_hjm_rpz_21c" data-ofbid="usb_host_ehci_driver__section_hjm_rpz_21c"><h2 class="- topic/title title sectiontitle">Roothub</h2>
+            
+            <p class="- topic/p p" data-ofbid="d253031e79__20250121171704">首先创建虚拟的 roothub:</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_host_ehci_driver__pre_ijm_rpz_21c" data-ofbid="usb_host_ehci_driver__pre_ijm_rpz_21c"><em class="hl-comment">/* (1) 首先创建和初始化 `usb_device` 结构： */</em>
+ehci_platform_probe() → usb_add_hcd() → usb_alloc_dev():
+<strong class="hl-keyword">struct</strong> usb_device *usb_alloc_dev(<strong class="hl-keyword">struct</strong> usb_device *parent,
+                <strong class="hl-keyword">struct</strong> usb_bus *bus, <strong class="hl-keyword">unsigned</strong> port1)
+{
+
+    <em class="hl-comment">/* (1.1) dev 总线初始化为 usb_bus_type */</em>
+    dev-&gt;dev.bus = &amp;usb_bus_type;
+    <em class="hl-comment">/* (1.2) dev 类型初始化为 usb_device_type，标明自己是一个 usb device */</em>
+    dev-&gt;dev.type = &amp;usb_device_type;
+    dev-&gt;dev.groups = usb_device_groups;
+
+}
+
+<em class="hl-comment">/* (2) 然后注册  `usb_device` 结构： */</em>
+usb_add_hcd() → register_root_hub() → usb_new_device() → device_add()
+</pre>
+            <p class="- topic/p p" data-ofbid="d253031e85__20250121171704">然后因为 roothub 并不是在 Usb 物理总线上，所以对它的查询和配置需要特殊处理。详见 <code class="+ topic/ph pr-d/codeph ph codeph">Usb Hub Driver</code>
+                这一节。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_host_ehci_driver__section_ejm_rpz_21c" data-tocid="usb_host_ehci_driver__section_ejm_rpz_21c">URB Transfer</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_host_ehci_driver__section_hjm_rpz_21c" data-tocid="usb_host_ehci_driver__section_hjm_rpz_21c">Roothub</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

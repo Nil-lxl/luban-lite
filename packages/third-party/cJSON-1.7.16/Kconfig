@@ -1,0 +1,3 @@
+config LPKG_USING_CJSON
+    bool "Using cJSON-1.7.16 tools"
+    default n

@@ -1,0 +1,436 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="设备结构体 CE 设备结构体用来保存 CE 基地址等相关信息，除此之外，还包含了三个不同类型的算法加速器结构体， 以及安全 SRAM 的分配管理信息等。 struct aic_alg_accelerator { struct crypto_engine *engine; struct mutex alock; DECLARE_KFIFO_PTR(req_fifo, void *); }; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-31"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ce_data_structure_design"/><meta name="DC.language" content="zh-CN"/><title>数据结构设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/ce/ce_data_struct.dita"/><meta name="wh-out-relpath" content="topics/sdk/ce/ce_data_struct.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ce_data_structure_design" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ce/ce_data_struct.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">数据结构设计</h1><div class="date inPage">31 Jan 2024</div><div style="color: gray;">
+                    Read time: 5 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="ce_data_structure_design__section_g5w_fby_21c" data-ofbid="ce_data_structure_design__section_g5w_fby_21c"><h2 class="- topic/title title sectiontitle">设备结构体</h2>
+            
+            <div class="- topic/p p" data-ofbid="d219950e27__20250121171646">CE 设备结构体用来保存 CE 基地址等相关信息，除此之外，还包含了三个不同类型的算法加速器结构体， 以及安全 SRAM
+                的分配管理信息等。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_data_structure_design__codeblock_iz4_nby_21c" data-ofbid="ce_data_structure_design__codeblock_iz4_nby_21c"><strong class="hl-keyword">struct</strong> aic_alg_accelerator {
+    <strong class="hl-keyword">struct</strong> crypto_engine *engine;
+    <strong class="hl-keyword">struct</strong> mutex alock;
+    DECLARE_KFIFO_PTR(req_fifo, <strong class="hl-keyword">void</strong> *);
+};
+
+<strong class="hl-keyword">struct</strong> aic_crypto_dev {
+    <strong class="hl-keyword">struct</strong> device *dev;
+    <strong class="hl-keyword">void</strong> __iomem *base;
+    <strong class="hl-keyword">struct</strong> clk *clk;
+    <strong class="hl-keyword">struct</strong> reset_control *reset;
+    <strong class="hl-keyword">struct</strong> mutex mlock;
+    <strong class="hl-keyword">struct</strong> aic_alg_accelerator sk_accel;
+    <strong class="hl-keyword">struct</strong> aic_alg_accelerator ak_accel;
+    <strong class="hl-keyword">struct</strong> aic_alg_accelerator hash_accel;
+    u64 ssram_bitmap;
+    u32 irq_status;
+    u32 err_status;
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d219950e32__20250121171646">其中：</p>
+            <ul class="- topic/ul ul" id="ce_data_structure_design__ul_j5w_fby_21c" data-ofbid="ce_data_structure_design__ul_j5w_fby_21c"><li class="- topic/li li" data-ofbid="d219950e36__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e38__20250121171646">sk_accel</p>
+                    <p class="- topic/p p" data-ofbid="d219950e41__20250121171646">对称密钥算法加速器结构体，用于管理对称密钥算法所使用的 crypto_engine 实例，以及正在处理的请求 FIFO。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e44__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e46__20250121171646">ak_accel</p>
+                    <p class="- topic/p p" data-ofbid="d219950e49__20250121171646">非对称密钥算法加速器结构体，用于管理非对称密钥算法所使用的 crypto_engine 实例，以及正在处理的请求 FIFO。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e52__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e54__20250121171646">hash_accel</p>
+                    <p class="- topic/p p" data-ofbid="d219950e57__20250121171646">消息摘要算法加速器结构体，用于管理消息摘要算法所使用的 crypto_engine 实例，以及正在处理的请求 FIFO。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e60__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e62__20250121171646">ssram_bitmap</p>
+                    <p class="- topic/p p" data-ofbid="d219950e65__20250121171646">安全 SRAM 空间的分配位图。安全 SRAM 按照 32 字节为单位进行分配管理，这里每一个比特对应一个 32 字节的安全 SRAM 空间。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e68__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e70__20250121171646">irq_status</p>
+                    <p class="- topic/p p" data-ofbid="d219950e73__20250121171646">记录最新的 IRQ 状态寄存器的值。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e76__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e78__20250121171646">err_status</p>
+                    <p class="- topic/p p" data-ofbid="d219950e81__20250121171646">记录最新的错误状态寄存器的值。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="ce_data_structure_design__section_k5w_fby_21c" data-ofbid="ce_data_structure_design__section_k5w_fby_21c"><h2 class="- topic/title title sectiontitle">对称密钥算法</h2>
+            
+            <div class="- topic/p p" data-ofbid="d219950e90__20250121171646">aic_skcipher_tfm_ctx 是一个对称密钥算法实例对应的上下文结构体，当用户使用 API
+                接口<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_data_structure_design__codeblock_dfd_mby_21c" data-ofbid="ce_data_structure_design__codeblock_dfd_mby_21c"><strong class="hl-keyword">struct</strong> crypto_skcipher *
+crypto_alloc_skcipher(<strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *alg_name, u32 type, u32 mask);</pre></div>
+            <div class="- topic/p p" data-ofbid="d219950e95__20250121171646">创建一个实例时，自动创建对应的上下文。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_data_structure_design__codeblock_kyp_mby_21c" data-ofbid="ce_data_structure_design__codeblock_kyp_mby_21c"><strong class="hl-keyword">struct</strong> aic_skcipher_tfm_ctx {
+    <strong class="hl-keyword">struct</strong> crypto_engine_ctx enginectx;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *inkey;
+    <strong class="hl-keyword">int</strong> inkeylen;
+    <strong class="hl-keyword">struct</strong> aic_crypto_dev *ce;
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d219950e100__20250121171646">其中：</p>
+            <ul class="- topic/ul ul" id="ce_data_structure_design__ul_o5w_fby_21c" data-ofbid="ce_data_structure_design__ul_o5w_fby_21c"><li class="- topic/li li" data-ofbid="d219950e104__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e106__20250121171646">enginectx</p>
+                    <p class="- topic/p p" data-ofbid="d219950e109__20250121171646">crypto_engine 的上下文，用于配置该算法的回调处理函数。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e112__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e114__20250121171646">inkey</p>
+                    <p class="- topic/p p" data-ofbid="d219950e117__20250121171646">用于保存用户配置的密钥信息。此处保存的密钥不直接交给 CE 硬件。</p>
+                </li></ul>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_data_structure_design__codeblock_ipz_kby_21c" data-ofbid="ce_data_structure_design__codeblock_ipz_kby_21c"><strong class="hl-keyword">struct</strong> aic_skcipher_reqctx {
+    <strong class="hl-keyword">struct</strong> task_desc *task;
+    dma_addr_t phy_task;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *key;
+    dma_addr_t phy_key;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *iv;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *backup_ivs; <em class="hl-comment">/* Back up iv for CBC decrypt */</em>
+    dma_addr_t phy_iv;
+    dma_addr_t ssram_addr;
+    dma_addr_t backup_phy_ivs;
+    dma_addr_t next_iv; <em class="hl-comment">/* Next IV address for CBC encrypt */</em>
+    <strong class="hl-keyword">int</strong> tasklen;
+    <strong class="hl-keyword">int</strong> keylen;
+    <strong class="hl-keyword">int</strong> ivsize;
+    <strong class="hl-keyword">int</strong> blocksize;
+    <strong class="hl-keyword">int</strong> backup_iv_cnt;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> mode;
+    <strong class="hl-keyword">void</strong> *src_cpy_buf;
+    <strong class="hl-keyword">void</strong> *dst_cpy_buf;
+    dma_addr_t src_phy_buf;
+    dma_addr_t dst_phy_buf;
+    bool src_map_sg;
+    bool dst_map_sg;
+};</pre>
+            <p class="- topic/p p" data-ofbid="d219950e125__20250121171646">aic_skcipher_reqctx 是每一个数据请求所对应的上下文，在每一个 struct skcipher_request 实例化时自动创建。</p>
+            <p class="- topic/p p" data-ofbid="d219950e128__20250121171646">其中：</p>
+            <ul class="- topic/ul ul" id="ce_data_structure_design__ul_r5w_fby_21c" data-ofbid="ce_data_structure_design__ul_r5w_fby_21c"><li class="- topic/li li" data-ofbid="d219950e132__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e134__20250121171646">task</p>
+                    <p class="- topic/p p" data-ofbid="d219950e137__20250121171646">CE 任务描述符指针。任务描述符所使用的空间是动态分配的空间，需要相关指针信息保存，以便完成时释放。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e140__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e142__20250121171646">phy_task</p>
+                    <p class="- topic/p p" data-ofbid="d219950e145__20250121171646">任务描述符的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e148__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e150__20250121171646">key</p>
+                    <p class="- topic/p p" data-ofbid="d219950e153__20250121171646">密钥缓冲区的指针。该缓冲区为动态分配，地址空间 DMA 可用。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e156__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e158__20250121171646">phy_key</p>
+                    <p class="- topic/p p" data-ofbid="d219950e161__20250121171646">密钥缓冲区的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e164__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e166__20250121171646">iv</p>
+                    <p class="- topic/p p" data-ofbid="d219950e169__20250121171646">初始化向量缓冲区指针。该缓冲区动态分配，地址空间 DMA 可用。</p>
+                    <p class="- topic/p p" data-ofbid="d219950e172__20250121171646">该成员变量在不同的算法模式中，含义有所不同。CBC 模式中为初始化向量。CTR 模式中为初始计数值，同时也用于保存 CE
+                        输出的下一个数据块的计数值。XTS 中为 TWEAK 值。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e175__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e177__20250121171646">phy_iv</p>
+                    <p class="- topic/p p" data-ofbid="d219950e180__20250121171646">初始化向量缓冲区的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e183__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e185__20250121171646">backup_ivs</p>
+                    <p class="- topic/p p" data-ofbid="d219950e188__20250121171646">用于 CBC 算法模式的解密情景。解密时，需要保存不同数据段的最后一个密文块，作为下一个数据段的初始化向量。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e191__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e193__20250121171646">backup_phy_ivs</p>
+                    <p class="- topic/p p" data-ofbid="d219950e196__20250121171646">对应的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e199__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e201__20250121171646">next_iv</p>
+                    <p class="- topic/p p" data-ofbid="d219950e204__20250121171646">用于 CBC 算法模式加密的场景。在 CBC 算法模式的加密处理时，如果一个请求中有多个数据块串行处理，使用 next_iv
+                        指向当前数据块的最后一个密文块的地址，以作为下一个数据块的初始化向量输入。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e207__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e209__20250121171646">ssram_addr</p>
+                    <p class="- topic/p p" data-ofbid="d219950e212__20250121171646">当需要使用安全 SRAM 时，用于保存申请到的安全 SRAM 地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e215__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e217__20250121171646">mode</p>
+                    <p class="- topic/p p" data-ofbid="d219950e220__20250121171646">算法和模式标记变量，用于标记当前请求所使用的算法和模式等信息。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e224__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e226__20250121171646">src_cpy_buf</p>
+                    <p class="- topic/p p" data-ofbid="d219950e229__20250121171646">输入数据的工作缓冲区。当前请求的输入数据缓冲区不满足 CE 硬件的使用要求时，需要分配物理连续的工作缓冲区。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e232__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e234__20250121171646">src_phy_buf</p>
+                    <p class="- topic/p p" data-ofbid="d219950e237__20250121171646">输入数据的工作缓冲区物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e240__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e242__20250121171646">dst_cpy_buf</p>
+                    <p class="- topic/p p" data-ofbid="d219950e245__20250121171646">输出数据的工作缓冲区。当前输出数据缓冲区不满足 CE 硬件的使用要求时，需要分配物理连续的工作缓冲区。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e248__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e250__20250121171646">dst_phy_buf</p>
+                    <p class="- topic/p p" data-ofbid="d219950e253__20250121171646">输出数据缓冲区的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e256__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e258__20250121171646">src_map_sg</p>
+                    <p class="- topic/p p" data-ofbid="d219950e261__20250121171646">输入 sg list 是否执行了 map 的标记。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e264__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e266__20250121171646">dst_map_sg</p>
+                    <p class="- topic/p p" data-ofbid="d219950e269__20250121171646">输出 sg list 是否执行了 map  的标记。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="ce_data_structure_design__section_s5w_fby_21c" data-ofbid="ce_data_structure_design__section_s5w_fby_21c"><h2 class="- topic/title title sectiontitle">非对称密钥算法</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_data_structure_design__codeblock_zyk_3by_21c" data-ofbid="ce_data_structure_design__codeblock_zyk_3by_21c"><strong class="hl-keyword">struct</strong> aic_akcipher_tfm_ctx {
+    <strong class="hl-keyword">struct</strong> crypto_engine_ctx enginectx;
+    <strong class="hl-keyword">struct</strong> aic_crypto_dev *ce;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *n;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *e;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *d;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> n_sz;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> e_sz;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> d_sz;
+};</pre>
+            <p class="- topic/p p" data-ofbid="d219950e281__20250121171646">aic_akcipher_tfm_ctx 是非对称密钥算法实例所对应的上下文。</p>
+            <p class="- topic/p p" data-ofbid="d219950e284__20250121171646">其中：</p>
+            <ul class="- topic/ul ul" id="ce_data_structure_design__ul_v5w_fby_21c" data-ofbid="ce_data_structure_design__ul_v5w_fby_21c"><li class="- topic/li li" data-ofbid="d219950e288__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e290__20250121171646">enginectx</p>
+                    <p class="- topic/p p" data-ofbid="d219950e293__20250121171646">crypto_engine 的上下文，用于配置该算法的回调处理函数。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e296__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e298__20250121171646">n</p>
+                    <p class="- topic/p p" data-ofbid="d219950e301__20250121171646">RSA 密钥中的 modulus。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e304__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e306__20250121171646">e</p>
+                    <p class="- topic/p p" data-ofbid="d219950e309__20250121171646">RSA 密钥中的公钥指数。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e312__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e314__20250121171646">d</p>
+                    <p class="- topic/p p" data-ofbid="d219950e317__20250121171646">RSA 密钥中的私钥指数。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d219950e322__20250121171646"><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_data_structure_design__codeblock_ydb_3by_21c" data-ofbid="ce_data_structure_design__codeblock_ydb_3by_21c"><strong class="hl-keyword">struct</strong> aic_akcipher_reqctx {
+    <strong class="hl-keyword">struct</strong> task_desc *task;
+    dma_addr_t phy_task;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *wbuf;
+    dma_addr_t phy_wbuf;
+    dma_addr_t ssram_addr;
+    <strong class="hl-keyword">int</strong> tasklen;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> wbuf_size;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> flags;
+};</pre>aic_akcipher_reqctx 是每一个数据请求所对应的上下文，在每一个 struct akcipher_request
+                实例化时自动创建。</div>
+            <p class="- topic/p p" data-ofbid="d219950e327__20250121171646">其中：</p>
+            <ul class="- topic/ul ul" id="ce_data_structure_design__ul_y5w_fby_21c" data-ofbid="ce_data_structure_design__ul_y5w_fby_21c"><li class="- topic/li li" data-ofbid="d219950e331__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e333__20250121171646">task</p>
+                    <p class="- topic/p p" data-ofbid="d219950e336__20250121171646">CE 任务描述符指针。任务描述符所使用的空间是动态分配的空间，需要相关指针信息保存，以便完成时释放。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e339__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e341__20250121171646">phy_task</p>
+                    <p class="- topic/p p" data-ofbid="d219950e344__20250121171646">任务描述符的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e347__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e349__20250121171646">wbuf</p>
+                    <p class="- topic/p p" data-ofbid="d219950e352__20250121171646">工作缓冲区。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e355__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e357__20250121171646">phy_wbuf</p>
+                    <p class="- topic/p p" data-ofbid="d219950e360__20250121171646">工作缓冲区的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e363__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e365__20250121171646">ssram_addr</p>
+                    <p class="- topic/p p" data-ofbid="d219950e368__20250121171646">当需要使用安全 SRAM 时，用于保存申请到的安全 SRAM 地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e371__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e373__20250121171646">flags</p>
+                    <p class="- topic/p p" data-ofbid="d219950e376__20250121171646">算法和模式标记变量，用于标记当前请求所使用的算法和模式等信息。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="ce_data_structure_design__section_z5w_fby_21c" data-ofbid="ce_data_structure_design__section_z5w_fby_21c"><h2 class="- topic/title title sectiontitle">消息摘要算法</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_data_structure_design__codeblock_yzh_hby_21c" data-ofbid="ce_data_structure_design__codeblock_yzh_hby_21c"><strong class="hl-keyword">struct</strong> aic_hash_tfm_ctx {
+    <strong class="hl-keyword">struct</strong> crypto_engine_ctx enginectx;
+    <strong class="hl-keyword">struct</strong> aic_crypto_dev *ce;
+    bool hmac;
+};</pre>
+            <p class="- topic/p p" data-ofbid="d219950e388__20250121171646">aic_hash_tfm_ctx 是消息摘要算法实例所对应的上下文。</p>
+            <p class="- topic/p p" data-ofbid="d219950e391__20250121171646">其中：</p>
+            <ul class="- topic/ul ul" id="ce_data_structure_design__ul_cvw_fby_21c" data-ofbid="ce_data_structure_design__ul_cvw_fby_21c"><li class="- topic/li li" data-ofbid="d219950e395__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e397__20250121171646">enginectx</p>
+                    <p class="- topic/p p" data-ofbid="d219950e400__20250121171646">crypto_engine 的上下文，用于配置该算法的回调处理函数。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e403__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e405__20250121171646">hmac</p>
+                    <p class="- topic/p p" data-ofbid="d219950e408__20250121171646">用于标记当前算法是否为 HMAC 类算法。</p>
+                </li></ul>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_data_structure_design__codeblock_hcr_gby_21c" data-ofbid="ce_data_structure_design__codeblock_hcr_gby_21c"><strong class="hl-keyword">struct</strong> aic_hash_reqctx {
+    <strong class="hl-keyword">struct</strong> task_desc *task;
+    dma_addr_t phy_task;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *ivbuf;
+    dma_addr_t phy_ivbuf;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *total_bitlen;
+    dma_addr_t phy_total_bitlen;
+    <strong class="hl-keyword">void</strong> *src_cpy_buf;
+    dma_addr_t src_phy_buf;
+    <strong class="hl-keyword">int</strong> tasklen;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> digest_size;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> flags;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> digest[CE_MAX_DIGEST_SIZE];
+    bool src_map_sg;
+};</pre>
+            <p class="- topic/p p" data-ofbid="d219950e416__20250121171646">aic_hash_reqctx 是每一个数据请求所对应的上下文，在每一个 struct ahash_request 实例化时自动创建。</p>
+            <p class="- topic/p p" data-ofbid="d219950e419__20250121171646">其中：</p>
+            <ul class="- topic/ul ul" id="ce_data_structure_design__ul_fvw_fby_21c" data-ofbid="ce_data_structure_design__ul_fvw_fby_21c"><li class="- topic/li li" data-ofbid="d219950e423__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e425__20250121171646">task</p>
+                    <p class="- topic/p p" data-ofbid="d219950e428__20250121171646">CE 任务描述符指针。任务描述符所使用的空间是动态分配的空间，需要相关指针信息保存，以便完成时释放。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e431__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e433__20250121171646">phy_task</p>
+                    <p class="- topic/p p" data-ofbid="d219950e436__20250121171646">任务描述符的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e439__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e441__20250121171646">total_bitlen</p>
+                    <p class="- topic/p p" data-ofbid="d219950e444__20250121171646">当前请求处理的数据总长度，单位 bit。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e447__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e449__20250121171646">phy_total_bitlen</p>
+                    <p class="- topic/p p" data-ofbid="d219950e452__20250121171646">保存数据总长度的变量的物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e455__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e457__20250121171646">src_cpy_buf</p>
+                    <p class="- topic/p p" data-ofbid="d219950e460__20250121171646">输入数据的工作缓冲区。当前请求的输入数据缓冲区不满足 CE 硬件的使用要求时，需要分配物理连续的工作缓冲区。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e463__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e465__20250121171646">src_phy_buf</p>
+                    <p class="- topic/p p" data-ofbid="d219950e468__20250121171646">输入数据的工作缓冲区物理地址。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e471__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e473__20250121171646">flags</p>
+                    <p class="- topic/p p" data-ofbid="d219950e476__20250121171646">算法和模式标记变量，用于标记当前请求所使用的算法和模式等信息。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e479__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e481__20250121171646">digest</p>
+                    <p class="- topic/p p" data-ofbid="d219950e484__20250121171646">用于保存当前一笔请求数据的摘要结果。当有连续多个请求的数据需要处理时，同时作为下一个请求的初始化向量输入。</p>
+                </li><li class="- topic/li li" data-ofbid="d219950e487__20250121171646">
+                    <p class="- topic/p p" data-ofbid="d219950e489__20250121171646">src_map_sg</p>
+                    <p class="- topic/p p" data-ofbid="d219950e492__20250121171646">输入 sg list 是否执行了 map 的标记。</p>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#ce_data_structure_design__section_g5w_fby_21c" data-tocid="ce_data_structure_design__section_g5w_fby_21c">设备结构体</a></div></li><li class="section-item"><div class="section-title"><a href="#ce_data_structure_design__section_k5w_fby_21c" data-tocid="ce_data_structure_design__section_k5w_fby_21c">对称密钥算法</a></div></li><li class="section-item"><div class="section-title"><a href="#ce_data_structure_design__section_s5w_fby_21c" data-tocid="ce_data_structure_design__section_s5w_fby_21c">非对称密钥算法</a></div></li><li class="section-item"><div class="section-title"><a href="#ce_data_structure_design__section_z5w_fby_21c" data-tocid="ce_data_structure_design__section_z5w_fby_21c">消息摘要算法</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

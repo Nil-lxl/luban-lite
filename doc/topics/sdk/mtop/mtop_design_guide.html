@@ -1,0 +1,305 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 源代码位于 bsp/artinchip/ ： bsp/artinchip/drv/mtop/drv_mtop.c ，MTOP Driver 层实现 bsp/artinchip/include/drv/drv_mtop.h ，MTOP Drive 层头文件 bsp/artinchip/hal/mtop/hal_mtop.c ，MTOP HAL 层实现 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/mtop/mtop_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/mtop/mtop_test_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/mtop/mtop_faq.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e2913"/><meta name="wh-source-relpath" content="topics/sdk/mtop/mtop_design_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/mtop/mtop_design_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="chapter-system"><div class="title"><a href="../../../topics/chapter-title/chapter-system.html">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/mtop/mtop_user_guide.html">MTOP 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/mtop/mtop_design_guide.html">设计说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/mtop/mtop_test_guide.html" title="测试指南" aria-label="上一主题: 测试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/mtop/mtop_faq.html" title="常见问题" aria-label="下一主题: 常见问题" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e2449" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e2449-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/memory-user-guide.html" id="chapter-memory-d5856e2449-link">Memory 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="system_interrupt_user_guide-d5856e2565" class="topicref" data-id="system_interrupt_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action system_interrupt_user_guide-d5856e2565-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/interrupt/interrupt-user-guide.html" id="system_interrupt_user_guide-d5856e2565-link">Interrupt 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cmu-d5856e2601" class="topicref" data-id="cmu" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cmu-d5856e2601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cmu/cmu-introduction_2.html" id="cmu-d5856e2601-link">CMU 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_or5_kn3_pzb-d5856e2697" class="topicref" data-id="concept_or5_kn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_or5_kn3_pzb-d5856e2697-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-user-guide_2.html" id="concept_or5_kn3_pzb-d5856e2697-link">DMA 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2805" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-user-guide.html" id="id-d5856e2805-link">HRTimer 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2877" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2877-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_user_guide.html" id="id-d5856e2877-link">MTOP 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e2889" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_config.html" id="id-d5856e2889-link">MTOP 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2901" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_test_guide.html" id="id-d5856e2901-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e2913" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_design_guide.html" id="id-d5856e2913-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2925" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_faq.html" id="id-d5856e2925-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_n2p_sn3_pzb-d5856e2937" class="topicref" data-id="concept_n2p_sn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_n2p_sn3_pzb-d5856e2937-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-user-guide_2.html" id="concept_n2p_sn3_pzb-d5856e2937-link">RTC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3057" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3057-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pm/pm_introduction.html" id="id-d5856e3057-link">Power Management 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="tsensor-d5856e3129" class="topicref" data-id="tsensor" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action tsensor-d5856e3129-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-user-guide_2.html" id="tsensor-d5856e3129-link">TSensor 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="watchdog-d5856e3249" class="topicref" data-id="watchdog" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action watchdog-d5856e3249-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/watchdog/watchdog-user-guide_2.html" id="watchdog-d5856e3249-link">Watchdog 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mtop/mtop_design_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+            
+            <p class="- topic/p p" data-ofbid="d230957e24__20250121171651">源代码位于 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/</span>：</p><ul class="- topic/ul ul simple" id="id__ul_sx2_w3d_bdc" data-ofbid="id__ul_sx2_w3d_bdc"><li class="- topic/li li" data-ofbid="d230957e30__20250121171651">
+                    <p class="- topic/p p" data-ofbid="d230957e32__20250121171651"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/mtop/drv_mtop.c</span>，MTOP Driver 层实现</p>
+                </li><li class="- topic/li li" data-ofbid="d230957e37__20250121171651">
+                    <p class="- topic/p p" data-ofbid="d230957e39__20250121171651"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/drv/drv_mtop.h</span>，MTOP Drive 层头文件</p>
+                </li><li class="- topic/li li" data-ofbid="d230957e44__20250121171651">
+                    <p class="- topic/p p" data-ofbid="d230957e46__20250121171651"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/hal/mtop/hal_mtop.c</span>，MTOP HAL 层实现</p>
+                </li><li class="- topic/li li" data-ofbid="d230957e51__20250121171651">
+                    <p class="- topic/p p" data-ofbid="d230957e53__20250121171651"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_mtop.h</span>，MTOP HAL 层接口头文件</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">模块架构</h2>
+            
+            <p class="- topic/p p" data-ofbid="d230957e64__20250121171651">RTOS
+                系统中没有对应的设备框架来支持特定的硬件设备，此时可以将
+                MTOP 作为一个 Miscellaneous device 注册到 RTOS
+                上实现对特定硬件的管理。</p>
+            
+            <p class="- topic/p p" data-ofbid="d230957e67__20250121171651">将 MTOP 作为一种通用设备注册到 RTOS 上可以让开发者在 RTOS 环境下灵活地管理和操作自定义或不常见的硬件设备，也可以在 RTOS
+                环境中添加新的设备类型，而无需修改底层的 RTOS 代码。</p>
+            <p class="- topic/p p" data-ofbid="d230957e70__20250121171651">即使没有 RTOS，使用 HAL 层也可以支持 baremetal 方式的应用场景。这种情况下，HAL
+                层提供了基本的硬件操作接口，使得应用程序可以在没有操作系统的情况下直接控制硬件。</p>
+            
+        </section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">关键流程设计</h2>
+            
+            <div class="- topic/div div section" id="id__id5">
+                <strong class="+ topic/ph hi-d/b ph b">初始化流程</strong>
+                <p class="- topic/p p" data-ofbid="d230957e83__20250121171651">MTOP 驱动的初始化接口通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">INIT_BOARD_EXPORT(drv_mtop_init)</span>
+                    完成注册，其中主要步骤有：</p><ol class="- topic/ol ol arabic simple" id="id__ol_tx2_w3d_bdc" data-ofbid="id__ol_tx2_w3d_bdc"><li class="- topic/li li" data-ofbid="d230957e89__20250121171651">
+                        <p class="- topic/p p" data-ofbid="d230957e91__20250121171651">初始化模块的时钟 (clk)。</p>
+                        <p class="- topic/p p" data-ofbid="d230957e94__20250121171651">时钟 (clk) 是硬件模块正常工作的基础，因此首先需要初始化模块的时钟。</p>
+                    </li><li class="- topic/li li" data-ofbid="d230957e97__20250121171651">
+                        <p class="- topic/p p" data-ofbid="d230957e99__20250121171651">注册接收回调函数。</p>
+                        <p class="- topic/p p" data-ofbid="d230957e102__20250121171651">为了处理接收到的数据，需要注册一个回调函数。这个回调函数将在数据到达时被调用。</p>
+                    </li><li class="- topic/li li" data-ofbid="d230957e105__20250121171651">
+                        <p class="- topic/p p" data-ofbid="d230957e107__20250121171651">注册中断。</p>
+                        <p class="- topic/p p" data-ofbid="d230957e110__20250121171651">中断是硬件与软件通信的重要机制，通过注册中断可以确保在特定事件发生时及时响应。</p>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="id__id6" data-ofbid="id__id6"><h2 class="- topic/title title sectiontitle">数据结构设计</h2>
+            
+            <div class="- topic/div div section" id="id__mtop-dev">
+                <strong class="+ topic/ph hi-d/b ph b">mtop_dev</strong>
+                <div class="- topic/p p" data-ofbid="d230957e124__20250121171651">属于 Driver 层数据结构，记录 MTOP
+                    控制器配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_m2g_wyz_cdc" data-ofbid="id__codeblock_m2g_wyz_cdc"><strong class="hl-keyword">struct</strong> mtop_dev {
+    <strong class="hl-keyword">struct</strong> rt_device dev;
+    <strong class="hl-keyword">struct</strong> aic_mtop_dev mtop_handle;
+    <strong class="hl-keyword">char</strong> *name;
+};</pre></div>
+            </div>
+            <div class="- topic/div div section" id="id__aic-mtop-dev">
+                <strong class="+ topic/ph hi-d/b ph b">aic_mtop_dev</strong>
+                <div class="- topic/p p" data-ofbid="d230957e135__20250121171651">属于 HAL 层数据结构，记录 MTOP
+                    的通道分组和端口配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xpx_wyz_cdc" data-ofbid="id__codeblock_xpx_wyz_cdc"><strong class="hl-keyword">struct</strong> aic_mtop_dev {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> reg_base;
+    IRQn_Type irq_num;
+    uint32_t clk_id;
+    uint8_t grp;
+    uint8_t prt;
+    port_bandwidth port_bw[MTOP_GROUP_MAX * MTOP_PORT_MAX];
+    <strong class="hl-keyword">void</strong> (*callback)(<strong class="hl-keyword">struct</strong> aic_mtop_dev *phandle, <strong class="hl-keyword">void</strong> *arg);
+    <strong class="hl-keyword">void</strong> *arg;
+};
+
+<strong class="hl-keyword">typedef</strong> <strong class="hl-keyword">struct</strong> port_bandwidth_t {
+    u32 wcnt;
+    u32 rcnt;
+}port_bandwidth;</pre></div>
+            </div>
+        </section><section class="- topic/section section" id="id__id7" data-ofbid="id__id7"><h2 class="- topic/title title sectiontitle">接口设计</h2>
+            
+            <div class="- topic/div div section" id="id__mtop-ops-init">
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_wx2_w3d_bdc" data-ofbid="id__table_wx2_w3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mtop_ops_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_wx2_w3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_wx2_w3d_bdc__entry__2">rt_err_t mtop_ops_init(rt_device_t dev)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wx2_w3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wx2_w3d_bdc__entry__2">MTOP 控制器的初始化</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wx2_w3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wx2_w3d_bdc__entry__2">dev - 指向 MTOP 设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wx2_w3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wx2_w3d_bdc__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_wx2_w3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_wx2_w3d_bdc__entry__2">-</td></tr></tbody></table></div>
+            </div>
+            
+                
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_xx2_w3d_bdc" data-ofbid="id__table_xx2_w3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mtop_ops_open</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_xx2_w3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_xx2_w3d_bdc__entry__2">rt_err_t mtop_ops_open(rt_device_t dev)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xx2_w3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xx2_w3d_bdc__entry__2">打开 MTOP 设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xx2_w3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xx2_w3d_bdc__entry__2">dev - 指向 MTOP 设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xx2_w3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xx2_w3d_bdc__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_xx2_w3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_xx2_w3d_bdc__entry__2">-</td></tr></tbody></table></div>
+            
+            
+                
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_yx2_w3d_bdc" data-ofbid="id__table_yx2_w3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mtop_ops_close</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_yx2_w3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_yx2_w3d_bdc__entry__2">rt_err_t mtop_ops_close(rt_device_t dev)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_yx2_w3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_yx2_w3d_bdc__entry__2">关闭 MTOP 设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_yx2_w3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_yx2_w3d_bdc__entry__2">dev - 指向 MTOP 设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_yx2_w3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_yx2_w3d_bdc__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_yx2_w3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_yx2_w3d_bdc__entry__2">-</td></tr></tbody></table></div>
+            
+            
+                
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_zx2_w3d_bdc" data-ofbid="id__table_zx2_w3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mtop_ops_control</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zx2_w3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zx2_w3d_bdc__entry__2">rt_err_t mtop_ops_control(rt_device_t *dev, int cmd, void
+                                    *args)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zx2_w3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zx2_w3d_bdc__entry__2">MTOP 驱动的 ioctl 接口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zx2_w3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zx2_w3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">dev - 指向 MTOP 设备</div>
+                                        <div class="- topic/div div">cmd - ioctl
+                                                命令码<a name="fnsrc_1" href="#fntarg_1" class=" topic/fn-call fn-call "><sup>1</sup></a></div>
+                                        <div class="- topic/div div">args - ioctl 命令相应的参数</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zx2_w3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zx2_w3d_bdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zx2_w3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_zx2_w3d_bdc__entry__2">-</td></tr></tbody></table></div>
+                
+                <div class="- topic/p p" data-ofbid="d230957e302__20250121171651">MTOP 的 cmd
+                    命令码的定义如下所示，详见
+                        <span class="+ topic/ph sw-d/filepath ph filepath">bsp/arcinchip/include/drv/aic_drv_mtop.h</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ons_yyz_cdc" data-ofbid="id__codeblock_ons_yyz_cdc"><strong class="hl-keyword">enum</strong> {
+    MTOP_SET_PERIOD_MODE, <em class="hl-comment">// 设置周期模式</em>
+    MTOP_ENABLE,    <em class="hl-comment">// 启用 MTOP</em>
+};</pre></div>
+                
+            
+        </section><section class="- topic/section section" id="id__hal" data-ofbid="id__hal"><h2 class="- topic/title title sectiontitle">HAL 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d230957e317__20250121171651">HAL
+                层的函数接口声明存放在 aic_hal_mtop.h
+                中，主要接口有：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_thd_yyz_cdc" data-ofbid="id__codeblock_thd_yyz_cdc"><strong class="hl-keyword">int</strong> hal_mtop_init(<strong class="hl-keyword">struct</strong> aic_mtop_dev *phandle);
+<strong class="hl-keyword">int</strong> hal_mtop_deinit(<strong class="hl-keyword">struct</strong> aic_mtop_dev *phandle);
+<strong class="hl-keyword">void</strong> hal_mtop_enable(<strong class="hl-keyword">struct</strong> aic_mtop_dev *phandle);
+<strong class="hl-keyword">void</strong> hal_mtop_irq_enable(<strong class="hl-keyword">struct</strong> aic_mtop_dev *phandle);
+irqreturn_t hal_mtop_irq_handler(<strong class="hl-keyword">int</strong> irq_num, <strong class="hl-keyword">void</strong> *can_handle);
+<strong class="hl-keyword">void</strong> hal_mtop_set_period_cnt(<strong class="hl-keyword">struct</strong> aic_mtop_dev *phandle, uint32_t period_cnt);
+<strong class="hl-keyword">void</strong> hal_mtop_attach_callback(<strong class="hl-keyword">struct</strong> aic_mtop_dev *phandle, <strong class="hl-keyword">void</strong> *callback, <strong class="hl-keyword">void</strong> *arg);
+<strong class="hl-keyword">void</strong> hal_mtop_detach_callback(<strong class="hl-keyword">struct</strong> aic_mtop_dev *phandle);</pre></div>
+        </section></div><div class="- topic/fn fn"><a name="fntarg_1" href="#fnsrc_1"><sup>1</sup></a>  命令码可以在代码中使用，以便调用相应的功能。</div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">源码说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">模块架构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">关键流程设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id6" data-tocid="id__id6">数据结构设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id7" data-tocid="id__id7">接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__hal" data-tocid="id__hal">HAL 层接口设计</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,76 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('PRJ_OUT_DIR')
+from building import *
+
+cwd = GetCurrentDir()
+
+path = [cwd + '/include']
+path += [cwd + '/include/freetype/config']
+path += [cwd + '/include/freetype']
+path += [cwd + '/include/freetype/internal']
+path += [cwd + '/src/autofit']
+path += [cwd + '/src/base']
+path += [cwd + '/src/bdf']
+path += [cwd + '/src/bzip2']
+path += [cwd + '/src/cache']
+path += [cwd + '/src/cff']
+path += [cwd + '/src/cid']
+path += [cwd + '/src/pfr']
+path += [cwd + '/src/psaux']
+path += [cwd + '/src/pshinter']
+path += [cwd + '/src/psnames']
+path += [cwd + '/src/raster']
+path += [cwd + '/src/sfnt']
+path += [cwd + '/src/smooth']
+path += [cwd + '/src/truetype']
+path += [cwd + '/src/type1']
+path += [cwd + '/src/type42']
+path += [cwd + '/src/winfonts']
+path += [cwd + '/src/lzw']
+path += [cwd + '/src/pcf']
+path += [cwd + '/src/gzip']
+
+src = []
+
+CPPDEFINES = []
+
+src += Glob('src/autofit/*.c')
+src += Glob('src/base/*.c')
+src += Glob('src/bdf/*.c')
+src += Glob('src/bzip2/ftbzip2.c')
+src += Glob('src/cache/*.c')
+src += Glob('src/cid/*.c')
+src += Glob('src/pfr/*.c')
+src += Glob('src/psaux/*.c')
+src += Glob('src/pshinter/*.c')
+src += Glob('src/psnames/*.c')
+src += Glob('src/raster/*.c')
+src += Glob('src/smooth/*.c')
+src += Glob('src/truetype/*.c')
+src += Glob('src/type1/*.c')
+src += Glob('src/type42/*.c')
+src += Glob('src/winfonts/*.c')
+
+src += Glob('src/gzip/ftgzip.c')
+
+if not GetDepend('FT_CONFIG_OPTION_USE_LZW'):
+    src += Glob('src/lzw/ftzopen.c')
+src += Glob('src/lzw/ftlzw.c')
+
+src += Glob('src/cff/*.c')
+src += Glob('src/sfnt/*.c')
+src += Glob('src/pcf/*.c')
+
+LOCAL_CCFLAGS = ' -DHAVE_UNISTD_H -DHAVE_FCNTL_H'
+
+if not GetDepend('LPKG_USING_FREETYPE_STATIC'):
+    group = DefineGroup('freetype', src, depend = ['LPKG_USING_FREETYPE'], CPPPATH = path, LOCAL_CCFLAGS = LOCAL_CCFLAGS)
+else:
+    lib_path = os.path.join(AIC_ROOT, PRJ_OUT_DIR)
+    lib_path = lib_path.replace('/images', '/libs')
+    DefineGroup(lib_path + '/libFREETYPE.a', src, depend = ['LPKG_USING_FREETYPE'],  CPPPATH = path, LOCAL_CCFLAGS = LOCAL_CCFLAGS, LIBRARY='')
+
+    src = []
+    group = DefineGroup('FREETYPE_lib', src, depend = ['LPKG_USING_FREETYPE'], CPPPATH = path, LIBS = ['FREETYPE'], LIBPATH = [lib_path])
+Return('group')

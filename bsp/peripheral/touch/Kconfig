@@ -1,0 +1,166 @@
+choice
+    prompt "Select CTP device"
+    default AIC_TOUCH_PANEL_GT911
+    depends on AIC_USING_CTP
+
+    config AIC_TOUCH_PANEL_AXS15260
+        bool "AXS15260"
+
+    config AIC_TOUCH_PANEL_C145HAX01
+        bool "C145HAX01"
+
+    config AIC_TOUCH_PANEL_C123HAX022
+        bool "C123HAX022"
+
+    config AIC_TOUCH_PANEL_CST826
+        bool "CST826"
+
+    config AIC_TOUCH_PANEL_CST3240
+        bool "CST3240"
+
+    config AIC_TOUCH_PANEL_FT6336
+        bool "FT6336"
+
+    config AIC_TOUCH_PANEL_FT7411
+        bool "FT7411"
+
+    config AIC_TOUCH_PANEL_GSL1680
+        bool "GSL1680"
+
+    config AIC_TOUCH_PANEL_GSL3676
+        bool "GSL3676"
+
+    config AIC_TOUCH_PANEL_GT911
+        bool "GT911"
+
+    config AIC_TOUCH_PANEL_ILI2511
+        bool "ILI2511"
+
+    config AIC_TOUCH_PANEL_ST16XX
+        bool "ST16XX"
+
+    config AIC_TOUCH_PANEL_ST77922
+        bool "ST77922"
+
+    config AIC_TOUCH_PANEL_TW31XX
+        bool "TW31XX"
+endchoice
+
+config AIC_TOUCH_PANEL_I2C_CHAN
+    string "Touch using I2C channel index"
+    default "i2c3"
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_PANEL_RST_PIN
+    string "Touch reset pin"
+    default "PA.8"
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_PANEL_INT_PIN
+    string "Touch irq pin"
+    default "PA.9"
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_X_COORDINATE_RANGE
+    int "Touch real x coordinate range"
+    default 1024
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_Y_COORDINATE_RANGE
+    int "Touch real y coordinate range"
+    default 600
+    depends on AIC_USING_CTP
+
+config AIC_SCREEN_REAL_X_RESOLUTION
+    int "Screen real x coordinate range"
+    default 1024
+    depends on AIC_USING_CTP
+
+config AIC_SCREEN_REAL_Y_RESOLUTION
+    int "Screen real y coordinate range"
+    default 600
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_X_FLIP
+    bool "Touch flip x coordinate"
+    default n
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_Y_FLIP
+    bool "Touch flip y coordinate"
+    default n
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_90_DEGREE_ROTATION
+    bool "Touch 90 degrees rotation"
+    default n
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_270_DEGREE_ROTATION
+    bool "Touch 270 degrees rotation"
+    default n
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_CROP
+    bool "Enable touch crop"
+    default n
+    help
+        Some Touch need to be cropped, the effective area displayed is less
+        than the timing signal.
+        If unsure select "N".
+
+if AIC_TOUCH_CROP
+    config AIC_TOUCH_CROP_POS_X
+        int "Touch crop x position of pixels"
+        default 0
+
+    config AIC_TOUCH_CROP_POS_Y
+        int "Touch crop y position of pixels"
+        default 0
+
+    config AIC_TOUCH_CROP_WIDTH
+        int "Touch crop width"
+        default 1024
+
+    config AIC_TOUCH_CROP_HEIGHT
+        int "Touch crop height"
+        default 600
+endif
+
+config AIC_TOUCH_REPORT_X_COORDINATE
+    int
+    default AIC_TOUCH_CROP_HEIGHT if AIC_TOUCH_90_DEGREE_ROTATION && AIC_TOUCH_CROP
+    default AIC_TOUCH_CROP_HEIGHT if AIC_TOUCH_270_DEGREE_ROTATION && AIC_TOUCH_CROP
+    default AIC_TOUCH_Y_COORDINATE_RANGE if AIC_TOUCH_90_DEGREE_ROTATION
+    default AIC_TOUCH_Y_COORDINATE_RANGE if AIC_TOUCH_270_DEGREE_ROTATION
+    default AIC_TOUCH_CROP_WIDTH if AIC_TOUCH_CROP
+    default AIC_TOUCH_X_COORDINATE_RANGE
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_REPORT_Y_COORDINATE
+    int
+    default AIC_TOUCH_CROP_WIDTH if AIC_TOUCH_90_DEGREE_ROTATION && AIC_TOUCH_CROP
+    default AIC_TOUCH_CROP_WIDTH if AIC_TOUCH_270_DEGREE_ROTATION && AIC_TOUCH_CROP
+    default AIC_TOUCH_X_COORDINATE_RANGE if AIC_TOUCH_90_DEGREE_ROTATION
+    default AIC_TOUCH_X_COORDINATE_RANGE if AIC_TOUCH_270_DEGREE_ROTATION
+    default AIC_TOUCH_CROP_HEIGHT if AIC_TOUCH_CROP
+    default AIC_TOUCH_Y_COORDINATE_RANGE
+    depends on AIC_USING_CTP
+
+config AIC_TOUCH_PANEL_NAME
+    string
+    default "axs15260"  if AIC_TOUCH_PANEL_AXS15260
+    default "c123hax022" if AIC_TOUCH_PANEL_C123HAX022
+    default "c145hax01" if AIC_TOUCH_PANEL_C145HAX01
+    default "cst826"    if AIC_TOUCH_PANEL_CST826
+    default "cst3240"   if AIC_TOUCH_PANEL_CST3240
+    default "ft6336"    if AIC_TOUCH_PANEL_FT6336
+    default "ft7411"    if AIC_TOUCH_PANEL_FT7411
+    default "gsl1680"   if AIC_TOUCH_PANEL_GSL1680
+    default "gsl3676"   if AIC_TOUCH_PANEL_GSL3676
+    default "gt911"     if AIC_TOUCH_PANEL_GT911
+    default "ili2511"   if AIC_TOUCH_PANEL_ILI2511
+    default "st16xx"    if AIC_TOUCH_PANEL_ST16XX
+    default "st77922"   if AIC_TOUCH_PANEL_ST77922
+    default "tw31xx"    if AIC_TOUCH_PANEL_TW31XX
+    depends on AIC_USING_CTP

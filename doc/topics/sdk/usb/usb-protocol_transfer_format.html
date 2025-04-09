@@ -1,0 +1,206 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Transfer / Frame (传输): 从时间的维度看，USB 通信是由一系列的 Transfer (传输)组成的。包括四种传输类型： Control Transfers 控制传输 Isochronous Transfers 同步传输 Interrupt Transfers 中断传输 Bulk Transfers 批量传输 Transaction (事务): 每一个 Transfer ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-30"/><meta name="DC.date.modified" content="2024-02-29"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_protocol_transfer_format"/><meta name="DC.language" content="zh-CN"/><title>USB 协议传输格式</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-protocol_transfer_format.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-protocol_transfer_format.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_protocol_transfer_format" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-protocol_transfer_format.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">USB 协议传输格式</h1><div class="date inPage">29 Feb 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d299254e23__20250121171803"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_protocol_transfer_format__image_nyn_f2q_g1c" src="../../../images/usb/usb_frame_format.png" alt="image1"/></div><br/></div><ul class="- topic/ul ul" id="usb_protocol_transfer_format__ul_oyn_f2q_g1c" data-ofbid="usb_protocol_transfer_format__ul_oyn_f2q_g1c"><li class="- topic/li li" data-ofbid="d299254e28__20250121171803"><p class="- topic/p p" data-ofbid="d299254e29__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code>/<code class="+ topic/ph pr-d/codeph ph codeph">Frame</code> (传输): 从时间的维度看，USB 通信是由一系列的
+                        <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> (传输)组成的。包括四种传输类型：</p><ul class="- topic/ul ul" id="usb_protocol_transfer_format__ul_pyn_f2q_g1c" data-ofbid="usb_protocol_transfer_format__ul_pyn_f2q_g1c"><li class="- topic/li li" data-ofbid="d299254e40__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e42__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Control Transfers</code> 控制传输</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e47__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e49__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Isochronous Transfers</code> 同步传输</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e54__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e56__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Interrupt Transfers</code> 中断传输</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e61__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e63__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Bulk Transfers</code> 批量传输</p>
+                    </li></ul><div class="- topic/p p" data-ofbid="d299254e68__20250121171803"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_protocol_transfer_format__image_qyn_f2q_g1c" src="../../../images/usb/usb_protocol_transfer.png" alt="image2"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d299254e72__20250121171803"><p class="- topic/p p" data-ofbid="d299254e73__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph"><a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="usb-transaction.html">Transaction</a></code> (事务): 每一个 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code>
+                    (传输)又可以分成不同的 Transaction，具体的 Transaction 类型为以下 3 种：</p><ul class="- topic/ul ul" id="usb_protocol_transfer_format__ul_syn_f2q_g1c" data-ofbid="usb_protocol_transfer_format__ul_syn_f2q_g1c"><li class="- topic/li li" data-ofbid="d299254e83__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e85__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">IN/Read/Upstream Transaction</code> 输入 (Host) 事务</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e90__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e92__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">OUT/Write/Downstream Transaction</code> 输出 (Host) 事务</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e97__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e99__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Control Transaction</code> 控制事务</p>
+                    </li></ul><div class="- topic/p p" data-ofbid="d299254e104__20250121171803"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_protocol_transfer_format__image_tyn_f2q_g1c" src="../../../images/usb/usb_protocol_transaction.png" alt="image3"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d299254e108__20250121171803"><p class="- topic/p p" data-ofbid="d299254e109__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph"><a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="usb-packet.html">Packet</a></code> 每一次 Transaction 又由不同的 Packets
+                    所组成</p><ul class="- topic/ul ul" id="usb_protocol_transfer_format__ul_vyn_f2q_g1c" data-ofbid="usb_protocol_transfer_format__ul_vyn_f2q_g1c"><li class="- topic/li li" data-ofbid="d299254e116__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e118__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Token Packet</code></p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e122__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e124__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Data Packet</code></p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e128__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e130__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Handshake Packet</code></p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e134__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e136__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Special Packet</code></p>
+                    </li></ul><div class="- topic/p p" data-ofbid="d299254e140__20250121171803"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_protocol_transfer_format__image_wyn_f2q_g1c" src="../../../images/usb/usb_protocol_packet.png" alt="image4"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d299254e144__20250121171803">
+                <p class="- topic/p p" data-ofbid="d299254e146__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Field</code> 每一个 Packet 又由不同的 Field 组成：</p>
+                <ul class="- topic/ul ul" id="usb_protocol_transfer_format__ul_yyn_f2q_g1c" data-ofbid="usb_protocol_transfer_format__ul_yyn_f2q_g1c"><li class="- topic/li li" data-ofbid="d299254e152__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e154__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">Sync</code> 同步域</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e159__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e161__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">PID</code> 标识域</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e166__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e168__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">ADDR</code> 设备地址域</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e173__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e175__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">ENDP</code> 端点域</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e180__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e182__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">FRAM</code> 帧号域</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e187__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e189__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">DATA</code> 数据域</p>
+                    </li><li class="- topic/li li" data-ofbid="d299254e194__20250121171803">
+                        <p class="- topic/p p" data-ofbid="d299254e196__20250121171803"><code class="+ topic/ph pr-d/codeph ph codeph">CRC</code> 校验域</p>
+                    </li></ul>
+                <div class="- topic/p p" data-ofbid="d299254e202__20250121171803"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_protocol_transfer_format__image_azn_f2q_g1c" src="../../../images/usb/usb_packet_format1.png" alt="image5"/></div><br/></div>
+            </li></ul></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

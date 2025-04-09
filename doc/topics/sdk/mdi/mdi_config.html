@@ -1,0 +1,219 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="按照以下流程，配置 MDI 驱动模块及相关参数： 在 Luban-Lite 根目录下执行 scons --menuconfig ，进入 menuconfig 的功能配置界面，按如下选择，打开 MPP VIN DevMode： 注： MDI 驱动依赖 MPP 中的 VIN 子模块，而且用到的是其中的 DevMode，需要提前打开。 Local packages options ---&gt; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-05"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>参数配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mdi/mdi_config.dita"/><meta name="wh-out-relpath" content="topics/sdk/mdi/mdi_config.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">参数配置</h1><div class="date inPage">5 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><div class="- topic/p p" data-ofbid="d111120e17__20250121171551">按照以下流程，配置 MDI 驱动模块及相关参数：<ol class="- topic/ol ol" id="id__ol_jjy_5rt_2dc" data-ofbid="id__ol_jjy_5rt_2dc"><li class="- topic/li li" data-ofbid="d111120e20__20250121171551">
+                    <div class="- topic/p p" data-ofbid="d111120e22__20250121171551">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig
+                        的功能配置界面，按如下选择，打开 MPP VIN DevMode：<div class="- topic/note note note note_note" id="id__note_onm_fst_2dc" data-ofbid="id__note_onm_fst_2dc"><span class="note__title">注：</span> MDI 驱动依赖 MPP 中的
+                            VIN 子模块，而且用到的是其中的
+                        DevMode，需要提前打开。</div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xn1_4rt_2dc" data-ofbid="id__codeblock_xn1_4rt_2dc">Local packages options  ---&gt;
+    ArtInChip packages options  ---&gt;
+        [*] aic-mpp  ---&gt;
+            [*]     Enable Video Input interface of DevMode
+            (<span class="hl-number">6278400</span>) Size of Video Input buffer</pre></div>
+                    <p class="- topic/p p" data-ofbid="d111120e35__20250121171551">其中 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Size of Video Input buffer</span>
+                            需要根据应用场景的图像数据格式来计算。关于详细计算说明，可查看<a class="- topic/xref xref" href="mdi_config.html#id__section_s15_dst_2dc">MDI 应用场景及资源需求</a>。</p>
+                </li><li class="- topic/li li" data-ofbid="d111120e45__20250121171551">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig
+                    的功能配置界面，按如下选择，打开 MDI 驱动<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ddm_hst_2dc" data-ofbid="id__codeblock_ddm_hst_2dc">Board options  ---&gt;
+    [*] Using MDI
+    (PE.<span class="hl-number">11</span>) Busy signal PIN
+    [*]   Data sequence is First-In-First-Save</pre><ul class="- topic/ul ul simple" id="id__ul_ihk_mrt_2dc" data-ofbid="id__ul_ihk_mrt_2dc"><li class="- topic/li li" data-ofbid="d111120e56__20250121171551">
+                            <p class="- topic/p p" data-ofbid="d111120e58__20250121171551">
+                                <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Busy
+                                    signal
+                                    PIN</span>：用于向 Host 发送 Busy 信号，默认值 PE.11 在
+                                D12x 中并不存在，需要根据实际板级电路修改此参数。</p>
+                        </li><li class="- topic/li li" data-ofbid="d111120e64__20250121171551">
+                            <p class="- topic/p p" data-ofbid="d111120e66__20250121171551">
+                                <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Data sequence is
+                                First-In-First-Save</span>：用于调整输入信号的存放顺序，取决于数据源格式和数据线的排布方式。</p>
+                        </li></ul></li></ol></div><section class="- topic/section section" id="id__section_s15_dst_2dc" data-ofbid="id__section_s15_dst_2dc"><h2 class="- topic/title title sectiontitle">MDI 应用场景及资源需求</h2>
+            
+            
+            
+            <p class="- topic/p p" data-ofbid="d111120e77__20250121171551">为了覆盖大部分场景， <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Size of Video Input buffer</span>
+                <strong class="+ topic/ph hi-d/b ph b">默认值使用输入 640*480、RGB888 格式计算得到 6278400</strong>，如果输入超过 640*480、RGB888 的资源需求，就需要调大此
+                    Buffer。用户可以参考<a class="- topic/xref xref" href="../../../external-references/MDI_buf_size.xlsx">MDIBuf 资源需求的计算表</a> 的数据源格式、显示格式来计算 Buf 资源的需求。</p>
+            <p class="- topic/p p" data-ofbid="d111120e90__20250121171551">MDI 应用场景及资源需求的详细说明如下所示：</p>
+            
+            
+            <div class="- topic/div div section" id="id__mpp-vin-devmode">
+                
+                <div class="- topic/div div section" id="id__mdi-de"><strong class="+ topic/ph hi-d/b ph b">MDI -&gt; DE 场景的资源需求</strong>
+                    <p class="- topic/p p" data-ofbid="d111120e99__20250121171551">MDI 取到的数据放入 Buffer 队列，该 Buffer 队列会直接交给 DE 去显示。 运行过程中为了流畅度，<strong class="+ topic/ph hi-d/b ph b">Buffer 队列需要的
+                            Buffer 数量至少是 3</strong>。</p><p class="- topic/p p" data-ofbid="d111120e104__20250121171551">Buffer 的大小主要取决于 Framebuffer 的图像格式，下表以 1024*600
+                        显示分辨率列举一些情况：</p><div class="table-container"><table class="- topic/table table frame-all" id="id__table_dhk_mrt_2dc" data-ofbid="id__table_dhk_mrt_2dc" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:21.598272138228943%"/><col style="width:24.406047516198704%"/><col style="width:24.838012958963283%"/><col style="width:29.157667386609077%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_dhk_mrt_2dc__entry__1">FB 格式</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_dhk_mrt_2dc__entry__2">Buffer Size</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_dhk_mrt_2dc__entry__3">Buffer 个数</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_dhk_mrt_2dc__entry__4">总的 RAM 需求</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_dhk_mrt_2dc__entry__1">RGB565</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_dhk_mrt_2dc__entry__2">1,228,800</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_dhk_mrt_2dc__entry__3">3</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_dhk_mrt_2dc__entry__4">3,686,400</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_dhk_mrt_2dc__entry__1">RGB888</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_dhk_mrt_2dc__entry__2">1,843,200</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_dhk_mrt_2dc__entry__3">3</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_dhk_mrt_2dc__entry__4">5,529,600</td></tr></tbody></table></div></div>
+                <div class="- topic/div div section" id="id__mdi-ge-de">
+                    <strong class="+ topic/ph hi-d/b ph b">MDI -&gt; GE -&gt; DE 场景的资源需求</strong>
+                    <p class="- topic/p p" data-ofbid="d111120e148__20250121171551">MDI 取到的数据先放入 Buffer 队列，该 Buffer 队列会交给 GE 去处理，然后 GE 输出到一对乒乓 Buffer，乒乓 Buffer
+                        再转交 DE 去显示。 同上，运行过程中为了流畅度，Buffer 队列需要的 Buffer 数量至少是 3。</p><p class="- topic/p p" data-ofbid="d111120e150__20250121171551">这种场景要分两部分去计算
+                        Buffer 需求： Buffer 总大小=Buffer 队列的大小+乒乓 Buffer 的大小</p><ol class="- topic/ol ol arabic simple" id="id__ol_ehk_mrt_2dc" data-ofbid="id__ol_ehk_mrt_2dc"><li class="- topic/li li" data-ofbid="d111120e153__20250121171551">
+                            <div class="- topic/p p" data-ofbid="d111120e155__20250121171551">Buffer 队列中，单个 Buffer 的大小取决于 MDI 的输入图像格式。下表是一些格式举例：<div class="table-container"><table class="- topic/table table frame-all" id="id__table_fhk_mrt_2dc" data-ofbid="id__table_fhk_mrt_2dc" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:18.26241134751773%"/><col style="width:19.326241134751772%"/><col style="width:21.98581560283688%"/><col style="width:22.69503546099291%"/><col style="width:17.730496453900706%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_fhk_mrt_2dc__entry__1">输入格式</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_fhk_mrt_2dc__entry__2">输入分辨率</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_fhk_mrt_2dc__entry__3">输入 Buffer Size</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_fhk_mrt_2dc__entry__4">输入 Buffre 个数</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_fhk_mrt_2dc__entry__5">RAM 需求</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__1">RGB565</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__2">320*480</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__3">307,200</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__4">3</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__5">921,600</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__1">RGB888</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__2">320*480</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__3">460,800</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__4">3</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__5">1,382,400</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__1">RGB565</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__2">640*480</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__3">921,600</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__4">3</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_fhk_mrt_2dc__entry__5">1,728,000</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_fhk_mrt_2dc__entry__1">RGB888</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_fhk_mrt_2dc__entry__2">640*480</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_fhk_mrt_2dc__entry__3">921,600</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_fhk_mrt_2dc__entry__4">3</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_fhk_mrt_2dc__entry__5">2,592,000</td></tr></tbody></table></div></div>
+                            <div class="- topic/note note note note_note" id="id__note_xgp_qn3_ddc" data-ofbid="id__note_xgp_qn3_ddc"><span class="note__title">注：</span> 
+                                <p class="- topic/p p" data-ofbid="d111120e225__20250121171551">在 <strong class="+ topic/ph hi-d/b ph b">局部刷新</strong> 的场景中，需要用一块 Buffer 来当作背景图的备份，所以在上表基础上 Buffer 队列中的
+                                    Buffer 个数需要再加一。</p>
+                            </div>
+                        </li><li class="- topic/li li" data-ofbid="d111120e232__20250121171551">
+                            <div class="- topic/p p" data-ofbid="d111120e234__20250121171551">乒乓 Buffer 中，单个 Buffer 的大小取决于 DE 的图像格式。下表是一些格式举例：<div class="table-container"><table class="- topic/table table frame-all" id="id__table_hhk_mrt_2dc" data-ofbid="id__table_hhk_mrt_2dc" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:24.39024390243903%"/><col style="width:26.829268292682933%"/><col style="width:24.39024390243903%"/><col style="width:24.39024390243903%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_hhk_mrt_2dc__entry__1">FB 格式</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_hhk_mrt_2dc__entry__2">Buffer Size</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_hhk_mrt_2dc__entry__3">Buffer 个数</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_hhk_mrt_2dc__entry__4">RAM 需求</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_hhk_mrt_2dc__entry__1">RGB565</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_hhk_mrt_2dc__entry__2">1,228,800</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_hhk_mrt_2dc__entry__3">2</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_hhk_mrt_2dc__entry__4">2,457,600</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_hhk_mrt_2dc__entry__1">RGB888</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_hhk_mrt_2dc__entry__2">1,843,200</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_hhk_mrt_2dc__entry__3">2</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_hhk_mrt_2dc__entry__4">3,686,400</td></tr></tbody></table></div></div>
+                        </li></ol></div>
+            </div>
+            
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

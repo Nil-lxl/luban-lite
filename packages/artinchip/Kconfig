@@ -1,0 +1,13 @@
+menu "ArtInChip packages options"
+
+source "packages/artinchip/mpp/Kconfig"
+source "packages/artinchip/env/Kconfig"
+source "packages/artinchip/userid/Kconfig"
+source "packages/artinchip/pinmux-check/Kconfig"
+source "packages/artinchip/ota/Kconfig"
+source "packages/artinchip/burn-in/Kconfig"
+source "packages/artinchip/aic-authorization/Kconfig"
+source "packages/artinchip/ipmanager/Kconfig"
+source "packages/artinchip/barcode/Kconfig"
+
+endmenu

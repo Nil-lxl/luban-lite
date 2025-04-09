@@ -1,0 +1,201 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="关于此任务 本节详细介绍如何将触控屏与 ArtInChip 的 LVGL 图形库对接，确保在 Luban-Lite 平台上顺利运行并验证触控功能。 以 gt911 电容式触控屏为例，详细操作流程如下所示： 过程 替换触控屏驱动，修改驱动调用，在 packages/artinchip/lvgl-ui/lv_port_disp.c 的 lv_port_disp_init() ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="task"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-10-14"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="touch-integrate-gt911-with-lvgl"/><meta name="DC.language" content="zh-CN"/><title>CTP 与 LVGL 集成</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/peripheral/touch-integrate-gt911-with-lvgl.dita"/><meta name="wh-out-relpath" content="topics/sdk/peripheral/touch-integrate-gt911-with-lvgl.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="touch-integrate-gt911-with-lvgl" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic task/task topic task" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/peripheral/touch-integrate-gt911-with-lvgl.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">CTP 与 LVGL 集成</h1><div class="date inPage">14 Oct 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body task/taskbody body taskbody"><section class="- topic/section task/context section context" data-ofbid="d339849e22__20250121171859"><div class="tasklabel"><h2 class="sectiontitle tasklabel">关于此任务</h2></div>
+            <p class="- topic/p p" data-ofbid="d339849e24__20250121171859">本节详细介绍如何将触控屏与 ArtInChip 的 LVGL 图形库对接，确保在 <span class="- topic/ph ph">Luban-Lite</span> 平台上顺利运行并验证触控功能。</p>
+            <p class="- topic/p p" data-ofbid="d339849e30__20250121171859">以 gt911 电容式触控屏为例，详细操作流程如下所示：</p>
+        </section><section class="- topic/ol task/steps ol steps"><div class="tasklabel"><h2 class="sectiontitle tasklabel">过程</h2></div><ol class="- topic/ol task/steps ol steps" data-ofbid="d339849e33__20250121171859"><li class="- topic/li task/step li step" data-ofbid="d339849e34__20250121171859"><span class="- topic/ph task/cmd ph cmd">替换触控屏驱动，修改驱动调用，在 <span class="+ topic/ph sw-d/filepath ph filepath">packages/artinchip/lvgl-ui/lv_port_disp.c</span>
+                    的 <code class="+ topic/ph pr-d/codeph ph codeph">lv_port_disp_init()</code> 函数里，将触控屏名称由原设备名改为
+                    <code class="+ topic/ph pr-d/codeph ph codeph">gt911</code>。</span><div class="- topic/itemgroup task/info itemgroup info">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch-integrate-gt911-with-lvgl__codeblock_wbx_5zf_1dc" data-ofbid="touch-integrate-gt911-with-lvgl__codeblock_wbx_5zf_1dc">tpc_run(<span class="hl-string">"name"</span>, info.width, info.height);       <em class="hl-comment">//将 name 改成注册的 CTP 的名字如：gt911</em></pre>
+                </div></li><li class="- topic/li task/step li step" data-ofbid="d339849e51__20250121171859"><span class="- topic/ph task/cmd ph cmd">修改 <span class="+ topic/ph sw-d/filepath ph filepath">packages/artinchip/lvgl-ui/lv_tpc_run.c</span> 中关于 CTP
+                    的宏定义，将原有的触控屏宏 <code class="+ topic/ph pr-d/codeph ph codeph">AIC_TOUCH_PANEL_ST16XX</code>
+                        替换为<code class="+ topic/ph pr-d/codeph ph codeph">AIC_TOUCH_PANEL_GT911</code>。</span><div class="- topic/itemgroup task/info itemgroup info">
+                    <div class="- topic/p p" data-ofbid="d339849e65__20250121171859">确保触控点读取函数名称正确对应。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch-integrate-gt911-with-lvgl__codeblock_s1q_11g_1dc" data-ofbid="touch-integrate-gt911-with-lvgl__codeblock_s1q_11g_1dc">#ifdef AIC_TOUCH_PANEL_ST16XX           <em class="hl-comment">//替换成 bsp/peripheral/touch/gt911/Kconfig 的宏如：AIC_TOUCH_PANEL_GT911</em>
+<strong class="hl-keyword">extern</strong> rt_size_t gt911_read_point(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">void</strong> *buf,
+                                rt_size_t read_num);
+#endif
+
+#<span class="hl-directive">define</span> THREAD_PRIORITY   <span class="hl-number">25</span>
+#<span class="hl-directive">define</span> THREAD_STACK_SIZE <span class="hl-number">4096</span>
+#<span class="hl-directive">define</span> THREAD_TIMESLICE  <span class="hl-number">5</span>
+
+<strong class="hl-keyword">static</strong> rt_thread_t  gt911_thread = RT_NULL;
+<strong class="hl-keyword">static</strong> rt_sem_t     gt911_sem = RT_NULL;
+<strong class="hl-keyword">static</strong> rt_device_t  dev = RT_NULL;
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_touch_data *read_data;
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_touch_info info;
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> gt911_entry(<strong class="hl-keyword">void</strong> *parameter)
+{
+    rt_device_control(dev, RT_TOUCH_CTRL_GET_INFO, &amp;info);
+
+    read_data = (<strong class="hl-keyword">struct</strong> rt_touch_data *)rt_malloc(<strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_data) * info.point_num);
+
+    <strong class="hl-keyword">while</strong> (<span class="hl-number">1</span>)
+    {
+        rt_sem_take(gt911_sem, RT_WAITING_FOREVER);
+        <strong class="hl-keyword">int</strong> num = <span class="hl-number">0</span>;
+#ifdef AIC_TOUCH_PANEL_ST16XX           <em class="hl-comment">//替换成 bsp/peripheral/touch/gt911/Kconfig 的宏如：AIC_TOUCH_PANEL_GT911</em>
+        num = rt_device_read(dev, <span class="hl-number">0</span>, read_data, info.point_num);
+#endif</pre></div>
+                </div></li></ol></section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

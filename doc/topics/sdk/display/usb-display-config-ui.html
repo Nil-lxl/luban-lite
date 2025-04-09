@@ -1,0 +1,316 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本地 UI 可提供一系列辅助功能，可根据需要打开。本地 UI 详细配置流程如下： 在 SDK 根目录，执行下列命令，进入 menuconfig 的功能配置界面： scons menuconfig 使能 LVGL USB OSD Demo： &gt; Application options ---&gt; -*- LVGL (official): powerful and easy-to-use ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/app/usb-display.html"/><meta name="DC.relation" content="../../../topics/sdk/display/usb-display-config-addon.html"/><meta name="DC.relation" content="../../../topics/sdk/display/usb-display-ui-interface.html"/><meta name="DC.relation" content="../../../topics/sdk/display/usb-display-ui-interface.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_display_config_ui"/><title>配置本地 UI</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="usb_display_config_ui-d5856e2047"/><meta name="wh-source-relpath" content="topics/sdk/display/usb-display-config-ui.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/usb-display-config-ui.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_display_config_ui" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="usb_display"><div class="title"><a href="../../../topics/sdk/app/usb-display.html">USB Display 方案</a></div></div></li><li class="active"><div class="topicref" data-id="usb_display_config_ui"><div class="title"><a href="../../../topics/sdk/display/usb-display-config-ui.html">配置本地 UI</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/display/usb-display-config-addon.html" title="配置附加功能" aria-label="上一主题: 配置附加功能" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/display/usb-display-ui-interface.html" title="本地 UI 界面说明" aria-label="下一主题: 本地 UI 界面说明" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="usb_display_config-d5856e2023" class="topicref" data-id="usb_display_config" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display-config.html" id="usb_display_config-d5856e2023-link">配置 USB 设备功能</a></div></div></li><li role="treeitem"><div data-tocid="usb_display_config_addon-d5856e2035" class="topicref" data-id="usb_display_config_addon" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-config-addon.html" id="usb_display_config_addon-d5856e2035-link">配置附加功能</a></div></div></li><li role="treeitem" aria-expanded="true" class="active"><div data-tocid="usb_display_config_ui-d5856e2047" class="topicref" data-id="usb_display_config_ui" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action usb_display_config_ui-d5856e2047-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-config-ui.html" id="usb_display_config_ui-d5856e2047-link">配置本地 UI</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="usb_display_ui_interface-d5856e2059" class="topicref" data-id="usb_display_ui_interface" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-ui-interface.html" id="usb_display_ui_interface-d5856e2059-link">本地 UI 界面说明</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="usb_display_rotate-d5856e2071" class="topicref" data-id="usb_display_rotate" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-rotate.html" id="usb_display_rotate-d5856e2071-link">配置横屏竖用和竖屏横用功能</a></div></div></li><li role="treeitem"><div data-tocid="usb_display_config_screen_cut-d5856e2083" class="topicref" data-id="usb_display_config_screen_cut" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-config-screen-cut.html" id="usb_display_config_screen_cut-d5856e2083-link">配置屏幕裁剪</a></div></div></li><li role="treeitem"><div data-tocid="usb_display_install_drive-d5856e2095" class="topicref" data-id="usb_display_install_drive" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display-install-drive.html" id="usb_display_install_drive-d5856e2095-link">安装驱动</a></div></div></li><li role="treeitem"><div data-tocid="usb_display_tp_calibrate_windows-d5856e2107" class="topicref" data-id="usb_display_tp_calibrate_windows" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display-tp-calibrate_windows.html" id="usb_display_tp_calibrate_windows-d5856e2107-link">在 Windows 中校准触摸屏</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/usb-display-config-ui.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">配置本地 UI</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body body"><div class="- topic/p p" data-ofbid="d114655e19__20250121171556">本地 UI 可提供一系列辅助功能，可根据需要打开。本地 UI 详细配置流程如下：<ol class="- topic/ol ol" id="usb_display_config_ui__ol_ccb_tyd_c2c" data-ofbid="usb_display_config_ui__ol_ccb_tyd_c2c"><li class="- topic/li li" data-ofbid="d114655e22__20250121171556">在 SDK 根目录，执行下列命令，进入 menuconfig
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_njn_5yd_c2c" data-ofbid="usb_display_config_ui__codeblock_njn_5yd_c2c">scons menuconfig</pre></li><li class="- topic/li li" data-ofbid="d114655e26__20250121171556">
+                    <div class="- topic/p p" data-ofbid="d114655e28__20250121171556">使能 LVGL USB OSD
+                        Demo：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_tyf_zyd_c2c" data-ofbid="usb_display_config_ui__codeblock_tyf_zyd_c2c">&gt; Application options  ---&gt;
+   -*- LVGL (official): powerful and easy-to-use embedded GUI library  ---&gt;
+   [*] ArtInChip LVGL demo  ---&gt;
+       select LVGL demo (LVGL usb osd demo)  ---&gt;
+   (/data/lvgl_data) LVGL Resource Directory</pre></div>
+                </li><li class="- topic/li li" id="usb_display_config_ui__li_umr_zb2_c2c" data-ofbid="usb_display_config_ui__li_umr_zb2_c2c">
+                    <p class="- topic/p p" data-ofbid="d114655e35__20250121171556">配置 <code class="+ topic/ph pr-d/codeph ph codeph">/data</code> 分区。</p>
+                    <div class="- topic/p p" data-ofbid="d114655e41__20250121171556">LVGL Demo 使用的文件保存在 <code class="+ topic/ph pr-d/codeph ph codeph">/data</code> 分区中，分区配置如下：<ul class="- topic/ul ul" id="usb_display_config_ui__ul_csm_czd_c2c" data-ofbid="usb_display_config_ui__ul_csm_czd_c2c"><li class="- topic/li li" data-ofbid="d114655e47__20250121171556">
+                                <div class="- topic/p p" data-ofbid="d114655e49__20250121171556">配置 NAND Flash 的 <code class="+ topic/ph pr-d/codeph ph codeph">/data</code>
+                                    分区：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_dv3_czd_c2c" data-ofbid="usb_display_config_ui__codeblock_dv3_czd_c2c">&gt; Application options  ---&gt;
+    [*] Using File System Image <span class="hl-number">1</span>  ---&gt;
+       Select File System Type (FATFS)  ---&gt;
+       (packages/artinchip/lvgl-ui/aic_demo/usb_osd_demo/lvgl_src/) Data Directory
+       (data.fatfs) Image Name
+       [ ]   <strong class="hl-keyword">auto</strong> calcuate image size</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d114655e57__20250121171556">
+                                <div class="- topic/p p" data-ofbid="d114655e59__20250121171556">配置 NOR Flash 的 <code class="+ topic/ph pr-d/codeph ph codeph">/data</code>
+                                    分区：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_xrx_2zd_c2c" data-ofbid="usb_display_config_ui__codeblock_xrx_2zd_c2c">&gt; Application options  ---&gt;
+    [*] Using File System Image <span class="hl-number">1</span>  ---&gt;
+       Select File System Type (LittleFS)  ---&gt;
+       (packages/artinchip/lvgl-ui/aic_demo/usb_osd_demo/lvgl_src/) Data Directory
+       (data.lfs) Image Name</pre></div>
+                            </li></ul></div>
+                    <div class="table-container"><table class="- topic/table table frame-all" id="usb_display_config_ui__table_h12_hzd_c2c" data-ofbid="usb_display_config_ui__table_h12_hzd_c2c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">参数描述</span></caption><colgroup><col style="width:36.63003663003663%"/><col style="width:63.369963369963365%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_display_config_ui__table_h12_hzd_c2c__entry__1">参数</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_display_config_ui__table_h12_hzd_c2c__entry__2">描述</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_display_config_ui__table_h12_hzd_c2c__entry__1"><code class="+ topic/ph pr-d/codeph ph codeph">Using File System Image 1</code></td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_display_config_ui__table_h12_hzd_c2c__entry__2">配置文件系统镜像格式。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_display_config_ui__table_h12_hzd_c2c__entry__1"><code class="+ topic/ph pr-d/codeph ph codeph">Select File System Type</code></td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_display_config_ui__table_h12_hzd_c2c__entry__2">选择分区格式：<ul class="- topic/ul ul" id="usb_display_config_ui__ul_b2h_jzd_c2c" data-ofbid="usb_display_config_ui__ul_b2h_jzd_c2c"><li class="- topic/li li" data-ofbid="d114655e94__20250121171556">
+                                                <p class="- topic/p p" data-ofbid="d114655e96__20250121171556">如选择 FATFS，则系统显示 <code class="+ topic/ph pr-d/codeph ph codeph">Select File System Type
+                                                  (FATFS)</code></p>
+                                            </li><li class="- topic/li li" data-ofbid="d114655e101__20250121171556">
+                                                <p class="- topic/p p" data-ofbid="d114655e103__20250121171556">如选择 LittleFS，则系统显示
+                                                  <code class="+ topic/ph pr-d/codeph ph codeph">SelectFileSystemType(LittleFS)</code></p>
+                                            </li></ul></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_display_config_ui__table_h12_hzd_c2c__entry__1"><code class="+ topic/ph pr-d/codeph ph codeph">(packages/artinchip/lvgl-ui/aic_demo/usb_osd_demo/lvgl_src/)
+                                            Data Directory</code></td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_display_config_ui__table_h12_hzd_c2c__entry__2">打包的文件夹，示例目录为<span class="+ topic/ph sw-d/filepath ph filepath">(packages/artinchip/lvgl-ui/aic_demo/usb_osd_demo/lvgl_src/)</span>，用于存放
+                                        Demo 资源文件。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_display_config_ui__table_h12_hzd_c2c__entry__1"><code class="+ topic/ph pr-d/codeph ph codeph">(data.lfs) Image Name</code></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_display_config_ui__table_h12_hzd_c2c__entry__2">映像名为 <code class="+ topic/ph pr-d/codeph ph codeph">(data.lfs)</code></td></tr></tbody></table></div>
+                </li><li class="- topic/li li" data-ofbid="d114655e126__20250121171556">
+                    <div class="- topic/p p" data-ofbid="d114655e128__20250121171556">根据需要，配置下列本地功能：<ul class="- topic/ul ul" id="usb_display_config_ui__ul_lt3_212_c2c" data-ofbid="usb_display_config_ui__ul_lt3_212_c2c"><li class="- topic/li li" data-ofbid="d114655e131__20250121171556"><a class="- topic/xref xref" href="usb-display-config-ui.html#usb_display_config_ui__section_xqy_gc2_c2c">配置本地 UI Logo</a></li><li class="- topic/li li" data-ofbid="d114655e135__20250121171556">
+                                <p class="- topic/p p" data-ofbid="d114655e137__20250121171556"><a class="- topic/xref xref" href="usb-display-config-ui.html#usb_display_config_ui__section_exq_nc2_c2c">配置本地 UI 待机程序</a></p>
+                                <p class="- topic/p p" data-ofbid="d114655e142__20250121171556"><a class="- topic/xref xref" href="usb-display-config-ui.html#usb_display_config_ui__section_ksg_jd2_c2c">配置 OSD 菜单</a></p>
+                            </li></ul></div>
+                </li></ol></div><section class="- topic/section section" id="usb_display_config_ui__section_xqy_gc2_c2c" data-ofbid="usb_display_config_ui__section_xqy_gc2_c2c"><h2 class="- topic/title title sectiontitle">配置本地 UI Logo</h2>
+            
+            <div class="- topic/p p" data-ofbid="d114655e153__20250121171556">本地 UI 提供两种 Logo 模式：<ul class="- topic/ul ul" id="usb_display_config_ui__ul_mpq_kb2_c2c" data-ofbid="usb_display_config_ui__ul_mpq_kb2_c2c"><li class="- topic/li li" data-ofbid="d114655e156__20250121171556">
+                        <p class="- topic/p p" data-ofbid="d114655e158__20250121171556">模式 1：开机或待机时显示 Logo，支持 OSD 菜单</p>
+                        <p class="- topic/p p" data-ofbid="d114655e161__20250121171556">OSD 菜单可为用户提供一系列辅助功能。</p>
+                        <div class="- topic/p p" data-ofbid="d114655e164__20250121171556">在 menuconfig 菜单中使能 Logo
+                            功能：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_r1m_pb2_c2c" data-ofbid="usb_display_config_ui__codeblock_r1m_pb2_c2c">&gt; Application options  ---&gt;
+   [*] ArtInChip LVGL demo  ---&gt;
+       (logo.png) LOGO Image Name</pre></div>
+                        <p class="- topic/p p" data-ofbid="d114655e169__20250121171556">示例中，Logo 文件配置为 <code class="+ topic/ph pr-d/codeph ph codeph">logo.png</code>，对应单板上的
+                                <span class="+ topic/ph sw-d/filepath ph filepath">/data/lvgl_data/logo.png</span> 文件。用户可以根据需求配置 Logo
+                            文件。如果配置为空，则没有 Logo。</p>
+                    </li><li class="- topic/li li" data-ofbid="d114655e178__20250121171556">
+                        <p class="- topic/p p" data-ofbid="d114655e180__20250121171556">模式 2：开机显示 Logo，USB 副屏永不待机，不支持 OSD 菜单</p>
+                        <p class="- topic/p p" data-ofbid="d114655e183__20250121171556">显示完开机 Logo 后会释放 Framebuffer，为副屏显示提供额外的内存，能更好地支持旋转场景。</p>
+                        <ol class="- topic/ol ol" id="usb_display_config_ui__ul_ry4_tb2_c2c" data-ofbid="usb_display_config_ui__ul_ry4_tb2_c2c"><li class="- topic/li li" data-ofbid="d114655e187__20250121171556">
+                                <div class="- topic/p p" data-ofbid="d114655e189__20250121171556">在 menuconfig 菜单中使能 Startup Ui
+                                    功能：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_mtc_5b2_c2c" data-ofbid="usb_display_config_ui__codeblock_mtc_5b2_c2c">&gt; Local packages options  ---&gt;
+       ArtInChip packages options  ---&gt;
+           aic-mpp  ---&gt;
+               [*]   Show Startup Ui</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d114655e194__20250121171556">
+                                <div class="- topic/p p" data-ofbid="d114655e196__20250121171556">根据 Logo 图片和屏幕分辨率设置显示的坐标，如果全屏显示，则均设为
+                                    0。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_djp_vb2_c2c" data-ofbid="usb_display_config_ui__codeblock_djp_vb2_c2c">&gt; Local packages options  ---&gt;
+       ArtInChip packages options  ---&gt;
+           aic-mpp  ---&gt;
+               [*]   Show Startup Ui
+               (<span class="hl-number">0</span>)    X coordinate of the screen in pixels
+               (<span class="hl-number">0</span>)    Y coordinate of the screen in pixels</pre></div>
+                                <p class="- topic/p p" data-ofbid="d114655e201__20250121171556">Logo 文件对应单板上的 <span class="+ topic/ph sw-d/filepath ph filepath">/data/lvgl_data/logo.png</span>
+                                        文件。关于详细配置说明，可查看<a class="- topic/xref xref" href="usb-display-config-ui.html#usb_display_config_ui__li_umr_zb2_c2c">配置
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">data</code> 分区</a>。</p>
+                            </li></ol>
+                    </li></ul></div>
+            <div class="- topic/note note important note_important" id="usb_display_config_ui__note_afy_kc2_c2c" data-ofbid="usb_display_config_ui__note_afy_kc2_c2c"><span class="note__title">重要：</span> 
+                <ol class="- topic/ol ol" id="usb_display_config_ui__ol_hss_lc2_c2c" data-ofbid="usb_display_config_ui__ol_hss_lc2_c2c"><li class="- topic/li li" data-ofbid="d114655e219__20250121171556">
+                        <p class="- topic/p p" data-ofbid="d114655e221__20250121171556">Logo 文件必须命名为 <span class="+ topic/ph sw-d/filepath ph filepath">logo.png</span>。当前只支持 png 格式图片 Logo。</p>
+                    </li><li class="- topic/li li" data-ofbid="d114655e227__20250121171556">
+                        <p class="- topic/p p" data-ofbid="d114655e229__20250121171556">USB 副屏显示必须在 Logo 显示后，如果屏幕初始化或者播放动画比较耗时，需要设置 USB 副屏初始化延时，否则可能引起程序异常。</p>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="usb_display_config_ui__section_exq_nc2_c2c" data-ofbid="usb_display_config_ui__section_exq_nc2_c2c"><h2 class="- topic/title title sectiontitle">配置本地 UI 待机程序</h2>
+            
+            <p class="- topic/p p" data-ofbid="d114655e239__20250121171556">用户可以设置在 USB 副屏长时间显示不更新的情况下进入待机状态。</p>
+            <div class="- topic/p p" data-ofbid="d114655e242__20250121171556">在 menuconfig 中，已配置待机的默认值。如果 OSD 菜单被使能，可以在运行过程中使用 OSD 菜单动态更改待机配置，详细流程如下：<ol class="- topic/ol ol" id="usb_display_config_ui__ol_odr_1d2_c2c" data-ofbid="usb_display_config_ui__ol_odr_1d2_c2c"><li class="- topic/li li" data-ofbid="d114655e245__20250121171556">
+                        <div class="- topic/p p" data-ofbid="d114655e247__20250121171556">配置默认使能待机模式<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_mp3_bd2_c2c" data-ofbid="usb_display_config_ui__codeblock_mp3_bd2_c2c">&gt; Application options  ---&gt;
+   [*] ArtInChip LVGL demo  ---&gt;
+       (<span class="hl-number">1</span>)   Default Screen Lock Time(min), <span class="hl-number">0</span> to Never Lock</pre></div>
+                        <p class="- topic/p p" data-ofbid="d114655e252__20250121171556">配置进入待机模式之前的空闲时间，如果配置为 0 则不进入待机模式。</p>
+                    </li><li class="- topic/li li" data-ofbid="d114655e255__20250121171556">
+                        <div class="- topic/p p" data-ofbid="d114655e257__20250121171556">配置默认待机模式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_lpq_cd2_c2c" data-ofbid="usb_display_config_ui__codeblock_lpq_cd2_c2c">&gt; Application options  ---&gt;
+   [*] ArtInChip LVGL demo  ---&gt;
+       Default Screen Lock Mode (Display LOGO)  ---&gt;
+           (X) Display LOGO
+           ( ) Display Pictures
+           ( ) Display Video
+           ( ) Blank Screen</pre></div>
+                        <p class="- topic/p p" data-ofbid="d114655e262__20250121171556">待机模式选项包括显示 Logo、播放图片、播放视频和关闭屏幕。</p>
+                    </li><li class="- topic/li li" data-ofbid="d114655e265__20250121171556">
+                        <div class="- topic/p p" data-ofbid="d114655e267__20250121171556">配置待机显示 Logo
+                            多久后关闭屏幕：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_mm5_3d2_c2c" data-ofbid="usb_display_config_ui__codeblock_mm5_3d2_c2c">&gt; Application options  ---&gt;
+   [*] ArtInChip LVGL demo  ---&gt;
+       (<span class="hl-number">5</span>)   Screen Blank Time(min) After Screen Lock, <span class="hl-number">0</span> to Never</pre></div>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="usb_display_config_ui__section_ksg_jd2_c2c" data-ofbid="usb_display_config_ui__section_ksg_jd2_c2c"><h2 class="- topic/title title sectiontitle">配置 OSD 菜单</h2>
+            
+            <p class="- topic/p p" data-ofbid="d114655e278__20250121171556">用户可选择以下任意一种方式进入 OSD 菜单：</p>
+            <ul class="- topic/ul ul" id="usb_display_config_ui__ul_gbk_f1g_c2c" data-ofbid="usb_display_config_ui__ul_gbk_f1g_c2c"><li class="- topic/li li" data-ofbid="d114655e282__20250121171556">
+                    <div class="- topic/p p" data-ofbid="d114655e284__20250121171556">按键进入。<ol class="- topic/ol ol" id="usb_display_config_ui__ol_emv_g1g_c2c" data-ofbid="usb_display_config_ui__ol_emv_g1g_c2c"><li class="- topic/li li" data-ofbid="d114655e287__20250121171556">
+                                <div class="- topic/p p" data-ofbid="d114655e289__20250121171556">在 menuconfig 中配置 OSD 的 GPIO
+                                    按键。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_config_ui__codeblock_wdj_ld2_c2c" data-ofbid="usb_display_config_ui__codeblock_wdj_ld2_c2c">&gt; Application options  ---&gt;
+   [*] ArtInChip LVGL demo  ---&gt;
+       [*]   Enbale USB OSD Settings Menu
+       (PD.<span class="hl-number">6</span>)  USB OSD Settings Menu Wakeup Key</pre></div>
+                                <div class="table-container"><table class="- topic/table table frame-all" id="usb_display_config_ui__table_arw_md2_c2c" data-ofbid="usb_display_config_ui__table_arw_md2_c2c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">参数描述</span></caption><colgroup><col style="width:36.63003663003663%"/><col style="width:63.369963369963365%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_display_config_ui__table_arw_md2_c2c__entry__1">参数</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_display_config_ui__table_arw_md2_c2c__entry__2">描述</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_display_config_ui__table_arw_md2_c2c__entry__1"><code class="+ topic/ph pr-d/codeph ph codeph">Enbale USB OSD Settings
+                                                  Menu</code></td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_display_config_ui__table_arw_md2_c2c__entry__2">使能 USB OSD 菜单。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_display_config_ui__table_arw_md2_c2c__entry__1"><code class="+ topic/ph pr-d/codeph ph codeph">USB OSD Settings Menu Wakeup
+                                                  Key</code></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_display_config_ui__table_arw_md2_c2c__entry__2">OSD 菜单的唤出按键，例如 PD.6。</td></tr></tbody></table></div>
+                            </li><li class="- topic/li li" data-ofbid="d114655e320__20250121171556">
+                                <p class="- topic/p p" data-ofbid="d114655e322__20250121171556">使用按键启动 OSD 菜单，再按一次按键则退出菜单。</p>
+                            </li></ol></div>
+                </li><li class="- topic/li li" data-ofbid="d114655e326__20250121171556">
+                    <p class="- topic/p p" data-ofbid="d114655e328__20250121171556">在待机模式下长按触摸屏进入。在屏幕进入待机模式的情况下长按 TP 触摸屏，启动 OSD 菜单，在菜单旁任意空白处点击则退出。</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d114655e332__20250121171556">用户可以使能 OSD 菜单，通过 OSD 菜单调整屏幕亮度、对比度以及动态配置待机模式。关于 OSD 菜单的详细功能说明，可查看<a class="- topic/xref xref" href="usb-display-ui-interface.html#usb_display_ui_interface__section_k3y_xzf_c2c">OSD 菜单功能介绍</a>。</p>
+        </section></div></article></main></div>
+                        
+                        <div class=" wh_child_links d-print-none "><nav aria-label="Child Links" role="navigation" class="- topic/related-links related-links"><ul class="ullinks"><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/usb-display-ui-interface.html">本地 UI 界面说明</a></strong></li></ul></nav></div>
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_display_config_ui__section_xqy_gc2_c2c" data-tocid="usb_display_config_ui__section_xqy_gc2_c2c">配置本地 UI Logo</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_display_config_ui__section_exq_nc2_c2c" data-tocid="usb_display_config_ui__section_exq_nc2_c2c">配置本地 UI 待机程序</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_display_config_ui__section_ksg_jd2_c2c" data-tocid="usb_display_config_ui__section_ksg_jd2_c2c">配置 OSD 菜单</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

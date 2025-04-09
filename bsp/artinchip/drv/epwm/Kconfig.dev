@@ -1,0 +1,174 @@
+#-----------------------------
+# EPWM devices local parameter
+#-----------------------------
+
+# EPWM0 parameter
+
+menu "EPWM0 Parameter"
+    depends on AIC_USING_EPWM0
+
+config AIC_EPWM0_SYNC
+    int "Using EPWM0 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM1 parameter
+
+menu "EPWM1 Parameter"
+    depends on AIC_USING_EPWM1
+
+config AIC_EPWM1_SYNC
+    int "Using EPWM1 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM2 parameter
+
+menu "EPWM2 Parameter"
+    depends on AIC_USING_EPWM2
+
+config AIC_EPWM2_SYNC
+    int "Using EPWM2 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM3 parameter
+
+menu "EPWM3 Parameter"
+    depends on AIC_USING_EPWM3
+
+config AIC_EPWM3_SYNC
+    int "Using EPWM3 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM4 parameter
+
+menu "EPWM4 Parameter"
+    depends on AIC_USING_EPWM4
+
+config AIC_EPWM4_SYNC
+    int "Using EPWM4 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM5 parameter
+
+menu "EPWM5 Parameter"
+    depends on AIC_USING_EPWM5
+
+config AIC_EPWM5_SYNC
+    int "Using EPWM5 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM6 parameter
+
+menu "EPWM6 Parameter"
+    depends on AIC_USING_EPWM6
+
+config AIC_EPWM6_SYNC
+    int "Using EPWM6 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM7 parameter
+
+menu "EPWM7 Parameter"
+    depends on AIC_USING_EPWM7
+
+config AIC_EPWM7_SYNC
+    int "Using EPWM7 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM8 parameter
+
+menu "EPWM8 Parameter"
+    depends on AIC_USING_EPWM8
+
+config AIC_EPWM8_SYNC
+    int "Using EPWM8 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM9 parameter
+
+menu "EPWM9 Parameter"
+    depends on AIC_USING_EPWM9
+
+config AIC_EPWM9_SYNC
+    int "Using EPWM9 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM10 parameter
+
+menu "EPWM10 Parameter"
+    depends on AIC_USING_EPWM10
+
+config AIC_EPWM10_SYNC
+    int "Using EPWM10 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# EPWM11 parameter
+
+menu "EPWM11 Parameter"
+    depends on AIC_USING_EPWM11
+
+config AIC_EPWM11_SYNC
+    int "Using EPWM11 sync mode"
+    range 0 1
+    default 0
+    help
+        set 0 to unuse sync mode, set 1 to use sync mode
+
+endmenu
+
+# common parameter
+

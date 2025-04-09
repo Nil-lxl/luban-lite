@@ -1,0 +1,256 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 内核的时钟驱动框架位于 linux-5.10/drivers/clk 目录下，CMU 的底层驱动位于 /drivers/clk/artinchip/ 目录下。 ArtInChip 的目录结构如下图所示： 文件 说明 clk-aic.h aic 公用头文件 clk-aic.c CMU 各个时钟的初始化，注册文件 clk-disp.c 显示模块的时钟文件 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-13"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_nmr_yn3_pzb"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/cmu/cmu-design-guide-lb.dita"/><meta name="wh-out-relpath" content="topics/sdk/cmu/cmu-design-guide-lb.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_nmr_yn3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/cmu/cmu-design-guide-lb.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">13 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="concept_nmr_yn3_pzb__section_dxn_tn4_mdc" data-ofbid="concept_nmr_yn3_pzb__section_dxn_tn4_mdc"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+            
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d127565e29__20250121171602">内核的时钟驱动框架位于 <span class="+ topic/ph sw-d/filepath ph filepath">linux-5.10/drivers/clk</span> 目录下，CMU
+                        的底层驱动位于<span class="+ topic/ph sw-d/filepath ph filepath">/drivers/clk/artinchip/</span>目录下。</p>
+                <p class="- topic/p p" data-ofbid="d127565e38__20250121171602">ArtInChip 的目录结构如下图所示：</p>
+                <div class="table-container"><table class="- topic/table table frame-all" id="concept_nmr_yn3_pzb__table_msb_srw_bzb" data-ofbid="concept_nmr_yn3_pzb__table_msb_srw_bzb" data-cols="2"><caption></caption><colgroup><col style="width:37.03703703703704%"/><col style="width:62.962962962962955%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__1">文件</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">clk-aic.h</span></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__2">aic 公用头文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">clk-aic.c</span></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__2">CMU 各个时钟的初始化，注册文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">clk-disp.c</span></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__2">显示模块的时钟文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">clk-fixed-parent-mod.c</span></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__2">只有一个父时钟源的时钟文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">clk-multi-parent-mod.c</span></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__2">具有多个父时钟源的时钟文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">clk-pll.c</span></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_msb_srw_bzb__entry__2">PLL 时钟文件</td></tr></tbody></table></div>
+            </div>
+        </section><section class="- topic/section section" id="concept_nmr_yn3_pzb__section_xhf_trw_bzb" data-ofbid="concept_nmr_yn3_pzb__section_xhf_trw_bzb"><h2 class="- topic/title title sectiontitle">Clock </h2>
+            
+            <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d127565e97__20250121171602">按照 CCF 框架，时钟分为下列类别：<ul class="- topic/ul ul" id="concept_nmr_yn3_pzb__ul_yhf_trw_bzb" data-ofbid="concept_nmr_yn3_pzb__ul_yhf_trw_bzb"><li class="- topic/li li" data-ofbid="d127565e100__20250121171602">
+                            <p class="- topic/p p" data-ofbid="d127565e102__20250121171602">fixed rate clock</p>
+                        </li><li class="- topic/li li" data-ofbid="d127565e105__20250121171602">
+                            <p class="- topic/p p" data-ofbid="d127565e107__20250121171602">gate clock</p>
+                        </li><li class="- topic/li li" data-ofbid="d127565e110__20250121171602">
+                            <p class="- topic/p p" data-ofbid="d127565e112__20250121171602">divider clock</p>
+                        </li><li class="- topic/li li" data-ofbid="d127565e115__20250121171602">
+                            <p class="- topic/p p" data-ofbid="d127565e117__20250121171602">mux clock</p>
+                        </li><li class="- topic/li li" data-ofbid="d127565e120__20250121171602">
+                            <p class="- topic/p p" data-ofbid="d127565e122__20250121171602">fixed clock</p>
+                        </li><li class="- topic/li li" data-ofbid="d127565e125__20250121171602">
+                            <p class="- topic/p p" data-ofbid="d127565e127__20250121171602">composite clock</p>
+                        </li></ul></div>
+                <div class="- topic/p p" data-ofbid="d127565e131__20250121171602">时钟树中的每一个 divider、gate、mux 都需要定义一个 hw 结构体。CMU 模块中有大量 gate 和
+                    divider，因此为了代码的简洁性和易用性，CMU 的驱动并未严格按照 CCF 框架编写。CMU
+                        驱动模块将时钟分为多种类型，且每种分类都有一个对应的自定义结构体，用来实现各种时钟操作：<div class="- topic/note note note note_note" id="concept_nmr_yn3_pzb__note_vkm_xl4_mdc" data-ofbid="concept_nmr_yn3_pzb__note_vkm_xl4_mdc"><span class="note__title">注：</span> 关于时钟分类和时钟树的描述，可查看下列时钟树章节<a class="- topic/xref xref" href="cmu-design-guide-lb.html#concept_nmr_yn3_pzb__section_itz_c44_mdc">时钟树</a>。</div><ul class="- topic/ul ul" id="concept_nmr_yn3_pzb__ul_r5s_vj4_mdc" data-ofbid="concept_nmr_yn3_pzb__ul_r5s_vj4_mdc"><li class="- topic/li li" data-ofbid="d127565e140__20250121171602">
+                            <p class="- topic/p p" data-ofbid="d127565e142__20250121171602">在 fixed parent module 的结构体中，定义了模块的 bus_gate 和
+                                module_gate，以及该类型时钟的分频系数，相当于综合了 CCF 框架中的 gate 和 divider。</p>
+                        </li><li class="- topic/li li" data-ofbid="d127565e145__20250121171602">
+                            <p class="- topic/p p" data-ofbid="d127565e147__20250121171602">在 multiple parent module 的结构体中定义了 gate，mux 以及分频系数，相当于综合了 CCF 框架中的
+                                gate，divider 和 mux。</p>
+                        </li></ul></div>
+            </div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="concept_nmr_yn3_pzb__table_a3f_trw_bzb" data-ofbid="concept_nmr_yn3_pzb__table_a3f_trw_bzb" data-cols="6"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">各时钟类型支持的 API 接口</span></caption><colgroup><col style="width:13.835616438356164%"/><col style="width:20.410958904109584%"/><col style="width:19.72602739726027%"/><col style="width:17.80821917808219%"/><col style="width:14.520547945205479%"/><col style="width:13.698630136986301%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">类型</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2">fixed rate clock</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3">fixed parent clock</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4">multi parent clock</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5">disp clock</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6">pll clock</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_prepare</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2" rowspan="2"></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3" rowspan="2">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4" rowspan="2">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5" rowspan="2">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6" rowspan="2">√</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_prepare_enable</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_unprepare</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2" rowspan="2"></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3" rowspan="2">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4" rowspan="2">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5" rowspan="2">√ </td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6" rowspan="2">√</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_disable_unprepare</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_set_rate</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2">-</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6">√</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_get_rate</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6">√</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_round_rate</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2">-</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6">√</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_set_parent</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2">-</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3">-</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5">-</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">clk_get_parent</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2">-</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3">-</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5">-</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__1">recalc_rate</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__2">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__3">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__4">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__5">√</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_a3f_trw_bzb__entry__6">√</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="concept_nmr_yn3_pzb__section_m3f_trw_bzb" data-ofbid="concept_nmr_yn3_pzb__section_m3f_trw_bzb"><h2 class="- topic/title title sectiontitle">Reset</h2>
+            
+            <div class="- topic/p p" data-ofbid="d127565e291__20250121171602">CMU 模块的 reset 驱动实现基于内核提供的 framework。其实现过程是创建并填充内核提供的 controller 设备结构体(struct
+                    reset_controller_dev)，并调用相应的接口：<ul class="- topic/ul ul" id="concept_nmr_yn3_pzb__ul_n3f_trw_bzb" data-ofbid="concept_nmr_yn3_pzb__ul_n3f_trw_bzb"><li class="- topic/li li" data-ofbid="d127565e294__20250121171602">
+                        <p class="- topic/p p" data-ofbid="d127565e296__20250121171602">reset_controller_register</p>
+                    </li><li class="- topic/li li" data-ofbid="d127565e299__20250121171602">
+                        <p class="- topic/p p" data-ofbid="d127565e301__20250121171602">reset_controller_unregister</p>
+                    </li></ul></div>
+            <div class="- topic/p p" data-ofbid="d127565e305__20250121171602">注册或注销。reset controller
+                的结构体如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_nmr_yn3_pzb__codeblock_odd_w1f_f1c" data-ofbid="concept_nmr_yn3_pzb__codeblock_odd_w1f_f1c"><strong class="hl-keyword">struct</strong> reset_controller_dev {
+        <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> reset_control_ops *ops;
+        <strong class="hl-keyword">struct</strong> module *owner;
+        <strong class="hl-keyword">struct</strong> list_head list;
+        <strong class="hl-keyword">struct</strong> list_head reset_control_head;
+        <strong class="hl-keyword">struct</strong> device *dev;
+        <strong class="hl-keyword">struct</strong> device_node *of_node;
+        <strong class="hl-keyword">int</strong> of_reset_n_cells;
+        <strong class="hl-keyword">int</strong> (*of_xlate)(<strong class="hl-keyword">struct</strong> reset_controller_dev *rcdev,
+                    <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> of_phandle_args *reset_spec);
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> nr_resets;
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d127565e310__20250121171602">驱动实现过程主要是对 ops 结构体中的函数指针进行填充，基本上是 reset 驱动的所有工作量。在 CMU 模块的 reset 驱动中，实现了对 assert 和
+                deassert 及 status 三个函数指针的填充。</p>
+        </section><section class="- topic/section section" id="concept_nmr_yn3_pzb__section_itz_c44_mdc" data-ofbid="concept_nmr_yn3_pzb__section_itz_c44_mdc"><h2 class="- topic/title title sectiontitle">时钟树</h2>
+      
+      <div class="- topic/div div section">
+        <figure class="- topic/fig fig fignone" id="concept_nmr_yn3_pzb__fig_rxf_3l4_mdc" data-ofbid="concept_nmr_yn3_pzb__fig_rxf_3l4_mdc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_nmr_yn3_pzb__image_sxf_3l4_mdc" src="../../../reusables/reused-topics/../../images/cmu/cmu_clock_structure_tree.png" alt="clock_tree"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">时钟树</span></figcaption></figure>
+        <div class="- topic/p p" id="concept_nmr_yn3_pzb__p_five_type_clock" data-ofbid="concept_nmr_yn3_pzb__p_five_type_clock">CMU 驱动将时钟树中的时钟分为五种类型，每种类型的时钟具有不同的特性和功能：<ul class="- topic/ul ul simple" id="concept_nmr_yn3_pzb__ul_nkq_yhd_bdc" data-ofbid="concept_nmr_yn3_pzb__ul_nkq_yhd_bdc"><li class="- topic/li li" data-ofbid="d127565e330__20250121171602">
+              <p class="- topic/p p" data-ofbid="d127565e332__20250121171602"><span class="+ topic/keyword pr-d/parmname keyword parmname">fixed rate
+                clock</span>：具有固定的输出频率，通常用于驱动一些不需要动态调整频率的外设。时钟频率固定，不能调节频率，不能打开或关闭。固定频率时钟包括
+                OSC24M、RC1M 和 OSC32K。</p>
+            </li><li class="- topic/li li" data-ofbid="d127565e337__20250121171602">
+              <p class="- topic/p p" data-ofbid="d127565e339__20250121171602"><span class="+ topic/keyword pr-d/parmname keyword parmname">fixed parent module
+                clock</span>：从另一个时钟信号派生出来的时钟，其输出频率与父时钟信号的频率相同。该类型时钟可以实现只有一个父时钟源的时钟驱动，主要用于各个外设模块的时钟驱动。该类型时钟可以改变时钟频率，打开或关闭时钟，获取父时钟源参数，但不能设置或改变父时钟源。</p>
+            </li><li class="- topic/li li" data-ofbid="d127565e344__20250121171602">
+              <p class="- topic/p p" data-ofbid="d127565e346__20250121171602"><span class="+ topic/keyword pr-d/parmname keyword parmname">multiple parent module clock</span>：可以从多个父时钟源中选择其中一个作为其输入，并根据需要调整输出频率。
+                该类型时钟可以实现有多个父时钟源的时钟驱动，主要用于各种总线时钟驱动，可以打开或关闭时钟，调节频率，获取或改变父时钟源。</p>
+            </li><li class="- topic/li li" data-ofbid="d127565e351__20250121171602">
+              <p class="- topic/p p" data-ofbid="d127565e353__20250121171602"><span class="+ topic/keyword pr-d/parmname keyword parmname">display module clock：</span>
+                实现了几个与显示模块相关的时钟驱动，除了自身的模块时钟外，显示模块还有一个像素时钟，相应的底层寄存器的设计也不同，所以显示相关的几个时钟重新设计了底层驱动。</p>
+            </li><li class="- topic/li li" data-ofbid="d127565e358__20250121171602">
+              <p class="- topic/p p" data-ofbid="d127565e360__20250121171602"><span class="+ topic/keyword pr-d/parmname keyword parmname">pll clock</span>：实现了 CMU 的 PLL 时钟驱动。PLL 是一种能够产生高频时钟信号的电路。PLL
+                可以将一个低频率的参考时钟信号乘以一个整数倍的频率因子，从而得到一个高频率的时钟信号。</p>
+            </li></ul></div>
+        <div class="- topic/p p" data-ofbid="d127565e366__20250121171602">下列表格列出了各种时钟分类对应的时钟树：<div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="concept_nmr_yn3_pzb__table_txf_3l4_mdc" data-ofbid="concept_nmr_yn3_pzb__table_txf_3l4_mdc" data-cols="2"><caption></caption><colgroup><col style="width:41.32231404958678%"/><col style="width:58.67768595041321%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__1">类型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">时钟</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__1" rowspan="3">fixed rate clock</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">OSC24M</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">OSC32K</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">RC1M</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__1" rowspan="31">fixed parent clock</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_DMA</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_CE</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_USBD</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_USBH0-1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_USB_PHY0-1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_GMAC0-1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_SPI0-1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_SDMMC0-2</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_SYSCON</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_RTC</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_I2S0-1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_ADDA</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_DE</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_GE</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_VE</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_WDOG</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_SID</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_GTC</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_GPIO</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_UART0-7</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_I2C0-3</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_CAN0-1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_PWM</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_ADCIM</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_GPADC</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_RTP</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_TSEN</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_CIR</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_RGB</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_LVDS</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_MIPIDSI</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__1" rowspan="9">multi parent clock</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_CPU</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_AHB0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_APB0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_APB1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_AXI0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_OUT0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_OUT1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_OUT2</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_OUT3</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__1" rowspan="5">pll clock</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_PLL_INT0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_PLL_INT1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_PLL_FRA0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_PLL_FRA1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_PLL_FRA2</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__1" rowspan="2">disp clock</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_PIX</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nmr_yn3_pzb__table_txf_3l4_mdc__entry__2">CLK_SCLK</td></tr></tbody></table></div></div>
+      </div>
+    </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_nmr_yn3_pzb__section_dxn_tn4_mdc" data-tocid="concept_nmr_yn3_pzb__section_dxn_tn4_mdc">源码说明</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_nmr_yn3_pzb__section_xhf_trw_bzb" data-tocid="concept_nmr_yn3_pzb__section_xhf_trw_bzb">Clock </a></div></li><li class="section-item"><div class="section-title"><a href="#concept_nmr_yn3_pzb__section_m3f_trw_bzb" data-tocid="concept_nmr_yn3_pzb__section_m3f_trw_bzb">Reset</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_nmr_yn3_pzb__section_itz_c44_mdc" data-tocid="concept_nmr_yn3_pzb__section_itz_c44_mdc">时钟树</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

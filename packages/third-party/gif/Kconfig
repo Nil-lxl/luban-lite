@@ -1,0 +1,29 @@
+
+# Kconfig file for gif
+menuconfig LPKG_USING_GIF
+    bool "GIF: decode giff image"
+    default n
+
+if LPKG_USING_GIF
+
+choice
+    prompt "select gif color format "
+    default GIF_COLOR_FORMAT_RGB565
+
+    config GIF_COLOR_FORMAT_ARGB8888
+        bool "argb8888"
+
+    config GIF_COLOR_FORMAT_RGB565
+        bool "rgb565"
+endchoice
+
+    config GIF_COLOR_FORMAT
+        int
+        default 0   if GIF_COLOR_FORMAT_ARGB8888
+        default 14  if GIF_COLOR_FORMAT_RGB565
+
+    config GIF_USING_SAMPLES
+        bool "Enable gif  samples"
+        default n
+
+endif

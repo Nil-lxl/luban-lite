@@ -1,0 +1,213 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="drv_ve_open 表 1 . drv_ve_open 函数原型 struct aic_ve_client *drv_ve_open(void) 功能说明 打开 VE 设备 参数定义 无 返回值 VE 设备 注意事项 - drv_ve_close 表 2 . drv_ve_close 函数原型 int drv_ve_close(struct aic_ve_client *client) ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-07-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ve_interface_design"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/ic/ve/ve-interface_design.dita"/><meta name="wh-out-relpath" content="topics/ic/ve/ve-interface_design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ve_interface_design" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/ic/ve/ve-interface_design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">接口设计</h1><div class="date inPage">16 Jul 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="ve_interface_design__section_ykl_2jn_f1c" data-ofbid="ve_interface_design__section_ykl_2jn_f1c"><h2 class="- topic/title title sectiontitle">drv_ve_open</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="ve_interface_design__table_klt_y3n_f1c" data-ofbid="ve_interface_design__table_klt_y3n_f1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_ve_open</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_klt_y3n_f1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_klt_y3n_f1c__entry__2">struct aic_ve_client *drv_ve_open(void)</th></tr><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_klt_y3n_f1c__entry__3">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_klt_y3n_f1c__entry__4">打开 VE 设备</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_klt_y3n_f1c__entry__1 ve_interface_design__table_klt_y3n_f1c__entry__3">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_klt_y3n_f1c__entry__2 ve_interface_design__table_klt_y3n_f1c__entry__4">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_klt_y3n_f1c__entry__1 ve_interface_design__table_klt_y3n_f1c__entry__3">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_klt_y3n_f1c__entry__2 ve_interface_design__table_klt_y3n_f1c__entry__4">VE 设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve_interface_design__table_klt_y3n_f1c__entry__1 ve_interface_design__table_klt_y3n_f1c__entry__3">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ve_interface_design__table_klt_y3n_f1c__entry__2 ve_interface_design__table_klt_y3n_f1c__entry__4">-</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="ve_interface_design__section_gdx_cjn_f1c" data-ofbid="ve_interface_design__section_gdx_cjn_f1c"><h2 class="- topic/title title sectiontitle">drv_ve_close</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="ve_interface_design__table_llt_y3n_f1c" data-ofbid="ve_interface_design__table_llt_y3n_f1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_ve_close</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_llt_y3n_f1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_llt_y3n_f1c__entry__2">int drv_ve_close(struct aic_ve_client *client)</th></tr><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_llt_y3n_f1c__entry__3">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_llt_y3n_f1c__entry__4">关闭 VE 设备</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_llt_y3n_f1c__entry__1 ve_interface_design__table_llt_y3n_f1c__entry__3">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_llt_y3n_f1c__entry__2 ve_interface_design__table_llt_y3n_f1c__entry__4">client：VE 设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_llt_y3n_f1c__entry__1 ve_interface_design__table_llt_y3n_f1c__entry__3">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_llt_y3n_f1c__entry__2 ve_interface_design__table_llt_y3n_f1c__entry__4">0：成功，其他：失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve_interface_design__table_llt_y3n_f1c__entry__1 ve_interface_design__table_llt_y3n_f1c__entry__3">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ve_interface_design__table_llt_y3n_f1c__entry__2 ve_interface_design__table_llt_y3n_f1c__entry__4">-</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="ve_interface_design__section_ud5_4tf_d1c" data-ofbid="ve_interface_design__section_ud5_4tf_d1c"><h2 class="- topic/title title sectiontitle">IOC_VE_GET_CLIENT</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="ve_interface_design__table_wd5_4tf_d1c" data-ofbid="ve_interface_design__table_wd5_4tf_d1c" data-cols="2"><caption></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_wd5_4tf_d1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_wd5_4tf_d1c__entry__2"><span class="- topic/ph ph">int drv_ve_control(struct aic_ve_client *client, int cmd,
+                                    void *arg)</span></th></tr><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_wd5_4tf_d1c__entry__3">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_wd5_4tf_d1c__entry__4">获取 VE 设备独占权限</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_wd5_4tf_d1c__entry__1 ve_interface_design__table_wd5_4tf_d1c__entry__3">参数</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_wd5_4tf_d1c__entry__2 ve_interface_design__table_wd5_4tf_d1c__entry__4">
+                                <ul class="- topic/ul ul" id="ve_interface_design__ul_wqx_chp_bcc" data-ofbid="ve_interface_design__ul_wqx_chp_bcc"><li class="- topic/li li" data-ofbid="d71090e128__20250121171522">client：VE 设备</li><li class="- topic/li li" data-ofbid="d71090e130__20250121171522">CMD：IOC_VE_GET_CLIENT</li><li class="- topic/li li" data-ofbid="d71090e132__20250121171522">arg：NULL</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_wd5_4tf_d1c__entry__1 ve_interface_design__table_wd5_4tf_d1c__entry__3">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_wd5_4tf_d1c__entry__2 ve_interface_design__table_wd5_4tf_d1c__entry__4">0：成功。<p class="- topic/p p" data-ofbid="d71090e140__20250121171522">其他：失败</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve_interface_design__table_wd5_4tf_d1c__entry__1 ve_interface_design__table_wd5_4tf_d1c__entry__3">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ve_interface_design__table_wd5_4tf_d1c__entry__2 ve_interface_design__table_wd5_4tf_d1c__entry__4">无</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="ve_interface_design__section_xd5_4tf_d1c" data-ofbid="ve_interface_design__section_xd5_4tf_d1c"><h2 class="- topic/title title sectiontitle">IOC_VE_PUT_CLIENT</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="ve_interface_design__table_zd5_4tf_d1c" data-ofbid="ve_interface_design__table_zd5_4tf_d1c" data-cols="2"><caption></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_zd5_4tf_d1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_zd5_4tf_d1c__entry__2">int drv_ve_control(struct aic_ve_client *client, int cmd, void
+                                *arg)</th></tr><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_zd5_4tf_d1c__entry__3">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_zd5_4tf_d1c__entry__4">释放 VE 设备独占权限</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_zd5_4tf_d1c__entry__1 ve_interface_design__table_zd5_4tf_d1c__entry__3">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_zd5_4tf_d1c__entry__2 ve_interface_design__table_zd5_4tf_d1c__entry__4">
+                                <ul class="- topic/ul ul" id="ve_interface_design__ul_bcq_bhp_bcc" data-ofbid="ve_interface_design__ul_bcq_bhp_bcc"><li class="- topic/li li" data-ofbid="d71090e175__20250121171522">client：VE 设备</li><li class="- topic/li li" data-ofbid="d71090e177__20250121171522">
+                                        <p class="- topic/p p" data-ofbid="d71090e179__20250121171522">CMD：IOC_VE_PUT_CLIENT</p>
+                                    </li><li class="- topic/li li" data-ofbid="d71090e182__20250121171522">arg：NULL</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_zd5_4tf_d1c__entry__1 ve_interface_design__table_zd5_4tf_d1c__entry__3">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_zd5_4tf_d1c__entry__2 ve_interface_design__table_zd5_4tf_d1c__entry__4">0：成功。<p class="- topic/p p" data-ofbid="d71090e190__20250121171522">其他：失败</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve_interface_design__table_zd5_4tf_d1c__entry__1 ve_interface_design__table_zd5_4tf_d1c__entry__3">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ve_interface_design__table_zd5_4tf_d1c__entry__2 ve_interface_design__table_zd5_4tf_d1c__entry__4">
+                                <p class="- topic/p p" data-ofbid="d71090e197__20250121171522">-</p>
+                                
+                            </td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="ve_interface_design__section_a25_4tf_d1c" data-ofbid="ve_interface_design__section_a25_4tf_d1c"><h2 class="- topic/title title sectiontitle">IOC_VE_WAIT</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="ve_interface_design__table_c25_4tf_d1c" data-ofbid="ve_interface_design__table_c25_4tf_d1c" data-cols="2"><caption></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_c25_4tf_d1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_c25_4tf_d1c__entry__2">int drv_ve_control(struct aic_ve_client *client, int cmd, void
+                                *arg)</th></tr><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_c25_4tf_d1c__entry__3">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_c25_4tf_d1c__entry__4">等待 VE 驱动编解码完成，获取 VE 寄存器状态</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_c25_4tf_d1c__entry__1 ve_interface_design__table_c25_4tf_d1c__entry__3">参数</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_c25_4tf_d1c__entry__2 ve_interface_design__table_c25_4tf_d1c__entry__4">
+                                <ul class="- topic/ul ul" id="ve_interface_design__ul_nzt_ygp_bcc" data-ofbid="ve_interface_design__ul_nzt_ygp_bcc"><li class="- topic/li li" data-ofbid="d71090e228__20250121171522">client：drv_ve_open 返回的 VE 硬件实例</li><li class="- topic/li li" data-ofbid="d71090e230__20250121171522">cmd：IOC_VE_WAIT</li><li class="- topic/li li" data-ofbid="d71090e232__20250121171522">arg：指向 info 指针</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_c25_4tf_d1c__entry__1 ve_interface_design__table_c25_4tf_d1c__entry__3">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_c25_4tf_d1c__entry__2 ve_interface_design__table_c25_4tf_d1c__entry__4">0：成功。<p class="- topic/p p" data-ofbid="d71090e240__20250121171522">其他：失败</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve_interface_design__table_c25_4tf_d1c__entry__1 ve_interface_design__table_c25_4tf_d1c__entry__3">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ve_interface_design__table_c25_4tf_d1c__entry__2 ve_interface_design__table_c25_4tf_d1c__entry__4">
+                                <p class="- topic/p p" data-ofbid="d71090e247__20250121171522">-</p>
+                                
+                            </td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="ve_interface_design__section_j25_4tf_d1c" data-ofbid="ve_interface_design__section_j25_4tf_d1c"><h2 class="- topic/title title sectiontitle">IOC_VE_RESET</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="ve_interface_design__table_l25_4tf_d1c" data-ofbid="ve_interface_design__table_l25_4tf_d1c" data-cols="2"><caption></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_l25_4tf_d1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_l25_4tf_d1c__entry__2">int drv_ve_control(struct aic_ve_client *client, int cmd, void
+                                *arg)</th></tr><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve_interface_design__table_l25_4tf_d1c__entry__3">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve_interface_design__table_l25_4tf_d1c__entry__4">VE 驱动硬件复位</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_l25_4tf_d1c__entry__1 ve_interface_design__table_l25_4tf_d1c__entry__3">参数</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_l25_4tf_d1c__entry__2 ve_interface_design__table_l25_4tf_d1c__entry__4">
+                                <ul class="- topic/ul ul" id="ve_interface_design__ul_y25_vgp_bcc" data-ofbid="ve_interface_design__ul_y25_vgp_bcc"><li class="- topic/li li" data-ofbid="d71090e278__20250121171522">client：VE 设备</li><li class="- topic/li li" data-ofbid="d71090e280__20250121171522">cmd：IOC_VE_RESET</li><li class="- topic/li li" data-ofbid="d71090e282__20250121171522">arg：NULL</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve_interface_design__table_l25_4tf_d1c__entry__1 ve_interface_design__table_l25_4tf_d1c__entry__3">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve_interface_design__table_l25_4tf_d1c__entry__2 ve_interface_design__table_l25_4tf_d1c__entry__4">0：成功。<p class="- topic/p p" data-ofbid="d71090e290__20250121171522">-</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve_interface_design__table_l25_4tf_d1c__entry__1 ve_interface_design__table_l25_4tf_d1c__entry__3">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ve_interface_design__table_l25_4tf_d1c__entry__2 ve_interface_design__table_l25_4tf_d1c__entry__4">无</td></tr></tbody></table></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#ve_interface_design__section_ykl_2jn_f1c" data-tocid="ve_interface_design__section_ykl_2jn_f1c">drv_ve_open</a></div></li><li class="section-item"><div class="section-title"><a href="#ve_interface_design__section_gdx_cjn_f1c" data-tocid="ve_interface_design__section_gdx_cjn_f1c">drv_ve_close</a></div></li><li class="section-item"><div class="section-title"><a href="#ve_interface_design__section_ud5_4tf_d1c" data-tocid="ve_interface_design__section_ud5_4tf_d1c">IOC_VE_GET_CLIENT</a></div></li><li class="section-item"><div class="section-title"><a href="#ve_interface_design__section_xd5_4tf_d1c" data-tocid="ve_interface_design__section_xd5_4tf_d1c">IOC_VE_PUT_CLIENT</a></div></li><li class="section-item"><div class="section-title"><a href="#ve_interface_design__section_a25_4tf_d1c" data-tocid="ve_interface_design__section_a25_4tf_d1c">IOC_VE_WAIT</a></div></li><li class="section-item"><div class="section-title"><a href="#ve_interface_design__section_j25_4tf_d1c" data-tocid="ve_interface_design__section_j25_4tf_d1c">IOC_VE_RESET</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

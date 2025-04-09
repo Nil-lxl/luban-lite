@@ -1,0 +1,494 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="SConstruct，一般简称为 SCons，全称为 Software Construction Tool，是一个用 Python 编写的开源构建工具，旨在改进和自动化软件构建过程。SConstruct 提供了一种更简单、更可靠且高效的替代传统构建系统如 GNU Make 的方案。 Luban-Lite 使用 SConstruct 来实现自动化构建。 基本用法和特点 SCons 使用 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/advanced/sdk-usage.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/architecture.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/compile.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>SConstruct</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1219"/><meta name="wh-source-relpath" content="topics/sdk/advanced/sconstruct.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/sconstruct.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/sconstruct.html">SConstruct </a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/advanced/architecture.html" title="设计框架" aria-label="上一主题: 设计框架" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/advanced/compile.html" title="编译选项介绍" aria-label="下一主题: 编译选项介绍" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1169" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1169-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/commands.html" id="id-d5856e1169-link">命令详解 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1207" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/architecture.html" id="id-d5856e1207-link">设计框架</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e1219" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sconstruct.html" id="id-d5856e1219-link">SConstruct </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1231" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/compile.html" id="id-d5856e1231-link">编译选项介绍</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1243" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition.html" id="id-d5856e1243-link">配置分区</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1255" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1255-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/image_burn_and_config.html" id="id-d5856e1255-link">配置烧录镜像</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1339" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/gdb.html" id="id-d5856e1339-link">GDB 调试</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1353" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/pinmux.html" id="id-d5856e1353-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1367" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/driver.html" id="id-d5856e1367-link">添加驱动</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1379" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/app.html" id="id-d5856e1379-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1392" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/hellowold.html" id="id-d5856e1392-link">hellowold</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1404" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/burnin_test.html" id="id-d5856e1404-link">烤机测试</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/sconstruct.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SConstruct </h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 8 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d36894e22__20250121171515">SConstruct，一般简称为 SCons，全称为 Software Construction Tool，是一个用 Python
+            编写的开源构建工具，旨在改进和自动化软件构建过程。SConstruct 提供了一种更简单、更可靠且高效的替代传统构建系统如 GNU Make 的方案。</p><p class="- topic/p p" data-ofbid="d36894e24__20250121171515"><span class="- topic/ph ph">Luban-Lite</span> 使用
+            SConstruct
+            来实现自动化构建。</p><section class="- topic/section section" id="id__id1" data-ofbid="id__id1"><h2 class="- topic/title title sectiontitle">基本用法和特点</h2>
+            <p class="- topic/p p" data-ofbid="d36894e32__20250121171515">SCons 使用 <a class="- topic/xref xref" href="sconstruct.html#id__id4">SConstruct</a> 和 <a class="- topic/xref xref" href="sconstruct.html#id__sconscript">SConscript</a>
+                文件来组织源码结构。</p>
+            <p class="- topic/p p" data-ofbid="d36894e43__20250121171515">在大型项目中，通常会有一个 SConstruct 和多个 SConscript 文件，分别位于含有源代码的子目录中。原则上每个存放有源代码的子目录下都会放置一个
+                SConscript，但譬如 BSP 的驱动开发等会集合所有的驱动源码到一个 SConscript 中。</p>
+            <div class="- topic/p p" data-ofbid="d36894e46__20250121171515">SCons 具有以下特点：<ul class="- topic/ul ul simple" id="id__ul_zfh_rpb_rdc" data-ofbid="id__ul_zfh_rpb_rdc"><li class="- topic/li li" data-ofbid="d36894e49__20250121171515">
+                        <p class="- topic/p p" data-ofbid="d36894e51__20250121171515">SCons 使用 Python 脚本做为配置文件，具有强大的表达式力和灵活性，允许执行复杂的逻辑和操作。</p>
+                    </li><li class="- topic/li li" data-ofbid="d36894e54__20250121171515">
+                        <p class="- topic/p p" data-ofbid="d36894e56__20250121171515">Python 的跨平台特性使得 SCons 自然支持多平台，可以无缝地在 Windows、Linux
+                            及其他操作系统上运行，无需修改构建脚本。</p>
+                    </li><li class="- topic/li li" data-ofbid="d36894e59__20250121171515">
+                        <p class="- topic/p p" data-ofbid="d36894e61__20250121171515">自动检测源文件和头文件之间的依赖关系，确保只有在必要时才重新构建项目。</p>
+                    </li><li class="- topic/li li" data-ofbid="d36894e64__20250121171515">
+                        <p class="- topic/p p" data-ofbid="d36894e66__20250121171515">支持多种编程语言，包括 C/ C++/ D/ Java/ Fortran/ Yacc/ Lex/ Qt/ SWIG 以及
+                            Tex/Latex，扩展性好，支持用户自扩展编程语言。</p>
+                    </li><li class="- topic/li li" data-ofbid="d36894e69__20250121171515">
+                        <p class="- topic/p p" data-ofbid="d36894e71__20250121171515">支持 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make -j</span> 风格的并行构建，允许同时运行多个工作，以利用多核处理器的优势，提高构建速度。SCons
+                            管理并行任务时会考虑文件层次结构和依赖性，避免构建错误。</p>
+                    </li><li class="- topic/li li" data-ofbid="d36894e77__20250121171515">
+                        <p class="- topic/p p" data-ofbid="d36894e79__20250121171515">使用 Autoconf 风格自动查找系统上的头文件，函数库，函数和类型定义，简化了跨系统构建配置的复杂性。</p>
+                    </li><li class="- topic/li li" data-ofbid="d36894e82__20250121171515">
+                        <p class="- topic/p p" data-ofbid="d36894e84__20250121171515">基于 MD5 识别构建文件是否发生变化，比传统的时间戳更精准和安全。</p>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">环境安装</h2>
+            
+            
+            <ul class="- topic/ul ul" id="id__ul_jrz_dsn_hdc" data-ofbid="id__ul_jrz_dsn_hdc"><li class="- topic/li li" data-ofbid="d36894e96__20250121171515">
+                    <div class="- topic/div div section" id="id__windows"><strong class="+ topic/ph hi-d/b ph b">Windows</strong><p class="- topic/p p" data-ofbid="d36894e101__20250121171515"><span class="- topic/ph ph">Luban-Lite</span>
+                            具有小体积，良好的兼容性，以及快速的特点，尤其是在命令行的开发和构建方面，推荐在 Windows 系统上进行操作。</p><p class="- topic/p p" data-ofbid="d36894e105__20250121171515">Windows
+                            下的对应工具存放在 <span class="+ topic/ph sw-d/filepath ph filepath">luban-lite/tools/env/tools</span>
+                            目录中，不需要安装。</p><figure class="- topic/fig fig fignone" id="id__fig_dpb_2sn_hdc" data-ofbid="id__fig_dpb_2sn_hdc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_epb_2sn_hdc" src="../../../images/sdk/win-sdk-tools.png" alt="win-sdk-tools"/></div><br/></figure></div>
+                </li><li class="- topic/li li" data-ofbid="d36894e115__20250121171515">
+                    <div class="- topic/div div section" id="id__linux"><strong class="+ topic/ph hi-d/b ph b">Linux</strong>
+                        <div class="- topic/p p" data-ofbid="d36894e121__20250121171515">在 Linux 系统上设置 <span class="- topic/ph ph">Luban-Lite</span> 固件构建环境，需要安装关键的依赖包，包括：<div class="- topic/note note note note_note" id="id__note_xpw_hsn_hdc" data-ofbid="id__note_xpw_hsn_hdc"><span class="note__title">注：</span> 推荐使用 <code class="+ topic/ph pr-d/codeph ph codeph">apt-get</code>
+                                命令直接安装目标软件和依赖。</div></div><ol class="- topic/ol ol simple" id="id__ul_o12_2sn_hdc" data-ofbid="id__ul_o12_2sn_hdc"><li class="- topic/li li" data-ofbid="d36894e132__20250121171515">
+                                <p class="- topic/p p" data-ofbid="d36894e134__20250121171515">python2 + SCons</p>
+                                <div class="- topic/div div section" id="id__scons"><strong class="+ topic/ph hi-d/b ph b">安装
+                                        SCons</strong>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_p12_2sn_hdc" data-ofbid="id__codeblock_p12_2sn_hdc">sudo apt-get install scons</pre>
+                                </div>
+                            </li><li class="- topic/li li" data-ofbid="d36894e147__20250121171515">
+                                <p class="- topic/p p" data-ofbid="d36894e149__20250121171515">python3 + pycryptodomex</p>
+                                <div class="- topic/div div section" id="id__pycryptodomex"><strong class="+ topic/ph hi-d/b ph b">安装
+                                        pycryptodomex</strong><p class="- topic/p p" data-ofbid="d36894e159__20250121171515">pycryptodomex
+                                        是一个 python 编写的加密包，<span class="- topic/ph ph">Luban-Lite</span>
+                                    中有源码包可以进行编译安装</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_q12_2sn_hdc" data-ofbid="id__codeblock_q12_2sn_hdc">sudo apt install pip
+cd tools/env/local_pkgs/
+tar xvf pycryptodomex-<span class="hl-number">3.11</span>.<span class="hl-number">0.</span>tar.gz
+cd pycryptodomex-<span class="hl-number">3.11</span>.<span class="hl-number">0</span>
+sudo python3 setup.py install</pre></div>
+                            </li></ol></div>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">SConstruct</h2>
+            
+            
+            <div class="- topic/p p" data-ofbid="d36894e178__20250121171515"><span class="- topic/ph ph">Luban-Lite</span> 的 SConstruct 脚本放置在 SDK
+                根目录下，负责配置编译逻辑、设置全局环境变量，并允许用户添加自定义的私有环境变量 (ENV)，以便实现高度定制化的构建配置：<ul class="- topic/ul ul" id="id__ul_v1n_mcx_5cc" data-ofbid="id__ul_v1n_mcx_5cc"><li class="- topic/li li" data-ofbid="d36894e183__20250121171515">配置编译逻辑：通过定义一系列的规则和依赖关系，SConstruct
+                            脚本可以自动化编译流程。<p class="- topic/p p" data-ofbid="d36894e185__20250121171515">相关规则可以指定如何从源代码生成目标文件，包括编译器选择、编译选项及链接过程。用户可以在 SConstruct
+                            中定义不同的编译配置，例如调试版本和发布版本，每种配置可以有不同的编译器选项和优化设置，从而满足不同环境下的构建需求。</p></li><li class="- topic/li li" data-ofbid="d36894e187__20250121171515">设置全局环境变量：SConstruct
+                                提供了设置全局环境变量的功能，如编译器路径、包含目录等，确保构建过程能在正确的环境下执行。<p class="- topic/p p" data-ofbid="d36894e189__20250121171515">通过调整环境变量，<span class="- topic/ph ph">Luban-Lite</span> 可以适应不同的操作系统和工具链，提高构建系统的灵活性和兼容性。</p></li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wx2_bww_fdc" data-ofbid="id__codeblock_wx2_bww_fdc">import os
+import sys
+
+# Luban-Lite root directory
+AIC_ROOT = os.path.normpath(os.getcwd())
+
+# luban-lite custom scripts
+aic_script_path = os.path.join(AIC_ROOT, <span class="hl-string">'tools/scripts/'</span>)
+sys.path.append(aic_script_path)
+from aic_build import *
+chk_prj_config(AIC_ROOT)
+PRJ_CHIP,PRJ_BOARD,PRJ_KERNEL,PRJ_APP,PRJ_DEFCONFIG_NAME,PRJ_CUSTOM_LDS,MKIMAGE_POST_ACTION = get_prj_config(AIC_ROOT)
+PRJ_NAME = PRJ_DEFCONFIG_NAME.replace(<span class="hl-string">'_defconfig'</span>,<span class="hl-string">''</span>)
+PRJ_OUT_DIR = <span class="hl-string">'output/'</span> + PRJ_NAME + <span class="hl-string">'/images/'</span>
+AIC_SCRIPT_DIR = aic_script_path
+AIC_COMMON_DIR = os.path.join(AIC_ROOT, <span class="hl-string">'bsp/artinchip/sys/'</span> + PRJ_CHIP)
+AIC_PACK_DIR = os.path.join(AIC_ROOT, <span class="hl-string">'target/'</span> + PRJ_CHIP + <span class="hl-string">'/'</span> + PRJ_BOARD + <span class="hl-string">'/pack/'</span>)
+
+# Var tranfer to SConscript
+Export(<span class="hl-string">'AIC_ROOT'</span>)
+Export(<span class="hl-string">'AIC_SCRIPT_DIR'</span>)
+Export(<span class="hl-string">'AIC_COMMON_DIR'</span>)
+Export(<span class="hl-string">'AIC_PACK_DIR'</span>)
+Export(<span class="hl-string">'PRJ_CHIP'</span>)
+Export(<span class="hl-string">'PRJ_BOARD'</span>)
+Export(<span class="hl-string">'PRJ_KERNEL'</span>)
+Export(<span class="hl-string">'PRJ_APP'</span>)
+Export(<span class="hl-string">'PRJ_NAME'</span>)
+Export(<span class="hl-string">'PRJ_DEFCONFIG_NAME'</span>)
+Export(<span class="hl-string">'PRJ_OUT_DIR'</span>)
+# Var tranfer to Kconfig <span class="hl-string">'option env=xxx'</span>
+os.environ[<span class="hl-string">"AIC_ROOT"</span>]           = AIC_ROOT
+os.environ[<span class="hl-string">"AIC_SCRIPT_DIR"</span>]     = AIC_SCRIPT_DIR
+os.environ[<span class="hl-string">"AIC_COMMON_DIR"</span>]     = AIC_COMMON_DIR
+os.environ[<span class="hl-string">"AIC_PACK_DIR"</span>]       = AIC_PACK_DIR
+os.environ[<span class="hl-string">"PRJ_CHIP"</span>]           = PRJ_CHIP
+os.environ[<span class="hl-string">"PRJ_BOARD"</span>]          = PRJ_BOARD
+os.environ[<span class="hl-string">"PRJ_KERNEL"</span>]         = PRJ_KERNEL
+os.environ[<span class="hl-string">"PRJ_APP"</span>]            = PRJ_APP
+os.environ[<span class="hl-string">"PRJ_NAME"</span>]           = PRJ_NAME
+os.environ[<span class="hl-string">"PRJ_DEFCONFIG_NAME"</span>] = PRJ_DEFCONFIG_NAME
+os.environ[<span class="hl-string">"PRJ_OUT_DIR"</span>]        = PRJ_OUT_DIR
+
+# rtconfig
+chip_path = os.path.join(AIC_ROOT, <span class="hl-string">'bsp/artinchip/sys/'</span> + PRJ_CHIP)
+sys.path.append(chip_path)
+import rtconfig
+
+# RTT_ROOT
+<strong class="hl-keyword">if</strong> os.getenv(<span class="hl-string">'RTT_ROOT'</span>):
+    RTT_ROOT = os.getenv(<span class="hl-string">'RTT_ROOT'</span>)
+<strong class="hl-keyword">else</strong>:
+    RTT_ROOT = os.path.join(AIC_ROOT, <span class="hl-string">'kernel/rt-thread/'</span>)
+os.environ[<span class="hl-string">"RTT_ROOT"</span>]           = RTT_ROOT
+sys.path.append(os.path.join(RTT_ROOT, <span class="hl-string">'tools'</span>))
+from building import *
+
+# ENV_ROOT
+<strong class="hl-keyword">if</strong> os.getenv(<span class="hl-string">'ENV_ROOT'</span>) is None:
+    ENV_ROOT = RTT_ROOT + <span class="hl-string">'/../../tools/env'</span>
+    os.environ[<span class="hl-string">"ENV_ROOT"</span>] =  ENV_ROOT
+
+# TARGET
+TARGET = PRJ_OUT_DIR + rtconfig.SOC + <span class="hl-string">'.'</span> + rtconfig.TARGET_EXT
+
+rtconfig.LFLAGS += <span class="hl-string">' -T '</span> + ld
+
+# add post action
+rtconfig.POST_ACTION += MKIMAGE_POST_ACTION
+
+# create env
+env  = Environment(tools = [<span class="hl-string">'mingw'</span>],
+AS   = rtconfig.AS,   ASFLAGS   = rtconfig.AFLAGS,
+CC   = rtconfig.CC,   CFLAGS   = rtconfig.CFLAGS,
+CXX  = rtconfig.CXX,  CXXFLAGS  = rtconfig.CXXFLAGS,
+AR   = rtconfig.AR,   ARFLAGS   = <span class="hl-string">'-rc'</span>,
+LINK = rtconfig.LINK, LINKFLAGS = rtconfig.LFLAGS)
+env.PrependENVPath(<span class="hl-string">'PATH'</span>, rtconfig.EXEC_PATH)
+
+# add --start-group and --end-group <strong class="hl-keyword">for</strong> GNU GCC
+env[<span class="hl-string">'LINKCOM'</span>] = <span class="hl-string">'$LINK -o $TARGET $LINKFLAGS $__RPATH $SOURCES $_LIBDIRFLAGS -Wl,--start-group $_LIBFLAGS -Wl,--end-group'</span>
+env[<span class="hl-string">'ASCOM'</span>] = env[<span class="hl-string">'ASPPCOM'</span>]
+
+# signature database
+env.SConsignFile(PRJ_OUT_DIR + <span class="hl-string">".sconsign.dblite"</span>)
+
+Export(<span class="hl-string">'RTT_ROOT'</span>)
+Export(<span class="hl-string">'rtconfig'</span>)
+
+# Var tranfer to building.py
+env[<span class="hl-string">'AIC_ROOT'</span>]                  = AIC_ROOT
+env[<span class="hl-string">'AIC_SCRIPT_DIR'</span>]            = AIC_SCRIPT_DIR
+env[<span class="hl-string">'AIC_COMMON_DIR'</span>]            = AIC_COMMON_DIR
+env[<span class="hl-string">'AIC_PACK_DIR'</span>]              = AIC_PACK_DIR
+env[<span class="hl-string">'PRJ_CHIP'</span>]                  = PRJ_CHIP
+env[<span class="hl-string">'PRJ_BOARD'</span>]                 = PRJ_BOARD
+env[<span class="hl-string">'PRJ_KERNEL'</span>]                = PRJ_KERNEL
+env[<span class="hl-string">'PRJ_NAME'</span>]                  = PRJ_NAME
+env[<span class="hl-string">'PRJ_APP'</span>]                   = PRJ_APP
+env[<span class="hl-string">'PRJ_DEFCONFIG_NAME'</span>]        = PRJ_DEFCONFIG_NAME
+env[<span class="hl-string">'PRJ_OUT_DIR'</span>]               = PRJ_OUT_DIR
+
+# prepare building environment
+objs = PrepareBuilding(env, RTT_ROOT, has_libcpu=False)
+
+# make a building
+DoBuilding(TARGET, objs)</pre></div>
+        </section><section class="- topic/section section" id="id__sconscript" data-ofbid="id__sconscript"><h2 class="- topic/title title sectiontitle">SConscript</h2>
+            
+            <p class="- topic/p p" data-ofbid="d36894e202__20250121171515">SConscript 是 SCons 构建系统的配置文件，用于定义构建任务和依赖关系，以支持复杂的构建过程。SConscript 脚本位于源代码树的子目录中，每个
+                SConscript 文件可以描述该目录下的所有构建任务，从而简化构建流程的管理和维护。</p>
+            <p class="- topic/p p" data-ofbid="d36894e205__20250121171515">一些常用的 SConscript 方法有：</p>
+            <ul class="- topic/ul ul" id="id__ul_jj3_ksn_hdc" data-ofbid="id__ul_jj3_ksn_hdc"><li class="- topic/li li" data-ofbid="d36894e209__20250121171515">
+                    <div class="- topic/div div section" id="id__program">使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">Program</span>
+                        生成可执行文件<p class="- topic/p p" data-ofbid="d36894e216__20250121171515"><span class="+ topic/keyword pr-d/apiname keyword apiname">Program</span>
+                        用于生成可执行文件的示例如下：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_cck_ksn_hdc" data-ofbid="id__codeblock_cck_ksn_hdc">Program(<span class="hl-string">'hello.c'</span>)          编译 hello.c 可执行文件，根据系统自动生成(hello.exe on Windows; hello on POSIX)
+Program(<span class="hl-string">'hello'</span>,<span class="hl-string">'hello.c'</span>)  指定 Output 文件名(hello.exe on Windows; hello on POSIX)
+Program([<span class="hl-string">'hello.c'</span>, <span class="hl-string">'file1.c'</span>, <span class="hl-string">'file2.c'</span>]) 编译多个文件，Output 文件名以第一个文件命名
+Program(source = <span class="hl-string">"hello.c"</span>,target = <span class="hl-string">"hello"</span>)
+Program(target = <span class="hl-string">"hello"</span> , source = <span class="hl-string">"hello.c"</span>)
+Program(<span class="hl-string">'hello'</span>, Split(<span class="hl-string">'hello.c file1.c file2.c'</span>)) 编译多个文件
+
+Program(Glob(<span class="hl-string">"*.c"</span>))
+src = [<span class="hl-string">"hello.c"</span>,<span class="hl-string">"foo.c"</span>];
+Program(src)</pre>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d36894e224__20250121171515">
+                    <div class="- topic/div div section" id="id__object">使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">Object</span>
+                        生成目标文件<p class="- topic/p p" data-ofbid="d36894e231__20250121171515"><span class="+ topic/keyword pr-d/apiname keyword apiname">Object</span>
+                        用于生成目标文件的示例如下：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_z2n_ksn_hdc" data-ofbid="id__codeblock_z2n_ksn_hdc">Object(<span class="hl-string">'hello.c'</span>) 编译 hello.c 目标文件，根据系统自动生成(hello.obj on Windows; hello.o on POSIX)
+</pre>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d36894e239__20250121171515">
+                    <div class="- topic/div div section" id="id__library">使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">Library</span>
+                        生成静态/动态库文件<p class="- topic/p p" data-ofbid="d36894e246__20250121171515"><span class="+ topic/keyword pr-d/apiname keyword apiname">Library</span>
+                        用于生成静态/动态库文件</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_frp_ksn_hdc" data-ofbid="id__codeblock_frp_ksn_hdc">Library(<span class="hl-string">'foo'</span>, [<span class="hl-string">'f1.c'</span>, <span class="hl-string">'f2.c'</span>, <span class="hl-string">'f3.c'</span>]) 编译 library
+SharedLibrary(<span class="hl-string">'foo'</span>, [<span class="hl-string">'f1.c'</span>, <span class="hl-string">'f2.c'</span>, <span class="hl-string">'f3.c'</span>]) 编译 shared library
+StaticLibrary(<span class="hl-string">'bar'</span>, [<span class="hl-string">'f4.c'</span>, <span class="hl-string">'f5.c'</span>, <span class="hl-string">'f6.c'</span>]) 编译 <strong class="hl-keyword">static</strong> library
+
+库的使用：
+
+Program(<span class="hl-string">'prog.c'</span>, LIBS=[<span class="hl-string">'foo'</span>, <span class="hl-string">'bar'</span>], LIBPATH=<span class="hl-string">'.'</span>) 连接库，不需加后缀或是前缀
+</pre>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d36894e254__20250121171515">
+                    <div class="- topic/div div section" id="id__depends">使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">Depends</span>
+                        明确依赖关系<p class="- topic/p p" data-ofbid="d36894e261__20250121171515"><span class="+ topic/keyword pr-d/apiname keyword apiname">Depends</span>
+                        用于明确依赖关系</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ups_ksn_hdc" data-ofbid="id__codeblock_ups_ksn_hdc">Depends(hello,<span class="hl-string">'other_file'</span>)<em class="hl-comment">//hello 依赖于 other_file</em></pre>
+                    </div>
+                </li></ul>
+        </section><div class="- topic/example example" id="id__example_kdj_4sn_hdc" data-ofbid="id__example_kdj_4sn_hdc"><h2 class="- topic/title title sectiontitle">驱动程序的 SConscript 示例 </h2>
+            
+            <p class="- topic/p p" data-ofbid="d36894e275__20250121171515">以下是一个典型的驱动程序的 SConscript 示例，用于构建一个 UART 驱动程序。SConscript 文件示例定义了一个名为
+                    <code class="+ topic/ph pr-d/codeph ph codeph">aic_osal</code> 的构建组，包含了 UART 驱动程序的所有源文件，并根据需要设置了头文件路径和编译选项。详情如下：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_vmp_4sn_hdc" data-ofbid="id__codeblock_vmp_4sn_hdc">Import(<span class="hl-string">'AIC_ROOT'</span>)
+Import(<span class="hl-string">'PRJ_KERNEL'</span>)
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob(<span class="hl-string">'*.c'</span>)
+CPPPATH = []
+
+<strong class="hl-keyword">if</strong> GetDepend(<span class="hl-string">'DRIVER_DRV_EN'</span>):
+    CPPPATH.append(cwd + <span class="hl-string">'/include/drv'</span>)
+<strong class="hl-keyword">if</strong> GetDepend(<span class="hl-string">'DRIVER_HAL_EN'</span>):
+    CPPPATH.append(cwd + <span class="hl-string">'/include/hal'</span>)
+    CPPPATH.append(cwd + <span class="hl-string">'/include/uapi'</span>)
+
+# UART driver
+<strong class="hl-keyword">if</strong> GetDepend(<span class="hl-string">'AIC_UART_DRV'</span>):
+    <strong class="hl-keyword">if</strong> GetDepend(<span class="hl-string">'DRIVER_DRV_EN'</span>):
+        src += Glob(<span class="hl-string">'drv/uart/*.c'</span>)
+    <strong class="hl-keyword">if</strong> GetDepend(<span class="hl-string">'DRIVER_HAL_EN'</span>):
+        src += Glob(<span class="hl-string">'hal/uart/*.c'</span>)
+
+LOCAL_CCFLAGS += <span class="hl-string">' -O0'</span>
+
+<em class="hl-comment">//DefineGroup(name， src， depend，**parameters)</em>
+group = DefineGroup(<span class="hl-string">'aic_osal'</span>, src, depend=[<span class="hl-string">''</span>], CPPPATH=CPPPATH, LOCAL_CCFLAGS=LOCAL_CCFLAGS)
+
+Return(<span class="hl-string">'group'</span>)
+</pre>
+            <div class="- topic/p p" data-ofbid="d36894e284__20250121171515">上述 SConscript 示例代码主要完成以下任务：<ol class="- topic/ol ol" id="id__ol_hq4_1rx_5cc" data-ofbid="id__ol_hq4_1rx_5cc"><li class="- topic/li li" data-ofbid="d36894e287__20250121171515">导入必要的变量和模块。</li><li class="- topic/li li" data-ofbid="d36894e289__20250121171515">获取当前目录并设置源文件列表 <span class="+ topic/keyword pr-d/parmname keyword parmname">src</span>。</li><li class="- topic/li li" data-ofbid="d36894e294__20250121171515">根据条件判断是否包含特定的头文件路径到 <span class="+ topic/keyword pr-d/parmname keyword parmname">CPPPATH</span> 中。</li><li class="- topic/li li" data-ofbid="d36894e299__20250121171515">如果启用了 UART 驱动程序，根据条件将相应的源文件添加到 <span class="+ topic/keyword pr-d/parmname keyword parmname">src</span> 列表中。</li><li class="- topic/li li" data-ofbid="d36894e304__20250121171515">添加编译选项 <span class="+ topic/keyword pr-d/parmname keyword parmname">-O0</span> 到 <span class="+ topic/keyword pr-d/parmname keyword parmname">LOCAL_CCFLAGS</span>。</li><li class="- topic/li li" data-ofbid="d36894e312__20250121171515">使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">DefineGroup</span> 函数创建一个名为 <code class="+ topic/ph pr-d/codeph ph codeph">aic_osal</code>
+                        的构建组，其中包含源文件、依赖项、头文件路径和编译选项。</li><li class="- topic/li li" data-ofbid="d36894e320__20250121171515">返回创建的构建组。</li></ol></div>
+        </div><div class="- topic/example example" id="id__example_ryp_msn_hdc" data-ofbid="id__example_ryp_msn_hdc"><h2 class="- topic/title title sectiontitle">应用程序的 SConscript 示例</h2>
+            
+            <p class="- topic/p p" data-ofbid="d36894e328__20250121171515">以下是一个典型的应用程序的 SConscript 示例，用于构建一个多媒体播放器：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_j4d_nsn_hdc" data-ofbid="id__codeblock_j4d_nsn_hdc">Import(<span class="hl-string">'AIC_ROOT'</span>)
+Import(<span class="hl-string">'PRJ_KERNEL'</span>)
+from building import *
+
+cwd = GetCurrentDir()
+path = [cwd + <span class="hl-string">'/include'</span>]
+path += [cwd + <span class="hl-string">'/base/include'</span>]
+path += [cwd + <span class="hl-string">'/ge/include'</span>]
+
+path += [cwd + <span class="hl-string">'/ve/include'</span>]
+path += [cwd + <span class="hl-string">'../../../bsp/artinchip/include/uapi'</span>]
+path += [cwd + <span class="hl-string">'/mpp_test'</span>]
+
+<strong class="hl-keyword">if</strong> GetDepend([<span class="hl-string">'AIC_MPP_PLAYER_INTERFACE'</span>]):
+    #audio decoder
+    path += [cwd + <span class="hl-string">'/middle_media/audio_decoder/include'</span>]
+    path += [cwd + <span class="hl-string">'/middle_media/audio_decoder/decoder'</span>]
+
+    #base
+    path += [cwd + <span class="hl-string">'/middle_media/base/include'</span>]
+    path += [cwd + <span class="hl-string">'/middle_media/base/parser/mov'</span>]
+    path += [cwd + <span class="hl-string">'/middle_media/base/parser/rawdata'</span>]
+    path += [cwd + <span class="hl-string">'/middle_media/base/stream/file'</span>]
+
+
+src = []
+CPPDEFINES = []
+
+# mpp
+<strong class="hl-keyword">if</strong> GetDepend([<span class="hl-string">'LPKG_MPP'</span>]):
+    src += Glob(<span class="hl-string">'./base/memory/*.c'</span>)
+    src += Glob(<span class="hl-string">'./ge/*.c'</span>)
+    src += Glob(<span class="hl-string">'./fb/*.c'</span>)
+    src += Glob(<span class="hl-string">'ve/decoder/*.c'</span>)
+    src += Glob(<span class="hl-string">'ve/common/*.c'</span>)
+    src += Glob(<span class="hl-string">'ve/decoder/jpeg/*.c'</span>)
+    src += Glob(<span class="hl-string">'ve/decoder/png/*.c'</span>)
+    src += Glob(<span class="hl-string">'ve/decoder/h264/*.c'</span>)
+    src += Glob(<span class="hl-string">'./mpp_test/*.c'</span>)
+
+
+<strong class="hl-keyword">if</strong> GetDepend([<span class="hl-string">'AIC_MPP_PLAYER_INTERFACE'</span>]):
+    #audio decoder
+    src += Glob(<span class="hl-string">'middle_media/audio_decoder/decoder/*.c'</span>)
+    src += Glob(<span class="hl-string">'middle_media/audio_decoder/decoder/mp3/mp3_decoder.c'</span>)
+
+<em class="hl-comment">//DefineGroup(name， src， depend，**parameters)</em>
+group = DefineGroup(<span class="hl-string">'mpp'</span>, src, depend = [<span class="hl-string">''</span>], CPPPATH = path, CPPDEFINES = CPPDEFINES)
+
+Return(<span class="hl-string">'group'</span>)
+</pre>
+            <div class="- topic/p p" data-ofbid="d36894e334__20250121171515">上述 SConscript 示例代码主要完成以下任务：<ol class="- topic/ol ol" id="id__ol_xgz_3rx_5cc" data-ofbid="id__ol_xgz_3rx_5cc"><li class="- topic/li li" data-ofbid="d36894e337__20250121171515">导入必要的变量和模块。</li><li class="- topic/li li" data-ofbid="d36894e339__20250121171515">获取当前目录并设置头文件路径列表 <span class="+ topic/keyword pr-d/parmname keyword parmname">path</span>。</li><li class="- topic/li li" data-ofbid="d36894e344__20250121171515">根据条件判断是否包含特定的头文件路径到 <span class="+ topic/keyword pr-d/parmname keyword parmname">path</span> 中。</li><li class="- topic/li li" data-ofbid="d36894e349__20250121171515">初始化源文件列表 <span class="+ topic/keyword pr-d/parmname keyword parmname">src</span> 和编译选项列表 <span class="+ topic/keyword pr-d/parmname keyword parmname">CPPDEFINES</span>。</li><li class="- topic/li li" data-ofbid="d36894e357__20250121171515">如果启用了多媒体播放器接口，根据条件将相应的源文件添加到 <span class="+ topic/keyword pr-d/parmname keyword parmname">src</span> 列表中。</li><li class="- topic/li li" data-ofbid="d36894e362__20250121171515">使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">DefineGroup</span> 函数创建一个名为 <span class="+ topic/keyword pr-d/parmname keyword parmname">mpp</span>
+                        的构建组，其中包含源文件、依赖项、头文件路径和编译选项。</li><li class="- topic/li li" data-ofbid="d36894e370__20250121171515">返回创建的构建组。</li></ol></div>
+        </div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id1" data-tocid="id__id1">基本用法和特点</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">环境安装</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">SConstruct</a></div></li><li class="section-item"><div class="section-title"><a href="#id__sconscript" data-tocid="id__sconscript">SConscript</a></div></li><li class="section-title"><a href="#id__example_kdj_4sn_hdc" data-tocid="id__example_kdj_4sn_hdc">驱动程序的 SConscript 示例 </a></li><li class="section-title"><a href="#id__example_ryp_msn_hdc" data-tocid="id__example_ryp_msn_hdc">应用程序的 SConscript 示例</a></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

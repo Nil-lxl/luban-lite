@@ -1,0 +1,25 @@
+Import('AIC_ROOT')
+Import('PRJ_OUT_DIR')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+path = [cwd + '/authorization']
+
+src = []
+group = []
+
+LOCAL_CCFLAGS = ''
+# LOCAL_CCFLAGS += ' -O0'
+
+# authorization
+if GetDepend(['LPKG_USING_AIC_AUTHORIZATION']):
+    src += Glob('./authorization/*.c')
+
+if GetDepend(['AIC_AUTHORIZATION_TEST']):
+    src += Glob('./test/*.c')
+
+group = DefineGroup('aic-authorization', src, depend = ['LPKG_USING_AIC_AUTHORIZATION'], CPPPATH = path, LOCAL_CCFLAGS=LOCAL_CCFLAGS)
+
+
+Return('group')

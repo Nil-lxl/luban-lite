@@ -1,0 +1,174 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="表 1 . 源码说明 相关模块 源码路径 AIC UDC source\linux-5.10\drivers\usb\gadget\udc\aic_udc.c source\linux-5.10\drivers\usb\gadget\udc\aic_udc.h 从上述 Device Controller Driver (DCD) 的框架图中可以看到，DCD 主要提供了两大功能： 普通 ep 的 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-06"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_device_controller_driver"/><meta name="DC.language" content="zh-CN"/><title>USB Device Controller Driver</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-device-controller-driver.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-device-controller-driver.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_device_controller_driver" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-device-controller-driver.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">USB Device Controller Driver</h1><div class="date inPage">6 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="table-container"><table class="- topic/table table frame-all" id="usb_device_controller_driver__table_y45_kmz_21c" data-ofbid="usb_device_controller_driver__table_y45_kmz_21c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">源码说明</span></caption><colgroup><col style="width:23.474178403755868%"/><col style="width:76.52582159624413%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_device_controller_driver__table_y45_kmz_21c__entry__1">相关模块</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_device_controller_driver__table_y45_kmz_21c__entry__2">源码路径</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_device_controller_driver__table_y45_kmz_21c__entry__1">AIC UDC</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_device_controller_driver__table_y45_kmz_21c__entry__2">
+                                <p class="- topic/p p" data-ofbid="d222514e40__20250121171647"><span class="+ topic/ph sw-d/filepath ph filepath">source\linux-5.10\drivers\usb\gadget\udc\aic_udc.c</span></p>
+                                <p class="- topic/p p" data-ofbid="d222514e44__20250121171647"><span class="+ topic/ph sw-d/filepath ph filepath">source\linux-5.10\drivers\usb\gadget\udc\aic_udc.h</span></p>
+                            </td></tr></tbody></table></div><div class="- topic/p p" data-ofbid="d222514e48__20250121171647"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_device_controller_driver__image_awc_mmz_21c" src="../../../images/usb/usb_dcd.png" width="576" alt="image4"/></div><br/></div><p class="- topic/p p" data-ofbid="d222514e52__20250121171647">从上述 Device Controller Driver (DCD) 的框架图中可以看到，DCD 主要提供了两大功能：</p><ol class="- topic/ol ol" id="usb_device_controller_driver__ol_bwc_mmz_21c" data-ofbid="usb_device_controller_driver__ol_bwc_mmz_21c"><li class="- topic/li li" data-ofbid="d222514e55__20250121171647">
+                <p class="- topic/p p" data-ofbid="d222514e57__20250121171647">普通 ep 的 usb request 处理。</p>
+                <p class="- topic/p p" data-ofbid="d222514e60__20250121171647">DCD 提供了一个 endpoint 资源池，Gadget Function Driver 可以在这个资源池中分配需要的 endpoint，这部分的
+                    endpoint 就称为 普通 ep。</p>
+            </li><li class="- topic/li li" data-ofbid="d222514e63__20250121171647">
+                <p class="- topic/p p" data-ofbid="d222514e65__20250121171647">ep0 的 usb request 处理。</p>
+                <p class="- topic/p p" data-ofbid="d222514e68__20250121171647">因为 DCD 对外呈现为一个 USB Device，USB Device 的 ep0 是管理通道是需要特殊处理的。对 ep0 传达过来的 control
+                    数据需要在 DCD 层开始解析。</p>
+            </li></ol></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

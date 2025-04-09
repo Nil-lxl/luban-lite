@@ -1,0 +1,225 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="准备工作 物料 交换机：最好是千兆交换机，因为千兆交换机兼容百兆，但百兆不兼容千兆 测试板：需要确定测试板的 PHY 端口的速度，千兆还是百兆 网线：可以进行路由器连接的网线 软件：确保 SDK 包含如下测试需要的网络软件 网速测试软件 主要是 iperf1.7.0 ，推荐 jperf2.0.2(图形化 iperf 工具) ，可直观观察网速变化 组网拓扑 推荐两种组网拓扑，可依现实条件选择使用 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-03"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mac_test_guide"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mac/mac_test.dita"/><meta name="wh-out-relpath" content="topics/sdk/mac/mac_test.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mac_test_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mac/mac_test.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">3 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d179984e22__20250121171624">准备工作<ul class="- topic/ul ul" id="mac_test_guide__ul_ssj_s1s_21c" data-ofbid="mac_test_guide__ul_ssj_s1s_21c"><li class="- topic/li li" data-ofbid="d179984e25__20250121171624">物料<ul class="- topic/ul ul" id="mac_test_guide__ul_z3y_q1s_21c" data-ofbid="mac_test_guide__ul_z3y_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e28__20250121171624">
+                            <p class="- topic/p p" data-ofbid="d179984e30__20250121171624">交换机：最好是千兆交换机，因为千兆交换机兼容百兆，但百兆不兼容千兆</p>
+                        </li><li class="- topic/li li" data-ofbid="d179984e33__20250121171624">
+                            <p class="- topic/p p" data-ofbid="d179984e35__20250121171624">测试板：需要确定测试板的 PHY 端口的速度，千兆还是百兆</p>
+                        </li><li class="- topic/li li" data-ofbid="d179984e38__20250121171624">
+                            <p class="- topic/p p" data-ofbid="d179984e40__20250121171624">网线：可以进行路由器连接的网线</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d179984e43__20250121171624">软件：确保 SDK 包含如下测试需要的网络软件<ul class="- topic/ul ul" id="mac_test_guide__ul_bjy_q1s_21c" data-ofbid="mac_test_guide__ul_bjy_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e46__20250121171624">
+                            <p class="- topic/p p" data-ofbid="d179984e48__20250121171624">网速测试软件 主要是 <span class="- topic/ph ph">iperf1.7.0</span>，推荐 <span class="- topic/ph ph">jperf2.0.2(图形化 iperf
+                                    工具)</span>，可直观观察网速变化</p>
+                        </li></ul></li></ul></div><section class="- topic/section section" id="mac_test_guide__section_cjy_q1s_21c" data-ofbid="mac_test_guide__section_cjy_q1s_21c"><h2 class="- topic/title title sectiontitle">组网拓扑</h2>
+            
+            <div class="- topic/p p" data-ofbid="d179984e62__20250121171624">推荐两种组网拓扑，可依现实条件选择使用<ul class="- topic/ul ul" id="mac_test_guide__ul_yc2_51s_21c" data-ofbid="mac_test_guide__ul_yc2_51s_21c"><li class="- topic/li li" data-ofbid="d179984e65__20250121171624">直连<p class="- topic/p p" data-ofbid="d179984e67__20250121171624">组网简单，但单机千兆 PHY 的兼容性不如交换机千兆 PHY，可能会出现 PHY 协商出错的问题</p><div class="- topic/p p" data-ofbid="d179984e69__20250121171624"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mac_test_guide__image_ejy_q1s_21c" src="../../../images/mac/test-top1.jpg" alt="test-top11"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d179984e73__20250121171624">交换机中转<p class="- topic/p p" data-ofbid="d179984e75__20250121171624">多一层网络设备，但对千兆网络的兼容性更好</p><div class="- topic/p p" data-ofbid="d179984e77__20250121171624"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mac_test_guide__image_gjy_q1s_21c" src="../../../images/mac/test-top2.jpg" alt="test-top21"/></div><br/></div></li></ul></div>
+        </section><section class="- topic/section section" id="mac_test_guide__section_djy_q1s_21c" data-ofbid="mac_test_guide__section_djy_q1s_21c"><h2 class="- topic/title title sectiontitle">功能测试</h2>
+            
+            <ol class="- topic/ol ol" id="mac_test_guide__ul_hjy_q1s_21c" data-ofbid="mac_test_guide__ul_hjy_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e88__20250121171624">配置好目标板的相关参数</li><li class="- topic/li li" data-ofbid="d179984e90__20250121171624">按相应组网拓扑搭建好测试网络</li><li class="- topic/li li" data-ofbid="d179984e92__20250121171624">通过 ping 对端的方式测试网络可以 ping 通</li></ol>
+            <div class="- topic/div div section" id="mac_test_guide__id10">
+                <strong class="+ topic/ph hi-d/b ph b">注意事项</strong>
+                <ul class="- topic/ul ul simple" id="mac_test_guide__ul_fxf_fys_4dc" data-ofbid="mac_test_guide__ul_fxf_fys_4dc"><li class="- topic/li li" data-ofbid="d179984e101__20250121171624">
+                        <p class="- topic/p p" data-ofbid="d179984e103__20250121171624">注意检查系统启动时 MAC 模块的打印信息，确保无错误信息和错误参数</p>
+                    </li><li class="- topic/li li" data-ofbid="d179984e106__20250121171624">
+                        <p class="- topic/p p" data-ofbid="d179984e108__20250121171624">注意检查相应操作的驱动信息输出，确保双方的协商参数，协商步骤一致</p>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="mac_test_guide__section_fjy_q1s_21c" data-ofbid="mac_test_guide__section_fjy_q1s_21c"><h2 class="- topic/title title sectiontitle">速度测试</h2>
+            
+            <ul class="- topic/ul ul" id="mac_test_guide__ul_jjy_q1s_21c" data-ofbid="mac_test_guide__ul_jjy_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e118__20250121171624">配置好目标板的相关参数<span class="- topic/ph ph">，并打开 iperf 命令选项</span></li><li class="- topic/li li" data-ofbid="d179984e122__20250121171624">按相应组网拓扑搭建好测试网络</li><li class="- topic/li li" data-ofbid="d179984e124__20250121171624">使用 iperf 测试发送及接收的性能</li></ul>
+            <div class="- topic/note note note note_note" id="mac_test_guide__note_ux2_cbs_21c" data-ofbid="mac_test_guide__note_ux2_cbs_21c"><span class="note__title">注：</span> 
+                <ul class="- topic/ul ul" id="mac_test_guide__ul_kjy_q1s_21c" data-ofbid="mac_test_guide__ul_kjy_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e130__20250121171624">速度测试对系统资源使用非常高，注意检查测试时系统资源的瓶颈，以此作为出错信息的判断参考</li></ul>
+            </div>
+        </section><section class="- topic/section section" id="mac_test_guide__section_ljy_q1s_21c" data-ofbid="mac_test_guide__section_ljy_q1s_21c"><h2 class="- topic/title title sectiontitle">兼容性测试</h2>
+            
+            <p class="- topic/p p" data-ofbid="d179984e139__20250121171624">兼容性主要是两个模块的配合工作能力，系统有两个具有兼容性的实体（MAC 和 PHY），有一组对兼容性有大影响的参数（百兆和千兆）。</p>
+            <p class="- topic/p p" data-ofbid="d179984e142__20250121171624">PHY 和 PHY 之间的协商由 PHY 的电气参数完成，无软件参与，因此如果有两个设备的 PHY 无法按设计协商一致，一般归为 PHY 的问题。</p>
+            <p class="- topic/p p" data-ofbid="d179984e145__20250121171624">MAC 和 PHY 之间的协商一般由驱动完成，借助途径是 PHY 的读写寄存器，如果二者协商不成功，一般需要调整 PHY 的配置参数。</p>
+            <p class="- topic/p p" data-ofbid="d179984e148__20250121171624">因此兼容性测试可以进行如下项目的测试：</p>
+            <ul class="- topic/ul ul" id="mac_test_guide__ul_mjy_q1s_21c" data-ofbid="mac_test_guide__ul_mjy_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e153__20250121171624">百兆设备和百兆设备的兼容性测试</li><li class="- topic/li li" data-ofbid="d179984e155__20250121171624">百兆设备和千兆设备的兼容性测试</li><li class="- topic/li li" data-ofbid="d179984e157__20250121171624">千兆设备和千兆设备的兼容性测试</li></ul>
+            <p class="- topic/p p" data-ofbid="d179984e160__20250121171624">测试方法为：</p>
+            <ol class="- topic/ol ol" id="mac_test_guide__ul_njy_q1s_21c" data-ofbid="mac_test_guide__ul_njy_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e164__20250121171624">拔插网线多次，均能正常识别拔插动作。</li><li class="- topic/li li" data-ofbid="d179984e166__20250121171624">拔插网线多次，均能正常协商为预定工作模式和速录。</li><li class="- topic/li li" data-ofbid="d179984e168__20250121171624">拔插网线多次，均能正常进行网络通信，ping 通。</li></ol>
+        </section><section class="- topic/section section" id="mac_test_guide__section_lpx_dbs_21c" data-ofbid="mac_test_guide__section_lpx_dbs_21c"><h2 class="- topic/title title sectiontitle">性能测试</h2>
+            
+            <div class="- topic/p p" data-ofbid="d179984e176__20250121171624">
+                <ul class="- topic/ul ul" id="mac_test_guide__ul_ojy_q1s_21c" data-ofbid="mac_test_guide__ul_ojy_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e179__20250121171624">性能测试主要专注于时间和速度的跟踪，如果建立连接的时间，通信速度</li><li class="- topic/li li" data-ofbid="d179984e181__20250121171624">性能测试可以使用 <span class="- topic/ph ph">jperf</span> 完成</li><li class="- topic/li li" data-ofbid="d179984e186__20250121171624">性能也会被系统资源影响，如 CPU 和 DDR 资源</li><li class="- topic/li li" data-ofbid="d179984e188__20250121171624">使用 <span class="- topic/ph ph">jperf</span> 进行网速测试时，client 端的 CPU 资源使用更多，因此如果 client 运行在 PC
+                        等其他系统上，则性能值会增加</li></ul>
+            </div>
+        </section><section class="- topic/section section" id="mac_test_guide__section_pjy_q1s_21c" data-ofbid="mac_test_guide__section_pjy_q1s_21c"><h2 class="- topic/title title sectiontitle">稳定性测试</h2>
+            
+            <p class="- topic/p p" data-ofbid="d179984e200__20250121171624">性能测试需要进行多次触发性动作测试</p>
+            <ul class="- topic/ul ul" id="mac_test_guide__ul_qjy_q1s_21c" data-ofbid="mac_test_guide__ul_qjy_q1s_21c"><li class="- topic/li li" data-ofbid="d179984e204__20250121171624">100 次拔插操作，均能正常识别，正常建立连接正常通信</li><li class="- topic/li li" data-ofbid="d179984e206__20250121171624">100 次拔插操作后，能正常进行通信</li><li class="- topic/li li" data-ofbid="d179984e208__20250121171624">1000 次 enable/disable 操作后能正常通信</li><li class="- topic/li li" data-ofbid="d179984e210__20250121171624">少量长时间数据通信，ping 48 小时不丢包</li><li class="- topic/li li" data-ofbid="d179984e212__20250121171624">长时间压力，模块不进行自动重启，测试完成后，模块功能正常</li></ul>
+        </section><section class="- topic/section section" id="mac_test_guide__section_rjy_q1s_21c" data-ofbid="mac_test_guide__section_rjy_q1s_21c"><h2 class="- topic/title title sectiontitle">高低温测试</h2>
+            
+            <div class="- topic/p p" data-ofbid="d179984e220__20250121171624">测试在工控标准的高温和低温环境下：<ul class="- topic/ul ul" id="mac_test_guide__ul_lbn_crp_g1c" data-ofbid="mac_test_guide__ul_lbn_crp_g1c"><li class="- topic/li li" data-ofbid="d179984e223__20250121171624">功能正常 </li><li class="- topic/li li" data-ofbid="d179984e225__20250121171624">长时间通信正常 </li><li class="- topic/li li" data-ofbid="d179984e227__20250121171624">压力测试不导致模块自动重启</li></ul></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#mac_test_guide__section_cjy_q1s_21c" data-tocid="mac_test_guide__section_cjy_q1s_21c">组网拓扑</a></div></li><li class="section-item"><div class="section-title"><a href="#mac_test_guide__section_djy_q1s_21c" data-tocid="mac_test_guide__section_djy_q1s_21c">功能测试</a></div></li><li class="section-item"><div class="section-title"><a href="#mac_test_guide__section_fjy_q1s_21c" data-tocid="mac_test_guide__section_fjy_q1s_21c">速度测试</a></div></li><li class="section-item"><div class="section-title"><a href="#mac_test_guide__section_ljy_q1s_21c" data-tocid="mac_test_guide__section_ljy_q1s_21c">兼容性测试</a></div></li><li class="section-item"><div class="section-title"><a href="#mac_test_guide__section_lpx_dbs_21c" data-tocid="mac_test_guide__section_lpx_dbs_21c">性能测试</a></div></li><li class="section-item"><div class="section-title"><a href="#mac_test_guide__section_pjy_q1s_21c" data-tocid="mac_test_guide__section_pjy_q1s_21c">稳定性测试</a></div></li><li class="section-item"><div class="section-title"><a href="#mac_test_guide__section_rjy_q1s_21c" data-tocid="mac_test_guide__section_rjy_q1s_21c">高低温测试</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

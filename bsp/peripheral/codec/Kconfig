@@ -1,0 +1,46 @@
+config AIC_I2S_CODEC_SELECT
+    bool "Select external audio codec"
+    default n
+
+config AIC_I2S_CODEC_ES8388
+    bool "es8388"
+    depends on AIC_I2S_CODEC_SELECT
+
+config AIC_I2S_CODEC_TLV320
+    bool "tlv320aic3101"
+    default y if AIC_I2S_CODEC_SELECT
+    depends on AIC_I2S_CODEC_SELECT
+
+config AIC_I2S_CODEC_CS4344
+    bool "cs4344"
+    depends on AIC_I2S_CODEC_SELECT
+
+if AIC_I2S_CODEC_ES8388
+source "bsp/peripheral/codec/es8388/Kconfig"
+endif
+
+if AIC_I2S_CODEC_TLV320
+source "bsp/peripheral/codec/tlv320aic3101/Kconfig"
+endif
+
+if AIC_I2S_CODEC_CS4344
+source "bsp/peripheral/codec/cs4344/Kconfig"
+endif
+
+config AIC_I2S_CODEC_PA_PIN
+    string "PA shutdown pin"
+    default "PA.13"
+    depends on AIC_I2S_CODEC_SELECT
+
+if AIC_I2S_CODEC_SELECT
+    choice
+        prompt "Select PA enable level"
+        default AIC_I2S_CODEC_PA_ENABLE_HIGH
+
+        config  AIC_I2S_CODEC_PA_ENABLE_HIGH
+            bool "high level Active"
+
+        config  AIC_I2S_CODEC_PA_ENABLE_LOW
+            bool "low level Active"
+    endchoice
+endif

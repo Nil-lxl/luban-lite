@@ -1,0 +1,183 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="VE 驱动未加载 现象 在 /dev 路径下，未发现字符设备 /dev/aic_ve 。 原因分析 确认内核中是否加载 VE 驱动。 图像解码报错 现象 解码异常报错，未得到解码后的视频帧，或者视频帧数据出错。 原因分析 逐步排除以下原因： 源文件是否是 VE 驱动支持的媒体文件格式，具体请参考模块介绍的硬件编解码格式章节。 源文件是否损坏，可参考 PC 端是否可正常播放。 码流解析是否正确，相关 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ve_common_issues"/><meta name="DC.language" content="zh-CN"/><title>常见问题</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/ve/ve-faq.dita"/><meta name="wh-out-relpath" content="topics/sdk/ve/ve-faq.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ve_common_issues" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ve/ve-faq.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">常见问题</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;"></div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="ve_common_issues__section_iym_vtf_d1c" data-ofbid="ve_common_issues__section_iym_vtf_d1c"><h2 class="- topic/title title sectiontitle">VE 驱动未加载</h2><p class="- topic/p p" data-ofbid="d338137e25__20250121171851"><strong class="+ topic/ph hi-d/b ph b">现象</strong></p><p class="- topic/p p" data-ofbid="d338137e28__20250121171851">在
+                    <span class="+ topic/ph sw-d/filepath ph filepath">/dev</span> 路径下，未发现字符设备
+                <span class="+ topic/ph sw-d/filepath ph filepath">/dev/aic_ve</span>。</p><strong class="+ topic/ph hi-d/b ph b">原因分析</strong><p class="- topic/p p" data-ofbid="d338137e38__20250121171851">确认内核中是否加载 VE 驱动。</p><div class="- topic/p p" data-ofbid="d338137e40__20250121171851">
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ve_common_issues__image_kym_vtf_d1c" src="../../../images/ve/ve-faq.jpg" width="576" alt="ve-faq"/></div><br/>
+            </div></section><section class="- topic/section section" id="ve_common_issues__section_jym_vtf_d1c" data-ofbid="ve_common_issues__section_jym_vtf_d1c"><h2 class="- topic/title title sectiontitle">图像解码报错</h2><p class="- topic/p p" data-ofbid="d338137e49__20250121171851"><strong class="+ topic/ph hi-d/b ph b">现象</strong></p><p class="- topic/p p" data-ofbid="d338137e52__20250121171851">解码异常报错，未得到解码后的视频帧，或者视频帧数据出错。</p><strong class="+ topic/ph hi-d/b ph b">原因分析</strong><p class="- topic/p p" data-ofbid="d338137e56__20250121171851">逐步排除以下原因：</p><ol class="- topic/ol ol" id="ve_common_issues__ol_nym_vtf_d1c" data-ofbid="ve_common_issues__ol_nym_vtf_d1c"><li class="- topic/li li" data-ofbid="d338137e59__20250121171851">
+                    <p class="- topic/p p" data-ofbid="d338137e61__20250121171851">源文件是否是 VE 驱动支持的媒体文件格式，具体请参考模块介绍的硬件编解码格式章节。</p>
+                </li><li class="- topic/li li" data-ofbid="d338137e64__20250121171851">
+                    <p class="- topic/p p" data-ofbid="d338137e66__20250121171851">源文件是否损坏，可参考 PC 端是否可正常播放。</p>
+                </li><li class="- topic/li li" data-ofbid="d338137e69__20250121171851">
+                    <p class="- topic/p p" data-ofbid="d338137e71__20250121171851">码流解析是否正确，相关 VE 寄存器信息是否配置正确。</p>
+                </li></ol><p class="- topic/p p" data-ofbid="d338137e74__20250121171851">解码报错后，VE 驱动中返回了解码当前帧的寄存器状态信息，请参考 Spec 说明对应分析。</p></section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#ve_common_issues__section_iym_vtf_d1c" data-tocid="ve_common_issues__section_iym_vtf_d1c">VE 驱动未加载</a></div></li><li class="section-item"><div class="section-title"><a href="#ve_common_issues__section_jym_vtf_d1c" data-tocid="ve_common_issues__section_jym_vtf_d1c">图像解码报错</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

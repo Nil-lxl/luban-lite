@@ -1,0 +1,1405 @@
+#-----------------------------
+# GPAI devices local parameter
+#-----------------------------
+
+config AIC_GPAI_USING_RTP_CHAN
+    bool "Using rtp channels as ADC"
+    default n
+    depends on AIC_RTP_DRV
+
+config AIC_GPAI_DRV_POLL
+    bool
+    default n
+
+menu "GPAI0 Parameter"
+    depends on AIC_USING_GPAI0
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI0_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI0_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI0_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI0_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI0_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI0_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI0_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI0_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI0_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI0_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI0_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI0_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI0_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI0_MODE_SINGLE
+            bool "non-period mode"
+            depends on !AIC_GPAI0_OBTAIN_DATA_BY_DMA
+    endchoice
+
+    config AIC_GPAI0_MODE
+        int
+        default 0     if AIC_GPAI0_MODE_SINGLE
+        default 1     if AIC_GPAI0_MODE_PERIOD
+
+    config AIC_GPAI0_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI0_MODE_PERIOD
+
+    config AIC_GPAI0_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI1 Parameter"
+    depends on AIC_USING_GPAI1
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI1_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI1_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI1_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI1_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI1_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI1_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI1_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI1_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI1_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI1_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI1_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI1_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI1_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI1_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI1_MODE
+        int
+        default 0     if AIC_GPAI1_MODE_SINGLE
+        default 1     if AIC_GPAI1_MODE_PERIOD
+
+    config AIC_GPAI1_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI1_MODE_PERIOD
+
+    config AIC_GPAI1_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI2 Parameter"
+    depends on AIC_USING_GPAI2
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI2_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI2_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI2_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI2_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI2_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI2_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI2_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI2_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI2_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI2_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI2_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI2_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI2_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI2_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI2_MODE
+        int
+        default 0     if AIC_GPAI2_MODE_SINGLE
+        default 1     if AIC_GPAI2_MODE_PERIOD
+
+    config AIC_GPAI2_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI2_MODE_PERIOD
+
+    config AIC_GPAI2_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI3 Parameter"
+    depends on AIC_USING_GPAI3
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI3_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI3_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI3_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI3_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI3_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI3_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI3_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI3_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI3_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI3_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI3_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI3_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI3_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI3_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI3_MODE
+        int
+        default 0     if AIC_GPAI3_MODE_SINGLE
+        default 1     if AIC_GPAI3_MODE_PERIOD
+
+    config AIC_GPAI3_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI3_MODE_PERIOD
+
+    config AIC_GPAI3_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI4 Parameter"
+    depends on AIC_USING_GPAI4
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI4_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI4_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI4_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI4_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI4_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI4_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI4_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI4_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI4_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI4_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI4_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI4_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI4_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI4_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI4_MODE
+        int
+        default 0     if AIC_GPAI4_MODE_SINGLE
+        default 1     if AIC_GPAI4_MODE_PERIOD
+
+    config AIC_GPAI4_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI4_MODE_PERIOD
+
+    config AIC_GPAI4_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI5 Parameter"
+    depends on AIC_USING_GPAI5
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI5_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI5_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI5_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI5_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI5_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI5_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI5_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI5_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI5_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI5_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI5_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI5_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI5_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI5_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI5_MODE
+        int
+        default 0     if AIC_GPAI5_MODE_SINGLE
+        default 1     if AIC_GPAI5_MODE_PERIOD
+
+    config AIC_GPAI5_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI5_MODE_PERIOD
+
+    config AIC_GPAI5_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI6 Parameter"
+    depends on AIC_USING_GPAI6
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI6_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI6_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI6_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI6_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI6_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI6_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI6_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI6_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI6_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI6_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI6_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI6_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI6_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI6_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI6_MODE
+        int
+        default 0     if AIC_GPAI6_MODE_SINGLE
+        default 1     if AIC_GPAI6_MODE_PERIOD
+
+    config AIC_GPAI6_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI6_MODE_PERIOD
+
+    config AIC_GPAI6_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI7 Parameter"
+    depends on AIC_USING_GPAI7
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI7_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI7_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI7_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI7_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI7_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI7_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI7_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI7_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI7_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI7_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI7_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI7_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI7_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI7_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI7_MODE
+        int
+        default 0     if AIC_GPAI7_MODE_SINGLE
+        default 1     if AIC_GPAI7_MODE_PERIOD
+
+    config AIC_GPAI7_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI7_MODE_PERIOD
+
+    config AIC_GPAI7_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI8 Parameter"
+    depends on AIC_USING_GPAI8
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI8_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI8_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI8_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI8_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI8_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI8_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI8_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI8_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI8_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI8_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI8_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI8_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI8_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI8_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI8_MODE
+        int
+        default 0     if AIC_GPAI8_MODE_SINGLE
+        default 1     if AIC_GPAI8_MODE_PERIOD
+
+    config AIC_GPAI8_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI8_MODE_PERIOD
+
+    config AIC_GPAI8_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI9 Parameter"
+    depends on AIC_USING_GPAI9
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI9_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI9_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI9_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI9_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI9_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI9_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI9_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI9_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI9_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI9_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI9_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI9_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI9_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI9_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI9_MODE
+        int
+        default 0     if AIC_GPAI9_MODE_SINGLE
+        default 1     if AIC_GPAI9_MODE_PERIOD
+
+    config AIC_GPAI9_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI9_MODE_PERIOD
+
+    config AIC_GPAI9_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI10 Parameter"
+    depends on AIC_USING_GPAI10
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI10_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI10_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI10_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI10_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI10_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI10_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI10_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI10_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI10_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI10_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI10_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI10_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI10_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI10_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI10_MODE
+        int
+        default 0     if AIC_GPAI10_MODE_SINGLE
+        default 1     if AIC_GPAI10_MODE_PERIOD
+
+    config AIC_GPAI10_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI10_MODE_PERIOD
+
+    config AIC_GPAI10_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI11 Parameter"
+    depends on AIC_USING_GPAI11
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI11_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI11_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI11_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI11_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI11_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI11_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI11_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI11_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI11_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI11_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI11_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI11_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI11_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI11_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI11_MODE
+        int
+        default 0     if AIC_GPAI11_MODE_SINGLE
+        default 1     if AIC_GPAI11_MODE_PERIOD
+
+    config AIC_GPAI11_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI11_MODE_PERIOD
+
+    config AIC_GPAI11_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI12 Parameter"
+    depends on AIC_USING_GPAI12
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI12_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI12_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI12_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI12_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI12_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI12_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI12_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI12_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI12_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI12_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI12_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI12_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI12_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI12_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI12_MODE
+        int
+        default 0     if AIC_GPAI12_MODE_SINGLE
+        default 1     if AIC_GPAI12_MODE_PERIOD
+
+    config AIC_GPAI12_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI12_MODE_PERIOD
+
+    config AIC_GPAI12_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI13 Parameter"
+    depends on AIC_USING_GPAI13
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI13_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI13_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI13_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI13_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI13_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI13_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI13_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI13_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI13_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI13_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI13_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI13_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI13_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI13_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI13_MODE
+        int
+        default 0     if AIC_GPAI13_MODE_SINGLE
+        default 1     if AIC_GPAI13_MODE_PERIOD
+
+    config AIC_GPAI13_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI13_MODE_PERIOD
+
+    config AIC_GPAI13_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI14 Parameter"
+    depends on AIC_USING_GPAI14
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI14_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI14_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI14_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI14_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI14_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI14_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI14_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI14_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI14_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI14_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI14_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI14_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI14_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI14_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI14_MODE
+        int
+        default 0     if AIC_GPAI14_MODE_SINGLE
+        default 1     if AIC_GPAI14_MODE_PERIOD
+
+    config AIC_GPAI14_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI14_MODE_PERIOD
+
+    config AIC_GPAI14_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI15 Parameter"
+    depends on AIC_USING_GPAI15
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI15_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI15_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI15_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI15_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI15_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI15_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI15_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI15_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI15_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI15_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI15_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI15_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI15_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI15_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI15_MODE
+        int
+        default 0     if AIC_GPAI15_MODE_SINGLE
+        default 1     if AIC_GPAI15_MODE_PERIOD
+
+    config AIC_GPAI15_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI15_MODE_PERIOD
+
+    config AIC_GPAI15_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI16 Parameter"
+    depends on AIC_USING_GPAI16
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI16_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI16_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI16_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI16_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI16_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI16_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI16_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI16_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI16_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI16_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI16_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI16_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI16_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI16_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI16_MODE
+        int
+        default 0     if AIC_GPAI16_MODE_SINGLE
+        default 1     if AIC_GPAI16_MODE_PERIOD
+
+    config AIC_GPAI16_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI16_MODE_PERIOD
+
+    config AIC_GPAI16_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI17 Parameter"
+    depends on AIC_USING_GPAI17
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI17_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI17_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI17_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI17_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI17_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI17_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI17_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI17_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI17_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI17_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI17_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI17_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI17_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI17_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI17_MODE
+        int
+        default 0     if AIC_GPAI17_MODE_SINGLE
+        default 1     if AIC_GPAI17_MODE_PERIOD
+
+    config AIC_GPAI17_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI17_MODE_PERIOD
+
+    config AIC_GPAI17_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI18 Parameter"
+    depends on AIC_USING_GPAI18
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI18_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI18_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI18_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI18_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI18_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI18_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI18_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI18_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI18_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI18_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI18_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI18_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI18_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI18_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI18_MODE
+        int
+        default 0     if AIC_GPAI18_MODE_SINGLE
+        default 1     if AIC_GPAI18_MODE_PERIOD
+
+    config AIC_GPAI18_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI18_MODE_PERIOD
+
+    config AIC_GPAI18_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI19 Parameter"
+    depends on AIC_USING_GPAI19
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI19_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI19_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI19_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI19_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI19_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI19_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI19_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI19_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI19_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI19_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI19_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI19_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI19_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI19_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI19_MODE
+        int
+        default 0     if AIC_GPAI19_MODE_SINGLE
+        default 1     if AIC_GPAI19_MODE_PERIOD
+
+    config AIC_GPAI19_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI19_MODE_PERIOD
+
+    config AIC_GPAI19_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI20 Parameter"
+    depends on AIC_USING_GPAI20
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI20_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI20_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI20_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI20_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI20_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI20_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI20_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI20_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI20_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI20_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI20_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI20_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI20_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI20_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI20_MODE
+        int
+        default 0     if AIC_GPAI20_MODE_SINGLE
+        default 1     if AIC_GPAI20_MODE_PERIOD
+
+    config AIC_GPAI20_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI20_MODE_PERIOD
+
+    config AIC_GPAI20_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI21 Parameter"
+    depends on AIC_USING_GPAI21
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI21_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI21_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI21_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI21_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI21_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI21_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI21_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI21_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI21_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI21_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI21_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI21_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI21_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI21_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI21_MODE
+        int
+        default 0     if AIC_GPAI21_MODE_SINGLE
+        default 1     if AIC_GPAI21_MODE_PERIOD
+
+    config AIC_GPAI21_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI21_MODE_PERIOD
+
+    config AIC_GPAI21_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI22 Parameter"
+    depends on AIC_USING_GPAI22
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI22_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI22_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI22_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI22_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI22_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI22_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI22_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI22_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI22_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI22_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI22_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI22_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI22_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI22_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI22_MODE
+        int
+        default 0     if AIC_GPAI22_MODE_SINGLE
+        default 1     if AIC_GPAI22_MODE_PERIOD
+
+    config AIC_GPAI22_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI22_MODE_PERIOD
+
+    config AIC_GPAI22_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu
+
+menu "GPAI23 Parameter"
+    depends on AIC_USING_GPAI23
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_GPAI23_OBTAIN_DATA_BY_CPU
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI23_OBTAIN_DATA_BY_POLL
+            bool "Polling mode"
+            select AIC_GPAI_DRV_POLL
+        config AIC_GPAI23_OBTAIN_DATA_BY_CPU
+            bool "CPU interrupt mode"
+        config AIC_GPAI23_OBTAIN_DATA_BY_DO
+            bool "DO mode"
+            depends on AIC_GPAI_DRV_DO
+        config AIC_GPAI23_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            depends on AIC_GPAI_DRV_DMA
+    endchoice
+
+    config AIC_GPAI23_OBTAIN_DATA_MODE
+        int
+        default 1     if AIC_GPAI23_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI23_OBTAIN_DATA_BY_DMA
+        default 3     if AIC_GPAI23_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI23_OBTAIN_DATA_BY_DO
+
+    choice
+        prompt "period mode"
+        default AIC_GPAI23_MODE_PERIOD
+        help
+            Select the obtaning data mode
+
+        config AIC_GPAI23_MODE_PERIOD
+            bool "period mode"
+            depends on !AIC_GPAI23_OBTAIN_DATA_BY_POLL
+        config AIC_GPAI23_MODE_SINGLE
+            bool "non-period mode"
+    endchoice
+
+    config AIC_GPAI23_MODE
+        int
+        default 0     if AIC_GPAI23_MODE_SINGLE
+        default 1     if AIC_GPAI23_MODE_PERIOD
+
+    config AIC_GPAI23_PERIOD_TIME
+        int "sample period time (us)"
+        default 18000
+        depends on AIC_GPAI23_MODE_PERIOD
+
+    config AIC_GPAI23_ADC_ACQ
+        hex "ADC Acquisition Time"
+        range 0 0xff
+        default 0x2f
+endmenu

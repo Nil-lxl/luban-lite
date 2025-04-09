@@ -1,0 +1,279 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="初始化流程 图 1 . 初始化流程 相关的代码流程如下。 aic_crypto_probe(pdev); |-&gt; ce_dev-&gt;base = devm_platform_ioremap_resource(pdev, 0 ); |-&gt; ret = devm_request_threaded_irq(dev, irq, aic_crypto_irq_handler, | ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-06-07"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ce_key_procedures"/><meta name="DC.language" content="zh-CN"/><title>关键流程设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/ce/ce-key_procedures.dita"/><meta name="wh-out-relpath" content="topics/sdk/ce/ce-key_procedures.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ce_key_procedures" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ce/ce-key_procedures.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">关键流程设计</h1><div class="date inPage">7 Jun 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="ce_key_procedures__section_hhx_y1y_21c" data-ofbid="ce_key_procedures__section_hhx_y1y_21c"><h2 class="- topic/title title sectiontitle">初始化流程</h2>
+            
+            <figure class="- topic/fig fig fignone" id="ce_key_procedures__fig_mcc_1by_21c" data-ofbid="ce_key_procedures__fig_mcc_1by_21c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ce_key_procedures__image_ihx_y1y_21c" src="../../../images/ce/ce_keyflow.png" alt="ce_keyflow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">初始化流程</span></figcaption></figure>
+            <div class="- topic/p p" data-ofbid="d72614e34__20250121171523">相关的代码流程如下。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_key_procedures__codeblock_uw1_bby_21c" data-ofbid="ce_key_procedures__codeblock_uw1_bby_21c">aic_crypto_probe(pdev);
+|-&gt; ce_dev-&gt;base = devm_platform_ioremap_resource(pdev, <span class="hl-number">0</span>);
+|-&gt; ret = devm_request_threaded_irq(dev, irq, aic_crypto_irq_handler,
+|                                   aic_crypto_irq_thread, IRQF_ONESHOT,
+|                                   dev_name(dev), ce_dev);
+|-&gt; ce_dev-&gt;clk = devm_clk_get(dev, NULL);
+|-&gt; clk_prepare_enable(ce_dev-&gt;clk);
+|-&gt; ce_dev-&gt;reset = devm_reset_control_get(dev, NULL);
+|-&gt; reset_control_assert(ce_dev-&gt;reset);
+|-&gt; reset_control_deassert(ce_dev-&gt;reset);
+|-&gt; aic_crypto_skcipher_accelerator_init(ce_dev);
+|   |-&gt; eng = crypto_engine_alloc_init_and_set(ce-&gt;dev, true, NULL, true,
+|   |                                          ACCEL_QUEUE_MAX_SIZE);
+|   |-&gt; kfifo_alloc(&amp;ce-&gt;sk_accel.req_fifo, ACCEL_QUEUE_MAX_SIZE, GFP_KERNEL);
+|   |-&gt; crypto_engine_start(ce-&gt;sk_accel.engine);
+|   |-&gt; crypto_register_skcipher(&amp;sk_algs[i].alg);
+|
+|-&gt; aic_crypto_akcipher_accelerator_init(ce_dev);
+|-&gt; aic_crypto_hash_accelerator_init(ce_dev);</pre></div>
+        </section><section class="- topic/section section" id="ce_key_procedures__section_khx_y1y_21c" data-ofbid="ce_key_procedures__section_khx_y1y_21c"><h2 class="- topic/title title sectiontitle">数据处理流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d72614e44__20250121171523">由于 CE 中几种类型算法的数据处理流程相似，这里仅以对称密钥算法的数据处理流程为例进行说明。</p>
+            <p class="- topic/p p" data-ofbid="d72614e47__20250121171523">在处理步骤上，各种算法都遵循标准化的几个步骤：</p>
+            <ol class="- topic/ol ol" id="ce_key_procedures__ol_mhx_y1y_21c" data-ofbid="ce_key_procedures__ol_mhx_y1y_21c"><li class="- topic/li li" data-ofbid="d72614e51__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e53__20250121171523">从 Crypto Core 层将处理请求传递给 CE 算法</p>
+                </li><li class="- topic/li li" data-ofbid="d72614e56__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e58__20250121171523">CE 算法处理函数将请求转交给(transfer)给对应加速器的 crypto_engine 队列</p>
+                </li><li class="- topic/li li" data-ofbid="d72614e61__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e63__20250121171523">crypto_engine 中的处理线程从队列中取出请求，调用对应的 prepare/do_one_req 进行处理</p>
+                </li><li class="- topic/li li" data-ofbid="d72614e66__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e68__20250121171523">do_one_req 回调函数中，将对应的请求交给硬件处理</p>
+                </li><li class="- topic/li li" data-ofbid="d72614e71__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e73__20250121171523">在中断处理函数中，取出结果，返回给调用者</p>
+                </li></ol>
+            <div class="- topic/p p" data-ofbid="d72614e77__20250121171523">对称密钥算法的具体处理调用流程如下所示。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_key_procedures__codeblock_exp_bby_21c" data-ofbid="ce_key_procedures__codeblock_exp_bby_21c">aic_skcipher_aes_ecb_encrypt(req);
+|-&gt; aic_skcipher_crypt(req, FLG_AES | FLG_ECB);
+    |-&gt; crypto_transfer_skcipher_request_to_engine(eng, req);
+
+crypto_engine
+|-&gt; aic_skcipher_prepare_req(engine, req);
+|-&gt; aic_skcipher_do_one_req(engine, req);
+    |-&gt; aic_crypto_enqueue_task(ce, algo, rctx-&gt;phy_task);
+
+aic_crypto_irq_thread(<strong class="hl-keyword">int</strong> irq, <strong class="hl-keyword">void</strong> *arg);
+|-&gt; aic_skcipher_handle_irq(ce_dev);
+    |-&gt; crypto_finalize_skcipher_request(ce-&gt;sk_accel.engine, req, err);
+        |-&gt; aic_skcipher_unprepare_req(engine, req);
+        |-&gt; req.complete(req, err);</pre></div>
+            <p class="- topic/p p" data-ofbid="d72614e83__20250121171523">除了上述的大处理流程，还有一个关键点需要注意，就是 <strong class="+ topic/ph hi-d/b ph b">数据的对齐处理</strong> 。用户发起数据处理请求时， 提供了输入和输出的数据缓冲区，然而这些数据缓冲区对 CE
+                而言有两个问题：</p>
+            <ol class="- topic/ol ol" id="ce_key_procedures__ol_phx_y1y_21c" data-ofbid="ce_key_procedures__ol_phx_y1y_21c"><li class="- topic/li li" data-ofbid="d72614e90__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e92__20250121171523">这些缓冲区是虚拟地址空间的内存，并不一定是物理连续的内存空间</p>
+                </li><li class="- topic/li li" data-ofbid="d72614e95__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e97__20250121171523">缓冲区的开始地址并不一定是对齐的，不一定满足 CE 的地址对齐要求</p>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d72614e101__20250121171523">因此需要对输入和输出的数据做一些处理。</p>
+            <p class="- topic/p p" data-ofbid="d72614e104__20250121171523">一个简单的处理方式是对输入和输出的数据，一律复制到驱动新申请的物理连续的缓冲区中， 使用该空间作为 CE 的硬件工作缓冲区，处理完成之后再复制到用户提供的输出缓冲区。
+                但是对每一笔数据都会有额外的两次数据拷贝操作，对于处理大量数据的应用场景，效率较低。</p>
+            <p class="- topic/p p" data-ofbid="d72614e107__20250121171523">为了兼顾数据处理效率，CE 驱动针对可能出现的情况，做了几个分类， <strong class="+ topic/ph hi-d/b ph b">原则上尽量避免数据拷贝</strong> 。</p>
+            <ol class="- topic/ol ol" id="ce_key_procedures__ol_rhx_y1y_21c" data-ofbid="ce_key_procedures__ol_rhx_y1y_21c"><li class="- topic/li li" data-ofbid="d72614e114__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e116__20250121171523">输入缓冲区和输出缓冲区 CE 都无法使用</p>
+                    <p class="- topic/p p" data-ofbid="d72614e119__20250121171523">此种情况 CE  驱动为输入和输出缓冲区分配物理连续的工作缓冲区，并且需要对输入和输出数据进行复制。</p>
+                </li><li class="- topic/li li" data-ofbid="d72614e122__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e124__20250121171523">输入缓冲区 CE 可用，输出缓冲区 CE 不可用</p>
+                    <p class="- topic/p p" data-ofbid="d72614e127__20250121171523">此种情况 CE 驱动为输出缓冲区分配物理连续的工作缓冲区，CE 将数据处理完成之后，再复制到用户提供的输出缓冲区。</p>
+                </li><li class="- topic/li li" data-ofbid="d72614e130__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d72614e132__20250121171523">输入缓冲区 CE 不可用，输出缓冲区 CE 可用</p>
+                    <p class="- topic/p p" data-ofbid="d72614e135__20250121171523">此种情况 CE 驱动为输入缓冲区分配物理连续的工作缓冲区，CE 驱动先将输入数据复制到工作缓冲区， 再启动 CE 处理，直接输出到输出缓冲区。</p>
+                </li><li class="- topic/li li" data-ofbid="d72614e138__20250121171523"><p class="- topic/p p" data-ofbid="d72614e139__20250121171523">输入缓冲区和输出缓冲区都是 CE 可用</p><p class="- topic/p p" data-ofbid="d72614e141__20250121171523">此种情况效率最高，CE 直接使用用户提供的输入输出缓冲区。</p><div class="- topic/p p" data-ofbid="d72614e143__20250121171523"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ce_key_procedures__image_shx_y1y_21c" src="../../../images/ce/ce_data_buffer_for_ce.png" alt="ce_data_buffer_for_ce"/></div><br/></div></li></ol>
+            <p class="- topic/p p" data-ofbid="d72614e149__20250121171523">当用户处理大量数据时，为了提高系统的处理效率，应为输入和输出数据申请按页对齐的缓冲区，这样 CE 驱动可以直接使用，避免额外的复制操作。</p>
+        </section><section class="- topic/section section" id="ce_key_procedures__section_thx_y1y_21c" data-ofbid="ce_key_procedures__section_thx_y1y_21c"><h2 class="- topic/title title sectiontitle">中断处理流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d72614e157__20250121171523">CE 驱动的中断处理比较简单，采用线程化的 IRQ 处理方式实现。</p>
+            <div class="- topic/p p" data-ofbid="d72614e160__20250121171523">当中断发生时，首先在 irq handler 函数中保存当前的 IRQ
+                状态寄存器和错误状态寄存器的值。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_key_procedures__codeblock_z5z_cby_21c" data-ofbid="ce_key_procedures__codeblock_z5z_cby_21c"><strong class="hl-keyword">static</strong> irqreturn_t aic_crypto_irq_handler(<strong class="hl-keyword">int</strong> irq, <strong class="hl-keyword">void</strong> *arg)
+{
+        <strong class="hl-keyword">struct</strong> aic_crypto_dev *ce_dev = arg;
+
+        ce_dev-&gt;irq_status = readl(ce_dev-&gt;base + CE_REG_ISR);
+        ce_dev-&gt;err_status = readl(ce_dev-&gt;base + CE_REG_ERR);
+        writel(ce_dev-&gt;irq_status, ce_dev-&gt;base + CE_REG_ISR);
+        <strong class="hl-keyword">return</strong> IRQ_WAKE_THREAD;
+}</pre></div>
+            <div class="- topic/p p" data-ofbid="d72614e165__20250121171523">然后唤醒对应的处理线程，根据中断状态值，调用对应算法加速器的 IRQ
+                处理函数。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_key_procedures__codeblock_y32_dby_21c" data-ofbid="ce_key_procedures__codeblock_y32_dby_21c"><strong class="hl-keyword">static</strong> irqreturn_t aic_crypto_irq_thread(<strong class="hl-keyword">int</strong> irq, <strong class="hl-keyword">void</strong> *arg)
+{
+        <strong class="hl-keyword">struct</strong> aic_crypto_dev *ce_dev = arg;
+
+        <strong class="hl-keyword">if</strong> (ce_dev-&gt;irq_status &amp; (<span class="hl-number">0x1</span> &lt;&lt; DMA_CHAN_SK_ACCELERATOR))
+                aic_skcipher_handle_irq(ce_dev);
+        <strong class="hl-keyword">if</strong> (ce_dev-&gt;irq_status &amp; (<span class="hl-number">0x1</span> &lt;&lt; DMA_CHAN_AK_ACCELERATOR))
+                aic_akcipher_handle_irq(ce_dev);
+        <strong class="hl-keyword">if</strong> (ce_dev-&gt;irq_status &amp; (<span class="hl-number">0x1</span> &lt;&lt; DMA_CHAN_HASH_ACCELERATOR))
+                aic_hash_handle_irq(ce_dev);
+        <strong class="hl-keyword">return</strong> IRQ_HANDLED;
+}</pre></div>
+            <div class="- topic/p p" data-ofbid="d72614e170__20250121171523">如前面所述，各算法加速器的 IRQ
+                处理函数只做相关资源的释放，以及请求处理完成的通知。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ce_key_procedures__codeblock_d5h_dby_21c" data-ofbid="ce_key_procedures__codeblock_d5h_dby_21c">aic_skcipher_handle_irq(ce_dev);
+|-&gt; crypto_finalize_skcipher_request(ce-&gt;sk_accel.engine, req, err);
+    |-&gt; aic_skcipher_unprepare_req(engine, req);
+    |-&gt; req.complete(req, err);</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#ce_key_procedures__section_hhx_y1y_21c" data-tocid="ce_key_procedures__section_hhx_y1y_21c">初始化流程</a></div></li><li class="section-item"><div class="section-title"><a href="#ce_key_procedures__section_khx_y1y_21c" data-tocid="ce_key_procedures__section_khx_y1y_21c">数据处理流程</a></div></li><li class="section-item"><div class="section-title"><a href="#ce_key_procedures__section_thx_y1y_21c" data-tocid="ce_key_procedures__section_thx_y1y_21c">中断处理流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

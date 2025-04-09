@@ -1,0 +1,215 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="芯片支持通过 U 盘的 FAT32 文件系统进行升级。烧录前须满足以下要求： 对芯片与板子的要求： 板子使用 USB 接口。 芯片烧录过镜像，且镜像支持 U 盘升级 对 U 盘 卡的要求： U 盘要求只有一个分区 U 盘格式化为 FAT32 文件系统，注意不是 exFAT、或者 FAT16 U 盘最好为专用 U 盘，里面不要放置太多其他文件 执行步骤： 拷贝在编译输出目录(images) ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="u"/><meta name="DC.language" content="zh-CN"/><title>U 盘升级</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/usb-burn.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/usb-burn.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="u" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/usb-burn.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">U 盘升级</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d121623e22__20250121171559">芯片支持通过 U 盘的 FAT32 文件系统进行升级。烧录前须满足以下要求：<ul class="- topic/ul ul" id="u__ul_ark_xt2_f1c" data-ofbid="u__ul_ark_xt2_f1c"><li class="- topic/li li" data-ofbid="d121623e25__20250121171559">对芯片与板子的要求：<ul class="- topic/ul ul" id="u__ol_xbd_5t2_f1c" data-ofbid="u__ol_xbd_5t2_f1c"><li class="- topic/li li" data-ofbid="d121623e28__20250121171559">
+                            <p class="- topic/p p" data-ofbid="d121623e30__20250121171559">板子使用 USB 接口。</p>
+                        </li><li class="- topic/li li" data-ofbid="d121623e33__20250121171559">
+                            <p class="- topic/p p" data-ofbid="d121623e35__20250121171559">芯片烧录过镜像，且镜像支持 U 盘升级</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d121623e38__20250121171559">对 U 盘 卡的要求：<ul class="- topic/ul ul" id="u__ol_ybd_5t2_f1c" data-ofbid="u__ol_ybd_5t2_f1c"><li class="- topic/li li" data-ofbid="d121623e41__20250121171559">
+                            <p class="- topic/p p" data-ofbid="d121623e43__20250121171559">U 盘要求只有一个分区</p>
+                        </li><li class="- topic/li li" data-ofbid="d121623e46__20250121171559">
+                            <p class="- topic/p p" data-ofbid="d121623e48__20250121171559">U 盘格式化为 FAT32 文件系统，注意不是 exFAT、或者 FAT16</p>
+                        </li><li class="- topic/li li" data-ofbid="d121623e51__20250121171559">
+                            <p class="- topic/p p" data-ofbid="d121623e53__20250121171559">U 盘最好为专用 U 盘，里面不要放置太多其他文件</p>
+                        </li></ul></li></ul></div><div class="- topic/p p" data-ofbid="d121623e56__20250121171559">执行步骤：<ol class="- topic/ol ol" id="u__ol_zbd_5t2_f1c" data-ofbid="u__ol_zbd_5t2_f1c"><li class="- topic/li li" data-ofbid="d121623e59__20250121171559">拷贝在编译输出目录(images) 下的两个文件到 U 盘 FAT32 文件系统的 <strong class="+ topic/ph hi-d/b ph b">根目录</strong><ul class="- topic/ul ul" id="u__ul_bcd_5t2_f1c" data-ofbid="u__ul_bcd_5t2_f1c"><li class="- topic/li li" data-ofbid="d121623e64__20250121171559"><span class="+ topic/ph sw-d/filepath ph filepath">bootcfg.txt</span> (注意 NAND 输出的名字有些不同，例如
+                                <span class="+ topic/ph sw-d/filepath ph filepath">bootcfg.txt(page_2k_block_128k) )</span></li><li class="- topic/li li" data-ofbid="d121623e70__20250121171559"><span class="+ topic/ph sw-d/filepath ph filepath">xxx.img</span>，例如 <span class="- topic/ph ph">d13x_per1-nor_v1.0.0.img</span></li></ul></li><li class="- topic/li li" data-ofbid="d121623e76__20250121171559">确保 bootcfg 文件的名字为 <span class="+ topic/ph sw-d/filepath ph filepath">bootcfg.txt</span>
+                    <p class="- topic/p p" data-ofbid="d121623e81__20250121171559">如果生成的名字为 <span class="+ topic/ph sw-d/filepath ph filepath">bootcfg.txt(page_2k_block_128k) )</span>，则需要改为
+                            <span class="+ topic/ph sw-d/filepath ph filepath">bootcfg.txt</span></p>
+                </li><li class="- topic/li li" data-ofbid="d121623e89__20250121171559">将 U 盘插入板子，重新上电，启动过程中则会自动检测 U 盘是否插入，检测到后进入烧录模式进行升级
+                </li><li class="- topic/li li" data-ofbid="d121623e91__20250121171559">烧录完成时，需要拔出 U 盘，然后重新上电启动
+                    <div class="- topic/note note note note_note" id="u__note_grm_s52_h1c" data-ofbid="u__note_grm_s52_h1c"><span class="note__title">注：</span> 
+                        <p class="- topic/p p" data-ofbid="d121623e95__20250121171559">烧录完成平台并不会主动重启，以防重复进入 U 盘烧录模式。</p>
+                    </div>
+                </li></ol></div><section class="- topic/section section" id="u__section_dcd_5t2_f1c" data-ofbid="u__section_dcd_5t2_f1c"><h2 class="- topic/title title sectiontitle">编译配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d121623e104__20250121171559">SDK 提供的配置，默认关闭该功能。这里进行配置使能以及注意项的说明。<ul class="- topic/ul ul" id="u__ul_ucf_q52_f1c" data-ofbid="u__ul_ucf_q52_f1c"><li class="- topic/li li" data-ofbid="d121623e107__20250121171559">SPI NAND/NOR 方案<div class="- topic/p p" data-ofbid="d121623e109__20250121171559">使能 SDFAT32 烧录功能，只需要在 menuconfig 中勾选配置项
+                        <span class="+ topic/ph ui-d/uicontrol ph uicontrol">AICUPG_UDISK_ENABLE</span>
+                            即可:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="u__codeblock_yr1_552_h1c" data-ofbid="u__codeblock_yr1_552_h1c">Bootloader options  ---&gt;
+    aicupg setting  ---&gt;
+        [*] aicupg udisk upgrade on</pre></div><p class="- topic/p p" data-ofbid="d121623e116__20250121171559">同时设置
+            <span class="+ topic/ph ui-d/uicontrol ph uicontrol">AICUPG_USB_CONTROLLER_MAX_NUM=1</span></p><div class="- topic/p p" data-ofbid="d121623e120__20250121171559">可用的最大 USB
+                            HOST 控制器数量，根据实际芯片平台进行设置。<div class="- topic/note note note note_note" id="u__note_asl_h52_f1c" data-ofbid="u__note_asl_h52_f1c"><span class="note__title">注：</span> 
+                                <p class="- topic/p p" data-ofbid="d121623e124__20250121171559">开启 U 盘烧录功能后，编译完成生成的 bootloader.aic 文件大小不能超过 126K，若超过则可以关闭以下配置来减小
+                                    CODE SIZE。</p>
+                                <ol class="- topic/ol ol" id="u__ol_icd_5t2_f1c" data-ofbid="u__ol_icd_5t2_f1c"><li class="- topic/li li" data-ofbid="d121623e128__20250121171559">AIC_BOOTLOADER_CMD_SPI_NAND</li><li class="- topic/li li" data-ofbid="d121623e130__20250121171559">AIC_BOOTLOADER_CMD_MTD</li><li class="- topic/li li" data-ofbid="d121623e132__20250121171559">AIC_BOOTLOADER_CMD_MEM</li></ol>
+                            </div></div></li></ul></div>
+        </section><section class="- topic/section section" id="u__section_jcd_5t2_f1c" data-ofbid="u__section_jcd_5t2_f1c"><h2 class="- topic/title title sectiontitle">注意事项</h2>
+            
+            <p class="- topic/p p" data-ofbid="d121623e141__20250121171559">在打包镜像前，需要确保
+                    <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">IC</var>/<var class="+ topic/keyword sw-d/varname keyword varname">Board</var>/pack</span>
+                目录下的 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件中 <span class="+ topic/keyword pr-d/parmname keyword parmname">device_id</span>
+                与存储介质所使用的控制器 id 所对应。</p>
+            <p class="- topic/p p" data-ofbid="d121623e159__20250121171559">例如 eMMC 存储介质使用的控制器为 SDMC0，则应该将 <span class="+ topic/keyword pr-d/parmname keyword parmname">device_id</span> 的值设为 0， 如果 eMMC
+                存储介质所使用的控制器为 SDMC1，则应该将 <span class="+ topic/keyword pr-d/parmname keyword parmname">device_id</span> 设为 1。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#u__section_dcd_5t2_f1c" data-tocid="u__section_dcd_5t2_f1c">编译配置</a></div></li><li class="section-item"><div class="section-title"><a href="#u__section_jcd_5t2_f1c" data-tocid="u__section_jcd_5t2_f1c">注意事项</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

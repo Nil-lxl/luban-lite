@@ -1,0 +1,19 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+CPPPATH = []
+
+if GetDepend('AIC_RTC_PCF8563'):
+    CPPPATH.append(cwd + 'pcf8563/')
+    src += Glob('pcf8563/*.c')
+
+if GetDepend('AIC_RTC_RX8010'):
+    CPPPATH.append(cwd + 'rx8010/')
+    src += Glob('rx8010/*.c')
+
+group = DefineGroup('rtc', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

@@ -1,0 +1,288 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="准备测试环境 硬件 开发板 软件 PC 端的串口终端软件，用于 PC 和开发板进行串口通信 test_tsen 测试程序 使能 test_tsen 在 Luban-Lite 根目录下执行 scons --menuconfig ，进入 menuconfig 的功能配置界面，按如下选择： Drivers options ---&gt; Drivers examples ---&gt; [*] Enable ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/tsensor/tsensor-user-guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/tsensor/tsensor-debug-guide-lite.html"/><meta name="DC.relation" content="../../../topics/sdk/tsensor/tsensor-design-intro-lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e3165"/><meta name="wh-source-relpath" content="topics/sdk/tsensor/tsensor-test-guide-lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/tsensor/tsensor-test-guide-lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="chapter-system"><div class="title"><a href="../../../topics/chapter-title/chapter-system.html">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li><div class="topicref" data-id="tsensor"><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-user-guide_2.html">TSensor 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-test-guide-lite.html">测试指南</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/tsensor/tsensor-debug-guide-lite.html" title="调试指南" aria-label="上一主题: 调试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/tsensor/tsensor-design-intro-lite.html" title="设计说明" aria-label="下一主题: 设计说明" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e2449" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e2449-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/memory-user-guide.html" id="chapter-memory-d5856e2449-link">Memory 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="system_interrupt_user_guide-d5856e2565" class="topicref" data-id="system_interrupt_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action system_interrupt_user_guide-d5856e2565-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/interrupt/interrupt-user-guide.html" id="system_interrupt_user_guide-d5856e2565-link">Interrupt 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cmu-d5856e2601" class="topicref" data-id="cmu" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cmu-d5856e2601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cmu/cmu-introduction_2.html" id="cmu-d5856e2601-link">CMU 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_or5_kn3_pzb-d5856e2697" class="topicref" data-id="concept_or5_kn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_or5_kn3_pzb-d5856e2697-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-user-guide_2.html" id="concept_or5_kn3_pzb-d5856e2697-link">DMA 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2805" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-user-guide.html" id="id-d5856e2805-link">HRTimer 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2877" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2877-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_user_guide.html" id="id-d5856e2877-link">MTOP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_n2p_sn3_pzb-d5856e2937" class="topicref" data-id="concept_n2p_sn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_n2p_sn3_pzb-d5856e2937-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-user-guide_2.html" id="concept_n2p_sn3_pzb-d5856e2937-link">RTC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3057" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3057-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pm/pm_introduction.html" id="id-d5856e3057-link">Power Management 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="tsensor-d5856e3129" class="topicref" data-id="tsensor" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action tsensor-d5856e3129-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-user-guide_2.html" id="tsensor-d5856e3129-link">TSensor 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e3141" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-config-lite.html" id="id-d5856e3141-link">TSensor 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3153" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-debug-guide-lite.html" id="id-d5856e3153-link">调试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e3165" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-test-guide-lite.html" id="id-d5856e3165-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3177" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3177-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-design-intro-lite.html" id="id-d5856e3177-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3237" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-faq_2.html" id="id-d5856e3237-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="watchdog-d5856e3249" class="topicref" data-id="watchdog" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action watchdog-d5856e3249-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/watchdog/watchdog-user-guide_2.html" id="watchdog-d5856e3249-link">Watchdog 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/tsensor/tsensor-test-guide-lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 5 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">准备测试环境</h2>
+            
+            <ul class="- topic/ul ul" id="id__ul_ytp_lcc_ddc" data-ofbid="id__ul_ytp_lcc_ddc"><li class="- topic/li li" data-ofbid="d320210e25__20250121171824">硬件<ul class="- topic/ul ul simple" id="id__ul_aqn_vwh_bdc" data-ofbid="id__ul_aqn_vwh_bdc"><li class="- topic/li li" data-ofbid="d320210e28__20250121171824">
+                            <p class="- topic/p p" data-ofbid="d320210e30__20250121171824">开发板</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d320210e33__20250121171824">软件<ul class="- topic/ul ul simple" id="id__ul_bqn_vwh_bdc" data-ofbid="id__ul_bqn_vwh_bdc"><li class="- topic/li li" data-ofbid="d320210e36__20250121171824">
+                            <p class="- topic/p p" data-ofbid="d320210e38__20250121171824">PC 端的串口终端软件，用于 PC 和开发板进行串口通信</p>
+                        </li><li class="- topic/li li" data-ofbid="d320210e41__20250121171824">
+                            <p class="- topic/p p" data-ofbid="d320210e43__20250121171824"><code class="+ topic/ph pr-d/codeph ph codeph">test_tsen</code> 测试程序</p>
+                        </li></ul></li></ul>
+        </section><section class="- topic/section section" id="id__id5" data-ofbid="id__id5"><h2 class="- topic/title title sectiontitle">使能
+                test_tsen</h2>
+            
+            
+            <div class="- topic/p p" data-ofbid="d320210e54__20250121171824">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig
+                的功能配置界面，按如下选择：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xfc_vcc_ddc" data-ofbid="id__codeblock_xfc_vcc_ddc">Drivers options  ---&gt;
+    Drivers examples  ---&gt;
+        [*] Enable TSEN driver test command</pre></div>
+        </section><section class="- topic/section section" id="id__section_lnj_1dc_ddc" data-ofbid="id__section_lnj_1dc_ddc"><h2 class="- topic/title title sectiontitle">测试温度读取</h2>
+            
+            <p class="- topic/p p" data-ofbid="d320210e70__20250121171824">在打开 <code class="+ topic/ph pr-d/codeph ph codeph">test_tsen</code> 的编译后，板子上可直接运行 <code class="+ topic/ph pr-d/codeph ph codeph">test_tsen</code>
+                命令来读取温度数据，每次连续读取 10 次温度值。</p>
+            <ul class="- topic/ul ul" id="id__ul_dxr_cdc_ddc" data-ofbid="id__ul_dxr_cdc_ddc"><li class="- topic/li li" data-ofbid="d320210e80__20250121171824">
+                    <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">RTOS
+                        环境</strong>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_a2w_vcc_ddc" data-ofbid="id__codeblock_a2w_vcc_ddc">test_tsen</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_m4b_vkk_5dc" data-ofbid="id__codeblock_m4b_vkk_5dc">Usage: test_tsen [options]
+     -m, --mode_id                  Select and start the reading/recording mode # 依据如下 Mode ID 进行设置
+     -s, --sensor_id                Select the sensor, <strong class="hl-keyword">default</strong> is <span class="hl-number">0</span> # 依据如下 Sensor ID 进行设置
+     -n, --samples_number           Set the samples number, <strong class="hl-keyword">default</strong> is <span class="hl-number">10</span>
+                                    # 单次监测时，读取温度的数量。会根据该数量会进行求平均处理，目的是为了避免误差
+     -t, --polling_interval         Set the polling interval (ms), <strong class="hl-keyword">default</strong> is <span class="hl-number">10</span>ms # 单次监测的时间间隔
+     -r, --recording_time           Set the recording time (ms), <strong class="hl-keyword">default</strong> is <span class="hl-number">100</span>ms # 总的目标检测时长
+     -d, --temp_diff_threshold      Set the temperature diff threshold (<span class="hl-number">0.1</span>℃ ), <strong class="hl-keyword">default</strong> is <span class="hl-number">20</span>(<span class="hl-number">2</span>℃ )
+                                    # 温度变化的阈值。当相邻两次监测的平均温度之差大于温度变化阈值时，会把最新点的温度进行记录
+                                    # 所设置阈值对应温度 = 该参数 * <span class="hl-number">0.1</span>℃
+     -h, --help
+
+Example:
+     test_tsen -n <span class="hl-number">5</span> -t <span class="hl-number">10</span> -d <span class="hl-number">2</span> -r <span class="hl-number">20</span> # 设置基本参数，温度记录模式参数配置示例
+     test_tsen -s <span class="hl-number">0</span> -m <span class="hl-number">1</span> # 选择传感器 ID 及 模式 ID
+     test_tsen -m <span class="hl-number">2</span> # 在 Mode ID 中选择想要进行的模式
+Mode ID:
+    [<span class="hl-number">0</span>] read temperature # 温度读取模式 ID
+    [<span class="hl-number">1</span>] record temperature # 进行温度记录模式 ID，超过温度差阈值的温度将会被记录到 Flash 中
+    [<span class="hl-number">2</span>] get recording temperature # 读取所记录的温度变化模式 ID
+Sensor ID:
+    [<span class="hl-number">0</span>] sensor_cpu # CPU 附近的传感器 ID
+    [<span class="hl-number">1</span>] sensor_gpai # GPAI 附近的传感器 ID</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_tb4_jdc_ddc" data-ofbid="id__codeblock_tb4_jdc_ddc">test_tsen -s <span class="hl-number">1</span> -n <span class="hl-number">10</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_y5j_vkk_5dc" data-ofbid="id__codeblock_y5j_vkk_5dc">[temp_tsen_cpu] Starting single mode   # 当前进行 CPU 附近温度传感器 ADC 采样
+num:  <span class="hl-number">0</span>, temp: <span class="hl-number">50.6</span> C, timestamp:<span class="hl-number">149647</span>
+num:  <span class="hl-number">1</span>, temp: <span class="hl-number">48.3</span> C, timestamp:<span class="hl-number">149648</span>
+num:  <span class="hl-number">2</span>, temp: <span class="hl-number">49.0</span> C, timestamp:<span class="hl-number">149649</span>
+num:  <span class="hl-number">3</span>, temp: <span class="hl-number">49.2</span> C, timestamp:<span class="hl-number">149650</span>
+num:  <span class="hl-number">4</span>, temp: <span class="hl-number">48.2</span> C, timestamp:<span class="hl-number">149651</span>
+num:  <span class="hl-number">5</span>, temp: <span class="hl-number">48.4</span> C, timestamp:<span class="hl-number">149652</span>
+num:  <span class="hl-number">6</span>, temp: <span class="hl-number">50.0</span> C, timestamp:<span class="hl-number">149653</span>
+num:  <span class="hl-number">7</span>, temp: <span class="hl-number">50.2</span> C, timestamp:<span class="hl-number">149654</span>
+num:  <span class="hl-number">8</span>, temp: <span class="hl-number">49.9</span> C, timestamp:<span class="hl-number">149655</span>
+num:  <span class="hl-number">9</span>, temp: <span class="hl-number">49.1</span> C, timestamp:<span class="hl-number">149656</span></pre></div>
+                </li><li class="- topic/li li" data-ofbid="d320210e95__20250121171824">裸机环境：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_pt3_xcc_ddc" data-ofbid="id__codeblock_pt3_xcc_ddc">test_tsen</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_pss_vkk_5dc" data-ofbid="id__codeblock_pss_vkk_5dc">Compile time: May <span class="hl-number">30</span> <span class="hl-number">2024</span> <span class="hl-number">16</span>:<span class="hl-number">26</span>:<span class="hl-number">32</span>
+Usage: test_tsen [options]
+test_tsen read &lt;sensor_id&gt;         : Select one channel in [<span class="hl-number">0</span>, <span class="hl-number">1</span>], <strong class="hl-keyword">default</strong> is <span class="hl-number">0</span> # 选用传感器 ID
+test_tsen help                     : Get this help
+
+Example: test_tsen read <span class="hl-number">1</span>
+Sensor ID:
+        [<span class="hl-number">0</span>] sensor_cpu
+        [<span class="hl-number">1</span>] sensor_gpai</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xsq_xcc_ddc" data-ofbid="id__codeblock_xsq_xcc_ddc">test_tsen read <span class="hl-number">0</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_pky_vkk_5dc" data-ofbid="id__codeblock_pky_vkk_5dc">Starting the tsen_cpu sensor temperature reading # 当前进行 CPU 附近温度传感器 ADC 采样
+num:  <span class="hl-number">0</span>, temp: <span class="hl-number">45.7</span> C (<span class="hl-number">1487</span>) # num:  读取温度次数, temp: 温度 C (ADC 采样值)
+num:  <span class="hl-number">1</span>, temp: <span class="hl-number">44.5</span> C (<span class="hl-number">1497</span>)
+num:  <span class="hl-number">2</span>, temp: <span class="hl-number">44.4</span> C (<span class="hl-number">1498</span>)
+num:  <span class="hl-number">3</span>, temp: <span class="hl-number">44.8</span> C (<span class="hl-number">1495</span>)
+num:  <span class="hl-number">4</span>, temp: <span class="hl-number">44.0</span> C (<span class="hl-number">1502</span>)
+num:  <span class="hl-number">5</span>, temp: <span class="hl-number">45.3</span> C (<span class="hl-number">1490</span>)
+num:  <span class="hl-number">6</span>, temp: <span class="hl-number">44.7</span> C (<span class="hl-number">1496</span>)
+num:  <span class="hl-number">7</span>, temp: <span class="hl-number">44.7</span> C (<span class="hl-number">1496</span>)
+num:  <span class="hl-number">8</span>, temp: <span class="hl-number">45.6</span> C (<span class="hl-number">1488</span>)
+num:  <span class="hl-number">9</span>, temp: <span class="hl-number">45.7</span> C (<span class="hl-number">1487</span>)</pre></li></ul>
+        </section><section class="- topic/section section" id="id__section_n1b_mdc_ddc" data-ofbid="id__section_n1b_mdc_ddc"><h2 class="- topic/title title sectiontitle">测试温度监测</h2>
+            
+            <div class="- topic/p p" data-ofbid="d320210e113__20250121171824">在打开对应传感器轮询模式配置以及 test_tsen 的编译后，首先，进行设置温度监测模式的相关参数。其次，选择传感器并开启轮询监测。最后，通过
+                    <code class="+ topic/ph pr-d/codeph ph codeph">test_tsen-m2</code> 查看所监测到的温度点。<ul class="- topic/ul ul" id="id__ul_kvx_mdc_ddc" data-ofbid="id__ul_kvx_mdc_ddc"><li class="- topic/li li" data-ofbid="d320210e119__20250121171824"><strong class="+ topic/ph hi-d/b ph b">RTOS 环境</strong><figure class="- topic/fig fig fignone" id="id__id10" data-ofbid="id__id10"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_fqn_vwh_bdc" src="../../../images/ths/tsen_temp_record.png" alt="tsen_temp_record"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">TSensor 温度监测模式设计说明</span></figcaption></figure><div class="- topic/p p" data-ofbid="d320210e128__20250121171824">相关参数配置<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_f1x_wcc_ddc" data-ofbid="id__codeblock_f1x_wcc_ddc">test_tsen -n <span class="hl-number">5</span> -t <span class="hl-number">10</span> -d <span class="hl-number">2</span> -r <span class="hl-number">20</span></pre></div><div class="- topic/p p" data-ofbid="d320210e132__20250121171824">轮询监测的序数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_rpl_wkk_5dc" data-ofbid="id__codeblock_rpl_wkk_5dc">test_tsen -s <span class="hl-number">0</span> -m <span class="hl-number">1</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_dds_wkk_5dc" data-ofbid="id__codeblock_dds_wkk_5dc">Recording way needs select polling mode</pre></div><p class="- topic/p p" data-ofbid="d320210e138__20250121171824">监测模式依赖于轮询，对此需在此处配置
+                            polling mode，具体配置方法可见 menuconfig。以下输出结果表示轮询监测的总次数为
+                            2：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wj5_1lk_5dc" data-ofbid="id__codeblock_wj5_1lk_5dc">=========[<span class="hl-number">1</span>]========= 
+[<span class="hl-number">0</span>] temp: <span class="hl-number">42.7</span> C, timestamp:   <span class="hl-number">30</span>
+[<span class="hl-number">1</span>] temp: <span class="hl-number">42.7</span> C, timestamp:   <span class="hl-number">30</span>
+[<span class="hl-number">2</span>] temp: <span class="hl-number">42.2</span> C, timestamp:   <span class="hl-number">30</span>
+[<span class="hl-number">3</span>] temp: <span class="hl-number">42.1</span> C, timestamp:   <span class="hl-number">30</span>
+[<span class="hl-number">4</span>] temp: <span class="hl-number">42.3</span> C, timestamp:   <span class="hl-number">30</span>
+=========[<span class="hl-number">2</span>]=========
+[<span class="hl-number">5</span>] temp: <span class="hl-number">42.5</span> C, timestamp:   <span class="hl-number">30</span>
+[<span class="hl-number">6</span>] temp: <span class="hl-number">42.1</span> C, timestamp:   <span class="hl-number">30</span>
+[<span class="hl-number">7</span>] temp: <span class="hl-number">42.0</span> C, timestamp:   <span class="hl-number">30</span>
+[<span class="hl-number">8</span>] temp: <span class="hl-number">42.0</span> C, timestamp:   <span class="hl-number">30</span>
+[<span class="hl-number">9</span>] temp: <span class="hl-number">41.9</span> C, timestamp:   <span class="hl-number">30</span>
+total record count:<span class="hl-number">2</span></pre><div class="- topic/p p" data-ofbid="d320210e142__20250121171824">监测到温差超过所设置的温度变化阈值的温度：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_erq_blk_5dc" data-ofbid="id__codeblock_erq_blk_5dc">test_tsen -m <span class="hl-number">2</span>
+[<span class="hl-number">0</span>] temp: <span class="hl-number">42.4</span> C
+[<span class="hl-number">1</span>] temp: <span class="hl-number">42.1</span> C</pre></div></li></ul></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">准备测试环境</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id5" data-tocid="id__id5">使能
+                test_tsen</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_lnj_1dc_ddc" data-tocid="id__section_lnj_1dc_ddc">测试温度读取</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_n1b_mdc_ddc" data-tocid="id__section_n1b_mdc_ddc">测试温度监测</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

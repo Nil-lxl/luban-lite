@@ -1,0 +1,306 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Gadget Layer 层没有定义一个标准的 Bus 总线，而是自定义了两条链表来分别存储 Device 和 Driver： type list escript Device udc_list 所有 Device 全集 Driver gadget_driver_pending_list 只包含没有适配 Device 的 Driver 它们的使用场景如下： 在 Gadget Device ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-04-03"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_gadget_bus"/><meta name="DC.language" content="zh-CN"/><title>Gadget Bus</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-gadget_bus.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-gadget_bus.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_gadget_bus" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-gadget_bus.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Gadget Bus</h1><div class="date inPage">3 Apr 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d354177e22__20250121172132">Gadget Layer 层没有定义一个标准的 Bus 总线，而是自定义了两条链表来分别存储 Device 和 Driver：</p><div class="table-container"><table class="- topic/table table frame-all" id="usb_gadget_bus__table_f3c_5qz_21c" data-ofbid="usb_gadget_bus__table_f3c_5qz_21c" data-cols="3"><caption></caption><colgroup><col style="width:21.691973969631235%"/><col style="width:38.6117136659436%"/><col style="width:39.69631236442516%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_gadget_bus__table_f3c_5qz_21c__entry__1">type</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_gadget_bus__table_f3c_5qz_21c__entry__2">list</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_gadget_bus__table_f3c_5qz_21c__entry__3">escript</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_gadget_bus__table_f3c_5qz_21c__entry__1">Device</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_gadget_bus__table_f3c_5qz_21c__entry__2">udc_list</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_gadget_bus__table_f3c_5qz_21c__entry__3">所有 Device 全集</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_gadget_bus__table_f3c_5qz_21c__entry__1">Driver</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_gadget_bus__table_f3c_5qz_21c__entry__2">gadget_driver_pending_list</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_gadget_bus__table_f3c_5qz_21c__entry__3">只包含没有适配 Device 的 Driver</td></tr></tbody></table></div><p class="- topic/p p" data-ofbid="d354177e52__20250121172132">它们的使用场景如下：</p><ul class="- topic/ul ul" id="usb_gadget_bus__ul_g3c_5qz_21c" data-ofbid="usb_gadget_bus__ul_g3c_5qz_21c"><li class="- topic/li li" data-ofbid="d354177e55__20250121172132">
+                <div class="- topic/p p" data-ofbid="d354177e57__20250121172132">在 Gadget Device 创建时，首先把 Device 加入到 <code class="+ topic/ph pr-d/codeph ph codeph">udc_list</code> 链表，然后尝试和
+                        <code class="+ topic/ph pr-d/codeph ph codeph">gadget_driver_pending_list</code> 链表中的 Driver 进行
+                    match():<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_bus__pre_h3c_5qz_21c" data-ofbid="usb_gadget_bus__pre_h3c_5qz_21c">usb_add_gadget_udc() → usb_add_gadget_udc_release() → usb_add_gadget():
+
+<strong class="hl-keyword">int</strong> usb_add_gadget(<strong class="hl-keyword">struct</strong> usb_gadget *gadget)
+{
+
+    <em class="hl-comment">/* (1) 将 device 加入全局链表 */</em>
+    list_add_tail(&amp;udc-&gt;list, &amp;udc_list);
+
+    <em class="hl-comment">/* pick up one of pending gadget drivers */</em>
+    <em class="hl-comment">/* (2) 尝试 match gadget 的 device 和 driver */</em>
+    ret = check_pending_gadget_drivers(udc);
+    <strong class="hl-keyword">if</strong> (ret)
+        <strong class="hl-keyword">goto</strong> err_del_udc;
+
+    mutex_unlock(&amp;udc_lock);
+}
+
+↓
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> check_pending_gadget_drivers(<strong class="hl-keyword">struct</strong> usb_udc *udc)
+{
+    <strong class="hl-keyword">struct</strong> usb_gadget_driver *driver;
+    <strong class="hl-keyword">int</strong> ret = <span class="hl-number">0</span>;
+
+    <em class="hl-comment">/* (2.1) 遍历 `gadget_driver_pending_list` 链表中的 Driver，和 Device 进行 match()
+            且一个 Driver 只能 match 一个 Device，Driver match 成功后会从链表删除
+    */</em>
+    list_for_each_entry(driver, &amp;gadget_driver_pending_list, pending)
+        <strong class="hl-keyword">if</strong> (!driver-&gt;udc_name || strcmp(driver-&gt;udc_name,
+                        dev_name(&amp;udc-&gt;dev)) == <span class="hl-number">0</span>) {
+            <em class="hl-comment">/* (2.2) Match 成功，对 Device 和 Driver 进行 bind() */</em>
+            ret = udc_bind_to_driver(udc, driver);
+            <strong class="hl-keyword">if</strong> (ret != -EPROBE_DEFER)
+                <em class="hl-comment">/* (2.3) Driver Match 成功后，从 pending 链表删除 */</em>
+                list_del_init(&amp;driver-&gt;pending);
+            <strong class="hl-keyword">break</strong>;
+        }
+
+    <strong class="hl-keyword">return</strong> ret;
+}
+</pre></div>
+            </li><li class="- topic/li li" data-ofbid="d354177e68__20250121172132">
+                <div class="- topic/p p" data-ofbid="d354177e70__20250121172132">在 Gadget Driver 创建时，首先尝试和 <code class="+ topic/ph pr-d/codeph ph codeph">udc_list</code> 链表中的 Device 进行
+                    match()，match() 不成功则把 Driver 加入到 <code class="+ topic/ph pr-d/codeph ph codeph">gadget_driver_pending_list</code>
+                    链表中:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_bus__pre_j3c_5qz_21c" data-ofbid="usb_gadget_bus__pre_j3c_5qz_21c">gadget_dev_desc_UDC_store() → usb_gadget_probe_driver():
+
+<strong class="hl-keyword">int</strong> usb_gadget_probe_driver(<strong class="hl-keyword">struct</strong> usb_gadget_driver *driver)
+{
+    <strong class="hl-keyword">struct</strong> usb_udc          *udc = NULL;
+    <strong class="hl-keyword">int</strong>                     ret = -ENODEV;
+
+    <strong class="hl-keyword">if</strong> (!driver || !driver-&gt;bind || !driver-&gt;setup)
+        <strong class="hl-keyword">return</strong> -EINVAL;
+
+    mutex_lock(&amp;udc_lock);
+    <em class="hl-comment">/* (1.1) 如果 Driver 有 udc_name，尝试和 udc_list 链表中 Device 的 Name 进行 match()  */</em>
+    <strong class="hl-keyword">if</strong> (driver-&gt;udc_name) {
+        list_for_each_entry(udc, &amp;udc_list, list) {
+            ret = strcmp(driver-&gt;udc_name, dev_name(&amp;udc-&gt;dev));
+            <strong class="hl-keyword">if</strong> (!ret)
+                <strong class="hl-keyword">break</strong>;
+        }
+        <strong class="hl-keyword">if</strong> (ret)
+            ret = -ENODEV;
+        <strong class="hl-keyword">else</strong> <strong class="hl-keyword">if</strong> (udc-&gt;driver)
+            ret = -EBUSY;
+        <strong class="hl-keyword">else</strong>
+            <strong class="hl-keyword">goto</strong> found;
+    <em class="hl-comment">/* (1.2) 如果 Driver 没有 udc_name，尝试适配 udc_list 链表中第一个没有适配的 Device */</em>
+    } <strong class="hl-keyword">else</strong> {
+        list_for_each_entry(udc, &amp;udc_list, list) {
+            <em class="hl-comment">/* For now we take the first one */</em>
+            <strong class="hl-keyword">if</strong> (!udc-&gt;driver)
+                <strong class="hl-keyword">goto</strong> found;
+        }
+    }
+
+    <strong class="hl-keyword">if</strong> (!driver-&gt;match_existing_only) {
+        <em class="hl-comment">/* (2) 如果没有 match() 成功，则把 Driver 加入到 pending 链表 */</em>
+        list_add_tail(&amp;driver-&gt;pending, &amp;gadget_driver_pending_list);
+        pr_info(<span class="hl-string">"udc-core: couldn't find an available UDC - added [%s] to list of pending drivers\n"</span>,
+            driver-&gt;function);
+        ret = <span class="hl-number">0</span>;
+    }
+
+    mutex_unlock(&amp;udc_lock);
+    <strong class="hl-keyword">if</strong> (ret)
+        pr_warn(<span class="hl-string">"udc-core: couldn't find an available UDC or it's busy\n"</span>);
+    <strong class="hl-keyword">return</strong> ret;
+found:
+    <em class="hl-comment">/* (3) 如果 Match 成功，对 Device 和 Driver 进行 bind() */</em>
+    ret = udc_bind_to_driver(udc, driver);
+    mutex_unlock(&amp;udc_lock);
+    <strong class="hl-keyword">return</strong> ret;
+}
+</pre></div>
+            </li><li class="- topic/li li" data-ofbid="d354177e81__20250121172132">
+                <div class="- topic/p p" data-ofbid="d354177e83__20250121172132">在 Device 和 Driver Match 成功时的 bind()
+                    动作：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_bus__codeblock_f2s_vqz_21c" data-ofbid="usb_gadget_bus__codeblock_f2s_vqz_21c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> udc_bind_to_driver(<strong class="hl-keyword">struct</strong> usb_udc *udc, <strong class="hl-keyword">struct</strong> usb_gadget_driver *driver)
+{
+    <strong class="hl-keyword">int</strong> ret;
+
+    dev_dbg(&amp;udc-&gt;dev, <span class="hl-string">"registering UDC driver [%s]\n"</span>,
+            driver-&gt;function);
+
+    <em class="hl-comment">/* (1) 数据成员的赋值 */</em>
+    udc-&gt;driver = driver;
+    udc-&gt;dev.driver = &amp;driver-&gt;driver;
+    udc-&gt;gadget-&gt;dev.driver = &amp;driver-&gt;driver;
+
+    usb_gadget_udc_set_speed(udc, driver-&gt;max_speed);
+
+    <em class="hl-comment">/* (2) 调用 Gadget Driver 的 bind() 函数 */</em>
+    ret = driver-&gt;bind(udc-&gt;gadget, driver);
+    <strong class="hl-keyword">if</strong> (ret)
+        <strong class="hl-keyword">goto</strong> err1;
+
+    <em class="hl-comment">/* (3) 调用 Gadget Device 的 start() 函数
+            udc-&gt;gadget-&gt;ops-&gt;udc_start(udc-&gt;gadget, udc-&gt;driver);
+    */</em>
+    ret = usb_gadget_udc_start(udc);
+    <strong class="hl-keyword">if</strong> (ret) {
+        driver-&gt;unbind(udc-&gt;gadget);
+        <strong class="hl-keyword">goto</strong> err1;
+    }
+
+    <em class="hl-comment">/* (4) 调用 Gadget Device 的 pullup() 函数
+            gadget-&gt;ops-&gt;pullup(gadget, 1/0);
+    */</em>
+    usb_udc_connect_control(udc);
+
+    kobject_uevent(&amp;udc-&gt;dev.kobj, KOBJ_CHANGE);
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+
+}</pre></div>
+            </li></ul><div class="- topic/p p" data-ofbid="d354177e88__20250121172132">
+            <div class="- topic/note note note note_note" id="usb_gadget_bus__note_cqy_ktn_y1c" data-ofbid="usb_gadget_bus__note_cqy_ktn_y1c"><span class="note__title">注：</span> 这里和一般的 Device 和 Driver 的适配规则有些不一样。一般的规则是一个 Dirver 可以适配多个
+                Device，而一个 Device 只能适配一个 Driver。而这里的规则是一个 Gadget Device 只能适配一个 Gadget Driver，而一个
+                Gadget Driver 只能适配一个 Gadget Device。 Gadget Driver 代表的是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Composite
+                    Device</code>。</div>
+        </div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

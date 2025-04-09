@@ -1,0 +1,16 @@
+choice
+    prompt "Select RTC Device"
+    default AIC_RTC_PCF8563
+    depends on AIC_USING_EXTERNAL_RTC
+
+    config AIC_RTC_PCF8563
+        bool "PCF8563"
+
+    config AIC_RTC_RX8010
+        bool "RX8010"
+endchoice
+
+config AIC_RTC_I2C_CHAN
+    string "RTC Using I2C channel index"
+    default "i2c0"
+    depends on AIC_USING_EXTERNAL_RTC

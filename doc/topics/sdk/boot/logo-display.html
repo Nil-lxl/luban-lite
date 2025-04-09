@@ -1,0 +1,441 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本章节主要介绍 U-Boot 阶段 LOGO 显示的相关内容。 U-Boot 驱动模型支持 Graphics，ArtInChip 平台中的显示驱动基于该框架进行实现。 但驱动内部逻辑参考了 Kernel 中的显示驱动，对新屏适配可参考 SDK 指南中的显示模块使用指南。 相关术语 术语 定义 注释说明 DE Display Engine 显示引擎 DI Display Interface ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_azt_bl3_pzb"/><meta name="DC.language" content="zh-CN"/><title>图像显示</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/logo-display.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/logo-display.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_azt_bl3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/logo-display.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">图像显示</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 8 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d195760e22__20250121171632">本章节主要介绍 U-Boot 阶段 LOGO 显示的相关内容。</p><p class="- topic/p p" data-ofbid="d195760e24__20250121171632">U-Boot 驱动模型支持 Graphics，ArtInChip 平台中的显示驱动基于该框架进行实现。
+            但驱动内部逻辑参考了 Kernel 中的显示驱动，对新屏适配可参考 SDK 指南中的显示模块使用指南。</p><section class="- topic/section section" id="concept_azt_bl3_pzb__section_mrf_sfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_mrf_sfh_bzb"><h2 class="- topic/title title sectiontitle">相关术语</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="concept_azt_bl3_pzb__table_yd2_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__table_yd2_rfh_bzb" data-cols="3"><caption></caption><colgroup><col style="width:22.573363431151243%"/><col style="width:32.50564334085779%"/><col style="width:44.92099322799098%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__1">术语</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__2">定义</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__1">DE</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__2">Display Engine</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__3">显示引擎</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__1">DI</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__2">Display Interface</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__3">显示接口，包括 RGB/LVDS/DSI 等</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__1">PANEL</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__2">panel</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__3">外接屏幕驱动</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__1">RGB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__2">Red Green Blue</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__3">按红绿蓝三原色编码的显示接口标准</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__1">LVDS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__2">Low Voltage Differential Signaling</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__3">低压差分信号的显示接口标准</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__1">MIPI-DSI</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__2">Mipi Display Serial Interface</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_azt_bl3_pzb__table_yd2_rfh_bzb__entry__3">Mipi 组织定义的一个显示接口标准</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_zd2_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_zd2_rfh_bzb"><h2 class="- topic/title title sectiontitle">驱动框架</h2>
+            
+            <p class="- topic/p p" data-ofbid="d195760e93__20250121171632">相关配置为：</p>
+            <ul class="- topic/ul ul" id="concept_azt_bl3_pzb__ul_a22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__ul_a22_rfh_bzb"><li class="- topic/li li" data-ofbid="d195760e97__20250121171632">
+                    <p class="- topic/p p" data-ofbid="d195760e99__20250121171632">CONFIG_DM_VIDEO</p>
+                </li><li class="- topic/li li" data-ofbid="d195760e102__20250121171632">
+                    <p class="- topic/p p" data-ofbid="d195760e104__20250121171632">CONFIG_DISPLAY</p>
+                </li><li class="- topic/li li" data-ofbid="d195760e107__20250121171632">
+                    <p class="- topic/p p" data-ofbid="d195760e109__20250121171632">CONFIG_VIDEO_ARTINCHIP</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d195760e113__20250121171632">相关源码有：</p>
+            <ul class="- topic/ul ul" id="concept_azt_bl3_pzb__ul_b22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__ul_b22_rfh_bzb"><li class="- topic/li li" data-ofbid="d195760e117__20250121171632">
+                    <p class="- topic/p p" data-ofbid="d195760e119__20250121171632"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/video/artinchip/</span></p>
+                </li><li class="- topic/li li" data-ofbid="d195760e123__20250121171632">
+                    <p class="- topic/p p" data-ofbid="d195760e125__20250121171632"><span class="+ topic/ph sw-d/filepath ph filepath">board/artinchip/d211/d211.c</span></p>
+                </li></ul>
+        </section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_c22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_c22_rfh_bzb"><h2 class="- topic/title title sectiontitle">预留内存</h2>
+            
+            <div class="- topic/p p" data-ofbid="d195760e135__20250121171632">在代码重定位前，U-Boot 会在 DRAM 的顶部预留出一块连续内存 <code class="+ topic/ph pr-d/codeph ph codeph">video buffer</code> ，用于保存 LOGO
+                信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__codeblock_sbz_ptr_c1c" data-ofbid="concept_azt_bl3_pzb__codeblock_sbz_ptr_c1c">board_init_f(); <em class="hl-comment">// common/board_f.c</em>
+    |-&gt; reserve_video()  <em class="hl-comment">// reserve video buffer</em></pre></div>
+            <p class="- topic/p p" data-ofbid="d195760e143__20250121171632"><span class="+ topic/keyword pr-d/apiname keyword apiname">reserve_video()</span> 会遍历 <code class="+ topic/ph pr-d/codeph ph codeph">uclass_video</code> 链表，解析
+                    <span class="+ topic/keyword pr-d/parmname keyword parmname">struct video_uc_platdata</span> 中的 <span class="+ topic/keyword pr-d/parmname keyword parmname">size</span>
+                属性是否被设置，如果不为零，即在 DRAM 顶部预留一块大小为 <span class="+ topic/keyword pr-d/parmname keyword parmname">size</span> 的 buffer，并将这块 buffer
+                的起始地址和结束地址存入 <span class="+ topic/keyword pr-d/apiname keyword apiname">gd-&gt;video_bottom</span> 和 <span class="+ topic/keyword pr-d/apiname keyword apiname">gd-&gt;video_top</span>
+                。随后 Boot 重置 DRAM 中可用内存的起始地址，减去这块 buffer。</p>
+            <div class="- topic/p p" data-ofbid="d195760e167__20250121171632">预留内存的大小在 U-Boot DM
+                驱动模型第一次初始化时设定。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__codeblock_vxs_qtr_c1c" data-ofbid="concept_azt_bl3_pzb__codeblock_vxs_qtr_c1c">board_init_f(); <em class="hl-comment">// common/board_f.c</em>
+    |-&gt; initf_dm();
+    |   |-&gt; device_bind_common()
+    |   |-&gt; drv-&gt;bind(dev)
+    |       aicfb_bind() <em class="hl-comment">// drivers/video/artinchip/aic_fb.c</em>
+    |                    <em class="hl-comment">// 为 platdata  中的 size 赋值</em>
+    |   ...
+    |-&gt; reserve_video()  <em class="hl-comment">// reserve video buffer</em></pre></div>
+        </section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_f22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_f22_rfh_bzb"><h2 class="- topic/title title sectiontitle">初始化流程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d195760e177__20250121171632">显示驱动的初始化发生在 U-Boot 重定位之后，LOGO
+                加载之前，probe 流程如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__codeblock_cck_rtr_c1c" data-ofbid="concept_azt_bl3_pzb__codeblock_cck_rtr_c1c">|-&gt; board_init_r(); <em class="hl-comment">// common/board_r.c</em>
+|   |-&gt; board_late_init()
+|   |   |-&gt; board_show_logo <em class="hl-comment">//board/artinchip/d211/d211.c</em>
+|           |-&gt; uclass_first_device
+|           |-&gt; device_probe()
+|              |-&gt; aicfb_probe() <em class="hl-comment">// drivers/video/artinchip/aic_fb.c</em>
+|                       |
+|       +---------------+
+|       |
+|   |-&gt; aicfb_find_de()
+|   |   | -&gt; uclass_get_device_by_ofnode()
+|   |       |-&gt; uclass_get_device_tail()
+|   |           |-&gt; device_probe()
+|   |               aic_de_probe() <em class="hl-comment">// drivers/video/artinchip/aic_de.c</em>
+|   |-&gt; aicfb_find_di()
+|   |   | -&gt; uclass_get_device_by_ofnode()
+|   |       |-&gt; uclass_get_device_tail()
+|   |           |-&gt; device_probe()
+|   |               aic_rgb_probe() / lvds_probe() / aic_dsi_probe()
+|   |           <em class="hl-comment">// 这三个函数的关系为三选一，分别位于</em>
+|   |           <em class="hl-comment">// drivers/video/artinchip/aic_rgb.c</em>
+|   |           <em class="hl-comment">// drivers/video/artinchip/aic_lvds.c</em>
+|   |           <em class="hl-comment">// drivers/video/artinchip/aic_dsi.c</em>
+|   |-&gt; aicfb_find_panel()
+|   |   | -&gt; uclass_get_device_by_ofnode()
+|   |       |-&gt; uclass_get_device_tail()
+|   |           |-&gt; device_probe()
+|   |           |-&gt; panel_probe() <em class="hl-comment">// drivers/video/artinchip/panel_xxx.c</em>
+|   ...
+    |-&gt; board_prepare_logo <em class="hl-comment">// 加载 logo</em>
+    |-&gt; aicfb_enable_panel</pre></div>
+            <p class="- topic/p p" data-ofbid="d195760e182__20250121171632">在 probe 过程中并没有开启显示模块，只是设置了相关参数。在 LOGO 加载进 video buffer 后，U-Boot 才会调用
+                    <span class="+ topic/keyword pr-d/apiname keyword apiname">aicfb_enable_panel</span> 执行显示模块的 enable 操作。</p>
+        </section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_h22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_h22_rfh_bzb"><h2 class="- topic/title title sectiontitle">LOGO 加载</h2>
+            
+            <p class="- topic/p p" data-ofbid="d195760e193__20250121171632">ArtInChip 平台支持从 MMC、SPI NAND 和 SPI NOR 等启动介质中加载 <span class="+ topic/ph sw-d/filepath ph filepath">png/jpg</span> 图片进行硬解码并居中显示。</p>
+            <div class="- topic/p p" data-ofbid="d195760e199__20250121171632">加载的过程为：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__codeblock_hjh_str_c1c" data-ofbid="concept_azt_bl3_pzb__codeblock_hjh_str_c1c">|-&gt; board_late_init <em class="hl-comment">// common/board_r.c</em>
+    |-&gt; board_show_logo <em class="hl-comment">// board/artinchip/d211/d211.c</em>
+        |-&gt; board_prepare_logo()
+        |   |-&gt; mmc_load_logo()    <em class="hl-comment">// mmc 启动</em>
+        |   |-&gt; spinand_load_logo() <em class="hl-comment">// spinand 启动</em>
+        |   |-&gt; spinor_load_logo()    <em class="hl-comment">// spinor 启动</em>
+        |       |-&gt; aic_logo_decode()  <em class="hl-comment">// 对 boot logo image 进行解码</em>
+        |           |-&gt; aicfb_enable_panel()  <em class="hl-comment">// 开启显示模块</em></pre></div>
+        </section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_j22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_j22_rfh_bzb"><h2 class="- topic/title title sectiontitle">硬件时序要求</h2><p class="- topic/p p" data-ofbid="d195760e207__20250121171632">DE、DI、panel 三个硬件模块在初始化时有一些时序上的要求，包含先后顺序、延迟大小，主要约束来自于 panel 侧。所以，当接入新的 panel 型号，必须要严格按照手册来完成硬件的初始化。
+                为了应对这样的硬件特性，驱动设计中使用 callback 方式来实现多个模块间的互相调用。</p><div class="- topic/p p" data-ofbid="d195760e209__20250121171632"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_azt_bl3_pzb__image_k22_rfh_bzb" src="../../../images/display/display_callbacks.png" width="480"/></div><br/></div><p class="- topic/p p" data-ofbid="d195760e211__20250121171632">在显示模块的 enable 操作中，会调用这些回调来完成初始化，如下图（其中关系比较绕的是 panel 初始化逻辑）</p><div class="- topic/p p" data-ofbid="d195760e213__20250121171632"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_azt_bl3_pzb__image_l22_rfh_bzb" src="../../../images/display/fb_bind.png" width="576"/></div><br/></div><div class="- topic/note note tip note_tip" id="concept_azt_bl3_pzb__note_cvv_str_c1c" data-ofbid="concept_azt_bl3_pzb__note_cvv_str_c1c"><span class="note__title">提示：</span> 
+                <p class="- topic/p p" data-ofbid="d195760e217__20250121171632">该部分逻辑与 kernel 中的显示驱动保持一致，不同点在与 enable 的调用时间不同。详情可参考 SDK 指南中的显示模块使用指南</p>
+            </div></section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_m22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_m22_rfh_bzb"><h2 class="- topic/title title sectiontitle">LOGO 保持</h2>
+            
+            <p class="- topic/p p" data-ofbid="d195760e225__20250121171632">U-Boot 在显示 LOGO 后，会把 video buffer 的信息，包括 buffer 起始地址，大小等添加到 kernel 解析的 dtb 文件中。
+                具体的方式为：在 dtb 文件的 reserved momory 结点中插入一个子节点，子节点中保存有 address 和 size 信息。 过程如下所示：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__pre_n22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__pre_n22_rfh_bzb">|-&gt; image_setup_libfdt()
+|-&gt; ft_board_setup()
+    |-&gt; fdtdec_add_reserved_memory()</pre>
+            <p class="- topic/p p" data-ofbid="d195760e231__20250121171632">Kernel 在启动时不会修改这块内存，kernel 中的显示驱动在初始化时，会将 video buffer 中的内容 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">memcopy</span>
+                到 <span class="+ topic/ph sw-d/filepath ph filepath">fb0</span> 中，从而保证 LOGO 可以从 U-Boot 保持到 kernel 启动，直到应用程序修改
+                <span class="+ topic/ph sw-d/filepath ph filepath">fb0</span> 文件。kernel 在 memcopy 操作之后，会将 video buffer 释放。</p>
+        </section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_o22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_o22_rfh_bzb"><h2 class="- topic/title title sectiontitle">更换 LOGO</h2>
+            
+            <p class="- topic/p p" data-ofbid="d195760e248__20250121171632">ArtInChip 平台支持开机 logo，还支持在 usb 烧录，SD 卡升级和 U 盘升级时显示 logo，并且允许在不同的场景显示不同的 logo 图片。</p>
+            <div class="- topic/p p" data-ofbid="d195760e251__20250121171632">Luban SDK 使用 <span class="+ topic/ph sw-d/filepath ph filepath">itb</span> (uboot FIT image) 文件格式来管理不同的 logo 图片，相关的
+                    <span class="+ topic/ph sw-d/filepath ph filepath">its</span> (image tree source) 配置文件位于
+                        <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">IC</var>/common/logo.its</span>。Luban SDK
+                在编译时，会把配置文件中指定的图片打包成 <span class="+ topic/ph sw-d/filepath ph filepath">logo.itb</span> 文件。 <span class="+ topic/ph sw-d/filepath ph filepath">logo.itb</span>
+                文件在烧录时会被加载进 logo 分区。如果想为某块单板维护一个 <span class="+ topic/ph sw-d/filepath ph filepath">its</span> 文件，可以将配置文件拷贝一份到板级目录，再修改
+                        <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">IC</var>/<var class="+ topic/keyword sw-d/varname keyword varname">Board</var>/logo.its</span>。<div class="- topic/note note note note_note" data-ofbid="d195760e284__20250121171632"><span class="note__title">注：</span> 如果板级
+                        <span class="+ topic/ph sw-d/filepath ph filepath">its</span> 文件存在， Luban SDK 优先链接板级配置文件。</div></div>
+            <div class="- topic/p p" data-ofbid="d195760e290__20250121171632">ArtInChip 平台支持以下格式的 logo 文件，uboot 会自动解析 logo 文件的文件头，以此来判断 logo 文件的具体格式：<ul class="- topic/ul ul" data-ofbid="d195760e292__20250121171632"><li class="- topic/li li" data-ofbid="d195760e293__20250121171632">
+                        <p class="- topic/p p" data-ofbid="d195760e295__20250121171632"><strong class="+ topic/ph hi-d/b ph b">PNG LOGO</strong></p>
+                        <ul class="- topic/ul ul" data-ofbid="d195760e299__20250121171632"><li class="- topic/li li" data-ofbid="d195760e300__20250121171632">
+                                <div class="- topic/p p" data-ofbid="d195760e302__20250121171632">ArtInChip 平台默认使用 png 格式 logo，图片保存路径为
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">IC</var>/<var class="+ topic/keyword sw-d/varname keyword varname">Board</var>/logo/boot_logo.png</span>。<div class="- topic/note note note note_note" data-ofbid="d195760e313__20250121171632"><span class="note__title">注：</span> 图片必须命名为
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">boot_logo.png</span>。</div></div>
+                            </li><li class="- topic/li li" data-ofbid="d195760e319__20250121171632">
+                                <p class="- topic/p p" data-ofbid="d195760e321__20250121171632">Luban SDK 编译时，编译脚本会在 logo 目录下检索
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">boot_logo.png</span> 文件，如果文件存在，就把它打包进
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">logo.itb</span> 文件。</p>
+                            </li><li class="- topic/li li" data-ofbid="d195760e330__20250121171632">
+                                <p class="- topic/p p" data-ofbid="d195760e332__20250121171632">Logo 分区 size 默认 768K，打包后的 <span class="+ topic/ph sw-d/filepath ph filepath">logo.itb</span> 文件 size
+                                    需小于 logo 分区。</p>
+                                <div class="- topic/p p" data-ofbid="d195760e338__20250121171632">以 spi-nand
+                                    启动为例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__codeblock_hgy_ztr_c1c" data-ofbid="concept_azt_bl3_pzb__codeblock_hgy_ztr_c1c"><em class="hl-comment">// target/&lt;IC&gt;/&lt;Board&gt;/image_cfg.json</em>
+<span class="hl-string">"spi-nand"</span>: {
+    <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
+    <span class="hl-string">"partitions"</span>: {
+        <span class="hl-string">"spl"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"uboot"</span>:  { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"userid"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"bbt"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"env"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"env_r"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"falcon"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"logo"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"768K"</span> },   <em class="hl-comment">// 默认配置 768K，需要大于 logo.itb 文件</em>
+        <span class="hl-string">"kernel"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"recovery"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"10m"</span> },
+        <span class="hl-string">"ubiroot"</span>: {
+            <span class="hl-string">"size"</span>: <span class="hl-string">"32m"</span>,
+            <span class="hl-string">"ubi"</span>: { <em class="hl-comment">// Volume in UBI device</em>
+                <span class="hl-string">"rootfs"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span> },
+            },
+        },
+        <span class="hl-string">"ubisystem"</span>: {
+            <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span>,
+            <span class="hl-string">"ubi"</span>: { <em class="hl-comment">// Volume in UBI device</em>
+                <span class="hl-string">"user"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span> },
+            },
+        },
+    }
+},</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d195760e343__20250121171632">
+                                <p class="- topic/p p" data-ofbid="d195760e345__20250121171632">ArtInChip 平台基于 ffmpeg 进行精简，提供一个专门的 png 转换工具，确保用作 logo 的 png
+                                    图片只包含一个 <span class="+ topic/keyword pr-d/parmname keyword parmname">IDAT</span> 数据块。</p>
+                                <div class="- topic/note note note note_note" id="concept_azt_bl3_pzb__note_htf_xfh_bzb" data-ofbid="concept_azt_bl3_pzb__note_htf_xfh_bzb"><span class="note__title">注：</span> 
+                                    <p class="- topic/p p" data-ofbid="d195760e353__20250121171632">当前暂不支持 32 位带 alpha 信息的 png 图片。</p>
+                                </div>
+                            </li><li class="- topic/li li" data-ofbid="d195760e357__20250121171632">
+                                <div class="- topic/p p" data-ofbid="d195760e359__20250121171632">png 硬解码输出的格式默认为 ARGB8888, 如果想更换输出格式，需要修改 uboot
+                                    源码。源码以及支持的格式如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__codeblock_agj_b5r_c1c" data-ofbid="concept_azt_bl3_pzb__codeblock_agj_b5r_c1c"><em class="hl-comment">// drivers/video/artinchip/decoder/aic_ve_png.c</em>
+
+<em class="hl-comment">/* output type */</em>
+#<span class="hl-directive">define</span> ARGB8888   <span class="hl-number">0</span>
+#<span class="hl-directive">define</span> ABGR8888   <span class="hl-number">1</span>
+#<span class="hl-directive">define</span> RGBA8888   <span class="hl-number">2</span>
+#<span class="hl-directive">define</span> BGRA8888   <span class="hl-number">3</span>
+#<span class="hl-directive">define</span> RGB888     <span class="hl-number">4</span>
+#<span class="hl-directive">define</span> BGR888     <span class="hl-number">5</span>
+
+#<span class="hl-directive">define</span> OUTPUT_FORMAT ARGB8888</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d195760e364__20250121171632">
+                                <p class="- topic/p p" data-ofbid="d195760e366__20250121171632">更换 logo 图片，需要注意以下几点：</p>
+                                <ol class="- topic/ol ol" id="concept_azt_bl3_pzb__ol_t22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__ol_t22_rfh_bzb"><li class="- topic/li li" data-ofbid="d195760e370__20250121171632">用作 logo 的 png 图片必须只包含一个 IDAT 数据块</li><li class="- topic/li li" data-ofbid="d195760e372__20250121171632">Png 图片的宽高不能大于当前 LCD panel 的宽高</li><li class="- topic/li li" data-ofbid="d195760e374__20250121171632"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件中 logo 分区 size（默认
+                                        768K）需要大于 <span class="+ topic/ph sw-d/filepath ph filepath">logo.itb</span> 文件</li></ol>
+                            </li></ul>
+                    </li><li class="- topic/li li" data-ofbid="d195760e383__20250121171632">
+                        <p class="- topic/p p" data-ofbid="d195760e385__20250121171632"><strong class="+ topic/ph hi-d/b ph b">JPG LOGO</strong></p>
+                        <ul class="- topic/ul ul" data-ofbid="d195760e389__20250121171632"><li class="- topic/li li" data-ofbid="d195760e390__20250121171632">
+                                <div class="- topic/p p" data-ofbid="d195760e392__20250121171632">更换 jpg 格式的 logo 图片，將图片存放于
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">IC</var>/<var class="+ topic/keyword sw-d/varname keyword varname">Board</var>/logo/boot_logo.jpg</span>。<div class="- topic/note note note note_note" id="concept_azt_bl3_pzb__note_okn_xfh_bzb" data-ofbid="concept_azt_bl3_pzb__note_okn_xfh_bzb"><span class="note__title">注：</span> 图片必须命名为
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">boot_logo.jpg</span>。</div></div>
+                            </li><li class="- topic/li li" data-ofbid="d195760e409__20250121171632">
+                                <div class="- topic/p p" data-ofbid="d195760e411__20250121171632">更换 jpg logo 图片，需要注意以下几点：<ol class="- topic/ol ol" id="concept_azt_bl3_pzb__ol_w22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__ol_w22_rfh_bzb"><li class="- topic/li li" data-ofbid="d195760e414__20250121171632"><span class="+ topic/ph sw-d/filepath ph filepath">jpg</span> 图片的宽高不能大于当前 LCD panel 的宽高。</li><li class="- topic/li li" data-ofbid="d195760e418__20250121171632">修改 <span class="+ topic/ph sw-d/filepath ph filepath">logo.its</span> 文件， 将
+                                                <span class="+ topic/ph sw-d/filepath ph filepath">boot_logo.jpg</span> 打包进
+                                                <span class="+ topic/ph sw-d/filepath ph filepath">logo.its</span> 文件。</li><li class="- topic/li li" data-ofbid="d195760e429__20250121171632"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件中 logo 分区 size （默认
+                                            768K）需要大于  <span class="+ topic/ph sw-d/filepath ph filepath">logo.its</span>  文件。</li></ol></div>
+                                <div class="- topic/p p" data-ofbid="d195760e437__20250121171632"><span class="+ topic/ph sw-d/filepath ph filepath">logo.its </span>文件修改，以 spi-nand
+                                    启动为例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__codeblock_bfz_d5r_c1c" data-ofbid="concept_azt_bl3_pzb__codeblock_bfz_d5r_c1c"><em class="hl-comment">// target/&lt;IC&gt;/&lt;Board&gt;/logo.its 板级配置，如果存在，优先修改</em>
+<em class="hl-comment">// target/&lt;IC&gt;/common/logo.its 默认配置</em>
+
+/dts-v1/;
+
+/ {
+ description = <span class="hl-string">"ArtInChip LOGO"</span>;
+ #address-cells = &lt;<span class="hl-number">1</span>&gt;;
+
+ images {
+  boot {
+   description = <span class="hl-string">"ArtInChip boot logo"</span>;
+   type = <span class="hl-string">"multi"</span>;
+   compression = <span class="hl-string">"none"</span>;
+   data = /incbin/(<span class="hl-string">"logo/boot_logo.jpg"</span>);   <em class="hl-comment">// 修改为 jpg 图片</em>
+  };
+
+  usbburn {
+   description = <span class="hl-string">"USB burn logo"</span>;
+   type = <span class="hl-string">"multi"</span>;
+   compression = <span class="hl-string">"none"</span>;
+   data = /incbin/(<span class="hl-string">"logo/usb_burn.png"</span>);
+  };
+
+  udiskburn {
+   description = <span class="hl-string">"udisk burn logo"</span>;
+   type = <span class="hl-string">"multi"</span>;
+   compression = <span class="hl-string">"none"</span>;
+   data = /incbin/(<span class="hl-string">"logo/udisk_burn.png"</span>);
+  };
+
+  sdburn {
+   description = <span class="hl-string">"SDCard burn logo"</span>;
+   type = <span class="hl-string">"multi"</span>;
+   compression = <span class="hl-string">"none"</span>;
+   data = /incbin/(<span class="hl-string">"logo/sd_burn.png"</span>);
+  };
+
+  burn_done {
+   description = <span class="hl-string">"burn done logo"</span>;
+   type = <span class="hl-string">"multi"</span>;
+   compression = <span class="hl-string">"none"</span>;
+   data = /incbin/(<span class="hl-string">"logo/burn_done.png"</span>);
+  };
+ };
+
+ configurations {
+  <strong class="hl-keyword">default</strong> = <span class="hl-string">"conf-1"</span>;
+
+  conf-<span class="hl-number">1</span> {
+   description = <span class="hl-string">"ArtInChip logo image"</span>;
+  };
+ };
+};</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d195760e444__20250121171632">
+                                <div class="- topic/p p" data-ofbid="d195760e446__20250121171632">jpeg 硬解码输出的是 YUV 数据, 需要 GE 进行一次数据格式转换，GE 默认转换的格式为 ARGB8888。
+                                    如果想修改转换格式，需要修改 uboot
+                                    源码。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_azt_bl3_pzb__codeblock_vmk_25r_c1c" data-ofbid="concept_azt_bl3_pzb__codeblock_vmk_25r_c1c"><em class="hl-comment">// drivers/video/artinchip/decoder/aic_ve_jpeg.c</em>
+
+<em class="hl-comment">/* GE output format */</em>
+#<span class="hl-directive">define</span> CONVER_FORMAT MPP_FMT_ARGB_<span class="hl-number">8888</span>
+
+<em class="hl-comment">// include/artinchip/mpp_types.h</em>
+<span class="hl-number">3.14</span>.<span class="hl-number">9.</span> falcon 模式 logo¶</pre></div>
+                            </li></ul>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_z22_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_z22_rfh_bzb"><h2 class="- topic/title title sectiontitle">Falcon 模式 logo</h2>
+            
+            <p class="- topic/p p" data-ofbid="d195760e458__20250121171632">ArtInChip 平台支持在 falcon 启动时显示 logo。</p>
+            <div class="- topic/note note note note_note" id="concept_azt_bl3_pzb__note_hjz_xfh_bzb" data-ofbid="concept_azt_bl3_pzb__note_hjz_xfh_bzb"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d195760e463__20250121171632">目前仅支持 SPI NAND Falcon 启动显示 logo，且只能显示 <span class="+ topic/ph sw-d/filepath ph filepath">png</span> 格式的 logo。</p>
+            </div>
+        </section><section class="- topic/section section" id="concept_azt_bl3_pzb__section_af2_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__section_af2_rfh_bzb"><h2 class="- topic/title title sectiontitle">FAQ</h2>
+            
+            <ul class="- topic/ul ul" id="concept_azt_bl3_pzb__ul_bf2_rfh_bzb" data-ofbid="concept_azt_bl3_pzb__ul_bf2_rfh_bzb"><li class="- topic/li li" data-ofbid="d195760e477__20250121171632">
+                    <p class="- topic/p p" data-ofbid="d195760e479__20250121171632">新屏支持</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d195760e483__20250121171632">参考 SDK
+                 指南中的显示模块使用指南，两者思路相同。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_mrf_sfh_bzb" data-tocid="concept_azt_bl3_pzb__section_mrf_sfh_bzb">相关术语</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_zd2_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_zd2_rfh_bzb">驱动框架</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_c22_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_c22_rfh_bzb">预留内存</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_f22_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_f22_rfh_bzb">初始化流程</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_h22_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_h22_rfh_bzb">LOGO 加载</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_j22_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_j22_rfh_bzb">硬件时序要求</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_m22_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_m22_rfh_bzb">LOGO 保持</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_o22_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_o22_rfh_bzb">更换 LOGO</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_z22_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_z22_rfh_bzb">Falcon 模式 logo</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_azt_bl3_pzb__section_af2_rfh_bzb" data-tocid="concept_azt_bl3_pzb__section_af2_rfh_bzb">FAQ</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

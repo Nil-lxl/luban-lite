@@ -1,0 +1,258 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="OTG 模式配置 OTG 可以配置成 Auto 模式 或者 Manual 模式 ： Auto 模式 。根据 id-pin GPIO 管脚的电平来决定当前 OTG 端口工作模式为 Host / Device 。 配置 OTG 为 Auto 模式时，id-pin 是必须要配置的，需要配置 id-pin GPIO 的名称和极性。相关 menuconfig 配置： &gt; Local packages ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/usb/usb_config_2.html"/><meta name="DC.relation" content="../../../topics/sdk/usb/usb-device_configuration_2.html"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_user_guide_2.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_otg_configuration"/><meta name="DC.language" content="zh-CN"/><title>USB OTG 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="usb_otg_configuration-d5856e5999"/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-otg_configuration.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-otg_configuration_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_otg_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_nww_hzh_pzb"><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="usb_user_guide"><div class="title"><a href="../../../topics/sdk/usb/usb_user_guide_2.html">USB 使用指南</a></div></div></li><li><div class="topicref" data-id="usb_configuration"><div class="title"><a href="../../../topics/sdk/usb/usb_config_2.html">USB 配置</a></div></div></li><li class="active"><div class="topicref" data-id="usb_otg_configuration"><div class="title"><a href="../../../topics/sdk/usb/usb-otg_configuration_2.html">USB OTG 配置</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/usb/usb-device_configuration_2.html" title="USB Device 配置" aria-label="上一主题: USB Device 配置" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/mac/mac_user_guide_2.html" title="MAC 使用指南" aria-label="下一主题: MAC 使用指南" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="can-d5856e4886" class="topicref" data-id="can" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-d5856e4886-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/can/can_user_guide_2.html" id="can-d5856e4886-link">CAN 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4958" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4958-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cap/cap_user_guide.html" id="id-d5856e4958-link">CAP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5018" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5018-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/qep/qep_user_guide.html" id="id-d5856e5018-link">QEP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cir-d5856e5228" class="topicref" data-id="cir" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cir-d5856e5228-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_user_guide_2.html" id="cir-d5856e5228-link">CIR 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="gpai-user-guide-d5856e5336" class="topicref" data-id="gpai-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action gpai-user-guide-d5856e5336-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpai/gpai_user_guide_2.html" id="gpai-user-guide-d5856e5336-link">GPAI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5408" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5408-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpio/gpio_user_guide.html" id="id-d5856e5408-link">GPIO 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c_user_guide-d5856e5480" class="topicref" data-id="i2c_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c_user_guide-d5856e5480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2c/i2c_user_guide_2.html" id="i2c_user_guide-d5856e5480-link">I2C 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5576" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5576-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/psadc/psadc_user_guide_2.html" id="id-d5856e5576-link">PSADC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5648" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5648-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pwm/pwm_user_guide_2.html" id="id-d5856e5648-link">PWM 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="rtp-user-guide-d5856e5721" class="topicref" data-id="rtp-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action rtp-user-guide-d5856e5721-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtp/rtp_user_guide_2.html" id="rtp-user-guide-d5856e5721-link">RTP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-d5856e5805" class="topicref" data-id="spi" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-d5856e5805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_user_guide_2.html" id="spi-d5856e5805-link"><span class="ph">Q</span>SPI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="uart_user_guide-d5856e5879" class="topicref" data-id="uart_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart_user_guide-d5856e5879-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_user_guide_2.html" id="uart_user_guide-d5856e5879-link">UART 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="usb_user_guide-d5856e5951" class="topicref" data-id="usb_user_guide" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action usb_user_guide-d5856e5951-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb_user_guide_2.html" id="usb_user_guide-d5856e5951-link">USB 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="usb_configuration-d5856e5963" class="topicref" data-id="usb_configuration" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action usb_configuration-d5856e5963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb_config_2.html" id="usb_configuration-d5856e5963-link">USB 配置</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="usb_host_configuration-d5856e5975" class="topicref" data-id="usb_host_configuration" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb-host_configuration_2.html" id="usb_host_configuration-d5856e5975-link">USB Host 配置</a></div></div></li><li role="treeitem"><div data-tocid="usb_device_configuration-d5856e5987" class="topicref" data-id="usb_device_configuration" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb-device_configuration_2.html" id="usb_device_configuration-d5856e5987-link">USB Device 配置</a></div></div></li><li role="treeitem" class="active"><div data-tocid="usb_otg_configuration-d5856e5999" class="topicref" data-id="usb_otg_configuration" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb-otg_configuration_2.html" id="usb_otg_configuration-d5856e5999-link">USB OTG 配置</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e6011" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e6011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_user_guide_2.html" id="id-d5856e6011-link">MAC 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-otg_configuration.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">USB OTG 配置</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="usb_otg_configuration__section_kvg_l3z_21c" data-ofbid="usb_otg_configuration__section_kvg_l3z_21c"><h2 class="- topic/title title sectiontitle">OTG 模式配置</h2>
+            <div class="- topic/p p" data-ofbid="d170540e28__20250121171620">OTG 可以配置成 <code class="+ topic/ph pr-d/codeph ph codeph">Auto 模式</code> 或者 <code class="+ topic/ph pr-d/codeph ph codeph">Manual</code> 模式 ：<ul class="- topic/ul ul" id="usb_otg_configuration__ul_k4r_hdz_21c" data-ofbid="usb_otg_configuration__ul_k4r_hdz_21c"><li class="- topic/li li" data-ofbid="d170540e37__20250121171620">
+                        <p class="- topic/p p" data-ofbid="d170540e39__20250121171620"><code class="+ topic/ph pr-d/codeph ph codeph">Auto 模式</code>。根据 <span class="- topic/ph ph">id-pin GPIO</span> 管脚的电平来决定当前 OTG 端口工作模式为
+                                <code class="+ topic/ph pr-d/codeph ph codeph">Host</code> / <code class="+ topic/ph pr-d/codeph ph codeph">Device</code> 。</p>
+                        
+                        <div class="- topic/p p" data-ofbid="d170540e53__20250121171620">配置 OTG 为 Auto 模式时，id-pin 是必须要配置的，需要配置 id-pin GPIO
+                            的名称和极性。相关 menuconfig
+                            配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_otg_configuration__codeblock_thv_sv3_zbc" data-ofbid="usb_otg_configuration__codeblock_thv_sv3_zbc">&gt; Local packages options
+   &gt; Third-party packages options
+       [*] CherryUSB: tiny and portable USB host/device stack <strong class="hl-keyword">for</strong> embedded system with USB IP  ---&gt;
+           [*]   Enable usb otg mode  ---&gt;
+               Select otg <strong class="hl-keyword">switch</strong> (Auto (Id pin detect))  ---&gt;
+               -*-   Using id-pin gpio  ---&gt;
+                   (PF.<span class="hl-number">15</span>) GPIO name
+                   Select GPIO polarity (Input value: <span class="hl-number">0</span> = Host, <span class="hl-number">1</span> = Device)  ---&gt;</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d170540e58__20250121171620">OTG 工作在 Manual 模式时，由用户手工来切换 Host/Device 模式。相关
+                        menuconfig
+                            配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_otg_configuration__codeblock_ujz_5v3_zbc" data-ofbid="usb_otg_configuration__codeblock_ujz_5v3_zbc">&gt; Local packages options
+   &gt; Third-party packages options
+       [*] CherryUSB: tiny and portable USB host/device stack <strong class="hl-keyword">for</strong> embedded system with USB IP  ---&gt;
+           [*]   Enable usb otg mode  ---&gt;
+               Select otg <strong class="hl-keyword">switch</strong> (Manual)  ---&gt;
+               Select <strong class="hl-keyword">default</strong> mode (Device)  ---&gt;</pre><div class="- topic/p p" data-ofbid="d170540e62__20250121171620">手工切换
+                            Host/Device 模式的命令为
+                            <span class="+ topic/keyword sw-d/cmdname keyword cmdname">set_otg_mode</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_otg_configuration__codeblock_d31_wv3_zbc" data-ofbid="usb_otg_configuration__codeblock_d31_wv3_zbc">set_otg_mode host</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_otg_configuration__codeblock_jr4_3lk_5dc" data-ofbid="usb_otg_configuration__codeblock_jr4_3lk_5dc">Usb otg <strong class="hl-keyword">auto</strong> mode (<strong class="hl-keyword">switch</strong> usb0 to host).</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_otg_configuration__codeblock_tz5_3lk_5dc" data-ofbid="usb_otg_configuration__codeblock_tz5_3lk_5dc">set_otg_mode device</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_otg_configuration__codeblock_hc1_jlk_5dc" data-ofbid="usb_otg_configuration__codeblock_hc1_jlk_5dc">Usb otg manual mode (<strong class="hl-keyword">switch</strong> usb0 to device).</pre></div></li></ul></div> 两种模式对应 DTS 文件中的 <code class="+ topic/ph pr-d/codeph ph codeph">otg</code> 节点的不同配置：<div class="table-container"><table class="- topic/table table frame-all" id="usb_otg_configuration__table_l4r_hdz_21c" data-ofbid="usb_otg_configuration__table_l4r_hdz_21c" data-cols="4"><caption></caption><colgroup><col style="width:13.755158184319122%"/><col style="width:27.097661623108664%"/><col style="width:25.722145804676757%"/><col style="width:33.425034387895465%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_otg_configuration__table_l4r_hdz_21c__entry__1">Mode</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_otg_configuration__table_l4r_hdz_21c__entry__2">DTS <code class="+ topic/ph pr-d/codeph ph codeph">otg-mode</code> 属性</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_otg_configuration__table_l4r_hdz_21c__entry__3">DTS <code class="+ topic/ph pr-d/codeph ph codeph">xxx-gpios</code> 属性</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_otg_configuration__table_l4r_hdz_21c__entry__4">运行时 <code class="+ topic/ph pr-d/codeph ph codeph">Host</code> / <code class="+ topic/ph pr-d/codeph ph codeph">Device</code> 切换方法</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_otg_configuration__table_l4r_hdz_21c__entry__1">Auto</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_otg_configuration__table_l4r_hdz_21c__entry__2"><code class="+ topic/ph pr-d/codeph ph codeph">otg-mode = "auto";</code> (如果没有配置
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">otg-mode</code> 属性, 默认也是 Auto 模式)</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_otg_configuration__table_l4r_hdz_21c__entry__3"><code class="+ topic/ph pr-d/codeph ph codeph">id-gpios</code> 属性必须配置。 <code class="+ topic/ph pr-d/codeph ph codeph">vbus-en-gpios</code>
+                                和 <code class="+ topic/ph pr-d/codeph ph codeph">dp-sw-gpios</code> 属性根据硬件配置选配。</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_otg_configuration__table_l4r_hdz_21c__entry__4">OTG 驱动根据 <code class="+ topic/ph pr-d/codeph ph codeph">id-gpios</code> 管脚的电平变化 自动切换 USB 工作模式为
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">Host</code> / <code class="+ topic/ph pr-d/codeph ph codeph">Device</code>。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_otg_configuration__table_l4r_hdz_21c__entry__1">Force</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_otg_configuration__table_l4r_hdz_21c__entry__2"><code class="+ topic/ph pr-d/codeph ph codeph">otg-mode = "device";</code> 或者 <code class="+ topic/ph pr-d/codeph ph codeph">otg-mode =
+                                    "host";</code></td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_otg_configuration__table_l4r_hdz_21c__entry__3"><code class="+ topic/ph pr-d/codeph ph codeph">id-gpios</code> 属性不需要配置。 <code class="+ topic/ph pr-d/codeph ph codeph">vbus-en-gpios</code>
+                                和 <code class="+ topic/ph pr-d/codeph ph codeph">dp-sw-gpios</code> 属性根据硬件配置选配。</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_otg_configuration__table_l4r_hdz_21c__entry__4">需要配置文件节点来手工切换： <code class="+ topic/ph pr-d/codeph ph codeph">echo devices &gt;
+                                    /sys/devices/platform/soc/soc\:usb-otg/otg_mode</code> 或者
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">echo host &gt;
+                                    /sys/devices/platform/soc/soc\:usb-otg/otg_mode</code></td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="usb_otg_configuration__section_m4r_hdz_21c" data-ofbid="usb_otg_configuration__section_m4r_hdz_21c"><h2 class="- topic/title title sectiontitle">OTG 相关 GPIO</h2>
+            
+            <p class="- topic/p p" data-ofbid="d170540e171__20250121171620">从上面配置可以看到和 OTG 功能相关的 GPIO 管脚有 3 个：</p>
+            <ul class="- topic/ul ul" id="usb_otg_configuration__ul_n4r_hdz_21c" data-ofbid="usb_otg_configuration__ul_n4r_hdz_21c"><li class="- topic/li li" data-ofbid="d170540e175__20250121171620">
+                    <p class="- topic/p p" data-ofbid="d170540e177__20250121171620"><code class="+ topic/ph pr-d/codeph ph codeph">id-gpios</code> 。用来检测当前插入的是不是 OTG 线，如果为 OTG 线则需要把本机切换到 USB Host
+                        模式，否则本机切换到 USB Device 模式。该管脚在 <code class="+ topic/ph pr-d/codeph ph codeph">Auto 模式</code> 模式下是必须配置的，如果缺少该管脚 OTG
+                        只能工作在 <code class="+ topic/ph pr-d/codeph ph codeph">Manual</code> 模式手工进行切换。</p>
+                </li><li class="- topic/li li" data-ofbid="d170540e188__20250121171620">
+                    <p class="- topic/p p" data-ofbid="d170540e190__20250121171620"><code class="+ topic/ph pr-d/codeph ph codeph">vbus-en-gpios</code> 。该管脚是用来控制 VBUS 的 5V 输出的，通常情况下：切换到 USB Host
+                        模式时需要使能本机端的 VBUS 5V 输出给对端 Device 供电，切换到 USB Device 模式时需要关闭本机端的 VBUS 5V
+                        输出转而对端 Host 的供电。（实际使用上来说，不论本端是 Host/Device 模式，也可以在 VBUS 上一直供电 5V 两边 VBUS
+                        无压差则无漏电，这种情况下 <code class="+ topic/ph pr-d/codeph ph codeph">vbus-en-gpios</code> 无需配置。）</p>
+                </li><li class="- topic/li li" data-ofbid="d170540e198__20250121171620">
+                    <p class="- topic/p p" data-ofbid="d170540e200__20250121171620"><code class="+ topic/ph pr-d/codeph ph codeph">dp-sw-gpios</code> 。该管脚是在 OTG 外出两个独立 Host、Device 端口时，用来控制外部 Switch
+                        的。非该模式时， <code class="+ topic/ph pr-d/codeph ph codeph">dp-sw-gpios</code> 无需配置。</p>
+                    <div class="- topic/p p" data-ofbid="d170540e208__20250121171620"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_otg_configuration__image_p4r_hdz_21c" src="../../../images/usb/otg_gpio.png" alt="image2"/></div><br/></div>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d170540e214__20250121171620">3 个 GPIO 管脚的具体使用场景如上图所示，用户根据自己的使用场景来选择配置哪些 GPIO。每个 GPIO 的 输入输出正反电平有效，可以通过 <span class="- topic/ph ph">menuconfig 菜单中的 <code class="+ topic/ph pr-d/codeph ph codeph">GPIO polarity</code> 选项来配置。</span>：</p>
+            
+        </section><section class="- topic/section section" id="usb_otg_configuration__section_cls_hw3_zbc" data-ofbid="usb_otg_configuration__section_cls_hw3_zbc"><h2 class="- topic/title title sectiontitle">USB Host/Device 配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d170540e228__20250121171620">在 OTG 模式下 CherryUSB 的 Device Mode 和 Host Mode 都必须使能，并且需要配置上相应应用。下图实例使能了 Host U 盘 和
+                Device MSC RAM disk
+                设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_otg_configuration__codeblock_ab3_3w3_zbc" data-ofbid="usb_otg_configuration__codeblock_ab3_3w3_zbc">Local packages options
+   &gt; Third-party packages options
+       [*] CherryUSB: tiny and portable USB host/device stack <strong class="hl-keyword">for</strong> embedded system with USB IP  ---&gt;
+           [*]   Enable usb otg mode  ---&gt;
+           [*]   Enable usb device mode  ---&gt;
+               [*]   Enable usb msc device  ---&gt;
+                   Use ram or storage template (msc ram)  ---&gt;
+           [*]   Enable usb host mode  ---&gt;
+               [*]   Enable usb msc driver  ---&gt;
+                   [*]   Use msc template</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_otg_configuration__section_kvg_l3z_21c" data-tocid="usb_otg_configuration__section_kvg_l3z_21c">OTG 模式配置</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_otg_configuration__section_m4r_hdz_21c" data-tocid="usb_otg_configuration__section_m4r_hdz_21c">OTG 相关 GPIO</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_otg_configuration__section_cls_hw3_zbc" data-tocid="usb_otg_configuration__section_cls_hw3_zbc">USB Host/Device 配置</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

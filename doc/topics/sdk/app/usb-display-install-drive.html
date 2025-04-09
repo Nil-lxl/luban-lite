@@ -1,0 +1,258 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="如果 PC 设备之前未安装对应驱动，当 USB Display 设备通过 USB 接入 PC 设备后，系统会多出一个 U 盘设备，其中包含需要的驱动安装包文件。 针对不同的操作系统，PC 设备驱动的安装方法也不仅下同。 在 Windows 系统中安装驱动 在 Windows 系统中，当 USB Display 设备通过 USB 接入 PC 设备后，在 U 盘中会看到一个 .exe 后缀的 USB ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/app/usb-display.html"/><meta name="DC.relation" content="../../../topics/sdk/display/usb-display-config-screen-cut.html"/><meta name="DC.relation" content="../../../topics/sdk/app/usb-display-tp-calibrate_windows.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_display_install_drive"/><title>安装驱动</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="usb_display_install_drive-d5856e2095"/><meta name="wh-source-relpath" content="topics/sdk/app/usb-display-install-drive.dita"/><meta name="wh-out-relpath" content="topics/sdk/app/usb-display-install-drive.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_display_install_drive" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="usb_display"><div class="title"><a href="../../../topics/sdk/app/usb-display.html">USB Display 方案</a></div></div></li><li class="active"><div class="topicref" data-id="usb_display_install_drive"><div class="title"><a href="../../../topics/sdk/app/usb-display-install-drive.html">安装驱动</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/display/usb-display-config-screen-cut.html" title="配置屏幕裁剪" aria-label="上一主题: 配置屏幕裁剪" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/app/usb-display-tp-calibrate_windows.html" title="在 Windows 中校准触摸屏" aria-label="下一主题: 在 Windows 中校准触摸屏" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="usb_display_config-d5856e2023" class="topicref" data-id="usb_display_config" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display-config.html" id="usb_display_config-d5856e2023-link">配置 USB 设备功能</a></div></div></li><li role="treeitem"><div data-tocid="usb_display_config_addon-d5856e2035" class="topicref" data-id="usb_display_config_addon" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-config-addon.html" id="usb_display_config_addon-d5856e2035-link">配置附加功能</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display_config_ui-d5856e2047" class="topicref" data-id="usb_display_config_ui" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display_config_ui-d5856e2047-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-config-ui.html" id="usb_display_config_ui-d5856e2047-link">配置本地 UI</a></div></div></li><li role="treeitem"><div data-tocid="usb_display_rotate-d5856e2071" class="topicref" data-id="usb_display_rotate" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-rotate.html" id="usb_display_rotate-d5856e2071-link">配置横屏竖用和竖屏横用功能</a></div></div></li><li role="treeitem"><div data-tocid="usb_display_config_screen_cut-d5856e2083" class="topicref" data-id="usb_display_config_screen_cut" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/usb-display-config-screen-cut.html" id="usb_display_config_screen_cut-d5856e2083-link">配置屏幕裁剪</a></div></div></li><li role="treeitem" class="active"><div data-tocid="usb_display_install_drive-d5856e2095" class="topicref" data-id="usb_display_install_drive" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display-install-drive.html" id="usb_display_install_drive-d5856e2095-link">安装驱动</a></div></div></li><li role="treeitem"><div data-tocid="usb_display_tp_calibrate_windows-d5856e2107" class="topicref" data-id="usb_display_tp_calibrate_windows" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display-tp-calibrate_windows.html" id="usb_display_tp_calibrate_windows-d5856e2107-link">在 Windows 中校准触摸屏</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/app/usb-display-install-drive.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">安装驱动</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d335013e19__20250121171842">如果 PC 设备之前未安装对应驱动，当 USB Display 设备通过 USB 接入 PC 设备后，系统会多出一个 U 盘设备，其中包含需要的驱动安装包文件。</p><p class="- topic/p p" data-ofbid="d335013e21__20250121171842">针对不同的操作系统，PC 设备驱动的安装方法也不仅下同。</p><section class="- topic/section section" id="usb_display_install_drive__section_rd2_j5f_c2c" data-ofbid="usb_display_install_drive__section_rd2_j5f_c2c"><h2 class="- topic/title title sectiontitle">在 Windows 系统中安装驱动</h2>
+            
+            <div class="- topic/p p" data-ofbid="d335013e28__20250121171842">在 Windows 系统中，当 USB Display 设备通过 USB 接入 PC 设备后，在 U 盘中会看到一个 <span class="+ topic/ph sw-d/filepath ph filepath">.exe</span>
+                后缀的 USB Display 驱动安装文件，如下图所示：<br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_display_install_drive__image_lng_45f_c2c" src="../../../images/usb-display/win_install_00.png"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d335013e35__20250121171842">双击 USB Display 驱动安装文件，并按照对话框指示说明，完成安装即可。</p>
+        </section><section class="- topic/section section" id="usb_display_install_drive__section_hxh_k5f_c2c" data-ofbid="usb_display_install_drive__section_hxh_k5f_c2c"><h2 class="- topic/title title sectiontitle">在 Linux 系统中安装驱动</h2>
+            
+            <div class="- topic/p p" data-ofbid="d335013e43__20250121171842">
+                <ol class="- topic/ol ol" id="usb_display_install_drive__ol_uq1_v5f_c2c" data-ofbid="usb_display_install_drive__ol_uq1_v5f_c2c"><li class="- topic/li li" data-ofbid="d335013e46__20250121171842">
+                        <p class="- topic/p p" data-ofbid="d335013e48__20250121171842">确保使用 Xorg 图形系统。</p>
+                        <p class="- topic/p p" data-ofbid="d335013e51__20250121171842">Linux 版本的 USB Display 当前仅支持 Xorg 图形系统。如果当前系统使用了 Xwayland，必须先切换到 Xorg
+                                图形系统。不同操作系统中的切换流程不尽相同，详情可查看<a class="- topic/xref xref" href="usb-display-install-drive.html#usb_display_install_drive__section_ztx_mvf_c2c">切换到 Xorg 图形系统</a>。</p>
+                    </li><li class="- topic/li li" data-ofbid="d335013e58__20250121171842">
+                        <p class="- topic/p p" data-ofbid="d335013e60__20250121171842">执行安装脚本。</p>
+                        <p class="- topic/p p" data-ofbid="d335013e63__20250121171842">在 Linux 系统中（含树莓派环境）中，当 USB Display 设备通过 USB 接入 PC 设备后，U 盘中提供了一键安装的
+                                <span class="+ topic/ph sw-d/filepath ph filepath">.sh</span> 脚本文件：</p>
+                        <ul class="- topic/ul ul" id="usb_display_install_drive__ul_thj_zvf_c2c" data-ofbid="usb_display_install_drive__ul_thj_zvf_c2c"><li class="- topic/li li" data-ofbid="d335013e70__20250121171842">
+                                <p class="- topic/p p" data-ofbid="d335013e72__20250121171842"><span class="+ topic/ph sw-d/filepath ph filepath">install_for_linux.sh</span>：安装 USB Display 的脚本</p>
+                            </li><li class="- topic/li li" data-ofbid="d335013e77__20250121171842">
+                                <p class="- topic/p p" data-ofbid="d335013e79__20250121171842"><span class="+ topic/ph sw-d/filepath ph filepath">uninstall_for_linux.sh</span>：卸载 USB Display
+                                    的脚本</p>
+                            </li></ul>
+                        <div class="- topic/p p" data-ofbid="d335013e85__20250121171842">在 Linux 系统中安装软件和运行上述脚本均需要 <code class="+ topic/ph pr-d/codeph ph codeph">root</code>
+                                用户权限，建议通过终端命令行来安装。详细安装流程如下：<ol class="- topic/ol ol" type="a" id="usb_display_install_drive__ol_u5b_2wf_c2c" data-ofbid="usb_display_install_drive__ol_u5b_2wf_c2c"><li class="- topic/li li" data-ofbid="d335013e91__20250121171842">
+                                    <p class="- topic/p p" data-ofbid="d335013e93__20250121171842">进入 U 盘文件夹后，选中 <span class="+ topic/ph sw-d/filepath ph filepath">Linux</span> 文件夹并点击鼠标右键。</p>
+                                </li><li class="- topic/li li" data-ofbid="d335013e99__20250121171842">
+                                    <p class="- topic/p p" data-ofbid="d335013e101__20250121171842">在弹出的菜单栏中，选择 <code class="+ topic/ph pr-d/codeph ph codeph">Open in Terminal(在终端中打开)</code>。</p>
+                                    <p class="- topic/p p" data-ofbid="d335013e107__20250121171842">此时，<code class="+ topic/ph pr-d/codeph ph codeph">终端</code> 界面会弹出。</p>
+                                </li><li class="- topic/li li" data-ofbid="d335013e113__20250121171842">
+                                    <div class="- topic/p p" data-ofbid="d335013e115__20250121171842">在终端命令行中，执行下列命令安装脚本：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_install_drive__codeblock_t1j_vwf_c2c" data-ofbid="usb_display_install_drive__codeblock_t1j_vwf_c2c">sudo bash install_for_linux</pre></div>
+                                    <p class="- topic/p p" data-ofbid="d335013e120__20250121171842">安装成功后，系统会提示 <samp class="+ topic/ph sw-d/systemoutput ph systemoutput sysout">AicUSBDisplay installed
+                                            successfully</samp>。</p>
+                                </li><li class="- topic/li li" data-ofbid="d335013e126__20250121171842">
+                                    <p class="- topic/p p" data-ofbid="d335013e128__20250121171842">重新插拔一次 USB。</p>
+                                    <p class="- topic/p p" data-ofbid="d335013e131__20250121171842">正常情况下，USB 扩展屏可正常显示。</p>
+                                </li><li class="- topic/li li" data-ofbid="d335013e134__20250121171842">
+                                    <div class="- topic/p p" data-ofbid="d335013e136__20250121171842">如需卸载，重复上述操作打开命令行终端，并执行下列卸载脚本：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_install_drive__codeblock_d2b_dxf_c2c" data-ofbid="usb_display_install_drive__codeblock_d2b_dxf_c2c">sudo bash uninstall_for_linux</pre></div>
+                                </li></ol></div>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="usb_display_install_drive__section_ztx_mvf_c2c" data-ofbid="usb_display_install_drive__section_ztx_mvf_c2c"><h2 class="- topic/title title sectiontitle">切换到 Xorg 图形系统</h2>
+            
+            <p class="- topic/p p" data-ofbid="d335013e149__20250121171842">Linux 版本的 USB Display 当前仅支持 Xorg 图形系统。如果当前系统使用了 Xwayland，必须先切换到 Xorg
+                图形系统。详细切换流程如下所示：</p>
+            <ul class="- topic/ul ul" id="usb_display_install_drive__ul_hjw_fvf_c2c" data-ofbid="usb_display_install_drive__ul_hjw_fvf_c2c"><li class="- topic/li li" data-ofbid="d335013e153__20250121171842">
+                    <div class="- topic/p p" data-ofbid="d335013e155__20250121171842"><strong class="+ topic/ph hi-d/b ph b">在树莓派中切换 Xorg 图形系统</strong>： <ol class="- topic/ol ol" id="usb_display_install_drive__ol_crh_z5f_c2c" data-ofbid="usb_display_install_drive__ol_crh_z5f_c2c"><li class="- topic/li li" data-ofbid="d335013e160__20250121171842">
+                                <div class="- topic/p p" data-ofbid="d335013e162__20250121171842">在终端中执行下列命令，通过 <code class="+ topic/ph pr-d/codeph ph codeph">raspi-config</code>
+                                    工具来修改图形库的类型：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_install_drive__codeblock_g2h_1vf_c2c" data-ofbid="usb_display_install_drive__codeblock_g2h_1vf_c2c">sudo raspi-config</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d335013e170__20250121171842">
+                                <div class="- topic/p p" data-ofbid="d335013e172__20250121171842">在下列配置选项中选择 <code class="+ topic/ph pr-d/codeph ph codeph">X11</code> 后，按 <code class="+ topic/ph pr-d/codeph ph codeph">ESC</code>
+                                    按键退出配置界面。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_install_drive__codeblock_lrt_bvf_c2c" data-ofbid="usb_display_install_drive__codeblock_lrt_bvf_c2c">-&gt; <span class="hl-number">6</span> Advanced Options
+    -&gt; A6 X11/Xwayland</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d335013e183__20250121171842">
+                                <p class="- topic/p p" data-ofbid="d335013e185__20250121171842">重启系统</p>
+                            </li></ol></div>
+                </li><li class="- topic/li li" data-ofbid="d335013e189__20250121171842">
+                    <div class="- topic/p p" data-ofbid="d335013e191__20250121171842"><strong class="+ topic/ph hi-d/b ph b">在  Ubuntu 中切换 Xorg 图形系统</strong>：<ol class="- topic/ol ol" id="usb_display_install_drive__ol_fvw_qvf_c2c" data-ofbid="usb_display_install_drive__ol_fvw_qvf_c2c"><li class="- topic/li li" data-ofbid="d335013e196__20250121171842">
+                                <div class="- topic/p p" data-ofbid="d335013e198__20250121171842">在在终端中执行下列命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_display_install_drive__codeblock_e1w_rvf_c2c" data-ofbid="usb_display_install_drive__codeblock_e1w_rvf_c2c">sudo vim /etc/gdm3/custom.conf</pre></div>
+                            </li><li class="- topic/li li" data-ofbid="d335013e203__20250121171842">
+                                <p class="- topic/p p" data-ofbid="d335013e205__20250121171842">按照下列操作修改 GDM 配置文件，保存配置并退出。</p>
+                                <p class="- topic/p p" data-ofbid="d335013e208__20250121171842">在文件编辑界面，找到 <code class="+ topic/ph pr-d/codeph ph codeph">WaylandEnable=false</code> 行，删除注释符号 #
+                                    后打开该行配置。</p>
+                            </li><li class="- topic/li li" data-ofbid="d335013e214__20250121171842">
+                                <p class="- topic/p p" data-ofbid="d335013e216__20250121171842">重启系统。</p>
+                            </li></ol></div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_display_install_drive__section_rd2_j5f_c2c" data-tocid="usb_display_install_drive__section_rd2_j5f_c2c">在 Windows 系统中安装驱动</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_display_install_drive__section_hxh_k5f_c2c" data-tocid="usb_display_install_drive__section_hxh_k5f_c2c">在 Linux 系统中安装驱动</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_display_install_drive__section_ztx_mvf_c2c" data-tocid="usb_display_install_drive__section_ztx_mvf_c2c">切换到 Xorg 图形系统</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

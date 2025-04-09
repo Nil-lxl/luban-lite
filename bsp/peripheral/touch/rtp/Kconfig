@@ -1,0 +1,30 @@
+config AIC_RTP_PERIOD_MS
+    int "The sample period of RTP(in cycle mode)"
+    range 18 1000
+    default 18
+    depends on AIC_USING_RTP
+
+config AIC_RTP_MAX_PRESSURE
+    int "The pressure threshold of RTP"
+    default 800
+    depends on AIC_USING_RTP
+
+config AIC_RTP_X_PLATE
+    int "The X-plate value of RTP touchscreen"
+    default 235
+    depends on AIC_USING_RTP
+
+config AIC_RTP_Y_PLATE
+    int "The Y-plate value of RTP touchscreen"
+    default 665
+    depends on AIC_USING_RTP
+
+config AIC_RTP_DELAY
+    hex "The precharge delay of RTP"
+    range 0 0xffffffff
+    default 0x4f00004f
+    depends on AIC_USING_RTP
+
+config AIC_TOUCH_PANEL_NAME
+    string
+    default "aic-rtp"  if AIC_USING_RTP

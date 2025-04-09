@@ -1,0 +1,310 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="SPI NOR 驱动 Linux 和 U-Boot 的驱动不一样，Linux 中驱动更复杂一些，本章阐述如何在 Linux 中进行 SPI NOR 器件的移植工作，以 Gigadevice 的 gd25q128 和 FudanMicro 的 FM25Q128 为例 移植一款 SPI NOR，最重要的是 JEDEC ID，通过在数据手册中查找 0x9F 命令获得 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-17"/><meta name="DC.date.modified" content="2024-07-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="spi_nor_linux_transplant"/><meta name="DC.language" content="zh-CN"/><title>Linux 移植</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/spinor/spinor_linux_transplant.dita"/><meta name="wh-out-relpath" content="topics/sdk/spinor/spinor_linux_transplant.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="spi_nor_linux_transplant" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/spinor/spinor_linux_transplant.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Linux 移植</h1><div class="date inPage">15 Jul 2024</div><div style="color: gray;">
+                    Read time: 5 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d284838e23__20250121171754">SPI NOR 驱动 Linux 和 U-Boot 的驱动不一样，Linux 中驱动更复杂一些，本章阐述如何在 Linux 中进行 SPI NOR 器件的移植工作，以
+                <code class="+ topic/ph pr-d/codeph ph codeph">Gigadevice</code> 的 <code class="+ topic/ph pr-d/codeph ph codeph">gd25q128</code> 和
+                <code class="+ topic/ph pr-d/codeph ph codeph">FudanMicro</code> 的 <code class="+ topic/ph pr-d/codeph ph codeph">FM25Q128</code> 为例</p><div class="- topic/p p" data-ofbid="d284838e37__20250121171754">
+            <ul class="- topic/ul ul" id="spi_nor_linux_transplant__ul_es5_xvy_c1c" data-ofbid="spi_nor_linux_transplant__ul_es5_xvy_c1c"><li class="- topic/li li" data-ofbid="d284838e40__20250121171754">
+                    <p class="- topic/p p" data-ofbid="d284838e42__20250121171754">移植一款 SPI NOR，最重要的是 JEDEC ID，通过在数据手册中查找 0x9F 命令获得</p>
+                </li><li class="- topic/li li" data-ofbid="d284838e45__20250121171754">
+                    <p class="- topic/p p" data-ofbid="d284838e47__20250121171754">其他的参数都可以默认设置，INFO(0xa14017, 0, 64 * 1024, n_sectors, SECT_4K |
+                        SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)</p>
+                </li><li class="- topic/li li" data-ofbid="d284838e50__20250121171754">
+                    <p class="- topic/p p" data-ofbid="d284838e52__20250121171754">推荐使用标准 dts 进行 SPI NOR 的兼容</p>
+                </li></ul>
+        </div><section class="- topic/section section" id="spi_nor_linux_transplant__section_myj_zvy_c1c" data-ofbid="spi_nor_linux_transplant__section_myj_zvy_c1c"><h2 class="- topic/title title sectiontitle">文件准备</h2>
+            
+            <p class="- topic/p p" data-ofbid="d284838e61__20250121171754">相较于 SPI NAND 器件， SPI NOR
+                的接口更加标准，但为了统一管理的方便，还是会为某一个公司创建一个文件进行管理，如果该公司的文件已经存在，则直接添加新器件支持即可</p>
+            <ul class="- topic/ul ul" id="spi_nor_linux_transplant__ul_nyj_zvy_c1c" data-ofbid="spi_nor_linux_transplant__ul_nyj_zvy_c1c"><li class="- topic/li li" data-ofbid="d284838e65__20250121171754">在 <span class="+ topic/ph sw-d/filepath ph filepath">source/linux-5.10/drivers/mtd/spi-nor/</span> 下建相应公司的标识的文件，如
+                        <span class="+ topic/ph sw-d/filepath ph filepath">fmsh.c cfx.c</span></li><li class="- topic/li li" data-ofbid="d284838e72__20250121171754">在 Makefile 中添加该文件的编译： spi-nor-objs += fmsh.o</li><li class="- topic/li li" data-ofbid="d284838e74__20250121171754">在 <span class="+ topic/ph sw-d/filepath ph filepath">source/linux-5.10/drivers/mtd/spi-nor/core.h</span> 中声明 extern
+                    const struct spi_nor_manufacturer spi_nor_fmsh;</li></ul>
+        </section><section class="- topic/section section" id="spi_nor_linux_transplant__section_oyj_zvy_c1c" data-ofbid="spi_nor_linux_transplant__section_oyj_zvy_c1c"><h2 class="- topic/title title sectiontitle">驱动索引</h2>
+            
+            <p class="- topic/p p" data-ofbid="d284838e85__20250121171754">内核中所支持的 SPI NOR 设备通过两级列表进行设置。</p>
+            <div class="- topic/p p" data-ofbid="d284838e88__20250121171754">首先检查 <span class="+ topic/ph sw-d/filepath ph filepath">source/linux-5.10/drivers/mtd/spi-nor/core.c</span> 中的
+                    <span class="+ topic/keyword pr-d/parmname keyword parmname">manufacturers</span>,
+                查看新设备的厂商是否在列表之中：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nor_linux_transplant__codeblock_c1q_1wy_c1c" data-ofbid="spi_nor_linux_transplant__codeblock_c1q_1wy_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> spi_nor_manufacturer *manufacturers[] = {
+    &amp;spi_nor_atmel,
+    &amp;spi_nor_catalyst,
+    &amp;spi_nor_eon,
+    &amp;spi_nor_esmt,
+    &amp;spi_nor_everspin,
+    &amp;spi_nor_fujitsu,
+    &amp;spi_nor_gigadevice,
+    &amp;spi_nor_intel,
+    &amp;spi_nor_issi,
+    &amp;spi_nor_macronix,
+    &amp;spi_nor_micron,
+    &amp;spi_nor_st,
+    &amp;spi_nor_spansion,
+    &amp;spi_nor_sst,
+    &amp;spi_nor_winbond,
+    &amp;spi_nor_xilinx,
+    &amp;spi_nor_xmc,
+    &amp;spi_nor_boya,
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d284838e99__20250121171754">再检查具体的设备厂商文件，具体的型号是否在列表之中（ 以 gigadevice  为例）:</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nor_linux_transplant__codeblock_ypw_1wy_c1c" data-ofbid="spi_nor_linux_transplant__codeblock_ypw_1wy_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> flash_info gigadevice_parts[] = {
+    ......
+   { <span class="hl-string">"gd25q128"</span>, INFO(<span class="hl-number">0xc84018</span>, <span class="hl-number">0</span>, <span class="hl-number">64</span> * <span class="hl-number">1024</span>, <span class="hl-number">256</span>,
+                       SECT_<span class="hl-number">4</span>K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
+                       SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB) },
+    ......
+};</pre>
+            <p class="- topic/p p" data-ofbid="d284838e106__20250121171754">此处检查，需要查找新设备的 Datasheet，找到该设备的 Manufacture 和 Device ID，并查看该 ID 是否出现在列表中。 例如此处为
+                    <code class="+ topic/ph pr-d/codeph ph codeph">0xc84018</code> ，其中 Manufacture ID = <code class="+ topic/ph pr-d/codeph ph codeph">0xc8</code>, Device ID
+                ID[15~8] = <code class="+ topic/ph pr-d/codeph ph codeph">0x40</code>, Device ID[7~0] = <code class="+ topic/ph pr-d/codeph ph codeph">0x18</code> 。</p>
+        </section><section class="- topic/section section" id="spi_nor_linux_transplant__section_ol3_xwy_c1c" data-ofbid="spi_nor_linux_transplant__section_ol3_xwy_c1c"><h2 class="- topic/title title sectiontitle">spi_nor_manufacturer</h2>
+            
+            <p class="- topic/p p" data-ofbid="d284838e126__20250121171754">该结构为第一级索引，用来描述器件厂家的信息</p>
+            <div class="- topic/p p" data-ofbid="d284838e129__20250121171754">SPI NOR
+                的接口和操作命令很统一，基本没有需要特殊处理的命令<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nor_linux_transplant__codeblock_ezk_fwy_c1c" data-ofbid="spi_nor_linux_transplant__codeblock_ezk_fwy_c1c"><strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> spi_nor_manufacturer spi_nor_fmsh = {
+    .name = <span class="hl-string">"FudanMicro"</span>,                   <em class="hl-comment">//厂家名字标识</em>
+    .parts = fmsh_parts,                    <em class="hl-comment">//本驱动支持的器件</em>
+    .nparts = ARRAY_SIZE(fmsh_parts),       <em class="hl-comment">//支持的器件的个数</em>
+};</pre></div>
+        </section><section class="- topic/section section" id="spi_nor_linux_transplant__section_r2d_zwy_c1c" data-ofbid="spi_nor_linux_transplant__section_r2d_zwy_c1c"><h2 class="- topic/title title sectiontitle">flash_info</h2>
+            
+            <div class="- topic/div div">
+                        <div class="- topic/p p" data-ofbid="d284838e141__20250121171754">flash_info 数据结构主要用来描述某一颗 SPI NOR 的参数，通过 INFO
+                            宏来设置，其详细结构为：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nor_linux_transplant__codeblock_y1s_45y_c1c" data-ofbid="spi_nor_linux_transplant__codeblock_y1s_45y_c1c"><strong class="hl-keyword">struct</strong> flash_info {
+    <strong class="hl-keyword">char</strong>    *name;                  <em class="hl-comment">//器件名称，一般用器件编号替代</em>
+    u8      id[SPI_NOR_MAX_ID_LEN]; <em class="hl-comment">//JEDEC 授权的器件 ID</em>
+    u8      id_len;                 <em class="hl-comment">//ID 长度，填 0，自动计算</em>
+    <strong class="hl-keyword">unsigned</strong>    sector_size;        <em class="hl-comment">//sector size，现在的意义已经改变</em>
+    u16     n_sectors;              <em class="hl-comment">//sector 数目，通过 flash size 和 sector size 计算出来</em>
+    u16     page_size;              <em class="hl-comment">//页大小， INFO 宏固定为 256</em>
+    u16     addr_width;             <em class="hl-comment">//</em><span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中配置
+    u32     flags;                  <em class="hl-comment">//功能标识</em></pre></div>
+                        <ul class="- topic/ul ul" id="spi_nor_linux_transplant__ul_g2b_t5y_c1c" data-ofbid="spi_nor_linux_transplant__ul_g2b_t5y_c1c"><li class="- topic/li li" data-ofbid="d284838e150__20250121171754"><strong class="+ topic/ph hi-d/b ph b">JEDEC ID</strong>：和 SPI NAND 不同， SPI NOR 的 ID 包含 Manufacture ID 和
+                                Device ID 等多项内容，一般为 24 位，描述方式为<div class="table-container"><table class="- topic/table table frame-all" id="spi_nor_linux_transplant__table_l5h_55y_c1c" data-ofbid="spi_nor_linux_transplant__table_l5h_55y_c1c" data-cols="4"><caption></caption><colgroup><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__1">阈值</th><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__2">名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__3">示例</th><th class="- topic/entry entry colsep-0 rowsep-1" id="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__4">标记方式</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__1">MID7 - IDF0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__2">Maunfacture ID</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__3">0xa1</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__4">JEDEC 分配</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__1">D15 - D8</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__2">Memory Type</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__3">0x40</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__4">0x9F 命令</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__1">D7 - D0</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__2">Memory Desity</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__3">0x17</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="spi_nor_linux_transplant__table_l5h_55y_c1c__entry__4">0x9F 命令</td></tr></tbody></table></div><p class="- topic/p p" data-ofbid="d284838e198__20250121171754">不同厂家在数据手册中描述方法不一样，但现代的 SPI NOR 的 MID 一般通过
+                                    “Maunfacture/MID” 等字段标注，Device ID 的（D15 - D0） 一般通过 0x9F 命令标注，
+                                    因此在数据手册中通过搜索 9F 一般能构造出 JEDEC ID， 如下图所示</p><ul class="- topic/ul ul" id="spi_nor_linux_transplant__ul_m5h_55y_c1c" data-ofbid="spi_nor_linux_transplant__ul_m5h_55y_c1c"><li class="- topic/li li" data-ofbid="d284838e201__20250121171754">0xC84018<div class="- topic/p p" data-ofbid="d284838e203__20250121171754">
+                                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nor_linux_transplant__image_n5h_55y_c1c" src="../../../images/memory/spinor_device_id1.png" width="480" alt="id-1"/></div><br/>
+                                        </div></li><li class="- topic/li li" data-ofbid="d284838e209__20250121171754">0xC22018<div class="- topic/p p" data-ofbid="d284838e211__20250121171754">
+                                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nor_linux_transplant__image_p5h_55y_c1c" src="../../../images/memory/spinor_device_id2.png" width="480" alt="id-2"/></div><br/>
+                                        </div></li><li class="- topic/li li" data-ofbid="d284838e217__20250121171754">0xA14017<div class="- topic/p p" data-ofbid="d284838e219__20250121171754">
+                                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nor_linux_transplant__image_r5h_55y_c1c" src="../../../images/memory/spinor_device_id3.png" width="480" alt="id-3"/></div><br/>
+                                        </div></li></ul></li><li class="- topic/li li" data-ofbid="d284838e225__20250121171754"><strong class="+ topic/ph hi-d/b ph b">sector_size</strong>：Sector Size 是个历史产物，不管是文件系统还是厂家的器件规格都开始对外提供基于
+                                Block 的接口，但在名称上还保留了 Sector 的名称，而驱动中则已经完全切换到 Block 的逻辑<p class="- topic/p p" data-ofbid="d284838e229__20250121171754">Sector Size
+                                    主要定义的是擦除参数，一般的器件提供三种擦除操作</p><div class="table-container"><table class="- topic/table table frame-all" id="spi_nor_linux_transplant__table_exs_dvy_c1c" data-ofbid="spi_nor_linux_transplant__table_exs_dvy_c1c" data-cols="4"><caption></caption><colgroup><col style="width:26.814814814814813%"/><col style="width:16.296296296296298%"/><col style="width:14.814814814814813%"/><col style="width:42.07407407407407%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__1">操作方式</th><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__2">命令</th><th class="- topic/entry entry colsep-1 rowsep-1" id="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__3">擦除大小</th><th class="- topic/entry entry colsep-0 rowsep-1" id="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__4">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__1">Sector Erase( SE)</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__2">0x20</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__3">4K</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__4">基础能力，主要做兼容，不做主力</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__1">32K Block Erase (BE)</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__2">0x52</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__3">32K</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__4">不再使用，和 BE-64 成对</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__1">64K Block Erase (BE)</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__2">0xD8</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__3">64K</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="spi_nor_linux_transplant__table_exs_dvy_c1c__entry__4">大部分都支持，如果不支持则必须支持 SE</td></tr></tbody></table></div><p class="- topic/p p" data-ofbid="d284838e275__20250121171754">在驱动中，Sector_Size 描述的实际是 BE-64 的参数，而 BE-64 要求的 size 又是固定的
+                                    64K，因此该参数的设置原则是：</p><ul class="- topic/ul ul" id="spi_nor_linux_transplant__ul_fxs_dvy_c1c" data-ofbid="spi_nor_linux_transplant__ul_fxs_dvy_c1c"><li class="- topic/li li" data-ofbid="d284838e278__20250121171754">在数据手册中，如果支持 64K Block Erase (0xD8）命令，则设置为 ‘64 * 1024’</li><li class="- topic/li li" data-ofbid="d284838e280__20250121171754">在数据手册中, 如果不支持 64K Block Erase (0xD8）命令，则设置为 ‘4 * 1024’</li></ul><div class="- topic/p p" data-ofbid="d284838e282__20250121171754">
+                                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nor_linux_transplant__image_gxs_dvy_c1c" src="../../../images/memory/spinor_sector_size.png" width="480" alt="se"/></div><br/>
+                                </div></li><li class="- topic/li li" data-ofbid="d284838e288__20250121171754"><strong class="+ topic/ph hi-d/b ph b">n_sectors</strong>：Sector (Block) 数目通过计算得到， 计算公式为 (（flash size）/
+                                sector size)，需要注意不同参数使用 Byte（B） 还是 bit（b） 描述<ul class="- topic/ul ul" id="spi_nor_linux_transplant__ul_gzk_3vy_c1c" data-ofbid="spi_nor_linux_transplant__ul_gzk_3vy_c1c"><li class="- topic/li li" data-ofbid="d284838e293__20250121171754">
+                                        <p class="- topic/p p" data-ofbid="d284838e295__20250121171754">gd25q128： 128Mb / 64KB = 256</p>
+                                    </li><li class="- topic/li li" data-ofbid="d284838e298__20250121171754">
+                                        <p class="- topic/p p" data-ofbid="d284838e300__20250121171754">FM25Q128: 128Mb / 64KB = 256</p>
+                                    </li><li class="- topic/li li" data-ofbid="d284838e303__20250121171754">
+                                        <p class="- topic/p p" data-ofbid="d284838e305__20250121171754">FM25Q64: 64Mb / 64KB = 128</p>
+                                    </li></ul></li><li class="- topic/li li" data-ofbid="d284838e308__20250121171754"><strong class="+ topic/ph hi-d/b ph b">flags</strong>：设置额外的功能标志。<ul class="- topic/ul ul" id="spi_nor_linux_transplant__ul_sxx_jvy_c1c" data-ofbid="spi_nor_linux_transplant__ul_sxx_jvy_c1c"><li class="- topic/li li" data-ofbid="d284838e313__20250121171754">SECT_4K 建议均设置，此功能用来兼容 Sector Erase( SE)
+                                        的支持，在一些特殊情况下可以继续工作</li><li class="- topic/li li" data-ofbid="d284838e315__20250121171754">如果支持 0xBB 命令，则打开 SPI_NOR_DUAL_READ</li><li class="- topic/li li" data-ofbid="d284838e317__20250121171754">如果支持 0xEB 命令，则打开 SPI_NOR_QUAD_READ<div class="- topic/p p" data-ofbid="d284838e319__20250121171754">
+                                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nor_linux_transplant__image_gds_5jv_mbc" src="../../../images/memory/spinor_qspi_read.png" width="480" alt="qspi"/></div><br/>
+                                        </div></li><li class="- topic/li li" data-ofbid="d284838e325__20250121171754">如果有 Status Register，则打开 USE_FSR，是一种状态呈现，非必须 <div class="- topic/p p" data-ofbid="d284838e327__20250121171754">
+                                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nor_linux_transplant__image_vxx_jvy_c1c" src="../../../images/memory/spinor_user_fsr.png" width="480" alt="fsr"/></div><br/>
+                                        </div></li></ul></li></ul>
+                    </div>
+        </section><section class="- topic/section section" id="spi_nor_linux_transplant__section_rhj_fxy_c1c" data-ofbid="spi_nor_linux_transplant__section_rhj_fxy_c1c"><h2 class="- topic/title title sectiontitle">id_table</h2>
+            
+            <div class="- topic/p p" data-ofbid="d284838e340__20250121171754">除了使用 dts 的 .compatible = “jedec,spi-nor” 统一匹配所有的 SPI NOR 外，驱动还兼容使用非标准 dts 的使用方式， 即直接在
+                dts 文件中描述要使用的 SPI NOR 的型号，
+                但这会造成固件和器件的紧耦合，不推荐使用<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nor_linux_transplant__codeblock_u4c_gxy_c1c" data-ofbid="spi_nor_linux_transplant__codeblock_u4c_gxy_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> spi_mem_driver spi_nor_driver = {
+    .spidrv = {
+            .driver = {
+                    .name = <span class="hl-string">"spi-nor"</span>,
+                    .of_match_table = spi_nor_of_table,
+            },
+            .id_table = spi_nor_dev_ids,
+    },
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> spi_device_id spi_nor_dev_ids[] = {
+
+    <em class="hl-comment">/*
+     * Entries not used in DTs that should be safe to drop after replacing
+     * them with "spi-nor" in platform data.
+     */</em>
+    {<span class="hl-string">"s25sl064a"</span>},  {<span class="hl-string">"w25x16"</span>},     {<span class="hl-string">"m25p10"</span>},     {<span class="hl-string">"m25px64"</span>},
+
+    <em class="hl-comment">/*
+     * Entries that were used in DTs without "jedec,spi-nor" fallback and
+     * should be kept for backward compatibility.
+     */</em>
+    {<span class="hl-string">"at25df321a"</span>}, {<span class="hl-string">"at25df641"</span>},  {<span class="hl-string">"at26df081a"</span>},
+    {<span class="hl-string">"mx25l4005a"</span>}, {<span class="hl-string">"mx25l1606e"</span>}, {<span class="hl-string">"mx25l6405d"</span>}, {<span class="hl-string">"mx25l12805d"</span>},
+    {<span class="hl-string">"mx25l25635e"</span>},{<span class="hl-string">"mx66l51235l"</span>},
+    {<span class="hl-string">"n25q064"</span>},    {<span class="hl-string">"n25q128a11"</span>}, {<span class="hl-string">"n25q128a13"</span>}, {<span class="hl-string">"n25q512a"</span>},
+    {<span class="hl-string">"s25fl256s1"</span>}, {<span class="hl-string">"s25fl512s"</span>},  {<span class="hl-string">"s25sl12801"</span>}, {<span class="hl-string">"s25fl008k"</span>},
+    {<span class="hl-string">"s25fl064k"</span>},</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#spi_nor_linux_transplant__section_myj_zvy_c1c" data-tocid="spi_nor_linux_transplant__section_myj_zvy_c1c">文件准备</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_nor_linux_transplant__section_oyj_zvy_c1c" data-tocid="spi_nor_linux_transplant__section_oyj_zvy_c1c">驱动索引</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_nor_linux_transplant__section_ol3_xwy_c1c" data-tocid="spi_nor_linux_transplant__section_ol3_xwy_c1c">spi_nor_manufacturer</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_nor_linux_transplant__section_r2d_zwy_c1c" data-tocid="spi_nor_linux_transplant__section_r2d_zwy_c1c">flash_info</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_nor_linux_transplant__section_rhj_fxy_c1c" data-tocid="spi_nor_linux_transplant__section_rhj_fxy_c1c">id_table</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

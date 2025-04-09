@@ -1,0 +1,265 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="使用 mk_image.py 制作烧录镜像时，需要提供 image_cfg.json 镜像配置文件。 通过嵌套对象的方式， image_cfg.json 描述了一个待生成的镜像文件所包含的信息和数据，如下列代码所示，该描述文件分为以下部分： 镜像烧录的目标设备描述，详情可查看 分区表描述 。 最终 Image 文件描述 ，包括信息和内容排布，由 info 数据， updater 数据和 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="burn-cfg-file"/><title>烧录镜像配置文件</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/advanced/burn-cfg-file.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/burn-cfg-file_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="burn-cfg-file" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/burn-cfg-file.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">烧录镜像配置文件</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d335969e22__20250121171844">使用 <span class="+ topic/ph sw-d/filepath ph filepath">mk_image.py</span> 制作烧录镜像时，需要提供 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+            镜像配置文件。</p><div class="- topic/p p" data-ofbid="d335969e30__20250121171844">通过嵌套对象的方式，<span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+                描述了一个待生成的镜像文件所包含的信息和数据，如下列代码所示，该描述文件分为以下部分：<ul class="- topic/ul ul simple" id="burn-cfg-file__ul_wr4_pcr_3dc" data-ofbid="burn-cfg-file__ul_wr4_pcr_3dc"><li class="- topic/li li" data-ofbid="d335969e36__20250121171844">
+                    <p class="- topic/p p" data-ofbid="d335969e38__20250121171844">镜像烧录的目标设备描述，详情可查看<a class="- topic/xref xref" href="../linux/burn-image-partition-table.html">分区表描述</a>。</p>
+                </li><li class="- topic/li li" data-ofbid="d335969e45__20250121171844">
+                    <p class="- topic/p p" data-ofbid="d335969e47__20250121171844">最终<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="../boot/image-file-intro.html">Image 文件描述</a>，包括信息和内容排布，由 <code class="+ topic/ph pr-d/codeph ph codeph">info</code>
+                            数据，<code class="+ topic/ph pr-d/codeph ph codeph">updater</code> 数据和 <code class="+ topic/ph pr-d/codeph ph codeph">target</code> 数据组成。</p>
+                </li><li class="- topic/li li" data-ofbid="d335969e63__20250121171844">
+                    <p class="- topic/p p" data-ofbid="d335969e65__20250121171844"><a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="sdk-guide-temp-file.html">中间文件描述</a>，制作 <span class="+ topic/ph sw-d/filepath ph filepath">image</span> 的过程中需要生成和使用的临时文件。</p>
+                </li></ul></div><div class="- topic/p p" data-ofbid="d335969e74__20250121171844">
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="burn-cfg-file__codeblock_ycn_hdr_3dc" data-ofbid="burn-cfg-file__codeblock_ycn_hdr_3dc">{
+    <span class="hl-string">"spi-nand"</span>: { <em class="hl-comment">// Device, The name should be the same with string in image:info:media:type</em>
+        <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
+        <span class="hl-string">"partitions"</span>: {
+            <span class="hl-string">"spl"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+            <span class="hl-string">"os"</span>:  { <span class="hl-string">"size"</span>: <span class="hl-string">"2m"</span> },
+            <span class="hl-string">"rodata"</span>:  { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+            <span class="hl-string">"data"</span>:  { <span class="hl-string">"size"</span>: <span class="hl-string">"28m"</span> },
+        },
+    },
+    <span class="hl-string">"image"</span>: {
+        <span class="hl-string">"info"</span>: { <em class="hl-comment">// Header information about image</em>
+            <span class="hl-string">"platform"</span>: <span class="hl-string">"d21x"</span>,
+            <span class="hl-string">"product"</span>: <span class="hl-string">"demo128_nand"</span>,
+            <span class="hl-string">"version"</span>: <span class="hl-string">"1.0.0"</span>,
+            <span class="hl-string">"media"</span>: {
+                <span class="hl-string">"type"</span>: <span class="hl-string">"spi-nand"</span>,
+                <span class="hl-string">"device_id"</span>: <span class="hl-number">0</span>,
+                <span class="hl-string">"array_organization"</span>: [
+                    { <span class="hl-string">"page"</span>: <span class="hl-string">"2k"</span>, <span class="hl-string">"block"</span>: <span class="hl-string">"128k"</span>, <span class="hl-string">"oob"</span>: <span class="hl-string">"64"</span> },
+        <em class="hl-comment">//            { "page": "4k", "block": "256k", "oob": "128" },</em>
+                ],
+            }
+        },
+        <span class="hl-string">"updater"</span>: { <em class="hl-comment">// Image writer which is downloaded to RAM by USB</em>
+            <span class="hl-string">"ddr"</span>: {
+                <span class="hl-string">"file"</span>: <span class="hl-string">"usbupg-ddr-init.aic"</span>,
+                <span class="hl-string">"attr"</span>: [<span class="hl-string">"required"</span>, <span class="hl-string">"run"</span>],
+                <span class="hl-string">"ram"</span>: <span class="hl-string">"0x00103000"</span>
+            },
+            <span class="hl-string">"bootloader"</span>: {
+                <span class="hl-string">"file"</span>: <span class="hl-string">"bootloader.aic"</span>,
+                <span class="hl-string">"attr"</span>: [<span class="hl-string">"required"</span>, <span class="hl-string">"run"</span>],
+                <span class="hl-string">"ram"</span>: <span class="hl-string">"0x41000000"</span>
+            },
+        },
+        <span class="hl-string">"target"</span>: { <em class="hl-comment">// Image components which will be burn to device's partitions</em>
+            <span class="hl-string">"bootloader"</span>: {
+                <span class="hl-string">"file"</span>: <span class="hl-string">"bootloader.aic"</span>,
+                <span class="hl-string">"attr"</span>: [<span class="hl-string">"mtd"</span>, <span class="hl-string">"required"</span>],
+                <span class="hl-string">"part"</span>: [<span class="hl-string">"spl"</span>]
+            },
+            <span class="hl-string">"os"</span>: {
+                <span class="hl-string">"file"</span>: <span class="hl-string">"os.aic"</span>,
+                <span class="hl-string">"attr"</span>: [<span class="hl-string">"mtd"</span>, <span class="hl-string">"required"</span>],
+                <span class="hl-string">"part"</span>: [<span class="hl-string">"os"</span>]
+            },
+            <span class="hl-string">"res"</span>: {
+                <span class="hl-string">"file"</span>: <span class="hl-string">"app.fatfs"</span>,
+                <span class="hl-string">"attr"</span>: [<span class="hl-string">"mtd"</span>, <span class="hl-string">"optional"</span>],
+                <span class="hl-string">"part"</span>: [<span class="hl-string">"rodata"</span>]
+            },
+            <span class="hl-string">"app"</span>: {
+                <span class="hl-string">"file"</span>: <span class="hl-string">"page_2k_block_128k_oob_64_data.uffs"</span>,
+                <span class="hl-string">"attr"</span>: [<span class="hl-string">"uffs"</span>, <span class="hl-string">"optional"</span>],
+                <span class="hl-string">"part"</span>: [<span class="hl-string">"data"</span>]
+            },
+        },
+    },
+    <span class="hl-string">"temporary"</span>: { <em class="hl-comment">// Pre-proccess to generate image components from raw data</em>
+        <span class="hl-string">"aicboot"</span>: {
+            <span class="hl-string">"usbupg-ddr-init.aic"</span>: { <em class="hl-comment">// No loader, only PreBootProgram to initialize DDR</em>
+                <span class="hl-string">"head_ver"</span>: <span class="hl-string">"0x00010001"</span>,
+                <span class="hl-string">"resource"</span>: {
+                    <span class="hl-string">"private"</span>: <span class="hl-string">"ddr_init.bin"</span>,
+                    <span class="hl-string">"pbp"</span>: <span class="hl-string">"d21x.pbp"</span>,
+                },
+            },
+            <span class="hl-string">"bootloader.aic"</span>: {
+                <span class="hl-string">"head_ver"</span>: <span class="hl-string">"0x00010001"</span>,
+                <span class="hl-string">"loader"</span>: {
+                    <span class="hl-string">"file"</span>: <span class="hl-string">"bootloader.bin"</span>,
+                    <span class="hl-string">"load address"</span>: <span class="hl-string">"0x42000000"</span>,
+                    <span class="hl-string">"entry point"</span>:  <span class="hl-string">"0x42000100"</span>,
+                },
+                <span class="hl-string">"resource"</span>: {
+                    <span class="hl-string">"private"</span>: <span class="hl-string">"ddr_init.bin"</span>,
+                    <span class="hl-string">"pbp"</span>: <span class="hl-string">"d21x.pbp"</span>,
+                },
+            },
+            <span class="hl-string">"os.aic"</span>: {
+                <span class="hl-string">"head_ver"</span>: <span class="hl-string">"0x00010001"</span>,
+                <span class="hl-string">"loader"</span>: {
+                    <span class="hl-string">"file"</span>: <span class="hl-string">"d21x.bin"</span>,
+                    <span class="hl-string">"load address"</span>: <span class="hl-string">"0x40000000"</span>,
+                    <span class="hl-string">"entry point"</span>:  <span class="hl-string">"0x40000100"</span>,
+                    <span class="hl-string">"run in dram"</span>: <span class="hl-string">"false"</span>,
+                }
+            },
+        },
+    },
+}</pre>
+        </div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

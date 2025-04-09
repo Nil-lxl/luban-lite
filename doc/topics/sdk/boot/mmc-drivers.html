@@ -1,0 +1,424 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本章节描述 MMC 驱动的相关配置和使用。 驱动框架 U-Boot 驱动模型支持 MMC，并且通过块设备接口对 MMC 进行访问。ArtInChip 平台中， SPL 和 U-Boot 阶段都支持 MMC 已经块设备接口。 相关配置为： CONFIG_MMC CONFIG_DM_MMC CONFIG_SPL_DM_MMC CONFIG_BLK CONFIG_SPL_BLK ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mmc_0"/><meta name="DC.language" content="zh-CN"/><title>MMC</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/mmc-drivers.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/mmc-drivers.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mmc_0" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/mmc-drivers.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">MMC</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 9 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d250701e22__20250121171703">本章节描述 MMC 驱动的相关配置和使用。</p><section class="- topic/section section" id="mmc_0__section_ol4_lch_bzb" data-ofbid="mmc_0__section_ol4_lch_bzb"><h2 class="- topic/title title sectiontitle">驱动框架</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250701e29__20250121171703">U-Boot 驱动模型支持 MMC，并且通过块设备接口对 MMC 进行访问。ArtInChip 平台中， SPL 和 U-Boot 阶段都支持 MMC 已经块设备接口。
+                相关配置为：</p>
+            <ul class="- topic/ul ul" id="mmc_0__ul_ql4_lch_bzb" data-ofbid="mmc_0__ul_ql4_lch_bzb"><li class="- topic/li li" data-ofbid="d250701e33__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e35__20250121171703">CONFIG_MMC</p>
+                </li><li class="- topic/li li" data-ofbid="d250701e38__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e40__20250121171703">CONFIG_DM_MMC</p>
+                </li><li class="- topic/li li" data-ofbid="d250701e43__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e45__20250121171703">CONFIG_SPL_DM_MMC</p>
+                </li><li class="- topic/li li" data-ofbid="d250701e48__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e50__20250121171703">CONFIG_BLK</p>
+                </li><li class="- topic/li li" data-ofbid="d250701e53__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e55__20250121171703">CONFIG_SPL_BLK</p>
+                </li><li class="- topic/li li" data-ofbid="d250701e58__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e60__20250121171703">CONFIG_MMC_ARTINCHIP</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d250701e64__20250121171703">相关源码有：</p>
+            <ul class="- topic/ul ul" id="mmc_0__ul_sl4_lch_bzb" data-ofbid="mmc_0__ul_sl4_lch_bzb"><li class="- topic/li li" data-ofbid="d250701e68__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e70__20250121171703"><span class="+ topic/ph sw-d/filepath ph filepath">include/mmc.h</span></p>
+                </li><li class="- topic/li li" data-ofbid="d250701e74__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e76__20250121171703"><span class="+ topic/ph sw-d/filepath ph filepath">include/blk.h</span></p>
+                </li><li class="- topic/li li" data-ofbid="d250701e80__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e82__20250121171703"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/block/blk-uclass.c</span></p>
+                </li><li class="- topic/li li" data-ofbid="d250701e86__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e88__20250121171703"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/mmc/mmc-uclass.c</span></p>
+                </li><li class="- topic/li li" data-ofbid="d250701e92__20250121171703">
+                    <p class="- topic/p p" data-ofbid="d250701e94__20250121171703"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/mmc/artinchip_mmc.c</span></p>
+                </li></ul>
+        </section><section class="- topic/section section" id="mmc_0__section_tl4_lch_bzb" data-ofbid="mmc_0__section_tl4_lch_bzb"><h2 class="- topic/title title sectiontitle">驱动接口</h2>
+            
+            <div class="- topic/p p" data-ofbid="d250701e104__20250121171703">常用驱动接口：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mmc_0__codeblock_oj4_d4r_c1c" data-ofbid="mmc_0__codeblock_oj4_d4r_c1c"><strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> blk_dread(<strong class="hl-keyword">struct</strong> blk_desc *block_dev, lbaint_t start,
+            lbaint_t blkcnt, <strong class="hl-keyword">void</strong> *buffer);
+<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> blk_dwrite(<strong class="hl-keyword">struct</strong> blk_desc *block_dev, lbaint_t start,
+             lbaint_t blkcnt, <strong class="hl-keyword">const</strong> <strong class="hl-keyword">void</strong> *buffer);
+<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> blk_derase(<strong class="hl-keyword">struct</strong> blk_desc *block_dev, lbaint_t start,
+             lbaint_t blkcnt);
+
+<strong class="hl-keyword">struct</strong> mmc *mmc_create(<strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> mmc_config *cfg, <strong class="hl-keyword">void</strong> *priv);
+<strong class="hl-keyword">int</strong> mmc_bind(<strong class="hl-keyword">struct</strong> udevice *dev, <strong class="hl-keyword">struct</strong> mmc *mmc,
+         <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> mmc_config *cfg);
+<strong class="hl-keyword">void</strong> mmc_destroy(<strong class="hl-keyword">struct</strong> mmc *mmc);
+<strong class="hl-keyword">int</strong> mmc_unbind(<strong class="hl-keyword">struct</strong> udevice *dev);
+<strong class="hl-keyword">int</strong> mmc_initialize(bd_t *bis);
+<strong class="hl-keyword">int</strong> mmc_init(<strong class="hl-keyword">struct</strong> mmc *mmc);
+<strong class="hl-keyword">int</strong> mmc_send_tuning(<strong class="hl-keyword">struct</strong> mmc *mmc, u32 opcode, <strong class="hl-keyword">int</strong> *cmd_error);
+<strong class="hl-keyword">int</strong> mmc_of_parse(<strong class="hl-keyword">struct</strong> udevice *dev, <strong class="hl-keyword">struct</strong> mmc_config *cfg);
+<strong class="hl-keyword">int</strong> mmc_read(<strong class="hl-keyword">struct</strong> mmc *mmc, u64 src, uchar *dst, <strong class="hl-keyword">int</strong> size);
+<strong class="hl-keyword">int</strong> mmc_set_clock(<strong class="hl-keyword">struct</strong> mmc *mmc, uint clock, bool disable);</pre></div>
+        </section><section class="- topic/section section" id="mmc_0__section_vl4_lch_bzb" data-ofbid="mmc_0__section_vl4_lch_bzb"><h2 class="- topic/title title sectiontitle">初始化和使用</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250701e114__20250121171703">本章节主要介绍 MMC 以及对应的 BLK 设备的初始化流程，以及读写流程。</p>
+        </section><section class="- topic/section section" id="mmc_0__section_wl4_lch_bzb" data-ofbid="mmc_0__section_wl4_lch_bzb"><h2 class="- topic/title title sectiontitle">绑定阶段</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250701e122__20250121171703">使用时，MMC 设备通过 BLK 块设备接口进行使用。MMC 设备与 BLK 设备之间的关系如 所示。</p>
+            <figure class="- topic/fig fig fignone" id="mmc_0__fig_yhv_24r_c1c" data-ofbid="mmc_0__fig_yhv_24r_c1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mmc_0__image_xl4_lch_bzb" src="../../../images/emmc/mmc_relation.png" alt="mmc_relation"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">MMC 与 BLK 设备的关系</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d250701e132__20250121171703">对于每一个 MMC 设备，在绑定阶段，都会创建一个对应的 MMC_BLK 块设备，并且 MMC_BLK 设备的 <span class="+ topic/keyword pr-d/parmname keyword parmname">parent</span> 指向当前
+                MMC 设备。 ArtInChip MMC 设备绑定对应的 MMC 设备驱动， MMC_BLK 设备绑定 <span class="+ topic/keyword pr-d/parmname keyword parmname">mmc-uclass</span> 中的
+                <span class="+ topic/keyword pr-d/parmname keyword parmname">mmc_blk</span> 驱动。</p>
+            <div class="- topic/p p" data-ofbid="d250701e144__20250121171703">读写操作时，通过 <span class="+ topic/keyword pr-d/parmname keyword parmname">mmc_blk</span> 驱动的读写函数，转为对 MMC
+                的操作。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mmc_0__codeblock_qmt_f4r_c1c" data-ofbid="mmc_0__codeblock_qmt_f4r_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> blk_ops mmc_blk_ops = { <em class="hl-comment">// drivers/mmc/mmc-uclass.c</em>
+    .read   = mmc_bread,
+#<strong class="hl-keyword">if</strong> CONFIG_IS_ENABLED(MMC_WRITE)
+    .write  = mmc_bwrite,
+    .erase  = mmc_berase,
+#endif
+    .select_hwpart  = mmc_select_hwpart,
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d250701e153__20250121171703">下面的绑定流程演示了创建 MMC_BLK 设备，并且进行关联的过程。</p>
+            <p class="- topic/p p" data-ofbid="d250701e156__20250121171703"><strong class="+ topic/ph hi-d/b ph b">使用 PLATDATA 时</strong></p>
+            <div class="- topic/p p" data-ofbid="d250701e160__20250121171703">在 SPL 中，使能 PLATDATA
+                时的绑定流程如下。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mmc_0__codeblock_ep4_g4r_c1c" data-ofbid="mmc_0__codeblock_ep4_g4r_c1c">reset <em class="hl-comment">// arch/arm/cpu/armv7/start.S</em>
+|-&gt; _main   <em class="hl-comment">// arch/arm/lib/crt0.S</em>
+    |-&gt; board_init_f(); <em class="hl-comment">// arch/arm/mach-artinchip/spl.c</em>
+        |-&gt; spl_early_init() <em class="hl-comment">// common/spl/spl.c</em>
+            |-&gt; spl_common_init(setup_malloc = true) <em class="hl-comment">// common/spl/spl.c</em>
+                |-&gt; dm_init_and_scan(!CONFIG_IS_ENABLED(OF_PLATDATA));
+                    |-&gt; dm_scan_platdata(pre_reloc_only=false)
+                        |-&gt; lists_bind_drivers();
+                            |-&gt; device_bind_by_name(parent, false, entry, &amp;dev);
+                                |-&gt; drv = lists_driver_lookup_name(info-&gt;name);
+                                |   <em class="hl-comment">// 搜索 U_BOOT_DRIVER(name) 声明的 driver</em>
+                                |-&gt; device_bind_common(); <em class="hl-comment">// drivers/core/device.c</em>
+                                    |-&gt; uclass_get(&amp;uc);
+                                    |-&gt; uclass_bind_device(dev);
+                                    |-&gt; drv-&gt;bind(dev);
+                                        aic_dwmmc_bind(dev);
+                                            |
+         +----------------------------------+
+         |
+aic_dwmmc_bind(dev); <em class="hl-comment">// drivers/mmc/artinchip_dw_mmc.c</em>
+|-&gt; dwmci_bind(dev, ...); <em class="hl-comment">// drivers/mmc/dw_mmc.c</em>
+    |
+    |-&gt; mmc_bind(dev, &amp;plat-&gt;mmc, &amp;plat-&gt;cfg) <em class="hl-comment">// drivers/mmc/mmc-uclass.c</em>
+        |  <em class="hl-comment">// 绑定一个 IF_TYPE_MMC 的 Block 子设备，这样可以通过块设备的接口</em>
+        |  <em class="hl-comment">// 使用 MMC。</em>
+        |
+        |-&gt; blk_create_devicef(dev, <span class="hl-string">"mmc_blk"</span>, <span class="hl-string">"blk"</span>,IF_TYPE_MMC, devnum,
+        |   |                   <span class="hl-number">512</span>, <span class="hl-number">0</span>, &amp;bdev); <em class="hl-comment">// drivers/block/blk-uclass.c</em>
+        |   |-&gt; blk_create_device(parent, <span class="hl-string">"mmc_blk"</span>, dev_name, if_type,
+        |       |                 devnum, blksz, lba, devp);
+        |       |-&gt; device_bind_driver(parent, drv_name, name, &amp;dev);
+        |           |   <em class="hl-comment">// drivers/core/lists.c</em>
+        |           |-&gt; ....
+        |               |-&gt; device_bind_common(dm_root, ...);
+        |                   |-&gt; uclass_get(drv-&gt;id, &amp;uc); id = UCLASS_BLK
+        |                   |-&gt; dev = calloc(<span class="hl-number">1</span>, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> udevice));
+        |                   |   dev-&gt;name = name <em class="hl-comment">// 块设备名字</em>
+        |                   |   dev-&gt;parent = parent <em class="hl-comment">// 指向 MMC 设备</em>
+        |                   |   dev-&gt;driver = drv <em class="hl-comment">// "mmc_blk" driver</em>
+        |                   |   dev-&gt;uclass = uc <em class="hl-comment">// UCLASS_BLK</em>
+        |                   |   <em class="hl-comment">// 创建设备 mmc_blk</em>
+        |                   |
+        |                   |-&gt; uclass_bind_device(dev);
+        |                       <em class="hl-comment">// 将设备添加到 UCLASS_BLK 列表中</em>
+        |
+        |-&gt; dev_get_uclass_platdata(bdev);</pre></div>
+            <p class="- topic/p p" data-ofbid="d250701e165__20250121171703"><strong class="+ topic/ph hi-d/b ph b">使用 DTS 时</strong></p>
+            <p class="- topic/p p" data-ofbid="d250701e169__20250121171703">使用 DTS 时，SPL 和 U-Boot 中的绑定流程如下。在 DTS 中，MMC 控制器是 <span class="+ topic/keyword pr-d/parmname keyword parmname">soc</span> 的子节点， 挂载到
+                <span class="+ topic/keyword pr-d/parmname keyword parmname">simple-bus</span> 中，因此相关绑定在 <span class="+ topic/keyword pr-d/parmname keyword parmname">soc</span> 设备绑定
+                <span class="+ topic/keyword pr-d/parmname keyword parmname">simple-bus</span> 驱动后被触发， 因此在 <span class="+ topic/keyword pr-d/apiname keyword apiname">simple_bus_post_build()</span>
+                中处理。</p>
+            <div class="- topic/p p" data-ofbid="d250701e187__20250121171703">U-Boot 阶段的 MMC 绑定在 <code class="+ topic/ph pr-d/codeph ph codeph">initf_dm</code>
+                中进行。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mmc_0__codeblock_rf3_h4r_c1c" data-ofbid="mmc_0__codeblock_rf3_h4r_c1c">simple_bus_post_bind(); <em class="hl-comment">// drivers/core/simple-bus.c</em>
+|-&gt; dm_scan_fdt_dev(dev); <em class="hl-comment">// drivers/core/root.c</em>
+    |-&gt; dm_scan_fdt_node();
+        |-&gt; lists_bind_fdt(); <em class="hl-comment">// drivers/core/lists.c</em>
+            |   <em class="hl-comment">// 通过 compatible 匹配设备和驱动</em>
+            |-&gt; device_bind_with_driver_data();
+                |-&gt; device_bind_common(); <em class="hl-comment">// drivers/core/device.c</em>
+                    |-&gt; uclass_get(&amp;uc)
+                    |-&gt; uclass_bind_device(dev)
+                    |-&gt; drv-&gt;bind(dev)
+                        aic_dwmmc_bind(dev);
+                            |
+         +------------------+
+         |
+aic_dwmmc_bind(dev); <em class="hl-comment">// drivers/mmc/artinchip_dw_mmc.c</em>
+|-&gt; dwmci_bind(dev, ...); <em class="hl-comment">// drivers/mmc/dw_mmc.c</em>
+    |
+    |-&gt; mmc_bind(dev, &amp;plat-&gt;mmc, &amp;plat-&gt;cfg); <em class="hl-comment">// drivers/mmc/mmc-uclass.c</em>
+        |  <em class="hl-comment">// 绑定一个 IF_TYPE_MMC 的 Block 子设备，这样可以通过块设备的接口</em>
+        |  <em class="hl-comment">// 使用 MMC。</em>
+        |
+        |-&gt; blk_create_devicef(dev, <span class="hl-string">"mmc_blk"</span>, <span class="hl-string">"blk"</span>,IF_TYPE_MMC, devnum,
+        |   |                   <span class="hl-number">512</span>, <span class="hl-number">0</span>, &amp;bdev); <em class="hl-comment">// drivers/block/blk-uclass.c</em>
+        |   |-&gt; blk_create_device(parent, <span class="hl-string">"mmc_blk"</span>, dev_name, if_type,
+        |       |                   devnum, blksz, lba, devp);
+        |       |-&gt; device_bind_driver(parent, drv_name, name, &amp;dev);
+        |           |   <em class="hl-comment">// drivers/core/lists.c</em>
+        |           |-&gt; ....
+        |               |-&gt; device_bind_common(dm_root, ...);
+        |                   |-&gt; uclass_get(drv-&gt;id, &amp;uc); id = UCLASS_BLK
+        |                   |-&gt; dev = calloc(<span class="hl-number">1</span>, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> udevice));
+        |                   |   dev-&gt;name = name; <em class="hl-comment">// 块设备名字</em>
+        |                   |   dev-&gt;parent = parent; <em class="hl-comment">// 指向 MMC 设备</em>
+        |                   |   dev-&gt;driver = drv; <em class="hl-comment">// "mmc_blk" driver</em>
+        |                   |   dev-&gt;uclass = uc; <em class="hl-comment">// UCLASS_BLK</em>
+        |                   |   <em class="hl-comment">// 创建设备 mmc_blk</em>
+        |                   |
+        |                   |-&gt; uclass_bind_device(dev);
+        |                       <em class="hl-comment">// 将设备添加到 UCLASS_BLK 列表中</em>
+        |
+        |-&gt; dev_get_uclass_platdata(bdev);</pre></div>
+        </section><section class="- topic/section section" id="mmc_0__section_bm4_lch_bzb" data-ofbid="mmc_0__section_bm4_lch_bzb"><h2 class="- topic/title title sectiontitle">Probe 流程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d250701e200__20250121171703">SPL 中的 Probe 流程如下。由于 BLK 设备的 probe 的目的是调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">mmc_init()</span> ，
+                这里直接调用，所以不需要单独的 Probe
+                了。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mmc_0__codeblock_bn1_34r_c1c" data-ofbid="mmc_0__codeblock_bn1_34r_c1c">spl_mmc_load(); <em class="hl-comment">// common/spl/spl_mmc.c</em>
+|-&gt; spl_mmc_find_device(&amp;mmc, bootdev-&gt;boot_device);
+|   |-&gt; mmc_initialize(NULL); <em class="hl-comment">// drivers/mmc/mmc.c</em>
+|   |   |-&gt; mmc_probe(bis);
+|           |-&gt; uclass_get(UCLASS_MMC, &amp;uc);
+|           |-&gt; device_probe(dev); <em class="hl-comment">// drivers/core/device.c</em>
+|               |  <em class="hl-comment">// 这里对 UCLASS_MMC 列表中的设备逐个调用</em>
+|               |  <em class="hl-comment">// device_probe(dev)</em>
+|               |
+|               |--&gt; aic_dwmmc_probe(...) <em class="hl-comment">// 具体驱动的 probe</em>
+|
+|-&gt; mmc_init(mmc);</pre></div>
+            <p class="- topic/p p" data-ofbid="d250701e208__20250121171703">U-Boot 中 MMC 设备和对应的 BLK 设备 Probe 流程如下。</p>
+            <div class="- topic/p p" data-ofbid="d250701e211__20250121171703">MMC 设备的 Probe 在 <span class="+ topic/keyword pr-d/apiname keyword apiname">board_init_r()</span> 调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">initr_mmc()</span>
+                时进行。对应的 BLK 设备的 Probe 在第一次使用时进行，通常是 <span class="+ topic/keyword pr-d/apiname keyword apiname">initr_env()</span> ，该函数加载 MMC
+                上的环境变量。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mmc_0__codeblock_lgy_34r_c1c" data-ofbid="mmc_0__codeblock_lgy_34r_c1c">board_init_r(gd_t *new_gd, ulong dest_addr)
+|-&gt; ...
+|-&gt; initr_dm(<strong class="hl-keyword">void</strong>)
+|-&gt; ...
+|-&gt; initr_mmc(<strong class="hl-keyword">void</strong>)
+|-&gt; initr_env(<strong class="hl-keyword">void</strong>)
+
+initr_mmc(<strong class="hl-keyword">void</strong>)
+|-&gt; mmc_initialize(gd-&gt;bd); <em class="hl-comment">// drivers/mmc/mmc.c</em>
+    |-&gt; mmc_probe(bis = gd-&gt;bd);
+        |-&gt; uclass_get(UCLASS_MMC, &amp;uc);
+        |-&gt; device_probe(dev); <em class="hl-comment">// drivers/core/device.c</em>
+            |  <em class="hl-comment">// 这里对 UCLASS_MMC 列表中的设备逐个调用</em>
+            |  <em class="hl-comment">// device_probe(dev)</em>
+            |
+            |--&gt; aic_dwmmc_probe(...) <em class="hl-comment">// 具体驱动的 probe</em>
+
+initr_env(<strong class="hl-keyword">void</strong>) <em class="hl-comment">// common/board_r.c</em>
+|
+|-&gt; env_relocate(<strong class="hl-keyword">void</strong>) <em class="hl-comment">// env/common.c</em>
+    |-&gt; env_load(<strong class="hl-keyword">void</strong>) <em class="hl-comment">// env/env.c</em>
+        | <em class="hl-comment">// 这个函数执行读取环境变量的动作</em>
+        |
+        |-&gt; drv = env_driver_lookup(ENVOP_LOAD, prio)
+        |   <em class="hl-comment">// u-boot 通过 U_BOOT_ENV_LOCATION 宏定义了各种可以用于加载</em>
+        |   <em class="hl-comment">// 环境变量的驱动 (struct env_driver)，并且在 lds 中将这些</em>
+        |   <em class="hl-comment">// 驱动收集到一个固定的段中，这里遍历各个驱动，尝试加载 ENV</em>
+        |
+        |-&gt; drv-&gt;load()/env_mmc_load(<strong class="hl-keyword">void</strong>) <em class="hl-comment">// env/mmc.c</em>
+            env_mmc_load();
+                    |
+    +---------------+
+    |
+env_mmc_load(); <em class="hl-comment">// env/mmc.c</em>
+|--&gt; devno = mmc_get_env_dev();
+|--&gt; mmc = find_mmc_device(devno);
+     |--&gt; init_mmc_for_env(mmc)
+          |--&gt; blk_get_from_parent(mmc-&gt;dev, &amp;dev)
+               |--&gt; device_find_first_child(parent, &amp;blkdev);
+               |    <em class="hl-comment">// 获取 mmc_blk 设备</em>
+               |
+               |--&gt; device_probe(blkdev)
+                    |--&gt; mmc_blk_probe(...) <em class="hl-comment">// drivers/mmc/mmc-uclass.c</em>
+                         |--&gt; mmc_init(mmc) <em class="hl-comment">// drivers/mmc/mmc.c</em></pre></div>
+        </section><section class="- topic/section section" id="mmc_0__section_gm4_lch_bzb" data-ofbid="mmc_0__section_gm4_lch_bzb"><h2 class="- topic/title title sectiontitle">读写流程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d250701e230__20250121171703">通过 BLK 接口对 MMC
+                进行读写的调用流程如下。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mmc_0__codeblock_flr_l4r_c1c" data-ofbid="mmc_0__codeblock_flr_l4r_c1c">blk_dread(mmc_get_blk_desc(mmc), blk, cnt, addr);
+|    <em class="hl-comment">// drivers/block/blk-uclass.c</em>
+|
+|--&gt; ops-&gt;read(dev, start, blkcnt, buffer);
+     mmc_bread(dev, start, blkcnt, buffer); <em class="hl-comment">// drivers/mmc/mmc.c</em>
+     |--&gt; mmc_read_blocks(mmc, dst, start, cur); <em class="hl-comment">// drivers/mmc/mmc.c</em>
+          |--&gt; mmc_send_cmd(mmc, &amp;cmd, &amp;data) <em class="hl-comment">//drivers/mmc/mmc-uclass.c</em>
+               |--&gt; ops-&gt;send_cmd(dev, cmd, data);
+                    dwmci_send_cmd(dev, cmd, data); <em class="hl-comment">// drivers/mmc/dw_mmc.c</em>
+
+blk_dwrite(mmc_get_blk_desc(mmc), blk, cnt, addr);
+|    <em class="hl-comment">// drivers/block/blk-uclass.c</em>
+|
+|--&gt; ops-&gt;write(dev, start, blkcnt, buffer);
+     mmc_bwrite(dev, start, blkcnt, buffer); <em class="hl-comment">// drivers/mmc/mmc_write.c</em>
+     |-&gt; mmc_write_blocks(mmc, start, cur, src); <em class="hl-comment">// drivers/mmc/mmc_write.c</em>
+          |--&gt; mmc_send_cmd(mmc, &amp;cmd, &amp;data) <em class="hl-comment">//drivers/mmc/mmc-uclass.c</em>
+               |--&gt; ops-&gt;send_cmd(dev, cmd, data);
+                    dwmci_send_cmd(dev, cmd, data); <em class="hl-comment">// drivers/mmc/dw_mmc.c</em></pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#mmc_0__section_ol4_lch_bzb" data-tocid="mmc_0__section_ol4_lch_bzb">驱动框架</a></div></li><li class="section-item"><div class="section-title"><a href="#mmc_0__section_tl4_lch_bzb" data-tocid="mmc_0__section_tl4_lch_bzb">驱动接口</a></div></li><li class="section-item"><div class="section-title"><a href="#mmc_0__section_vl4_lch_bzb" data-tocid="mmc_0__section_vl4_lch_bzb">初始化和使用</a></div></li><li class="section-item"><div class="section-title"><a href="#mmc_0__section_wl4_lch_bzb" data-tocid="mmc_0__section_wl4_lch_bzb">绑定阶段</a></div></li><li class="section-item"><div class="section-title"><a href="#mmc_0__section_bm4_lch_bzb" data-tocid="mmc_0__section_bm4_lch_bzb">Probe 流程</a></div></li><li class="section-item"><div class="section-title"><a href="#mmc_0__section_gm4_lch_bzb" data-tocid="mmc_0__section_gm4_lch_bzb">读写流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

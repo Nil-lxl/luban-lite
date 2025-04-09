@@ -1,0 +1,202 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍 U-Boot 中涉及到的各种镜像类型。 Image Image 文件是 Linux 编译生成的非压缩镜像文件，基于 ELF 文件 vmlinux 提取得到。 riscv64-unknown-linux-gnu-objcopy -O binary -O binary -R .note -R .note.gnu.build-id -R .comment -S vmlinux ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2023-10-10"/><meta name="DC.date.modified" content="2024-12-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_ds4_vl3_pzb"/><meta name="DC.language" content="zh-CN"/><title>镜像类型</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/uboot-image-type.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/uboot-image-type.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_ds4_vl3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/uboot-image-type.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">镜像类型</h1><div class="date inPage">25 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d322863e23__20250121171826">本节介绍 U-Boot 中涉及到的各种镜像类型。<ul class="- topic/ul ul" id="concept_ds4_vl3_pzb__ul_a4j_xcx_5dc" data-ofbid="concept_ds4_vl3_pzb__ul_a4j_xcx_5dc"><li class="- topic/li li" data-ofbid="d322863e26__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322863e28__20250121171826"><strong class="+ topic/ph hi-d/b ph b">Image</strong></p>
+                    <p class="- topic/p p" data-ofbid="d322863e32__20250121171826">Image 文件是 Linux 编译生成的非压缩镜像文件，基于 ELF 文件 vmlinux 提取得到。</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_ds4_vl3_pzb__codeblock_msj_bdh_bzb" data-ofbid="concept_ds4_vl3_pzb__codeblock_msj_bdh_bzb">riscv64-unknown-linux-gnu-objcopy -O binary -O binary -R .note -R .note.gnu.build-id -R .comment -S vmlinux arch/riscv/boot/Image
+</pre>
+                    <ul class="- topic/ul ul" id="concept_ds4_vl3_pzb__ul_stt_1dx_5dc" data-ofbid="concept_ds4_vl3_pzb__ul_stt_1dx_5dc"><li class="- topic/li li" data-ofbid="d322863e39__20250121171826">ARM64 和 RISCV 产生的 Image 文件自带一个镜像信息头，U-Boot 可以使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">booti</span>
+                            命令对该镜像进行解析和启动。 </li><li class="- topic/li li" data-ofbid="d322863e44__20250121171826">ARM32 上产生的 Image 文件不带镜像信息头。在 ArtInChip 方案中，U-Boot 也实现了一个特殊的
+                                <span class="+ topic/keyword sw-d/cmdname keyword cmdname">booti32</span> 命令，可以直接启动未压缩的 Image 文件。</li></ul>
+                </li><li class="- topic/li li" data-ofbid="d322863e50__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322863e52__20250121171826"><strong class="+ topic/ph hi-d/b ph b">Image.gz</strong></p>
+                    <p class="- topic/p p" data-ofbid="d322863e56__20250121171826">包括
+                            <span class="+ topic/ph sw-d/filepath ph filepath">Image.gz</span>、<span class="+ topic/ph sw-d/filepath ph filepath">Image.bz2</span>、<span class="+ topic/ph sw-d/filepath ph filepath">Image.lzo</span>、<span class="+ topic/ph sw-d/filepath ph filepath">Image.lzmo</span>
+                        和 <span class="+ topic/ph sw-d/filepath ph filepath">Image.lz4</span> 等类型的压缩文件，是基于 Image 文件直接压缩得到。</p>
+                    <p class="- topic/p p" data-ofbid="d322863e74__20250121171826">ARM64 和 RISCV 都采用这种方式产生对应的压缩文件。U-Boot 中可以使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">booti</span>
+                        命令解析和启动对应的压缩镜像文件。</p>
+                </li><li class="- topic/li li" data-ofbid="d322863e80__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322863e82__20250121171826"><strong class="+ topic/ph hi-d/b ph b">zImage</strong></p>
+                    <p class="- topic/p p" data-ofbid="d322863e86__20250121171826"><span class="+ topic/ph sw-d/filepath ph filepath">zImage</span> 是 Linux 编译生成的压缩内核 Image 格式，基于 Image
+                            文件生成。<span class="+ topic/ph sw-d/filepath ph filepath">zImage</span> 是一个运行时自解压缩的镜像文件。</p>
+                    <p class="- topic/p p" data-ofbid="d322863e94__20250121171826">内核生成 <span class="+ topic/ph sw-d/filepath ph filepath">zImage</span> 时，首先将未压缩的 Image 通过 gzip 压缩（默认选择 gzip 压缩），生成
+                        pyggy_data， 然后再与相关的解压缩代码编译和链接，生成 <span class="+ topic/ph sw-d/filepath ph filepath">zImage</span>。</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_ds4_vl3_pzb__codeblock_nsj_bdh_bzb" data-ofbid="concept_ds4_vl3_pzb__codeblock_nsj_bdh_bzb">cat arch/arm/boot/compressed/../Image | gzip -n -f -<span class="hl-number">9</span> &gt; arch/arm/boot/compressed/piggy_data</pre>
+                    <p class="- topic/p p" data-ofbid="d322863e106__20250121171826">在 U-Boot 中可以使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">bootz</span> 命令进行解析和启动该镜像文件。</p>
+                </li><li class="- topic/li li" data-ofbid="d322863e112__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322863e114__20250121171826"><strong class="+ topic/ph hi-d/b ph b">uImage</strong></p>
+                    <p class="- topic/p p" data-ofbid="d322863e118__20250121171826"><span class="+ topic/ph sw-d/filepath ph filepath">uImage</span> 基于 <span class="+ topic/ph sw-d/filepath ph filepath">zImage</span> 生成，仅在头部添加 U-Boot
+                        Image 的头信息，以便 U-Boot 正确解析。 实际上在新的内核中，已经不再生成该镜像文件。</p>
+                    <p class="- topic/p p" data-ofbid="d322863e126__20250121171826">在 U-Boot 中使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">bootm</span> 命令进行解析和启动该镜像文件。</p>
+                </li><li class="- topic/li li" data-ofbid="d322863e132__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322863e134__20250121171826"><strong class="+ topic/ph hi-d/b ph b">FIT Image</strong></p>
+                    <p class="- topic/p p" data-ofbid="d322863e138__20250121171826">FIT Image 是一种打包格式，可以将多个镜像文件打包在一起，合并成一个 <span class="+ topic/ph sw-d/filepath ph filepath">.itb</span> 文件。
+                        打包的具体细节通过对应的 <span class="+ topic/ph sw-d/filepath ph filepath">.its</span> 文件进行描述，然后通过
+                            <span class="+ topic/ph sw-d/filepath ph filepath">mkimage</span> 工具进行打包。</p>
+                    <p class="- topic/p p" data-ofbid="d322863e150__20250121171826">FIT Image 可以通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">bootm</span> 命令进行解析和启动。</p>
+                </li><li class="- topic/li li" data-ofbid="d322863e156__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322863e158__20250121171826"><strong class="+ topic/ph hi-d/b ph b">AIC 镜像</strong></p>
+                    <p class="- topic/p p" data-ofbid="d322863e162__20250121171826">在固件升级和 BROM 启动过程中，BROM 需要读取 AIC 自定义格式的镜像，以 <span class="+ topic/ph sw-d/filepath ph filepath">.aic</span> 结尾。 AIC
+                        镜像使用 <span class="+ topic/ph sw-d/filepath ph filepath">mk_image.py</span> 脚本生成，生成的细节通过
+                            <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件进行描述。</p>
+                </li></ul></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

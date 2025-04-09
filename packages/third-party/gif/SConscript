@@ -1,0 +1,17 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+objs = []
+cwd     = GetCurrentDir()
+list = os.listdir(cwd)
+src     = Glob('*.c') + Glob('*.cpp')
+
+if GetDepend(['GIF_USING_SAMPLES']):
+    src += Glob('samples/*.c')
+
+path  = [cwd]
+
+group = DefineGroup('cpu_usage', src, depend = ['LPKG_USING_GIF'], CPPPATH = path)
+
+Return('group')

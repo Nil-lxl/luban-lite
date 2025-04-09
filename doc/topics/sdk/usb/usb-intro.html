@@ -1,0 +1,629 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="USB 发展历史 USB 到现在一共经历了以下版本： Version App Speed Direction Data Line USB 1.0 低速 Low Speed 1.5Mbps Half 半双工模式 1 对差分线 D+/D1 USB 1.1 全速 Full Speed 12Mbps Half 半双工模式 1 对差分线 D+/D1 USB 2.0 高速 Hi-Speed 480Mbps ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-30"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_intro"/><meta name="DC.language" content="zh-CN"/><title>USB 简介</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-intro.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-intro.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_intro" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-intro.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">USB 简介</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 11 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="usb_intro__section_ipn_nsp_g1c" data-ofbid="usb_intro__section_ipn_nsp_g1c"><h2 class="- topic/title title sectiontitle">USB 发展历史</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e28__20250121171557">USB 到现在一共经历了以下版本：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="usb_intro__table_jpn_nsp_g1c" data-ofbid="usb_intro__table_jpn_nsp_g1c" data-cols="5"><caption></caption><colgroup><col style="width:20.03968253968254%"/><col style="width:20.03968253968254%"/><col style="width:20.03968253968254%"/><col style="width:20.03968253968254%"/><col style="width:19.841269841269842%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_jpn_nsp_g1c__entry__1">Version</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_jpn_nsp_g1c__entry__2">App</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_jpn_nsp_g1c__entry__3">Speed</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_jpn_nsp_g1c__entry__4">Direction</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_intro__table_jpn_nsp_g1c__entry__5">Data Line</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__1">USB 1.0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__2">低速 Low Speed</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__3">1.5Mbps</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__4">Half 半双工模式</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__5">1 对差分线 D+/D1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__1">USB 1.1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__2">全速 Full Speed</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__3">12Mbps</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__4">Half 半双工模式</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__5">1 对差分线 D+/D1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__1">USB 2.0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__2">高速 Hi-Speed</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__3">480Mbps</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__4">Half 半双工模式</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__5">1 对差分线 D+/D1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__1">USB 3.1 Gen1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__2">超高速 SuperSpeed</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__3">5Gbps</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__4">Full 双工模式</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__5">2 对差分线</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__1">USB 3.1 Gen2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__2">超高速 SuperSpeed+</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__3">10Gbps</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__4">Full 双工模式</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__5">2 对差分线</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__1">USB 3.2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__2">超高速 SuperSpeed+</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__3">20Gbps</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__4">Full 双工模式</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_jpn_nsp_g1c__entry__5">4 对差分线</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_jpn_nsp_g1c__entry__1">USB 4.0</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_jpn_nsp_g1c__entry__2">超高速 SuperSpeed+</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_jpn_nsp_g1c__entry__3">40Gbps</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_jpn_nsp_g1c__entry__4">Full 双工模式</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_intro__table_jpn_nsp_g1c__entry__5">4 对差分线</td></tr></tbody></table></div>
+            <div class="- topic/p p" data-ofbid="d117801e129__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_kpn_nsp_g1c" src="../../../images/usb/usb_history.jpg" width="576" alt="image0"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_intro__section_lpn_nsp_g1c" data-ofbid="usb_intro__section_lpn_nsp_g1c"><h2 class="- topic/title title sectiontitle">USB 1.0/2.0</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e139__20250121171557">在 USB 1.0/2.0 时期只需要用到 4 根线：1 根电源线、1 根地线、1 对差分数据线。因为只有 1
+                条数据通路，所以只能是半双工的，同一时间只能是接收或者发送数据。</p>
+            <div class="- topic/p p" data-ofbid="d117801e142__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_mpn_nsp_g1c" src="../../../images/usb/usb_port_12_pin.png" width="384" alt="image1"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e147__20250121171557">使用 <code class="+ topic/ph pr-d/codeph ph codeph">Type A</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">Type B</code> 型的接口：</p>
+            <div class="- topic/p p" data-ofbid="d117801e156__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_npn_nsp_g1c" src="../../../images/usb/usb_port_12.png" width="384" alt="image2"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e162__20250121171557">还有一系列小尺寸的变种：</p>
+            <div class="- topic/p p" data-ofbid="d117801e165__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_opn_nsp_g1c" src="../../../images/usb/usb_port_12_all.png" alt="image3"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_intro__section_ppn_nsp_g1c" data-ofbid="usb_intro__section_ppn_nsp_g1c"><h2 class="- topic/title title sectiontitle">USB 3.0</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e175__20250121171557">在 USB 3.0 时代从两个方向来增加速度：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_qpn_nsp_g1c" data-ofbid="usb_intro__ul_qpn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e179__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e181__20250121171557">增加传输的时钟速率。速率从 480M 增加到了 5G，高速信号会给 PCB 走线、EMC、线缆带来不小的压力。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e184__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e186__20250121171557">增加差分数据通路的数量。首先发明了改进型的 USB3.0 <code class="+ topic/ph pr-d/codeph ph codeph">Type A</code> 接口，在原有 4 线的基础上再增加了 5
+                        条线：</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e193__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_rpn_nsp_g1c" src="../../../images/usb/usb_port_3_pin.png" alt="image4"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e198__20250121171557">可以看到增加的 5 条线分别为 1 条地线和 2 对差分数据线。因为有了 2 条数据通路，所以可以双工，同一时间能同时接收和发送数据。在工作在 USB 3.0 模式时，原来的
+                D+/D- 差分线是不使用的。</p>
+            <div class="- topic/p p" data-ofbid="d117801e202__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_spn_nsp_g1c" src="../../../images/usb/usb_port_3.png" width="288" alt="image5"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e207__20250121171557">上图是 USB3.0 <code class="+ topic/ph pr-d/codeph ph codeph">Type A</code> 接口示意图，注意新增的 5 条线已断针的形式隐藏在后面，这样的设计是为了和 USB 2.0
+                兼容。但是颜色改成了蓝色，以示区别。</p>
+            <p class="- topic/p p" data-ofbid="d117801e213__20250121171557">在 USB 3.0 还出现了一种全新的接口类型 <code class="+ topic/ph pr-d/codeph ph codeph">Type C</code> 接口，它带来了以下好处：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_tpn_nsp_g1c" data-ofbid="usb_intro__ul_tpn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e220__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e222__20250121171557">接口线数量猛增到了 24 线，其中数据通路在 <code class="+ topic/ph pr-d/codeph ph codeph">D+/D-</code> 之外再提供了 4 条差分数据线。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e228__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e230__20250121171557">实现了正反面任意插拔，大大方便了用户使用。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e234__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_upn_nsp_g1c" src="../../../images/usb/usb_poert_typec.png" width="480" alt="image6"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e239__20250121171557">小技巧</p>
+            <p class="- topic/p p" data-ofbid="d117801e243__20250121171557">从 USB 3.2 开始，因为它需要使用 4 对数据差分线，所以目前唯一支持的只有 <code class="+ topic/ph pr-d/codeph ph codeph">Type C</code> 接口。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_vpn_nsp_g1c" data-ofbid="usb_intro__section_vpn_nsp_g1c"><h2 class="- topic/title title sectiontitle">速度识别</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e254__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_wpn_nsp_g1c" src="../../../images/usb/usb_speed_1.png" alt="image7"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e259__20250121171557">首先通过 D+/D- 的上拉电阻来区分 USB 1.0 和 1.1 ：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_xpn_nsp_g1c" data-ofbid="usb_intro__ul_xpn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e263__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e265__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">D+</code> 上拉，USB 1.1 <code class="+ topic/ph pr-d/codeph ph codeph">Full-speed</code>。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e273__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e275__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">D-</code> 上拉，USB 1.0 <code class="+ topic/ph pr-d/codeph ph codeph">Low-speed</code>。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e284__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_ypn_nsp_g1c" src="../../../images/usb/usb_speed_2.png" width="480" alt="image8"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e290__20250121171557">然后通过编码识别来进一步区分 <code class="+ topic/ph pr-d/codeph ph codeph">High-speed</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">Full-speed</code>。USB 2.0
+                    <code class="+ topic/ph pr-d/codeph ph codeph">High-speed</code> 的 <code class="+ topic/ph pr-d/codeph ph codeph">D+</code> 上拉，首先被当成 USB 1.1
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Full-speed</code> ：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_zpn_nsp_g1c" data-ofbid="usb_intro__ul_zpn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e309__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e311__20250121171557">Hub 检测到有设备插入上电，向主机通报，主机发送 Set_Port_Feature 请求让 Hub 复位新插入的设备。设备复位操作是 Hub
+                        通过驱动数据线到复位状态 <code class="+ topic/ph pr-d/codeph ph codeph">SE0</code> （即 D+ 和 D- 全为低电平），并持续至少 10ms。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e317__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e319__20250121171557">高速设备看到复位信号，通过内部的电流源向 D- 线持续灌大小为 17.78mA 电流。因为此时高速设备的 1.5k 上拉电阻未撤销，在 Hub
+                        端，全速/低速驱动器形成一个阻抗为 45Ohm 的终端电阻， <code class="+ topic/ph pr-d/codeph ph codeph">1.5k 与 45Ohm 的电阻并联</code> ，仍然是
+                        45Ohm，所以在 Hub 端看到一个约 800mV 的电压，这就是 <code class="+ topic/ph pr-d/codeph ph codeph">Chirp K</code> 信号。
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Chirp K</code> 信号持续 1ms ~ 7ms。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e331__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e333__20250121171557">在 Hub 端，虽然设置了复位信号，并一直驱动着 <code class="+ topic/ph pr-d/codeph ph codeph">SE0</code> ，但 USB2.0 的高速接收器一直在检测
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Chirp K</code> 信号，如果没有 <code class="+ topic/ph pr-d/codeph ph codeph">Chirp K</code>
+                        信号看到，就继续复位操作，直到复位结束，然后识别为全速设备。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e345__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e347__20250121171557">设备发送的 <code class="+ topic/ph pr-d/codeph ph codeph">Chirp K</code> 信号结束后 100us 内，Hub 必须开始恢复一连串的
+                            <code class="+ topic/ph pr-d/codeph ph codeph">KJKJKJ…</code> 序列，向设备表明这是一个 USB2.0 的 Hub。这里的 KJ
+                        序列是连续的，中间不能间断，而且每个 K 或 J 的持续时间在 40us~60us。KJ 序列停止后的的 100-500us 内结束复位操作。Hub 发送
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Chirp KJ</code> 序列的方式和设备一样，通过电流源向差分数据线交替灌 17.78mA 的电流实现。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e359__20250121171557">
+                    <dl class="- topic/dl dl" id="usb_intro__dl_aqn_nsp_g1c" data-ofbid="usb_intro__dl_aqn_nsp_g1c"><dt class="- topic/dt dt dlterm" data-ofbid="d117801e363__20250121171557">再回到设备端来。设备检测到 6 个 Hub 发送的 <code class="+ topic/ph pr-d/codeph ph codeph">Chirp</code> 信号后（3 对 KJ 序列），它必须在
+                                500us 内切换到高速模式。切换动作有：</dt><dd class="- topic/dd dd">
+                                <ul class="- topic/ul ul" id="usb_intro__ul_bqn_nsp_g1c" data-ofbid="usb_intro__ul_bqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e371__20250121171557">
+                                        <p class="- topic/p p" data-ofbid="d117801e373__20250121171557">断开 1.5K 的上拉电阻。</p>
+                                    </li><li class="- topic/li li" data-ofbid="d117801e376__20250121171557">
+                                        <p class="- topic/p p" data-ofbid="d117801e378__20250121171557">连接 D+/D-上 的高速终端电阻，实际上就是全速/低速差分驱动器。</p>
+                                    </li><li class="- topic/li li" data-ofbid="d117801e381__20250121171557">
+                                        <p class="- topic/p p" data-ofbid="d117801e383__20250121171557">进入默认的高速状态。执行上两步后，USB 信号线上看到的现象就发生变化，Hub 发送出来的
+                                                <code class="+ topic/ph pr-d/codeph ph codeph">Chirp KJ</code> 序列幅值降到原来的一半，即
+                                            400mV。这是因为设备端挂载新的中断电阻，并联后的阻抗是 22.5Ohm。之后高速操作的信号幅度就是
+                                            400mV，而不像全速/低速那样的 3V。</p>
+                                    </li></ul>
+                            </dd></dl>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e392__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_cqn_nsp_g1c" src="../../../images/usb/usb_speed_resistor.png" alt="image9"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e397__20250121171557">USB <code class="+ topic/ph pr-d/codeph ph codeph">Chirp K</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Chirp J</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">SE0</code>
+                信号定义：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="usb_intro__table_dqn_nsp_g1c" data-ofbid="usb_intro__table_dqn_nsp_g1c" data-cols="4"><caption></caption><colgroup><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_dqn_nsp_g1c__entry__1">信号</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_dqn_nsp_g1c__entry__2">低速模式 Low-speed</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_dqn_nsp_g1c__entry__3">全速速模式 Full-speed</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_intro__table_dqn_nsp_g1c__entry__4">高速模式 High-speed</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__1">Chirp J</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__2">D+ = 0，D- = 1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__3">D+ = 0，D- = 1</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__4">D+ = 1，D- =0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__1">Chirp K</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__2">D+ =1， D- = 0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__3">D+ =1， D- = 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__4">D+ =0， D- = 1</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__1">SE0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__2">D+ = 0， D- =0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__3">D+ = 0， D- =0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_dqn_nsp_g1c__entry__4">D+ = 0， D- =0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_dqn_nsp_g1c__entry__1">IDLE</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_dqn_nsp_g1c__entry__2">K 状态</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_dqn_nsp_g1c__entry__3">J 状态</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_intro__table_dqn_nsp_g1c__entry__4">SE0 状态</td></tr></tbody></table></div>
+            <ul class="- topic/ul ul" id="usb_intro__ul_eqn_nsp_g1c" data-ofbid="usb_intro__ul_eqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e464__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e466__20250121171557">从 J 到 K 或者从 K 到 J，信号翻转，说明发送的信号是 0。从 J 到 J 或从 K 到 K，信号不变，说明发送的信号是 1。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e469__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e471__20250121171557">Chirp J K 状态高速设备与低速设备相反。</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d117801e476__20250121171557">对于 USB 3.0 以后的速度识别，暂未涉及。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_fqn_nsp_g1c" data-ofbid="usb_intro__section_fqn_nsp_g1c"><h2 class="- topic/title title sectiontitle">OTG</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e484__20250121171557">USB
+                OTG 技术可实现没有主机时设备与设备之间的数据传输。例如：数码相机可以直接与打印机连接并打印照片，手机与手机之间可以直接传送数据等，从而拓展了 USB 技术的应用范围。</p>
+            <p class="- topic/p p" data-ofbid="d117801e487__20250121171557">在 OTG 中，初始主机设备称为 <code class="+ topic/ph pr-d/codeph ph codeph">A 设备</code> ，外设称为 <code class="+ topic/ph pr-d/codeph ph codeph">B 设备</code>
+                。也就是说，手机既可以做外设，又可以做主机来传送数据，可用电缆的连接方式来决定初始角色 (由 ID 线的状态来决定)。</p>
+            <p class="- topic/p p" data-ofbid="d117801e496__20250121171557">在 Mini/Micro USB 接口一共有 5 根线，在原有 USB 的基础上多出了一根 <code class="+ topic/ph pr-d/codeph ph codeph">ID</code> 线。OTG 的识别是通过 ID
+                脚的电平进行决定 OTG 作为 Device 还是 Host：</p>
+            <div class="- topic/p p" data-ofbid="d117801e502__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_gqn_nsp_g1c" src="../../../images/usb/usb_otg_id.png" alt="image10"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e508__20250121171557">当 OTG 设备检测到接地的 ID 引脚时，表示默认的是 A 设备（主机），而检测到 ID 引脚浮空的设备则认为是 B 设备（外设）。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_hqn_nsp_g1c" data-ofbid="usb_intro__section_hqn_nsp_g1c"><h2 class="- topic/title title sectiontitle">phy 总线</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e516__20250121171557">USB 信号传输前，需要通过 phy 把 usb 控制器的数字信号转成线缆上的模拟信号。usb 控制器和 phy 之间的总线主要有 3 种：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_iqn_nsp_g1c" data-ofbid="usb_intro__ul_iqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e520__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e522__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">UTMI</code> (USB2.0 Transceiver Macrocell Interface)。最早的 USB
+                        controller 和 USB PHY 通信的协议。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e528__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_jqn_nsp_g1c" src="../../../images/usb/phy_utmi.png" alt="image11"/></div><br/></div>
+            <ul class="- topic/ul ul" id="usb_intro__ul_kqn_nsp_g1c" data-ofbid="usb_intro__ul_kqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e534__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e536__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">ULPI</code> (UTMI+Low Pin Interface)。从名字上就可以看出 ULPI 是 UTMI 的 Low
+                        Pin 版本</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e543__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_lqn_nsp_g1c" src="../../../images/usb/phy_ulpi.png" alt="image12"/></div><br/></div>
+            <ul class="- topic/ul ul" id="usb_intro__ul_mqn_nsp_g1c" data-ofbid="usb_intro__ul_mqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e549__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e551__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">HSIC</code> (USB 2.0 High Speed Inter Chip)。是 USB 2.0
+                        的芯片到芯片变体，它消除了普通 USB 中的传统模拟收发器。速度可达 480M，是 IIC 的理想替代。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e557__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_nqn_nsp_g1c" src="../../../images/usb/phy_hsic.png" alt="image13"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_intro__section_oqn_nsp_g1c" data-ofbid="usb_intro__section_oqn_nsp_g1c"><h2 class="- topic/title title sectiontitle">传输编码方式</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e567__20250121171557">USB 信号在线路上传输时，需要采取合适的编码方式。</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_pqn_nsp_g1c" data-ofbid="usb_intro__ul_pqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e571__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e573__20250121171557">USB 1.0/2.0 采用的是 URZI (No Return Zero-Inverse)
+                        编码。无需同步的时钟信号也能产生同步的数据存取。NRZI 的编码规则是，当数据位为 1 时不转换，当数据位为 0 时转换，如下图所示。位传输的顺序以 LSB 优先。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e577__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_qqn_nsp_g1c" src="../../../images/usb/usb_encode_urzi.png" width="384" alt="image14"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e582__20250121171557">这种编码方式会遇到一个严重的问题，若重复相同的 1 信号时，就会造成数据长时间无法转换，逐渐的累积而导致堵塞的情况，使得读取的时序出现严重的错误。因此，在 NRZI
+                编码之间，还需执行所谓的位填塞（bit-stuffing）。即是，若原始的串行数据含有连续的 6 个 1 时，就执行位填塞工作，填塞一个 0。</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_rqn_nsp_g1c" data-ofbid="usb_intro__ul_rqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e587__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e589__20250121171557">USB 3.0 采用的是 8b/10b 编码。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e592__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e594__20250121171557">USB 3.1/3.2 采用的是 128/132 (64b/66b) 编码。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_sqn_nsp_g1c" data-ofbid="usb_intro__section_sqn_nsp_g1c"><h2 class="- topic/title title sectiontitle">总线拓扑</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e603__20250121171557">USB 是 <code class="+ topic/ph pr-d/codeph ph codeph">星型</code> 拓扑总线，由 Hub 来进行多级扩展。最大的层级不能超过 7 层，在任何一条路径上不能超过 5 个非根
+                Hub。</p>
+            <div class="- topic/p p" data-ofbid="d117801e609__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_tqn_nsp_g1c" src="../../../images/usb/usb_bus_topo.png" alt="image15"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e614__20250121171557">USB 总线由 3 种角色组成：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_uqn_nsp_g1c" data-ofbid="usb_intro__ul_uqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e618__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e620__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Host</code>。星型总线的中心，配置所有 Hub 和 Device，调度总线上所有的数据收发。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e625__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e627__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Hub</code>。提供了扩展端口，能连接更多的 Device。Hub 本身也是一种特殊的 Device。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e632__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e634__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Device</code>。提供了实际的设备功能。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e641__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_vqn_nsp_g1c" src="../../../images/usb/usb_bus_topo_star.png" width="288" alt="image16"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e646__20250121171557">经过几种角色的组合以后，USB 总线形成了逻辑上的星型拓扑，Host 到任一 Device 都是点对点传输。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_wqn_nsp_g1c" data-ofbid="usb_intro__section_wqn_nsp_g1c"><h2 class="- topic/title title sectiontitle"> Device 内部的逻辑关系</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e654__20250121171557">USB 将 <code class="+ topic/ph pr-d/codeph ph codeph">Device</code> 内部的资源进一步细分成了 3 个层级： <code class="+ topic/ph pr-d/codeph ph codeph">Configuration</code> 配置、
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Interface</code> 接口、 <code class="+ topic/ph pr-d/codeph ph codeph">Endpoint</code> 端点。</p>
+            <div class="- topic/p p" data-ofbid="d117801e669__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_xqn_nsp_g1c" src="../../../images/usb/usb_device_struct.png" alt="image17"/></div><br/></div>
+            <ul class="- topic/ul ul" id="usb_intro__ul_yqn_nsp_g1c" data-ofbid="usb_intro__ul_yqn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e675__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e677__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Configuration</code> 配置</p>
+                    <p class="- topic/p p" data-ofbid="d117801e682__20250121171557">每个 USB 设备都可以包含一个或者多个配置，不同的配置使设备表现出不同的功能组合，配置有多个接口组成。在 USB
+                        协议中，接口由多个端点组成，代表一个基本的功能。</p>
+                    <div class="- topic/p p" data-ofbid="d117801e685__20250121171557">看下面的一个例子。一个 USB 播放器带有音频视频功能，还有旋钮和按钮。那么这个 <code class="+ topic/ph pr-d/codeph ph codeph">Device</code> 设备 可以提供 3 种
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Configuration</code>
+                        配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_intro__pre_zqn_nsp_g1c" data-ofbid="usb_intro__pre_zqn_nsp_g1c">配置 <span class="hl-number">1</span>：音须(接口) + 旅钮(接口）
+配置 <span class="hl-number">2</span>: 音频(接口) + 视频(接口) + 按钮(接口）
+配置 <span class="hl-number">3</span>：视频(接口) + 旋钮(接口）
+</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d117801e696__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e698__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Interface</code> 接口 / <code class="+ topic/ph pr-d/codeph ph codeph">Function</code> 功能</p>
+                    <p class="- topic/p p" data-ofbid="d117801e706__20250121171557">Interface 接口代表一个独立的基本的功能，所以有时也称之为 <code class="+ topic/ph pr-d/codeph ph codeph">Function</code> 功能。如果我们开发
+                            <code class="+ topic/ph pr-d/codeph ph codeph">USB Client</code> 驱动，我们面向的对象就是 <code class="+ topic/ph pr-d/codeph ph codeph">USB Interface</code>
+                        ，上述实例中的音烦接口、视频接口、投钮接口、旋钮接口均需要一个独立的 <code class="+ topic/ph pr-d/codeph ph codeph">USB Client</code> 驱动程序。</p>
+                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_brn_nsp_g1c" src="../../../images/usb/usb_csw_func.png" alt="image18"/></div><br/>
+                    <p class="- topic/p p" data-ofbid="d117801e725__20250121171557">一个 <code class="+ topic/ph pr-d/codeph ph codeph">Interface</code> 接口中包含了完成这个基本功能的所需要的一个或者多个
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Endpoint</code> 端点。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e734__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e736__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Endpoint</code> 端点 (<code class="+ topic/ph pr-d/codeph ph codeph">Pipe</code> 管道)</p>
+                    <p class="- topic/p p" data-ofbid="d117801e744__20250121171557">端点是 USB 设备中最基本的可寻址单位，它是位于 USB 设备或主机上的一个数据缓冲区，用来存放和发送 USB 的各种数据。</p>
+                    <p class="- topic/p p" data-ofbid="d117801e747__20250121171557">设备的 <code class="+ topic/ph pr-d/codeph ph codeph">Endpoint 0</code> 是一个特殊端点，在设备初始化时系统需要使用该端点读配置设备。其他编号的端点
+                            <code class="+ topic/ph pr-d/codeph ph codeph">USB Client</code> 驱动都可以使用。</p>
+                    <p class="- topic/p p" data-ofbid="d117801e756__20250121171557">一个 <code class="+ topic/ph pr-d/codeph ph codeph">Host</code> 主机和一个设备 <code class="+ topic/ph pr-d/codeph ph codeph">Device</code> 的端点建立的连接称之为
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Pipe</code> 管道：</p>
+                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_drn_nsp_g1c" src="../../../images/usb/usb_endpoint.png" alt="image19"/></div><br/>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_ern_nsp_g1c" data-ofbid="usb_intro__section_ern_nsp_g1c"><h2 class="- topic/title title sectiontitle">Compound / Composite Device</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e778__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_frn_nsp_g1c" src="../../../images/usb/usb_compound.png" width="480" alt="image20"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e783__20250121171557">在 USB 协议描述中，有两个非常相近的名字： <code class="+ topic/ph pr-d/codeph ph codeph">Compund Device</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">Composite
+                    Device</code> 。正确的理解的它们有助于我们理解清楚随后的一些概念。</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_grn_nsp_g1c" data-ofbid="usb_intro__ul_grn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e793__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e795__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Compund Device</code> 。指的是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Hub</code> 设备中，还包含了其他的功能
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Device</code>。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e806__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e808__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Composite Device</code> 。指的是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Device</code> 当中，包含了多个
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Interface</code> ，能提供多个独立的功能。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_hrn_nsp_g1c" data-ofbid="usb_intro__section_hrn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Hub</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e825__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_irn_nsp_g1c" src="../../../images/usb/usb_hub.png" width="384" alt="image21"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e830__20250121171557">在 USB 的总线结构中，Hub 是一个重要的组成成员，它主要的作用是控制 Port 端口来连接更多的 USB Device 设备。</p>
+            <p class="- topic/p p" data-ofbid="d117801e833__20250121171557">它的核心点如下：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_jrn_nsp_g1c" data-ofbid="usb_intro__ul_jrn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e837__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e839__20250121171557">USB Host 需要给总线上的设备分配不同的地址才不会冲突，USB 的星形拓扑连接设备都是通过 Hub 的端口连结到总线上的。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e842__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e844__20250121171557">总线初始化枚举设备时，USB 设备的地址都是默认地址 0，但是 Hub 的端口都是关闭的所以并不产生设备冲突，Host 逐个打开 Hub
+                        的端口，逐个利用打开端口上设备的默认地址 0 来配置设备，给其分配新的地址，从 Endpoint 0 中读出设备的配置并设置。在运行过程中 USB
+                        设备的热插拔也是和这类似的。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_krn_nsp_g1c" data-ofbid="usb_intro__section_krn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Configure Descriptor</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e854__20250121171557">对于一个 USB 设备，在 <code class="+ topic/ph pr-d/codeph ph codeph">Device</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Configuration</code>、
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Interface</code>、 <code class="+ topic/ph pr-d/codeph ph codeph">Endpoint</code> 每个层次上都有对应的描述信息。可以使用
+                Endpoint0 在设备初始化的时候读出和配置这些信息。</p>
+            <div class="- topic/p p" data-ofbid="d117801e869__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_lrn_nsp_g1c" src="../../../images/usb/usb_device_config.png" alt="image22"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e874__20250121171557">最重要的是设备在初始化时，通过这些信息来进行枚举配置的过程。一个设备枚举的过程分为如下 8 步：</p>
+            <ol class="- topic/ol ol" id="usb_intro__ol_mrn_nsp_g1c" data-ofbid="usb_intro__ol_mrn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e878__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e880__20250121171557">获取设备描述符</p>
+                    <ul class="- topic/ul ul" id="usb_intro__ul_nrn_nsp_g1c" data-ofbid="usb_intro__ul_nrn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e884__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d117801e886__20250121171557">Host/Hub 通过数据线上拉电阻的阻值变化检测到新设备接入。Host 等待 100ms 以保证设备电源稳定。</p>
+                        </li><li class="- topic/li li" data-ofbid="d117801e889__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d117801e891__20250121171557">Host 向 Device 发 Bus Reset 使得设备进入 default 状态，从此之后，设备可以响应默认地址 0 。</p>
+                        </li><li class="- topic/li li" data-ofbid="d117801e894__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d117801e896__20250121171557">Host 请求 Device 发送 Device Descriptor 的前 64 个字节。</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d117801e900__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e902__20250121171557">复位</p>
+                    <ul class="- topic/ul ul" id="usb_intro__ul_orn_nsp_g1c" data-ofbid="usb_intro__ul_orn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e906__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d117801e908__20250121171557">Host 在收到 Device Descritptor 的前 8 个字节后，再次向 Device 发出 Bus Reset。</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d117801e912__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e914__20250121171557">设置地址</p>
+                    <ul class="- topic/ul ul" id="usb_intro__ul_prn_nsp_g1c" data-ofbid="usb_intro__ul_prn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e918__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d117801e920__20250121171557">Host 发送一个 Set Address 命令给 Deivce，从此 Device 有个通信地址，不再使用默认地址 0
+                                进行通信。</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d117801e924__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e926__20250121171557">再次获取设备描述符</p>
+                    <ul class="- topic/ul ul" id="usb_intro__ul_qrn_nsp_g1c" data-ofbid="usb_intro__ul_qrn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e930__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d117801e932__20250121171557">Host 请求获取完整的 Device Descritpor, 总计 18 字节。</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d117801e936__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e938__20250121171557">获取配置描述符</p>
+                    <ul class="- topic/ul ul" id="usb_intro__ul_rrn_nsp_g1c" data-ofbid="usb_intro__ul_rrn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e942__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d117801e944__20250121171557">Host 请求获取 9 个字节的 Configuration Descriptor 以了解 Configuration
+                                escriptor 的总大小。</p>
+                        </li><li class="- topic/li li" data-ofbid="d117801e947__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d117801e949__20250121171557">Host 请求 255 字节的 Configuration Descritpor。</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d117801e953__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e955__20250121171557">获取接口，端点描述符</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e958__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e960__20250121171557">获取字符串描述符</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e963__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e965__20250121171557">选择设备配置</p>
+                </li></ol>
+        </section><section class="- topic/section section" id="usb_intro__section_srn_nsp_g1c" data-ofbid="usb_intro__section_srn_nsp_g1c"><h2 class="- topic/title title sectiontitle">总线调度</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e974__20250121171557">USB 作为一个高速总线，它需要充分利用起其带宽，并且能承担其多种业务类型的数据包的传输。</p>
+            <p class="- topic/p p" data-ofbid="d117801e977__20250121171557">对数据传输来说，最重要的有几种因素 <code class="+ topic/ph pr-d/codeph ph codeph">带宽</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">时间延迟</code> 、
+                    <code class="+ topic/ph pr-d/codeph ph codeph">完整性校验</code> 。根据这几种因素的组合，USB 把数据传输分成了 4 类：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="usb_intro__table_trn_nsp_g1c" data-ofbid="usb_intro__table_trn_nsp_g1c" data-cols="4"><caption></caption><colgroup><col style="width:16.95364238410596%"/><col style="width:19.47019867549669%"/><col style="width:13.245033112582782%"/><col style="width:50.331125827814574%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_trn_nsp_g1c__entry__1">Type</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_trn_nsp_g1c__entry__2">KeyPoint</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_intro__table_trn_nsp_g1c__entry__3">Sample</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_intro__table_trn_nsp_g1c__entry__4">Descript</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__1">
+                                <p class="- topic/p p" data-ofbid="d117801e1009__20250121171557">Control</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1012__20250121171557">Transfers</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1015__20250121171557">控制传输</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__2">完整性校验</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__3">
+                                <p class="- topic/p p" data-ofbid="d117801e1022__20250121171557">USB</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1025__20250121171557">配置命令</p>
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__4">
+                                <p class="- topic/p p" data-ofbid="d117801e1030__20250121171557">突发的、非周期性的，主机软件发起的请求/响应通信</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1033__20250121171557">通常用于命令/状态操作。</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1036__20250121171557">数据量小对带宽、时间延迟要求不高，但是要求数据</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1039__20250121171557">须正确。</p>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__1">
+                                <p class="- topic/p p" data-ofbid="d117801e1045__20250121171557">Isochronous</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1048__20250121171557">Transfers</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1051__20250121171557">等时传输</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__2">
+                                <p class="- topic/p p" data-ofbid="d117801e1056__20250121171557">带宽 、</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1059__20250121171557">时间延迟</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__3">摄像头</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__4">
+                                <p class="- topic/p p" data-ofbid="d117801e1066__20250121171557">等时传输:主机和设备之间定期、连续的通信，通常用</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1069__20250121171557">于时间相关信息。这种传输类型还保留了数据中封装</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1072__20250121171557">的时间概念。然而，这并不意味着这些数据的交付需求</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1075__20250121171557">总是时间紧迫的。</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1078__20250121171557">数据量大需要大带宽、对时间延迟也很高，但是不要求</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1082__20250121171557">数据必须正确。也正因为前两者的要求高，也很难做到</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1085__20250121171557">数据校验和重传。</p>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__1">
+                                <p class="- topic/p p" data-ofbid="d117801e1091__20250121171557">Interrupt</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1094__20250121171557">Transfers</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1097__20250121171557">中断传输</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__2">
+                                <p class="- topic/p p" data-ofbid="d117801e1102__20250121171557">时间延迟 、</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1105__20250121171557">完整性校验</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__3">
+                                <p class="- topic/p p" data-ofbid="d117801e1110__20250121171557">键盘、</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1113__20250121171557">鼠标</p>
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_intro__table_trn_nsp_g1c__entry__4">
+                                <p class="- topic/p p" data-ofbid="d117801e1118__20250121171557">低频、有边界延迟通信。对时间延迟要求高，但数据量</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1121__20250121171557">所以要求数据必须正确。</p>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_trn_nsp_g1c__entry__1">
+                                <p class="- topic/p p" data-ofbid="d117801e1127__20250121171557">Bulk</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1130__20250121171557">Transfers</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1133__20250121171557">批量传输</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_trn_nsp_g1c__entry__2">
+                                <p class="- topic/p p" data-ofbid="d117801e1138__20250121171557">带宽 、</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1141__20250121171557">时间延迟 、</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1144__20250121171557">完整性校验</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_intro__table_trn_nsp_g1c__entry__3">文件存储</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_intro__table_trn_nsp_g1c__entry__4">
+                                <p class="- topic/p p" data-ofbid="d117801e1151__20250121171557">非周期性、大包突发通信，通常用于可以使用任何可用</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1154__20250121171557">带宽的数据，也可以延迟到带宽可用。</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1157__20250121171557">数据量大需要大带宽，但对时间延迟也不高，要求数据</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1160__20250121171557">必须正确。</p>
+                                <p class="- topic/p p" data-ofbid="d117801e1163__20250121171557">也正因为对延迟要求不高，所以可以做数据校验和重传。</p>
+                            </td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d117801e1167__20250121171557">USB 使用以下方法来满足多种类型的数据在一条共享通道上传输：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_urn_nsp_g1c" data-ofbid="usb_intro__ul_urn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1172__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1174__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">时间延迟</code> 。从时间维度上把数据传输切成多个时间片，在每个时间片内绝大部分份额 (最多 80%)
+                        优先传输对时间延迟有要求的数据，如 <code class="+ topic/ph pr-d/codeph ph codeph">Interrupt Transfers</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Isochronous
+                            Transfers</code> 。在时间片剩下的额度内传输对时间延迟没要求的数据，如 <code class="+ topic/ph pr-d/codeph ph codeph">Control
+                            Transfers</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Bulk Transfers</code> 。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1191__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1193__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">完整性校验</code> 。对需要保证数据完整性的数据加上了 CRC 校验，接收端使用 ACK 来知会发送端正确接收，如果没有收到
+                        ACK 发端会尝试重发 3 次。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_vrn_nsp_g1c" data-ofbid="usb_intro__section_vrn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Frames / Microframes</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1204__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_wrn_nsp_g1c" src="../../../images/usb/usb_microframe.png" width="384" alt="image24"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1209__20250121171557">如上图，USB 从时间维度上把数据传输切成多个时间片：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_xrn_nsp_g1c" data-ofbid="usb_intro__ul_xrn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1213__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1215__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Frames</code>。Low-speed 和 Full-speed 的时间切片大小为 <code class="+ topic/ph pr-d/codeph ph codeph">1ms</code>
+                        ，USB 控制器每 <code class="+ topic/ph pr-d/codeph ph codeph">1ms</code> 重新调度一下传输。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1226__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1228__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Microframes</code>。High-speed 的时间切片大小为 <code class="+ topic/ph pr-d/codeph ph codeph">125us</code> ，USB
+                        控制器每 <code class="+ topic/ph pr-d/codeph ph codeph">125us</code> 重新调度一下传输。</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d117801e1240__20250121171557">这个时间切片，和操作系统上 <code class="+ topic/ph pr-d/codeph ph codeph">Schedule Tick</code> 的概念是一样的。</p>
+            <p class="- topic/p p" data-ofbid="d117801e1247__20250121171557">在数据格式传输上又会进一步细分：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_yrn_nsp_g1c" data-ofbid="usb_intro__ul_yrn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1251__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1253__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code>。每个时间片的所有传输称之为一个 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code>，或者为一个
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Frames</code> / <code class="+ topic/ph pr-d/codeph ph codeph">Microframes</code>。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1267__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1269__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Transcation</code>。根据某次数据传输的目的，一个 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 可以分成多个
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Transcation</code> 事务。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1280__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1282__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Packet</code>。数据传输的最小单位，一个 <code class="+ topic/ph pr-d/codeph ph codeph">Transcation</code> 可能由多个
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Packet</code> 组成。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_zrn_nsp_g1c" data-ofbid="usb_intro__section_zrn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Bulk Transactions</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1299__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_asn_nsp_g1c" src="../../../images/usb/usb_trans_bulk.png" width="480" alt="image25"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1304__20250121171557">上图可以看到 <code class="+ topic/ph pr-d/codeph ph codeph">Bulk</code> 类型的 In/Out Endpint 在数据收发时的状态流程图：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_bsn_nsp_g1c" data-ofbid="usb_intro__ul_bsn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1311__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1313__20250121171557">NAK。接收端数据未准备好。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1316__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1318__20250121171557">ACK。接收端接收到数据且数据校验正确。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1321__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1323__20250121171557">不回应。接收端接收到错误数据，发端会重发 3 次。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_csn_nsp_g1c" data-ofbid="usb_intro__section_csn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Control Transfers</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1332__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_dsn_nsp_g1c" src="../../../images/usb/usb_trans_ctrl.png" alt="image26"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1337__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Control</code> 类型 和 <code class="+ topic/ph pr-d/codeph ph codeph">Bulk</code> 类型的处理类似。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_esn_nsp_g1c" data-ofbid="usb_intro__section_esn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Interrupt Transactions</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1350__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_fsn_nsp_g1c" src="../../../images/usb/usb_trans_int.png" width="480" alt="image27"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1355__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Interrupt</code> 类型对 <code class="+ topic/ph pr-d/codeph ph codeph">完整性校验</code> 也是有要求，处理流程和前面一样。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_gsn_nsp_g1c" data-ofbid="usb_intro__section_gsn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Isochronous Transactions</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1368__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_hsn_nsp_g1c" src="../../../images/usb/usb_trans_iso.png" alt="image28"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1373__20250121171557"><code class="+ topic/ph pr-d/codeph ph codeph">Isochronous</code> 类型是唯一对 <code class="+ topic/ph pr-d/codeph ph codeph">完整性校验</code> 没有要求的，所以它的数据不需要 ACK
+                回应。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_isn_nsp_g1c" data-ofbid="usb_intro__section_isn_nsp_g1c"><h2 class="- topic/title title sectiontitle">USB 和 PCIE 调度的区别</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e1386__20250121171557">PCIE 总线也是一个非常成功和流行的总线，从底层来说它和 USB 总线是非常像的：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_jsn_nsp_g1c" data-ofbid="usb_intro__ul_jsn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1390__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1392__20250121171557">它也是高速串行总线。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1395__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1397__20250121171557">它也是共享性的总线。都是把带宽逻辑切割成多份，分给不同的 Device 和驱动。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e1401__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_ksn_nsp_g1c" src="../../../images/tool/pcie_topo.png" alt="image29"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1406__20250121171557">但是它又看起来和 USB 如此的不同，主要的差异就在总线的调度上面：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_lsn_nsp_g1c" data-ofbid="usb_intro__ul_lsn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1411__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1413__20250121171557">PCIE 硬件使用了一个专门的仲裁器来做总线调度，所以在 Device 配置好以后，所有的 Mem/Io
+                        空间被映射到一个统一地址空间当中，只要发起普通的读写操作就能访问。而 USB 的总线调度被暴露了出来，需要硬件软件共同配合才能完成。毫无疑问，PCIE
+                        的硬件复杂度和成本会远远高于 USB。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1416__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1418__20250121171557">另外由于 PCIE 有独立的仲裁器来进行调度，所以 PCIE 支持多个设备同时操作总线。而 USB 的所有操作都需要 Host 来调度，所以只能由
+                        Host 发起总线操作。从效率来说 USB 要低。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1421__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1423__20250121171557">还有一点 PCIE 硬件仲裁器对软件是透明的，所以软件读写总线是 <code class="+ topic/ph pr-d/codeph ph codeph">同步</code> 的。而软件操作 USB 总线是
+                            <code class="+ topic/ph pr-d/codeph ph codeph">异步</code> 的，通过回调的操作来进行 USB 和 CPU 之间的状态对齐。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_msn_nsp_g1c" data-ofbid="usb_intro__section_msn_nsp_g1c"><h2 class="- topic/title title sectiontitle">传输格式</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e1438__20250121171557">上文说过一个传输时间片 Tranfer/Frame/MicroFrame，可以分割成多个 Transaction 事务，一个 Transaction 事务又可以细分成多个
+                Packet 包。</p>
+            <div class="- topic/p p" data-ofbid="d117801e1441__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_nsn_nsp_g1c" src="../../../images/usb/usb_frame_format.png" width="480" alt="image30"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_intro__section_osn_nsp_g1c" data-ofbid="usb_intro__section_osn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Packet</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e1451__20250121171557">Packet 包是 USB 传输的最小单位，由五部分组成：</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_psn_nsp_g1c" data-ofbid="usb_intro__ul_psn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1455__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1457__20250121171557">同步字段（SYNC）</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1460__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1462__20250121171557">包标识符字段（PID）</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1465__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1467__20250121171557">数据字段</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1470__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1472__20250121171557">循环冗余校验字段（CRC）</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1475__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1477__20250121171557">包结尾字段（EOP）</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e1481__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_qsn_nsp_g1c" src="../../../images/usb/usb_packet_format.png" width="480" alt="image31"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1486__20250121171557">主要的数据包格式有四类，对应不同的 PID 类型：</p>
+            <div class="- topic/p p" data-ofbid="d117801e1490__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_rsn_nsp_g1c" src="../../../images/usb/usb_packet_pid.png" alt="image32"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_intro__section_ssn_nsp_g1c" data-ofbid="usb_intro__section_ssn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Token Packet</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1500__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_tsn_nsp_g1c" src="../../../images/usb/usb_packet_token.png" width="288" alt="image33"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1505__20250121171557">此格式适用于 IN、OUT、SETUP、PING。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_usn_nsp_g1c" data-ofbid="usb_intro__section_usn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Data Packet</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1514__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_vsn_nsp_g1c" src="../../../images/usb/usb_packet_data.png" width="288" alt="image34"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d117801e1519__20250121171557">有四种类类型的数据包：DATA0, DATA1, DATA2,and MDATA，且由 PID 来区分。DATA0 和 DATA1 被定义为支持数据切换同步 (data
+                toggle synchronization)。</p>
+        </section><section class="- topic/section section" id="usb_intro__section_wsn_nsp_g1c" data-ofbid="usb_intro__section_wsn_nsp_g1c"><h2 class="- topic/title title sectiontitle">Handshake Packet</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1527__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_xsn_nsp_g1c" src="../../../images/usb/usb_packet_handshake.png" width="144" alt="image35"/></div><br/></div>
+            <ul class="- topic/ul ul" id="usb_intro__ul_ysn_nsp_g1c" data-ofbid="usb_intro__ul_ysn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1533__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1535__20250121171557">ACK: 对于 IN 事务，它将由 Host 发出。对于 OUT、SETUP 和 PING 事务，它将由 Device 发出。</p>
+                </li><li class="- topic/li li" data-ofbid="d117801e1538__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1540__20250121171557">NAK: 在数据阶段，对于 IN 事务，它将由 Device 发出。在握手阶段，对于 OUT 和 PING 事务，它也将由 Device  发出，Host
+                        从不发送 NAK 包。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_intro__section_zsn_nsp_g1c" data-ofbid="usb_intro__section_zsn_nsp_g1c"><h2 class="- topic/title title sectiontitle">通讯模型</h2>
+            
+            <p class="- topic/p p" data-ofbid="d117801e1549__20250121171557">USB 的主要作用就是建立起 Host 和 Device 之间的通讯。</p>
+            <ul class="- topic/ul ul" id="usb_intro__ul_atn_nsp_g1c" data-ofbid="usb_intro__ul_atn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1553__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1555__20250121171557">简要的通讯模型：</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e1559__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_btn_nsp_g1c" src="../../../images/usb/usb_flow_abstract.png" width="384" alt="image44"/></div><br/></div>
+            <ul class="- topic/ul ul" id="usb_intro__ul_ctn_nsp_g1c" data-ofbid="usb_intro__ul_ctn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1565__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d117801e1567__20250121171557">详细的通讯模型：</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d117801e1572__20250121171557"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_intro__image_dtn_nsp_g1c" src="../../../images/usb/usb_flow_detail.png" width="576" alt="image45"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_intro__section_sxq_4sp_g1c" data-ofbid="usb_intro__section_sxq_4sp_g1c"><h2 class="- topic/title title sectiontitle">参考资料</h2>
+            
+            <div class="- topic/p p" data-ofbid="d117801e1582__20250121171557">
+                <ol class="- topic/ol ol" id="usb_intro__ol_etn_nsp_g1c" data-ofbid="usb_intro__ol_etn_nsp_g1c"><li class="- topic/li li" data-ofbid="d117801e1585__20250121171557">
+                        <p class="- topic/p p" data-ofbid="d117801e1587__20250121171557"><a class="- topic/xref xref" href="https://www.usb.org/sites/default/files/usb_20_20211008.zip" target="_blank" rel="external noopener">USB 2.0 Specification</a></p>
+                    </li><li class="- topic/li li" data-ofbid="d117801e1592__20250121171557">
+                        <p class="- topic/p p" data-ofbid="d117801e1594__20250121171557"><a class="- topic/xref xref" href="http://www.usbzh.com/" target="_blank" rel="external noopener">USB 中文网</a></p>
+                    </li><li class="- topic/li li" data-ofbid="d117801e1599__20250121171557">
+                        <p class="- topic/p p" data-ofbid="d117801e1601__20250121171557"><a class="- topic/xref xref" href="https://blog.csdn.net/myarrow/article/details/8484113" target="_blank" rel="external noopener">USB 协通讯议–深入理解</a></p>
+                    </li></ol>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_intro__section_ipn_nsp_g1c" data-tocid="usb_intro__section_ipn_nsp_g1c">USB 发展历史</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_lpn_nsp_g1c" data-tocid="usb_intro__section_lpn_nsp_g1c">USB 1.0/2.0</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_ppn_nsp_g1c" data-tocid="usb_intro__section_ppn_nsp_g1c">USB 3.0</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_vpn_nsp_g1c" data-tocid="usb_intro__section_vpn_nsp_g1c">速度识别</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_fqn_nsp_g1c" data-tocid="usb_intro__section_fqn_nsp_g1c">OTG</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_hqn_nsp_g1c" data-tocid="usb_intro__section_hqn_nsp_g1c">phy 总线</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_oqn_nsp_g1c" data-tocid="usb_intro__section_oqn_nsp_g1c">传输编码方式</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_sqn_nsp_g1c" data-tocid="usb_intro__section_sqn_nsp_g1c">总线拓扑</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_wqn_nsp_g1c" data-tocid="usb_intro__section_wqn_nsp_g1c"> Device 内部的逻辑关系</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_ern_nsp_g1c" data-tocid="usb_intro__section_ern_nsp_g1c">Compound / Composite Device</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_hrn_nsp_g1c" data-tocid="usb_intro__section_hrn_nsp_g1c">Hub</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_krn_nsp_g1c" data-tocid="usb_intro__section_krn_nsp_g1c">Configure Descriptor</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_srn_nsp_g1c" data-tocid="usb_intro__section_srn_nsp_g1c">总线调度</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_vrn_nsp_g1c" data-tocid="usb_intro__section_vrn_nsp_g1c">Frames / Microframes</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_zrn_nsp_g1c" data-tocid="usb_intro__section_zrn_nsp_g1c">Bulk Transactions</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_csn_nsp_g1c" data-tocid="usb_intro__section_csn_nsp_g1c">Control Transfers</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_esn_nsp_g1c" data-tocid="usb_intro__section_esn_nsp_g1c">Interrupt Transactions</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_gsn_nsp_g1c" data-tocid="usb_intro__section_gsn_nsp_g1c">Isochronous Transactions</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_isn_nsp_g1c" data-tocid="usb_intro__section_isn_nsp_g1c">USB 和 PCIE 调度的区别</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_msn_nsp_g1c" data-tocid="usb_intro__section_msn_nsp_g1c">传输格式</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_osn_nsp_g1c" data-tocid="usb_intro__section_osn_nsp_g1c">Packet</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_ssn_nsp_g1c" data-tocid="usb_intro__section_ssn_nsp_g1c">Token Packet</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_usn_nsp_g1c" data-tocid="usb_intro__section_usn_nsp_g1c">Data Packet</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_wsn_nsp_g1c" data-tocid="usb_intro__section_wsn_nsp_g1c">Handshake Packet</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_zsn_nsp_g1c" data-tocid="usb_intro__section_zsn_nsp_g1c">通讯模型</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_intro__section_sxq_4sp_g1c" data-tocid="usb_intro__section_sxq_4sp_g1c">参考资料</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

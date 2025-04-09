@@ -1,0 +1,409 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍 Luban-Lite 方案中 XIP（Execute In Place）启动的适配说明。 不同的处理器和平台可能有不同的实现细节和要求。因此，在进行 XIP 适配时，务必参考特定处理器的技术文档和相关资源。 可执行文件 bsp/artinchip/drv_bare/spinor/aic_flash_xip_def.c ：关于 NOR Flash 的 XIP 配置信息 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/xip/xip_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/xip/3_test_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/xip/5_faq.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>适配说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1708"/><meta name="wh-source-relpath" content="topics/sdk/xip/4_adapter_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/xip/4_adapter_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html">XIP 方案 </a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/xip/4_adapter_guide.html">适配说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/xip/3_test_guide.html" title="测试指南" aria-label="上一主题: 测试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/xip/5_faq.html" title="常见问题" aria-label="下一主题: 常见问题" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1669" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/1_introduction.html" id="id-d5856e1669-link">模块介绍</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1681" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/2_config_guide.html" id="id-d5856e1681-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1693" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/3_test_guide.html" id="id-d5856e1693-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e1708" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/4_adapter_guide.html" id="id-d5856e1708-link">适配说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1722" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/5_faq.html" id="id-d5856e1722-link">常见问题</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/xip/4_adapter_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">适配说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 7 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d58387e21__20250121171520">本节介绍 <span class="- topic/ph ph">Luban-Lite</span> 方案中 XIP（Execute In Place）启动的适配说明。</p><p class="- topic/p p" data-ofbid="d58387e26__20250121171520">不同的处理器和平台可能有不同的实现细节和要求。因此，在进行 XIP 适配时，务必参考特定处理器的技术文档和相关资源。</p><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">可执行文件</h2>
+            <ul class="- topic/ul ul simple" data-ofbid="d58387e32__20250121171520"><li class="- topic/li li" data-ofbid="d58387e33__20250121171520">
+                    <p class="- topic/p p" data-ofbid="d58387e35__20250121171520"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv_bare/spinor/aic_flash_xip_def.c</span>：关于 NOR
+                        Flash 的 XIP 配置信息</p>
+                </li><li class="- topic/li li" data-ofbid="d58387e40__20250121171520">
+                    <p class="- topic/p p" data-ofbid="d58387e42__20250121171520"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/drv_bare/aic_flash_xip_def.h</span>：关于
+                            <span class="+ topic/keyword pr-d/apiname keyword apiname">aic_flash_xip_def </span>相关结构体和接口声明</p>
+                </li><li class="- topic/li li" data-ofbid="d58387e50__20250121171520">
+                    <p class="- topic/p p" data-ofbid="d58387e52__20250121171520"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_qspi.h</span>：关于 QSPI
+                        控制器相关接口头文件</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">配置结构体定义</h2>
+            <p class="- topic/p p" data-ofbid="d58387e62__20250121171520">XIP 相关的 NOR Flash 信息配置
+                    <span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv_bare/spinor/aic_flash_xip_def.c</span> 文件中。</p><p class="- topic/p p" data-ofbid="d58387e67__20250121171520">以下是 SPI NOR Flash 设备的配置结构体定义，主要包括以下几个部分：</p><div class="- topic/p p" data-ofbid="d58387e69__20250121171520">
+                <ul class="- topic/ul ul" id="id__ol_s2y_ypn_vcc" data-ofbid="id__ol_s2y_ypn_vcc"><li class="- topic/li li" data-ofbid="d58387e72__20250121171520">
+                        <div class="- topic/p p" data-ofbid="d58387e74__20250121171520"><code class="+ topic/ph pr-d/codeph ph codeph">xip_device</code> 结构体：包含设备名称、Flash
+                                ID、支持的协议等信息，以及两个配置结构体（<code class="+ topic/ph pr-d/codeph ph codeph">qspi_xip_burst_cfg</code> 和
+                                <code class="+ topic/ph pr-d/codeph ph codeph">qspi_xip_read_cfg</code>）。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_r54_zpn_vcc" data-ofbid="id__codeblock_r54_zpn_vcc"><strong class="hl-keyword">struct</strong> xip_device {
+    <strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *name;
+    u32 flash_id;
+    u32 proto_support;
+    <strong class="hl-keyword">struct</strong> qspi_xip_burst_cfg burst_cfg;
+    <strong class="hl-keyword">struct</strong> qspi_xip_read_cfg read_cfg;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d58387e87__20250121171520"><code class="+ topic/ph pr-d/codeph ph codeph">qspi_xip_burst_cfg</code> 结构体：用于配置 QSPI XIP
+                        模式下的突发传输参数，包括设置突发命令、虚拟字节、位宽等。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xjc_cqn_vcc" data-ofbid="id__codeblock_xjc_cqn_vcc"><strong class="hl-keyword">struct</strong> qspi_xip_burst_cfg {
+    u8 cmd_set_burst;   <em class="hl-comment">/* CMD to set burst with wrap or linear, 77h or C0h */</em>
+    u8 cmd_dummy_byte;  <em class="hl-comment">/* Dummy byte fot set burst command */</em>
+    u8 cmd_bits_width;  <em class="hl-comment">/* When CMD is C0h, bits width is needed to set */</em>
+    u8 wrap_en;         <em class="hl-comment">/* 00: disable, 01 wrap with fixed len, 02 wrap with auto len */</em>
+    <strong class="hl-keyword">struct</strong> qspi_xip_wrap_bits wrap;
+};</pre></li><li class="- topic/li li" data-ofbid="d58387e93__20250121171520"><code class="+ topic/ph pr-d/codeph ph codeph">qspi_xip_wrap_bits</code> 结构体：用于配置 QSPI XIP
+                        模式下的包装位参数，包括固定长度、禁用包装、自动选择不同长度的包装位。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_f3v_dqn_vcc" data-ofbid="id__codeblock_f3v_dqn_vcc"><strong class="hl-keyword">struct</strong> qspi_xip_wrap_bits {
+    <em class="hl-comment">/*
+    * When config SPI controller select to use fixed wrap length, should
+    * set the selected wrap bits value to it.
+    */</em>
+    u8 fixed_len;
+    <em class="hl-comment">/*
+    * Wrap bits value to disable wrap length
+    */</em>
+    u8 disable;
+    <em class="hl-comment">/*
+    * Wrap bits value to select wrap length 64bytes
+    */</em>
+    u8 auto_wl64;
+    <em class="hl-comment">/*
+    * Wrap bits value to select wrap length 32bytes
+    */</em>
+    u8 auto_wl32;
+    <em class="hl-comment">/*
+    * Wrap bits value to select wrap length 16bytes
+    */</em>
+    u8 auto_wl16;
+    <em class="hl-comment">/*
+    * Wrap bits value to select wrap length 8bytes
+    */</em>
+    u8 auto_wl8;
+};</pre></li><li class="- topic/li li" data-ofbid="d58387e99__20250121171520"><code class="+ topic/ph pr-d/codeph ph codeph">qspi_xip_read_cfg</code> 结构体：用于配置 QSPI XIP
+                        模式下的读取参数，包括读取命令、虚拟字节、地址模式等。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ffh_gqn_vcc" data-ofbid="id__codeblock_ffh_gqn_vcc"><strong class="hl-keyword">struct</strong> qspi_xip_read_cfg {
+    <em class="hl-comment">/*
+    * QIO or QPI read command value
+    */</em>
+    u8 read_cmd;
+    <em class="hl-comment">/*
+    * Read command's dummy byte.
+    * User should check SPI NOR datasheet and set it.
+    */</em>
+    u8 dummy_byte;
+    u8 addr_mode; <em class="hl-comment">/* 0: 3byte address, 1: 4byte address */</em>
+    <em class="hl-comment">/*
+    * When CPU cache is disabled, user can select to enable read command bypass mode
+    */</em>
+    u8 read_cmd_bypass_en;
+    <strong class="hl-keyword">struct</strong> qspi_xip_read_cmd_mode_byte mode;
+};</pre></li><li class="- topic/li li" data-ofbid="d58387e105__20250121171520"><code class="+ topic/ph pr-d/codeph ph codeph">qspi_xip_read_cmd_mode_byte</code> 结构体：用于配置 QSPI XIP
+                        模式下的读取命令模式字节，包括正常模式和绕过模式。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ntl_gqn_vcc" data-ofbid="id__codeblock_ntl_gqn_vcc"><strong class="hl-keyword">struct</strong> qspi_xip_read_cmd_mode_byte {
+    <em class="hl-comment">/*
+    * Mode byte code value to set read command bypass mode,
+    * User should check SPI NOR datasheet and set it.
+    */</em>
+    u8 bypass;
+    <em class="hl-comment">/*
+    * Mode byte code value to set read command normal mode,
+    * User should check SPI NOR datasheet and set it.
+    */</em>
+    u8 normal;
+};</pre></li></ul>
+            </div>
+            
+        </section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">适配方法</h2>
+            <p class="- topic/p p" data-ofbid="d58387e117__20250121171520">在 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv_bare/spinor/aic_flash_xip_def.c</span> 文件中添加节点信息到
+                    <code class="+ topic/ph pr-d/codeph ph codeph">struct xip_device</code> 结构体中。每个节点代表一颗 NOR Flash 。</p>
+            <div class="- topic/p p" data-ofbid="d58387e126__20250121171520">以下以 <strong class="+ topic/ph hi-d/b ph b">ZB25VQ128</strong> 为例演示具体的适配流程：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_unr_kpq_gdc" data-ofbid="id__codeblock_unr_kpq_gdc">{
+    .name = <span class="hl-string">"ZB25VQ128"</span>, <em class="hl-comment">// verify ok.</em>
+    .flash_id = <span class="hl-number">0X5E4018</span>,
+    .proto_support = CMD_PROTO_QIO|CMD_PROTO_CACHE_EN|CMD_PROTO_CACHE_DIS,
+    .burst_cfg = {
+            .cmd_set_burst = <span class="hl-number">0x77</span>,
+            .cmd_dummy_byte = <span class="hl-number">3</span>,
+            .cmd_bits_width = XIP_C0_BITS_WIDTH_<span class="hl-number">4</span>,
+            .wrap_en = XIP_BURST_WRAPPED_WITH_FIXED_LEN,
+            .wrap = {
+                    .fixed_len = <span class="hl-number">0x40</span>,
+                    .disable = <span class="hl-number">0x10</span>,
+                    .auto_wl64 = <span class="hl-number">0x60</span>,
+                    .auto_wl32 = <span class="hl-number">0x40</span>,
+                    .auto_wl16 = <span class="hl-number">0x20</span>,
+                    .auto_wl8 = <span class="hl-number">0x00</span>,
+            },
+    },
+    .read_cfg = {
+            .read_cmd = <span class="hl-number">0xEB</span>,
+            .dummy_byte = <span class="hl-number">2</span>,
+            .addr_mode = SPINOR_ADDR_MODE_<span class="hl-number">3</span>BYTE,
+            .read_cmd_bypass_en = <span class="hl-number">0</span>,
+            .mode = {
+                    .bypass = <span class="hl-number">0xf0</span>,
+                    .normal = <span class="hl-number">0x00</span>,
+            },
+    },
+}, <em class="hl-comment">//.name = "ZB25VQ128",</em></pre></div>
+            <ul class="- topic/ul ul" id="id__ul_t32_lpq_gdc" data-ofbid="id__ul_t32_lpq_gdc"><li class="- topic/li li" data-ofbid="d58387e135__20250121171520">
+                    <p class="- topic/p p" data-ofbid="d58387e137__20250121171520"><code class="+ topic/ph pr-d/codeph ph codeph">.flash_id</code> = 0X5E4018：</p>
+                    <p class="- topic/p p" data-ofbid="d58387e142__20250121171520">一般情况下，可通过 SPI 模式读取设备 ID，根据手册说明，ZB25VQ128 ID 为 0x5E4018。</p>
+                    <figure class="- topic/fig fig fignone" id="id__id9" data-ofbid="id__id9"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_j3l_lpq_gdc" src="../../../images/xip/flash_id.png" alt="flash_id"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">Flash ID</span></figcaption></figure>
+                </li><li class="- topic/li li" data-ofbid="d58387e152__20250121171520">
+                    <p class="- topic/p p" data-ofbid="d58387e154__20250121171520"><span class="+ topic/ph sw-d/filepath ph filepath">.burst_cfg</span>：</p>
+                    <p class="- topic/p p" data-ofbid="d58387e159__20250121171520"><code class="+ topic/ph pr-d/codeph ph codeph">struct qspi_xip_burst_cfg</code> 需要填充 Set Burst with Wrap
+                            指令配置，根据手册可知，<code class="+ topic/ph pr-d/codeph ph codeph">.cmd_set_burst =
+                            0x77</code>，<code class="+ topic/ph pr-d/codeph ph codeph">.wrap_en
+                            = XIP_BURST_WRAPPED_WITH_FIXED_LEN</code> 使能即使用 <code class="+ topic/ph pr-d/codeph ph codeph">struct
+                            qspi_xip_wrap_bits</code> 的 <code class="+ topic/ph pr-d/codeph ph codeph">.fixed_len</code> 配置其中
+                            <code class="+ topic/ph pr-d/codeph ph codeph">.fixed_len = 0x40</code> 意为 bit6 = 1， bit5=0 , 即
+                        0x40.</p>
+                    <div class="- topic/p p" data-ofbid="d58387e182__20250121171520">注意 <code class="+ topic/ph pr-d/codeph ph codeph">.cmd_dummy_byte</code> 是以 Byte 为单位，手册中描述需要 24 Dummy Bits，即 3
+                            Bytes。<figure class="- topic/fig fig fignone" id="id__id10" data-ofbid="id__id10"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_vyd_mpq_gdc" src="../../../images/xip/burst_cfg.png" alt="burst_cfg"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">Burst CFG</span></figcaption></figure></div>
+                </li><li class="- topic/li li" data-ofbid="d58387e194__20250121171520">
+                    <p class="- topic/p p" data-ofbid="d58387e196__20250121171520">.read_cfg =：</p>
+                    <p class="- topic/p p" data-ofbid="d58387e199__20250121171520"><code class="+ topic/ph pr-d/codeph ph codeph">structqspi_xip_read_cfg</code>
+                        是填充 Fast Read Quad I/O 指令配置，从 Set Burst with Wrap 指令的描述可知， The Set Burst
+                        with Wrap (77h) command is used in conjunction with ― Fast Read Quad I/O
+                        commands to access a fixed length and alignment of 8/16/32/64-bytes of
+                        data.</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__id5" data-ofbid="id__id5"><h2 class="- topic/title title sectiontitle">注意事项</h2>
+            <ul class="- topic/ul ul" id="id__ul_eqb_n4y_3dc" data-ofbid="id__ul_eqb_n4y_3dc"><li class="- topic/li li" data-ofbid="d58387e212__20250121171520">
+                    <div class="- topic/div div section" id="id__cache-qio-qpi"><strong class="+ topic/ph hi-d/b ph b">Cache 关闭，QIO/QPI 模式</strong>
+                        <ul class="- topic/ul ul" id="id__ul_h3c_54y_3dc" data-ofbid="id__ul_h3c_54y_3dc"><li class="- topic/li li" data-ofbid="d58387e219__20250121171520">
+                                <div class="- topic/div div section" id="id__id6"><strong class="+ topic/ph hi-d/b ph b">要点</strong>
+                                    <div class="- topic/p p" data-ofbid="d58387e225__20250121171520">QIO:<ul class="- topic/ul ul" id="id__ul_lpx_mpq_gdc" data-ofbid="id__ul_lpx_mpq_gdc"><li class="- topic/li li" data-ofbid="d58387e228__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e230__20250121171520">CPU 只发 Linear 访问</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e233__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e235__20250121171520">Read Command Bypass 可以使能</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e238__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e240__20250121171520">SPINOR 需要使能 QE Bit</p>
+                                            </li></ul></div><div class="- topic/p p" data-ofbid="d58387e243__20250121171520">QPI:<ul class="- topic/ul ul" id="id__ul_uv3_npq_gdc" data-ofbid="id__ul_uv3_npq_gdc"><li class="- topic/li li" data-ofbid="d58387e246__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e248__20250121171520">CPU 只发 Linear 访问</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e251__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e253__20250121171520">Read Command Bypass 可以使能</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e256__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e258__20250121171520">SPINOR 需要使能 QE Bit</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e261__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e263__20250121171520">SPINOR 需要进入 QPI 模式</p>
+                                            </li></ul></div>
+                                </div>
+                            </li><li class="- topic/li li" data-ofbid="d58387e268__20250121171520">
+                                <div class="- topic/div div section" id="id__cache-enable-wrap"><strong class="+ topic/ph hi-d/b ph b">为什么 Cache
+                                        Enable 时，必须使能 Wrap</strong><p class="- topic/p p" data-ofbid="d58387e273__20250121171520"> CPU Cache 使能时，CPU 发起的访问可能是 Wrap
+                                        burst，如果 SPI 控制器的 Wrap enable 没有使能， 则 SPI 控制器的 XIP 模块不会发送设置
+                                        SPINOR Wrap 模式的命令。 结果会导致 CPU 的访问类型与 SPINOR
+                                        返回数据的方式不匹配，读取数据出错。</p></div>
+                            </li></ul>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d58387e278__20250121171520">
+                    <div class="- topic/div div section" id="id__id7"><strong class="+ topic/ph hi-d/b ph b">Cache 使能，QIO/QPI 模式</strong>
+                        <ul class="- topic/ul ul" id="id__ul_vdv_s4y_3dc" data-ofbid="id__ul_vdv_s4y_3dc"><li class="- topic/li li" data-ofbid="d58387e285__20250121171520">
+                                <div class="- topic/div div section" id="id__id8"><strong class="+ topic/ph hi-d/b ph b">要点</strong>
+                                    <div class="- topic/p p" data-ofbid="d58387e291__20250121171520">QIO:<ul class="- topic/ul ul" id="id__ul_gry_npq_gdc" data-ofbid="id__ul_gry_npq_gdc"><li class="- topic/li li" data-ofbid="d58387e294__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e296__20250121171520">SPI 控制器的 Wrap burst 必须使能</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e299__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e301__20250121171520"><strong class="+ topic/ph hi-d/b ph b">Read Command Bypass 不可以使能</strong></p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e305__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e307__20250121171520">CPU 可能发 Linear/Wrap burst 访问</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e310__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e312__20250121171520">SPINOR 需要使能 QE Bit</p>
+                                            </li></ul></div><div class="- topic/p p" data-ofbid="d58387e315__20250121171520">QPI:<ul class="- topic/ul ul" id="id__ul_kkj_4pq_gdc" data-ofbid="id__ul_kkj_4pq_gdc"><li class="- topic/li li" data-ofbid="d58387e318__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e320__20250121171520">SPI 控制器的 Wrap burst 必须使能</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e323__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e325__20250121171520">Read Command Bypass 不可以使能</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e328__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e330__20250121171520">CPU 可能发 Linear/Wrap burst 访问</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e333__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e335__20250121171520">SPINOR 需要使能 QE Bit</p>
+                                            </li><li class="- topic/li li" data-ofbid="d58387e338__20250121171520">
+                                                <p class="- topic/p p" data-ofbid="d58387e340__20250121171520">SPINOR 需要进入 QPI 模式</p>
+                                            </li></ul></div></div>
+                            </li><li class="- topic/li li" data-ofbid="d58387e344__20250121171520">
+                                <div class="- topic/div div section" id="id__cache-enable-read-command-bypass"><strong class="+ topic/ph hi-d/b ph b">为什么
+                                        Cache Enable 时，不可以使能 Read Command Bypass</strong>
+                                    <p class="- topic/p p" data-ofbid="d58387e352__20250121171520">CPU Cache 使能时，CPU 发起的访问可能是 Linear 访问，也可能是 Wrap burst 访问，SPI
+                                        XIP 控制器需要根据接收到的 CPU 访问类型，发送命令对 SPINOR 进行切换。</p><p class="- topic/p p" data-ofbid="d58387e354__20250121171520">Cache
+                                        使能时，同时使能 Read Command Bypass
+                                        会导致上述的切换失败。</p><p class="- topic/p p" data-ofbid="d58387e356__20250121171520">具体场景如下：</p><ol class="- topic/ol ol" id="id__ol_k42_ppq_gdc" data-ofbid="id__ol_k42_ppq_gdc"><li class="- topic/li li" data-ofbid="d58387e359__20250121171520">
+                                            <p class="- topic/p p" data-ofbid="d58387e361__20250121171520">CPU 进行 Linear 访问时，设置了 Read Command Bypass</p>
+                                        </li><li class="- topic/li li" data-ofbid="d58387e364__20250121171520">
+                                            <p class="- topic/p p" data-ofbid="d58387e366__20250121171520">CPU 切换到了 Wrap burst 访问</p>
+                                        </li><li class="- topic/li li" data-ofbid="d58387e369__20250121171520">
+                                            <p class="- topic/p p" data-ofbid="d58387e371__20250121171520">此时 SPI XIP 模块需要发送切换命令到 SPINOR</p>
+                                        </li><li class="- topic/li li" data-ofbid="d58387e374__20250121171520">
+                                            <p class="- topic/p p" data-ofbid="d58387e376__20250121171520">问题：SPINOR 还在 Read Command ByPass
+                                                模式下，需要退出该模式才能接收命令，因此切换命令发送会失败</p>
+                                        </li><li class="- topic/li li" data-ofbid="d58387e379__20250121171520">
+                                            <p class="- topic/p p" data-ofbid="d58387e381__20250121171520">CPU Wrap burst 访问也会跟着失败</p>
+                                        </li></ol></div>
+                            </li></ul></div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">可执行文件</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">配置结构体定义</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">适配方法</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id5" data-tocid="id__id5">注意事项</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

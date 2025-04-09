@@ -1,0 +1,13 @@
+menuconfig LPKG_USING_AIC_AUTHORIZATION
+    bool "aic-authorization"
+    depends on AIC_CE_DRV
+    default n
+
+if LPKG_USING_AIC_AUTHORIZATION
+
+config AIC_AUTHORIZATION_TEST
+    bool "aic authorization test"
+    depends on LPKG_USING_AIC_AUTHORIZATION
+    default n
+
+endif

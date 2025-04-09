@@ -1,0 +1,605 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="信息配置 SDK 中 UART 的配置信息包括 SoC 配置： Kconfig.chip 开发板配置：Kconfig.board Pimux 配置：pinmux.c 设备配置：Kconfig.dev SoC 配置 SoC 的 UART 模块的基础信息配置在 bsp/artinchip/sys/soc name/Kconfig.chip 中设置 驱动版本信息 UART 数目信息 config ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/uart/uart_user_guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/uart/uart_test_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/uart/uart_faq_2.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e5927"/><meta name="wh-source-relpath" content="topics/sdk/uart/uart_design_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/uart/uart_design_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_nww_hzh_pzb"><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="uart_user_guide"><div class="title"><a href="../../../topics/sdk/uart/uart_user_guide_2.html">UART 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/uart/uart_design_lite.html">设计说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/uart/uart_test_lite.html" title="测试指南" aria-label="上一主题: 测试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/uart/uart_faq_2.html" title="常见问题" aria-label="下一主题: 常见问题" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="can-d5856e4886" class="topicref" data-id="can" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-d5856e4886-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/can/can_user_guide_2.html" id="can-d5856e4886-link">CAN 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4958" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4958-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cap/cap_user_guide.html" id="id-d5856e4958-link">CAP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5018" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5018-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/qep/qep_user_guide.html" id="id-d5856e5018-link">QEP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cir-d5856e5228" class="topicref" data-id="cir" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cir-d5856e5228-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_user_guide_2.html" id="cir-d5856e5228-link">CIR 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="gpai-user-guide-d5856e5336" class="topicref" data-id="gpai-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action gpai-user-guide-d5856e5336-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpai/gpai_user_guide_2.html" id="gpai-user-guide-d5856e5336-link">GPAI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5408" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5408-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpio/gpio_user_guide.html" id="id-d5856e5408-link">GPIO 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c_user_guide-d5856e5480" class="topicref" data-id="i2c_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c_user_guide-d5856e5480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2c/i2c_user_guide_2.html" id="i2c_user_guide-d5856e5480-link">I2C 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5576" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5576-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/psadc/psadc_user_guide_2.html" id="id-d5856e5576-link">PSADC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5648" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5648-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pwm/pwm_user_guide_2.html" id="id-d5856e5648-link">PWM 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="rtp-user-guide-d5856e5721" class="topicref" data-id="rtp-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action rtp-user-guide-d5856e5721-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtp/rtp_user_guide_2.html" id="rtp-user-guide-d5856e5721-link">RTP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-d5856e5805" class="topicref" data-id="spi" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-d5856e5805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_user_guide_2.html" id="spi-d5856e5805-link"><span class="ph">Q</span>SPI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="uart_user_guide-d5856e5879" class="topicref" data-id="uart_user_guide" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action uart_user_guide-d5856e5879-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_user_guide_2.html" id="uart_user_guide-d5856e5879-link">UART 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e5891" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_config_lite.html" id="id-d5856e5891-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e5903" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_debug_lite.html" id="id-d5856e5903-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e5915" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_test_lite.html" id="id-d5856e5915-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e5927" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_design_lite.html" id="id-d5856e5927-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="uart_common_issues-d5856e5939" class="topicref" data-id="uart_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_faq_2.html" id="uart_common_issues-d5856e5939-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_user_guide-d5856e5951" class="topicref" data-id="usb_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_user_guide-d5856e5951-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb_user_guide_2.html" id="usb_user_guide-d5856e5951-link">USB 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e6011" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e6011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_user_guide_2.html" id="id-d5856e6011-link">MAC 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/uart/uart_design_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 11 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_ubd_v3n_fdc" data-ofbid="id__section_ubd_v3n_fdc"><h2 class="- topic/title title sectiontitle">信息配置</h2>
+            
+            <p class="- topic/p p" data-ofbid="d200335e25__20250121171634">SDK 中 UART 的配置信息包括</p>
+            <ul class="- topic/ul ul simple" id="id__ul_ccd_v3n_fdc" data-ofbid="id__ul_ccd_v3n_fdc"><li class="- topic/li li" data-ofbid="d200335e29__20250121171634">
+                    <p class="- topic/p p" data-ofbid="d200335e31__20250121171634">SoC 配置： Kconfig.chip</p>
+                </li><li class="- topic/li li" data-ofbid="d200335e34__20250121171634">
+                    <p class="- topic/p p" data-ofbid="d200335e36__20250121171634">开发板配置：Kconfig.board</p>
+                </li><li class="- topic/li li" data-ofbid="d200335e39__20250121171634">
+                    <p class="- topic/p p" data-ofbid="d200335e41__20250121171634">Pimux 配置：pinmux.c</p>
+                </li><li class="- topic/li li" data-ofbid="d200335e44__20250121171634">
+                    <p class="- topic/p p" data-ofbid="d200335e46__20250121171634">设备配置：Kconfig.dev</p>
+                </li></ul>
+            <div class="- topic/div div section" id="id__soc">
+                <strong class="+ topic/ph hi-d/b ph b">SoC 配置</strong>
+                <p class="- topic/p p" data-ofbid="d200335e55__20250121171634">SoC 的 UART 模块的基础信息配置在 bsp/artinchip/sys/soc name/Kconfig.chip 中设置</p><ul class="- topic/ul ul simple" id="id__ul_dcd_v3n_fdc" data-ofbid="id__ul_dcd_v3n_fdc"><li class="- topic/li li" data-ofbid="d200335e58__20250121171634">
+                        <p class="- topic/p p" data-ofbid="d200335e60__20250121171634">驱动版本信息</p>
+                    </li><li class="- topic/li li" data-ofbid="d200335e63__20250121171634">
+                        <p class="- topic/p p" data-ofbid="d200335e65__20250121171634">UART 数目信息</p>
+                    </li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ecd_v3n_fdc" data-ofbid="id__codeblock_ecd_v3n_fdc">config AIC_UART_DRV
+bool
+<strong class="hl-keyword">default</strong> n
+
+config AIC_UART_DRV_V10
+bool
+<strong class="hl-keyword">default</strong> y <strong class="hl-keyword">if</strong> AIC_UART_DRV
+
+config AIC_UART_DRV_VER
+string
+<strong class="hl-keyword">default</strong> <span class="hl-string">"10"</span> <strong class="hl-keyword">if</strong> AIC_UART_DRV_V10
+
+config AIC_UART_DEV_NUM
+<strong class="hl-keyword">int</strong>
+<strong class="hl-keyword">default</strong> <span class="hl-number">8</span> <strong class="hl-keyword">if</strong> AIC_UART_DRV</pre>
+            </div>
+            <div class="- topic/div div section" id="id__id3">
+                <strong class="+ topic/ph hi-d/b ph b">开发板配置</strong>
+                <p class="- topic/p p" data-ofbid="d200335e77__20250121171634">在 target/soc name/board name/Kconfig.board 中完成某一开发板中 UART 的相关信息设置， 一般会配置需要的 UART
+                    端口 </p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_fcd_v3n_fdc" data-ofbid="id__codeblock_fcd_v3n_fdc">config AIC_USING_UART0
+bool <span class="hl-string">"Using uart0"</span>
+<strong class="hl-keyword">default</strong> n
+select AIC_UART_DRV
+
+config AIC_USING_UART1
+bool <span class="hl-string">"Using uart1"</span>
+<strong class="hl-keyword">default</strong> n
+select AIC_UART_DRV</pre></div>
+            <div class="- topic/div div section" id="id__pinmux">
+                <strong class="+ topic/ph hi-d/b ph b">Pinmux</strong>
+                <p class="- topic/p p" data-ofbid="d200335e88__20250121171634">在 target/soc name/board name/pinmux.c 中配置 UART 端口的
+                pinmux</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_gcd_v3n_fdc" data-ofbid="id__codeblock_gcd_v3n_fdc"><strong class="hl-keyword">struct</strong> aic_pinmux aic_pinmux_config[] = {
+...
+#ifdef AIC_USING_UART0
+    <em class="hl-comment">/* uart0 */</em>
+    {<span class="hl-number">5</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.0"</span>},
+    {<span class="hl-number">5</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.1"</span>},
+#endif</pre>
+            </div>
+            <div class="- topic/div div section" id="id__id4">
+                <strong class="+ topic/ph hi-d/b ph b">设备配置</strong>
+                <p class="- topic/p p" data-ofbid="d200335e99__20250121171634">在 bsp/artinchip/drv/uart/Kconfig.dev 中设置设备的工作参数</p><ul class="- topic/ul ul simple" id="id__ul_hcd_v3n_fdc" data-ofbid="id__ul_hcd_v3n_fdc"><li class="- topic/li li" data-ofbid="d200335e102__20250121171634">
+                        <p class="- topic/p p" data-ofbid="d200335e104__20250121171634">clock</p>
+                    </li><li class="- topic/li li" data-ofbid="d200335e107__20250121171634">
+                        <p class="- topic/p p" data-ofbid="d200335e109__20250121171634">baudrate</p>
+                    </li><li class="- topic/li li" data-ofbid="d200335e112__20250121171634">
+                        <p class="- topic/p p" data-ofbid="d200335e114__20250121171634">data bites</p>
+                    </li><li class="- topic/li li" data-ofbid="d200335e117__20250121171634">
+                        <p class="- topic/p p" data-ofbid="d200335e119__20250121171634">stop bits</p>
+                    </li><li class="- topic/li li" data-ofbid="d200335e122__20250121171634">
+                        <p class="- topic/p p" data-ofbid="d200335e124__20250121171634">parity</p>
+                    </li><li class="- topic/li li" data-ofbid="d200335e127__20250121171634">
+                        <p class="- topic/p p" data-ofbid="d200335e129__20250121171634">function</p>
+                    </li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_icd_v3n_fdc" data-ofbid="id__codeblock_icd_v3n_fdc">config AIC_DEV_UART0_BAUDRATE
+<strong class="hl-keyword">int</strong> <span class="hl-string">"uart0 baudrate"</span>
+<strong class="hl-keyword">default</strong> <span class="hl-number">115200</span>
+
+config AIC_DEV_UART0_DATABITS
+<strong class="hl-keyword">int</strong> <span class="hl-string">"uart0 data bits"</span>
+range <span class="hl-number">0</span> <span class="hl-number">15</span>
+<strong class="hl-keyword">default</strong> <span class="hl-number">8</span>
+
+config AIC_DEV_UART0_STOPBITS
+<strong class="hl-keyword">int</strong> <span class="hl-string">"uart0 stop bits"</span>
+range <span class="hl-number">0</span> <span class="hl-number">3</span>
+<strong class="hl-keyword">default</strong> <span class="hl-number">1</span></pre></div>
+        </section><section class="- topic/section section" id="id__section_wbd_v3n_fdc" data-ofbid="id__section_wbd_v3n_fdc"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+            
+            <p class="- topic/p p" data-ofbid="d200335e141__20250121171634">UART 的功能通过三层包装实现：</p>
+            <ul class="- topic/ul ul simple" id="id__ul_jcd_v3n_fdc" data-ofbid="id__ul_jcd_v3n_fdc"><li class="- topic/li li" data-ofbid="d200335e145__20250121171634">
+                    <p class="- topic/p p" data-ofbid="d200335e147__20250121171634">HAL 层： bsp/artinchip/hal/uart/aic_hal_uart.c</p>
+                </li><li class="- topic/li li" data-ofbid="d200335e150__20250121171634">
+                    <p class="- topic/p p" data-ofbid="d200335e152__20250121171634">驱动层： bsp/artinchip/drv/uart/aic_drv_uart.c</p>
+                </li><li class="- topic/li li" data-ofbid="d200335e155__20250121171634">
+                    <p class="- topic/p p" data-ofbid="d200335e157__20250121171634">应用层： kernel/rt-thread/components/drivers/serial/serial.c</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__section_xbd_v3n_fdc" data-ofbid="id__section_xbd_v3n_fdc"><h2 class="- topic/title title sectiontitle">HAL 层</h2>
+            
+            <p class="- topic/p p" data-ofbid="d200335e166__20250121171634">HAL 层主要完成对寄存的操作，对基础功能块的封装</p>
+            
+            <div class="- topic/div div section" id="id__id6">
+                <strong class="+ topic/ph hi-d/b ph b">寄存器</strong>
+                <div class="- topic/p p" data-ofbid="d200335e176__20250121171634">代码中通过一个数据结构来完整的保存寄存器的数据，对数据结构变量的操作将直接操作到对寄存器<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xzw_zhn_fdc" data-ofbid="id__codeblock_xzw_zhn_fdc"><strong class="hl-keyword">typedef</strong> <strong class="hl-keyword">struct</strong>
+{
+    <strong class="hl-keyword">union</strong>
+    {
+        __IM uint32_t RBR;              <em class="hl-comment">/* Offset: 0x000 (R/ )  Receive buffer register */</em>
+        __OM uint32_t THR;              <em class="hl-comment">/* Offset: 0x000 ( /W)  Transmission hold register */</em>
+        __IOM uint32_t DLL;             <em class="hl-comment">/* Offset: 0x000 (R/W)  Clock frequency division low section register */</em>
+    };
+    <strong class="hl-keyword">union</strong>
+    {
+        __IOM uint32_t DLH;             <em class="hl-comment">/* Offset: 0x004 (R/W)  Clock frequency division high section register */</em>
+        __IOM uint32_t IER;             <em class="hl-comment">/* Offset: 0x004 (R/W)  Interrupt enable register */</em>
+    };
+    <strong class="hl-keyword">union</strong>
+    {
+        __IM uint32_t IIR;              <em class="hl-comment">/* Offset: 0x008 (R/ )  Interrupt indicia register */</em>
+        __IOM uint32_t FCR;             <em class="hl-comment">/* Offset: 0x008 (W)    FIFO control register */</em>
+    };
+    __IOM uint32_t LCR;                 <em class="hl-comment">/* Offset: 0x00C (R/W)  Transmission control register */</em>
+    __IOM uint32_t MCR;                 <em class="hl-comment">/* Offset: 0x010 (R/W)  Modem Control register */</em>
+    __IM uint32_t LSR;                  <em class="hl-comment">/* Offset: 0x014 (R/ )  Transmission state register */</em>
+    __IM uint32_t MSR;                  <em class="hl-comment">/* Offset: 0x018 (R/ )  Modem state register */</em>
+    uint32_t RESERVED1[<span class="hl-number">24</span>];             <span class="hl-tag-doctype-comment">/**/
+    __IM uint32_t USR;                  /* Offset: 0x07c (R/ )  UART state register */</span>
+    uint32_t RESERVED2[<span class="hl-number">1</span>];
+    __IM uint32_t RFL;                  <em class="hl-comment">/* Offset: 0x084 (R/ )  UART rx fifo level register */</em>
+    __IOM uint32_t HSK;                 <em class="hl-comment">/* Offset: 0x088 (R/W)  UART dma hsk register */</em>
+    uint32_t RESERVED3[<span class="hl-number">6</span>];
+    __IOM uint32_t HALT;                <em class="hl-comment">/* Offset: 0x0A4 */</em>
+} aic_usart_reg_t;</pre></div></div>
+            <div class="- topic/div div section" id="id__id7">
+                <strong class="+ topic/ph hi-d/b ph b">扩展寄存器</strong>
+                <div class="- topic/p p" data-ofbid="d200335e186__20250121171634">扩展寄存器是 ArtInChip 的特殊寄存器，从 0XB8
+                    地址开始，采用和寄存一样的使用方式<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xsn_13n_fdc" data-ofbid="id__codeblock_xsn_13n_fdc"><strong class="hl-keyword">typedef</strong> <strong class="hl-keyword">struct</strong>
+{
+    __IOM uint32_t RS485DE;             <em class="hl-comment">/* Offset: 0x0B8 (R/W ) RS485 DE Time register*/</em>
+    uint32_t RESERVED0;
+    __IOM uint32_t RS485CTL;            <em class="hl-comment">/* Offset: 0x0C0 (R/W ) RS485 Control and Status register*/</em>
+    __IOM uint32_t RS485AM;            <em class="hl-comment">/* Offset: 0x0C4 (R/W ) RS485 Address Match register*/</em>
+    __IOM uint32_t RS485BIC;            <em class="hl-comment">/* Offset: 0x0C8 (R/W ) RS485 Bus Idle Check register*/</em>
+} aic_usart_exreg_t;</pre></div></div>
+        </section><section class="- topic/section section" id="id__section_ybd_v3n_fdc" data-ofbid="id__section_ybd_v3n_fdc"><h2 class="- topic/title title sectiontitle">接口设计</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_q5w_n3n_fdc" data-ofbid="id__table_q5w_n3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_initialize</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_q5w_n3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_q5w_n3n_fdc__entry__2">static int hal_usart_initialize(int32_t idx, usart_event_cb_t
+                                cb_event, void *handler)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q5w_n3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_q5w_n3n_fdc__entry__2">初始化 UART 端口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q5w_n3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_q5w_n3n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">index - UART 端口号</div>
+                                    <div class="- topic/div div">cb_event - event call back</div>
+                                    <div class="- topic/div div">handler - 生成的工作句柄</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q5w_n3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_q5w_n3n_fdc__entry__2">0，成功； &lt; 0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_q5w_n3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_q5w_n3n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_zf1_43n_fdc" data-ofbid="id__table_zf1_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_uninitialize </span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zf1_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zf1_43n_fdc__entry__2">int hal_usart_uninitialize(void *handler)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zf1_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zf1_43n_fdc__entry__2">关闭 UART 端口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zf1_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zf1_43n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handler - UART 句柄</div>
+                                    <div class="- topic/div div">cb_event - event call back</div>
+                                    <div class="- topic/div div">handler - 生产的工作句柄</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zf1_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zf1_43n_fdc__entry__2">0，成功； &lt; 0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zf1_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_zf1_43n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_tyd_43n_fdc" data-ofbid="id__table_tyd_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_config</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_tyd_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_tyd_43n_fdc__entry__2">int hal_usart_config(usart_handle_t handle, ……)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tyd_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tyd_43n_fdc__entry__2">配置 UART 的工作参数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tyd_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tyd_43n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">baud - 波特率</div>
+                                    <div class="- topic/div div">mode - 工作模式，同步还是异步</div>
+                                    <div class="- topic/div div">parity - 极性</div>
+                                    <div class="- topic/div div">stopbits - 停止位</div>
+                                    <div class="- topic/div div">bits - 数据位</div>
+                                    <div class="- topic/div div">func - 功能，RS232，RF485 等</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tyd_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tyd_43n_fdc__entry__2">0，成功； &lt; 0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_tyd_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_tyd_43n_fdc__entry__2">- </td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_rrg_43n_fdc" data-ofbid="id__table_rrg_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_send</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_rrg_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_rrg_43n_fdc__entry__2">int32_t al_usart_send(usart_handle_t handle, const void *data,
+                                uint32_t num)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rrg_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rrg_43n_fdc__entry__2">发送数据</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rrg_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rrg_43n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">data - 待发送数据</div>
+                                    <div class="- topic/div div">num - 数据长度</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rrg_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rrg_43n_fdc__entry__2">0，成功； &lt; 0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_rrg_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_rrg_43n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_yhj_43n_fdc" data-ofbid="id__table_yhj_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_receive</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_yhj_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_yhj_43n_fdc__entry__2">int32_t hal_usart_receive(usart_handle_t handle, void *data,
+                                uint32_t num)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_yhj_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_yhj_43n_fdc__entry__2">接收数据</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_yhj_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_yhj_43n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">data - 接收数据 buffer</div>
+                                    <div class="- topic/div div">num - 要接收的数据长度</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_yhj_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_yhj_43n_fdc__entry__2">0，成功； &lt; 0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_yhj_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_yhj_43n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_wyl_43n_fdc" data-ofbid="id__table_wyl_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_receive_query</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_wyl_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_wyl_43n_fdc__entry__2">int32_t hal_usart_receive_query(usart_handle_t handle, void
+                                *data, uint32_t num)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wyl_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wyl_43n_fdc__entry__2">查询要接收的数据的长度</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wyl_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wyl_43n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">data - 接收数据 buffer</div>
+                                    <div class="- topic/div div">num - buffer 的大小</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wyl_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wyl_43n_fdc__entry__2">长度</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_wyl_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_wyl_43n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_iv4_43n_fdc" data-ofbid="id__table_iv4_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_get_status</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_iv4_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_iv4_43n_fdc__entry__2">usart_status_t hal_usart_get_status(usart_handle_t
+                                handle)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iv4_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iv4_43n_fdc__entry__2">获取 UART 的状态</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iv4_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iv4_43n_fdc__entry__2">handle - UART 句柄</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iv4_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iv4_43n_fdc__entry__2">状态值</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_iv4_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_iv4_43n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_zvt_43n_fdc" data-ofbid="id__table_zvt_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_flush</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zvt_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zvt_43n_fdc__entry__2">int32_t hal_usart_flush(usart_handle_t handle, usart_flush_type_e
+                                type)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zvt_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zvt_43n_fdc__entry__2">flush 发送或接收的数据</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zvt_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zvt_43n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">type - 发送或者接收</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zvt_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zvt_43n_fdc__entry__2">0，成功； &lt; 0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zvt_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_zvt_43n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_f4w_43n_fdc" data-ofbid="id__table_f4w_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_config_flowctrl</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_f4w_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_f4w_43n_fdc__entry__2">int32_t hal_usart_config_flowctrl(usart_handle_t handle，
+                                usart_flowctrl_type_e flowctrl_type)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_f4w_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_f4w_43n_fdc__entry__2">配置 UART 的流控</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_f4w_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_f4w_43n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">flowctrl_type - 流控类型</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_f4w_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_f4w_43n_fdc__entry__2">0，成功； &lt; 0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_f4w_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_f4w_43n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_jdz_43n_fdc" data-ofbid="id__table_jdz_43n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_uart_set_fifo</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_jdz_43n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_jdz_43n_fdc__entry__2">int32_t hal_uart_set_fifo(usart_handle_t handle)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jdz_43n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jdz_43n_fdc__entry__2">设置 UART-DMA 模式下 rx_fifo 和 tx_fifo 的触发阈值</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jdz_43n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jdz_43n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jdz_43n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jdz_43n_fdc__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_jdz_43n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_jdz_43n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_ndc_p3n_fdc" data-ofbid="id__table_ndc_p3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_set_hsk</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ndc_p3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_ndc_p3n_fdc__entry__2">int32_t hal_usart_set_hsk(usart_handle_t handle)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ndc_p3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ndc_p3n_fdc__entry__2">配置 UART-DMA 握手模式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ndc_p3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ndc_p3n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ndc_p3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ndc_p3n_fdc__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ndc_p3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_ndc_p3n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_vvg_p3n_fdc" data-ofbid="id__table_vvg_p3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_get_rx_fifo_num</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_vvg_p3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_vvg_p3n_fdc__entry__2">int32_t hal_usart_get_rx_fifo_num(usart_handle_t handle)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_vvg_p3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_vvg_p3n_fdc__entry__2">读取 rx_fifo 里面的数据量</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_vvg_p3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_vvg_p3n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_vvg_p3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_vvg_p3n_fdc__entry__2">fifo_num，数据的多少</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_vvg_p3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_vvg_p3n_fdc__entry__2">- </td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_xwj_p3n_fdc" data-ofbid="id__table_xwj_p3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 13</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_uart_rx_dma_config</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_xwj_p3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_xwj_p3n_fdc__entry__2">int32_t hal_uart_rx_dma_config(usart_handle_t handle, uint8_t
+                                *buf, uint32_t size)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xwj_p3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xwj_p3n_fdc__entry__2">配置 UART-DMA 接收的参数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xwj_p3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xwj_p3n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">buf - DMA 搬运的目标地址</div>
+                                    <div class="- topic/div div">size - 搬运数据的大小</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xwj_p3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xwj_p3n_fdc__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_xwj_p3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_xwj_p3n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_dgm_p3n_fdc" data-ofbid="id__table_dgm_p3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 14</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_uart_send_by_dma</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_dgm_p3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_dgm_p3n_fdc__entry__2">int32_t hal_uart_send_by_dma(usart_handle_t handle, uint8_t *buf,
+                                uint32_t size)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_dgm_p3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_dgm_p3n_fdc__entry__2">配置 UART-DMA 发送的参数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_dgm_p3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_dgm_p3n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">buf - DMA 搬运的源端地址</div>
+                                    <div class="- topic/div div">size - 搬运数据的大小</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_dgm_p3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_dgm_p3n_fdc__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_dgm_p3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_dgm_p3n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_cn4_p3n_fdc" data-ofbid="id__table_cn4_p3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 15</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_usart_halt_tx_enable</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_cn4_p3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_cn4_p3n_fdc__entry__2">int32_t hal_usart_halt_tx_enable(usart_handle_t handle, uint8_t
+                                halt_tx_enable)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_cn4_p3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_cn4_p3n_fdc__entry__2">控制设备发送数据的开关</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_cn4_p3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_cn4_p3n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">handle - UART 句柄</div>
+                                    <div class="- topic/div div">halt_tx_enable - 禁止发送使能标志</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_cn4_p3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_cn4_p3n_fdc__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_cn4_p3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_cn4_p3n_fdc__entry__2">-</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="id__section_zbd_v3n_fdc" data-ofbid="id__section_zbd_v3n_fdc"><h2 class="- topic/title title sectiontitle">驱动层</h2>
+            
+            <p class="- topic/p p" data-ofbid="d200335e868__20250121171634">驱动层通过调用 HAL 层的接口，完成对 UART 设备的驱动实现, 代码在 bsp/artinchip/drv/uart/aic_drv_uart.c</p>
+            <div class="- topic/div div section" id="id__id10">
+                <strong class="+ topic/ph hi-d/b ph b">驱动参数</strong>
+                <div class="- topic/p p" data-ofbid="d200335e876__20250121171634">驱动的参数配置通过在 Kconfig
+                    中的宏来初始化<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_hg5_f3n_fdc" data-ofbid="id__codeblock_hg5_f3n_fdc"><strong class="hl-keyword">struct</strong> drv_uart_dev_para
+{
+    uint32_t index                   :<span class="hl-number">4</span>;
+    uint32_t data_bits               :<span class="hl-number">4</span>;
+    uint32_t stop_bits               :<span class="hl-number">2</span>;
+    uint32_t parity                  :<span class="hl-number">2</span>;
+    uint32_t flag;
+    uint32_t baud_rate;
+    uint32_t clk_freq;
+    uint32_t function;
+    <strong class="hl-keyword">char</strong> * name;
+    <strong class="hl-keyword">char</strong> * uart_rts_name;
+    <strong class="hl-keyword">char</strong> * uart_cts_name;
+};
+
+<strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> drv_uart_dev_para uart_dev_paras[] =
+{
+#ifdef AIC_USING_UART0
+    {<span class="hl-number">0</span>, AIC_DEV_UART0_DATABITS, AIC_DEV_UART0_STOPBITS, AIC_DEV_UART0_PARITY, AIC_UART0_FLAG,
+    AIC_DEV_UART0_BAUDRATE, AIC_CLK_UART0_FREQ, AIC_DEV_UART0_MODE, <span class="hl-string">"uart0"</span>, AIC_UART0_RTS_NAME, AIC_UART0_CTS_NAME},
+#endif
+#ifdef AIC_USING_UART1
+    {<span class="hl-number">1</span>, AIC_DEV_UART1_DATABITS, AIC_DEV_UART1_STOPBITS, AIC_DEV_UART1_PARITY, AIC_UART1_FLAG,
+    AIC_DEV_UART1_BAUDRATE, AIC_CLK_UART1_FREQ, AIC_DEV_UART1_MODE, <span class="hl-string">"uart1"</span>, AIC_UART1_RTS_NAME, AIC_UART1_CTS_NAME},
+#endif
+#ifdef AIC_USING_UART2
+    {<span class="hl-number">2</span>, AIC_DEV_UART2_DATABITS, AIC_DEV_UART2_STOPBITS, AIC_DEV_UART2_PARITY, AIC_UART2_FLAG,
+    AIC_DEV_UART2_BAUDRATE, AIC_CLK_UART2_FREQ, AIC_DEV_UART2_MODE, <span class="hl-string">"uart2"</span>, AIC_UART2_RTS_NAME, AIC_UART2_CTS_NAME},
+#endif
+#ifdef AIC_USING_UART3
+    {<span class="hl-number">3</span>, AIC_DEV_UART3_DATABITS, AIC_DEV_UART3_STOPBITS, AIC_DEV_UART3_PARITY, AIC_UART3_FLAG,
+    AIC_DEV_UART3_BAUDRATE, AIC_CLK_UART3_FREQ, AIC_DEV_UART3_MODE, <span class="hl-string">"uart3"</span>, AIC_UART3_RTS_NAME, AIC_UART3_CTS_NAME},
+#endif
+#ifdef AIC_USING_UART4
+    {<span class="hl-number">4</span>, AIC_DEV_UART4_DATABITS, AIC_DEV_UART4_STOPBITS, AIC_DEV_UART4_PARITY, AIC_UART4_FLAG,
+    AIC_DEV_UART4_BAUDRATE, AIC_CLK_UART4_FREQ, AIC_DEV_UART4_MODE, <span class="hl-string">"uart4"</span>, AIC_UART4_RTS_NAME, AIC_UART4_CTS_NAME},
+#endif
+#ifdef AIC_USING_UART5
+    {<span class="hl-number">5</span>, AIC_DEV_UART5_DATABITS, AIC_DEV_UART5_STOPBITS, AIC_DEV_UART5_PARITY, AIC_UART5_FLAG,
+    AIC_DEV_UART5_BAUDRATE, AIC_CLK_UART5_FREQ, AIC_DEV_UART5_MODE, <span class="hl-string">"uart5"</span>, AIC_UART5_RTS_NAME, AIC_UART5_CTS_NAME},
+#endif
+#ifdef AIC_USING_UART6
+    {<span class="hl-number">6</span>, AIC_DEV_UART6_DATABITS, AIC_DEV_UART6_STOPBITS, AIC_DEV_UART6_PARITY, AIC_UART6_FLAG,
+    AIC_DEV_UART6_BAUDRATE, AIC_CLK_UART6_FREQ, AIC_DEV_UART6_MODE, <span class="hl-string">"uart6"</span>, AIC_UART6_RTS_NAME, AIC_UART6_CTS_NAME},
+#endif
+#ifdef AIC_USING_UART7
+    {<span class="hl-number">7</span>, AIC_DEV_UART7_DATABITS, AIC_DEV_UART7_STOPBITS, AIC_DEV_UART7_PARITY, AIC_UART7_FLAG,
+    AIC_DEV_UART7_BAUDRATE, AIC_CLK_UART7_FREQ, AIC_DEV_UART7_MODE, <span class="hl-string">"uart7"</span>, AIC_UART7_RTS_NAME, AIC_UART7_CTS_NAME},
+#endif
+};</pre></div></div>
+            <div class="- topic/div div section" id="id__id11">
+                <strong class="+ topic/ph hi-d/b ph b">初始化</strong>
+                <div class="- topic/p p" data-ofbid="d200335e886__20250121171634">初始化工作通过调用 RT-Thread
+                    的标准初始化接口实现<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_tnf_g3n_fdc" data-ofbid="id__codeblock_tnf_g3n_fdc">INIT_BOARD_EXPORT(drv_usart_init);
+
+<strong class="hl-keyword">int</strong> drv_usart_init(<strong class="hl-keyword">void</strong>)
+{
+    <strong class="hl-keyword">struct</strong> serial_configure config = RT_SERIAL_CONFIG_DEFAULT;
+    <strong class="hl-keyword">int</strong> u = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">int</strong> i = <span class="hl-number">0</span>;
+
+    <strong class="hl-keyword">for</strong> (i=<span class="hl-number">0</span>; i&lt;<strong class="hl-keyword">sizeof</strong>(uart_dev_paras)/<strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> drv_uart_dev_para); i++) {
+        u = uart_dev_paras[i].index;
+        g_serial[u].ops                 = &amp; drv_uart_ops;
+        g_serial[u].config              = config;
+        g_serial[u].config.bufsz        = <span class="hl-number">2048</span>;
+        g_serial[u].config.baud_rate    = uart_dev_paras[i].baud_rate;
+        g_serial[u].config.data_bits    = uart_dev_paras[i].data_bits;
+        g_serial[u].config.stop_bits    = uart_dev_paras[i].stop_bits - <span class="hl-number">1</span>;
+        g_serial[u].config.parity       = uart_dev_paras[i].parity;
+        g_serial[u].config.function     = uart_dev_paras[i].function;
+        g_serial[u].config.flag         = uart_dev_paras[i].flag;
+        g_serial[u].config.uart_index   = uart_dev_paras[i].index;
+
+        hal_clk_set_freq(CLK_UART0 + u, uart_dev_paras[i].clk_freq);
+        hal_clk_enable(CLK_UART0 + u);
+        hal_reset_assert(RESET_UART0 + u);
+        aic_udelay(<span class="hl-number">10000</span>);
+        hal_reset_deassert(RESET_UART0 + u);
+
+#ifdef FINSH_POLL_MODE
+        uart_handle[u] = hal_usart_initialize(u, NULL, NULL);
+#<strong class="hl-keyword">else</strong>
+        uart_handle[u] = hal_usart_initialize(u, NULL, drv_usart_irqhandler);
+#endif
+        rt_hw_serial_register(&amp;g_serial[u],
+                            uart_dev_paras[i].name,
+#ifdef FINSH_POLL_MODE
+                            RT_DEVICE_FLAG_RDWR,
+#<strong class="hl-keyword">else</strong>
+                            uart_dev_paras[i].flag,
+#endif
+                            uart_handle[u]);
+
+        <strong class="hl-keyword">if</strong> (uart_dev_paras[i].flag == AIC_UART_DMA_FLAG) {
+            hal_uart_set_fifo((aic_usart_priv_t *)g_serial[u].parent.user_data);
+            hal_uart_attach_callback((aic_usart_priv_t *)g_serial[u].parent.user_data,
+                                        drv_uart_callback, NULL);
+            hal_usart_set_ier((aic_usart_priv_t *)g_serial[u].parent.user_data, <span class="hl-number">1</span>);
+        }
+
+        drv_usart_function_init(i, u);
+    }
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}</pre></div></div>
+            <div class="- topic/div div section" id="id__id12">
+                <strong class="+ topic/ph hi-d/b ph b">对外接口</strong>
+                <div class="- topic/p p" data-ofbid="d200335e896__20250121171634">UART 驱动对外的接口主要是实现了 rt_uart_ops 的标准接口，使用 dma_transmit 需要在 menuconfig 打开相应的
+                    uart-dma
+                    使能开关<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_os4_g3n_fdc" data-ofbid="id__codeblock_os4_g3n_fdc"><strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> rt_uart_ops drv_uart_ops =
+{
+    drv_uart_configure,
+    drv_uart_control,
+    drv_uart_putc,
+    drv_uart_getc,
+#<strong class="hl-keyword">if</strong> defined (RT_SERIAL_USING_DMA)
+    drv_uart_dma_transmit,
+#endif
+};</pre></div></div>
+        </section><section class="- topic/section section" id="id__section_acd_v3n_fdc" data-ofbid="id__section_acd_v3n_fdc"><h2 class="- topic/title title sectiontitle">应用层</h2>
+            
+            <p class="- topic/p p" data-ofbid="d200335e906__20250121171634">UART 在应用层被封装成了一个标准的设备，通过读写进行数据的发送和接收</p>
+            <p class="- topic/p p" data-ofbid="d200335e909__20250121171634">设备实现代码：kernel/rt-thread/components/drivers/serial/serial.c
+                    使用示例代码：<span class="+ topic/ph sw-d/filepath ph filepath">bsp/examples/test-uart/test_uart.c</span>
+            </p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_rv2_h3n_fdc" data-ofbid="id__table_rv2_h3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 16</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">rt_device_find</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_rv2_h3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_rv2_h3n_fdc__entry__2">rt_device_t rt_device_find(const char *name);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rv2_h3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rv2_h3n_fdc__entry__2">找到相应的设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rv2_h3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rv2_h3n_fdc__entry__2">name - 设备名</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rv2_h3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rv2_h3n_fdc__entry__2">设备变量或者 NULL</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_rv2_h3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_rv2_h3n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_ctf_33n_fdc" data-ofbid="id__table_ctf_33n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 17</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">rt_device_open</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ctf_33n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_ctf_33n_fdc__entry__2">rt_err_t rt_device_open (rt_device_t dev, rt_uint16_t
+                                oflag);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ctf_33n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ctf_33n_fdc__entry__2">打开设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ctf_33n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ctf_33n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">dev - UART device</div>
+                                    <div class="- topic/div div">oflag - 打开参数</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ctf_33n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ctf_33n_fdc__entry__2">0，成功； 其他，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ctf_33n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_ctf_33n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_t4r_33n_fdc" data-ofbid="id__table_t4r_33n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 18</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">rt_device_close</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_t4r_33n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_t4r_33n_fdc__entry__2">rt_err_t rt_device_close(rt_device_t dev);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t4r_33n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_t4r_33n_fdc__entry__2">关闭设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t4r_33n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_t4r_33n_fdc__entry__2">dev - 设备名</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t4r_33n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_t4r_33n_fdc__entry__2">0，成功； 其他，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_t4r_33n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_t4r_33n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_mxf_j3n_fdc" data-ofbid="id__table_mxf_j3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 19</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">rt_device_read</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_mxf_j3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_mxf_j3n_fdc__entry__2">rt_size_t rt_device_read (rt_device_t dev, rt_off_t pos, void
+                                *buffer, rt_size_t size);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mxf_j3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mxf_j3n_fdc__entry__2">接收信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mxf_j3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mxf_j3n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">dev - UART device</div>
+                                    <div class="- topic/div div">pos - 起始位置</div>
+                                    <div class="- topic/div div">buffer - 数据存储区</div>
+                                    <div class="- topic/div div">size - 大小</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mxf_j3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mxf_j3n_fdc__entry__2">接收数据的大小</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_mxf_j3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_mxf_j3n_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_lll_j3n_fdc" data-ofbid="id__table_lll_j3n_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 20</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">rt_device_write</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_lll_j3n_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_lll_j3n_fdc__entry__2">rt_size_t rt_device_write (rt_device_t dev, rt_off_t pos, void
+                                *buffer, rt_size_t size);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lll_j3n_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lll_j3n_fdc__entry__2">发送信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lll_j3n_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lll_j3n_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">dev - UART device</div>
+                                    <div class="- topic/div div">pos - 起始位置</div>
+                                    <div class="- topic/div div">buffer - 数据存储区</div>
+                                    <div class="- topic/div div">size - 大小</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lll_j3n_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lll_j3n_fdc__entry__2">发送数据的大小</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_lll_j3n_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_lll_j3n_fdc__entry__2">-</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="id__section_bcd_v3n_fdc" data-ofbid="id__section_bcd_v3n_fdc"><h2 class="- topic/title title sectiontitle">使用示例</h2>
+            
+            <div class="- topic/p p" data-ofbid="d200335e1130__20250121171634">示例可以参考
+                bsp/examples/test-uart/test_uart.c<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ucp_y3n_fdc" data-ofbid="id__codeblock_ucp_y3n_fdc"><strong class="hl-keyword">static</strong> rt_device_t serial = rt_device_find(<span class="hl-string">"uart1"</span>);
+rt_device_open(serial, RT_DEVICE_FLAG_RDONLY);
+rt_device_write(serial, <span class="hl-number">0</span>, str_send, (<strong class="hl-keyword">sizeof</strong>(str_send) - <span class="hl-number">1</span>));
+rt_device_read(serial, <span class="hl-number">0</span>, str_send, <span class="hl-number">1</span>);</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_ubd_v3n_fdc" data-tocid="id__section_ubd_v3n_fdc">信息配置</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_wbd_v3n_fdc" data-tocid="id__section_wbd_v3n_fdc">源码说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_xbd_v3n_fdc" data-tocid="id__section_xbd_v3n_fdc">HAL 层</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_ybd_v3n_fdc" data-tocid="id__section_ybd_v3n_fdc">接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_zbd_v3n_fdc" data-tocid="id__section_zbd_v3n_fdc">驱动层</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_acd_v3n_fdc" data-tocid="id__section_acd_v3n_fdc">应用层</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_bcd_v3n_fdc" data-tocid="id__section_bcd_v3n_fdc">使用示例</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

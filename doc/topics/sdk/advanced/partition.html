@@ -1,0 +1,506 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 Luban-Lite 系统中，分区的设置和管理是系统正常运行和日常维护的重要方面。本章节介绍 Luban-Lite 系统中分区的特点、规则和分区修改的方法。 按照存储介质的逻辑划分， Luban-Lite 默认分区包括以下几种： 启动分区 ：存放 BootLoader，用于系统启动。 数据分区 ：用于存储用户数据。 系统 A/B 分区 ：分为 A/B 系统，实现 OTA，即 Flash ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/advanced/sdk-usage.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/compile.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/image_burn_and_config.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="User"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>配置分区</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1243"/><meta name="wh-source-relpath" content="topics/sdk/advanced/partition.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/partition.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/partition.html">配置分区</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/advanced/compile.html" title="编译选项介绍" aria-label="上一主题: 编译选项介绍" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/advanced/image_burn_and_config.html" title="配置烧录镜像" aria-label="下一主题: 配置烧录镜像" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1169" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1169-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/commands.html" id="id-d5856e1169-link">命令详解 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1207" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/architecture.html" id="id-d5856e1207-link">设计框架</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1219" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sconstruct.html" id="id-d5856e1219-link">SConstruct </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1231" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/compile.html" id="id-d5856e1231-link">编译选项介绍</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e1243" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition.html" id="id-d5856e1243-link">配置分区</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1255" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1255-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/image_burn_and_config.html" id="id-d5856e1255-link">配置烧录镜像</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1339" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/gdb.html" id="id-d5856e1339-link">GDB 调试</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1353" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/pinmux.html" id="id-d5856e1353-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1367" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/driver.html" id="id-d5856e1367-link">添加驱动</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1379" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/app.html" id="id-d5856e1379-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1392" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/hellowold.html" id="id-d5856e1392-link">hellowold</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1404" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/burnin_test.html" id="id-d5856e1404-link">烤机测试</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/partition.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">配置分区</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 9 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d221262e24__20250121171647">在 <span class="- topic/ph ph">Luban-Lite</span>
+            系统中，分区的设置和管理是系统正常运行和日常维护的重要方面。本章节介绍 <span class="- topic/ph ph">Luban-Lite</span>
+            系统中分区的特点、规则和分区修改的方法。</p><div class="- topic/p p" data-ofbid="d221262e32__20250121171647">按照存储介质的逻辑划分，<span class="- topic/ph ph">Luban-Lite</span>
+                默认分区包括以下几种：<ul class="- topic/ul ul" id="id__ul_xbf_12y_5cc" data-ofbid="id__ul_xbf_12y_5cc"><li class="- topic/li li" data-ofbid="d221262e38__20250121171647"><a class="- topic/xref xref" href="partition.html#id__section_k1p_zlq_gdc">启动分区</a>：存放 BootLoader，用于系统启动。</li><li class="- topic/li li" data-ofbid="d221262e43__20250121171647"><a class="- topic/xref xref" href="partition.html#id__section_cpt_fmq_gdc">数据分区</a>：用于存储用户数据。</li><li class="- topic/li li" data-ofbid="d221262e48__20250121171647"><a class="- topic/xref xref" href="partition.html#id__section_n5m_gmq_gdc">系统 A/B 分区</a>：分为 A/B 系统，实现 OTA，即 Flash
+                    上保存前后两个版本的系统程序。</li></ul></div><section class="- topic/section section" id="id__section_k1p_zlq_gdc" data-ofbid="id__section_k1p_zlq_gdc"><h2 class="- topic/title title sectiontitle">启动分区</h2>
+            
+            <p class="- topic/p p" data-ofbid="d221262e58__20250121171647">在 <span class="- topic/ph ph">Luban-Lite</span> 系统中，启动分区（"spl" 分区）是存储介质上的第一个分区，用于存放
+                BootLoader，并且根据不同的存储介质类型和配置，其位置、大小和内容有所不同。</p>
+            
+            <p class="- topic/p p" data-ofbid="d221262e64__20250121171647">"spl" 分区为默认名称，用户可以根据需要自定义和修改启动分区名称。</p>
+            <p class="- topic/p p" data-ofbid="d221262e67__20250121171647"><span class="- topic/ph ph">Luban-Lite</span> 系统中的默认分区设置如下：</p>
+            <ul class="- topic/ul ul" id="id__ul_l1p_zlq_gdc" data-ofbid="id__ul_l1p_zlq_gdc"><li class="- topic/li li" data-ofbid="d221262e73__20250121171647">
+                    <p class="- topic/p p" data-ofbid="d221262e75__20250121171647">SPINOR</p>
+                    <p class="- topic/p p" data-ofbid="d221262e78__20250121171647">SPINOR Flash 的 0 ~ X 区间被设置为启动分区，主要用于存放 BootLoader，大小设置为 256K。</p>
+                    <p class="- topic/p p" data-ofbid="d221262e81__20250121171647">尽管 BROM 加载的程序可以大于 256K，但是由于 BROM 运行时的速度较慢，不建议加载过大的程序。</p>
+                </li><li class="- topic/li li" data-ofbid="d221262e84__20250121171647">
+                    <p class="- topic/p p" data-ofbid="d221262e86__20250121171647">SPINAND</p>
+                    <div class="- topic/p p" data-ofbid="d221262e89__20250121171647">SPINAND Flash 的前四个物理块被用作启动块，启动分区内使用四个启动块保存两份启动镜像：<ul class="- topic/ul ul" id="id__ul_wgs_gfy_5cc" data-ofbid="id__ul_wgs_gfy_5cc"><li class="- topic/li li" data-ofbid="d221262e92__20250121171647">对于块大小为 128K 的 SPINAND，启动分区为 512K。</li><li class="- topic/li li" data-ofbid="d221262e94__20250121171647">对于 块大小为 256K 的 SPINAND，启动分区为 1M。</li></ul></div>
+                </li><li class="- topic/li li" data-ofbid="d221262e97__20250121171647">
+                    <p class="- topic/p p" data-ofbid="d221262e99__20250121171647">eMMC</p>
+                    <p class="- topic/p p" data-ofbid="d221262e102__20250121171647">eMMC 的启动分区位于 UDA 区域的 17K ~ X 区间，BROM 从该区域读取程序。</p>
+                    <p class="- topic/p p" data-ofbid="d221262e105__20250121171647">建议启动镜像小于 512K。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__section_cpt_fmq_gdc" data-ofbid="id__section_cpt_fmq_gdc"><h2 class="- topic/title title sectiontitle">数据分区</h2>
+            
+            <div class="- topic/div div section" id="id__id4">
+                <p class="- topic/p p" data-ofbid="d221262e116__20250121171647">在 <span class="- topic/ph ph">Luban-Lite</span> 系统中，通过对 SPINOR/ SPINAND Flash
+                    进行分区可以实现数据的存储和管理，为数据的读写提供了不同的功能和性能特点。</p>
+                <p class="- topic/p p" data-ofbid="d221262e122__20250121171647">在 <span class="- topic/ph ph">Luban-Lite</span> 系统中，SPINOR/ SPINAND Flash
+                    上设置了以下默认分区来保存数据。两个分区在设计和实现上有一些差异，用户需要了解并根据实际情况规划数据存储：</p>
+                <ul class="- topic/ul ul" id="id__ul_m1p_zlq_gdc" data-ofbid="id__ul_m1p_zlq_gdc"><li class="- topic/li li" data-ofbid="d221262e129__20250121171647">
+                        <p class="- topic/p p" data-ofbid="d221262e131__20250121171647">"rodata"
+                        </p>
+                        <p class="- topic/p p" data-ofbid="d221262e134__20250121171647">目的：保存 APP 应用需要使用的资源文件，这些文件通常是应用的一部分，都是只读的数据，只是为了更好的管理和访问，使用 FAT
+                            文件系统的方式保存。</p>
+                        <p class="- topic/p p" data-ofbid="d221262e137__20250121171647">应用在访问这些资源文件的时候，通常要求能够快速读取数据，因此 "rodata"
+                            分区在实现的时候，删减了多余的软件层次，通过直接访问 Flash 的方式读取数据，以达到更优的速度。这些优化，也使得
+                                "rodata" 仅支持读取，不支持写入。</p>
+                        
+                        <div class="- topic/note note note note_note" id="id__note_pbj_gvw_fdc" data-ofbid="id__note_pbj_gvw_fdc"><span class="note__title">注：</span> 
+                            <div class="- topic/p p" data-ofbid="d221262e144__20250121171647">使用 SPINOR 时，可以通过配置的方式强制使能 "rodata" 可读写，但是需要注意其中的风险：<ol class="- topic/ol ol arabic simple" id="id__ol_irn_gvw_fdc" data-ofbid="id__ol_irn_gvw_fdc"><li class="- topic/li li" data-ofbid="d221262e147__20250121171647">
+                                        <p class="- topic/p p" data-ofbid="d221262e149__20250121171647">Flash 写入前需要先按块擦除，但是擦除和重新写入需要的时间比较长</p>
+                                    </li><li class="- topic/li li" data-ofbid="d221262e152__20250121171647">
+                                        <p class="- topic/p p" data-ofbid="d221262e154__20250121171647">FATFS 没有日志，不支持异地写入，因此需要原地回写，如果擦除和回写时出现掉电，会导致文件系统损坏</p>
+                                    </li></ol></div>
+                        </div>
+                    </li><li class="- topic/li li" data-ofbid="d221262e160__20250121171647">
+                        <div class="- topic/p p" data-ofbid="d221262e162__20250121171647">"data"<ul class="- topic/ul ul" id="id__ul_n5v_sgy_5cc" data-ofbid="id__ul_n5v_sgy_5cc"><li class="- topic/li li" data-ofbid="d221262e165__20250121171647">目的：提供一个可读写的文件系统分区，用于保存设备在使用过程中生成的需要写入 Flash 的数据。</li><li class="- topic/li li" data-ofbid="d221262e167__20250121171647">文件系统：<ul class="- topic/ul ul" id="id__ul_wvg_zgy_5cc" data-ofbid="id__ul_wvg_zgy_5cc"><li class="- topic/li li" data-ofbid="d221262e170__20250121171647">在 SPINOR Flash 上，使用 LittleFS。</li><li class="- topic/li li" data-ofbid="d221262e172__20250121171647">在 SPINAND Flash 上，使用 FATFS。</li><li class="- topic/li li" data-ofbid="d221262e174__20250121171647">在 eMMC 上，每个分区都是可读写的，默认使用 FATFS。</li></ul></li><li class="- topic/li li" data-ofbid="d221262e176__20250121171647">读写支持：可读写，适合存储设备运行过程中产生的临时数据或需要修改的数据。</li><li class="- topic/li li" data-ofbid="d221262e178__20250121171647">适用场景：需要频繁读写的场景，如用户设置、日志记录等。</li></ul></div>
+                    </li></ul>
+            </div>
+        </section><section class="- topic/section section" id="id__section_n5m_gmq_gdc" data-ofbid="id__section_n5m_gmq_gdc"><h2 class="- topic/title title sectiontitle">系统 A/B 分区</h2>
+            
+            <div class="- topic/div div section" id="id__a-b">
+                <p class="- topic/p p" data-ofbid="d221262e190__20250121171647">在 <span class="- topic/ph ph">Luban-Lite</span> 系统中，A/B 系统分区是实现 Over-the-Air (OTA)
+                    软件更新机制的一个重要部分。这种分区方式需要在 Flash 上保存前后两个版本的系统程序，并将每个版本保存在指定的分区中。 </p>
+                <p class="- topic/p p" data-ofbid="d221262e196__20250121171647">A/B 系统的分区命名比较直接，便于轻松识别两套软件版本，详细命名规则如下所示：</p>
+                <ul class="- topic/ul ul simple" id="id__ul_cmq_hvw_fdc" data-ofbid="id__ul_cmq_hvw_fdc"><li class="- topic/li li" data-ofbid="d221262e200__20250121171647">
+                        <p class="- topic/p p" data-ofbid="d221262e202__20250121171647">A 系统分区：直接使用其所代表的分区的名称，例如存储只读数据的 "rodata" 分区，则 A 系统分区即命名为
+                                "rodata"。</p>
+                    </li><li class="- topic/li li" data-ofbid="d221262e205__20250121171647">
+                        <p class="- topic/p p" data-ofbid="d221262e207__20250121171647">B 系统分区：在对应的 A 系统分区名后加上 <span class="+ topic/ph sw-d/filepath ph filepath">_r</span> 后缀，例如
+                            <span class="+ topic/ph sw-d/filepath ph filepath">rodata_r</span>。</p>
+                    </li></ul>
+                <p class="- topic/p p" data-ofbid="d221262e217__20250121171647">使用专门的 A/B 分区机制，可以最大化资源使用、实现备份，并且提前配置所需软件更新的存储空间，而不影响系统的运行性能。</p>
+            </div>
+        </section><section class="- topic/section section" id="id__id5" data-ofbid="id__id5"><h2 class="- topic/title title sectiontitle">分区与存储设备关系</h2>
+            
+            <p class="- topic/p p" data-ofbid="d221262e226__20250121171647"><span class="- topic/ph ph">Luban-Lite</span> 上使用 RT-Thread
+                时，每个分区都对应一个或者多个系统设备。不同存储介质的对应关系如下表格所示。系统中出现但此处未列出的其他分区，同样遵循下列规则。</p>
+            <div class="table-container"><table class="- topic/table table longtable colwidths-given docutils align-default frame-all" id="id__id10" data-ofbid="id__id10" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">SPINOR 上的分区、设备和文件系统</span></caption><colgroup><col style="width:16.707920792079207%"/><col style="width:16.707920792079207%"/><col style="width:16.707920792079207%"/><col style="width:12.376237623762377%"/><col style="width:37.5%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id10__entry__1">分区名</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id10__entry__2">MTD 设备名</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id10__entry__3">块设备名</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id10__entry__4">文件系统</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__id10__entry__5">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__1">"spl"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__2">"spl"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__4">-</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id10__entry__5">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__1">"os"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__2">"os"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__4">-</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id10__entry__5">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__1">"rodata"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__2">"rodata"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__3">"blk_rodata"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id10__entry__4">FATFS</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id10__entry__5">FATFS 通过 "blk_rodata" 设备访问 Flash</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id10__entry__1">"data"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id10__entry__2">"data"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id10__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id10__entry__4">LittleFS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__id10__entry__5">LittleFS 直接通过 MTD 设备访问 Flash</td></tr></tbody></table></div>
+            <ul class="- topic/ul ul" id="id__ul_xbz_pjy_5cc" data-ofbid="id__ul_xbz_pjy_5cc"><li class="- topic/li li" data-ofbid="d221262e299__20250121171647">分区名：<ul class="- topic/ul ul" id="id__ul_ocj_zjy_5cc" data-ofbid="id__ul_ocj_zjy_5cc"><li class="- topic/li li" data-ofbid="d221262e302__20250121171647">"spl"：分区及其设备名，"spl"
+                            分区主要用于存储二次引导加载程序，是系统启动的第一个阶段所加载的程序。</li><li class="- topic/li li" data-ofbid="d221262e304__20250121171647">"os"："os" 分区，存放操作系统的主要部分，是系统运行的核心区域。</li><li class="- topic/li li" data-ofbid="d221262e306__20250121171647">"rodata"："rodata"
+                            分区，主要用于存储只读数据，包括系统在运行时需要读取但不修改的配置信息等。</li><li class="- topic/li li" data-ofbid="d221262e308__20250121171647">"data"："data"
+                            分区，用来存储可变数据，如用户生成的数据或系统运行时产生的临时数据。</li></ul></li><li class="- topic/li li" data-ofbid="d221262e310__20250121171647">MTD 设备名：对 Flash 的底层直接访问，便于进行读写硬件等操作。</li><li class="- topic/li li" data-ofbid="d221262e312__20250121171647">块设备名：通过将物理存储抽象为块设备，简化了对文件系统的操作。仅 "rodata" 分区关联了一个块设备名
+                        "blk_rodata"。</li><li class="- topic/li li" data-ofbid="d221262e314__20250121171647">文件系统："rodata" 分区使用 FATFS
+                        文件系统，使得数据以文件的形式进行存储和管理。"data" 分区使用 LittleFS 文件系统。</li><li class="- topic/li li" data-ofbid="d221262e316__20250121171647">访问规则：<ul class="- topic/ul ul" id="id__ul_bst_25n_hdc" data-ofbid="id__ul_bst_25n_hdc"><li class="- topic/li li" data-ofbid="d221262e319__20250121171647">
+                            <p class="- topic/p p" data-ofbid="d221262e321__20250121171647">直接访问 Flash，使用 MTD 设备</p>
+                        </li><li class="- topic/li li" data-ofbid="d221262e324__20250121171647">
+                            <p class="- topic/p p" data-ofbid="d221262e326__20250121171647">FATFS 访问 Flash，需要使用块设备</p>
+                        </li><li class="- topic/li li" data-ofbid="d221262e329__20250121171647">
+                            <p class="- topic/p p" data-ofbid="d221262e331__20250121171647">LittleFS 访问 Flash，使用 MTD 设备</p>
+                        </li></ul></li></ul>
+            <div class="table-container"><table class="- topic/table table longtable colwidths-given docutils align-default frame-all" id="id__id11" data-ofbid="id__id11" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">SPINAND 上的分区、设备和文件系统</span></caption><colgroup><col style="width:11.014176663031625%"/><col style="width:14.394765539803709%"/><col style="width:14.067611777535442%"/><col style="width:10.905125408942203%"/><col style="width:49.61832061068702%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id11__entry__1">分区名字</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id11__entry__2">MTD 设备名</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id11__entry__3">块设备名</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id11__entry__4">文件系统</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__id11__entry__5">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__1">"spl"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__2">"spl"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__4">-</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id11__entry__5">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__1">"os"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__2">"os"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__4">-</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id11__entry__5">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__1">"rodata"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__2">"rodata"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__3">"blk_rodata"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id11__entry__4">FATFS</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id11__entry__5">通过 "blk_rodata" 设备访问 Flash，FATFS 只读</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id11__entry__1">"data"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id11__entry__2">"data"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id11__entry__3">"blk_data"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id11__entry__4">FATFS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__id11__entry__5">
+                                <p class="- topic/p p" data-ofbid="d221262e401__20250121171647">"blk_data"设备是通过 NFTL 层创建，</p>
+                                <p class="- topic/p p" data-ofbid="d221262e404__20250121171647">FATFS 访问 "blk_data" 时，通过 NFTL 访问 Flash。</p>
+                            </td></tr></tbody></table></div>
+            <ul class="- topic/ul ul" id="id__ul_s5j_3nq_gdc" data-ofbid="id__ul_s5j_3nq_gdc"><li class="- topic/li li" data-ofbid="d221262e410__20250121171647">分区名：<ul class="- topic/ul ul" id="id__ul_wlb_5ky_5cc" data-ofbid="id__ul_wlb_5ky_5cc"><li class="- topic/li li" data-ofbid="d221262e413__20250121171647">"spl"：分区及其设备名，"spl" 分区主要用于存储
+                            二次引导加载程序，是系统启动的第一个阶段所加载的程序。</li><li class="- topic/li li" data-ofbid="d221262e415__20250121171647">"os"："os" 分区，存放操作系统的主要部分，是系统运行的核心区域。</li><li class="- topic/li li" data-ofbid="d221262e417__20250121171647">"rodata"："rodata"
+                            分区，主要用于存储只读数据，包括系统在运行时需要读取但不修改的配置信息等。</li><li class="- topic/li li" data-ofbid="d221262e419__20250121171647">"data"："data"
+                            分区，用来存储可变数据，如用户生成的数据或系统运行时产生的临时数据。</li></ul></li><li class="- topic/li li" data-ofbid="d221262e421__20250121171647">MTD 设备名：对 Flash 的底层直接访问，便于进行读写硬件等操作。</li><li class="- topic/li li" data-ofbid="d221262e423__20250121171647">块设备名：通过将物理存储抽象为块设备，简化了对文件系统的操作。"blk_rodata" 和
+                        "blk_data" 分别支持对 "rodata" 和
+                        "data" 分区的文件系统访问。</li><li class="- topic/li li" data-ofbid="d221262e425__20250121171647">文件系统："rodata" 分区使用 FATFS
+                        文件系统，使得数据以文件的形式进行存储和管理。"data" 分区使用 FATFS 文件系统。</li><li class="- topic/li li" data-ofbid="d221262e427__20250121171647">NFTL 层：网络闪存转换层，主要用来将 Flash 的物理特性映射为一般块设备，便于 FATFS 等文件系统无需关心底层 NAND Flash
+                        的具体特性。<div class="- topic/note note note note_note" id="id__note_dr3_4mq_gdc" data-ofbid="id__note_dr3_4mq_gdc"><span class="note__title">注：</span> 
+                        <p class="- topic/p p" data-ofbid="d221262e431__20250121171647">建议只设置一个使用 NFTL 的分区，并且分区不要太小。因为 NFTL 需要预留至少 6 MB 空间做坏块管理。</p>
+                    </div></li><li class="- topic/li li" data-ofbid="d221262e434__20250121171647">访问规则：<ul class="- topic/ul ul" id="id__ul_oxj_f5n_hdc" data-ofbid="id__ul_oxj_f5n_hdc"><li class="- topic/li li" data-ofbid="d221262e437__20250121171647">
+                            <p class="- topic/p p" data-ofbid="d221262e439__20250121171647">直接访问 Flash，使用 MTD 设备</p>
+                        </li><li class="- topic/li li" data-ofbid="d221262e442__20250121171647">
+                            <p class="- topic/p p" data-ofbid="d221262e444__20250121171647">FATFS 访问 Flash，需要使用块设备，通过 NFTL 层访问 Flash</p>
+                        </li></ul></li></ul>
+            <div class="table-container"><table class="- topic/table table longtable colwidths-given docutils align-default frame-all" id="id__id12" data-ofbid="id__id12" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">eMMC 上的分区、设备和文件系统</span></caption><colgroup><col style="width:16.770186335403725%"/><col style="width:16.770186335403725%"/><col style="width:16.770186335403725%"/><col style="width:12.422360248447204%"/><col style="width:37.267080745341616%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id12__entry__1">分区名字</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id12__entry__2">MTD 设备名</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id12__entry__3">块设备名</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id12__entry__4">文件系统</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__id12__entry__5">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__1">"spl"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__3"><code class="+ topic/ph pr-d/codeph ph codeph">mmc0p0</code>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__4">-</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id12__entry__5">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__1">"os"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__3"><code class="+ topic/ph pr-d/codeph ph codeph">mmc0p1</code>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__4">-</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id12__entry__5">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__1">"rodata"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__3"><code class="+ topic/ph pr-d/codeph ph codeph">mmc0p2</code>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id12__entry__4">FATFS</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id12__entry__5">此处的分区排序仅为示例</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id12__entry__1">"data"
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id12__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id12__entry__3"><code class="+ topic/ph pr-d/codeph ph codeph">mmc0p3</code>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id12__entry__4">FATFS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__id12__entry__5">此处的分区排序仅为示例</td></tr></tbody></table></div>
+            <ul class="- topic/ul ul" id="id__ul_gtf_yly_5cc" data-ofbid="id__ul_gtf_yly_5cc"><li class="- topic/li li" data-ofbid="d221262e524__20250121171647"><strong class="+ topic/ph hi-d/b ph b">分区名</strong>：<ul class="- topic/ul ul" id="id__ul_htf_yly_5cc" data-ofbid="id__ul_htf_yly_5cc"><li class="- topic/li li" data-ofbid="d221262e529__20250121171647">"spl"：分区及其设备名，"spl" 分区主要用于存储
+                            二次引导加载程序，是系统启动的第一个阶段所加载的程序。</li><li class="- topic/li li" data-ofbid="d221262e531__20250121171647">"os"："os" 分区，存放操作系统的主要部分，是系统运行的核心区域。</li><li class="- topic/li li" data-ofbid="d221262e533__20250121171647">"rodata" ："rodata"
+                            分区，主要用于存储只读数据，包括系统在运行时需要读取但不修改的配置信息等。</li><li class="- topic/li li" data-ofbid="d221262e535__20250121171647">"data"："data"
+                            分区，用来存储可变数据，如用户生成的数据或系统运行时产生的临时数据。</li></ul></li><li class="- topic/li li" data-ofbid="d221262e537__20250121171647">MTD 设备名：对 Flash 的底层直接访问，便于进行读写硬件等操作。</li><li class="- topic/li li" data-ofbid="d221262e539__20250121171647">块设备名：块设备按照分区顺序从 0 开始编号，例如从 mmc0p0 到 mmc0p3。每个块设备代表 eMMC
+                    中的一个分区，简化了物理存储到逻辑存储的映射，便于后续的文件系统管理。</li><li class="- topic/li li" data-ofbid="d221262e541__20250121171647">文件系统："rodata" 和 "data" 分区均使用 FATFS 文件系统。</li><li class="- topic/li li" data-ofbid="d221262e543__20250121171647">访问规则：块设备的命名，按照分区的排序从 0 开始编号</li></ul>
+        </section><section class="- topic/section section" id="id__section_xdj_cnq_gdc" data-ofbid="id__section_xdj_cnq_gdc"><h2 class="- topic/title title sectiontitle">修改分区</h2>
+            
+            <p class="- topic/p p" data-ofbid="d221262e551__20250121171647"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+                文件是设置分区信息以及如何生成烧录镜像文件的配置文件，由于分区和烧录信息是相互关联的，因此在一个文件中进行配置。
+                    <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件的保存路径为
+                        <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">chip</var>/<var class="+ topic/keyword sw-d/varname keyword varname">board</var>/pack/image_cfg.json</span>。</p>
+            <div class="- topic/p p" data-ofbid="d221262e568__20250121171647">分区数值的书写规则如下：<ul class="- topic/ul ul simple" id="id__ul_hzh_tsy_5cc" data-ofbid="id__ul_hzh_tsy_5cc"><li class="- topic/li li" data-ofbid="d221262e571__20250121171647">
+                        <p class="- topic/p p" data-ofbid="d221262e573__20250121171647">不带单位，表示字节</p>
+                    </li><li class="- topic/li li" data-ofbid="d221262e576__20250121171647">
+                        <p class="- topic/p p" data-ofbid="d221262e578__20250121171647">可以使用单位 k 或者 K</p>
+                    </li><li class="- topic/li li" data-ofbid="d221262e581__20250121171647">
+                        <p class="- topic/p p" data-ofbid="d221262e583__20250121171647">可以使用单位 m 或者 M</p>
+                    </li><li class="- topic/li li" data-ofbid="d221262e586__20250121171647">
+                        <p class="- topic/p p" data-ofbid="d221262e588__20250121171647">可以使用单位 g 或者 G</p>
+                    </li></ul></div>
+            <p class="- topic/p p" data-ofbid="d221262e592__20250121171647">输入分区 "size" 值时，需要注意存储介质的对齐要求：</p>
+            <ul class="- topic/ul ul simple" id="id__ul_ufy_5sy_5cc" data-ofbid="id__ul_ufy_5sy_5cc"><li class="- topic/li li" data-ofbid="d221262e596__20250121171647">
+                    <p class="- topic/p p" data-ofbid="d221262e598__20250121171647">SPINOR: 与最小擦除块大小对齐，一般为 4K 或者 64K，具体请参考 SPINOR 的数据手册。</p>
+                </li><li class="- topic/li li" data-ofbid="d221262e601__20250121171647">
+                    <p class="- topic/p p" data-ofbid="d221262e603__20250121171647">SPINAND: 与最小擦除块大小对齐，一般为 128K 或者 256K，具体请参考 SPINAND 的数据手册。</p>
+                </li><li class="- topic/li li" data-ofbid="d221262e606__20250121171647">
+                    <p class="- topic/p p" data-ofbid="d221262e608__20250121171647">eMMC: 需要 512 字节对齐。</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d221262e613__20250121171647">分区设置步骤和流程如下所示：<ol class="- topic/ol ol" id="id__ul_sf5_3sy_5cc" data-ofbid="id__ul_sf5_3sy_5cc"><li class="- topic/li li" data-ofbid="d221262e616__20250121171647">在 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+                                文件中查找对应媒介的分区配置信息。<div class="- topic/p p" data-ofbid="d221262e621__20250121171647"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+                            文件是设置分区信息以及配置烧录镜像文件生成方式的配置文件，保存路径为
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">chip</var>/<var class="+ topic/keyword sw-d/varname keyword varname">board</var>/pack/image_cfg.json</span>。<ul class="- topic/ul ul" id="id__ul_sn5_5yy_5cc" data-ofbid="id__ul_sn5_5yy_5cc"><li class="- topic/li li" data-ofbid="d221262e635__20250121171647"><var class="+ topic/keyword sw-d/varname keyword varname">chip</var> 为对应芯片型号。</li><li class="- topic/li li" data-ofbid="d221262e639__20250121171647"><var class="+ topic/keyword sw-d/varname keyword varname">board</var> 为芯片开发板型号。</li></ul></div><div class="- topic/p p" data-ofbid="d221262e643__20250121171647">以下以 SPI NAND 的分区配置为例：<div class="- topic/note note note note_note" id="id__note_d4b_1zy_5cc" data-ofbid="id__note_d4b_1zy_5cc"><span class="note__title">注：</span> 对于 SPI NAND
+                                Flash 的分区配置，需要注意 NFTL
+                            分区的配置方法。</div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_t5q_gty_5cc" data-ofbid="id__codeblock_t5q_gty_5cc"><span class="hl-string">"spi-nand"</span>: {
+    <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
+    <span class="hl-string">"partitions"</span>: {
+        <span class="hl-string">"spl"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"env"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"env_r"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"os"</span>:       { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"os_r"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"rodata"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"rodata_r"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"data"</span>: {
+            <span class="hl-string">"size"</span>: <span class="hl-string">"40m"</span>,
+            <span class="hl-string">"nftl"</span>: { <em class="hl-comment">// Volume in NFTL device</em>
+                <span class="hl-string">"datavol"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span> },
+            },
+        },
+    },
+},</pre></div></li><li class="- topic/li li" data-ofbid="d221262e649__20250121171647">根据所需分区尺寸，修改对应的分区 "size" 值，否则可跳过此步。<div class="- topic/p p" data-ofbid="d221262e651__20250121171647">例如，将 "data" 分区中的 "size" 从 40M 修改为 50M
+                            后，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ljq_rty_5cc" data-ofbid="id__codeblock_ljq_rty_5cc"><span class="hl-string">"spi-nand"</span>: {
+    <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
+    <span class="hl-string">"partitions"</span>: {
+        <span class="hl-string">"spl"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"env"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"env_r"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"os"</span>:       { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"os_r"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"rodata"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"rodata_r"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"data"</span>: {
+            <span class="hl-string">"size"</span>: <span class="hl-string">"50m"</span>,
+            <span class="hl-string">"nftl"</span>: { <em class="hl-comment">// Volume in NFTL device</em>
+                <span class="hl-string">"datavol"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span> },
+            },
+        },
+    },
+},</pre></div></li><li class="- topic/li li" data-ofbid="d221262e655__20250121171647">如需新增一个分区，在所需位置添加一行配置即可，否则可跳过此步。<div class="- topic/p p" data-ofbid="d221262e657__20250121171647">例如，新增一个 "user"
+                            分区，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_j4c_pty_5cc" data-ofbid="id__codeblock_j4c_pty_5cc"><span class="hl-string">"spi-nand"</span>: {
+    <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
+    <span class="hl-string">"partitions"</span>: {
+        <span class="hl-string">"spl"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"env"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"env_r"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"os"</span>:       { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"os_r"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"rodata"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"rodata_r"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"user"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"20m"</span> },      <em class="hl-comment">// 新添加的分区</em>
+        <span class="hl-string">"data"</span>: {
+            <span class="hl-string">"size"</span>: <span class="hl-string">"50m"</span>,
+            <span class="hl-string">"nftl"</span>: { <em class="hl-comment">// Volume in NFTL device</em>
+                <span class="hl-string">"datavol"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"20m"</span> },
+            },
+        },
+    },
+},</pre></div></li><li class="- topic/li li" data-ofbid="d221262e661__20250121171647">如果新增的分区需要烧录预制内容，在 "target" 段中新增配置。<div class="- topic/note note note note_note" id="id__note_ddm_kyy_5cc" data-ofbid="id__note_ddm_kyy_5cc"><span class="note__title">注：</span> 对于分区表中的分区，如果没有在 "target" 段中设置需要烧录的数据，则在烧录过程中，该分区不会被擦除和修改。</div><div class="- topic/p p" data-ofbid="d221262e665__20250121171647">
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_yrb_jyy_5cc" data-ofbid="id__codeblock_yrb_jyy_5cc"><span class="hl-string">"target"</span>: { <em class="hl-comment">// Image components which will be burn to device's partitions</em>
+    <span class="hl-string">"spl"</span>: {
+        <span class="hl-string">"file"</span>: <span class="hl-string">"bootloader.aic"</span>,
+        <span class="hl-string">"attr"</span>: [<span class="hl-string">"required"</span>],
+        <span class="hl-string">"part"</span>: [<span class="hl-string">"spl"</span>]
+    },
+
+    ...
+
+    <span class="hl-string">"mydata"</span>: {                 <em class="hl-comment">// 此处组件名字可自定义</em>
+        <span class="hl-string">"file"</span>: <span class="hl-string">"userdata.bin"</span>, <em class="hl-comment">// 此处为要烧录到分区的数据</em>
+        <span class="hl-string">"attr"</span>: [<span class="hl-string">"mtd"</span>, <span class="hl-string">"optional"</span>],
+        <span class="hl-string">"part"</span>: [<span class="hl-string">"user"</span>]        <em class="hl-comment">// 此处设置要烧录的分区名字</em>
+    },
+},</pre>
+                        </div></li><li class="- topic/li li" data-ofbid="d221262e670__20250121171647">如需删除一个分区，删除对应的分区配置行即可。<div class="- topic/p p" data-ofbid="d221262e672__20250121171647">例如，删除新增的 "user"
+                            分区，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ups_nyy_5cc" data-ofbid="id__codeblock_ups_nyy_5cc"><span class="hl-string">"spi-nand"</span>: {
+    <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
+    <span class="hl-string">"partitions"</span>: {
+        <span class="hl-string">"spl"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"env"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"env_r"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"os"</span>:       { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"os_r"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"rodata"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"rodata_r"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"data"</span>: {
+            <span class="hl-string">"size"</span>: <span class="hl-string">"50m"</span>,
+            <span class="hl-string">"nftl"</span>: { <em class="hl-comment">// Volume in NFTL device</em>
+                <span class="hl-string">"datavol"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"20m"</span> },
+            },
+        },
+    },
+},</pre></div><div class="- topic/note note note note_note" id="id__note_ipr_syy_5cc" data-ofbid="id__note_ipr_syy_5cc"><span class="note__title">注：</span> 
+                            <p class="- topic/p p" data-ofbid="d221262e678__20250121171647">检查 <code class="+ topic/ph pr-d/codeph ph codeph">target</code> 段中是否有使用该分区，如果有，则删除相关的配置。</p>
+                        </div></li></ol></div>
+        </section><section class="- topic/section section" id="id__id6" data-ofbid="id__id6"><h2 class="- topic/title title sectiontitle">分区配置示例
+                </h2><div class="- topic/p p" data-ofbid="d221262e688__20250121171647"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件是设置分区信息以及配置烧录镜像文件生成方式的配置文件。由于分区和烧录信息是相互关联的，因此在一个文件中进行配置。
+                    <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件的保存路径为
+                        <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">chip</var>/<var class="+ topic/keyword sw-d/varname keyword varname">board</var>/pack/image_cfg.json</span>。<ul class="- topic/ul ul" id="id__ul_eqf_lqy_5cc" data-ofbid="id__ul_eqf_lqy_5cc"><li class="- topic/li li" data-ofbid="d221262e705__20250121171647"><var class="+ topic/keyword sw-d/varname keyword varname">chip</var> 为对应芯片型号。</li><li class="- topic/li li" data-ofbid="d221262e709__20250121171647"><var class="+ topic/keyword sw-d/varname keyword varname">board</var> 为芯片开发板型号。</li></ul></div><div class="- topic/div div section" id="id__id7">
+                <p class="- topic/p p" data-ofbid="d221262e715__20250121171647"><strong class="+ topic/ph hi-d/b ph b">SPINOR 的分区配置示例</strong>：</p>
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" data-ofbid="d221262e720__20250121171647"><span class="hl-string">"spi-nor"</span>: {
+    <span class="hl-string">"size"</span>: <span class="hl-string">"16m"</span>, <em class="hl-comment">// Size of SPI NOR</em>
+    <span class="hl-string">"partitions"</span>: {
+        <span class="hl-string">"spl"</span>:        { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"env"</span>:        { <span class="hl-string">"size"</span>: <span class="hl-string">"128k"</span> },
+        <span class="hl-string">"env_r"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"128k"</span> },
+        <span class="hl-string">"os"</span>:         { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"os_r"</span>:       { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"rodata"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"3m"</span> },
+        <span class="hl-string">"rodata_r"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"3m"</span> },
+        <span class="hl-string">"data"</span>:       { <span class="hl-string">"size"</span>: <span class="hl-string">"7m"</span> }
+    },
+},
+</pre>
+                <div class="- topic/div div">
+                    <div class="- topic/p p" data-ofbid="d221262e725__20250121171647"><strong class="+ topic/ph hi-d/b ph b">SPINAND Flash 的分区配置示例</strong>：<div class="- topic/note note note note_note" id="id__note_gtq_fqq_3dc" data-ofbid="id__note_gtq_fqq_3dc"><span class="note__title">注：</span> 对于 SPINAND Flash
+                            的分区配置，需要注意 NFTL 分区的配置方法。</div></div>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_r2y_qqq_3dc" data-ofbid="id__codeblock_r2y_qqq_3dc"><span class="hl-string">"spi-nand"</span>: {
+    <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
+    <span class="hl-string">"partitions"</span>: {
+        <span class="hl-string">"spl"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"env"</span>:      { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"env_r"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"os"</span>:       { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"os_r"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"4m"</span> },
+        <span class="hl-string">"rodata"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"rodata_r"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+        <span class="hl-string">"data"</span>: {
+            <span class="hl-string">"size"</span>: <span class="hl-string">"40m"</span>,
+            <span class="hl-string">"nftl"</span>: { <em class="hl-comment">// Volume in NFTL device</em>
+                <span class="hl-string">"datavol"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span> },
+            },
+        },
+    },
+},
+</pre>
+                    <div class="- topic/p p" data-ofbid="d221262e735__20250121171647">上述示例中， "data" 分区的配置了如下内容：<ul class="- topic/ul ul" id="id__ul_i5x_fry_5cc" data-ofbid="id__ul_i5x_fry_5cc"><li class="- topic/li li" data-ofbid="d221262e738__20250121171647">"size"：40 MB</li><li class="- topic/li li" data-ofbid="d221262e740__20250121171647">"nftl" 设备：<ul class="- topic/ul ul" id="id__ul_qv2_hry_5cc" data-ofbid="id__ul_qv2_hry_5cc"><li class="- topic/li li" data-ofbid="d221262e743__20250121171647">"datavol"： 表示 NFTL 设备的一个卷。</li></ul><ul class="- topic/ul ul" id="id__ul_phz_hry_5cc" data-ofbid="id__ul_phz_hry_5cc"><li class="- topic/li li" data-ofbid="d221262e746__20250121171647">"size"：“-” 表示卷的大小是 NFTL 设备的所有剩余存储空间。<p class="- topic/p p" data-ofbid="d221262e748__20250121171647">NFTL 设备需要使用大约 6 MB
+                                            的空间做坏块管理，因此 “datavol” 的可用大小大约为 34 MB。</p></li></ul></li></ul></div>
+                </div>
+                <div class="- topic/div div">
+                    <div class="- topic/p p" data-ofbid="d221262e754__20250121171647"><strong class="+ topic/ph hi-d/b ph b">eMMC 的分区配置示例</strong>：<div class="- topic/note note note note_note" id="id__note_a1x_sry_5cc" data-ofbid="id__note_a1x_sry_5cc"><span class="note__title">注：</span> 第一个分区的开始位置。eMMC
+                            使用 GPT 分区表格式，需要在 eMMC 的开始和末尾都预留 17K 的空间存放 GPT 信息，因此 “spl” 的开始位置为
+                            “0x4400”。</div></div>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_pgz_rqq_3dc" data-ofbid="id__codeblock_pgz_rqq_3dc"><span class="hl-string">"mmc"</span>: {
+    <span class="hl-string">"size"</span>: <span class="hl-string">"8G"</span>, <em class="hl-comment">// Size of SD/eMMC</em>
+    <span class="hl-string">"partitions"</span>: {
+        <span class="hl-string">"spl"</span>:        { <span class="hl-string">"offset"</span>: <span class="hl-string">"0x4400"</span>, <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+        <span class="hl-string">"os"</span>:         { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+        <span class="hl-string">"rodata"</span>:     { <span class="hl-string">"size"</span>: <span class="hl-string">"3m"</span> },
+        <span class="hl-string">"data"</span>:       { <span class="hl-string">"size"</span>: <span class="hl-string">"5m"</span> }
+    },
+},
+</pre>
+                    <p class="- topic/p p" data-ofbid="d221262e767__20250121171647">每一个分区的配置项中，都有 "offset" 和 "size" 两个配置信息，其中 "offset" 用于配置该分区的开始位置。 如未设置
+                        "offset"，表示该分区紧跟上一个分区之后。</p>
+                </div>
+            </div></section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_k1p_zlq_gdc" data-tocid="id__section_k1p_zlq_gdc">启动分区</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_cpt_fmq_gdc" data-tocid="id__section_cpt_fmq_gdc">数据分区</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_n5m_gmq_gdc" data-tocid="id__section_n5m_gmq_gdc">系统 A/B 分区</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id5" data-tocid="id__id5">分区与存储设备关系</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_xdj_cnq_gdc" data-tocid="id__section_xdj_cnq_gdc">修改分区</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id6" data-tocid="id__id6">分区配置示例
+                </a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

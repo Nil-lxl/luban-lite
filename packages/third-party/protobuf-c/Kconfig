@@ -1,0 +1,54 @@
+# Kconfig file for package protobuf-c
+menuconfig LPKG_USING_PROTOBUF_C
+    bool "protobuf-c: a C implementation of the Google Protocol Buffers data serialization format on RT-Thread"
+    default n
+
+if LPKG_USING_PROTOBUF_C
+
+    config LPKG_PROTOBUF_C_PATH
+        string
+        default "/packages/iot/protobuf-c"
+
+    config PROTOBUF_C_USING_EXAMPLE
+        bool "protobuf-c examples"
+        help
+            protobuf-c examples
+        default n
+    if PROTOBUF_C_USING_EXAMPLE
+        config PROTOBUF_C_USING_ENCODE_DECODE_EXAMPLE
+            bool "protobuf-c example: encode and decode in memory"
+            help
+                protobuf-c example: encode and decode in memory
+            default n
+
+        config PROTOBUF_C_USING_ENCODE_DECODE_FILE_EXAMPLE
+            select RT_USING_DFS      if RT_VER_NUM < 0x40100
+            select RT_USING_POSIX_FS if RT_VER_NUM >= 0x40100
+            bool "protobuf-c example: encode to file and decode from file"
+            help
+                protobuf-c example: encode to file and decode from file
+            default n
+    endif
+
+    choice
+        prompt "Version"
+        default LPKG_USING_PROTOBUF_C_LATEST_VERSION
+        help
+            Select the package version
+        config LPKG_USING_PROTOBUF_C_V100
+            bool "v1.0.0"
+        config LPKG_USING_PROTOBUF_C_LATEST_VERSION
+            bool "latest"
+    endchoice
+
+    config LPKG_PROTOBUF_C_VER
+       string
+       default "v1.0.0"    if LPKG_USING_PROTOBUF_C_V100
+       default "latest"    if LPKG_USING_PROTOBUF_C_LATEST_VERSION
+
+    config LPKG_PROTOBUF_C_VER_NUM
+        hex
+        default 0x10000 if LPKG_USING_PROTOBUF_C_V100
+        default 0x99999 if LPKG_USING_PROTOBUF_C_LATEST_VERSION
+
+endif

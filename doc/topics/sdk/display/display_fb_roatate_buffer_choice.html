@@ -1,0 +1,328 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="ArtInChip 平台在进行屏幕旋转时，兼容单 buffer 和双 buffer 的应用程序，可以提供多种屏幕旋转场景供用户选择。各种场景的详细对比说明如下表所示： 表 1 . 屏幕旋转场景对比 场景 优势 劣势 双绘制 buffer 和双显示 buffer 对应用友好，仅需修改 dts 配置即可达成竖屏横用，不需要修改上层应用。 占用的内存资源多，需要 4 块 buf，有一块绘制 buf ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-18"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="display_choices"/><meta name="DC.language" content="zh-CN"/><title>场景选择</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/display/display_fb_roatate_buffer_choice.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_fb_roatate_buffer_choice.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="display_choices" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_fb_roatate_buffer_choice.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">场景选择</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/div div">
+                    <div class="- topic/p p" data-ofbid="d189423e25__20250121171629">ArtInChip 平台在进行屏幕旋转时，兼容单 buffer 和双 buffer
+                            的应用程序，可以提供多种屏幕旋转场景供用户选择。各种场景的详细对比说明如下表所示：<div class="table-container"><table class="- topic/table table frame-all" id="display_choices__table_ldt_gss_2dc" data-ofbid="display_choices__table_ldt_gss_2dc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">屏幕旋转场景对比</span></caption><colgroup><col style="width:26.595744680851062%"/><col style="width:29.787234042553195%"/><col style="width:43.61702127659575%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_choices__table_ldt_gss_2dc__entry__1">场景</th><th class="- topic/entry entry colsep-1 rowsep-1" id="display_choices__table_ldt_gss_2dc__entry__2">优势</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_choices__table_ldt_gss_2dc__entry__3">劣势</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_choices__table_ldt_gss_2dc__entry__1"><span class="- topic/xref xref">双绘制 buffer 和双显示 buffer</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_choices__table_ldt_gss_2dc__entry__2">对应用友好，仅需修改 dts 配置即可达成竖屏横用，不需要修改上层应用。</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_choices__table_ldt_gss_2dc__entry__3">占用的内存资源多，需要 4 块 buf，有一块绘制 buf 是可以节省下来的。720x1280 的屏幕显示
+                                            32 位 RGB 数据时，需要约 14M 的物理连续内存。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_choices__table_ldt_gss_2dc__entry__1"><span class="- topic/xref xref">单绘制 buffer 和双显示 buffer</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_choices__table_ldt_gss_2dc__entry__2">
+                                            <p class="- topic/p p" data-ofbid="d189423e59__20250121171629">能避免显示撕裂现象，能节省下一块绘制 buf。</p>
+                                        </td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_choices__table_ldt_gss_2dc__entry__3">
+                                            <p class="- topic/p p" data-ofbid="d189423e64__20250121171629">需要修改应用程序。</p>
+                                        </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_choices__table_ldt_gss_2dc__entry__1"><span class="- topic/xref xref">单绘制 buffer 和单显示 buffer</span></td><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_choices__table_ldt_gss_2dc__entry__2">占用的内存资源最小</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_choices__table_ldt_gss_2dc__entry__3">
+                                            <p class="- topic/p p" data-ofbid="d189423e76__20250121171629">需要手动触发更新，必须修改应用。</p>
+                                            <p class="- topic/p p" data-ofbid="d189423e79__20250121171629">只有一块显示 buf，撕裂现象不可避免，只能在一些特定的场景中使用。</p>
+                                        </td></tr></tbody></table></div></div>
+                    <p class="- topic/p p" data-ofbid="d189423e83__20250121171629">本节以一块 720x1280 的屏幕竖屏横用为例进行详细说明。</p>
+                </div><section class="- topic/section section" id="display_choices__section_bufer_choice1" data-ofbid="display_choices__section_bufer_choice1"><h2 class="- topic/title title sectiontitle">双绘制 buffer 和双显示 buffer</h2>
+            
+            <div class="- topic/p p" data-ofbid="d189423e91__20250121171629">仅需要设置 rotation-degress （旋转角度）和 height-virtual （内存高度），且 height-virtual 必须为横屏高度的 2 倍。此时
+                GUI 会使用双 framebuffer 的方式绘制界面，显示 buf 个数自动适配为
+                2。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_choices__codeblock_gcx_njg_d1c" data-ofbid="display_choices__codeblock_gcx_njg_d1c">&amp;fb0 {
+    artinchip,uboot-logo-on=&lt;<span class="hl-number">1</span>&gt;;
+    rotation-degress = &lt;<span class="hl-number">270</span>&gt;;
+    height-virtual = &lt;<span class="hl-number">1440</span>&gt;;  <em class="hl-comment">// 720 * 2</em>
+
+    port {
+        fb0_out: endpoint {
+            remote-endpoint = &lt;&amp;de0_in&gt;;
+        };
+    };
+};</pre></div>
+            <div class="- topic/p p" data-ofbid="d189423e96__20250121171629">
+                <div class="- topic/div div">
+                <div class="- topic/p p" id="display_choices__p_hnr_mtk_ndc" data-ofbid="display_choices__p_hnr_mtk_ndc">内存使用情况如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_choices__codeblock_bxl_4jg_d1c" data-ofbid="display_choices__codeblock_bxl_4jg_d1c">+-------------------------+
+|      绘制 buf <span class="hl-number">0</span>         |
++-------------------------+
+|      绘制 buf <span class="hl-number">1</span>         |
++-----+-------------------+
+|     |
+| 显  |
+| 示  |
+| buf |
+| <span class="hl-number">0</span>   |
+|     |
++-----+
+|     |
+| 显  |
+| 示  |
+| buf |
+| <span class="hl-number">1</span>   |
+|     |
++-----+</pre></div>
+                <p class="- topic/p p" data-ofbid="d189423e105__20250121171629">GUI 在绘制 buf0 绘制完界面后，底层驱动会把数据旋转到显示 buf0 进行显示，绘制 buf1 同理。</p>
+            </div>
+            </div>
+        </section><section class="- topic/section section" id="display_choices__section_bufer_choice2" data-ofbid="display_choices__section_bufer_choice2"><h2 class="- topic/title title sectiontitle">单绘制 buffer 和双显示 buffer</h2>
+            
+            <div class="- topic/p p" data-ofbid="d189423e115__20250121171629">由于只有 1 块绘制 buf，不需要设置 height-virtual ，但需要设置
+                disp-buf-num。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_choices__codeblock_mf3_rjg_d1c" data-ofbid="display_choices__codeblock_mf3_rjg_d1c">&amp;fb0 {
+    artinchip,uboot-logo-on=&lt;<span class="hl-number">1</span>&gt;;
+    rotation-degress = &lt;<span class="hl-number">270</span>&gt;;
+    disp-buf-num = &lt;<span class="hl-number">2</span>&gt;;
+
+    port {
+        fb0_out: endpoint {
+            remote-endpoint = &lt;&amp;de0_in&gt;;
+        };
+    };
+};</pre></div>
+            <div class="- topic/div div">
+            <div class="- topic/p p" data-ofbid="d189423e122__20250121171629">内存使用情况如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_choices__codeblock_v5y_rjg_d1c" data-ofbid="display_choices__codeblock_v5y_rjg_d1c">+-------------------------+
+|      绘制 buf <span class="hl-number">0</span>         |
++-----+-------------------+
+|     |
+| 显  |
+| 示  |
+| buf |
+| <span class="hl-number">0</span>   |
+|     |
++-----+
+|     |
+| 显  |
+| 示  |
+| buf |
+| <span class="hl-number">1</span>   |
+|     |
++-----+</pre></div>
+        </div>
+            <p class="- topic/p p" data-ofbid="d189423e128__20250121171629">GUI 绘制完界面后，下放 ioctl <span class="+ topic/keyword pr-d/parmname keyword parmname">FBIOPAN_DISPLAY</span>，底层驱动会自动切换显示 buf，避免撕裂现象的发生。GUI
+                应用程序不需要关注显示 buf 的切换。</p>
+            <div class="- topic/p p" data-ofbid="d189423e134__20250121171629">这种使用方式能避免 LCD 撕裂，并节省一块绘制
+                buf，但需要修改应用程序。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_choices__codeblock_bcm_yjg_d1c" data-ofbid="display_choices__codeblock_bcm_yjg_d1c"><strong class="hl-keyword">struct</strong> fb_var_screeninfo var = {<span class="hl-number">0</span>};
+<strong class="hl-keyword">int</strong> zero = <span class="hl-number">0</span>;
+
+<strong class="hl-keyword">if</strong> (ioctl(fbfd, FBIOGET_VSCREENINFO, &amp;var) &lt; <span class="hl-number">0</span>) {
+    printf(<span class="hl-string">"ioctl FBIOGET_VSCREENINFO fail\n"</span>);
+    <strong class="hl-keyword">return</strong>;
+}
+
+<strong class="hl-keyword">if</strong> (ioctl(fbfd, FBIOPAN_DISPLAY, &amp;var) == <span class="hl-number">0</span>) {
+    <strong class="hl-keyword">if</strong> (ioctl(fbfd, FBIO_WAITFORVSYNC, &amp;zero) &lt; <span class="hl-number">0</span>) {
+        printf(<span class="hl-string">"ioctl FBIO_WAITFORVSYNC fail\n"</span>);
+        <strong class="hl-keyword">return</strong>;
+    }
+} <strong class="hl-keyword">else</strong> {
+    printf(<span class="hl-string">"pan display err\n"</span>);
+}</pre></div>
+        </section><section class="- topic/section section" id="display_choices__section_bufer_choice3" data-ofbid="display_choices__section_bufer_choice3"><h2 class="- topic/title title sectiontitle">单绘制 buffer 和单显示 buffer</h2>
+            
+            <div class="- topic/p p" data-ofbid="d189423e144__20250121171629">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_choices__codeblock_zxd_sjg_d1c" data-ofbid="display_choices__codeblock_zxd_sjg_d1c">&amp;fb0 {
+    artinchip,uboot-logo-on=&lt;<span class="hl-number">1</span>&gt;;
+    rotation-degress = &lt;<span class="hl-number">270</span>&gt;;
+
+    port {
+        fb0_out: endpoint {
+            remote-endpoint = &lt;&amp;de0_in&gt;;
+        };
+    };
+};</pre>
+                <div class="- topic/note note note note_note" id="display_choices__note_e4c_tjg_d1c" data-ofbid="display_choices__note_e4c_tjg_d1c"><span class="note__title">注：</span> 
+                    <p class="- topic/p p" data-ofbid="d189423e151__20250121171629">该场景只需要指定旋转角度。</p>
+                </div>
+            </div>
+            <div class="- topic/div div">
+            <div class="- topic/p p" data-ofbid="d189423e158__20250121171629">其底层的内存使用情况如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_choices__codeblock_btn_t4s_2dc" data-ofbid="display_choices__codeblock_btn_t4s_2dc">+-------------------------+
+|      绘制 buf <span class="hl-number">0</span>         |
++-----+-------------------+
+|     |
+| 显  |
+| 示  |
+| buf |
+| <span class="hl-number">0</span>   |
+|     |
++-----+</pre></div>
+            <div class="- topic/note note note note_note" id="display_choices__note_lh4_qn3_ddc" data-ofbid="display_choices__note_lh4_qn3_ddc"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d189423e165__20250121171629">因为 Display Engine 无法确定 CPU 绘制完成的时机，所以需要应用使用 ioctl pan_display 去手动触发更新。</p>
+            </div>
+        </div>
+            <p class="- topic/p p" data-ofbid="d189423e170__20250121171629">GUI 在绘制 buf0 绘制完界面后，需要<span class="- topic/ph ph">下发 ioctl
+                <span class="+ topic/keyword pr-d/parmname keyword parmname">FBIOPAN_DISPLAY</span></span> 才可以触发屏幕旋转。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_choices__codeblock_cnt_x3g_d1c" data-ofbid="display_choices__codeblock_cnt_x3g_d1c"><strong class="hl-keyword">struct</strong> fb_var_screeninfo var = {<span class="hl-number">0</span>};
+<strong class="hl-keyword">int</strong> zero = <span class="hl-number">0</span>;
+
+<strong class="hl-keyword">if</strong> (ioctl(fbfd, FBIOGET_VSCREENINFO, &amp;var) &lt; <span class="hl-number">0</span>) {
+    printf(<span class="hl-string">"ioctl FBIOGET_VSCREENINFO fail\n"</span>);
+    <strong class="hl-keyword">return</strong>;
+}
+
+<strong class="hl-keyword">if</strong> (ioctl(fbfd, FBIOPAN_DISPLAY, &amp;var) == <span class="hl-number">0</span>) {
+    <strong class="hl-keyword">if</strong> (ioctl(fbfd, FBIO_WAITFORVSYNC, &amp;zero) &lt; <span class="hl-number">0</span>) {
+        printf(<span class="hl-string">"ioctl FBIO_WAITFORVSYNC fail\n"</span>);
+        <strong class="hl-keyword">return</strong>;
+    }
+} <strong class="hl-keyword">else</strong> {
+    printf(<span class="hl-string">"pan display err\n"</span>);
+}</pre>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#display_choices__section_bufer_choice1" data-tocid="display_choices__section_bufer_choice1">双绘制 buffer 和双显示 buffer</a></div></li><li class="section-item"><div class="section-title"><a href="#display_choices__section_bufer_choice2" data-tocid="display_choices__section_bufer_choice2">单绘制 buffer 和双显示 buffer</a></div></li><li class="section-item"><div class="section-title"><a href="#display_choices__section_bufer_choice3" data-tocid="display_choices__section_bufer_choice3">单绘制 buffer 和单显示 buffer</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

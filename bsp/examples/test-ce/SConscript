@@ -1,0 +1,16 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('AIC_CE_DRV_TEST') and GetDepend('RT_USING_FINSH'):
+    src = Glob('test_ce.c')
+if GetDepend('AIC_SOFT_AES_TEST') and GetDepend('RT_USING_FINSH'):
+    src = Glob('soft-aes-ecb.c')
+    src += Glob('test-soft-aes-ecb.c')
+
+group = DefineGroup('test-ce', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

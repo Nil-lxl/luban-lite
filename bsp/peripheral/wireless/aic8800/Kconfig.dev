@@ -1,0 +1,15 @@
+#-----------------------------
+# aic8800 wlan devices local parameter
+#-----------------------------
+
+# wlan0 parameter
+
+menu "Wlan0 Parameter"
+
+    config AIC_DEV_AIC8800_WLAN0_PWR_GPIO
+        string "aic8800 wlan0 power on gpio"
+
+    config AIC_DEV_AIC8800_WLAN0_RST_GPIO
+        string "aic8800 wlan0 reset gpio"
+
+endmenu

@@ -1,0 +1,17 @@
+menuconfig LPKG_USING_OTA_DOWNLOADER
+    bool "aic-ota"
+    default n
+
+if LPKG_USING_OTA_DOWNLOADER
+
+    config OTA_DOWNLOADER_DEBUG
+        bool "Enable OTA downloader debug"
+        default n
+
+    config AIC_OTA_INTERFACE
+        bool "Enable OTA interface"
+        select AIC_ENV_INTERFACE
+        select AIC_AB_SYSTEM_INTERFACE
+        default y
+
+endif

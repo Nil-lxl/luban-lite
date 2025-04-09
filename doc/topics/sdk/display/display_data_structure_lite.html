@@ -1,0 +1,564 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节段介绍了多个结构体和枚举类型的代码示例，用于描述和管理显示框架缓冲区 (Framebuffer) 的配置，包括矩形区域、点坐标、大小、像素格式、缓冲区属性、图层数据、颜色键、Alpha 混合、CCM（Color Correction Matrix）、Gamma 校正以及屏幕信息。 mpp_types.h 路径： bsp/artinchip/include/uapi/mpp_types.h ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/display/display-design_intro_2.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_key_process.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_interface_lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>数据结构说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e3822"/><meta name="wh-source-relpath" content="topics/sdk/display/display_data_structure_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_data_structure_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html">Display 使用指南</a></div></div></li><li><div class="topicref" data-id="display_design_intro"><div class="title"><a href="../../../topics/sdk/display/display-design_intro_2.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/display/display_data_structure_lite.html">数据结构说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/display/display_key_process.html" title="关键流程设计" aria-label="上一主题: 关键流程设计" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/display/display_interface_lite.html" title="接口设计" aria-label="下一主题: 接口设计" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3726" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3726-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_config_lite.html" id="id-d5856e3726-link">Display 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3762" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_debug_lite.html" id="id-d5856e3762-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3774" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_test_guide_lite.html" id="id-d5856e3774-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="display_design_intro-d5856e3786" class="topicref" data-id="display_design_intro" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action display_design_intro-d5856e3786-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display-design_intro_2.html" id="display_design_intro-d5856e3786-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e3798" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_sourcecode_and_arch_lite.html" id="id-d5856e3798-link">源码和框架说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3810" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_key_process.html" id="id-d5856e3810-link">关键流程设计</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e3822" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_data_structure_lite.html" id="id-d5856e3822-link">数据结构说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3834" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_interface_lite.html" id="id-d5856e3834-link">接口设计</a></div></div></li><li role="treeitem"><div data-tocid="display_demo-d5856e3846" class="topicref" data-id="display_demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_demo_2.html" id="display_demo-d5856e3846-link">Demo</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e3858" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_panel_port_lite.html" id="id-d5856e3858-link">屏适配指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3870" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3870-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_fb_rotation_lite.html" id="id-d5856e3870-link">屏幕旋转</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3894" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_color_property_lite.html" id="id-d5856e3894-link">色彩调整</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3906" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_burn_process.html" id="id-d5856e3906-link">烧录进度条</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3918" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_blending.html" id="id-d5856e3918-link">Blending</a></div></div></li><li role="treeitem"><div data-tocid="startup-ui-d5856e3930" class="topicref" data-id="startup-ui" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_startup_ui.html" id="startup-ui-d5856e3930-link">开机动画</a></div></div></li><li role="treeitem"><div data-tocid="concept_smb_cl3_pzb-d5856e3943" class="topicref" data-id="concept_smb_cl3_pzb" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_faq_screen_2.html" id="concept_smb_cl3_pzb-d5856e3943-link">调屏常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_data_structure_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">数据结构说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 12 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d176834e19__20250121171623">本节段介绍了多个结构体和枚举类型的代码示例，用于描述和管理显示框架缓冲区 (Framebuffer)
+            的配置，包括矩形区域、点坐标、大小、像素格式、缓冲区属性、图层数据、颜色键、Alpha 混合、CCM（Color Correction Matrix）、Gamma
+            校正以及屏幕信息。</p><section class="- topic/section section" id="id__section_vz1_lds_2dc" data-ofbid="id__section_vz1_lds_2dc"><h2 class="- topic/title title sectiontitle"><span class="+ topic/ph sw-d/filepath ph filepath">mpp_types.h</span></h2>
+            
+            <p class="- topic/p p" data-ofbid="d176834e28__20250121171623">路径：<span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/uapi/mpp_types.h</span>
+            </p>
+            <ul class="- topic/ul ul" id="id__ul_emp_n2k_ndc" data-ofbid="id__ul_emp_n2k_ndc"><li class="- topic/li li" data-ofbid="d176834e35__20250121171623">
+                    <div class="- topic/div div section" id="id__struct-mpp-rect">
+                        <strong class="+ topic/ph hi-d/b ph b">struct
+                        mpp_rect</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_zcl_mds_2dc" data-ofbid="id__codeblock_zcl_mds_2dc"><strong class="hl-keyword">struct</strong> mpp_rect {
+    <strong class="hl-keyword">int</strong> x;
+    <strong class="hl-keyword">int</strong> y;
+    <strong class="hl-keyword">int</strong> width;
+    <strong class="hl-keyword">int</strong> height;
+};</pre>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d176834e45__20250121171623">
+                    <div class="- topic/div div section" id="id__struct-mpp-point">
+                        <strong class="+ topic/ph hi-d/b ph b">struct
+                        mpp_point</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_npp_mds_2dc" data-ofbid="id__codeblock_npp_mds_2dc"><strong class="hl-keyword">struct</strong> mpp_point {
+    <strong class="hl-keyword">int</strong> x;
+    <strong class="hl-keyword">int</strong> y;
+};</pre>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d176834e55__20250121171623">
+                    <div class="- topic/div div section" id="id__struct-mpp-size">
+                        <strong class="+ topic/ph hi-d/b ph b">struct mpp_size</strong>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_uzq_mds_2dc" data-ofbid="id__codeblock_uzq_mds_2dc"><strong class="hl-keyword">struct</strong> mpp_size {
+    <strong class="hl-keyword">int</strong> width;
+    <strong class="hl-keyword">int</strong> height;
+};</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d176834e65__20250121171623">
+                    <div class="- topic/div div section" id="id__enum-mpp-pixel-format">
+                        <strong class="+ topic/ph hi-d/b ph b">enum
+                        mpp_pixel_format</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_nzs_mds_2dc" data-ofbid="id__codeblock_nzs_mds_2dc"><strong class="hl-keyword">enum</strong> mpp_pixel_format {
+    MPP_FMT_ARGB_<span class="hl-number">8888</span>            = <span class="hl-number">0x00</span>,
+    MPP_FMT_ABGR_<span class="hl-number">8888</span>            = <span class="hl-number">0x01</span>,
+    MPP_FMT_RGBA_<span class="hl-number">8888</span>            = <span class="hl-number">0x02</span>,
+    MPP_FMT_BGRA_<span class="hl-number">8888</span>            = <span class="hl-number">0x03</span>,
+    MPP_FMT_XRGB_<span class="hl-number">8888</span>            = <span class="hl-number">0x04</span>,
+    MPP_FMT_XBGR_<span class="hl-number">8888</span>            = <span class="hl-number">0x05</span>,
+    MPP_FMT_RGBX_<span class="hl-number">8888</span>            = <span class="hl-number">0x06</span>,
+    MPP_FMT_BGRX_<span class="hl-number">8888</span>            = <span class="hl-number">0x07</span>,
+    MPP_FMT_RGB_<span class="hl-number">888</span>              = <span class="hl-number">0x08</span>,
+    MPP_FMT_BGR_<span class="hl-number">888</span>              = <span class="hl-number">0x09</span>,
+    MPP_FMT_ARGB_<span class="hl-number">1555</span>            = <span class="hl-number">0x0a</span>,
+    MPP_FMT_ABGR_<span class="hl-number">1555</span>            = <span class="hl-number">0x0b</span>,
+    MPP_FMT_RGBA_<span class="hl-number">5551</span>            = <span class="hl-number">0x0c</span>,
+    MPP_FMT_BGRA_<span class="hl-number">5551</span>            = <span class="hl-number">0x0d</span>,
+    MPP_FMT_RGB_<span class="hl-number">565</span>              = <span class="hl-number">0x0e</span>,
+    MPP_FMT_BGR_<span class="hl-number">565</span>              = <span class="hl-number">0x0f</span>,
+    MPP_FMT_ARGB_<span class="hl-number">4444</span>            = <span class="hl-number">0x10</span>,
+    MPP_FMT_ABGR_<span class="hl-number">4444</span>            = <span class="hl-number">0x11</span>,
+    MPP_FMT_RGBA_<span class="hl-number">4444</span>            = <span class="hl-number">0x12</span>,
+    MPP_FMT_BGRA_<span class="hl-number">4444</span>            = <span class="hl-number">0x13</span>,
+
+    MPP_FMT_YUV420P              = <span class="hl-number">0x20</span>,
+    MPP_FMT_NV12                 = <span class="hl-number">0x21</span>,
+    MPP_FMT_NV21                 = <span class="hl-number">0x22</span>,
+    MPP_FMT_YUV422P              = <span class="hl-number">0x23</span>,
+    MPP_FMT_NV16                 = <span class="hl-number">0x24</span>,
+    MPP_FMT_NV61                 = <span class="hl-number">0x25</span>,
+    MPP_FMT_YUYV                 = <span class="hl-number">0x26</span>,
+    MPP_FMT_YVYU                 = <span class="hl-number">0x27</span>,
+    MPP_FMT_UYVY                 = <span class="hl-number">0x28</span>,
+    MPP_FMT_VYUY                 = <span class="hl-number">0x29</span>,
+    MPP_FMT_YUV400               = <span class="hl-number">0x2a</span>,
+    MPP_FMT_YUV444P              = <span class="hl-number">0x2b</span>,
+
+    MPP_FMT_YUV420_<span class="hl-number">64</span>x32_TILE    = <span class="hl-number">0x30</span>,
+    MPP_FMT_YUV420_<span class="hl-number">128</span>x16_TILE   = <span class="hl-number">0x31</span>,
+    MPP_FMT_YUV422_<span class="hl-number">64</span>x32_TILE    = <span class="hl-number">0x32</span>,
+    MPP_FMT_YUV422_<span class="hl-number">128</span>x16_TILE   = <span class="hl-number">0x33</span>,
+    MPP_FMT_MAX,
+};</pre>
+                    </div>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__section_gwk_lds_2dc" data-ofbid="id__section_gwk_lds_2dc"><h2 class="- topic/title title sectiontitle">artinchip_fb.h</h2>
+            
+            <div class="- topic/div div section" id="id__artinchip-fb-h">
+                <p class="- topic/p p" data-ofbid="d176834e85__20250121171623">路径： <span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/uapi/artinchip_fb.h</span></p>
+                <ul class="- topic/ul ul" id="id__ul_hld_42k_ndc" data-ofbid="id__ul_hld_42k_ndc"><li class="- topic/li li" data-ofbid="d176834e91__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-layer-num">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_layer_num</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_bnx_mds_2dc" data-ofbid="id__codeblock_bnx_mds_2dc"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_layer_num - aicfb layer number
+ * @vi_num: number of video layers
+ * @ui_num: number of UI layers
+ *
+ *  total_layer_num = vi_num + ui_num
+ *
+ *  layer id range: [0, total_layer_num - 1]
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_layer_num {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> vi_num;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> ui_num;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e100__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-layer-capability">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_layer_capability</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_bdz_mds_2dc" data-ofbid="id__codeblock_bdz_mds_2dc"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_layer_capability - aicfb layer capability
+ * @layer_id: the layer id
+ * @layer_type: the layer type
+ *  0: UI layer
+ *  1: Video layer
+ * @max_width:  the max pixels per line
+ * @max_height: the max lines
+ * @cap_flags:  flags of layer capability
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_layer_capability {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_type;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> max_width;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> max_height;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> cap_flags;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e109__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-buffer">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_buffer</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_sgc_nds_2dc" data-ofbid="id__codeblock_sgc_nds_2dc"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_buffer - aicfb frame buffer
+ * @phy_addr[3]: address of frame buffer
+ *  single addr for interleaved fomart with 1 plane,
+ *  double addr for semi-planar fomart with 2 planes,
+ *  triple addr for planar format with 3 planes
+ * @size: width and height of aicfb_buffer
+ * @stride[3]: stride for all planes
+ * @crop_en: corp disable/enable ctrl
+ *  0: disable crop the buffer
+ *  1: enable crop the buffer
+ * @crop: crop info
+ * @format: color format
+ * @buf_flags: aicfb buffer flags
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_buffer {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            phy_addr[AICFB_PLANE_NUM];
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            dmabuf_fd[AICFB_PLANE_NUM];
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            stride[AICFB_PLANE_NUM];
+    <strong class="hl-keyword">struct</strong> aic_size         size;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            crop_en;
+    <strong class="hl-keyword">struct</strong> aic_rect         crop;
+    <strong class="hl-keyword">enum</strong> aic_pixel_format   format;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            buf_flags;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e118__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-layer-data">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_layer_data</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_zmb_pds_2dc" data-ofbid="id__codeblock_zmb_pds_2dc"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_layer_data - aicfb layer data
+ * @enable
+ *  0: disable the layer
+ *  1: enable the layer
+ * @layer_id: the layer id
+ *
+ * @rect_id: the rectanglular window id of the layer
+ *  only used by layers with multi-rectangular windows
+ *  for example: if the layer has 4 rectangular windows,
+ *  rect_id can be 0,1,2 or 3 for different windows
+ *
+ * @scale_size:  scaling size
+ *  if the layer can be scaled. the scaling size can be different
+ *  from the input buffer. the input buffer can be original aicfb_buffer
+ *  or crop aicfb_buffer, otherwise, the scaling size will be ignore
+ *
+ * @pos: left-top x/y coordinate of the screen in pixels
+ * @buf: frame buffer
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_layer_data {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> rect_id;
+    <strong class="hl-keyword">struct</strong> aic_size scale_size;
+    <strong class="hl-keyword">struct</strong> aic_point pos;
+    <strong class="hl-keyword">struct</strong> aicfb_buffer buf;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e127__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-config-lists">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_config_lists</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_eyf_nds_2dc" data-ofbid="id__codeblock_eyf_nds_2dc"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_config_lists - aicfb config lists
+ * @num: the total number of layer data config lists
+ * @layers[]: the array of aicfb_layer_data lists
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_config_lists {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> num;
+    <strong class="hl-keyword">struct</strong> aicfb_layer_data layers[];
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e136__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-alpha-config">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_alpha_config</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_brh_nds_2dc" data-ofbid="id__codeblock_brh_nds_2dc"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_alpha_config - aicfb layer alpha blending config
+ *
+ * @layer_id: the layer id
+ *
+ * @enable
+ *  0: disable alpha
+ *  1: enable alpha
+ *
+ * @mode: alpha mode
+ *  0: pixel alpha mode
+ *  1: global alpha mode
+ *  2: mixder alpha mode(alpha = pixel alpha * global alpha / 255)
+ *
+ * @value: global alpha value (0~255)
+ *  used by global alpha mode and mixer alpha mode
+ *
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_alpha_config {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> mode;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> value;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e145__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-ck-config">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_ck_config</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_cbk_nds_2dc" data-ofbid="id__codeblock_cbk_nds_2dc"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_ck_config - aicfb layer color key blending config
+ *
+ * @layer_id: the layer id
+ *
+ * @ck_enable
+ *  0: disable color key
+ *  1: enable color key
+ *
+ *
+ * @ck_value: color key rgb value to match the layer pixels
+ *  bit[31:24]: reserved
+ *  bit[23:16]: R value
+ *  bit[15:8]: G value
+ *  bit[7:0]: B value
+ *
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_ck_config {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> value;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e154__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-disp-prop">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_disp_prop</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_hxm_nds_2dc" data-ofbid="id__codeblock_hxm_nds_2dc"><em class="hl-comment">/*
+ * struct aicfb_disp_prop - aicfb display property
+ *
+ * @bright: bright in percent, range [0, 100], 50 means no effect
+ * @contrast: contrast in percent, range [0, 100], 50 means no effect
+ * @saturation: saturation in percent, range [0, 100], 50 means no effect
+ * @hue: hue in percent, range [0, 100], 50 means no effect
+ */</em>
+<strong class="hl-keyword">struct</strong> aicfb_disp_prop {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> bright;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> contrast;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> saturation;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> hue;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e163__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-ccm-config">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_ccm_config</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xj4_nds_2dc" data-ofbid="id__codeblock_xj4_nds_2dc"><strong class="hl-keyword">struct</strong> aicfb_ccm_config {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">int</strong> ccm_table[<span class="hl-number">12</span>];
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e172__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-gamma-config">
+                            <strong class="+ topic/ph hi-d/b ph b">struct
+                            aicfb_gamma_config</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_bvq_nds_2dc" data-ofbid="id__codeblock_bvq_nds_2dc"><strong class="hl-keyword">enum</strong> gamma_lut {
+    GAMMA_RED,
+    GAMMA_GREEN,
+    GAMMA_BLUE,
+};
+
+<strong class="hl-keyword">struct</strong> aicfb_gamma_config {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> gamma_lut[<span class="hl-number">3</span>][<span class="hl-number">16</span>];
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e181__20250121171623">
+                        <div class="- topic/div div section" id="id__struct-aicfb-screeninfo">
+                            <strong class="+ topic/ph hi-d/b ph b">struct aicfb_screeninfo</strong>
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_qlz_pds_2dc" data-ofbid="id__codeblock_qlz_pds_2dc"><em class="hl-comment">/*
+ * struct aicfb_screeninfo - aicfb screen info
+ *
+ * @format: color format
+ * @bits_per_pixel: bits per pixel
+ * @stride: stride of screen
+ * @width: screen width in pixels
+ * @height: screen height in pixels
+ * @framebuffer: start of frame buffer mem
+ * @smem_len: length of frame buffer mem
+ */</em>
+<strong class="hl-keyword">struct</strong> aicfb_screeninfo {
+    <strong class="hl-keyword">enum</strong> mpp_pixel_format format;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> bits_per_pixel;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> stride;
+
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> width;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> height;
+
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *framebuffer;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> smem_len;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d176834e192__20250121171623">
+                        <div class="- topic/div div section" id="id__ioctl">
+                            <strong class="+ topic/ph hi-d/b ph b">ioctl
+                            命令</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_klx_pds_2dc" data-ofbid="id__codeblock_klx_pds_2dc">#<span class="hl-directive">define</span> AICFB_WAIT_FOR_VSYNC  _IOW(IOC_TYPE_FB, <span class="hl-number">0x20</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>)
+
+<span class="hl-tag-doctype-comment">/** get layer number */</span>
+#<span class="hl-directive">define</span> AICFB_GET_LAYER_NUM  _IOR(IOC_TYPE_FB, <span class="hl-number">0x21</span>, <strong class="hl-keyword">struct</strong> aicfb_layer_num)
+
+<span class="hl-tag-doctype-comment">/** get layer capability */</span>
+#<span class="hl-directive">define</span> AICFB_GET_LAYER_CAPABILITY  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x22</span>,\
+                    <strong class="hl-keyword">struct</strong> aicfb_layer_capability)
+
+<span class="hl-tag-doctype-comment">/** get layer config data */</span>
+#<span class="hl-directive">define</span> AICFB_GET_LAYER_CONFIG  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x23</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_layer_data)
+
+<span class="hl-tag-doctype-comment">/** update layer config data */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_LAYER_CONFIG  _IOW(IOC_TYPE_FB, <span class="hl-number">0x24</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_layer_data)
+
+<span class="hl-tag-doctype-comment">/** update layer config data lists */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_LAYER_CONFIG_LISTS  _IOW(IOC_TYPE_FB, <span class="hl-number">0x25</span>, \
+                        <strong class="hl-keyword">struct</strong> aicfb_config_lists)
+
+<span class="hl-tag-doctype-comment">/** get layer alpha blendig config */</span>
+#<span class="hl-directive">define</span> AICFB_GET_ALPHA_CONFIG  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x26</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_alpha_config)
+
+<span class="hl-tag-doctype-comment">/** update layer alpha blendig config */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_ALPHA_CONFIG  _IOW(IOC_TYPE_FB, <span class="hl-number">0x27</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_alpha_config)
+
+<span class="hl-tag-doctype-comment">/** get layer color key config */</span>
+#<span class="hl-directive">define</span> AICFB_GET_CK_CONFIG  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x28</span>, <strong class="hl-keyword">struct</strong> aicfb_ck_config)
+
+<span class="hl-tag-doctype-comment">/** update layer color key config */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_CK_CONFIG  _IOW(IOC_TYPE_FB, <span class="hl-number">0x29</span>, <strong class="hl-keyword">struct</strong> aicfb_ck_config)
+
+<span class="hl-tag-doctype-comment">/** pan display */</span>
+#<span class="hl-directive">define</span> AICFB_PAN_DISPLAY  _IOR(IOC_TYPE_FB, <span class="hl-number">0x43</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>)
+
+<span class="hl-tag-doctype-comment">/** set display property */</span>
+#<span class="hl-directive">define</span> AICFB_SET_DISP_PROP _IOW(IOC_TYPE_FB, <span class="hl-number">0x60</span>, <strong class="hl-keyword">struct</strong> aicfb_disp_prop)
+
+<span class="hl-tag-doctype-comment">/** get display property */</span>
+#<span class="hl-directive">define</span> AICFB_GET_DISP_PROP _IOR(IOC_TYPE_FB, <span class="hl-number">0x61</span>, <strong class="hl-keyword">struct</strong> aicfb_disp_prop)
+
+<span class="hl-tag-doctype-comment">/** update ccm config */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_CCM_CONFIG _IOR(IOC_TYPE_FB, <span class="hl-number">0x65</span>, <strong class="hl-keyword">struct</strong> aicfb_ccm_config)
+
+<span class="hl-tag-doctype-comment">/** get ccm config */</span>
+#<span class="hl-directive">define</span> AICFB_GET_CCM_CONFIG _IOR(IOC_TYPE_FB, <span class="hl-number">0x66</span>, <strong class="hl-keyword">struct</strong> aicfb_ccm_config)
+
+<span class="hl-tag-doctype-comment">/** update gamma config */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_GAMMA_CONFIG _IOR(IOC_TYPE_FB, <span class="hl-number">0x67</span>, <strong class="hl-keyword">struct</strong> aicfb_gamma_config)
+
+<span class="hl-tag-doctype-comment">/** get gamma config */</span>
+#<span class="hl-directive">define</span> AICFB_GET_GAMMA_CONFIG _IOR(IOC_TYPE_FB, <span class="hl-number">0x68</span>, <strong class="hl-keyword">struct</strong> aicfb_gamma_config)
+
+<em class="hl-comment">/* get screen info */</em>
+#<span class="hl-directive">define</span> AICFB_GET_SCREENINFO _IOR(IOC_TYPE_FB, <span class="hl-number">0x62</span>, <strong class="hl-keyword">struct</strong> aicfb_screeninfo)
+
+<em class="hl-comment">/* enable aic fb, calls panel enable callback */</em>
+#<span class="hl-directive">define</span> AICFB_POWERON   _IOR(IOC_TYPE_FB, <span class="hl-number">0x63</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>)
+
+<em class="hl-comment">/* disable aic fb, calls panel disable callback */</em>
+#<span class="hl-directive">define</span> AICFB_POWEROFF   _IOR(IOC_TYPE_FB, <span class="hl-number">0x64</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>)</pre>
+                        </div>
+                    </li></ul>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_vz1_lds_2dc" data-tocid="id__section_vz1_lds_2dc"><span class="+ topic/ph sw-d/filepath ph filepath">mpp_types.h</span></a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_gwk_lds_2dc" data-tocid="id__section_gwk_lds_2dc">artinchip_fb.h</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

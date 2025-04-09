@@ -1,0 +1,383 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="由于驱动支持非命令队列和命令队列两种模式，在提供的用户 MPP 接口中，对调用驱动的接口进行了封装，保持了统一的调用 API， 建议用户统一使用 MPP 中间层 API。在命令队列模式下，task 会先缓存在用户的 cmd buffer 中，当调用 mpp_ge_emit 后， 会通过 write 接口把命令写入内核的 ring buffer。 图 1 . 应用调用 MPP 框架 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_design_2.html"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp-zlib_design_and_interface_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp-vin-design-interface.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp-ge-design"/><title>MPP GE 设计及接口说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="mpp-ge-design-d5856e4459"/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp_ge_design_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp_ge_design_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mpp-ge-design" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="mpp"><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html">MPP 使用指南</a></div></div></li><li><div class="topicref" data-id="mpp_design_intro"><div class="title"><a href="../../../topics/sdk/mpp/mpp_design_2.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="mpp-ge-design"><div class="title"><a href="../../../topics/sdk/mpp/mpp_ge_design_lite.html">MPP GE 设计及接口说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/mpp/mpp-zlib_design_and_interface_intro.html" title="MPP Zlib 设计及接口说明" aria-label="上一主题: MPP Zlib 设计及接口说明" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/mpp/mpp-vin-design-interface.html" title="MPP VIN 设计及接口说明" aria-label="下一主题: MPP VIN 设计及接口说明" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e4375" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_config_lite.html" id="id-d5856e4375-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4387" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_debug_lite.html" id="id-d5856e4387-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="mpp_test_guide-d5856e4399" class="topicref" data-id="mpp_test_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_test_2.html" id="mpp_test_guide-d5856e4399-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="mpp_design_intro-d5856e4411" class="topicref" data-id="mpp_design_intro" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mpp_design_intro-d5856e4411-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_design_2.html" id="mpp_design_intro-d5856e4411-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="mpp_decode-d5856e4423" class="topicref" data-id="mpp_decode" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp-decode_2.html" id="mpp_decode-d5856e4423-link">MPP Decoder 设计及接口说明</a></div></div></li><li role="treeitem"><div data-tocid="mpp_encoder_design_and_interface_intro-d5856e4435" class="topicref" data-id="mpp_encoder_design_and_interface_intro" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_encoder_design_2.html" id="mpp_encoder_design_and_interface_intro-d5856e4435-link">MPP Encoder 设计及接口说明</a></div></div></li><li role="treeitem"><div data-tocid="mpp_zlib_design_and_interface_intro-d5856e4447" class="topicref" data-id="mpp_zlib_design_and_interface_intro" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp-zlib_design_and_interface_intro.html" id="mpp_zlib_design_and_interface_intro-d5856e4447-link">MPP Zlib 设计及接口说明</a></div></div></li><li role="treeitem" class="active"><div data-tocid="mpp-ge-design-d5856e4459" class="topicref" data-id="mpp-ge-design" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_ge_design_lite.html" id="mpp-ge-design-d5856e4459-link">MPP GE 设计及接口说明</a></div></div></li><li role="treeitem"><div data-tocid="mpp_vin_设计及接口说明-d5856e4471" class="topicref" data-id="mpp_vin_设计及接口说明" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp-vin-design-interface.html" id="mpp_vin_设计及接口说明-d5856e4471-link">MPP VIN 设计及接口说明</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="mpp_common_issues-d5856e4483" class="topicref" data-id="mpp_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_faq_2.html" id="mpp_common_issues-d5856e4483-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mpp/mpp_ge_design_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">MPP GE 设计及接口说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d320524e26__20250121171825">由于驱动支持非命令队列和命令队列两种模式，在提供的用户 MPP 接口中，对调用驱动的接口进行了封装，保持了统一的调用 API， 建议用户统一使用 MPP 中间层
+            API。在命令队列模式下，task 会先缓存在用户的 cmd buffer 中，当调用 mpp_ge_emit 后， 会通过 write 接口把命令写入内核的 ring
+            buffer。</p><figure class="- topic/fig fig fignone" id="mpp-ge-design__id19" data-ofbid="mpp-ge-design__id19"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp-ge-design__image_hvn_2nt_2dc" src="../../../images/ge/ge_function_call_mpp.png" width="480" alt="ge_call_mpp"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">应用调用 MPP 框架</span></figcaption></figure><section class="- topic/section section" id="mpp-ge-design__mpp-ge-open" data-ofbid="mpp-ge-design__mpp-ge-open"><h2 class="- topic/title title sectiontitle">mpp_ge_open</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp-ge-design__table_ivn_2nt_2dc" data-ofbid="mpp-ge-design__table_ivn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp-ge-design__table_ivn_2nt_2dc__entry__1">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp-ge-design__table_ivn_2nt_2dc__entry__2">打开 ge 设备</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_ivn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_ivn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">无</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_ivn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_ivn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">struct mpp_ge 结构体指针</div>
+                                    <div class="- topic/div div">NULL：失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp-ge-design__table_ivn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp-ge-design__table_ivn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">无</div>
+                                </div>
+                            </td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="mpp-ge-design__mpp-ge-close" data-ofbid="mpp-ge-design__mpp-ge-close"><h2 class="- topic/title title sectiontitle">mpp_ge_close</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp-ge-design__table_jvn_2nt_2dc" data-ofbid="mpp-ge-design__table_jvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp-ge-design__table_jvn_2nt_2dc__entry__1">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp-ge-design__table_jvn_2nt_2dc__entry__2">关闭 ge 设备</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_jvn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_jvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">ge</span>: struct mpp_ge 结构体指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_jvn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_jvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">无</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp-ge-design__table_jvn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp-ge-design__table_jvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">无</div>
+                                </div>
+                            </td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="mpp-ge-design__mpp-ge-get-mode" data-ofbid="mpp-ge-design__mpp-ge-get-mode"><h2 class="- topic/title title sectiontitle">mpp_ge_get_mode</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp-ge-design__table_kvn_2nt_2dc" data-ofbid="mpp-ge-design__table_kvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp-ge-design__table_kvn_2nt_2dc__entry__1">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp-ge-design__table_kvn_2nt_2dc__entry__2">获取 GE 模式</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_kvn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_kvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">ge</span>: struct mpp_ge 结构体指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_kvn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_kvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">enum ge_mode 枚举类型</div>
+                                    <div class="- topic/div div"> 通过返回值可以获取 GE 是否工作在命令队列</div>
+                                    <div class="- topic/div div">模式</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp-ge-design__table_kvn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp-ge-design__table_kvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">无</div>
+                                </div>
+                            </td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="mpp-ge-design__mpp-ge-fillrect" data-ofbid="mpp-ge-design__mpp-ge-fillrect"><h2 class="- topic/title title sectiontitle">mpp_ge_fillrect</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp-ge-design__table_lvn_2nt_2dc" data-ofbid="mpp-ge-design__table_lvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp-ge-design__table_lvn_2nt_2dc__entry__1">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp-ge-design__table_lvn_2nt_2dc__entry__2">矩形填充</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_lvn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_lvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">ge</span>: struct mpp_ge 结构体指针</div>
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">fillrect</span>: struct ge_fillrect 结构体指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_lvn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_lvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0：成功</div>
+                                    <div class="- topic/div div">&lt;0：失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp-ge-design__table_lvn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp-ge-design__table_lvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> normal（非命令队列）模式此接口是同步</div>
+                                    <div class="- topic/div div">的。</div>
+                                    <div class="- topic/div div"> 命令队列模式此接口是异步的：</div>
+                                    <div class="- topic/div div"> （1）当用户的缓存 buffer 足够时候仅把</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 命令缓存在用户</div>
+                                    </div>
+                                    <div class="- topic/div div"> （2）当用户的缓存空间不够的时候，先</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 通过 write 接口，把缓存的命令全部</div>
+                                        <div class="- topic/div div"> 写入驱动，然后再把当前命令缓存到</div>
+                                        <div class="- topic/div div">用户 buffer</div>
+                                    </div>
+                                </div>
+                            </td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d320524e292__20250121171825">矩形填充在目标图像中指定一块矩形区域，填充颜色格式只能为 ARGB8888 格式， 在进行固定颜色填充的时候，不支持 scaler，不支持 90/180/270
+                度旋转，不支持镜像， 填充的颜色可以和目标层进行 alpha blending 和 color key。</p>
+            <figure class="- topic/fig fig fignone" id="mpp-ge-design__id20" data-ofbid="mpp-ge-design__id20"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp-ge-design__image_mvn_2nt_2dc" src="../../../images/mpp/ge_function_fill1.png" alt="ge_function_fill1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">矩形填充</span></figcaption></figure>
+        </section><section class="- topic/section section" id="mpp-ge-design__mpp-ge-bitblt" data-ofbid="mpp-ge-design__mpp-ge-bitblt"><h2 class="- topic/title title sectiontitle">mpp_ge_bitblt</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp-ge-design__table_nvn_2nt_2dc" data-ofbid="mpp-ge-design__table_nvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp-ge-design__table_nvn_2nt_2dc__entry__1">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp-ge-design__table_nvn_2nt_2dc__entry__2">位块搬移</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_nvn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_nvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">ge</span>: struct mpp_ge 结构体指针</div>
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">blt</span>: struct ge_bitblt 结构体指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_nvn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_nvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0：成功</div>
+                                    <div class="- topic/div div">&lt;0：失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp-ge-design__table_nvn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp-ge-design__table_nvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> normal（非命令队列）模式此接口是同步</div>
+                                    <div class="- topic/div div">的。</div>
+                                    <div class="- topic/div div"> 命令队列模式此接口是异步的：</div>
+                                    <div class="- topic/div div"> （1）当用户的缓存 buffer 足够时候仅把</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 命令缓存在用户</div>
+                                    </div>
+                                    <div class="- topic/div div"> （2）当用户的缓存空间不够的时候，先</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 通过 write 接口，把缓存的命令全部</div>
+                                        <div class="- topic/div div"> 写入驱动，然后再把当前命令缓存到</div>
+                                        <div class="- topic/div div">用户 buffer</div>
+                                    </div>
+                                </div>
+                            </td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d320524e394__20250121171825">位块搬移可以分两种情况：</p>
+            <ol class="- topic/ol ol arabic simple" id="mpp-ge-design__ol_ovn_2nt_2dc" data-ofbid="mpp-ge-design__ol_ovn_2nt_2dc"><li class="- topic/li li" data-ofbid="d320524e398__20250121171825">
+                    <p class="- topic/p p" data-ofbid="d320524e400__20250121171825">原图的矩形区域搬移到目标图的矩形区域中不进行缩放</p>
+                    <figure class="- topic/fig fig fignone" id="mpp-ge-design__id21" data-ofbid="mpp-ge-design__id21"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp-ge-design__image_pvn_2nt_2dc" src="../../../images/mpp/ge_function_blit1.png" alt="ge_function_blit1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">不进行缩放</span></figcaption></figure>
+                </li><li class="- topic/li li" data-ofbid="d320524e410__20250121171825">
+                    <p class="- topic/p p" data-ofbid="d320524e412__20250121171825">原图的矩形区域搬移到目标图的矩形区域中同时进行放大或者缩小</p>
+                    <figure class="- topic/fig fig fignone" id="mpp-ge-design__id22" data-ofbid="mpp-ge-design__id22"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp-ge-design__image_rvn_2nt_2dc" src="../../../images/mpp/ge_function_stretchblit1.png" alt="ge_function_stretchblit1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">进行缩放</span></figcaption></figure>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d320524e423__20250121171825">在进行位块搬移的同时可以进行 alpha blending 和 color key，同时也支持 90/180/270 度旋转和镜像。</p>
+        </section><section class="- topic/section section" id="mpp-ge-design__mpp-ge-rotate" data-ofbid="mpp-ge-design__mpp-ge-rotate"><h2 class="- topic/title title sectiontitle">mpp_ge_rotate</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp-ge-design__table_svn_2nt_2dc" data-ofbid="mpp-ge-design__table_svn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp-ge-design__table_svn_2nt_2dc__entry__1">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp-ge-design__table_svn_2nt_2dc__entry__2">任意角度旋转</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_svn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_svn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">ge</span>: struct mpp_ge 结构体指针</div>
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">rot</span>: struct ge_rotation 结构体指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_svn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_svn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0：成功</div>
+                                    <div class="- topic/div div">&lt;0：失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp-ge-design__table_svn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp-ge-design__table_svn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> normal（非命令队列）模式此接口是同步</div>
+                                    <div class="- topic/div div">的。</div>
+                                    <div class="- topic/div div"> 命令队列模式此接口是异步的：</div>
+                                    <div class="- topic/div div"> （1）当用户的缓存 buffer 足够时候仅把</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 命令缓存在用户</div>
+                                    </div>
+                                    <div class="- topic/div div"> （2）当用户的缓存空间不够的时候，先</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 通过 write 接口，把缓存的命令全部</div>
+                                        <div class="- topic/div div"> 写入驱动，然后再把当前命令缓存到</div>
+                                        <div class="- topic/div div">用户 buffer</div>
+                                    </div>
+                                </div>
+                            </td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d320524e518__20250121171825">进行任意角度旋转的时候可以进行 alpha blending，并且可以指定原图和目标图的旋转中心，任意角度旋转原图和目标图都只支持 RGB 格式。
+                其中旋转角度传给驱动的是旋转角度的 sin 和 cos 值，为 2.12 定点数，其中小数部分 12 bits ，则应用程序计算 sin 和 cos
+                值的方法如下：</p>
+            <figure class="- topic/fig fig fignone" id="mpp-ge-design__fig_tvn_2nt_2dc" data-ofbid="mpp-ge-design__fig_tvn_2nt_2dc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp-ge-design__image_uvn_2nt_2dc" src="../../../images/ge/ge_function_rot.png" alt="ge_function_rot"/></div><br/></figure>
+        </section><section class="- topic/section section" id="mpp-ge-design__mpp-ge-emit" data-ofbid="mpp-ge-design__mpp-ge-emit"><h2 class="- topic/title title sectiontitle">mpp_ge_emit</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp-ge-design__table_vvn_2nt_2dc" data-ofbid="mpp-ge-design__table_vvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp-ge-design__table_vvn_2nt_2dc__entry__1">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp-ge-design__table_vvn_2nt_2dc__entry__2">向驱动发送命令</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_vvn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_vvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">ge</span>: struct mpp_ge 结构体指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_vvn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_vvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0：成功</div>
+                                    <div class="- topic/div div">&lt;0：失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp-ge-design__table_vvn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp-ge-design__table_vvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> normal（非命令队列）模式此接口为空，</div>
+                                    <div class="- topic/div div"> 不产生任何作用</div>
+                                    <div class="- topic/div div"> 命令队列模式此接口通过 write 接口，</div>
+                                    <div class="- topic/div div"> 把用户 buffer 中缓存的命令都写入驱动</div>
+                                </div>
+                            </td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="mpp-ge-design__mpp-ge-sync" data-ofbid="mpp-ge-design__mpp-ge-sync"><h2 class="- topic/title title sectiontitle">mpp_ge_sync</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp-ge-design__table_wvn_2nt_2dc" data-ofbid="mpp-ge-design__table_wvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp-ge-design__table_wvn_2nt_2dc__entry__1">功能说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp-ge-design__table_wvn_2nt_2dc__entry__2">阻塞等待所有任务执行完成</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_wvn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_wvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">ge</span>: struct mpp_ge 结构体指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp-ge-design__table_wvn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp-ge-design__table_wvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0：成功</div>
+                                    <div class="- topic/div div">&lt;0：失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp-ge-design__table_wvn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp-ge-design__table_wvn_2nt_2dc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> normal（非命令队列）模式此接口为空，</div>
+                                    <div class="- topic/div div"> 不产生任何作用</div>
+                                    <div class="- topic/div div"> 命令队列模式此接口通过调用 IOC_GE_SYNC</div>
+                                    <div class="- topic/div div"> 接口，等待所有任务都完成</div>
+                                </div>
+                            </td></tr></tbody></table></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#mpp-ge-design__mpp-ge-open" data-tocid="mpp-ge-design__mpp-ge-open">mpp_ge_open</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp-ge-design__mpp-ge-close" data-tocid="mpp-ge-design__mpp-ge-close">mpp_ge_close</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp-ge-design__mpp-ge-get-mode" data-tocid="mpp-ge-design__mpp-ge-get-mode">mpp_ge_get_mode</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp-ge-design__mpp-ge-fillrect" data-tocid="mpp-ge-design__mpp-ge-fillrect">mpp_ge_fillrect</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp-ge-design__mpp-ge-bitblt" data-tocid="mpp-ge-design__mpp-ge-bitblt">mpp_ge_bitblt</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp-ge-design__mpp-ge-rotate" data-tocid="mpp-ge-design__mpp-ge-rotate">mpp_ge_rotate</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp-ge-design__mpp-ge-emit" data-tocid="mpp-ge-design__mpp-ge-emit">mpp_ge_emit</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp-ge-design__mpp-ge-sync" data-tocid="mpp-ge-design__mpp-ge-sync">mpp_ge_sync</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

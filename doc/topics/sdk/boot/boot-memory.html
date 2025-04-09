@@ -1,0 +1,247 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="DDR 初始化 BROM 阶段仅系统 SRAM 可用，大小为 96 KB。在 BROM 阶段 Cache 关闭，SRAM 的运行频率为 24 MHz. DDR 的初始化在 PreBoot Program (PBP) 程序中进行。PBP 是保存在 AIC 启动镜像中的一段程序， BROM 在运行 SPL 之前先运行 PBP 程序，PBP 程序执行成功之后，才跳转执行 SPL 程序。 PBP ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-03"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="_1601_0"/><meta name="DC.language" content="zh-CN"/><title>内存相关</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/boot-memory.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/boot-memory.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="_1601_0" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/boot-memory.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">内存相关</h1><div class="date inPage">3 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="_1601_0__section_bws_cbd_ndc" data-ofbid="_1601_0__section_bws_cbd_ndc"><h2 class="- topic/title title sectiontitle">DDR 初始化</h2>
+            
+            <p class="- topic/p p" data-ofbid="d297673e27__20250121171803">BROM 阶段仅系统 SRAM 可用，大小为 96 KB。在 BROM 阶段 Cache 关闭，SRAM 的运行频率为 24 MHz.</p>
+            <p class="- topic/p p" data-ofbid="d297673e30__20250121171803">DDR 的初始化在 PreBoot Program (PBP) 程序中进行。PBP 是保存在 AIC 启动镜像中的一段程序， BROM 在运行 SPL 之前先运行 PBP
+                程序，PBP 程序执行成功之后，才跳转执行 SPL 程序。</p>
+            <div class="- topic/p p" data-ofbid="d297673e33__20250121171803">PBP 程序的主要功能是完成 DDR 初始化。<div class="- topic/note note note note_note" id="_1601_0__note_sh2_vjr_c1c" data-ofbid="_1601_0__note_sh2_vjr_c1c"><span class="note__title">注：</span> PBP 阶段，并不会使能 Cache，Cache 的使能放在 SPL
+                    阶段执行。</div></div>
+        </section><section class="- topic/section section" id="_1601_0__section_sz5_2bd_ndc" data-ofbid="_1601_0__section_sz5_2bd_ndc"><h2 class="- topic/title title sectiontitle">Cache</h2>
+            
+            <p class="- topic/p p" data-ofbid="d297673e43__20250121171803">由于打开 Cache 对程序执行效率和内存访问效率都有很大的提升，SPL 的配置默认打开 I-Cache 和 D-Cache。使能 Cache 的流程如下：</p>
+            <ul class="- topic/ul ul" id="_1601_0__ul_zt1_szg_bzb" data-ofbid="_1601_0__ul_zt1_szg_bzb"><li class="- topic/li li" data-ofbid="d297673e47__20250121171803">SPL 阶段，执行时立刻使能 I-Cache。</li><li class="- topic/li li" data-ofbid="d297673e49__20250121171803">SPL 退出时不关闭 Cache，因此后续 OpenSBI、U-Boot 阶段，默认是在 Cache 使能的情况下运行的。<div class="- topic/note note note note_note" id="_1601_0__note_gvn_ckr_c1c" data-ofbid="_1601_0__note_gvn_ckr_c1c"><span class="note__title">注：</span> 
+                        <ul class="- topic/ul ul" id="_1601_0__ol_vp4_ckr_c1c" data-ofbid="_1601_0__ol_vp4_ckr_c1c"><li class="- topic/li li" data-ofbid="d297673e54__20250121171803">RISCV CPU 中，Cache 与 MMU 两个功能是分开设置的。此处只描述 Cache 的相关配置，与 MMU
+                                没有关系。</li><li class="- topic/li li" data-ofbid="d297673e56__20250121171803">Cache 的使能必须在 RISCV M-Mode 下操作，由于 U-Boot 运行在 S-Mode，因此 U-Boot 阶段不能开关
+                                Cache。</li></ul>
+                    </div></li></ul>
+            <p class="- topic/p p" data-ofbid="d297673e60__20250121171803">ArtInChip 平台默认使能 I-Cache 和 D-Cache，如果需要关闭相关功能，可以使用下面的配置：</p>
+            <ul class="- topic/ul ul" id="_1601_0__ul_n3p_5k3_p1c" data-ofbid="_1601_0__ul_n3p_5k3_p1c"><li class="- topic/li li" data-ofbid="d297673e64__20250121171803">CONFIG_SYS_ICACHE_OFF</li><li class="- topic/li li" data-ofbid="d297673e66__20250121171803">CONFIG_SYS_DCACHE_OFF</li></ul>
+            <div class="table-container"><table class="- topic/table table frame-all" id="_1601_0__table_bsx_vk3_p1c" data-ofbid="_1601_0__table_bsx_vk3_p1c" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">Cache 相关 API</span></caption><colgroup><col style="width:51.982378854625544%"/><col style="width:22.026431718061673%"/><col style="width:25.991189427312772%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__table_bsx_vk3_p1c__entry__1">API</th><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__table_bsx_vk3_p1c__entry__2">SPL 可用</th><th class="- topic/entry entry colsep-0 rowsep-1" id="_1601_0__table_bsx_vk3_p1c__entry__3">U-Boot 可用</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">icache_enable</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">icache_disable</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">icache_status</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">dcache_enable</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">dcache_disable</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">dcache_status</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">flush_dcache_all</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__3">是</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">flush_dcache_range</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__table_bsx_vk3_p1c__entry__3">是</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__table_bsx_vk3_p1c__entry__1"><span class="+ topic/keyword pr-d/apiname keyword apiname">invalidate_dcache_range</span></td><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__table_bsx_vk3_p1c__entry__2">是</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="_1601_0__table_bsx_vk3_p1c__entry__3">是</td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d297673e159__20250121171803">其实现在 <span class="+ topic/ph sw-d/filepath ph filepath">arch/riscv/cpu/c906/cache.c</span> 。</p>
+            <div class="- topic/p p" data-ofbid="d297673e165__20250121171803">SPL 中 Cache
+                初始化流程如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="_1601_0__codeblock_i3h_wk3_p1c" data-ofbid="_1601_0__codeblock_i3h_wk3_p1c">_start <em class="hl-comment">// arch/riscv/cpu/start.S</em>
+|-&gt; save_boot_params
+|-&gt; board_init_f_alloc_reserve
+|-&gt; harts_early_init
+|-&gt; board_init_f_init_reserve
+|-&gt; icache_enable   <em class="hl-comment">// arch/riscv/cpu/c906/cache.c</em>
+|-&gt; dcache_enable   <em class="hl-comment">// arch/riscv/cpu/c906/cache.c</em>
+|-&gt; board_init_f</pre></div>
+        </section><section class="- topic/section section" id="_1601_0__section_yrv_lbd_ndc" data-ofbid="_1601_0__section_yrv_lbd_ndc"><h2 class="- topic/title title sectiontitle">内存分配</h2>
+            
+            <div class="- topic/p p" data-ofbid="d297673e175__20250121171803">启动阶段的内存空间是通过预分配的形式进行使用。<ul class="- topic/ul ul" id="_1601_0__ul_hxg_pbd_ndc" data-ofbid="_1601_0__ul_hxg_pbd_ndc"><li class="- topic/li li" data-ofbid="d297673e178__20250121171803">
+                        <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">BROM 阶段</strong><div class="table-container"><table class="- topic/table table frame-all" id="_1601_0__id2" data-ofbid="_1601_0__id2" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">BROM 的内存分配</span></caption><colgroup><col style="width:33.33333333333333%"/><col style="width:33.33333333333333%"/><col style="width:33.33333333333333%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__id2__entry__1">地址范围</th><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__id2__entry__2">存放内容</th><th class="- topic/entry entry colsep-0 rowsep-1" id="_1601_0__id2__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id2__entry__1">0x00100000 ~ 0x00102000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id2__entry__2">BROM DATA, BSS</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id2__entry__3">8 KB</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id2__entry__1">0x00102000 ~ 0x00103000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id2__entry__2">BROM Stack</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id2__entry__3">4 KB</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__id2__entry__1">0x00103000 ~ 0x00118000</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__id2__entry__2">SPL, PBP</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="_1601_0__id2__entry__3">84 KB</td></tr></tbody></table></div></div>
+                    </li><li class="- topic/li li" data-ofbid="d297673e221__20250121171803">
+                        <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">SPL 阶段</strong></div>
+                        <div class="table-container"><table class="- topic/table table frame-all" id="_1601_0__id3" data-ofbid="_1601_0__id3" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">SPL 的内存分配</span></caption><colgroup><col style="width:26.331811263318112%"/><col style="width:15.220700152207002%"/><col style="width:58.44748858447488%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__id3__entry__1">地址范围</th><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__id3__entry__2">存放内容</th><th class="- topic/entry entry colsep-0 rowsep-1" id="_1601_0__id3__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x00103000 ~ 0x00115F00</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">SPL 初始栈空间</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">0x00118000 是配置的栈顶位置，但实际运行时需要预留 HEAP 空间和 GD
+                                            全局变量的空间，因此实际的栈顶地址是 0x00115F00。<p class="- topic/p p" data-ofbid="d297673e250__20250121171803">配置：CONFIG_SPL_STACK,
+                                                rch/riscv/cpu/start.S</p><p class="- topic/p p" data-ofbid="d297673e252__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">include/configs/d211.h</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x00115F00 ~ 0x00116000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">Global Data</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">GD 全局变量的初始空间</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x00116000 ~ 0x00118000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">HEAP</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">初始 HEAP
+                                                  的空间<p class="- topic/p p" data-ofbid="d297673e270__20250121171803">配置：CONFIG_SYS_MALLOC_F_LEN</p><p class="- topic/p p" data-ofbid="d297673e272__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x40000000 ~ 0x42000000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">Kernel</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">SPL 直接启动 Kernel 时使用，从 U-Boot
+                                                  启动时不用<p class="- topic/p p" data-ofbid="d297673e283__20250121171803">配置：its</p><p class="- topic/p p" data-ofbid="d297673e285__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">kernel.its</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x40004000 ~ 0x41000000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">U-Boot</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">SPL 启动 U-Boot 时使用，直接启动 Kernel 时不用，预留约
+                                                16MB<p class="- topic/p p" data-ofbid="d297673e296__20250121171803">配置：its</p><p class="- topic/p p" data-ofbid="d297673e298__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">u-boot.its</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x42000000 ~ 0x42000100</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">SPL AIC 信息头</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">SPL 的 AIC 头信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x42000100 ~ 0x42020000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">SPL bin</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">0x42000100 是 SPL 的程序入口地址，SPL 大小不应该超过
+                                                128KB<p class="- topic/p p" data-ofbid="d297673e316__20250121171803">配置：CONFIG_SPL_TEXT_BASE,
+                                                  image_cfg.json</p><p class="- topic/p p" data-ofbid="d297673e318__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">common/spl/Kconfig</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x42200000 ~ 0x42300000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">SPL STACK</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">1MB, 初始栈太小，在 board_r
+                                            之后切换到新的栈运行配置：CONFIG_SPL_STACK_R_ADDR -
+                                            CONFIG_SPL_STACK_R_MALLOC_SIMPLE_LEN 预留完 Simple heap
+                                            之后，剩下的空间给 Stack 位置：<span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x42300000 ~ 0x43F00000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">SPL heap</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">28MB 在 SPL board_r 初始化 CONFIG_SYS_SPL_MALLOC_START
+                                            之前使用 D211 不会定义 CONFIG_SYS_SPL_MALLOC_START，只用 Simple
+                                                Heap<p class="- topic/p p" data-ofbid="d297673e338__20250121171803">配置：CONFIG_SPL_STACK_R_ADDR
+                                                =0x43F00000</p><p class="- topic/p p" data-ofbid="d297673e340__20250121171803">配置：CONFIG_SPL_STACK_R_MALLOC_SIMPLE_LEN
+                                                =
+                                                  0x1C000000,28MB</p><p class="- topic/p p" data-ofbid="d297673e342__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__1">0x43F00000 ~ 0x43F20000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id3__entry__2">Falcon 模式参数</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id3__entry__3">SPL Falcon
+                                                模式才需要，所需空间不大<p class="- topic/p p" data-ofbid="d297673e353__20250121171803">配置：CONFIG_SYS_SPL_ARGS_ADDR</p><p class="- topic/p p" data-ofbid="d297673e355__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">include/configs/d211.h</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__id3__entry__1">0x43FE0000 ~ 0x44000000</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__id3__entry__2">OpenSBI</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="_1601_0__id3__entry__3">配置：CONFIG_SPL_OPENSBI_LOAD_ADDR<p class="- topic/p p" data-ofbid="d297673e366__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span></p></td></tr></tbody></table></div>
+                        <div class="table-container"><table class="- topic/table table frame-all" id="_1601_0__id4" data-ofbid="_1601_0__id4" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">USB 升级时下载地址</span></caption><colgroup><col style="width:26.32450331125828%"/><col style="width:16.55629139072848%"/><col style="width:57.11920529801324%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__id4__entry__1">地址范围</th><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__id4__entry__2">存放内容</th><th class="- topic/entry entry colsep-0 rowsep-1" id="_1601_0__id4__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id4__entry__1">0x40000000 ~ 0x41000000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id4__entry__2">SPL</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id4__entry__3">SPL
+                                                  的下载地址，运行起来时会被搬运到指定的链接位置<p class="- topic/p p" data-ofbid="d297673e394__20250121171803">配置：<span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id4__entry__1">0x41000000 ~ 0x41100000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id4__entry__2">env.bin</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id4__entry__3">存放启动升级程序（U-Boot）所用的环境变量，由于升级时不会直接运行 Kernel，因此与上面的
+                                            Kernel 地址空间不冲突<p class="- topic/p p" data-ofbid="d297673e405__20250121171803">配置：CONFIG_ENV_RAM_ADDR,
+                                                image_cfg.json</p><p class="- topic/p p" data-ofbid="d297673e407__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">env/Kconfig</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__id4__entry__1">0x41100000 ~ 0x42000000</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__id4__entry__2">uboot.itb</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="_1601_0__id4__entry__3">存放升级程序<p class="- topic/p p" data-ofbid="d297673e418__20250121171803">配置：CONFIG_SPL_LOAD_FIT_ADDRESS,
+                                                image_cfg.json</p><p class="- topic/p p" data-ofbid="d297673e420__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span></p></td></tr></tbody></table></div>
+                    </li><li class="- topic/li li" data-ofbid="d297673e425__20250121171803">
+                        <div class="- topic/p p" data-ofbid="d297673e427__20250121171803"><strong class="+ topic/ph hi-d/b ph b">U-Boot 阶段</strong><div class="table-container"><table class="- topic/table table frame-all" id="_1601_0__id5" data-ofbid="_1601_0__id5" data-cols="3"><caption></caption><colgroup><col style="width:23.772102161100197%"/><col style="width:19.64636542239686%"/><col style="width:56.581532416502945%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__id5__entry__1">地址范围</th><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601_0__id5__entry__2">存放内容</th><th class="- topic/entry entry colsep-0 rowsep-1" id="_1601_0__id5__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">0x40004000 ~ 0x41000000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">初始 U-Boot</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">U-Boot 的程序入口地址，但在初始化完成之后，U-Boot 会自行重定位到 DRAM
+                                                的末尾运行，该空间被空出来，用于加载
+                                                  Kernel<p class="- topic/p p" data-ofbid="d297673e451__20250121171803">配置：CONFIG_SYS_TEXT_BASE</p><p class="- topic/p p" data-ofbid="d297673e453__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">0x40300000 ~ 0x40400000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">初始 U-Boot HEAP</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">初始 gd, HEAP, STACK
+                                                的保留空间，重定位之后，该空间会被空出来。配置：CONFIG_SYS_INIT_SP_ADDR
+                                                  位置：<span class="+ topic/ph sw-d/filepath ph filepath">include/configs/d211.h</span><p class="- topic/p p" data-ofbid="d297673e466__20250121171803">配置：CONFIG_SYS_MALLOC_F_LEN</p><p class="- topic/p p" data-ofbid="d297673e468__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">0x40000000 ~ 0x42000000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">Kernel</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">Kernel 的程序入口地址，Kernel 最终会被加载到该空间</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">0x41200000 ~ 0x42200000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">kenrel.itb</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">Kernel.itb 的加载地址，加载后 Kernel 被复制到 0x40000000 预留 16
+                                                  MB<p class="- topic/p p" data-ofbid="d297673e486__20250121171803">配置：knl_addr</p><p class="- topic/p p" data-ofbid="d297673e488__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">0x42200000 ~ 0x42300000</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">dtb</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">调试用，正常情况下不使用<ul class="- topic/ul ul" id="_1601_0__ul_qkc_vp3_bcc" data-ofbid="_1601_0__ul_qkc_vp3_bcc"><li class="- topic/li li" data-ofbid="d297673e500__20250121171803">配置：dtb_addr </li><li class="- topic/li li" data-ofbid="d297673e502__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span></li></ul></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">0x42400000 ~ ……….</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">logo.itb</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">Logo 数据的加载地址，logo.itb 中存储了多张 png 图片 uboot
+                                                会从该地址读取相应的 png 图片进行解码并显示<p class="- topic/p p" data-ofbid="d297673e513__20250121171803">配置：<span class="+ topic/ph sw-d/filepath ph filepath">logo: { ram:
+                                                  }</span></p><p class="- topic/p p" data-ofbid="d297673e517__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span></p><p class="- topic/p p" data-ofbid="d297673e521__20250121171803">配置：CONFIG_LOGO_ITB_ADDRESS</p><p class="- topic/p p" data-ofbid="d297673e523__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">drivers/video/artinchip/display/aic_display.c</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">0x41000000 ~ ……….</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">ENV</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">U-Boot 环境变量的加载地址，USB 升级时使用，16KB 左右初始化加载之后可释放，不影响
+                                                Kernel
+                                                  的使用<p class="- topic/p p" data-ofbid="d297673e534__20250121171803">配置：CONFIG_ENV_RAM_ADDR</p><p class="- topic/p p" data-ofbid="d297673e536__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">env/Kconfig</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">At the End of DRAM</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">保留内存</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">重定位后的 U-Boot、栈、堆，以及其他需要预留的内存。具体可以查看 board_f.c
+                                                相关处理。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__1">0x43F00000 ~ 0x43FDFFFF</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601_0__id5__entry__2">dtb</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601_0__id5__entry__3">预留给 Kernel dtb 的内存空间，正常启动时加载到该空间<p class="- topic/p p" data-ofbid="d297673e554__20250121171803">配置：fdt-1: {
+                                                  load =
+                                                  }</p><p class="- topic/p p" data-ofbid="d297673e556__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">kernel.its</span></p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__id5__entry__1">0x43FE0000 ~ 0x44000000</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601_0__id5__entry__2">OpenSBI</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="_1601_0__id5__entry__3">预留给 OpenSBI
+                                                  的内存空间<p class="- topic/p p" data-ofbid="d297673e567__20250121171803">配置：CONFIG_SPL_OPENSBI_LOAD_ADDR</p><p class="- topic/p p" data-ofbid="d297673e569__20250121171803">位置：<span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span></p></td></tr></tbody></table></div></div>
+                    </li></ul></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#_1601_0__section_bws_cbd_ndc" data-tocid="_1601_0__section_bws_cbd_ndc">DDR 初始化</a></div></li><li class="section-item"><div class="section-title"><a href="#_1601_0__section_sz5_2bd_ndc" data-tocid="_1601_0__section_sz5_2bd_ndc">Cache</a></div></li><li class="section-item"><div class="section-title"><a href="#_1601_0__section_yrv_lbd_ndc" data-tocid="_1601_0__section_yrv_lbd_ndc">内存分配</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本模块源码位于 source/artinchip/aic-mpp/middle_media ，目录结构如下 aic-mpp |--middle-media |-base | |-inlcude | | |-aic_message.h //定义公共消息接口 | | |-aic_parser.h //定义 parser 接口 | | |-aic_stream.h //定义 stream 接口 | | ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp_player_design_intro"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp_player_design.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp_player_design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mpp_player_design_intro" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mpp/mpp_player_design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d29579e22__20250121171504">本模块源码位于 <span class="+ topic/ph sw-d/filepath ph filepath">source/artinchip/aic-mpp/middle_media</span>
+                ，目录结构如下<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_player_design_intro__codeblock_lym_hb3_d1c" data-ofbid="mpp_player_design_intro__codeblock_lym_hb3_d1c">aic-mpp
+        |--middle-media
+                |-base
+                |       |-inlcude
+                |       |       |-aic_message.h       <em class="hl-comment">//定义公共消息接口</em>
+                |       |       |-aic_parser.h        <em class="hl-comment">//定义 parser  接口</em>
+                |       |       |-aic_stream.h        <em class="hl-comment">//定义 stream 接口</em>
+                |       |       |-aic_render.h        <em class="hl-comment">//定义视频渲染接口</em>
+                |       |       |-aic_audio_render.h  <em class="hl-comment">//定义音频渲染接口</em>
+                |       |
+                |       |-message    <em class="hl-comment">//消息接口具体实现</em>
+                |       |-parser     <em class="hl-comment">//parser 接口具体实现</em>
+                |       |-stream     <em class="hl-comment">//stream 接口具体实现</em>
+                |       |-render     <em class="hl-comment">//音视频渲染接口具体实现</em>
+                |
+                |-audio_decoder  <em class="hl-comment">//音频软件解码器，无硬件音频解码器。</em>
+                |
+                |-openmax        <em class="hl-comment">//播放器组件</em>
+                |       |-component
+                |       |       |-OMX_AdecComponent.c          <em class="hl-comment">//音频解码组件,输入编码音频数据,输出解码后的 pcm 数据</em>
+                |       |       |-OMX_AudioRenderComponent.c   <em class="hl-comment">//音频渲染组件，将解码后音频送到音频设备播放</em>
+                |       |       |-OMX_ClockComponent.c         <em class="hl-comment">//时钟组件，为音视频同步服务</em>
+                |       |       |-OMX_DemuxerComponent.c       <em class="hl-comment">//解封装组件,识别文件的封装格式,从文件中解析出音视频 packet</em>
+                |       |       |-OMX_VdecComponent.c          <em class="hl-comment">//视频解码组件，输入编码视频数据，输出解码后的视频图像</em>
+                |       |       |-OMX_VideoRenderComponent.c   <em class="hl-comment">//视频渲染组件，将解码后图像显示在屏幕上</em>
+                |       |
+                |       |-inlcude
+                |               |-*.h  <em class="hl-comment">//openmax 头文件</em>
+                |
+                |-player
+                        |-inlcude
+                        |       |-aic_player.h  <em class="hl-comment">//palyer 接口定义</em>
+                        |
+                        |aic_player.c      <em class="hl-comment">//player 接口实现</em></pre><ul class="- topic/ul ul simple" id="mpp_player_design_intro__ul_fjz_trf_fdc" data-ofbid="mpp_player_design_intro__ul_fjz_trf_fdc"><li class="- topic/li li" data-ofbid="d29579e30__20250121171504">
+                    <p class="- topic/p p" data-ofbid="d29579e32__20250121171504"> component 相比 V1 版本播放器删除 OMX 的 component 设计，变更为自研的 mm_component
+                        框架，内容更加精简。</p>
+                </li><li class="- topic/li li" data-ofbid="d29579e35__20250121171504">
+                    <p class="- topic/p p" data-ofbid="d29579e37__20250121171504">为了避免整体框架调整过大，该框架部分 API 仍然借鉴了部分 OMX 的思想，使得各组件间调用的接口更加统一和规范。</p>
+                </li></ul></div><section class="- topic/section section" id="mpp_player_design_intro__section_gq4_jb3_d1c" data-ofbid="mpp_player_design_intro__section_gq4_jb3_d1c"><h2 class="- topic/title title sectiontitle">模块架构</h2><p class="- topic/p p" data-ofbid="d29579e43__20250121171504">player 在系统架构中的层次如下图</p><p class="- topic/p p" data-ofbid="d29579e45__20250121171504"></p><div class="- topic/p p" data-ofbid="d29579e46__20250121171504"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_player_design_intro__image_h2s_3h3_g1c" src="../../../images/mpp/player_system.png" alt="player_system"/></div><br/></div><ul class="- topic/ul ul" id="mpp_player_design_intro__ul_iq4_jb3_d1c" data-ofbid="mpp_player_design_intro__ul_iq4_jb3_d1c"><li class="- topic/li li" data-ofbid="d29579e51__20250121171504">
+                    <p class="- topic/p p" data-ofbid="d29579e53__20250121171504">player 是中间件，向 App 提供 player 接口</p>
+                    <ul class="- topic/ul ul" id="mpp_player_design_intro__ul_jq4_jb3_d1c" data-ofbid="mpp_player_design_intro__ul_jq4_jb3_d1c"><li class="- topic/li li" data-ofbid="d29579e57__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e59__20250121171504">player 视频解码调用 mpp_decoder</p>
+                        </li><li class="- topic/li li" data-ofbid="d29579e62__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e64__20250121171504">player 音频解码调用 audio_decoder</p>
+                        </li><li class="- topic/li li" data-ofbid="d29579e67__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e69__20250121171504">player 视频渲染操作 DE driver 提供<span class="- topic/ph ph">的接口</span></p>
+                        </li><li class="- topic/li li" data-ofbid="d29579e74__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e76__20250121171504">player 音频渲染操作 Sound driver 提供的接口</p>
+                        </li><li class="- topic/li li" data-ofbid="d29579e79__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e81__20250121171504">player 内部实现解封装的功能</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d29579e85__20250121171504">
+                    <p class="- topic/p p" data-ofbid="d29579e87__20250121171504">audio_decoder(音频解码器)</p>
+                    <ul class="- topic/ul ul" id="mpp_player_design_intro__ul_kq4_jb3_d1c" data-ofbid="mpp_player_design_intro__ul_kq4_jb3_d1c"><li class="- topic/li li" data-ofbid="d29579e91__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e93__20250121171504">audio_decoder 是纯软件解码，目前移植了第三方的 libmad 和 faad ，支持 MP3 和 AAC 解码。</p>
+                        </li></ul>
+                </li></ul><p class="- topic/p p" data-ofbid="d29579e97__20250121171504">player 模块架构如下图,分为 3 层</p><ul class="- topic/ul ul" id="mpp_player_design_intro__ul_lq4_jb3_d1c" data-ofbid="mpp_player_design_intro__ul_lq4_jb3_d1c"><li class="- topic/li li" data-ofbid="d29579e100__20250121171504">
+                    <p class="- topic/p p" data-ofbid="d29579e102__20250121171504">第 1 层,player interface ,向上提供 player 接口,向下调用 OpenMAX 组件实现 player 功能。</p>
+                </li><li class="- topic/li li" data-ofbid="d29579e105__20250121171504">
+                    <p class="- topic/p p" data-ofbid="d29579e107__20250121171504">第 2 层,OpenMAX Component,提供统一的组件操作接口。每个组件完成特定的功能,比如视频解码,视频渲染等。</p>
+                </li><li class="- topic/li li" data-ofbid="d29579e110__20250121171504">
+                    <p class="- topic/p p" data-ofbid="d29579e112__20250121171504">第 3 层,Base，提供 parser，stream，message，render 接口和实现。</p>
+                    <ul class="- topic/ul ul" id="mpp_player_design_intro__ul_mq4_jb3_d1c" data-ofbid="mpp_player_design_intro__ul_mq4_jb3_d1c"><li class="- topic/li li" data-ofbid="d29579e116__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e118__20250121171504">parser 提供解封装的功能，比如 MP4 封装</p>
+                        </li><li class="- topic/li li" data-ofbid="d29579e121__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e123__20250121171504">stream 提供解析流协议的功能，本地文件也看作是一种流协议，目前也只支持本地文件</p>
+                        </li><li class="- topic/li li" data-ofbid="d29579e126__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e128__20250121171504">message 为组件传递消息提供支持</p>
+                        </li><li class="- topic/li li" data-ofbid="d29579e131__20250121171504">
+                            <p class="- topic/p p" data-ofbid="d29579e133__20250121171504">render 提供底层音视频渲染的功能</p>
+                        </li><li class="- topic/li li" data-ofbid="d29579e136__20250121171504"><p class="- topic/p p" data-ofbid="d29579e137__20250121171504">目前支持 MP4 和 MP3 封装的本地文件，后续扩展其他流协议和封装格式，通过增加相应的 parser 和 stream
+                                实现</p><div class="- topic/p p" data-ofbid="d29579e139__20250121171504"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_player_design_intro__image_nq4_jb3_d1c" src="../../../images/mpp/player_framework.png" alt="player_framework1"/></div><br/></div></li></ul>
+                </li></ul></section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

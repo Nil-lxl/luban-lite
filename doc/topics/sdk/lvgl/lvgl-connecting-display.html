@@ -1,0 +1,372 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="LVGL 显示对接主要包括以下步骤和流程： 绘制 buffer 初始化，用于存储当前帧的图像数据，并在需要时进行交换。 flush_cb 对接，刷新回调函数，用于将绘制缓冲区的数据发送到显示屏。刷新回调函数又分为以下两种模式： 全刷新 局部刷新 2D 硬件加速对接。 为了提高绘图性能，可以将部分绘图操作进行硬件加速。 将上述所有配置注册到 LVGL 中。 绘制 buffer 初始化 在 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/lvgl/lvgl_design_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/lvgl/lvgl_design_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/lvgl/lvgl-hw-decoder.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="lvgl-connecting-display"/><title>显示对接</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="lvgl-connecting-display-d5856e4784"/><meta name="wh-source-relpath" content="topics/sdk/lvgl/lvgl-connecting-display.dita"/><meta name="wh-out-relpath" content="topics/sdk/lvgl/lvgl-connecting-display.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="lvgl-connecting-display" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html">LVGL 使用指南</a></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_design_guide.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="lvgl-connecting-display"><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-connecting-display.html">显示对接</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/lvgl/lvgl_design_guide.html" title="设计说明" aria-label="上一主题: 设计说明" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/lvgl/lvgl-hw-decoder.html" title="硬件解码对接" aria-label="下一主题: 硬件解码对接" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e4736" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_configure.html" id="id-d5856e4736-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4748" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_debug_guide.html" id="id-d5856e4748-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4760" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_test_guide.html" id="id-d5856e4760-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e4772" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e4772-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_design_guide.html" id="id-d5856e4772-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="lvgl-connecting-display-d5856e4784" class="topicref" data-id="lvgl-connecting-display" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-connecting-display.html" id="lvgl-connecting-display-d5856e4784-link">显示对接</a></div></div></li><li role="treeitem"><div data-tocid="lvgl-hw-decoder-d5856e4796" class="topicref" data-id="lvgl-hw-decoder" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-hw-decoder.html" id="lvgl-hw-decoder-d5856e4796-link">硬件解码对接</a></div></div></li><li role="treeitem"><div data-tocid="lvgl-freetype-d5856e4808" class="topicref" data-id="lvgl-freetype" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-freetype.html" id="lvgl-freetype-d5856e4808-link">第三方 FreeType 库支持</a></div></div></li><li role="treeitem"><div data-tocid="lvgl-demo-d5856e4820" class="topicref" data-id="lvgl-demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl-demo.html" id="lvgl-demo-d5856e4820-link">LVGL Demo</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e4832" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_add_app.html" id="id-d5856e4832-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4844" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_special_func.html" id="id-d5856e4844-link">屏幕旋转</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4856" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_faq.html" id="id-d5856e4856-link">常见问题</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/lvgl/lvgl-connecting-display.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">显示对接</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 5 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d119801e24__20250121171558">LVGL 显示对接主要包括以下步骤和流程：</p><ol class="- topic/ol ol arabic simple" id="lvgl-connecting-display__ol_b1h_1zf_fdc" data-ofbid="lvgl-connecting-display__ol_b1h_1zf_fdc"><li class="- topic/li li" data-ofbid="d119801e27__20250121171558">
+                <p class="- topic/p p" data-ofbid="d119801e29__20250121171558">绘制 buffer 初始化，用于存储当前帧的图像数据，并在需要时进行交换。</p>
+            </li><li class="- topic/li li" data-ofbid="d119801e32__20250121171558">
+                <div class="- topic/p p" data-ofbid="d119801e34__20250121171558">flush_cb 对接，刷新回调函数，用于将绘制缓冲区的数据发送到显示屏。刷新回调函数又分为以下两种模式：<ul class="- topic/ul ul" id="lvgl-connecting-display__ul_txy_3sg_fdc" data-ofbid="lvgl-connecting-display__ul_txy_3sg_fdc"><li class="- topic/li li" data-ofbid="d119801e37__20250121171558">全刷新</li><li class="- topic/li li" data-ofbid="d119801e39__20250121171558">局部刷新</li></ul></div>
+            </li><li class="- topic/li li" data-ofbid="d119801e42__20250121171558">
+                <p class="- topic/p p" data-ofbid="d119801e44__20250121171558">2D 硬件加速对接。</p>
+                <p class="- topic/p p" data-ofbid="d119801e47__20250121171558">为了提高绘图性能，可以将部分绘图操作进行硬件加速。</p>
+            </li><li class="- topic/li li" data-ofbid="d119801e50__20250121171558">将上述所有配置注册到 LVGL 中。</li></ol><section class="- topic/section section" id="lvgl-connecting-display__id7" data-ofbid="lvgl-connecting-display__id7"><h2 class="- topic/title title sectiontitle">绘制 buffer 初始化</h2>
+            
+            <div class="- topic/p p" data-ofbid="d119801e57__20250121171558">在 LVGL（Light and Versatile Graphics Library）中，绘制缓冲区（draw
+                buffer）的初始化是显示设备配置的重要步骤之一。双缓冲模式可以提高图形界面的刷新效率和流畅度。绘制 buffer
+                初始化函数如下:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-connecting-display__codeblock_rml_g1g_fdc" data-ofbid="lvgl-connecting-display__codeblock_rml_g1g_fdc"><strong class="hl-keyword">void</strong> lv_disp_draw_buf_init(lv_disp_draw_buf_t * draw_buf, <strong class="hl-keyword">void</strong> * buf1, <strong class="hl-keyword">void</strong> * buf2, uint32_t size_in_px_cnt)</pre></div>
+            <ul class="- topic/ul ul simple" id="lvgl-connecting-display__ul_c1h_1zf_fdc" data-ofbid="lvgl-connecting-display__ul_c1h_1zf_fdc"><li class="- topic/li li" data-ofbid="d119801e63__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d119801e65__20250121171558">buf1：无论选择单缓冲或多缓冲，必须设置此 buffer。</p>
+                </li><li class="- topic/li li" data-ofbid="d119801e68__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d119801e70__20250121171558">buf2：选择双缓冲时，需要配置此 buffer，单缓冲不需要配置。</p>
+                </li><li class="- topic/li li" data-ofbid="d119801e73__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d119801e75__20250121171558">size_in_px_cnt：以像素为单位的 buf 大小，应该根据实际的分辨率来计算。</p>
+                </li></ul>
+            <figure class="- topic/fig fig fignone" id="lvgl-connecting-display__id16" data-ofbid="lvgl-connecting-display__id16"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="lvgl-connecting-display__image_d1h_1zf_fdc" src="../../../images/lvgl/double_frame.png" alt="double_frame1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">双缓冲</span></figcaption></figure>
+        </section><section class="- topic/section section" id="lvgl-connecting-display__flush-cb" data-ofbid="lvgl-connecting-display__flush-cb"><h2 class="- topic/title title sectiontitle">flush_cb 对接</h2>
+            
+            <p class="- topic/p p" data-ofbid="d119801e91__20250121171558">以双缓冲为例，flush_cb 回调函数的处理流程分别如下所示，包括 full_refresh 和 direct_mode 两种绘制模式：</p>
+            <ol class="- topic/ol ol arabic simple" id="lvgl-connecting-display__ol_e1h_1zf_fdc" data-ofbid="lvgl-connecting-display__ol_e1h_1zf_fdc"><li class="- topic/li li" data-ofbid="d119801e95__20250121171558">
+                    <div class="- topic/p p" data-ofbid="d119801e97__20250121171558">full_refresh：即全刷新模式，每一帧都刷新整个显示屏。流程如下：<ol class="- topic/ol ol" type="a" id="lvgl-connecting-display__ul_ufh_55g_fdc" data-ofbid="lvgl-connecting-display__ul_ufh_55g_fdc"><li class="- topic/li li" data-ofbid="d119801e100__20250121171558">直接通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">pan_display</span> 接口将当前绘制缓冲区（draw
+                                buffer）发送到显示设备。</li><li class="- topic/li li" data-ofbid="d119801e105__20250121171558">等待垂直同步（vsync）中断，确保数据已经显示在屏幕上。</li><li class="- topic/li li" data-ofbid="d119801e107__20250121171558">调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_disp_flush_ready</span> 通知 LVGL 框架刷新结束。</li><li class="- topic/li li" data-ofbid="d119801e112__20250121171558">LVGL 框架会自动交换绘制缓冲区。</li></ol></div>
+                    <figure class="- topic/fig fig fignone" id="lvgl-connecting-display__id17" data-ofbid="lvgl-connecting-display__id17"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="lvgl-connecting-display__image_f1h_1zf_fdc" src="../../../images/lvgl/full_flush_cb1.png" alt="full_flush_cb1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">全刷新模式下 flush_cb 回调函数的处理流程</span></figcaption></figure>
+                </li><li class="- topic/li li" data-ofbid="d119801e122__20250121171558">
+                    <div class="- topic/p p" data-ofbid="d119801e124__20250121171558">direct_mode：即局部刷新，每一帧只刷新需要更新的无效区域（可以有多个无效区域）。流程如下：<ol class="- topic/ol ol" type="a" id="lvgl-connecting-display__ul_l52_y5g_fdc" data-ofbid="lvgl-connecting-display__ul_l52_y5g_fdc"><li class="- topic/li li" data-ofbid="d119801e127__20250121171558">遍历所有无效区域，例如 <span class="+ topic/keyword pr-d/apiname keyword apiname">invalid area0</span> 和 <span class="+ topic/keyword pr-d/apiname keyword apiname">invalid
+                                    area1</span>，将每个无效区域的数据从绘制缓冲区发送到显示设备。</li><li class="- topic/li li" data-ofbid="d119801e135__20250121171558">最后一个无效区域处理完毕后，调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_disp_flush_ready</span> 通知 LVGL
+                                框架刷新结束。</li><li class="- topic/li li" data-ofbid="d119801e140__20250121171558">LVGL 框架会自动交换绘制缓冲区。</li></ol></div>
+                    <figure class="- topic/fig fig fignone" id="lvgl-connecting-display__id18" data-ofbid="lvgl-connecting-display__id18"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="lvgl-connecting-display__image_h1h_1zf_fdc" src="../../../images/lvgl/invalid_area.png" alt="invalid_area1.png"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">无效区域</span></figcaption></figure>
+                    <figure class="- topic/fig fig fignone" id="lvgl-connecting-display__id19" data-ofbid="lvgl-connecting-display__id19"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="lvgl-connecting-display__image_i1h_1zf_fdc" src="../../../images/lvgl/direct_flush_cb.png" alt="direct_flush_cb1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">局部刷新模式下 flush_cb 回调函数的处理流程</span></figcaption></figure>
+                    <div class="- topic/p p" data-ofbid="d119801e157__20250121171558"><span class="+ topic/keyword pr-d/apiname keyword apiname">flush_cb</span>
+                        的实现代码 <span class="+ topic/keyword pr-d/apiname keyword apiname">fbdev_flush</span>
+                        如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-connecting-display__codeblock_ybv_31g_fdc" data-ofbid="lvgl-connecting-display__codeblock_ybv_31g_fdc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> fbdev_flush(lv_disp_drv_t * drv, <strong class="hl-keyword">const</strong> lv_area_t * area, lv_color_t *color_p)
+{
+    <strong class="hl-keyword">int</strong> index = <span class="hl-number">0</span>;
+    lv_disp_t * disp = _lv_refr_get_disp_refreshing();
+    lv_disp_draw_buf_t * draw_buf = lv_disp_get_draw_buf(disp);
+
+    <strong class="hl-keyword">if</strong> (!disp-&gt;driver-&gt;direct_mode || draw_buf-&gt;flushing_last) {
+        <strong class="hl-keyword">if</strong> (disp-&gt;driver-&gt;direct_mode)
+            aicos_dcache_clean_invalid_range((<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> *)info.framebuffer, (<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>)info.smem_len * <span class="hl-number">2</span>);
+        <strong class="hl-keyword">else</strong>
+            aicos_dcache_clean_invalid_range((<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> *)color_p, (<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>)info.smem_len);
+
+        <strong class="hl-keyword">if</strong> ((<strong class="hl-keyword">void</strong> *)color_p == (<strong class="hl-keyword">void</strong> *)info.framebuffer)
+            index = <span class="hl-number">0</span>;
+        <strong class="hl-keyword">else</strong>
+            index = <span class="hl-number">1</span>;
+
+        mpp_fb_ioctl(g_fb, AICFB_PAN_DISPLAY , &amp;index);
+        mpp_fb_ioctl(g_fb, AICFB_WAIT_FOR_VSYNC, <span class="hl-number">0</span>);
+
+        <strong class="hl-keyword">if</strong> (drv-&gt;direct_mode == <span class="hl-number">1</span>) {
+            <strong class="hl-keyword">for</strong> (<strong class="hl-keyword">int</strong> i = <span class="hl-number">0</span>; i &lt; disp-&gt;inv_p; i++) {
+                <strong class="hl-keyword">if</strong> (disp-&gt;inv_area_joined[i] == <span class="hl-number">0</span>) {
+                    sync_disp_buf(drv, color_p, &amp;disp-&gt;inv_areas[i]);
+                }
+            }
+        }
+
+        lv_disp_flush_ready(drv);
+    }
+    <strong class="hl-keyword">else</strong> {
+        lv_disp_flush_ready(drv);
+    }
+}</pre></div>
+                </li></ol>
+        </section><section class="- topic/section section" id="lvgl-connecting-display__section_pqd_1tg_fdc" data-ofbid="lvgl-connecting-display__section_pqd_1tg_fdc"><h2 class="- topic/title title sectiontitle">2D 硬件加速对接</h2>
+            
+            
+            <div class="- topic/p p" data-ofbid="d119801e178__20250121171558">在 LVGL 中，硬件加速的实现可以显著提高图形绘制的性能。2D 加速主要对接 <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_draw_ctx_t</span>
+                    中的绘制函数，并对接相应的硬件加速接口。以下是详细的步骤：<ol class="- topic/ol ol" id="lvgl-connecting-display__ol_cms_5vg_fdc" data-ofbid="lvgl-connecting-display__ol_cms_5vg_fdc"><li class="- topic/li li" data-ofbid="d119801e184__20250121171558">在 <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_draw_aic_ctx_t</span> 结构体中包含
+                            <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_draw_ctx_t</span> 和 <span class="+ topic/keyword pr-d/apiname keyword apiname">blend</span>
+                                函数。<p class="- topic/p p" data-ofbid="d119801e195__20250121171558"><span class="+ topic/keyword pr-d/apiname keyword apiname">lv_draw_aic_ctx_t</span> 是一个包含了硬件加速功能的上下文结构体，继承自
+                                <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_draw_sw_ctx_t</span>
+                                并添加了硬件加速所需的成员函数。关于详细绘制函数的说明，可查看<a class="- topic/xref xref" href="lvgl-connecting-display.html#lvgl-connecting-display__table_j1h_1zf_fdc"> lv_draw_ctx_t 中的绘制函数</a>。</p><div class="- topic/p p" data-ofbid="d119801e206__20250121171558">
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-connecting-display__codeblock_alt_j1g_fdc" data-ofbid="lvgl-connecting-display__codeblock_alt_j1g_fdc"><strong class="hl-keyword">typedef</strong> <strong class="hl-keyword">struct</strong> {
+    lv_draw_ctx_t base_draw;
+
+    <span class="hl-tag-doctype-comment">/** Fill an area of the destination buffer with a color*/</span>
+    <strong class="hl-keyword">void</strong> (*blend)(lv_draw_ctx_t * draw_ctx, <strong class="hl-keyword">const</strong> lv_draw_sw_blend_dsc_t * dsc);
+} lv_draw_sw_ctx_t;</pre>
+                        </div></li><li class="- topic/li li" data-ofbid="d119801e211__20250121171558">
+                        <div class="- topic/p p" data-ofbid="d119801e213__20250121171558">初始化 <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_draw_aic_ctx_t</span>
+                            硬件加速上下文结构体，并将软件实现的绘制函数替换为硬件加速版本的函数。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-connecting-display__codeblock_cd1_k1g_fdc" data-ofbid="lvgl-connecting-display__codeblock_cd1_k1g_fdc"><strong class="hl-keyword">void</strong> lv_draw_aic_ctx_init(lv_disp_drv_t * drv, lv_draw_ctx_t * draw_ctx)
+{
+    lv_draw_sw_init_ctx(drv, draw_ctx);
+    lv_draw_aic_ctx_t * aic_draw_ctx = (lv_draw_aic_ctx_t *)draw_ctx;
+
+    aic_draw_ctx-&gt;blend = lv_draw_aic_blend;
+    aic_draw_ctx-&gt;base_draw.draw_img = lv_draw_aic_draw_img;
+    aic_draw_ctx-&gt;base_draw.draw_img_decoded = lv_draw_aic_img_decoded;
+
+    <strong class="hl-keyword">return</strong>;
+}</pre></div>
+                        <p class="- topic/p p" data-ofbid="d119801e221__20250121171558">draw_rect、draw_line 等接口操作的功能由多个步骤组成，虽然未进行硬件加速，但是操作的部分实现会调用到 blend，而 blend
+                            接口进行了硬件加速对接。</p>
+                    </li><li class="- topic/li li" data-ofbid="d119801e224__20250121171558">
+                        <p class="- topic/p p" data-ofbid="d119801e226__20250121171558">实现硬件加速的 blend 函数，该函数会调用底层硬件加速 API 来实现高效的混合操作。</p>
+                        <p class="- topic/p p" data-ofbid="d119801e229__20250121171558">先调用 lv_draw_sw_init_ctx 函数把所有绘制操作都初始化为软件实现，对可以硬件加速的接口重新实现， 覆盖原来的软件实现。</p>
+                    </li><li class="- topic/li li" data-ofbid="d119801e232__20250121171558">继续实现其他硬件加速的绘制函数，例如 <span class="+ topic/keyword pr-d/apiname keyword apiname">draw_img</span> 和
+                            <span class="+ topic/keyword pr-d/apiname keyword apiname">draw_img_decoded</span>。</li></ol></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="lvgl-connecting-display__table_j1h_1zf_fdc" data-ofbid="lvgl-connecting-display__table_j1h_1zf_fdc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"> lv_draw_ctx_t 中的绘制函数</span></caption><colgroup><col style="width:38.655462184873954%"/><col style="width:40.33613445378151%"/><col style="width:21.008403361344538%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">成员</th><th class="- topic/entry entry colsep-1 rowsep-1" id="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">说明</th><th class="- topic/entry entry colsep-0 rowsep-1" id="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">是否硬件加速</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">void *buf</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">当前要绘制的 buffer</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">
+                                <em class="+ topic/ph hi-d/i ph i">-</em>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">const lv_area_t * clip_area</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">绘制区域裁剪（以屏幕为参考的绝对坐标）</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">
+                                <em class="+ topic/ph hi-d/i ph i">-</em>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">void (*draw_rect)()</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">绘制矩形（包括圆角、阴影、渐变等）</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">void (*draw_arc)()</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">绘制弧形</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">void (*draw_img_decoded)()</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">绘制已经解码后的图像</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">是</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">lv_res_t (*draw_img)()</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">绘制图像（包括图片解码）</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">是</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">void (*draw_letter)()</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">绘制文字</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">void (*draw_line)()</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">绘制直线</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">否</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__1">void (*draw_polygon)()</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__2">绘制多边形</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="lvgl-connecting-display__table_j1h_1zf_fdc__entry__3">否</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="lvgl-connecting-display__id8" data-ofbid="lvgl-connecting-display__id8"><h2 class="- topic/title title sectiontitle">显示驱动注册</h2>
+            
+            <ol class="- topic/ol ol arabic simple" id="lvgl-connecting-display__ol_k1h_1zf_fdc" data-ofbid="lvgl-connecting-display__ol_k1h_1zf_fdc"><li class="- topic/li li" data-ofbid="d119801e333__20250121171558">
+                    <div class="- topic/p p" data-ofbid="d119801e335__20250121171558">通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_disp_drv_init</span> 来初始化 <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_disp_drv_t</span>
+                            结构体。<div class="- topic/note note note note_note" id="lvgl-connecting-display__note_exc_vxg_fdc" data-ofbid="lvgl-connecting-display__note_exc_vxg_fdc"><span class="note__title">注：</span> <span class="+ topic/keyword pr-d/apiname keyword apiname">lv_disp_drv_t</span>包含了所有与显示相关的配置信息，详情可查看<a class="- topic/xref xref" href="#lvgl-connecting-display__p_tsg_xxg_fdc"><span class="+ topic/keyword pr-d/apiname keyword apiname">lv_disp_drv_t</span>
+                                结构体代码</a></div></div>
+                </li><li class="- topic/li li" data-ofbid="d119801e354__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d119801e356__20250121171558">通过 lv_disp_draw_buf_init 初始化绘制 buffer。</p>
+                </li><li class="- topic/li li" data-ofbid="d119801e359__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d119801e361__20250121171558">通过回调 flush_cb 来注册显示接口。</p>
+                </li><li class="- topic/li li" data-ofbid="d119801e364__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d119801e366__20250121171558">通过 lv_draw_aic_ctx_init 来注册 2D 硬件加速相关接口。</p>
+                </li><li class="- topic/li li" data-ofbid="d119801e370__20250121171558">
+                    <p class="- topic/p p" data-ofbid="d119801e372__20250121171558">通过 lv_disp_drv_register 来注册 lv_disp_drv_t。</p>
+                </li></ol>
+            
+            <div class="- topic/p p" data-ofbid="d119801e378__20250121171558">上述代码中表示目前是局部刷新模式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-connecting-display__codeblock_wvw_l1g_fdc" data-ofbid="lvgl-connecting-display__codeblock_wvw_l1g_fdc">disp_drv.full_refresh = <span class="hl-number">0</span>;
+disp_drv.direct_mode = <span class="hl-number">1</span>;</pre></div>
+            <div class="- topic/p p" data-ofbid="d119801e383__20250121171558">全刷新模式参数配置如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-connecting-display__codeblock_of1_l1g_fdc" data-ofbid="lvgl-connecting-display__codeblock_of1_l1g_fdc">disp_drv.full_refresh = <span class="hl-number">1</span>;
+disp_drv.direct_mode = <span class="hl-number">0</span>;</pre></div>
+            <div class="- topic/p p" id="lvgl-connecting-display__p_tsg_xxg_fdc" data-ofbid="lvgl-connecting-display__p_tsg_xxg_fdc"><span class="+ topic/keyword pr-d/apiname keyword apiname">lv_disp_drv_t</span>
+                结构体代码示例如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lvgl-connecting-display__codeblock_sgp_k1g_fdc" data-ofbid="lvgl-connecting-display__codeblock_sgp_k1g_fdc"><strong class="hl-keyword">static</strong> lv_disp_drv_t disp_drv;
+<strong class="hl-keyword">void</strong> lv_port_disp_init(<strong class="hl-keyword">void</strong>)
+{
+    <strong class="hl-keyword">void</strong> *buf1 = RT_NULL;
+    <strong class="hl-keyword">void</strong> *buf2 = RT_NULL;
+    uint32_t fb_Size;
+    rt_err_t result;
+
+    g_fb = mpp_fb_open();
+    <strong class="hl-keyword">if</strong> (g_fb == <span class="hl-number">0</span>) {
+        LOG_E(<span class="hl-string">"can't find aic framebuffer device!"</span>);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    result = mpp_fb_ioctl(g_fb, AICFB_GET_SCREENINFO, &amp;info);
+    <strong class="hl-keyword">if</strong> (result != RT_EOK) {
+        LOG_E(<span class="hl-string">"get device fb info failed!"</span>);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    g_ge = mpp_ge_open();
+    <strong class="hl-keyword">if</strong> (!g_ge) {
+        LOG_E(<span class="hl-string">"ge open fail\n"</span>);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    fb_Size = info.height * info.stride;
+    buf1 = (<strong class="hl-keyword">void</strong> *)info.framebuffer;
+    buf2 = (<strong class="hl-keyword">void</strong> *)((uint8_t *)info.framebuffer + fb_Size);
+    lv_disp_draw_buf_init(&amp;disp_buf, buf2, buf1,
+                        info.width * info.height);
+    lv_disp_drv_init(&amp;disp_drv);
+
+    <em class="hl-comment">/*Set a display buffer*/</em>
+    disp_drv.draw_buf = &amp;disp_buf;
+
+    <em class="hl-comment">/*Set the resolution of the display*/</em>
+    disp_drv.hor_res = info.width;
+    disp_drv.ver_res = info.height;
+    disp_drv.full_refresh = <span class="hl-number">0</span>;
+    disp_drv.direct_mode = <span class="hl-number">1</span>;
+    disp_drv.flush_cb = fbdev_flush;
+    disp_drv.draw_ctx_init = lv_draw_aic_ctx_init;
+    disp_drv.draw_ctx_deinit = lv_draw_aic_ctx_deinit;
+    disp_drv.draw_ctx_size = <strong class="hl-keyword">sizeof</strong>(lv_draw_aic_ctx_t);
+
+    <em class="hl-comment">/*Finally register the driver*/</em>
+    lv_disp_drv_register(&amp;disp_drv);
+}</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#lvgl-connecting-display__id7" data-tocid="lvgl-connecting-display__id7">绘制 buffer 初始化</a></div></li><li class="section-item"><div class="section-title"><a href="#lvgl-connecting-display__flush-cb" data-tocid="lvgl-connecting-display__flush-cb">flush_cb 对接</a></div></li><li class="section-item"><div class="section-title"><a href="#lvgl-connecting-display__section_pqd_1tg_fdc" data-tocid="lvgl-connecting-display__section_pqd_1tg_fdc">2D 硬件加速对接</a></div></li><li class="section-item"><div class="section-title"><a href="#lvgl-connecting-display__id8" data-tocid="lvgl-connecting-display__id8">显示驱动注册</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

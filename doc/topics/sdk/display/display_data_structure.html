@@ -1,0 +1,439 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="uapi/video/artinchip_video.h struct aic_rect struct aic_rect { int x; int y; int width; int height; }; struct aic_point struct aic_point { int x; int y; }; struct aic_size struct aic_size { int width; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-11-28"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="display_data_structure"/><meta name="DC.language" content="zh-CN"/><title>数据结构设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/display/display_data_structure.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_data_structure.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="display_data_structure" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_data_structure.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">数据结构设计</h1><div class="date inPage">28 Nov 2024</div><div style="color: gray;">
+                    Read time: 9 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="display_data_structure__section_fqk_v1g_d1c" data-ofbid="display_data_structure__section_fqk_v1g_d1c"><h2 class="- topic/title title sectiontitle"><span class="+ topic/ph sw-d/filepath ph filepath">uapi/video/artinchip_video.h</span></h2>
+            
+            <div class="- topic/p p" data-ofbid="d145544e28__20250121171610">
+                <ul class="- topic/ul ul" id="display_data_structure__ul_h3k_x1g_d1c" data-ofbid="display_data_structure__ul_h3k_x1g_d1c"><li class="- topic/li li" data-ofbid="d145544e31__20250121171610"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aic_rect</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_byq_y1g_d1c" data-ofbid="display_data_structure__codeblock_byq_y1g_d1c"><strong class="hl-keyword">struct</strong> aic_rect {
+    <strong class="hl-keyword">int</strong> x;
+    <strong class="hl-keyword">int</strong> y;
+    <strong class="hl-keyword">int</strong> width;
+    <strong class="hl-keyword">int</strong> height;
+};</pre></li><li class="- topic/li li" data-ofbid="d145544e36__20250121171610"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aic_point</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_tf5_y1g_d1c" data-ofbid="display_data_structure__codeblock_tf5_y1g_d1c"><strong class="hl-keyword">struct</strong> aic_point {
+    <strong class="hl-keyword">int</strong> x;
+    <strong class="hl-keyword">int</strong> y;
+};</pre></li><li class="- topic/li li" id="display_data_structure__li_q42_gdg_d1c" data-ofbid="display_data_structure__li_q42_gdg_d1c"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aic_size</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_lvw_y1g_d1c" data-ofbid="display_data_structure__codeblock_lvw_y1g_d1c"><strong class="hl-keyword">struct</strong> aic_size {
+    <strong class="hl-keyword">int</strong> width;
+    <strong class="hl-keyword">int</strong> height;
+};</pre></li><li class="- topic/li li" data-ofbid="d145544e46__20250121171610"><strong class="+ topic/ph hi-d/b ph b">enum
+                        aic_pixel_format</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_jc1_1bg_d1c" data-ofbid="display_data_structure__codeblock_jc1_1bg_d1c"><strong class="hl-keyword">enum</strong> aic_pixel_format {
+    AIC_FMT_ARGB_<span class="hl-number">8888</span>            = <span class="hl-number">0x00</span>,
+    AIC_FMT_ABGR_<span class="hl-number">8888</span>            = <span class="hl-number">0x01</span>,
+    AIC_FMT_RGBA_<span class="hl-number">8888</span>            = <span class="hl-number">0x02</span>,
+    AIC_FMT_BGRA_<span class="hl-number">8888</span>            = <span class="hl-number">0x03</span>,
+    AIC_FMT_XRGB_<span class="hl-number">8888</span>            = <span class="hl-number">0x04</span>,
+    AIC_FMT_XBGR_<span class="hl-number">8888</span>            = <span class="hl-number">0x05</span>,
+    AIC_FMT_RGBX_<span class="hl-number">8888</span>            = <span class="hl-number">0x06</span>,
+    AIC_FMT_BGRX_<span class="hl-number">8888</span>            = <span class="hl-number">0x07</span>,
+    AIC_FMT_RGB_<span class="hl-number">888</span>              = <span class="hl-number">0x08</span>,
+    AIC_FMT_BGR_<span class="hl-number">888</span>              = <span class="hl-number">0x09</span>,
+    AIC_FMT_ARGB_<span class="hl-number">1555</span>            = <span class="hl-number">0x0a</span>,
+    AIC_FMT_ABGR_<span class="hl-number">1555</span>            = <span class="hl-number">0x0b</span>,
+    AIC_FMT_RGBA_<span class="hl-number">5551</span>            = <span class="hl-number">0x0c</span>,
+    AIC_FMT_BGRA_<span class="hl-number">5551</span>            = <span class="hl-number">0x0d</span>,
+    AIC_FMT_RGB_<span class="hl-number">565</span>              = <span class="hl-number">0x0e</span>,
+    AIC_FMT_BGR_<span class="hl-number">565</span>              = <span class="hl-number">0x0f</span>,
+    AIC_FMT_ARGB_<span class="hl-number">4444</span>            = <span class="hl-number">0x10</span>,
+    AIC_FMT_ABGR_<span class="hl-number">4444</span>            = <span class="hl-number">0x11</span>,
+    AIC_FMT_RGBA_<span class="hl-number">4444</span>            = <span class="hl-number">0x12</span>,
+    AIC_FMT_BGRA_<span class="hl-number">4444</span>            = <span class="hl-number">0x13</span>,
+
+    AIC_FMT_YUV420P              = <span class="hl-number">0x20</span>,
+    AIC_FMT_NV12                 = <span class="hl-number">0x21</span>,
+    AIC_FMT_NV21                 = <span class="hl-number">0x22</span>,
+    AIC_FMT_YUV422P              = <span class="hl-number">0x23</span>,
+    AIC_FMT_NV16                 = <span class="hl-number">0x24</span>,
+    AIC_FMT_NV61                 = <span class="hl-number">0x25</span>,
+    AIC_FMT_YUYV                 = <span class="hl-number">0x26</span>,
+    AIC_FMT_YVYU                 = <span class="hl-number">0x27</span>,
+    AIC_FMT_UYVY                 = <span class="hl-number">0x28</span>,
+    AIC_FMT_VYUY                 = <span class="hl-number">0x29</span>,
+    AIC_FMT_YUV400               = <span class="hl-number">0x2a</span>,
+    AIC_FMT_YUV444P              = <span class="hl-number">0x2b</span>,
+
+    AIC_FMT_YUV420_<span class="hl-number">64</span>x32_TILE    = <span class="hl-number">0x30</span>,
+    AIC_FMT_YUV420_<span class="hl-number">128</span>x16_TILE   = <span class="hl-number">0x31</span>,
+    AIC_FMT_YUV422_<span class="hl-number">64</span>x32_TILE    = <span class="hl-number">0x32</span>,
+    AIC_FMT_YUV422_<span class="hl-number">128</span>x16_TILE   = <span class="hl-number">0x33</span>,
+    AIC_FMT_MAX,
+};</pre></li></ul>
+            </div>
+        </section><section class="- topic/section section" id="display_data_structure__section_kmc_x1g_d1c" data-ofbid="display_data_structure__section_kmc_x1g_d1c"><h2 class="- topic/title title sectiontitle"><span class="+ topic/ph sw-d/filepath ph filepath">uapi/video/artinchip_fb.h</span></h2>
+            
+            <div class="- topic/p p" data-ofbid="d145544e59__20250121171610">
+                <ul class="- topic/ul ul" id="display_data_structure__ul_ftr_1bg_d1c" data-ofbid="display_data_structure__ul_ftr_1bg_d1c"><li class="- topic/li li" id="display_data_structure__li_dvy_ccg_d1c" data-ofbid="display_data_structure__li_dvy_ccg_d1c"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aicfb_layer_num</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_tt5_dbg_d1c" data-ofbid="display_data_structure__codeblock_tt5_dbg_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_layer_num - aicfb layer number
+ * @vi_num: number of video layers
+ * @ui_num: number of UI layers
+ *
+ *  total_layer_num = vi_num + ui_num
+ *
+ *  layer id range: [0, total_layer_num - 1]
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_layer_num {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> vi_num;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> ui_num;
+};</pre></li><li class="- topic/li li" id="display_data_structure__li_jcy_tdg_d1c" data-ofbid="display_data_structure__li_jcy_tdg_d1c"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aicfb_layer_capability</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_egy_dbg_d1c" data-ofbid="display_data_structure__codeblock_egy_dbg_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_layer_capability - aicfb layer capability
+ * @layer_id: the layer id
+ * @layer_type: the layer type
+ *  0: UI layer
+ *  1: Video layer
+ * @max_width:  the max pixels per line
+ * @max_height: the max lines
+ * @cap_flags:  flags of layer capability
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_layer_capability {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_type;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> max_width;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> max_height;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> cap_flags;
+};</pre></li><li class="- topic/li li" data-ofbid="d145544e72__20250121171610"><strong class="+ topic/ph hi-d/b ph b">struct aicfb_buffer</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_nj1_2bg_d1c" data-ofbid="display_data_structure__codeblock_nj1_2bg_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_buffer - aicfb frame buffer
+ * @phy_addr[3]: address of frame buffer
+ *  single addr for interleaved fomart with 1 plane,
+ *  double addr for semi-planar fomart with 2 planes,
+ *  triple addr for planar format with 3 planes
+ * @size: width and height of aicfb_buffer
+ * @stride[3]: stride for all planes
+ * @crop_en: corp disable/enable ctrl
+ *  0: disable crop the buffer
+ *  1: enable crop the buffer
+ * @crop: crop info
+ * @format: color format
+ * @buf_flags: aicfb buffer flags
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_buffer {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            phy_addr[AICFB_PLANE_NUM];
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            dmabuf_fd[AICFB_PLANE_NUM];
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            stride[AICFB_PLANE_NUM];
+    <strong class="hl-keyword">struct</strong> aic_size         size;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            crop_en;
+    <strong class="hl-keyword">struct</strong> aic_rect         crop;
+    <strong class="hl-keyword">enum</strong> aic_pixel_format   format;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            buf_flags;
+};</pre></li><li class="- topic/li li" id="display_data_structure__li_struct_aicfb_layer_data" data-ofbid="display_data_structure__li_struct_aicfb_layer_data"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aicfb_layer_data</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_mfc_2bg_d1c" data-ofbid="display_data_structure__codeblock_mfc_2bg_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_layer_data - aicfb layer data
+ * @enable
+ *  0: disable the layer
+ *  1: enable the layer
+ * @layer_id: the layer id
+ *
+ * @rect_id: the rectanglular window id of the layer
+ *  only used by layers with multi-rectangular windows
+ *  for example: if the layer has 4 rectangular windows,
+ *  rect_id can be 0,1,2 or 3 for different windows
+ *
+ * @scale_size:  scaling size
+ *  if the layer can be scaled. the scaling size can be different
+ *  from the input buffer. the input buffer can be original aicfb_buffer
+ *  or crop aicfb_buffer, otherwise, the scaling size will be ignore
+ *
+ * @pos: left-top x/y coordinate of the screen in pixels
+ * @buf: frame buffer
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_layer_data {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> rect_id;
+    <strong class="hl-keyword">struct</strong> aic_size scale_size;
+    <strong class="hl-keyword">struct</strong> aic_point pos;
+    <strong class="hl-keyword">struct</strong> aicfb_buffer buf;
+};</pre></li><li class="- topic/li li" id="display_data_structure__li_edn_pdg_d1c" data-ofbid="display_data_structure__li_edn_pdg_d1c"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aicfb_config_lists</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_svd_2bg_d1c" data-ofbid="display_data_structure__codeblock_svd_2bg_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_config_lists - aicfb config lists
+ * @num: the total number of layer data config lists
+ * @layers[]: the array of aicfb_layer_data lists
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_config_lists {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> num;
+    <strong class="hl-keyword">struct</strong> aicfb_layer_data layers[];
+};</pre></li><li class="- topic/li li" id="display_data_structure__li_iks_ldg_d1c" data-ofbid="display_data_structure__li_iks_ldg_d1c"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aicfb_alpha_config</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_elf_2bg_d1c" data-ofbid="display_data_structure__codeblock_elf_2bg_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_alpha_config - aicfb layer alpha blending config
+ *
+ * @layer_id: the layer id
+ *
+ * @enable
+ *  0: disable alpha
+ *  1: enable alpha
+ *
+ * @mode: alpha mode
+ *  0: pixel alpha mode
+ *  1: global alpha mode
+ *  2: mixder alpha mode(alpha = pixel alpha * global alpha / 255)
+ *
+ * @value: global alpha value (0~255)
+ *  used by global alpha mode and mixer alpha mode
+ *
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_alpha_config {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> mode;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> value;
+};</pre></li><li class="- topic/li li" id="display_data_structure__li_bnc_jdg_d1c" data-ofbid="display_data_structure__li_bnc_jdg_d1c"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aicfb_ck_config</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_qd3_2bg_d1c" data-ofbid="display_data_structure__codeblock_qd3_2bg_d1c"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_ck_config - aicfb layer color key blending config
+ *
+ * @layer_id: the layer id
+ *
+ * @ck_enable
+ *  0: disable color key
+ *  1: enable color key
+ *
+ *
+ * @ck_value: color key rgb value to match the layer pixels
+ *  bit[31:24]: reserved
+ *  bit[23:16]: R value
+ *  bit[15:8]: G value
+ *  bit[7:0]: B value
+ *
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_ck_config {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> value;
+};</pre></li><li class="- topic/li li" id="display_data_structure__li_oyp_ycg_d1c" data-ofbid="display_data_structure__li_oyp_ycg_d1c"><strong class="+ topic/ph hi-d/b ph b">struct
+                        aicfb_dmabuf_fd</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_cyj_2bg_d1c" data-ofbid="display_data_structure__codeblock_cyj_2bg_d1c"><span class="hl-tag-doctype-comment">/**
+ * Transfer dma-buf fd from userspace to the importers in kernel.
+ *
+ * @fd: the actual fd, requested by mmap() in userspace
+ * @phy_addr: the physical address of the actual fd
+ *
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_dmabuf_fd {
+    <strong class="hl-keyword">int</strong> fd;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> phy_addr;
+};</pre></li><li class="- topic/li li" data-ofbid="d145544e102__20250121171610"><strong class="+ topic/ph hi-d/b ph b">ioctl
+                        命令</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_data_structure__codeblock_rlm_2bg_d1c" data-ofbid="display_data_structure__codeblock_rlm_2bg_d1c">#<span class="hl-directive">define</span> IOC_TYPE_FB       <span class="hl-string">'F'</span>
+
+#<span class="hl-directive">define</span> AICFB_WAIT_FOR_VSYNC  _IOW(IOC_TYPE_FB, <span class="hl-number">0x20</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>)
+
+<span class="hl-tag-doctype-comment">/** get layer number */</span>
+#<span class="hl-directive">define</span> AICFB_GET_LAYER_NUM  _IOR(IOC_TYPE_FB, <span class="hl-number">0x21</span>, <strong class="hl-keyword">struct</strong> aicfb_layer_num)
+
+<span class="hl-tag-doctype-comment">/** get layer capability */</span>
+#<span class="hl-directive">define</span> AICFB_GET_LAYER_CAPABILITY  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x22</span>,\
+                    <strong class="hl-keyword">struct</strong> aicfb_layer_capability)
+
+<span class="hl-tag-doctype-comment">/** get layer config data */</span>
+#<span class="hl-directive">define</span> AICFB_GET_LAYER_CONFIG  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x23</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_layer_data)
+
+<span class="hl-tag-doctype-comment">/** update layer config data */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_LAYER_CONFIG  _IOW(IOC_TYPE_FB, <span class="hl-number">0x24</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_layer_data)
+
+<span class="hl-tag-doctype-comment">/** update layer config data lists */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_LAYER_CONFIG_LISTS  _IOW(IOC_TYPE_FB, <span class="hl-number">0x25</span>, \
+                        <strong class="hl-keyword">struct</strong> aicfb_config_lists)
+
+<span class="hl-tag-doctype-comment">/** get layer alpha blendig config */</span>
+#<span class="hl-directive">define</span> AICFB_GET_ALPHA_CONFIG  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x26</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_alpha_config)
+
+<span class="hl-tag-doctype-comment">/** update layer alpha blendig config */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_ALPHA_CONFIG  _IOW(IOC_TYPE_FB, <span class="hl-number">0x27</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_alpha_config)
+
+<span class="hl-tag-doctype-comment">/** get layer color key config */</span>
+#<span class="hl-directive">define</span> AICFB_GET_CK_CONFIG  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x26</span>, <strong class="hl-keyword">struct</strong> aicfb_ck_config)
+
+<span class="hl-tag-doctype-comment">/** update layer color key config */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_CK_CONFIG  _IOW(IOC_TYPE_FB, <span class="hl-number">0x27</span>, <strong class="hl-keyword">struct</strong> aicfb_ck_config)
+
+<span class="hl-tag-doctype-comment">/** get screen size */</span>
+#<span class="hl-directive">define</span> AICFB_GET_SCREEN_SIZE  _IOR(IOC_TYPE_FB, <span class="hl-number">0x40</span>, <strong class="hl-keyword">struct</strong> aic_size)
+
+<span class="hl-tag-doctype-comment">/** get layer config data which the standard framebuffer is used
+ * call this API to get which layer the standard framebuffer is used.
+ */</span>
+#<span class="hl-directive">define</span> AICFB_GET_FB_LAYER_CONFIG  _IOR(IOC_TYPE_FB, <span class="hl-number">0x41</span>, \
+                    <strong class="hl-keyword">struct</strong> aicfb_layer_data)
+
+#<span class="hl-directive">define</span> AICFB_GET_DMABUF _IOW(IOC_TYPE_FB, <span class="hl-number">0x50</span>, <strong class="hl-keyword">struct</strong> aicfb_dmabuf_fd)
+#<span class="hl-directive">define</span> AICFB_PUT_DMABUF _IOW(IOC_TYPE_FB, <span class="hl-number">0x51</span>, <strong class="hl-keyword">struct</strong> aicfb_dmabuf_fd)
+
+<span class="hl-tag-doctype-comment">/** export a dma_buf fd, associates /dev/fb0 */</span>
+#<span class="hl-directive">define</span> AICFB_TO_DMABUF_FD _IOW(IOC_TYPE_FB, <span class="hl-number">0x52</span>, <strong class="hl-keyword">struct</strong> aicfb_dmabuf_fd)</pre></li></ul>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#display_data_structure__section_fqk_v1g_d1c" data-tocid="display_data_structure__section_fqk_v1g_d1c"><span class="+ topic/ph sw-d/filepath ph filepath">uapi/video/artinchip_video.h</span></a></div></li><li class="section-item"><div class="section-title"><a href="#display_data_structure__section_kmc_x1g_d1c" data-tocid="display_data_structure__section_kmc_x1g_d1c"><span class="+ topic/ph sw-d/filepath ph filepath">uapi/video/artinchip_fb.h</span></a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

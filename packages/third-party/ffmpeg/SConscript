@@ -1,0 +1,28 @@
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+
+if GetDepend('LPKG_USING_FFMPEG'):
+    src += Glob('./libavutil/mem.c')
+    src += Glob('./libavutil/reverse.c')
+    src += Glob('./libavutil/log2_tab.c')
+    src += Glob('./libavutil/intmath.c')
+    src += Glob('./libavcodec/bitstream.c')
+    src += Glob('./libavcodec/fft.c')
+    src += Glob('./libavcodec/mdct.c')
+    src += Glob('./libavcodec/dsputils.c')
+    src += Glob('./libavcodec/allcodecs.c')
+    src += Glob('./libavcodec/avcodec.c')
+    src += Glob('./libavcodec/wmadec.c')
+    src += Glob('./libavcodec/test_decoder.c')
+
+
+CPPPATH = [cwd,
+           cwd + r'/libavutil/',
+           cwd + r'/libavcodec/']
+
+group = DefineGroup('libFFmpeg', src, depend = ['LPKG_USING_FFMPEG'], CPPPATH = CPPPATH)
+
+Return('group')
+

@@ -1,0 +1,232 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="通常一个 Packet 由 5 个部分组成。 PID : Packet ID ADDR : Device Address EP : Endpoint Number Payload DATA CRC ： 5/16 bits CRC 以下是四种 Packet 的具体格式。 Token Packet Token Packet 主要分四种： IN , OUT , SETUP , SOF Data ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-30"/><meta name="DC.date.modified" content="2024-11-21"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_packet"/><meta name="DC.language" content="zh-CN"/><title>Packet</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-packet.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-packet.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_packet" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-packet.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Packet</h1><div class="date inPage">21 Nov 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d245392e23__20250121171701">通常一个 Packet 由 5 个部分组成。<ul class="- topic/ul ul" id="usb_packet__ul_bzn_f2q_g1c" data-ofbid="usb_packet__ul_bzn_f2q_g1c"><li class="- topic/li li" data-ofbid="d245392e26__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e28__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">PID</code> : Packet ID</p>
+                </li><li class="- topic/li li" data-ofbid="d245392e33__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e35__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">ADDR</code> : Device Address</p>
+                </li><li class="- topic/li li" data-ofbid="d245392e40__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e42__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">EP</code> : Endpoint Number</p>
+                </li><li class="- topic/li li" data-ofbid="d245392e47__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e49__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">Payload DATA</code></p>
+                </li><li class="- topic/li li" data-ofbid="d245392e53__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e55__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">CRC</code> ： 5/16 bits CRC</p>
+                </li></ul></div><p class="- topic/p p" data-ofbid="d245392e60__20250121171701">以下是四种 Packet 的具体格式。</p><section class="- topic/section section" id="usb_packet__section_tg3_jfq_g1c" data-ofbid="usb_packet__section_tg3_jfq_g1c"><h2 class="- topic/title title sectiontitle">Token Packet </h2>
+            
+            <div class="- topic/p p" data-ofbid="d245392e67__20250121171701"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_packet__image_dzn_f2q_g1c" src="../../../images/usb/packet_token.png" alt="image6"/></div><br/></div>
+            <div class="- topic/p p" data-ofbid="d245392e72__20250121171701">Token Packet 主要分四种：<ul class="- topic/ul ul" id="usb_packet__ul_ezn_f2q_g1c" data-ofbid="usb_packet__ul_ezn_f2q_g1c"><li class="- topic/li li" data-ofbid="d245392e75__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e77__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">IN</code>,</p>
+                    </li><li class="- topic/li li" data-ofbid="d245392e82__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e84__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">OUT</code>,</p>
+                    </li><li class="- topic/li li" data-ofbid="d245392e89__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e91__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">SETUP</code>,</p>
+                    </li><li class="- topic/li li" data-ofbid="d245392e96__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e98__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">SOF</code></p>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="usb_packet__section_e1m_jfq_g1c" data-ofbid="usb_packet__section_e1m_jfq_g1c"><h2 class="- topic/title title sectiontitle">Data Packets</h2>
+            
+            <div class="- topic/p p" data-ofbid="d245392e108__20250121171701"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_packet__image_gzn_f2q_g1c" src="../../../images/usb/packet_data.png" alt="image7"/></div><br/></div>
+            <div class="- topic/p p" data-ofbid="d245392e113__20250121171701">Data Packets 主要由三部分组成：<ul class="- topic/ul ul" id="usb_packet__ul_hzn_f2q_g1c" data-ofbid="usb_packet__ul_hzn_f2q_g1c"><li class="- topic/li li" data-ofbid="d245392e116__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e118__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">Packet ID</code> (DATA1/DATA0, toggle), -</p>
+                    </li><li class="- topic/li li" data-ofbid="d245392e123__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e125__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">Payload data</code>,</p>
+                    </li><li class="- topic/li li" data-ofbid="d245392e130__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e132__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">CRC16</code> 。</p>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="usb_packet__section_z5m_jfq_g1c" data-ofbid="usb_packet__section_z5m_jfq_g1c"><h2 class="- topic/title title sectiontitle">Handshake Packets</h2>
+            
+            <div class="- topic/p p" data-ofbid="d245392e143__20250121171701"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_packet__image_jzn_f2q_g1c" src="../../../images/usb/packet_handshake.png" alt="image8"/></div><br/></div>
+            <div class="- topic/p p" data-ofbid="d245392e148__20250121171701">Handshake Packets 主要有 4 种：<ul class="- topic/ul ul" id="usb_packet__ul_kzn_f2q_g1c" data-ofbid="usb_packet__ul_kzn_f2q_g1c"><li class="- topic/li li" data-ofbid="d245392e151__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e153__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">ACK</code> : 返回成功</p>
+                    </li><li class="- topic/li li" data-ofbid="d245392e158__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e160__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">NAK</code> : Device 忙，或者没有什么需要执行。</p>
+                    </li><li class="- topic/li li" data-ofbid="d245392e165__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e167__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">STALL</code> : Device 出错</p>
+                    </li><li class="- topic/li li" data-ofbid="d245392e172__20250121171701">
+                        <p class="- topic/p p" data-ofbid="d245392e174__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">NYET</code> : Host only, Not ready.</p>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="usb_packet__section_pyn_jfq_g1c" data-ofbid="usb_packet__section_pyn_jfq_g1c"><h2 class="- topic/title title sectiontitle">Special Packet</h2>
+            
+            <figure class="- topic/fig fig fignone" id="usb_packet__fig_z1d_lfq_g1c" data-ofbid="usb_packet__fig_z1d_lfq_g1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_packet__image_mzn_f2q_g1c" src="../../../images/usb/packet_special.png" alt="image9"/></div><br/></figure>
+            <ul class="- topic/ul ul" id="usb_packet__ul_nzn_f2q_g1c" data-ofbid="usb_packet__ul_nzn_f2q_g1c"><li class="- topic/li li" data-ofbid="d245392e191__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e193__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">PRE</code> : 由 Host 向 Hub 发送，指示下一个 packet 是 low speed</p>
+                </li><li class="- topic/li li" data-ofbid="d245392e198__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e200__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">SPLIT</code> : Host only, split transaction</p>
+                </li><li class="- topic/li li" data-ofbid="d245392e205__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e207__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">ERR</code> : Host only, 由 Hub 向 Host 发送，指示在一次 split transaction
+                        中出错</p>
+                </li><li class="- topic/li li" data-ofbid="d245392e212__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d245392e214__20250121171701"><code class="+ topic/ph pr-d/codeph ph codeph">PING</code> : Host only, check status</p>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_packet__section_tg3_jfq_g1c" data-tocid="usb_packet__section_tg3_jfq_g1c">Token Packet </a></div></li><li class="section-item"><div class="section-title"><a href="#usb_packet__section_e1m_jfq_g1c" data-tocid="usb_packet__section_e1m_jfq_g1c">Data Packets</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_packet__section_z5m_jfq_g1c" data-tocid="usb_packet__section_z5m_jfq_g1c">Handshake Packets</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_packet__section_pyn_jfq_g1c" data-tocid="usb_packet__section_pyn_jfq_g1c">Special Packet</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="OTA 文件结构 OTA 源码位于 Luban-Lite 根目录中的 packages/artinchip/ota/ 文件夹 ，文件结构如下: ├── absystem.c # 文件系统挂载源文件 ├── absystem.h ├── burn.c # FLASH 固化接口源文件 ├── burn.h ├── ota.c # OTA 接口源文件 ├── ota.h └── test_ota.c # ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_programming.html"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_faq_lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1631"/><meta name="wh-source-relpath" content="topics/sdk/ota/ota_design_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/ota/ota_design_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html">OTA 方案</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/ota/ota_design_lite.html">设计说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/ota/ota_programming.html" title="编程指南" aria-label="上一主题: 编程指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/ota/ota_faq_lite.html" title="常见问题" aria-label="下一主题: 常见问题" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1569" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota__sys_intro.html" id="id-d5856e1569-link">OTA 系统结构</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1581" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_configure.html" id="id-d5856e1581-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1593" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_debug_lite.html" id="id-d5856e1593-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1605" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_test_guide.html" id="id-d5856e1605-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="ota-programming-d5856e1617" class="topicref" data-id="ota-programming" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_programming.html" id="ota-programming-d5856e1617-link">编程指南</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e1631" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_design_lite.html" id="id-d5856e1631-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1645" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_faq_lite.html" id="id-d5856e1645-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ota/ota_design_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 6 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_jvr_j1q_wcc" data-ofbid="id__section_jvr_j1q_wcc"><h2 class="- topic/title title sectiontitle">OTA 文件结构</h2>
+            
+            <ul class="- topic/ul ul" id="id__ul_cnc_jfv_1dc" data-ofbid="id__ul_cnc_jfv_1dc"><li class="- topic/li li" data-ofbid="d246117e27__20250121171701">OTA 源码位于 <span class="- topic/ph ph">Luban-Lite</span> 根目录中的<span class="+ topic/ph sw-d/filepath ph filepath">packages/artinchip/ota/</span> 文件夹
+                    ，文件结构如下:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_gyg_jfv_1dc" data-ofbid="id__pre_gyg_jfv_1dc">├── absystem.c # 文件系统挂载源文件
+├── absystem.h
+├── burn.c # FLASH 固化接口源文件
+├── burn.h
+├── ota.c # OTA 接口源文件
+├── ota.h
+└── test_ota.c # 测试 TF 卡 OTA 源文件</pre></li><li class="- topic/li li" data-ofbid="d246117e37__20250121171701">OTA 升级过程中使用到的相关文件位于各个 <span class="+ topic/ph sw-d/filepath ph filepath">target/xx-chip/xx-board/pack</span>
+                    板级目录中，文件结构如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_zgg_cfv_1dc" data-ofbid="id__pre_zgg_cfv_1dc">├── bootloader.bin  # 引导加载程序，用于启动系统。
+├── ddr_init.json   # DDR 初始化配置文件，用于配置内存参数。
+├── env.txt         # 环境变量文件，用于环境变量存放。
+├── image_cfg.json  # 系统分区配置文件，用作定义系统分区信息。
+└── ota-subimgs.cfg # OTA 升级包配置文件，用于指定需要更新的子镜像及其顺序</pre></li></ul>
+        </section><section class="- topic/section section" id="id__section_zfn_qfv_1dc" data-ofbid="id__section_zfn_qfv_1dc"><h2 class="- topic/title title sectiontitle">A/B 系统分区信息</h2>
+            
+            <figure class="- topic/fig fig fignone" id="id__fig_rr5_wgv_1dc" data-ofbid="id__fig_rr5_wgv_1dc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_agn_qfv_1dc" src="../../../images/ota/part_lite.png" alt="part"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">A/B 系统方案分区信息 </span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d246117e57__20250121171701">如<a class="- topic/xref xref" href="ota_design.html#id__fig_rr5_wgv_1dc">ota_design.html#id__fig_rr5_wgv_1dc</a>所示，各分区详细描述如下：</p>
+            <ul class="- topic/ul ul arabic simple" id="id__ol_bgn_qfv_1dc" data-ofbid="id__ol_bgn_qfv_1dc"><li class="- topic/li li" data-ofbid="d246117e63__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e65__20250121171701">ENV 分区：用来保存 <a class="- topic/xref xref" href="ota_design.html#id__section_k5j_33v_1dc">env
+                            环境变量</a>，其中增加了一个备用 ENV 分区，确保在一份数据破坏后，另外一份数据还能继续使用。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e72__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e74__20250121171701">OS， RODATA 和 DATA 分区各有一个主分区和一个备份分区，统称为 A/ B 系统。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e77__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e79__20250121171701">用户可根据实际 OTA 需求<a class="- topic/xref xref" href="ota_faq.html#id__section_nzj_fhv_1dc">剪裁分区</a>，例如只需升级
+                        OS，则可以删除 RODATA 与 DATA 的备份分区。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__section_i4m_hjv_1dc" data-ofbid="id__section_i4m_hjv_1dc"><h2 class="- topic/title title sectiontitle">OTA 分区说明</h2>
+            
+            <div class="table-container"><table class="- topic/table table docutils align-default frame-all" id="id__table_rgn_qfv_1dc" data-ofbid="id__table_rgn_qfv_1dc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">NAND 分区说明</span></caption><colgroup><col style="width:18.832391713747647%"/><col style="width:35.781544256120526%"/><col style="width:45.38606403013182%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row row-odd"><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_rgn_qfv_1dc__entry__1">设备名称</th><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_rgn_qfv_1dc__entry__2">定义</th><th class="- topic/entry entry head colsep-0 rowsep-1" id="id__table_rgn_qfv_1dc__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">os</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__2">系统主分区 MTD 设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__3">用于 A 系统烧录 OS</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">os_r</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__2">系统备份分区 MTD 设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__3">用于 B 系统烧录 OS</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">blk_rodata</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__2">只读文件系统主分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__3">用于 A 系统挂载只读文件系统</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">blk_rodata_r</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__2">只读文件系统备份分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__3">用于 B 系统挂载只读文件系统</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">blk_data</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__2">读写文件系统主分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__3">用于 A 系统挂载与烧录读写文件系统</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">blk_data_r</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__2">读写文件系统备份分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__3">用于 B 系统挂载与烧录读写文件系统</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">rodata</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__2">只读文件系统主分区 MTD 设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rgn_qfv_1dc__entry__3">用于 A 系统烧录只读文件系统</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_rgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">rodata_r</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_rgn_qfv_1dc__entry__2">只读文件系统备份分区 MTD 设备</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_rgn_qfv_1dc__entry__3">用于 B 系统烧录只读文件系统</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table docutils align-default frame-all" id="id__table_sgn_qfv_1dc" data-ofbid="id__table_sgn_qfv_1dc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">NOR 分区说明</span></caption><colgroup><col style="width:19.53125%"/><col style="width:35.3515625%"/><col style="width:45.1171875%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row row-odd"><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_sgn_qfv_1dc__entry__1">设备名称</th><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_sgn_qfv_1dc__entry__2">定义</th><th class="- topic/entry entry head colsep-0 rowsep-1" id="id__table_sgn_qfv_1dc__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">os</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__2">系统主分区 MTD 设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__3">用于 A 系统烧录 OS</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">os_r</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__2">系统备份分区 MTD 设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__3">用于 B 系统烧录 OS</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">blk_rodata</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__2">只读文件系统主分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__3">用于 A 系统挂载只读文件系统</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">blk_rodata_r</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__2">只读文件系统备份分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__3">用于 B 系统挂载只读文件系统</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">rodata</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__2">只读文件系统主分区 MTD 设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_sgn_qfv_1dc__entry__3">用于 A 系统烧录只读文件系统</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_sgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">rodata_r</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_sgn_qfv_1dc__entry__2">只读文件系统备份分区 MTD 设备</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_sgn_qfv_1dc__entry__3">用于 B 系统烧录只读文件系统</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table docutils align-default frame-all" id="id__table_tgn_qfv_1dc" data-ofbid="id__table_tgn_qfv_1dc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">eMMC 分区说明</span></caption><colgroup><col style="width:19.120458891013385%"/><col style="width:35.75525812619503%"/><col style="width:45.12428298279158%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row row-odd"><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_tgn_qfv_1dc__entry__1">设备名称</th><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_tgn_qfv_1dc__entry__2">定义</th><th class="- topic/entry entry head colsep-0 rowsep-1" id="id__table_tgn_qfv_1dc__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">mmc0p3</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__2">系统主分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__3">用于 A 系统烧录 OS</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">mmc0p4</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__2">系统备份分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__3">用于 B 系统烧录 OS</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">mmc0p5</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__2">只读文件系统主分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__3">用于 A 系统挂载与烧录只读文件系统</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">mmc0p6</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__2">只读文件系统备份分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__3">用于 B 系统挂载与烧录只读文件系统</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">mmc0p7</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__2">读写文件系统主分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tgn_qfv_1dc__entry__3">用于 A 系统挂载与烧录读写文件系统</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_tgn_qfv_1dc__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">mmc0p8</span>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_tgn_qfv_1dc__entry__2">读写文件系统备份分区块设备</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_tgn_qfv_1dc__entry__3">用于 B 系统挂载与烧录读写文件系统</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="id__section_fk4_shv_1dc" data-ofbid="id__section_fk4_shv_1dc"><h2 class="- topic/title title sectiontitle">A/B 系统升级过程</h2>
+            
+            <figure class="- topic/fig fig fignone" id="id__fig_oyd_phv_1dc" data-ofbid="id__fig_oyd_phv_1dc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_fgn_qfv_1dc" src="../../../images/ota/ab.png" alt="ab"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">A/B 系统升级过程</span></figcaption></figure>
+            <ol class="- topic/ol ol arabic simple" id="id__ol_ggn_qfv_1dc" data-ofbid="id__ol_ggn_qfv_1dc"><li class="- topic/li li" data-ofbid="d246117e336__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e338__20250121171701">升级前，A 系统为启动系统，B 系统为备用系统。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e341__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e343__20250121171701">启动 OTA 升级，给 B 系统升级程序。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e346__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e348__20250121171701">升级完成后重启，从 B 系统启动，A 系统为备用系统。</p>
+                </li></ol>
+        </section><section class="- topic/section section" id="id__section_k5j_33v_1dc" data-ofbid="id__section_k5j_33v_1dc"><h2 class="- topic/title title sectiontitle">ENV 环境变量</h2>
+            
+            <div class="- topic/p p" data-ofbid="d246117e357__20250121171701">OTA 升级涉及的 ENV 环境变量描述如下：<ul class="- topic/ul ul" id="id__ul_gvj_p3v_1dc" data-ofbid="id__ul_gvj_p3v_1dc"><li class="- topic/li li" data-ofbid="d246117e360__20250121171701">环境变量文件路径：<span class="+ topic/ph sw-d/filepath ph filepath">target/xx-chip/xx-board/pack/env.txt</span></li><li class="- topic/li li" data-ofbid="d246117e364__20250121171701">环境变量文件详细内容：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_olb_r3v_1dc" data-ofbid="id__codeblock_olb_r3v_1dc">osAB_next=A
+osAB_now=A
+rodataAB_next=A
+rodataAB_now=A
+dataAB_next=A
+dataAB_now=A
+upgrade_available=<span class="hl-number">0</span>
+bootlimit=<span class="hl-number">5</span>
+bootcount=<span class="hl-number">0</span>
+rodata_partname=blk_rodata
+rodata_partname_r=blk_rodata_r
+data_partname=blk_data
+data_partname_r=blk_data_r</pre></li></ul></div>
+            <div class="table-container"><table class="- topic/table table docutils align-default frame-all" id="id__table_jgn_qfv_1dc" data-ofbid="id__table_jgn_qfv_1dc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">环境变量使用说明</span></caption><colgroup><col style="width:17.513134851138354%"/><col style="width:25.39404553415061%"/><col style="width:57.09281961471103%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row row-odd"><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_jgn_qfv_1dc__entry__1">环境变量名称</th><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_jgn_qfv_1dc__entry__2">定义</th><th class="- topic/entry entry head colsep-0 rowsep-1" id="id__table_jgn_qfv_1dc__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">osAB_now</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">当前启动分区</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">osAB_now 取值说明：<ul class="- topic/ul ul" id="id__ul_gbs_smv_1dc" data-ofbid="id__ul_gbs_smv_1dc"><li class="- topic/li li" data-ofbid="d246117e393__20250121171701">“A”：OS 本次从 A 启动</li><li class="- topic/li li" data-ofbid="d246117e395__20250121171701">“B”：OS 本次从 B 启动，无需手动修改</li></ul></td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">osAB_next</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">下次启动分区</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">osAB_next 取值说明：<ul class="- topic/ul ul" id="id__ul_exs_vmv_1dc" data-ofbid="id__ul_exs_vmv_1dc"><li class="- topic/li li" data-ofbid="d246117e405__20250121171701">“A”：OS 下次从 A 启动</li><li class="- topic/li li" data-ofbid="d246117e407__20250121171701">“B”：OS 下次从 B 启动，可以手动修改</li></ul></td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">rodataAB_now</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">当前挂载的只读分区</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">rodataAB_now 取值说明：<ul class="- topic/ul ul" id="id__ul_bng_xmv_1dc" data-ofbid="id__ul_bng_xmv_1dc"><li class="- topic/li li" data-ofbid="d246117e417__20250121171701">“A”：rodata 本次从 A 挂载</li><li class="- topic/li li" data-ofbid="d246117e419__20250121171701">“B”：rodata 本次从 B 挂载，无需手动修改</li></ul></td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">rodataAB_next</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">下次挂载的只读分区</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">rodataAB_next 取值说明：<ul class="- topic/ul ul" id="id__ul_avg_ymv_1dc" data-ofbid="id__ul_avg_ymv_1dc"><li class="- topic/li li" data-ofbid="d246117e429__20250121171701">“A”：rodata 下次从 A 挂载</li><li class="- topic/li li" data-ofbid="d246117e431__20250121171701">“B”：rodata 下次从 B 挂载，可以手动修改</li></ul></td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">dataAB_now</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">当前挂载的读写分区</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">dataAB_now 取值说明：<ul class="- topic/ul ul" id="id__ul_a4z_zmv_1dc" data-ofbid="id__ul_a4z_zmv_1dc"><li class="- topic/li li" data-ofbid="d246117e441__20250121171701">“A”：data 本次从 A 挂载</li><li class="- topic/li li" data-ofbid="d246117e443__20250121171701">“B”：data 本次从 B 挂载，无需手动修改</li></ul></td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">dataAB_next</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">下次挂载的读写分区</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">dataAB_next 取值说明：<ul class="- topic/ul ul" id="id__ul_psh_bnv_1dc" data-ofbid="id__ul_psh_bnv_1dc"><li class="- topic/li li" data-ofbid="d246117e453__20250121171701">“A”：data 下次从 A 挂载</li><li class="- topic/li li" data-ofbid="d246117e455__20250121171701">“B”：data 下次从 B 挂载，可以手动修改</li></ul></td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">upgrade_available</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">OTA 升级完成</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">OTA 升级完成，指导 boot 程序更新启动分区和版本回退</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">bootcount</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">失败启动次数</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">启动分区启动 os 程序失败的次数</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">bootlimit</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">失败启动次数限制</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">启动分区启动失败次数超过 bootlimit 会触发版本回退</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">rodata_partname</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">rodata 挂载设备名称</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">rodata 实际挂载的设备名称<p class="- topic/p p" data-ofbid="d246117e485__20250121171701">如果系统设备名称改变，此处应该同步修改 </p></td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">rodata_partname_r</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">备份 rodata 挂载设备名称</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">rodata_r 实际挂载的设备名称<p class="- topic/p p" data-ofbid="d246117e494__20250121171701">如果系统设备名称改变，此处应该同步修改 </p></td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__1">data_partname</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__2">data 挂载设备名称</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_jgn_qfv_1dc__entry__3">rodata 实际挂载的设备名称<p class="- topic/p p" data-ofbid="d246117e504__20250121171701">如果系统设备名称改变，此处应该同步修改 </p></td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_jgn_qfv_1dc__entry__1">data_partname_r</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_jgn_qfv_1dc__entry__2">备份 data 挂载设备名称</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_jgn_qfv_1dc__entry__3">rodata_r 实际挂载的设备名称<p class="- topic/p p" data-ofbid="d246117e513__20250121171701">如果系统设备名称改变，此处应该同步修改 </p></td></tr></tbody></table></div>
+            <figure class="- topic/fig fig fignone" id="id__fig_tzr_t3v_1dc" data-ofbid="id__fig_tzr_t3v_1dc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_kgn_qfv_1dc" src="../../../images/ota/env.png" alt="env"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">环境变量在 OTA 升级过程中的作用</span></figcaption></figure>
+            <div class="- topic/note note note note_note" id="id__note_azg_v3v_1dc" data-ofbid="id__note_azg_v3v_1dc"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d246117e525__20250121171701">rodata 和 data 分区的升级原理与 OS 相同。</p>
+            </div>
+        </section><section class="- topic/section section" id="id__section_bdt_x3v_1dc" data-ofbid="id__section_bdt_x3v_1dc"><h2 class="- topic/title title sectiontitle">OTA 升级包制作原理</h2>
+            
+            <div class="- topic/p p" data-ofbid="d246117e534__20250121171701"><strong class="+ topic/ph hi-d/b ph b">OTA 升级包配置文件</strong>为
+                    <span class="+ topic/ph sw-d/filepath ph filepath">ota-subimgs.cfg</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_zzm_cjv_1dc" data-ofbid="id__codeblock_zzm_cjv_1dc">[image]
+size = <span class="hl-string">""</span>;
+version = <span class="hl-string">"1.0.0"</span>;
+
+[file]
+ota_info.bin:file;
+d21x_os.itb:os;
+rodata.fatfs:rodata;
+data.fatfs:blk_data;</pre><div class="table-container"><table class="- topic/table table docutils align-default frame-all" id="id__table_mgn_qfv_1dc" data-ofbid="id__table_mgn_qfv_1dc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">ota-subimgs.cfg 配置文件详细说明</span></caption><colgroup><col style="width:16.233766233766232%"/><col style="width:26.136363636363637%"/><col style="width:57.62987012987013%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row row-odd"><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_mgn_qfv_1dc__entry__1">环境变量名称</th><th class="- topic/entry entry head colsep-1 rowsep-1" id="id__table_mgn_qfv_1dc__entry__2">定义</th><th class="- topic/entry entry head colsep-0 rowsep-1" id="id__table_mgn_qfv_1dc__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__1">size</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__2">整个 <span class="+ topic/ph sw-d/filepath ph filepath">ota.cpio</span> 文件的大小</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__3">size 为 py 脚本自动计算，在 C 文件中有解析此字段，供用户用做下载进度等使用。</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__1">version</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__2">新更新的系统版本号</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__3">version 为 py 脚本自动填充，从 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+                                    中解析，用户应修改 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 中的版本号。</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__1">ota_info.bin</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__2">ota-subimgs.cfg 的二进制文件</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__3">py 脚本会将本文件编译为二进制流文件，供 C 文件中解析使用。file 属性可以忽略。</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__1">d21x_os.itb</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__2">OS 的实际比特流文件</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__3">此文件编译会自动生成，此处存在代表将会被打包进 cpio 包。 <span class="+ topic/keyword pr-d/parmname keyword parmname">os</span>
+                                    为即将升级到的设备。</td></tr><tr class="- topic/row row-even"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__1">rodata.fatfs</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__2">只读分区的实际比特流文件</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mgn_qfv_1dc__entry__3">此文件编译会自动生成，此处存在代表将会被打包进 cpio 包。 <span class="+ topic/keyword pr-d/parmname keyword parmname">rodata</span>
+                                    为即将升级到的设备。</td></tr><tr class="- topic/row row-odd"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_mgn_qfv_1dc__entry__1">data.fatfs</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_mgn_qfv_1dc__entry__2">读写分区的实际比特流文件</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_mgn_qfv_1dc__entry__3">此文件编译会自动生成，此处存在代表将会被打包进 cpio 包。 <span class="+ topic/keyword pr-d/parmname keyword parmname">blk_data</span>
+                                    为即将升级到的设备。</td></tr></tbody></table></div><div class="- topic/note note note note_note" id="id__note_ep5_djv_1dc" data-ofbid="id__note_ep5_djv_1dc"><span class="note__title">注：</span> 
+                    <ol class="- topic/ol ol arabic simple" id="id__ol_ngn_qfv_1dc" data-ofbid="id__ol_ngn_qfv_1dc"><li class="- topic/li li" data-ofbid="d246117e622__20250121171701">
+                            <p class="- topic/p p" data-ofbid="d246117e624__20250121171701">FLASH
+                                为 NAND 时，只读文件系统与读写文件系统升级的设备不同，读写文件系统依赖 NFTL 支持，烧写
+                                FLASH 需使用块设备接口，而只读文件系统烧写 FLASH 使用 MTD 设备接口即可。</p>
+                        </li><li class="- topic/li li" data-ofbid="d246117e630__20250121171701">
+                            <p class="- topic/p p" data-ofbid="d246117e632__20250121171701">FLASH 为 NOR 时，由于空间限制，目前读写文件系统不使用 OTA 进行升级。</p>
+                        </li><li class="- topic/li li" data-ofbid="d246117e635__20250121171701">
+                            <p class="- topic/p p" data-ofbid="d246117e637__20250121171701">FLASH 为 eMMC 时，主分区应为 <span class="+ topic/keyword pr-d/parmname keyword parmname">mmc0p*</span> , 备份分区在
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 分配时应该在主分区下面，在 OTA 代码中，默认将
+                                <span class="+ topic/keyword pr-d/parmname keyword parmname">mmc0p*+1</span> 作为备份分区。</p>
+                        </li></ol>
+                </div>
+            </div>
+            <p class="- topic/p p" data-ofbid="d246117e652__20250121171701"><strong class="+ topic/ph hi-d/b ph b">OTA 升级包生成工具</strong>为 <span class="+ topic/ph sw-d/filepath ph filepath">mkcpio.py</span>，文件路径为
+                    <span class="+ topic/ph sw-d/filepath ph filepath">tools/scripts/mkcpio.py</span></p>
+            <p class="- topic/p p" data-ofbid="d246117e662__20250121171701">执行编译命令，会自动执行 <span class="+ topic/ph sw-d/filepath ph filepath">mkcpio.py</span> 命令生成 ota.cpio。mkcpio.py 具体调用了 cpio,
+                cpio.exe 命令进行打包。</p>
+        </section><section class="- topic/section section" id="id__section_zsq_2jv_1dc" data-ofbid="id__section_zsq_2jv_1dc"><h2 class="- topic/title title sectiontitle">OTA 包数据组成格式</h2>
+            
+            <div class="- topic/p p" data-ofbid="d246117e673__20250121171701">
+                <figure class="- topic/fig fig fignone" id="id__fig_ig2_xjv_1dc" data-ofbid="id__fig_ig2_xjv_1dc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_pgn_qfv_1dc" src="../../../images/ota/cpio.png" width="192" alt="cpio"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">OTA 包数据组成格式</span></figcaption></figure>
+            </div>
+            <div class="- topic/p p" data-ofbid="d246117e683__20250121171701">其中头部信息如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_drv_yjv_1dc" data-ofbid="id__codeblock_drv_yjv_1dc"><strong class="hl-keyword">struct</strong> filehdr {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> format;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> size;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> size_align;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> begin_offset;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> cpio_header_len;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> namesize;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> filename_size;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> filename_align;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> burn_len;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> chksum;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> sum;
+    <strong class="hl-keyword">char</strong> filename[MAX_IMAGE_FNAME];
+};</pre></div>
+        </section><section class="- topic/section section" id="id__section_tjc_vgv_1dc" data-ofbid="id__section_tjc_vgv_1dc"><h2 class="- topic/title title sectiontitle">A/B 系统分区优势</h2>
+            
+            <ol class="- topic/ol ol arabic simple" id="id__ol_fcr_gfq_wcc" data-ofbid="id__ol_fcr_gfq_wcc"><li class="- topic/li li" data-ofbid="d246117e694__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e696__20250121171701">避免出现升级过程中意外断电导致系统更新失败且重启后不能继续升级的问题。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e699__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e701__20250121171701">自带回滚机制，可以恢复到原来的程序。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e708__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e710__20250121171701">对比 Recovery 系统方案，配置简单，维护方便。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e713__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e715__20250121171701">消耗的存储资源相对较少，现有平台存储资源完全能满足要求。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e718__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e720__20250121171701">在 RTOS 系统上获取、校验和升级固件，不涉及 Boot，不需要额外存储空间保存 OTA 升级文件。</p>
+                </li><li class="- topic/li li" data-ofbid="d246117e723__20250121171701">
+                    <p class="- topic/p p" data-ofbid="d246117e725__20250121171701">市面上的应用广泛。</p>
+                </li></ol>
+        </section><section class="- topic/section section" id="id__section_lvr_j1q_wcc" data-ofbid="id__section_lvr_j1q_wcc"><h2 class="- topic/title title sectiontitle">网络 OTA 流程</h2>
+            
+            <ul class="- topic/ul ul" id="id__ul_vts_2v5_4dc" data-ofbid="id__ul_vts_2v5_4dc"><li class="- topic/li li" data-ofbid="d246117e735__20250121171701">
+                    <div class="- topic/div div">
+                        <p class="- topic/p p" data-ofbid="d246117e739__20250121171701"><strong class="+ topic/ph hi-d/b ph b">OS 阶段 app OTA 执行流程</strong></p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_p4q_wgq_wcc" data-ofbid="id__codeblock_p4q_wgq_wcc">http_ota  <em class="hl-comment">//packages/third-party/ota_downloader/src/http_ota.c</em>
+|-&gt; http_ota_fw_download(argv[<span class="hl-number">1</span>]);
+    |-&gt; webclient_session_create(GET_HEADER_BUFSZ);
+    |-&gt; webclient_shard_head_function(session, uri, &amp;file_size);
+    |-&gt; webclient_register_shard_position_function(session, http_ota_shard_download_swu_handle);
+    |-&gt; webclient_shard_position_function(session, uri, file_offset, file_size, HTTP_OTA_BUFF_LEN);
+        |-&gt; http_ota_shard_download_swu_handle      <em class="hl-comment">//采用分片方式下载数据</em>
+        |-&gt; ota_buf_push(&amp;shdr, buffer, length);    <em class="hl-comment">//将下载的数据放到缓存区，供解析 cpio 头部信息</em>
+        |-&gt; find_cpio_data(&amp;fhdr, shdr.buf, shdr.buflen);   <em class="hl-comment">//解析 cpio 头部信息</em>
+        |-&gt; parse_cpio_file_info(&amp;bhdr, &amp;fhdr, &amp;finfo);     <em class="hl-comment">//解析 cpio 文件大小和版本号，供用户自定义使用，并且存储烧录的分区设备名字</em>
+        |-&gt; swu_buf_pop(&amp;bhdr, &amp;shdr, &amp;fhdr);               <em class="hl-comment">//将 cpio 头部信息后面的数据放到另外的缓存区，供升级使用</em>
+        |-&gt; ota_buf_push(&amp;bhdr, buffer, length);            <em class="hl-comment">//将下载的数据放到缓存区，供升级使用</em>
+        |-&gt; find_device(partname)                           <em class="hl-comment">//获取分区信息</em>
+        |-&gt; aic_ota_erase_part(dl_part, <span class="hl-number">0</span>, dl_part-&gt;len)    <em class="hl-comment">//擦除分区</em>
+        |-&gt; download_buf_pop(&amp;bhdr, &amp;fhdr)                  <em class="hl-comment">//将缓存区里面的数据取出来，升级到 FLASH 上</em>
+            |-&gt; aic_ota_part_write                          <em class="hl-comment">//写入数据到 FLASH 上</em>
+            |-&gt; cpio_file_checksum((<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> *)bhdr-&gt;buf, burn_len);       <em class="hl-comment">//升级完成以后，校验和信息</em>
+    |-&gt; aic_upgrade_end(); <em class="hl-comment">//升级结束，更新环境变量信息</em>
+    |-&gt; rt_hw_cpu_reset(); <em class="hl-comment">//重新启动</em></pre>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d246117e747__20250121171701">
+                    <div class="- topic/div div section" id="id__boot">
+                        <p class="- topic/p p" data-ofbid="d246117e751__20250121171701"><strong class="+ topic/ph hi-d/b ph b">Boot 阶段新系统程序加载启动流程</strong></p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_iy2_lkv_1dc" data-ofbid="id__codeblock_iy2_lkv_1dc">do_nor_boot <em class="hl-comment">//application/baremetal/bootloader/cmd/nor_boot.c</em>
+|-&gt; aic_ota_check();  <em class="hl-comment">//application/baremetal/bootloader/lib/absystem/absystem.c</em>
+    |-&gt; aic_ota_version_fallback(); <em class="hl-comment">// OTA 升级失败，版本回退到之前的版本</em>
+|-&gt; aic_get_os_to_startup(target); <em class="hl-comment">//获取新系统信息</em>
+|-&gt; find_boot_part(target); <em class="hl-comment">// 获取新系统 OS 分区结构体</em>
+|-&gt; spl_load_simple_fit(&amp;info, &amp;entry_point); <em class="hl-comment">// 加载 os 分区程序到缓存上</em></pre>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d246117e759__20250121171701">
+                    <div class="- topic/div div section" id="id__os-app">
+                        <p class="- topic/p p" data-ofbid="d246117e763__20250121171701"><strong class="+ topic/ph hi-d/b ph b">OS 阶段 app 挂载新文件系统</strong>
+                        </p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_dm3_lkv_1dc" data-ofbid="id__codeblock_dm3_lkv_1dc">absystem.c <em class="hl-comment">//packages/artinchip/ota/absystem.c</em>
+|-&gt; INIT_ENV_EXPORT(aic_absystem_mount_fs_prio0);
+|-&gt; INIT_LATE_APP_EXPORT(aic_absystem_mount_fs_prio1);</pre>
+                    </div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_jvr_j1q_wcc" data-tocid="id__section_jvr_j1q_wcc">OTA 文件结构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_zfn_qfv_1dc" data-tocid="id__section_zfn_qfv_1dc">A/B 系统分区信息</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_i4m_hjv_1dc" data-tocid="id__section_i4m_hjv_1dc">OTA 分区说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_fk4_shv_1dc" data-tocid="id__section_fk4_shv_1dc">A/B 系统升级过程</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_k5j_33v_1dc" data-tocid="id__section_k5j_33v_1dc">ENV 环境变量</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_bdt_x3v_1dc" data-tocid="id__section_bdt_x3v_1dc">OTA 升级包制作原理</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_zsq_2jv_1dc" data-tocid="id__section_zsq_2jv_1dc">OTA 包数据组成格式</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_tjc_vgv_1dc" data-tocid="id__section_tjc_vgv_1dc">A/B 系统分区优势</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_lvr_j1q_wcc" data-tocid="id__section_lvr_j1q_wcc">网络 OTA 流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

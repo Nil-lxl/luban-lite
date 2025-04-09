@@ -1,0 +1,259 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="准备测试环境 硬件 D12x 开发板 Host 端的板子（D21x 开发板可满足大部分测试的格式需求） 跨接两个板子的子板、或者数据排线 软件 MDI 模块的测试 demo：test_mdi PC 端的串口终端软件，用于 PC 和开发板进行串口通信 配置和测试 test_mdi 在 Luban-Lite 根目录下执行 scons --menuconfig ，进入 menuconfig ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-23"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mdi/mdi_test.dita"/><meta name="wh-out-relpath" content="topics/sdk/mdi/mdi_test.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_test.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">23 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_p11_zcy_2dc" data-ofbid="id__section_p11_zcy_2dc"><h2 class="- topic/title title sectiontitle">准备测试环境</h2>
+            
+            <div class="- topic/div div">
+                <div class="- topic/div div section" id="id__id3">
+                    <strong class="+ topic/ph hi-d/b ph b">硬件</strong>
+                    <ul class="- topic/ul ul simple" id="id__ul_wrz_55t_2dc" data-ofbid="id__ul_wrz_55t_2dc"><li class="- topic/li li" data-ofbid="d100290e31__20250121171536">
+                            <p class="- topic/p p" data-ofbid="d100290e33__20250121171536">D12x 开发板</p>
+                        </li><li class="- topic/li li" data-ofbid="d100290e37__20250121171536">
+                            <p class="- topic/p p" data-ofbid="d100290e39__20250121171536">Host 端的板子（D21x 开发板可满足大部分测试的格式需求）</p>
+                        </li><li class="- topic/li li" data-ofbid="d100290e42__20250121171536">
+                            <p class="- topic/p p" data-ofbid="d100290e44__20250121171536">跨接两个板子的子板、或者数据排线</p>
+                        </li></ul></div>
+                <div class="- topic/div div section" id="id__id4">
+                    <strong class="+ topic/ph hi-d/b ph b">软件</strong>
+                    <ul class="- topic/ul ul simple" id="id__ul_xrz_55t_2dc" data-ofbid="id__ul_xrz_55t_2dc"><li class="- topic/li li" data-ofbid="d100290e54__20250121171536">
+                            <p class="- topic/p p" data-ofbid="d100290e56__20250121171536">MDI 模块的测试 demo：test_mdi</p>
+                        </li><li class="- topic/li li" data-ofbid="d100290e59__20250121171536">
+                            <p class="- topic/p p" data-ofbid="d100290e61__20250121171536">PC 端的串口终端软件，用于 PC 和开发板进行串口通信</p>
+                        </li></ul></div>
+                
+            </div>
+        </section><section class="- topic/section section" id="id__section_jd1_ffy_2dc" data-ofbid="id__section_jd1_ffy_2dc"><h2 class="- topic/title title sectiontitle">配置和测试 test_mdi</h2>
+            
+            
+            
+            <div class="- topic/p p" data-ofbid="d100290e71__20250121171536">
+                <ol class="- topic/ol ol" id="id__ol_xk3_gfy_2dc" data-ofbid="id__ol_xk3_gfy_2dc"><li class="- topic/li li" data-ofbid="d100290e74__20250121171536">
+                        <div class="- topic/p p" data-ofbid="d100290e76__20250121171536">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入
+                            menuconfig 的功能配置界面，按如下选择，使能 MDI
+                            驱动测试命令工具：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_isn_3fy_2dc" data-ofbid="id__codeblock_isn_3fy_2dc">Drivers options  ---&gt;
+    Drivers examples  ---&gt;
+        [*] Enable MDI driver test command</pre></div>
+                        <p class="- topic/p p" data-ofbid="d100290e87__20250121171536">结果：test_mdi 启动 MDI，接收 Host 端传来的数据和命令，并将数据传给 GE、DE 模块去处理和显示。</p>
+                    </li><li class="- topic/li li" data-ofbid="d100290e90__20250121171536">
+                        <div class="- topic/p p" data-ofbid="d100290e92__20250121171536">在打开 test_mdi 的编译后，板子上可直接运行 test_mdi
+                            命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_y5b_3fy_2dc" data-ofbid="id__codeblock_y5b_3fy_2dc">test_mdi -h</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_upr_y2k_5dc" data-ofbid="id__codeblock_upr_y2k_5dc">Compile time: Feb <span class="hl-number">29</span> <span class="hl-number">2024</span> <span class="hl-number">16</span>:<span class="hl-number">16</span>:<span class="hl-number">41</span>
+Usage: test_mdi [options]:
+     -c, --count        the number of capture frame
+     -h, --help
+</pre></div>
+                        <div class="- topic/p p" data-ofbid="d100290e99__20250121171536">示例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xsv_y2k_5dc" data-ofbid="id__codeblock_xsv_y2k_5dc">test_mdi -c <span class="hl-number">1</span>
+</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ff1_z2k_5dc" data-ofbid="id__codeblock_ff1_z2k_5dc">test_mdi</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_tl1_1fk_5dc" data-ofbid="id__codeblock_tl1_1fk_5dc">Bus mode: <span class="hl-number">8080</span>, Pin: X16, Big endian: <span class="hl-number">0</span>
+[I] aic_find_panel()<span class="hl-number">59</span> find panel driver : panel-rgb</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_kdr_1fk_5dc" data-ofbid="id__codeblock_kdr_1fk_5dc">[W] dbi_cmd_process()<span class="hl-number">509</span> unknown command <span class="hl-number">0</span>
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd f7
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd ec
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd c0
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd c1
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd c5
+[I] dbi_cmd_fr_set()<span class="hl-number">412</span> pixclk <span class="hl-number">51886560</span> is too large
+Recv framerate <span class="hl-number">68</span>, pixclk should be <span class="hl-number">50000000</span>
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd b4
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd b6
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd b7
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd be
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd e9
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd b7
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd f4
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd f4
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd <span class="hl-number">35</span>
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd <span class="hl-number">44</span>
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd <span class="hl-number">33</span>
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd <span class="hl-number">37</span>
+Recv width: <span class="hl-number">320</span> (<span class="hl-number">0</span> - <span class="hl-number">319</span>)
+Recv height: <span class="hl-number">480</span> (<span class="hl-number">0</span> - <span class="hl-number">479</span>)
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd <span class="hl-number">36</span>
+Recv DBI <span class="hl-number">24</span>bits(<span class="hl-number">7</span>) -&gt; DPI <span class="hl-number">24</span>bits(<span class="hl-number">7</span>), Flag <span class="hl-number">1</span>
+[I] dbi_cmd_unsupported()<span class="hl-number">444</span> Unsupported cmd <span class="hl-number">11</span>
+
+Allocated <span class="hl-number">4</span> video buffer <strong class="hl-keyword">for</strong> MDI:
+Buf   Plane     size
+  <span class="hl-number">0</span> <span class="hl-number">0x400a40e0</span>  <span class="hl-number">1843200</span>
+  <span class="hl-number">1</span> <span class="hl-number">0x402660e0</span>  <span class="hl-number">1843200</span>
+  <span class="hl-number">2</span> <span class="hl-number">0x404280e0</span>  <span class="hl-number">1843200</span>
+  <span class="hl-number">3</span> <span class="hl-number">0x405ea0e0</span>  <span class="hl-number">1843200</span>
+[I] aic_find_panel()<span class="hl-number">59</span> find panel driver : panel-rgb
+[I] dbi_cmd_disp_on()<span class="hl-number">233</span> Turn on DE
+MDI frame rate: <span class="hl-number">17.3</span>, frame <span class="hl-number">1000</span> / <span class="hl-number">57.7</span> seconds
+MDI frame rate: <span class="hl-number">31.2</span>, frame <span class="hl-number">1000</span> / <span class="hl-number">32.0</span> seconds
+MDI frame rate: <span class="hl-number">31.2</span>, frame <span class="hl-number">1000</span> / <span class="hl-number">32.0</span> seconds
+MDI frame rate: <span class="hl-number">31.2</span>, frame <span class="hl-number">1000</span> / <span class="hl-number">31.9</span> seconds</pre></div>
+                    </li></ol>
+            </div>
+            
+            <div class="- topic/div div"></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_p11_zcy_2dc" data-tocid="id__section_p11_zcy_2dc">准备测试环境</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_jd1_ffy_2dc" data-tocid="id__section_jd1_ffy_2dc">配置和测试 test_mdi</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

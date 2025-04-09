@@ -1,0 +1,254 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="打开 RTC 驱动 在 Luban-Lite 根目录下执行 scons --menuconfig ，进入 menuconfig 的功能配置界面。 scons --menuconfig 在菜单中找到并选择 Board options 后，勾选 Using RTC 选项，即可启用 RTC 驱动。 Board options ---&gt; [*] Using RTC 注： 为了简化使用， Using RTC ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/rtc/rtc-user-guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/rtc/rtc-user-guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/rtc/rtc-debug-guide-lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>RTC 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e2949"/><meta name="wh-source-relpath" content="topics/sdk/rtc/rtc-config-guide-lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/rtc/rtc-config-guide-lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="chapter-system"><div class="title"><a href="../../../topics/chapter-title/chapter-system.html">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li><div class="topicref" data-id="concept_n2p_sn3_pzb"><div class="title"><a href="../../../topics/sdk/rtc/rtc-user-guide_2.html">RTC 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/rtc/rtc-config-guide-lite.html">RTC 配置</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/rtc/rtc-user-guide_2.html" title="RTC 使用指南" aria-label="上一主题: RTC 使用指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/rtc/rtc-debug-guide-lite.html" title="调试指南" aria-label="下一主题: 调试指南" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e2449" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e2449-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/memory-user-guide.html" id="chapter-memory-d5856e2449-link">Memory 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="system_interrupt_user_guide-d5856e2565" class="topicref" data-id="system_interrupt_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action system_interrupt_user_guide-d5856e2565-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/interrupt/interrupt-user-guide.html" id="system_interrupt_user_guide-d5856e2565-link">Interrupt 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cmu-d5856e2601" class="topicref" data-id="cmu" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cmu-d5856e2601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cmu/cmu-introduction_2.html" id="cmu-d5856e2601-link">CMU 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_or5_kn3_pzb-d5856e2697" class="topicref" data-id="concept_or5_kn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_or5_kn3_pzb-d5856e2697-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-user-guide_2.html" id="concept_or5_kn3_pzb-d5856e2697-link">DMA 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2805" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-user-guide.html" id="id-d5856e2805-link">HRTimer 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2877" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2877-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_user_guide.html" id="id-d5856e2877-link">MTOP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_n2p_sn3_pzb-d5856e2937" class="topicref" data-id="concept_n2p_sn3_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_n2p_sn3_pzb-d5856e2937-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-user-guide_2.html" id="concept_n2p_sn3_pzb-d5856e2937-link">RTC 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="id-d5856e2949" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-config-guide-lite.html" id="id-d5856e2949-link">RTC 配置</a></div></div></li><li role="treeitem"><div data-tocid="rtc_debug_guide_luban_lite-d5856e2961" class="topicref" data-id="rtc_debug_guide_luban_lite" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-debug-guide-lite.html" id="rtc_debug_guide_luban_lite-d5856e2961-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2973" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-test-guide-lite.html" id="id-d5856e2973-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2985" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2985-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-design-intro-lite.html" id="id-d5856e2985-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="rtc_common_issues-d5856e3045" class="topicref" data-id="rtc_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-common-issues_2.html" id="rtc_common_issues-d5856e3045-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3057" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3057-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pm/pm_introduction.html" id="id-d5856e3057-link">Power Management 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="tsensor-d5856e3129" class="topicref" data-id="tsensor" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action tsensor-d5856e3129-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-user-guide_2.html" id="tsensor-d5856e3129-link">TSensor 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="watchdog-d5856e3249" class="topicref" data-id="watchdog" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action watchdog-d5856e3249-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/watchdog/watchdog-user-guide_2.html" id="watchdog-d5856e3249-link">Watchdog 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/rtc/rtc-config-guide-lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">RTC 配置</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__ref-to-lite-rtc-cfg" data-ofbid="id__ref-to-lite-rtc-cfg"><h2 class="- topic/title title sectiontitle">打开 RTC 驱动</h2>
+            
+            <div class="- topic/p p" data-ofbid="d103337e24__20250121171537">
+                <ol class="- topic/ol ol" id="id__ol_byv_1nb_ddc" data-ofbid="id__ol_byv_1nb_ddc"><li class="- topic/li li" data-ofbid="d103337e27__20250121171537">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入
+                        menuconfig
+                        的功能配置界面。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_md4_bnb_ddc" data-ofbid="id__codeblock_md4_bnb_ddc">scons --menuconfig</pre></li><li class="- topic/li li" data-ofbid="d103337e37__20250121171537">在菜单中找到并选择 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Board options</span> 后，勾选 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using
+                            RTC</span> 选项，即可启用 RTC
+                            驱动。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ic1_2nb_ddc" data-ofbid="id__codeblock_ic1_2nb_ddc">Board options  ---&gt;
+    [*] Using RTC</pre><div class="- topic/note note note note_note" id="id__note_ilr_4mb_ddc" data-ofbid="id__note_ilr_4mb_ddc"><span class="note__title">注：</span> 
+                            <p class="- topic/p p" data-ofbid="d103337e49__20250121171537">为了简化使用，<span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using RTC</span> 会自动打开 RT-Thread 的 RTC
+                                设备驱动框架。</p>
+                        </div></li><li class="- topic/li li" data-ofbid="d103337e55__20250121171537">根据实际需求调整 RTC 参数。如不需要，可跳过此步。<p class="- topic/p p" data-ofbid="d103337e57__20250121171537">勾选了 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using RTC</span> 的情况下，可以看到
+                                <span class="+ topic/ph ui-d/uicontrol ph uicontrol">RTC parameter</span>，默认值是 <code class="+ topic/ph pr-d/codeph ph codeph">(3276800) The
+                                actual rate of 32K
+                            clock</code>，可根据实际需求配置。</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xl4_3nb_ddc" data-ofbid="id__codeblock_xl4_3nb_ddc">Board options  ---&gt;
+    [*] Using RTC
+        RTC parameter  ---&gt;
+            (<span class="hl-number">3276800</span>) The actual rate of <span class="hl-number">32</span>K clock
+            [ ] Enable the alarm IO output
+            [ ] Enable the <span class="hl-number">32</span>K clock output</pre><p class="- topic/p p" data-ofbid="d103337e70__20250121171537">如果不需要启用 Alarm
+                            IO 输出和 32K 时钟输出，则勿勾选 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Enable the alarm IO output</span> 和
+                                <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Enable the 32K clock output</span>。</p></li><li class="- topic/li li" data-ofbid="d103337e78__20250121171537">选择 RT-Thread 组件，启用 RTC 设备驱动和 Alarm。<p class="- topic/p p" data-ofbid="d103337e80__20250121171537">在菜单中找到并选择 <code class="+ topic/ph pr-d/codeph ph codeph">Rt-Thread
+                        options</code>，勾选 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using RTC device drivers</span> 和
+                        <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using RTC alarm</span>。</p><div class="- topic/p p" data-ofbid="d103337e91__20250121171537">当使用 RT-Thread 内核的时候，RTC
+                            驱动需要依赖 RT-Thread 的 RTC 设备驱动框架和 alarm
+                            框架。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_crg_mmb_ddc" data-ofbid="id__codeblock_crg_mmb_ddc">Rt-Thread options  ---&gt;
+    RT-Thread Components  ---&gt;
+        Device Drivers  ---&gt;
+            [*]  Using RTC device drivers
+            [*]     Using RTC alarm</pre></div></li></ol>
+            </div>
+        </section><section class="- topic/section section" id="id__rtc" data-ofbid="id__rtc"><h2 class="- topic/title title sectiontitle">配置 RTC 自定义参数</h2>
+            
+            <p class="- topic/p p" data-ofbid="d103337e103__20250121171537">RTC 驱动在 menuconfig 中提供了一些扩展参数，方便用户根据板级硬件设计来进行调整。如下表：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_nhv_cwh_bdc" data-ofbid="id__table_nhv_cwh_bdc" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">RTC 自定义参数</span></caption><colgroup><col style="width:29.953051643192484%"/><col style="width:11.455399061032862%"/><col style="width:9.389671361502346%"/><col style="width:14.741784037558686%"/><col style="width:34.46009389671361%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_nhv_cwh_bdc__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_nhv_cwh_bdc__entry__2">适用版本</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_nhv_cwh_bdc__entry__3">类型</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_nhv_cwh_bdc__entry__4">取值范围</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_nhv_cwh_bdc__entry__5">功能说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__1">AIC_RTC_CLK_RATE</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__2">V1.0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__3">正整数</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__4">3276800±3196</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__5">时钟源的实测频率值 * 100，用于时钟校准</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__1">AIC_RTC_ALARM_IO_OUTPUT</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__2">V1.0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__3">boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__4">1 - 是，0 - 否</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_nhv_cwh_bdc__entry__5">是否使能 Alarm 的 IO 输出功能</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_nhv_cwh_bdc__entry__1">AIC_RTC_32K_IO_OUTPUT</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_nhv_cwh_bdc__entry__2">V1.0</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_nhv_cwh_bdc__entry__3">boolean</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_nhv_cwh_bdc__entry__4">1 - 是，0 - 否</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_nhv_cwh_bdc__entry__5">是否使能 32K 时钟输出功能</td></tr></tbody></table></div>
+            <ol class="- topic/ol ol arabic simple" id="id__ol_ohv_cwh_bdc" data-ofbid="id__ol_ohv_cwh_bdc"><li class="- topic/li li" data-ofbid="d103337e163__20250121171537">
+                    <p class="- topic/p p" data-ofbid="d103337e165__20250121171537"><code class="+ topic/ph pr-d/codeph ph codeph">AIC_RTC_CLK_RATE</code> 取时钟源频率值的 <strong class="+ topic/ph hi-d/b ph b">100 倍</strong>，是为了提高校准的精度，校准可以精确到
+                        0.03Hz。</p>
+                </li><li class="- topic/li li" data-ofbid="d103337e173__20250121171537">
+                    <p class="- topic/p p" data-ofbid="d103337e175__20250121171537">参数 <code class="+ topic/ph pr-d/codeph ph codeph">aic,alarm-io-output</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">aic,32k-io-output</code>
+                        共用一个 IO 输出，所以只能二选一。</p>
+                </li></ol>
+        </section><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">配置时区</h2>
+            
+            <div class="- topic/p p" data-ofbid="d103337e191__20250121171537">在 RT-Thread 组件中提供了时区管理功能，<span class="- topic/ph ph">Luban-Lite</span> SDK 中默认配置时区为中国的 +8 时区。按照下列流程，可以配置和管理时钟：<ol class="- topic/ol ol" data-ofbid="d103337e196__20250121171537"><li class="- topic/li li" data-ofbid="d103337e197__20250121171537">
+                        <div class="- topic/p p" data-ofbid="d103337e199__20250121171537">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入
+                            menuconfig
+                            的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_qhv_cwh_bdc" data-ofbid="id__codeblock_qhv_cwh_bdc">Rt-Thread options  ---&gt;
+    RT-Thread Components  ---&gt;
+        C/C++ and POSIX layer  ---&gt;
+            (<span class="hl-number">8</span>) Set the <strong class="hl-keyword">default</strong> time zone (UTC+)</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d103337e210__20250121171537">
+                        <p class="- topic/p p" data-ofbid="d103337e212__20250121171537">保存 menuconfig 配置并退出。</p>
+                    </li><li class="- topic/li li" data-ofbid="d103337e215__20250121171537">
+                        <p class="- topic/p p" data-ofbid="d103337e217__20250121171537">执行 Shell 命令 <code class="+ topic/ph pr-d/codeph ph codeph">date</code>，查看输出信息，判断是否有时区配置。</p>
+                        <div class="- topic/p p" data-ofbid="d103337e223__20250121171537">如果系统输出中含有 <code class="+ topic/ph pr-d/codeph ph codeph">UTC+8</code> 字样，表示已经配置了 +8
+                            时区，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_rhv_cwh_bdc" data-ofbid="id__codeblock_rhv_cwh_bdc">date</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_rxd_lqz_sdc" data-ofbid="id__codeblock_rxd_lqz_sdc">local time: Sat May <span class="hl-number">2011</span>:<span class="hl-number">22</span>:<span class="hl-number">05</span> <span class="hl-number">2023</span>
+timestamps: <span class="hl-number">1684552925</span>
+timezone: UTC+<span class="hl-number">8</span></pre></div>
+                        <div class="- topic/p p" data-ofbid="d103337e233__20250121171537">此时，RTC 控制器中的时间信息和 <code class="+ topic/ph pr-d/codeph ph codeph">date</code> 时间存在一个时区差。
+                            关系如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_shv_cwh_bdc" data-ofbid="id__codeblock_shv_cwh_bdc">系统时间 = RTC 时间 + 时区</pre></div>
+                    </li></ol></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__ref-to-lite-rtc-cfg" data-tocid="id__ref-to-lite-rtc-cfg">打开 RTC 驱动</a></div></li><li class="section-item"><div class="section-title"><a href="#id__rtc" data-tocid="id__rtc">配置 RTC 自定义参数</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">配置时区</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

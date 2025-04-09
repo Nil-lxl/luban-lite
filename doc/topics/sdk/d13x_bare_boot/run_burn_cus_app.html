@@ -1,0 +1,328 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="description" content="要运行上面生成的 app.aic 程序，有三个途径： 使用 USB/UART 工具下载运行 放到 SD 卡中运行 烧录到 Flash 中运行 使用 USB/UART 工具下载运行 当 Flash 中没有可启动的镜像时，Boot ROM 会启动失败，自动进入 USB/UART 升级模式。遵照以下步骤，下载和运行客制化的启动镜像： 选择以下任意一种方式及相应操作： 使用 USB ..."/><meta name="DC.relation" content="../../../topics/sdk/d13x_bare_boot/index.html"/><meta name="DC.relation" content="../../../topics/sdk/d13x_bare_boot/generate-cus-brom-app.html"/><meta name="DC.relation" content="../../../topics/sdk/d13x_bare_boot/init-config-prsam.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="run-burn-cus-app"/>        
+      <title>运行和烧录客制化程序</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="run-burn-cus-app-d5856e1904"/><meta name="wh-source-relpath" content="topics/sdk/d13x_bare_boot/run_burn_cus_app.dita"/><meta name="wh-out-relpath" content="topics/sdk/d13x_bare_boot/run_burn_cus_app.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="run-burn-cus-app" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html">客制化启动</a></div></div></li><li class="active"><div class="topicref" data-id="run-burn-cus-app"><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/run_burn_cus_app.html">运行和烧录客制化程序</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/d13x_bare_boot/generate-cus-brom-app.html" title="生成客制化的 Boot ROM 启动程序" aria-label="上一主题: 生成客制化的 Boot ROM 启动程序" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/d13x_bare_boot/init-config-prsam.html" title="初始化并使用 PSRAM" aria-label="下一主题: 初始化并使用 PSRAM" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="generate-cus-brom-app-d5856e1890" class="topicref" data-id="generate-cus-brom-app" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/generate-cus-brom-app.html" id="generate-cus-brom-app-d5856e1890-link">生成客制化的 Boot ROM 启动程序</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" class="active"><div data-tocid="run-burn-cus-app-d5856e1904" class="topicref" data-id="run-burn-cus-app" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/run_burn_cus_app.html" id="run-burn-cus-app-d5856e1904-link">运行和烧录客制化程序</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="init-config-prsam-d5856e1918" class="topicref" data-id="init-config-prsam" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/init-config-prsam.html" id="init-config-prsam-d5856e1918-link">初始化并使用 PSRAM</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="brom-load-limit-and-notes-d5856e1932" class="topicref" data-id="brom-load-limit-and-notes" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/brom-load-limit-and-notes.html" id="brom-load-limit-and-notes-d5856e1932-link">Boot ROM 直接加载的限制与注意事项</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="reference-configuration-d5856e1946" class="topicref" data-id="reference-configuration" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/reference-configuration.html" id="reference-configuration-d5856e1946-link"><span class="ph filepath">image_cfg.json</span> 参考配置</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/d13x_bare_boot/run_burn_cus_app.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">运行和烧录客制化程序</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/shortdesc shortdesc"></p><div class="- topic/p p" data-ofbid="d154894e20__20250121171615">要运行上面生成的 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span> 程序，有三个途径：<ul class="- topic/ul ul" id="run-burn-cus-app__ul_vk1_pdr_gdc" data-ofbid="run-burn-cus-app__ul_vk1_pdr_gdc"><li class="- topic/li li" data-ofbid="d154894e26__20250121171615"><a class="- topic/xref xref" href="run_burn_cus_app.html#run-burn-cus-app__section_kch_crq_gdc">使用 USB/UART 工具下载运行</a></li><li class="- topic/li li" data-ofbid="d154894e30__20250121171615"><a class="- topic/xref xref" href="run_burn_cus_app.html#run-burn-cus-app__section_ql3_vcr_gdc">放到 SD 卡中运行</a></li><li class="- topic/li li" data-ofbid="d154894e34__20250121171615"><a class="- topic/xref xref" href="run_burn_cus_app.html#run-burn-cus-app__section_k3k_bdr_gdc">烧录到 Flash 中运行</a></li></ul></div><section class="- topic/section section" id="run-burn-cus-app__section_kch_crq_gdc" data-ofbid="run-burn-cus-app__section_kch_crq_gdc"><h2 class="- topic/title title sectiontitle">使用 USB/UART 工具下载运行</h2>
+            
+            <div class="- topic/p p" data-ofbid="d154894e43__20250121171615">当 Flash 中没有可启动的镜像时，Boot ROM 会启动失败，自动进入 USB/UART 升级模式。遵照以下步骤，下载和运行客制化的启动镜像：<ol class="- topic/ol ol" id="run-burn-cus-app__ol_uj3_pdc_wcc" data-ofbid="run-burn-cus-app__ol_uj3_pdc_wcc"><li class="- topic/li li" data-ofbid="d154894e46__20250121171615">选择以下任意一种方式及相应操作：<ul class="- topic/ul ul" id="run-burn-cus-app__ul_ddr_3cr_gdc" data-ofbid="run-burn-cus-app__ul_ddr_3cr_gdc"><li class="- topic/li li" data-ofbid="d154894e49__20250121171615">
+                                <p class="- topic/p p" data-ofbid="d154894e51__20250121171615">使用 USB 线连接板子和电脑，电脑可识别设备</p>
+                            </li><li class="- topic/li li" data-ofbid="d154894e54__20250121171615">使用串口线，连接板子的 UART0</li></ul></li><li class="- topic/li li" data-ofbid="d154894e56__20250121171615">安装 AiBurn 工具，并且在安装过程中选择安装 USB 驱动。</li><li class="- topic/li li" data-ofbid="d154894e58__20250121171615">使用 AiBurn 安装目录下的 <span class="+ topic/ph sw-d/filepath ph filepath">upgcmd.exe</span> 工具下载并运行
+                    <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span>：<div class="- topic/p p" data-ofbid="d154894e66__20250121171615">使用以下任意方式运行的 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span>
+                                程序：<div class="- topic/note note note note_note" id="run-burn-cus-app__note_msr_4cr_gdc" data-ofbid="run-burn-cus-app__note_msr_4cr_gdc"><span class="note__title">注：</span> 
+                                <p class="- topic/p p" data-ofbid="d154894e73__20250121171615">当 Flash 有合法的启动镜像时，上电芯片会优先从 Flash 启动，不会进入升级模式。</p>
+                            </div><ul class="- topic/ul ul" id="run-burn-cus-app__ul_u32_dcr_gdc" data-ofbid="run-burn-cus-app__ul_u32_dcr_gdc"><li class="- topic/li li" data-ofbid="d154894e77__20250121171615"><strong class="+ topic/ph hi-d/b ph b">USB
+                                        下载：</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="run-burn-cus-app__codeblock_g2h_dcr_gdc" data-ofbid="run-burn-cus-app__codeblock_g2h_dcr_gdc">upgcmd.exe -l  # 确认板子连接成功
+
+upgcmd.exe write <span class="hl-number">0x30044000</span> app.aic # 将 app.aic 下载到 Load address 处
+upgcmd.exe exec <span class="hl-number">0x30044000</span>          # 跳转运行 app.aic</pre><p class="- topic/p p" data-ofbid="d154894e82__20250121171615">此时
+    Boot ROM 校验并且运行 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span> 。</p></li><li class="- topic/li li" data-ofbid="d154894e87__20250121171615">
+                                    <div class="- topic/p p" data-ofbid="d154894e89__20250121171615"><strong class="+ topic/ph hi-d/b ph b">UART
+                                        下载：</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="run-burn-cus-app__codeblock_fkj_2cr_gdc" data-ofbid="run-burn-cus-app__codeblock_fkj_2cr_gdc">upgcmd.exe -u COM3 -l  # 确认板子连接成功，此处的 COM3 应根据实际情况做修改
+
+upgcmd.exe -u COM3 write <span class="hl-number">0x30044000</span> app.aic # 将 app.aic 下载到 Load address 处
+upgcmd.exe -u COM3 exec  <span class="hl-number">0x30044000</span>         # 跳转运行 app.aic</pre></div>
+                                </li></ul></div></li></ol></div>
+        </section><section class="- topic/section section" id="run-burn-cus-app__section_ql3_vcr_gdc" data-ofbid="run-burn-cus-app__section_ql3_vcr_gdc"><h2 class="- topic/title title sectiontitle">放到 SD 卡中运行</h2>
+            
+            <p class="- topic/p p" data-ofbid="d154894e101__20250121171615">如果 SDMC1 对应的卡座上插入了 SD 卡，上电启动过程中，总是优先检查 SD 卡，因此将 app.aic 放到 SD 卡中总是会被执行。具体如下：</p>
+            <ol class="- topic/ol ol" id="run-burn-cus-app__ol_t1c_1dr_gdc" data-ofbid="run-burn-cus-app__ol_t1c_1dr_gdc"><li class="- topic/li li" data-ofbid="d154894e105__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d154894e107__20250121171615">准备一张市面上常见的 SD 卡，即 TF 卡。</p>
+                </li><li class="- topic/li li" data-ofbid="d154894e110__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d154894e112__20250121171615">格式化为 FAT32/exFAT 文件系统，确保只有一个分区。</p>
+                </li><li class="- topic/li li" data-ofbid="d154894e115__20250121171615">
+                    <div class="- topic/p p" data-ofbid="d154894e117__20250121171615">参照下面的格式写一个 bootcfg.txt 文件，并且将 bootcfg.txt 和 app.aic 一起复制到 SD
+                        卡文件系统的根目录。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="run-burn-cus-app__pre_u1c_1dr_gdc" data-ofbid="run-burn-cus-app__pre_u1c_1dr_gdc">boot0=app.aic  # 此处 boot0 是一个关键字，app.aic 可根据实际情况修改
+</pre></div>
+                    <div class="- topic/note note note note_note" id="run-burn-cus-app__note_vnd_bdr_gdc" data-ofbid="run-burn-cus-app__note_vnd_bdr_gdc"><span class="note__title">注：</span> 
+                        <p class="- topic/p p" data-ofbid="d154894e124__20250121171615">bootcfg.txt 中如有换行符，请确保使用 UNIX 格式的换行符，即 ‘\n’，不能是 ‘\r\n’。</p>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d154894e128__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d154894e130__20250121171615">插卡到 SDMC1 对应的卡座，重启板子，即可运行 app.aic。</p>
+                </li></ol>
+        </section><section class="- topic/section section" id="run-burn-cus-app__section_k3k_bdr_gdc" data-ofbid="run-burn-cus-app__section_k3k_bdr_gdc"><h2 class="- topic/title title sectiontitle">烧录到 Flash 中运行</h2>
+            
+            <ul class="- topic/ul ul" id="run-burn-cus-app__ul_y1j_hdr_gdc" data-ofbid="run-burn-cus-app__ul_y1j_hdr_gdc"><li class="- topic/li li" data-ofbid="d154894e140__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d154894e142__20250121171615"><strong class="+ topic/ph hi-d/b ph b">自定义烧录</strong></p>
+                    <p class="- topic/p p" data-ofbid="d154894e146__20250121171615">Boot ROM 升级模式不支持烧录 Flash。 如果不使用 Luban-Lite SDK 的
+                        BootLoader 烧录方案，则需要自定义烧录功能。</p>
+                    <p class="- topic/p p" data-ofbid="d154894e149__20250121171615">开发者需要本节介绍如何自行实现一个自定义一个带烧录功能的程序，如 <span class="+ topic/ph sw-d/filepath ph filepath">flashwriter.aic</span> ，通过
+                        USB/UART/SD 卡等方式运行后起来，然后将 app.aic 烧录到指定的存储介质中。</p>
+                    <ul class="- topic/ul ul" id="run-burn-cus-app__ul_yzf_3dr_gdc" data-ofbid="run-burn-cus-app__ul_yzf_3dr_gdc"><li class="- topic/li li" data-ofbid="d154894e156__20250121171615">通过 USB/UART 烧录:<ol class="- topic/ol ol" id="run-burn-cus-app__ol_ags_2dr_gdc" data-ofbid="run-burn-cus-app__ol_ags_2dr_gdc"><li class="- topic/li li" data-ofbid="d154894e159__20250121171615">通过 USB/UART，使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">upgcmd.exe write</span> 命令将
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span> 先写入到一个预设的 SRAM
+                                    空间。在命令行中执行以下命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="run-burn-cus-app__pre_bgs_2dr_gdc" data-ofbid="run-burn-cus-app__pre_bgs_2dr_gdc">upgcmd.exe write /path/to/app.aic /path/to/sram_storage</pre></li><li class="- topic/li li" data-ofbid="d154894e169__20250121171615">
+                                    <p class="- topic/p p" data-ofbid="d154894e171__20250121171615">下载运行 <span class="+ topic/ph sw-d/filepath ph filepath">flashwriter.aic</span> ，由
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">flashwriter.aic</span> 从该位置 SRAM 存储中读取
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span> 的数据，并写入将其烧录到 Flash。</p>
+                                </li></ol></li><li class="- topic/li li" data-ofbid="d154894e183__20250121171615">
+                            <div class="- topic/p p" data-ofbid="d154894e185__20250121171615">通过 SD 卡烧录：<ol class="- topic/ol ol" id="run-burn-cus-app__ol_cgs_2dr_gdc" data-ofbid="run-burn-cus-app__ol_cgs_2dr_gdc"><li class="- topic/li li" data-ofbid="d154894e188__20250121171615">将 SD 卡插入开发板，并将 <span class="+ topic/ph sw-d/filepath ph filepath">flashwriter.aic</span> 烧录到 SD
+                                        卡的 FAT32 文件系统中。</li><li class="- topic/li li" data-ofbid="d154894e193__20250121171615">
+                                        <p class="- topic/p p" data-ofbid="d154894e195__20250121171615">启动开发板，使其从 SD 卡启动并运行
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">flashwriter.aic</span>。</p>
+                                    </li><li class="- topic/li li" data-ofbid="d154894e201__20250121171615">
+                                        <p class="- topic/p p" data-ofbid="d154894e203__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">flashwriter.aic</span> 程序从 SD 卡的文件系统中读取
+                                                <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span> 的数据，并写入将其烧录到 Flash。</p>
+                                    </li></ol></div>
+                            <div class="- topic/p p" data-ofbid="d154894e212__20250121171615">烧录位置可能因存储介质类型而异：<ul class="- topic/ul ul" id="run-burn-cus-app__ul_dgs_2dr_gdc" data-ofbid="run-burn-cus-app__ul_dgs_2dr_gdc"><li class="- topic/li li" data-ofbid="d154894e215__20250121171615">
+                                        <p class="- topic/p p" data-ofbid="d154894e217__20250121171615">对于 SPINOR，只需将 app.aic 直接烧录到 Flash 的最开始位置即可，即 Flash 0
+                                            位置。</p>
+                                    </li><li class="- topic/li li" data-ofbid="d154894e220__20250121171615">
+                                        <p class="- topic/p p" data-ofbid="d154894e222__20250121171615">对于 SD/eMMC，开始处需要预留 17K Byte 的 GPT 分区头，因此从第 34 个 Sector
+                                            的位置烧录 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span>。</p>
+                                    </li></ul></div>
+                            <p class="- topic/p p" data-ofbid="d154894e229__20250121171615">对于 SPINAND，由于需要坏块管理等，处理比较复杂，建议使用 SDK 的 BootLoader 进行烧录，此处不进行描述。</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d154894e233__20250121171615">
+                    <p class="- topic/p p" data-ofbid="d154894e235__20250121171615"><strong class="+ topic/ph hi-d/b ph b">使用 SDK 的 BootLoader 烧录</strong></p>
+                    <p class="- topic/p p" data-ofbid="d154894e239__20250121171615">使用 SDK 的 BootLoader 烧录是一种较为简便的方法，参考下面的配置流程，可以将 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span>
+                        烧录到指定的分区。</p>
+                    <div class="- topic/p p" data-ofbid="d154894e245__20250121171615">参考下面的配置，可以完成将 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span> 烧录到指定的分区。<ol class="- topic/ol ol" id="run-burn-cus-app__ol_egs_2dr_gdc" data-ofbid="run-burn-cus-app__ol_egs_2dr_gdc"><li class="- topic/li li" data-ofbid="d154894e251__20250121171615">
+                                <p class="- topic/p p" data-ofbid="d154894e253__20250121171615">编译一个对应项目的 BootLoader。以 SPINOR 的方案为例，根据相近配置板子的项目，修改配置后，编译生成
+                                    BootLoader 程序。</p>
+                                <p class="- topic/p p" data-ofbid="d154894e256__20250121171615">例如
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">output/d13x_demo88-nor_baremetal_bootloader/images/d13x.bin</span></p>
+                                <p class="- topic/p p" data-ofbid="d154894e261__20250121171615">即为编译后的 BootLoader 程序，可重命名为
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">bootloader.bin</span>。</p>
+                                <p class="- topic/p p" data-ofbid="d154894e267__20250121171615">对于没有 PSRAM 的项目，可以参考 G73x 的项目编译 BootLoader。</p>
+                            </li><li class="- topic/li li" data-ofbid="d154894e270__20250121171615">
+                                <p class="- topic/p p" data-ofbid="d154894e272__20250121171615">生成烧录镜像。需要准备下列工具和文件：</p>
+                                <ul class="- topic/ul ul" id="run-burn-cus-app__ul_fgs_2dr_gdc" data-ofbid="run-burn-cus-app__ul_fgs_2dr_gdc"><li class="- topic/li li" data-ofbid="d154894e276__20250121171615">
+                                        <p class="- topic/p p" data-ofbid="d154894e278__20250121171615">工具:</p>
+                                        <ol class="- topic/ol ol" type="a" id="run-burn-cus-app__ol_ggs_2dr_gdc" data-ofbid="run-burn-cus-app__ol_ggs_2dr_gdc"><li class="- topic/li li" data-ofbid="d154894e282__20250121171615">
+                                                <p class="- topic/p p" data-ofbid="d154894e284__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">tools/scripts/mk_image.py/mk_image.exe</span></p>
+                                            </li><li class="- topic/li li" data-ofbid="d154894e288__20250121171615">
+                                                <p class="- topic/p p" data-ofbid="d154894e290__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">tools/scripts/gen_partition_table.py</span></p>
+                                            </li><li class="- topic/li li" data-ofbid="d154894e294__20250121171615">
+                                                <p class="- topic/p p" data-ofbid="d154894e296__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">tools/scripts/mk_private_resource.py</span></p>
+                                            </li></ol>
+                                    </li><li class="- topic/li li" data-ofbid="d154894e301__20250121171615">
+                                        <p class="- topic/p p" data-ofbid="d154894e303__20250121171615">文件: 参考相近存储的 demo 板的配置，如 demo88-nor，如果没有 PSRAM，可参考 G73x
+                                            的对应文件</p>
+                                        <ol class="- topic/ol ol" type="a" id="run-burn-cus-app__ol_hgs_2dr_gdc" data-ofbid="run-burn-cus-app__ol_hgs_2dr_gdc"><li class="- topic/li li" data-ofbid="d154894e307__20250121171615">
+                                                <p class="- topic/p p" data-ofbid="d154894e309__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/sys/d13x/d13x.pbp</span></p>
+                                            </li><li class="- topic/li li" data-ofbid="d154894e313__20250121171615">
+                                                <p class="- topic/p p" data-ofbid="d154894e315__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">target/d13x/demo88-nor/pack/image_cfg.json</span></p>
+                                            </li><li class="- topic/li li" data-ofbid="d154894e319__20250121171615">
+                                                <p class="- topic/p p" data-ofbid="d154894e321__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">target/d13x/demo88-nor/pack/pbp_cfg.json</span></p>
+                                            </li></ol>
+                                    </li><li class="- topic/li li" data-ofbid="d154894e326__20250121171615">
+                                        <p class="- topic/p p" data-ofbid="d154894e328__20250121171615">修改 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 配置文件，详情可查看<a class="- topic/xref xref" href="reference-configuration.html">image_cfg.json 参考配置</a>。</p>
+                                    </li><li class="- topic/li li" data-ofbid="d154894e338__20250121171615">
+                                        <div class="- topic/p p" data-ofbid="d154894e340__20250121171615">将下列文件放到一个目录：<ul class="- topic/ul ul" id="run-burn-cus-app__ul_igs_2dr_gdc" data-ofbid="run-burn-cus-app__ul_igs_2dr_gdc"><li class="- topic/li li" data-ofbid="d154894e343__20250121171615">
+                                                  <p class="- topic/p p" data-ofbid="d154894e345__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">mk_image.py/mk_image.exe</span></p>
+                                                </li><li class="- topic/li li" data-ofbid="d154894e349__20250121171615">
+                                                  <p class="- topic/p p" data-ofbid="d154894e351__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">gen_partition_table.py</span></p>
+                                                </li><li class="- topic/li li" data-ofbid="d154894e355__20250121171615">
+                                                  <p class="- topic/p p" data-ofbid="d154894e357__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">mk_private_resource.py</span></p>
+                                                </li><li class="- topic/li li" data-ofbid="d154894e361__20250121171615">
+                                                  <p class="- topic/p p" data-ofbid="d154894e363__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">d13x.pbp</span></p>
+                                                </li><li class="- topic/li li" data-ofbid="d154894e367__20250121171615">
+                                                  <p class="- topic/p p" data-ofbid="d154894e369__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span></p>
+                                                </li><li class="- topic/li li" data-ofbid="d154894e373__20250121171615">
+                                                  <p class="- topic/p p" data-ofbid="d154894e375__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">pbp_cfg.json</span></p>
+                                                </li><li class="- topic/li li" data-ofbid="d154894e379__20250121171615">
+                                                  <p class="- topic/p p" data-ofbid="d154894e381__20250121171615"><span class="+ topic/ph sw-d/filepath ph filepath">app.bin</span></p>
+                                                </li></ul></div>
+                                    </li></ul>
+                            </li><li class="- topic/li li" data-ofbid="d154894e387__20250121171615">
+                                <p class="- topic/p p" data-ofbid="d154894e389__20250121171615">执行命令生成烧录镜像：</p>
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="run-burn-cus-app__pre_jgs_2dr_gdc" data-ofbid="run-burn-cus-app__pre_jgs_2dr_gdc">gen_partition_table.py -c image_cfg.json -o partition.h -j partition.json
+mk_private_resource.py -l pbp_cfg.json,partition.json pbp_cfg.bin
+mk_image.py -v -d . -c image_cfg.json</pre>
+                            </li><li class="- topic/li li" data-ofbid="d154894e395__20250121171615">
+                                <p class="- topic/p p" data-ofbid="d154894e397__20250121171615">使用 AiBurn 或者执行下列 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">upgcmd.exe</span> 进行烧录。AiBurn 烧录，与
+                                    SDK 镜像文件烧录方法一致。</p>
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="run-burn-cus-app__pre_kgs_2dr_gdc" data-ofbid="run-burn-cus-app__pre_kgs_2dr_gdc">upgcmd.exe image  d13x_demo88-nor_v1.<span class="hl-number">0.0</span>.img</pre>
+                                <p class="- topic/p p" data-ofbid="d154894e406__20250121171615">注意，上述配置下，烧录完成后，重启时 Boot ROM 直接运行 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span>
+                                    ，因此如果需要重新进入 Boot ROM 升级模式， 需要通过短接 Flash 引脚，让芯片读取 Flash
+                                    内容失败然后进入升级模式。</p>
+                            </li></ol></div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#run-burn-cus-app__section_kch_crq_gdc" data-tocid="run-burn-cus-app__section_kch_crq_gdc">使用 USB/UART 工具下载运行</a></div></li><li class="section-item"><div class="section-title"><a href="#run-burn-cus-app__section_ql3_vcr_gdc" data-tocid="run-burn-cus-app__section_ql3_vcr_gdc">放到 SD 卡中运行</a></div></li><li class="section-item"><div class="section-title"><a href="#run-burn-cus-app__section_k3k_bdr_gdc" data-tocid="run-burn-cus-app__section_k3k_bdr_gdc">烧录到 Flash 中运行</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

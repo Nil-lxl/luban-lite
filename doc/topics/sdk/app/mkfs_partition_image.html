@@ -1,0 +1,288 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="制作文件系统镜像时，需要将编译后的文件和资源打包成特定格式的镜像文件，以便烧录到目标设备上。制作文件系统镜像前，需要准备相应的资源文件。在 Luban Lite SDK 中，各模块可以通过配置 INSTALL 参数来指定需要安装的资源文件。这些资源文件会被复制到指定的目标目录中。 Luban-Lite SDK ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/chapter-app.html"/><meta name="DC.relation" content="../../../topics/sdk/secure/spienc_function_d13x.html"/><meta name="DC.relation" content="../../../topics/sdk/d13x_bare_boot/index.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mkfs_partition_image"/><meta name="DC.language" content="zh-CN"/><title>制作分区镜像</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="mkfs_partition_image-d5856e1866"/><meta name="wh-source-relpath" content="topics/sdk/app/mkfs_partition_image.dita"/><meta name="wh-out-relpath" content="topics/sdk/app/mkfs_partition_image.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mkfs_partition_image" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li class="active"><div class="topicref" data-id="mkfs_partition_image"><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html">制作分区镜像</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/secure/spienc_function_d13x.html" title="防抄板-SPIENC-D13x" aria-label="上一主题: 防抄板-SPIENC-D13x" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/d13x_bare_boot/index.html" title="客制化启动" aria-label="下一主题: 客制化启动" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem" class="active"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/app/mkfs_partition_image.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">制作分区镜像</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d314702e21__20250121171820">制作文件系统镜像时，需要将编译后的文件和资源打包成特定格式的镜像文件，以便烧录到目标设备上。制作文件系统镜像前，需要准备相应的资源文件。在 Luban Lite SDK
+            中，各模块可以通过配置 <code class="+ topic/ph pr-d/codeph ph codeph">INSTALL</code> 参数来指定需要安装的资源文件。这些资源文件会被复制到指定的目标目录中。</p><p class="- topic/p p" data-ofbid="d314702e26__20250121171820"><span class="- topic/ph ph">Luban-Lite</span> SDK 在编译的最后阶段会自动制作所需要的文件系统镜像。如需独立制作文件系统镜像，可参照本节的镜像制作流程。</p><section class="- topic/section section" id="mkfs_partition_image__section_bxm_cqf_c2c" data-ofbid="mkfs_partition_image__section_bxm_cqf_c2c"><h2 class="- topic/title title sectiontitle">安装资源文件</h2>
+            
+            <div class="- topic/p p" data-ofbid="d314702e35__20250121171820">详细的配置流程如下所示：<ol class="- topic/ol ol" id="mkfs_partition_image__ol_abc_3lf_c2c" data-ofbid="mkfs_partition_image__ol_abc_3lf_c2c"><li class="- topic/li li" data-ofbid="d314702e38__20250121171820">
+                        <p class="- topic/p p" data-ofbid="d314702e40__20250121171820">安装各个模块所需的资源文件，以模块 A 和 B 为例：</p>
+                        <div class="- topic/p p" data-ofbid="d314702e43__20250121171820">以下是两个模块 A 和 B 的示例配置，如图所示：<br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mkfs_partition_image__image_vsp_bjf_c2c" src="../../../images/app/mkfs_arch.png"/></div><br/><div class="table-container"><table class="- topic/table table frame-all" id="mkfs_partition_image__table_obl_ljf_c2c" data-ofbid="mkfs_partition_image__table_obl_ljf_c2c" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">模块 A 和 B 文件系统安装示例</span></caption><colgroup><col style="width:4.508566275924256%"/><col style="width:12.623985572587918%"/><col style="width:18.66546438232642%"/><col style="width:64.2019837691614%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mkfs_partition_image__table_obl_ljf_c2c__entry__1">模块</th><th class="- topic/entry entry colsep-1 rowsep-1" id="mkfs_partition_image__table_obl_ljf_c2c__entry__2">安装文件</th><th class="- topic/entry entry colsep-1 rowsep-1" id="mkfs_partition_image__table_obl_ljf_c2c__entry__3">文件系统安装路径</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mkfs_partition_image__table_obl_ljf_c2c__entry__4">SConscript 中配置示例</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__1" rowspan="2">模块 A</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__2">
+                                                <p class="- topic/p p" data-ofbid="d314702e70__20250121171820"><span class="+ topic/ph sw-d/filepath ph filepath">res/file1</span></p>
+                                                <p class="- topic/p p" data-ofbid="d314702e74__20250121171820"><span class="+ topic/ph sw-d/filepath ph filepath">res/file2</span></p>
+                                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__3"><span class="+ topic/ph sw-d/filepath ph filepath">rodata/mod_a/</span></td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__4" rowspan="2">
+                                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__codeblock_xlt_mkf_c2c" data-ofbid="mkfs_partition_image__codeblock_xlt_mkf_c2c">install = [
+    (<span class="hl-string">'res/'</span>, <span class="hl-string">'rodata/mod_a/'</span>),
+    (<span class="hl-string">'file5'</span>, <span class="hl-string">'data/mod_a/file5'</span>)
+]
+group = DefineGroup(<span class="hl-string">'Module A'</span>, src, depend = [], CPPPATH = CPPPATH, CLFAGS = cc_flags, INSTALL = install)</pre>
+                                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__2"><span class="+ topic/ph sw-d/filepath ph filepath">file5</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__3"><span class="+ topic/ph sw-d/filepath ph filepath">data/mod_a/file5</span></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__1" rowspan="2">模块 B</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__2">
+                                                <p class="- topic/p p" data-ofbid="d314702e98__20250121171820"><span class="+ topic/ph sw-d/filepath ph filepath">res/file3</span></p>
+                                                <p class="- topic/p p" data-ofbid="d314702e102__20250121171820"><span class="+ topic/ph sw-d/filepath ph filepath">res/file2</span></p>
+                                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__3"><span class="+ topic/ph sw-d/filepath ph filepath">rodata/mod_b/</span></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__4" rowspan="2">
+                                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__codeblock_xbb_pkf_c2c" data-ofbid="mkfs_partition_image__codeblock_xbb_pkf_c2c">install = [
+    (<span class="hl-string">'res/'</span>, <span class="hl-string">'rodata/mod_b/'</span>),
+    (<span class="hl-string">'file7'</span>, <span class="hl-string">'data/mod_b/file7'</span>)
+]
+group = DefineGroup(<span class="hl-string">'Module B'</span>, src, depend = [], CPPPATH = CPPPATH, CLFAGS = cc_flags, INSTALL = install)</pre>
+                                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__2"><span class="+ topic/ph sw-d/filepath ph filepath">file7</span></td><td class="- topic/entry entry colsep-1 rowsep-0" headers="mkfs_partition_image__table_obl_ljf_c2c__entry__3"><span class="+ topic/ph sw-d/filepath ph filepath">data/mod_b/file7</span></td></tr></tbody></table></div></div>
+                        <div class="- topic/p p" data-ofbid="d314702e122__20250121171820"><code class="+ topic/ph pr-d/codeph ph codeph">INSTALL = <var class="+ topic/keyword sw-d/varname keyword varname">install</var></code>
+                            配置支持设置安装的源目录或文件，目标目录或文件。其中，源目录路径为该模块目录的相对路径，目标目录路径为编译输出的
+                                <span class="+ topic/ph sw-d/filepath ph filepath">images</span> 目录的相对路径。在 SDK 编译的最后阶段，会执行
+                                <span class="+ topic/ph sw-d/filepath ph filepath">fsinstall.py</span> 脚本，统一对上述的配置进行文件安装。<div class="- topic/note note note note_note" id="mkfs_partition_image__note_rjy_xkf_c2c" data-ofbid="mkfs_partition_image__note_rjy_xkf_c2c"><span class="note__title">注：</span> 上述安装目标文件夹名称可以任意配置，并不仅限于使用
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">rodata</span> 和
+                                <span class="+ topic/ph sw-d/filepath ph filepath">data</span>。使用其他名称时，务必同步修改镜像打包配置中的文件名称。</div></div>
+                    </li><li class="- topic/li li" data-ofbid="d314702e143__20250121171820">
+                        <div class="- topic/p p" data-ofbid="d314702e145__20250121171820">将安装的目录打包成文件系统镜像，并完成烧录。<ol class="- topic/ol ol" type="a" id="mkfs_partition_image__ol_ghp_nlf_c2c" data-ofbid="mkfs_partition_image__ol_ghp_nlf_c2c"><li class="- topic/li li" data-ofbid="d314702e148__20250121171820">
+                                    <div class="- topic/p p" data-ofbid="d314702e150__20250121171820">按照所需镜像类别，在 menuconfig
+                                        中配置系统镜像文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__codeblock_okm_plf_c2c" data-ofbid="mkfs_partition_image__codeblock_okm_plf_c2c">&gt; Application options  ---&gt;
+    [*] Using File System Image <span class="hl-number">0</span>  ---&gt;
+    [*] Using File System Image <span class="hl-number">1</span>  ---&gt;</pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d314702e155__20250121171820">
+                                    <p class="- topic/p p" data-ofbid="d314702e157__20250121171820">配置 <code class="+ topic/ph pr-d/codeph ph codeph">Data Directory</code> 参数。 </p>
+                                    <div class="- topic/p p" data-ofbid="d314702e163__20250121171820">资源文件安装时，安装到了 <span class="+ topic/ph sw-d/filepath ph filepath">images</span>
+                                        下的指定文件夹，制作文件系统镜像时，也应该从对应的文件夹进行打包，生成镜像。 示例如下，从
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">images</span> 目录下的
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">rodata/</span> 文件夹进行打包，生成
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">rodata.fatfs</span>
+                                        文件系统镜像。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__codeblock_hlc_mmf_c2c" data-ofbid="mkfs_partition_image__codeblock_hlc_mmf_c2c">&gt; Application options  ---&gt;
+    [*] Using File System Image <span class="hl-number">0</span>  ---&gt;
+       Select File System Type (FATFS)  ---&gt;
+       (rodata/) Data Directory
+       (rodata.fatfs) Image Name
+       [*]   <strong class="hl-keyword">auto</strong> calcuate image size
+       [*]   using <strong class="hl-keyword">default</strong> volume lable
+</pre></div>
+                                </li></ol></div>
+                    </li></ol><div class="- topic/note note tip note_tip" id="mkfs_partition_image__note_nyv_5pf_c2c" data-ofbid="mkfs_partition_image__note_nyv_5pf_c2c"><span class="note__title">提示：</span> 
+                    <p class="- topic/p p" data-ofbid="d314702e183__20250121171820">如果希望进行简单的文件复制安装操作，可以将文件存放在工程的主目录中，例如
+                            <span class="+ topic/ph sw-d/filepath ph filepath">target/d21x/demo128-nand/</span>， 并添加安装命令到主目录的 SConscript
+                        脚本中，例如 <span class="+ topic/ph sw-d/filepath ph filepath">target/d21x/demo128-nand/SConscript</span>。</p>
+                </div></div>
+        </section><section class="- topic/section section" id="mkfs_partition_image__section_u5z_cqq_gdc" data-ofbid="mkfs_partition_image__section_u5z_cqq_gdc"><h2 class="- topic/title title sectiontitle">制作 FATFS 镜像</h2>
+            
+            <div class="- topic/p p" data-ofbid="d314702e198__20250121171820">
+                <ol class="- topic/ol ol" id="mkfs_partition_image__ol_rbh_2qq_gdc" data-ofbid="mkfs_partition_image__ol_rbh_2qq_gdc"><li class="- topic/li li" data-ofbid="d314702e201__20250121171820">
+                        <p class="- topic/p p" data-ofbid="d314702e203__20250121171820">确保编译主机上已经安装 Python3，并进入 <span class="- topic/ph ph">Luban-Lite</span> SDK 的根目录。 </p>
+                    </li><li class="- topic/li li" data-ofbid="d314702e209__20250121171820">
+                        <div class="- topic/p p" data-ofbid="d314702e211__20250121171820">将需要打包的文件或文件夹，放到一个独立的文件夹内，例如： <ul class="- topic/ul ul" id="mkfs_partition_image__ul_ycv_hpb_wcc" data-ofbid="mkfs_partition_image__ul_ycv_hpb_wcc"><li class="- topic/li li" data-ofbid="d314702e214__20250121171820">Linux: <span class="+ topic/ph sw-d/filepath ph filepath">~/fatfs_root/</span></li><li class="- topic/li li" data-ofbid="d314702e218__20250121171820">Windows: <span class="+ topic/ph sw-d/filepath ph filepath">D:\fatfs_root\</span></li></ul></div>
+                    </li><li class="- topic/li li" data-ofbid="d314702e223__20250121171820">
+                        <div class="- topic/p p" data-ofbid="d314702e225__20250121171820">根据资源文件大小制作镜像或制作指定大小的文件系统镜像。 <ul class="- topic/ul ul" id="mkfs_partition_image__ol_hfg_fqq_gdc" data-ofbid="mkfs_partition_image__ol_hfg_fqq_gdc"><li class="- topic/li li" data-ofbid="d314702e228__20250121171820">
+                                    <div class="- topic/p p" data-ofbid="d314702e230__20250121171820">如需根据资源文件大小制作镜像，则执行下列命令：<div style="margin-bottom: 0;"><strong>Linux</strong></div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__codeblock_ykb_1sq_pdc" data-ofbid="mkfs_partition_image__codeblock_ykb_1sq_pdc">python3 ./tools/scripts/makefatfs.py --<strong class="hl-keyword">auto</strong> --cluster <span class="hl-number">8</span> --sector <span class="hl-number">512</span> --tooldir ./tools/scripts/ --inputdir ~/fatfs_root/ --outfile mytest.fatfs</pre><div style="margin-bottom: 0;"><strong>Windows</strong></div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__pre_ktl_xpb_wcc" data-ofbid="mkfs_partition_image__pre_ktl_xpb_wcc">python tools\scripts\makefatfs.py --<strong class="hl-keyword">auto</strong> --cluster <span class="hl-number">8</span> --sector <span class="hl-number">512</span> --tooldir tools\scripts\ --inputdir D:\fatfs_root\ --outfile mytest.fatfs</pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d314702e237__20250121171820">
+                                    <div class="- topic/p p" data-ofbid="d314702e239__20250121171820">如需制作指定大小的文件系统镜像，执行下列命令，以制作一个 100 MB 的 FATFS
+                                        镜像为例：<div style="margin-bottom: 0;"><strong>Linux</strong></div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__codeblock_z4h_dsq_pdc" data-ofbid="mkfs_partition_image__codeblock_z4h_dsq_pdc">python3 ./tools/scripts/makefatfs.py --raw --imgsize <span class="hl-number">104857600</span> --cluster <span class="hl-number">8</span> --sector <span class="hl-number">512</span> --tooldir ./tools/scripts/ --inputdir ~/fatfs_root/ --outfile mytest.fatfs</pre><div style="margin-bottom: 0;"><strong>Windows</strong></div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__pre_nky_ypb_wcc" data-ofbid="mkfs_partition_image__pre_nky_ypb_wcc">python tools\scripts\makefatfs.py --raw --imgsize <span class="hl-number">104857600</span> --cluster <span class="hl-number">8</span> --sector <span class="hl-number">512</span> --tooldir tools\scripts\ --inputdir D:\fatfs_root\ --outfile mytest.fatfs
+</pre></div>
+                                    <p class="- topic/p p" data-ofbid="d314702e246__20250121171820">与格式化指定大小的磁盘的操作类似，需要复制填充资源文件。</p>
+                                    <ul class="- topic/ul ul" id="mkfs_partition_image__ul_xb1_msq_pdc" data-ofbid="mkfs_partition_image__ul_xb1_msq_pdc"><li class="- topic/li li" data-ofbid="d314702e250__20250121171820">
+                                            <p class="- topic/p p" data-ofbid="d314702e252__20250121171820">由于设置了 <span class="+ topic/keyword pr-d/parmname keyword parmname">imgsize</span> 为 100
+                                                MB，因此生成的镜像文件大小为 100 MB，可以将该镜像文件烧录到 100 MB 的磁盘分区。</p>
+                                        </li><li class="- topic/li li" data-ofbid="d314702e258__20250121171820">
+                                            <div class="- topic/p p" data-ofbid="d314702e260__20250121171820">如果实际资源大小不足 100 MB，工具会自动在镜像文件后面填充 0。如果不需要填充，可以去掉命令参数中的
+                                                  <span class="+ topic/keyword sw-d/cmdname keyword cmdname">--raw</span>，此时生成的镜像文件仅保留必要数据部分。详细示例如下：<div style="margin-bottom: 0;"><strong>Linux</strong></div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__codeblock_wfh_nsq_pdc" data-ofbid="mkfs_partition_image__codeblock_wfh_nsq_pdc">python3 ./tools/scripts/makefatfs.py --imgsize <span class="hl-number">104857600</span> --cluster <span class="hl-number">8</span> --sector <span class="hl-number">512</span> --tooldir ./tools/scripts/ --inputdir ~/fatfs_root/ --outfile mytest.fatfs</pre><div style="margin-bottom: 0;"><strong>Windows</strong></div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mkfs_partition_image__codeblock_knh_dqq_gdc" data-ofbid="mkfs_partition_image__codeblock_knh_dqq_gdc">python tools\scripts\makefatfs.py --imgsize <span class="hl-number">104857600</span> --cluster <span class="hl-number">8</span> --sector <span class="hl-number">512</span> --tooldir tools\scripts\ --inputdir D:\fatfs_root\ --outfile mytest.fatfs</pre></div>
+                                        </li></ul>
+                                </li></ul></div>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="mkfs_partition_image__id3" data-ofbid="mkfs_partition_image__id3"><h2 class="- topic/title title sectiontitle">FATFS 镜像格式说明</h2>
+            
+            <p class="- topic/p p" data-ofbid="d314702e279__20250121171820">按照<a class="- topic/xref xref" href="mkfs_partition_image.html#mkfs_partition_image__section_u5z_cqq_gdc">制作 FATFS 镜像</a>的流程，会生成一个 FATFS 镜像，其格式取决于指定的镜像大小，详情如下：</p>
+            <div class="table-container"><table class="- topic/table table longtable colwidths-given docutils align-default frame-all" id="mkfs_partition_image__id5" data-ofbid="mkfs_partition_image__id5" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">FATFS 格式</span></caption><colgroup><col style="width:23.364485981308412%"/><col style="width:35.981308411214954%"/><col style="width:40.654205607476634%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mkfs_partition_image__id5__entry__1">文件系统</th><th class="- topic/entry entry colsep-1 rowsep-1" id="mkfs_partition_image__id5__entry__2">镜像大小</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mkfs_partition_image__id5__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__id5__entry__1">FAT12</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__id5__entry__2">Size ≤ 16 MB</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mkfs_partition_image__id5__entry__3">生成 FAT12 文件系统镜像</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__id5__entry__1">FAT16</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mkfs_partition_image__id5__entry__2">16 MB &lt; Size ≤ 256 MB</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mkfs_partition_image__id5__entry__3">生成 FAT16 文件系统镜像</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mkfs_partition_image__id5__entry__1">FAT32</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="mkfs_partition_image__id5__entry__2">Size &gt; 256 MB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mkfs_partition_image__id5__entry__3">生成 FAT32 文件系统镜像</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="mkfs_partition_image__littlefs" data-ofbid="mkfs_partition_image__littlefs"><h2 class="- topic/title title sectiontitle">制作 LittleFS 镜像</h2>
+            
+            <div class="- topic/p p" data-ofbid="d314702e329__20250121171820">以制作一个 10 MB 的 LittleFS 镜像文件为例，详细步骤如下所示：<ol class="- topic/ol ol" id="mkfs_partition_image__ol_cwg_jqq_gdc" data-ofbid="mkfs_partition_image__ol_cwg_jqq_gdc"><li class="- topic/li li" data-ofbid="d314702e332__20250121171820">
+                        <p class="- topic/p p" data-ofbid="d314702e334__20250121171820">确保编译主机上已经安装 <code class="+ topic/ph pr-d/codeph ph codeph">Python3</code> 并进入 <span class="- topic/ph ph">Luban-Lite</span> SDK 的
+                                <span class="+ topic/ph sw-d/filepath ph filepath">tools/scripts/</span> 目录。</p>
+                    </li><li class="- topic/li li" data-ofbid="d314702e346__20250121171820">
+                        <div class="- topic/p p" data-ofbid="d314702e348__20250121171820">将需要打包的文件/文件夹，放到一个独立的文件夹内，例如：<ul class="- topic/ul ul" id="mkfs_partition_image__ul_cqj_hrb_wcc" data-ofbid="mkfs_partition_image__ul_cqj_hrb_wcc"><li class="- topic/li li" data-ofbid="d314702e351__20250121171820">Linux: <span class="+ topic/ph sw-d/filepath ph filepath">~/littlefs_root/</span></li><li class="- topic/li li" data-ofbid="d314702e355__20250121171820">windows: <span class="+ topic/ph sw-d/filepath ph filepath">\littlefs_root\</span></li></ul></div>
+                    </li><li class="- topic/li li" data-ofbid="d314702e360__20250121171820">
+                        <div class="- topic/p p" data-ofbid="d314702e362__20250121171820">执行下列命令。<div style="margin-bottom: 0;"><strong>Windows</strong></div><pre class="+ topic/pre pr-d/codeblock pre codeblock Windows" id="mkfs_partition_image__codeblock_ywb_kqq_gdc" data-ofbid="mkfs_partition_image__codeblock_ywb_kqq_gdc"><code>python tools\scripts\makelittlefs.py --imgsize 10485760 --pagesize 256 --blocksize 4096 --tooldir tools\scripts\ --inputdir ~\littlefs_root\ --outfile mytest.lfs</code></pre><div style="margin-bottom: 0;"><strong>Linux</strong></div><pre class="+ topic/pre pr-d/codeblock pre codeblock Linux" id="mkfs_partition_image__codeblock_wvv_mqq_pdc" data-ofbid="mkfs_partition_image__codeblock_wvv_mqq_pdc"><code>python3 ./tools/scripts/makefatfs.py --auto --cluster 8 --sector 512 --tooldir ./tools/scripts/ --inputdir ~/fatfs_root/ --outfile mytest.fatfs</code></pre></div>
+                    </li></ol></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#mkfs_partition_image__section_bxm_cqf_c2c" data-tocid="mkfs_partition_image__section_bxm_cqf_c2c">安装资源文件</a></div></li><li class="section-item"><div class="section-title"><a href="#mkfs_partition_image__section_u5z_cqq_gdc" data-tocid="mkfs_partition_image__section_u5z_cqq_gdc">制作 FATFS 镜像</a></div></li><li class="section-item"><div class="section-title"><a href="#mkfs_partition_image__id3" data-tocid="mkfs_partition_image__id3">FATFS 镜像格式说明</a></div></li><li class="section-item"><div class="section-title"><a href="#mkfs_partition_image__littlefs" data-tocid="mkfs_partition_image__littlefs">制作 LittleFS 镜像</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

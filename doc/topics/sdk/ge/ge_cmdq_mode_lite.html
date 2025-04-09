@@ -1,0 +1,309 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="命令队列模式，即 CMD queue 模式。GE 的完整功能需要依赖 MPP 中间件， 在 MPP 中间件中会把用户设置的参数信息转换成硬件可以识别的命令队列信息。 在 CMD queue 模式下，GE 驱动内部以下列命令队列方式执行， GE 驱动只负责接收并执行命令队列： Task：GE 可以执行的最小任务单元，比如一次 blit 操作或一次矩形填充。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/ge/ge_design_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/ge/ge_normal_mode_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/ge/ge_compare_mode_2.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ge_command_queue_mode"/><meta name="DC.language" content="zh-CN"/><title>命令队列模式</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="ge_command_queue_mode-d5856e4135"/><meta name="wh-source-relpath" content="topics/sdk/ge/ge_cmdq_mode_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/ge/ge_cmdq_mode_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ge_command_queue_mode" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="ge"><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html">GE 使用指南</a></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/ge/ge_design_lite.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="ge_command_queue_mode"><div class="title"><a href="../../../topics/sdk/ge/ge_cmdq_mode_lite.html">命令队列模式</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/ge/ge_normal_mode_lite.html" title="非命令队列模式" aria-label="上一主题: 非命令队列模式" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/ge/ge_compare_mode_2.html" title="非命令队列和命令队列对比" aria-label="下一主题: 非命令队列和命令队列对比" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e4087" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_config_lite.html" id="id-d5856e4087-link">GE 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4099" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_test_lite.html" id="id-d5856e4099-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e4111" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e4111-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_design_lite.html" id="id-d5856e4111-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="ge_normal_mode-d5856e4123" class="topicref" data-id="ge_normal_mode" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_normal_mode_lite.html" id="ge_normal_mode-d5856e4123-link">非命令队列模式</a></div></div></li><li role="treeitem" class="active"><div data-tocid="ge_command_queue_mode-d5856e4135" class="topicref" data-id="ge_command_queue_mode" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_cmdq_mode_lite.html" id="ge_command_queue_mode-d5856e4135-link">命令队列模式</a></div></div></li><li role="treeitem"><div data-tocid="ge-compare-mode-d5856e4147" class="topicref" data-id="ge-compare-mode" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_compare_mode_2.html" id="ge-compare-mode-d5856e4147-link">非命令队列和命令队列对比</a></div></div></li><li role="treeitem"><div data-tocid="ge-data-structure-lite-d5856e4159" class="topicref" data-id="ge-data-structure-lite" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_data_structure_lite.html" id="ge-data-structure-lite-d5856e4159-link">数据结构设计</a></div></div></li><li role="treeitem"><div data-tocid="ge-interface-lite-d5856e4171" class="topicref" data-id="ge-interface-lite" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_interface_lite.html" id="ge-interface-lite-d5856e4171-link">接口设计</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e4183" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_faq.html" id="id-d5856e4183-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ge/ge_cmdq_mode_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">命令队列模式</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d263880e24__20250121171729">
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d263880e28__20250121171729">命令队列模式，即 CMD queue 模式。GE 的完整功能需要依赖 MPP 中间件， 在 MPP
+                    中间件中会把用户设置的参数信息转换成硬件可以识别的命令队列信息。</p>
+                <div class="- topic/p p" data-ofbid="d263880e31__20250121171729">在 CMD queue 模式下，GE 驱动内部以下列命令队列方式执行， GE 驱动只负责接收并执行命令队列：<ul class="- topic/ul ul simple" id="ge_command_queue_mode__ul_ip5_kvy_2dc" data-ofbid="ge_command_queue_mode__ul_ip5_kvy_2dc"><li class="- topic/li li" data-ofbid="d263880e34__20250121171729">
+                            <p class="- topic/p p" data-ofbid="d263880e36__20250121171729">Task：GE 可以执行的最小任务单元，比如一次 blit 操作或一次矩形填充。</p>
+                        </li><li class="- topic/li li" data-ofbid="d263880e39__20250121171729">
+                            <p class="- topic/p p" data-ofbid="d263880e41__20250121171729">Batch：是一系列命令的集合，可以包含一个或者多个 task。</p>
+                            <p class="- topic/p p" data-ofbid="d263880e44__20250121171729">硬件以 batch 为单位执行，软件也必须以 batch 为单位向驱动写入命令。</p>
+                        </li><li class="- topic/li li" data-ofbid="d263880e47__20250121171729">
+                            <p class="- topic/p p" data-ofbid="d263880e49__20250121171729">Command Queue：软件可以向 Command Queue 写入多个 batch，硬件以 batch 为单位，按顺序执行。</p>
+                            <div class="- topic/note note note note_note" id="ge_command_queue_mode__note_itp_j4z_2dc" data-ofbid="ge_command_queue_mode__note_itp_j4z_2dc"><span class="note__title">注：</span> GE Command Queue 是以 ring buffer 的方式实现，关于
+                                ring buffer 的说明，参考具体产品的用户手册 &gt; 多媒体 &gt; Graphics Engine (GE) 章节。</div>
+                        </li></ul></div>
+            </div>
+        </div><div class="- topic/p p" data-ofbid="d263880e57__20250121171729">CMD Queue 模式应用可使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">hal_ge_control</span> 接口，包括以下操作：<ul class="- topic/ul ul" id="ge_command_queue_mode__ul_nvn_g5r_ndc" data-ofbid="ge_command_queue_mode__ul_nvn_g5r_ndc"><li class="- topic/li li" data-ofbid="d263880e63__20250121171729">IOC_GE_VERSION</li><li class="- topic/li li" data-ofbid="d263880e65__20250121171729">IOC_GE_MODE</li><li class="- topic/li li" data-ofbid="d263880e67__20250121171729">IOC_GE_CMD_BUF_SIZE</li><li class="- topic/li li" data-ofbid="d263880e69__20250121171729">IOC_GE_SYNC</li></ul></div><section class="- topic/section section" id="ge_command_queue_mode__section_urp_yvr_ndc" data-ofbid="ge_command_queue_mode__section_urp_yvr_ndc"><h2 class="- topic/title title sectiontitle">初始化流程</h2>
+            
+            
+            <div class="- topic/div div section" id="ge_command_queue_mode__id7">
+                <p class="- topic/p p" data-ofbid="d263880e80__20250121171729">GE 驱动的初始化过程见 <span class="+ topic/keyword pr-d/apiname keyword apiname">hal_ge_init()</span> 函数，除了申请中断外， 还申请了存储 Command Queue
+                    需要的 ring buffer，以及存储 batch 信息的结构体。</p>
+                <div class="- topic/div div">
+                    <div class="- topic/p p" data-ofbid="d263880e88__20250121171729">Batch 结构体不存储实际的命令，其中保存了一段指向 ring buffer 的空间，包括相对于 ring buffer 起始地址的
+                        offset，以及当前 batch 中的命令 length。batch
+                        结构体定义如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_command_queue_mode__codeblock_mfp_svy_2dc" data-ofbid="ge_command_queue_mode__codeblock_mfp_svy_2dc"><strong class="hl-keyword">struct</strong> aic_ge_batch {
+    <strong class="hl-keyword">struct</strong> list_head list;
+    <strong class="hl-keyword">int</strong> offset;
+    <strong class="hl-keyword">int</strong> length;
+    <strong class="hl-keyword">int</strong> client_id;
+};</pre></div>
+                    <div class="- topic/p p" data-ofbid="d263880e93__20250121171729">目前驱动中定义了八个存储 batch 信息的结构体，ring buffer 的 size 定义为 32K。32K 的空间可以缓存超过 256 个
+                        task（假如都是 RGB 格式的
+                        task）。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_command_queue_mode__codeblock_c22_tvy_2dc" data-ofbid="ge_command_queue_mode__codeblock_c22_tvy_2dc">#<span class="hl-directive">define</span> MAX_BATCH_NUM <span class="hl-number">8</span>
+#<span class="hl-directive">define</span> CMD_BUF_SIZE  AIC_GE_CMDQ_BUF_LENGTH</pre></div>
+                    <p class="- topic/p p" data-ofbid="d263880e98__20250121171729">下图 ring buffer 中不同的颜色代表不同的 batch 对应的命令：</p>
+                    <figure class="- topic/fig fig fignone" id="ge_command_queue_mode__fig_n2x_ybb_d1c" data-ofbid="ge_command_queue_mode__fig_n2x_ybb_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ge_command_queue_mode__image_myf_spm_f1c" src="../../../reusables/reused-topics/../../images/ge/ge_function_ring_buffer_lite.png" alt="ge_function_ring_buffer_lite"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">ring buffer 与 batch 关系图</span></figcaption></figure>
+                </div>
+                <p class="- topic/p p" data-ofbid="d263880e109__20250121171729">Kconfig 文件中定义了 <span class="+ topic/keyword pr-d/parmname keyword parmname">AIC_GE_CMDQ_BUF_LENGTH</span>。如需分配
+                        <span class="+ topic/keyword pr-d/parmname keyword parmname">CMD_BUF_SIZE</span> 大小，可以使用 menuconfig 配置。</p>
+            </div>
+        </section><section class="- topic/section section" id="ge_command_queue_mode__section_ggs_rxr_ndc" data-ofbid="ge_command_queue_mode__section_ggs_rxr_ndc"><h2 class="- topic/title title sectiontitle">Batch 管理</h2>
+            
+            <div class="- topic/div div" id="ge_command_queue_mode__batch">
+                <div class="- topic/p p" data-ofbid="d263880e127__20250121171729">每一个 batch 总共可能存在三种状态：<ul class="- topic/ul ul simple" id="ge_command_queue_mode__ul_mp5_kvy_2dc" data-ofbid="ge_command_queue_mode__ul_mp5_kvy_2dc"><li class="- topic/li li" data-ofbid="d263880e130__20250121171729">
+                            <p class="- topic/p p" data-ofbid="d263880e132__20250121171729">空闲状态 (free)，batch 中没有可用信息在 free batch list 中。</p>
+                        </li><li class="- topic/li li" data-ofbid="d263880e135__20250121171729">
+                            <p class="- topic/p p" data-ofbid="d263880e137__20250121171729">Ready 状态，batch 中有等待执行的 cmd 信息在 ready list batch 中。</p>
+                        </li><li class="- topic/li li" data-ofbid="d263880e140__20250121171729">
+                            <p class="- topic/p p" data-ofbid="d263880e142__20250121171729">运行状态，当前硬件正在运行的 batch 既 不在 free list 中也不在 ready list 中。</p>
+                        </li></ul></div>
+            </div>
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d263880e149__20250121171729"><strong class="+ topic/ph hi-d/b ph b">Batch 状态变化流程如下：</strong></p>
+                <ol class="- topic/ol ol" id="ge_command_queue_mode__ol_yq1_5bb_d1c" data-ofbid="ge_command_queue_mode__ol_yq1_5bb_d1c"><li class="- topic/li li" data-ofbid="d263880e154__20250121171729">
+                        <p class="- topic/p p" data-ofbid="d263880e156__20250121171729">在<span class="- topic/ph ph">分配给应用</span>的缓冲
+                            buffer 中，<span class="- topic/ph ph">应用</span>组织好命令队列，以 batch 为单位，通过标准的 <span class="+ topic/keyword pr-d/apiname keyword apiname">write</span> 接口把命令 copy
+                            到内核中的 buffer。</p>
+                    </li><li class="- topic/li li" data-ofbid="d263880e168__20250121171729">
+                        <p class="- topic/p p" data-ofbid="d263880e170__20250121171729">在<span class="- topic/ph ph">驱动</span>中维护一个包含每个
+                            batch 起始 offset 和 length 信息的链表，硬件以 batch 为单位执行命令队列。</p>
+                    </li><li class="- topic/li li" data-ofbid="d263880e176__20250121171729">
+                        <div class="- topic/p p" data-ofbid="d263880e178__20250121171729">如 <a class="- topic/xref xref" href="../../../reusables/reused-topics/ge_user_guide_reused.html#reused-topicsge-user-guide-reused__fig_qlp_bcb_d1c">batch 状态变化流程图</a>所示，出现以下两种情况，需要启动硬件执行 batch 命令：<ul class="- topic/ul ul" id="ge_command_queue_mode__ul_dr1_5bb_d1c" data-ofbid="ge_command_queue_mode__ul_dr1_5bb_d1c"><li class="- topic/li li" data-ofbid="d263880e185__20250121171729">
+                                    <p class="- topic/p p" data-ofbid="d263880e187__20250121171729">当应用调用了 <span class="+ topic/keyword pr-d/apiname keyword apiname">write</span> 命令写入当前 batch
+                                        信息，并且硬件处于空闲状态</p>
+                                </li><li class="- topic/li li" data-ofbid="d263880e193__20250121171729">
+                                    <p class="- topic/p p" data-ofbid="d263880e195__20250121171729">在中断服务判断当前的 ready list batch 不为空，则从列表中 dequeue 一个
+                                        batch，送给硬件执行</p>
+                                </li></ul></div>
+                        <figure class="- topic/fig fig fignone" id="ge_command_queue_mode__fig_qlp_bcb_d1c" data-ofbid="ge_command_queue_mode__fig_qlp_bcb_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ge_command_queue_mode__image_br1_5bb_d1c" src="../../../reusables/reused-topics/../../images/ge/ge_batch_status_change.png" alt="ge_batch_status_change"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">batch 状态变化流程图</span></figcaption></figure>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="ge_command_queue_mode__section_twm_myr_ndc" data-ofbid="ge_command_queue_mode__section_twm_myr_ndc"><h2 class="- topic/title title sectiontitle">多进程支持</h2>
+            
+            <p class="- topic/p p" data-ofbid="d263880e213__20250121171729">在 <span class="- topic/ph ph">Luban-Lite</span> 中，应用是在线程去调用 GE 的。为了确保不同线程添加的 batch
+                按照先进先出原则运行，系统需要对多线程进行有效管理。</p>
+            <figure class="- topic/fig fig fignone" id="ge_command_queue_mode__fig_mgm_gcb_d1c" data-ofbid="ge_command_queue_mode__fig_mgm_gcb_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ge_command_queue_mode__image_fr1_5bb_d1c" src="../../../reusables/reused-topics/../../images/ge/ge_batch_multi_process_support.png" alt="ge_batch_multi_process_support"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">多进程支持</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d263880e226__20250121171729"><span class="- topic/ph ph">在 Luban-Lite 中，应用是在线程去调用 GE
+                的。</span>当某个进程需要等待当前进程任务是否完成时，需要调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">IOC_GE_SYNC</span>
+                命令，等待当前进程所有的任务完成即可，如上图所示。 当进程 2 调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">IOC_GE_SYNC</span> 命令时，只需要等待
+                Batch5、batch3、batch2、batch0 完成即可，不用管后边加入的其他进程的 Batch6、Batch7</p>
+            <p class="- topic/p p" data-ofbid="d263880e237__20250121171729">当某个线程需要使用 GE 时，<span class="+ topic/keyword pr-d/apiname keyword apiname">IOC_GE_SYNC</span> 的实现流程如下：</p>
+            <ol class="- topic/ol ol" id="ge_command_queue_mode__ol_gr1_5bb_d1c" data-ofbid="ge_command_queue_mode__ol_gr1_5bb_d1c"><li class="- topic/li li" data-ofbid="d263880e245__20250121171729">通过 <span class="- topic/ph ph">hal_</span>open 接口创建当前 client 的上下文信息，并添加到 client
+                    链表中。每个 client 都有一个唯一的识别
+                    ID。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_command_queue_mode__codeblock_wsx_bbn_ybc" data-ofbid="ge_command_queue_mode__codeblock_wsx_bbn_ybc"><strong class="hl-keyword">struct</strong> aic_ge_client {
+    <strong class="hl-keyword">struct</strong> list_head list;
+    <strong class="hl-keyword">struct</strong> list_head buf_list;
+    <strong class="hl-keyword">int</strong> id;
+    <strong class="hl-keyword">int</strong> batch_num;
+};</pre></li><li class="- topic/li li" data-ofbid="d263880e252__20250121171729">当前<span class="- topic/ph ph">应用</span>调用<span class="- topic/ph ph">hal_</span>write 接口写入一个 batch 命令的时， 当前 batch 中的
+                    client_id 会写入对应的 client 识别 id， 并且对应的 client 上下文中的 batch_num 引用计数会加 1。</li><li class="- topic/li li" data-ofbid="d263880e260__20250121171729">硬件每执行完成一个 batch 产生一次中断，在中断服务程序中查询当前 batch 中的 client_id，并通过 client_id 从 client
+                    链表中找到当前 client， 对应的 client 中的 batch_num 引用计数减 1。同时，通知所有打开了 GE
+                    的应用：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_command_queue_mode__codeblock_hkd_yvy_2dc" data-ofbid="ge_command_queue_mode__codeblock_hkd_yvy_2dc">aicos_event_send(data-&gt;wait_event, HW_RUNNING_EVENT);</pre></li><li class="- topic/li li" data-ofbid="d263880e264__20250121171729">
+                    <div class="- topic/p p" data-ofbid="d263880e266__20250121171729"><span class="- topic/ph ph">应用</span>通过接口
+                            <span class="+ topic/keyword pr-d/apiname keyword apiname">IOC_GE_SYNC</span> 等待任务完成，只需要等待当前 client 中的 batch_num 为 0
+                        即可。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ge_command_queue_mode__codeblock_b2m_yvy_2dc" data-ofbid="ge_command_queue_mode__codeblock_b2m_yvy_2dc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> ge_client_sync(<strong class="hl-keyword">struct</strong> aic_ge_data *data,
+                <strong class="hl-keyword">struct</strong> aic_ge_client *client)
+{
+    <strong class="hl-keyword">int</strong> ret = <span class="hl-number">0</span>;
+    uint32_t recved;
+
+    hal_log_debug(<span class="hl-string">"%s\n"</span>, __func__);
+
+    <strong class="hl-keyword">while</strong> (client-&gt;batch_num) {
+        ret = aicos_event_recv(data-&gt;wait_event,
+                                BATCH_NUM_EVENT,
+                                &amp;recved,
+                                GE_TIMEOUT);
+        <strong class="hl-keyword">if</strong> (ret &lt; <span class="hl-number">0</span>) {
+            <strong class="hl-keyword">break</strong>;
+        }
+    }
+
+    hal_log_debug(<span class="hl-string">"%s\n"</span>, __func__);
+
+    <strong class="hl-keyword">return</strong> ret;
+}</pre></div>
+                </li></ol>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#ge_command_queue_mode__section_urp_yvr_ndc" data-tocid="ge_command_queue_mode__section_urp_yvr_ndc">初始化流程</a></div></li><li class="section-item"><div class="section-title"><a href="#ge_command_queue_mode__section_ggs_rxr_ndc" data-tocid="ge_command_queue_mode__section_ggs_rxr_ndc">Batch 管理</a></div></li><li class="section-item"><div class="section-title"><a href="#ge_command_queue_mode__section_twm_myr_ndc" data-tocid="ge_command_queue_mode__section_twm_myr_ndc">多进程支持</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

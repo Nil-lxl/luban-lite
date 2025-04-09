@@ -1,0 +1,21 @@
+from building import *
+Import('rtconfig')
+
+src   = []
+path  = []
+cwd   = GetCurrentDir()
+
+src += Glob('port/artinchip/*.c')
+src += Glob('ptp/dep/*.c')
+src += Glob('ptp/*.c')
+
+# add include path.
+path  += [cwd + '/port/artinchip']
+path  += [cwd + '/ptp']
+path  += [cwd + '/ptp/dep']
+
+myccflags = (' -w')
+# add src and include to group.
+group = DefineGroup('ptpd', src, depend = ['LPKG_USING_PTPD'], CPPPATH = path, LOCAL_CFLAGS = myccflags)
+
+Return('group')

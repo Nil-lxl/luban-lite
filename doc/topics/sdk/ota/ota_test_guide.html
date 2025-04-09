@@ -1,0 +1,478 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="准备测试环境 硬件 开发板 TF 卡 网线（如需测试网络 OTA ） 软件 PC 端的串口终端软件，用于 PC 和开发板进行串口通信。 HTTP 服务器工具，用于网络 OTA 测试。如不需测试，可略过。 测试流程 详细流程如下 打开 OTA 相关配置后，保存退出。 注： 按照 参数配置 流程可打开 OTA 相关配置。 重新编译和烧录镜像。 以下为一个制作 CPIO ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_debug_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_programming.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1605"/><meta name="wh-source-relpath" content="topics/sdk/ota/ota_test_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/ota/ota_test_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html">OTA 方案</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/ota/ota_test_guide.html">测试指南</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/ota/ota_debug_lite.html" title="调试指南" aria-label="上一主题: 调试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/ota/ota_programming.html" title="编程指南" aria-label="下一主题: 编程指南" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1569" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota__sys_intro.html" id="id-d5856e1569-link">OTA 系统结构</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1581" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_configure.html" id="id-d5856e1581-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1593" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_debug_lite.html" id="id-d5856e1593-link">调试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e1605" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_test_guide.html" id="id-d5856e1605-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="ota-programming-d5856e1617" class="topicref" data-id="ota-programming" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_programming.html" id="ota-programming-d5856e1617-link">编程指南</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1631" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_design_lite.html" id="id-d5856e1631-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1645" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_faq_lite.html" id="id-d5856e1645-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ota/ota_test_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 11 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__topic_v5r_j1q_wcc" data-ofbid="id__topic_v5r_j1q_wcc"><h2 class="- topic/title title sectiontitle">准备测试环境</h2>
+            <ul class="- topic/ul ul" id="id__ul_v5l_n4q_gdc" data-ofbid="id__ul_v5l_n4q_gdc"><li class="- topic/li li" data-ofbid="d106743e24__20250121171541">
+                    <div class="- topic/p p" data-ofbid="d106743e26__20250121171541"><strong class="+ topic/ph hi-d/b ph b">硬件</strong><ul class="- topic/ul ul simple" id="id__ul_syq_lfq_wcc" data-ofbid="id__ul_syq_lfq_wcc"><li class="- topic/li li" data-ofbid="d106743e30__20250121171541">
+                                <p class="- topic/p p" data-ofbid="d106743e32__20250121171541">开发板</p>
+                            </li><li class="- topic/li li" data-ofbid="d106743e35__20250121171541">
+                                <p class="- topic/p p" data-ofbid="d106743e37__20250121171541">TF 卡</p>
+                            </li><li class="- topic/li li" data-ofbid="d106743e40__20250121171541">
+                                <p class="- topic/p p" data-ofbid="d106743e42__20250121171541">网线（如需测试网络 OTA ）</p>
+                            </li></ul></div>
+                </li><li class="- topic/li li" data-ofbid="d106743e46__20250121171541">
+                    <div class="- topic/p p" data-ofbid="d106743e48__20250121171541"><strong class="+ topic/ph hi-d/b ph b">软件</strong><ul class="- topic/ul ul simple" id="id__ul_in3_mfq_wcc" data-ofbid="id__ul_in3_mfq_wcc"><li class="- topic/li li" data-ofbid="d106743e52__20250121171541">
+                                <p class="- topic/p p" data-ofbid="d106743e54__20250121171541">PC 端的串口终端软件，用于 PC 和开发板进行串口通信。</p>
+                            </li><li class="- topic/li li" data-ofbid="d106743e57__20250121171541">
+                                <p class="- topic/p p" data-ofbid="d106743e59__20250121171541">HTTP 服务器工具，用于网络 OTA 测试。如不需测试，可略过。 </p>
+                            </li></ul></div>
+                </li></ul></section><section class="- topic/section section" id="id__section_dmd_p4q_gdc" data-ofbid="id__section_dmd_p4q_gdc"><h2 class="- topic/title title sectiontitle">测试流程</h2>
+                
+                <p class="- topic/p p" data-ofbid="d106743e68__20250121171541">详细流程如下</p>
+                <div class="- topic/p p" data-ofbid="d106743e71__20250121171541">
+                    <ol class="- topic/ol ol" id="id__ol_slh_5dv_1dc" data-ofbid="id__ol_slh_5dv_1dc"><li class="- topic/li li" data-ofbid="d106743e74__20250121171541">打开
+                            OTA
+                                相关配置后，保存退出。<div class="- topic/note note note note_note" id="id__note_ch3_wdv_1dc" data-ofbid="id__note_ch3_wdv_1dc"><span class="note__title">注：</span> 按照<a class="- topic/xref xref" href="ota_configure.html">参数配置</a>流程可打开
+                                OTA
+                                相关配置。</div></li><li class="- topic/li li" data-ofbid="d106743e90__20250121171541">重新编译和烧录镜像。<div class="- topic/p p" data-ofbid="d106743e92__20250121171541">以下为一个制作 CPIO 镜像的示例，在编译过程中可以看到如下打包信息，表示编译过程已经完成且更新了
+                                <span class="+ topic/ph sw-d/filepath ph filepath">ota.cpio</span>
+                            的大小：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_cr5_qfq_wcc" data-ofbid="id__pre_cr5_qfq_wcc">make CPIO image begin...
+ota_info.bin
+d21x_os.itb
+rodata.fatfs
+data.fatfs
+<span class="hl-number">14663</span> blocks
+Successfully updated size to ota.cpio
+make CPIO image done...
+</pre></div><div class="- topic/p p" data-ofbid="d106743e99__20250121171541">三个需升级的文件如下所示：<ul class="- topic/ul ul" id="id__ul_hn4_32v_1dc" data-ofbid="id__ul_hn4_32v_1dc"><li class="- topic/li li" data-ofbid="d106743e102__20250121171541"><span class="+ topic/ph sw-d/filepath ph filepath">d21x_os.itb</span>：系统文件系统</li><li class="- topic/li li" data-ofbid="d106743e106__20250121171541"><span class="+ topic/ph sw-d/filepath ph filepath">rodata.fatfs</span>：只读文件系统</li><li class="- topic/li li" data-ofbid="d106743e110__20250121171541"><span class="+ topic/ph sw-d/filepath ph filepath">data.fatfs</span>：读写文件系统</li></ul></div></li><li class="- topic/li li" data-ofbid="d106743e114__20250121171541">将 <span class="+ topic/ph sw-d/filepath ph filepath">ota.cpio</span> 放到 TF 卡根目录中。<p class="- topic/p p" data-ofbid="d106743e119__20250121171541">测试程序
+                            <code class="+ topic/ph pr-d/codeph ph codeph">test_ota</code> 默认从 TF 卡根目录读取，源码路径为
+                            <span class="+ topic/ph sw-d/filepath ph filepath">packages\artinchip\ota\test_ota.c。</span></p></li><li class="- topic/li li" data-ofbid="d106743e126__20250121171541">搭建 HTTP 服务器，准备网络 OTA。<div class="- topic/note note note note_note" id="id__note_icm_hdv_1dc" data-ofbid="id__note_icm_hdv_1dc"><span class="note__title">注：</span> 推荐使用 NGINX 工具在 Windows
+                                环境下搭建 HTTP 服务器。</div><ol class="- topic/ol ol arabic simple" type="a" id="id__ol_ps2_qfq_wcc" data-ofbid="id__ol_ps2_qfq_wcc"><li class="- topic/li li" data-ofbid="d106743e131__20250121171541">从官网下载 NGINX 软件包，地址：<a class="- topic/xref xref reference external" href="https://nginx.org/en/download.html" target="_blank" rel="external noopener">https://nginx.org/en/download.html。</a></li><li class="- topic/li li" data-ofbid="d106743e136__20250121171541">解压缩下载的软件包。<div class="- topic/p p" data-ofbid="d106743e138__20250121171541">
+                                        <div class="- topic/note note note note_note" id="id__note_nq1_sbl_vcc" data-ofbid="id__note_nq1_sbl_vcc"><span class="note__title">注：</span> 解压包的路径不能包含中文字符。</div>
+                                    </div></li><li class="- topic/li li" data-ofbid="d106743e143__20250121171541">在 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">CMD</span> 环境下，启动 NGINX 服务。<p class="- topic/p p" data-ofbid="d106743e148__20250121171541">服务启动成功后，使用任务管理器中的两个
+                                    <span class="+ topic/keyword sw-d/cmdname keyword cmdname">nginx</span> 进程，测试服务器是否正常工作。</p></li><li class="- topic/li li" data-ofbid="d106743e153__20250121171541">适配 <span class="+ topic/ph sw-d/filepath ph filepath">nginx.conf</span> 文件配置后重新加载配置，并开放服务器目录。<p class="- topic/p p" data-ofbid="d106743e158__20250121171541">HTTP
+                                        服务器窗口如下所示：</p><div class="- topic/p p" data-ofbid="d106743e160__20250121171541">
+                                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_ss2_qfq_wcc" src="../../../images/ota/http.png" width="384" alt="http"/></div><br/>
+                                    </div></li><li class="- topic/li li" data-ofbid="d106743e166__20250121171541">执行命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">co</span> 进入 <span class="+ topic/ph sw-d/filepath ph filepath">images</span> 目录下，找到
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">ota.cpio</span> 升级包并将其复制到 NGINX 服务器目录。 </li></ol></li></ol>
+                </div>
+            </section></div><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title2" xml:lang="zh-CN" lang="zh-CN" id="section_x5r_j1q_wcc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ota/ota_test_guide.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title2">测试验证</h2><div class="- topic/body body"><div class="- topic/p p" data-ofbid="d106743e202__20250121171541">在执行升级之前，需要先确认当前环境变量、文件挂载信息和系统信息等，具体流程如下：<ol class="- topic/ol ol" id="section_x5r_j1q_wcc__ol_cjy_ndv_1dc" data-ofbid="section_x5r_j1q_wcc__ol_cjy_ndv_1dc"><li class="- topic/li li" data-ofbid="d106743e205__20250121171541">确认系统启动位置（上电默认打印）<div class="- topic/p p" data-ofbid="d106743e207__20250121171541">下列示例表示从 os
+                            升级：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_qkg_4dv_1dc" data-ofbid="section_x5r_j1q_wcc__pre_qkg_4dv_1dc">Start-up from os</pre></div></li><li class="- topic/li li" data-ofbid="d106743e211__20250121171541">输入 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">fw_printenv</span>
+                            命令查看当前的环境变量设置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_fl5_4dv_1dc" data-ofbid="section_x5r_j1q_wcc__pre_fl5_4dv_1dc">fw_printenv</pre><div class="- topic/p p" data-ofbid="d106743e218__20250121171541">输出示例如下<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_tds_vkh_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_tds_vkh_tdc">MTD=spi0.<span class="hl-number">0</span>:<span class="hl-number">1</span>m(spl),<span class="hl-number">256</span>k(env),<span class="hl-number">256</span>k(env_r),<span class="hl-number">4</span>m(os),<span class="hl-number">4</span>m(os_r),<span class="hl-number">12</span>m(rodata),<span class="hl-number">12</span>m(rodata_r),<span class="hl-number">40</span>m(data),<span class="hl-number">40</span>m(data_r)osAB_next=A
+rodataAB_next=A
+dataAB_next=A
+upgrade_available=<span class="hl-number">0</span>bootlimit=<span class="hl-number">5</span>bootcount=<span class="hl-number">0</span>rodata_partname=blk_rodata
+rodata_partname_r=blk_rodata_r
+data_partname=blk_data
+data_partname_r=blk_data_r
+osAB_now=A
+rodataAB_now=A
+dataAB_now=A
+</pre></div></li><li class="- topic/li li" data-ofbid="d106743e222__20250121171541">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">mount</span>
+                            指令查看当前挂载的文件系统信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_r5h_pdv_1dc" data-ofbid="section_x5r_j1q_wcc__pre_r5h_pdv_1dc">mount</pre><div class="- topic/p p" data-ofbid="d106743e229__20250121171541">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_vxt_ykh_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_vxt_ykh_tdc">filesystem     device     mountpoint
+----------  ------------  ----------
+devfs       (NULL)        /dev
+rom         (NULL)        /
+elm         blk_rodata    /rodata
+elm         blk_data      /data
+elm         sd0           /sdcard
+</pre></div></li></ol></div><section class="- topic/section section" id="section_x5r_j1q_wcc__id8" data-ofbid="section_x5r_j1q_wcc__id8"><h3 class="- topic/title title sectiontitle">验证 TF 卡 OTA</h3>
+                    <div class="- topic/p p" data-ofbid="d106743e237__20250121171541">
+                    <ol class="- topic/ol ol" id="section_x5r_j1q_wcc__ol_ery_zbv_1dc" data-ofbid="section_x5r_j1q_wcc__ol_ery_zbv_1dc"><li class="- topic/li li" data-ofbid="d106743e240__20250121171541">烧录完成后，断开电源，上电，插入 TF 卡。</li><li class="- topic/li li" data-ofbid="d106743e242__20250121171541">在串口中直接输入升级命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_ota</span>，开始 OTA
+                                升级。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_sj4_blh_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_sj4_blh_tdc">test_ota</pre><ul class="- topic/ul ul" id="section_x5r_j1q_wcc__ul_dmt_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__ul_dmt_pfq_wcc"><li class="- topic/li li" data-ofbid="d106743e250__20250121171541">确认 cpio 文件信息。</li><li class="- topic/li li" data-ofbid="d106743e252__20250121171541">擦除 nand flash 分区。</li><li class="- topic/li li" data-ofbid="d106743e254__20250121171541">分别升级
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">d21x_os.itb</span>、<span class="+ topic/ph sw-d/filepath ph filepath">rodata.fatfs</span>、<span class="+ topic/ph sw-d/filepath ph filepath">data.fatfs</span>
+                                    文件。</li><li class="- topic/li li" data-ofbid="d106743e265__20250121171541">验证文件完整性。</li><li class="- topic/li li" data-ofbid="d106743e267__20250121171541">升级完成后，系统会自动重启并加载新的固件。</li></ul><div class="- topic/p p" data-ofbid="d106743e269__20250121171541">结果输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_n1f_blh_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_n1f_blh_tdc"><span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: find file ota_info.bin cpio data success
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: cpio file size:<span class="hl-number">10538496</span>
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: cpio file version:<span class="hl-number">1.0</span>.<span class="hl-number">0</span>
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Parsing cpio file info is successful!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: find file d21x_os.itb cpio data success
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: osAB_now= A
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Upgrade B system
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Start upgrade to os_r, flag_cpio:<span class="hl-number">1</span>!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Partition (os_r) find success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Start erase nand flash partition!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Erase nand flash partition success! len=<span class="hl-number">3201</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Start upgrade d21x_os.itb!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Download: [=&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">27</span> I/NO_TAG: Download: [==&gt;
+
+......
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Sum check success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: download d21x_os.itb success!
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Incomplete header info! shdr.buflen =<span class="hl-number">801</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: find file rodata.fatfs cpio data success
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: rodataAB_now= A
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Upgrade B rodatafs
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Start upgrade to rodata_r, flag_cpio:<span class="hl-number">2</span>!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Partition (rodata_r) find success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Start erase nand flash partition!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Erase nand flash partition success! len=<span class="hl-number">9601</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Start upgrade rodata.fatfs!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Download: [&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Download: [=&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">29</span> I/NO_TAG: Download: [==&gt;
+
+......
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Sum check success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: download rodata.fatfs success!
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: find file data.fatfs cpio data success
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: dataAB_now= A
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Upgrade B datafs
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Start upgrade to blk_data_r, flag_cpio:<span class="hl-number">3</span>!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Partition (blk_data_r) find success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: NFTL partition not need to erase!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Start upgrade data.fatfs!
+[ND]nftl start:<span class="hl-number">320</span>,<span class="hl-number">51</span>
+[ND]nftl ok!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Download: [&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Download: [=&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Download: [==&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">33</span> I/NO_TAG: Download: [===&gt;
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: Sum check success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: download data.fatfs success!
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: Incomplete header info! shdr.buflen =<span class="hl-number">1601</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: find file TRAILER!!! cpio data success
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: find file TRAILER!!! cpio data success
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: os Next startup in B system
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: rodata Next mount in B system
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: data Next mount in B system
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">15</span>:<span class="hl-number">59</span>:<span class="hl-number">36</span> I/NO_TAG: Restarting system ...
+</pre></div></li></ol>
+                </div>
+                </section><section class="- topic/section section" id="section_x5r_j1q_wcc__id10" data-ofbid="section_x5r_j1q_wcc__id10"><h3 class="- topic/title title sectiontitle">验证网络 OTA</h3>
+                
+                
+                <ol class="- topic/ol ol" id="section_x5r_j1q_wcc__ol_nxn_jcv_1dc" data-ofbid="section_x5r_j1q_wcc__ol_nxn_jcv_1dc"><li class="- topic/li li" data-ofbid="d106743e284__20250121171541">烧录完成后，断开电源，上电，插入网线。</li><li class="- topic/li li" data-ofbid="d106743e286__20250121171541">查看启动打印信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_cpm_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__pre_cpm_pfq_wcc">ai:
+    IPv4 Address   : <span class="hl-number">192.168</span>.<span class="hl-number">31.200</span>
+    Default Gateway: <span class="hl-number">192.168</span>.<span class="hl-number">31.1</span>
+    Subnet mask    : <span class="hl-number">255.255</span>.<span class="hl-number">255.0</span>
+    MAC addr       : <span class="hl-number">00</span>:<span class="hl-number">22</span>:<span class="hl-number">44</span>:<span class="hl-number">88</span>:<span class="hl-number">77</span>:<span class="hl-number">66</span>
+[I] aicphy_poll_thread()<span class="hl-number">635</span>  Port <span class="hl-number">0</span> link UP! autoneg mode: speed <span class="hl-number">100</span>M, full duplex, flow control off.
+</pre></li><li class="- topic/li li" data-ofbid="d106743e290__20250121171541">测试网络连通状态。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_dpm_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__pre_dpm_pfq_wcc">ping <span class="hl-number">192.168</span>.<span class="hl-number">31.22</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_l5d_yqw_5dc" data-ofbid="section_x5r_j1q_wcc__codeblock_l5d_yqw_5dc">Reply from <span class="hl-number">192.168</span>.<span class="hl-number">31.22</span>: time=<span class="hl-number">2</span>ms</pre><div class="- topic/note note note note_note" id="section_x5r_j1q_wcc__note_b4x_lcv_1dc" data-ofbid="section_x5r_j1q_wcc__note_b4x_lcv_1dc"><span class="note__title">注：</span> ping 通网络，需要等待一段时间</div></li><li class="- topic/li li" data-ofbid="d106743e298__20250121171541">执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">help</span> 命令查看 OTA
+                        升级，命令如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_epm_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__pre_epm_pfq_wcc">...
+http_ota         - Use HTTP to download the firmware
+...
+</pre></li><li class="- topic/li li" data-ofbid="d106743e305__20250121171541">执行下列命令启动 OTA
+                            升级：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_fpm_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__pre_fpm_pfq_wcc">http_ota</pre><div class="- topic/p p" data-ofbid="d106743e309__20250121171541">或者
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_e3n_zqw_5dc" data-ofbid="section_x5r_j1q_wcc__codeblock_e3n_zqw_5dc">http_ota http:<em class="hl-comment">//192.168.31.22/ota.cpio</em></pre></div><div class="- topic/note note note note_note" id="section_x5r_j1q_wcc__note_jyw_pcv_1dc" data-ofbid="section_x5r_j1q_wcc__note_jyw_pcv_1dc"><span class="note__title">注：</span> 
+                            <p class="- topic/p p" data-ofbid="d106743e315__20250121171541">升级完成以后，自动重启，加载新代码启动。</p>
+                        </div><div class="- topic/p p" data-ofbid="d106743e318__20250121171541">以下是相关升级信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_hj4_wt4_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_hj4_wt4_tdc">using uri: http:<em class="hl-comment">//192.168.31.20/ota.cpio</em>
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: OTA file size is (<span class="hl-number">10538496</span>)<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: find file ota_info.bin cpio data success
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: cpio file size:<span class="hl-number">10538496</span>
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: cpio file version:<span class="hl-number">1.0</span>.<span class="hl-number">0</span>
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: Parsing cpio file info once is sufficient and successful!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: find file d21x_os.itb cpio data success
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: osAB_now= B
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: Upgrade A system
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: Start upgrade to os, flag_cpio:<span class="hl-number">1</span>!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: Partition (os) find success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">08</span> I/NO_TAG: Start erase nand flash partition!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">09</span> I/NO_TAG: Erase nand flash partition success! len=<span class="hl-number">3201</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">09</span> I/NO_TAG: Start upgrade d21x_os.itb!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">08</span>:<span class="hl-number">50</span> I/NO_TAG: Download: [==&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">08</span>:<span class="hl-number">50</span> I/NO_TAG: Download: [===&gt;
+......
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Sum check success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: download d21x_os.itb success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: find file rodata.fatfs cpio data success
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: rodataAB_now= B
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Upgrade A rodatafs
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Start upgrade to rodata, flag_cpio:<span class="hl-number">2</span>!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Partition (rodata) find success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Start erase nand flash partition!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Erase nand flash partition success! len=<span class="hl-number">9601</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Start upgrade rodata.fatfs!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Download: [&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">11</span> I/NO_TAG: Download: [=&gt;
+......
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: find file data.fatfs cpio data success
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: dataAB_now= B
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: Upgrade A datafs
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: Start upgrade to blk_data, flag_cpio:<span class="hl-number">3</span>!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: Partition (blk_data) find success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: NFTL partition not need to erase!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: Start upgrade data.fatfs!
+[ND]nftl start:<span class="hl-number">320</span>,<span class="hl-number">51</span>
+[ND]nftl ok!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: Download: [&gt;
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">16</span> I/NO_TAG: Download: [=&gt;
+......
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">21</span> I/NO_TAG: download data.fatfs success!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">21</span> I/NO_TAG: find file TRAILER!!! cpio data success
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">21</span> I/NO_TAG: Download firmware to flash success.
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">21</span> I/NO_TAG: System now will restart...
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">21</span> I/NO_TAG: os Next startup in A system
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">21</span> I/NO_TAG: rodata Next mount in A system
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">21</span> I/NO_TAG: data Next mount in A system
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">16</span>:<span class="hl-number">10</span>:<span class="hl-number">21</span> I/NO_TAG: Restarting system ...
+</pre></div></li></ol>
+            </section><section class="- topic/section section" id="section_x5r_j1q_wcc__id15" data-ofbid="section_x5r_j1q_wcc__id15"><h3 class="- topic/title title sectiontitle">升级判断</h3>
+                    <p class="- topic/p p" data-ofbid="d106743e327__20250121171541">从程序打印 log 差异和文件系统中文件差异判断当前运行的版本。</p>
+                    <div class="- topic/div div section" id="section_x5r_j1q_wcc__boot"><strong class="+ topic/ph hi-d/b ph b">Boot 相关打印信息</strong>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_cv2_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__pre_cv2_pfq_wcc">Start-up from os/os_r</pre><ul class="- topic/ul ul arabic simple" id="section_x5r_j1q_wcc__ol_dv2_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__ol_dv2_pfq_wcc"><li class="- topic/li li" data-ofbid="d106743e337__20250121171541">
+                            <p class="- topic/p p" data-ofbid="d106743e339__20250121171541"><span class="+ topic/keyword pr-d/parmname keyword parmname">os</span> 表示从 <span class="+ topic/keyword pr-d/parmname keyword parmname">os</span> 分区读取数据启动 RTT
+                                程序。</p>
+                        </li><li class="- topic/li li" data-ofbid="d106743e347__20250121171541">
+                            <p class="- topic/p p" data-ofbid="d106743e349__20250121171541"><span class="+ topic/keyword pr-d/parmname keyword parmname">os_r</span> 表示从 <span class="+ topic/keyword pr-d/parmname keyword parmname">os_r</span> 分区读取数据启动 RTT
+                                程序。</p>
+                        </li></ul>
+                </div>
+                    <div class="- topic/div div section" id="section_x5r_j1q_wcc__rtt"><strong class="+ topic/ph hi-d/b ph b">RTT 相关打印信息</strong>
+                    <div class="- topic/p p" data-ofbid="d106743e363__20250121171541">如果有进行文件系统升级，可以关注以下信息<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_ev2_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__pre_ev2_pfq_wcc">Mount APP in blk blk_rodata_r
+Mount APP in blk blk_data_r</pre></div><ul class="- topic/ul ul arabic simple" id="section_x5r_j1q_wcc__ol_fv2_pfq_wcc" data-ofbid="section_x5r_j1q_wcc__ol_fv2_pfq_wcc"><li class="- topic/li li" data-ofbid="d106743e368__20250121171541">
+                            <p class="- topic/p p" data-ofbid="d106743e370__20250121171541">blk_data 表示从 blk_data 分区挂载读写文件系统。</p>
+                        </li><li class="- topic/li li" data-ofbid="d106743e373__20250121171541">
+                            <p class="- topic/p p" data-ofbid="d106743e375__20250121171541">blk_data_r 表示从 blk_data_r 分区挂载读写文件系统。</p>
+                        </li><li class="- topic/li li" data-ofbid="d106743e378__20250121171541">
+                            <p class="- topic/p p" data-ofbid="d106743e380__20250121171541">blk_rodata 表示从 blk_rodata 分区挂载只读文件系统。</p>
+                        </li><li class="- topic/li li" data-ofbid="d106743e383__20250121171541">
+                            <p class="- topic/p p" data-ofbid="d106743e385__20250121171541">blk_rodata_r 表示从 blk_rodata_r 分区挂载只读文件系统。</p>
+                        </li></ul><div class="- topic/note note tip note_tip" id="section_x5r_j1q_wcc__note_ww3_tcv_1dc" data-ofbid="section_x5r_j1q_wcc__note_ww3_tcv_1dc"><span class="note__title">提示：</span> 
+                        <p class="- topic/p p" data-ofbid="d106743e390__20250121171541">可以再次输入 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">mount</span> 命令查看文件系统挂载点。</p>
+                    </div>
+                </div>
+                </section><section class="- topic/section section" id="section_x5r_j1q_wcc__id16" data-ofbid="section_x5r_j1q_wcc__id16"><h3 class="- topic/title title sectiontitle">版本回退</h3>
+                    <p class="- topic/p p" data-ofbid="d106743e402__20250121171541">在 OTA 升级过程中，如果需要回退到先前的版本，可以通过
+                    RTT
+                    或者 BootLoader  方式设置系统和文件系统的启动分区来实现。</p>
+                        <div class="- topic/p p" data-ofbid="d106743e409__20250121171541">以下是详细的版本回退步骤和注意事项说明：<ol class="- topic/ol ol" id="section_x5r_j1q_wcc__ol_b2w_34l_vcc" data-ofbid="section_x5r_j1q_wcc__ol_b2w_34l_vcc"><li class="- topic/li li" data-ofbid="d106743e412__20250121171541">
+                            <div class="- topic/p p" data-ofbid="d106743e414__20250121171541">在进行任何操作之前，确保已经备份了设备上的重要数据，以防数据丢失。<ul class="- topic/ul ul" id="section_x5r_j1q_wcc__ul_uzy_w4l_vcc" data-ofbid="section_x5r_j1q_wcc__ul_uzy_w4l_vcc"><li class="- topic/li li" data-ofbid="d106743e417__20250121171541">在回退过程中，设备可能会短暂失去响应，耐心等待设备重启并加载旧版本固件。</li><li class="- topic/li li" data-ofbid="d106743e419__20250121171541">如果回退后设备无法正常启动，可能需要重新进行 OTA 升级或联系技术支持。</li></ul></div>
+                        </li><li class="- topic/li li" data-ofbid="d106743e422__20250121171541">在 BootLoader 或系统中，输入<span class="+ topic/keyword sw-d/cmdname keyword cmdname">fw_setenv</span>
+                                命令设置下次启动的系统和文件系统分区：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_pvd_kw4_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_pvd_kw4_tdc">fw_setenv osAB_next B
+fw_setenv rodataAB_next B
+fw_setenv dataAB_next A
+</pre><ul class="- topic/ul ul" id="section_x5r_j1q_wcc__ul_dcd_l4l_vcc" data-ofbid="section_x5r_j1q_wcc__ul_dcd_l4l_vcc"><li class="- topic/li li" data-ofbid="d106743e430__20250121171541"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">osAB_next = B</span>: 将下次系统启动分区设置为 B。</li><li class="- topic/li li" data-ofbid="d106743e434__20250121171541"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">rodataAB_next = B</span>: 将下次只读文件系统挂载分区设置为 B。</li><li class="- topic/li li" data-ofbid="d106743e438__20250121171541"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">dataAB_next = A</span>: 将下次读写文件系统挂载分区设置为 A。</li></ul></li><li class="- topic/li li" data-ofbid="d106743e442__20250121171541">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">fw_printenv</span>
+                                命令查看当前的环境变量设置，确保上述设置已成功应用：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_ycq_r4l_vcc" data-ofbid="section_x5r_j1q_wcc__codeblock_ycq_r4l_vcc">fw_printenv</pre><div class="- topic/p p" data-ofbid="d106743e449__20250121171541">系统输出如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_zsx_lw4_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_zsx_lw4_tdc">MTD=spi0.<span class="hl-number">0</span>:<span class="hl-number">1</span>m(spl),<span class="hl-number">256</span>k(env),<span class="hl-number">256</span>k(env_r),<span class="hl-number">4</span>m(os),<span class="hl-number">4</span>m(os_r),<span class="hl-number">12</span>m(rodata),<span class="hl-number">12</span>m(rodata_r),<span class="hl-number">40</span>m(data),<span class="hl-number">40</span>m(data_r)
+bootlimit=<span class="hl-number">5</span>
+rodata_partname=blk_rodata
+rodata_partname_r=blk_rodata_r
+data_partname=blk_data
+data_partname_r=blk_data_r
+bootcount=<span class="hl-number">1</span>
+upgrade_available=<span class="hl-number">0</span>
+osAB_now=A # 当前系统启动分区为 A 分区
+rodataAB_now=A # 当前只读系统挂载为 A 分区
+dataAB_now=B # 当前读写系统挂载为 B 分区
+osAB_next=B # 下次系统启动分区为 B 分区
+rodataAB_next=B # 下次只读系统挂载为 B 分区
+dataAB_next=A # 下次读写系统挂载为 A 分区</pre></div></li><li class="- topic/li li" data-ofbid="d106743e453__20250121171541">输入 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">reboot</span>
+                            命令重启设备，使新的设置生效：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_zfy_v4l_vcc" data-ofbid="section_x5r_j1q_wcc__codeblock_zfy_v4l_vcc">reboot</pre></li></ol></div>
+                     </section><div class="- topic/example example" id="section_x5r_j1q_wcc__example_ofj_k54_tdc" data-ofbid="section_x5r_j1q_wcc__example_ofj_k54_tdc"><h3 class="- topic/title title sectiontitle">在 RTT 中进行回退操作</h3>
+                
+                <ol class="- topic/ol ol" id="section_x5r_j1q_wcc__ol_vhp_n54_tdc" data-ofbid="section_x5r_j1q_wcc__ol_vhp_n54_tdc"><li class="- topic/li li" data-ofbid="d106743e467__20250121171541">通过 <code class="+ topic/ph pr-d/codeph ph codeph">fw_setenv</code> 命令设置下次启动时系统、只读文件系统和读写文件系统的分区。<ul class="- topic/ul ul" id="section_x5r_j1q_wcc__ul_wjd_b54_tdc" data-ofbid="section_x5r_j1q_wcc__ul_wjd_b54_tdc"><li class="- topic/li li" data-ofbid="d106743e473__20250121171541">将系统设置为下次从 B
+                                分区启动：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_lvl_b54_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_lvl_b54_tdc">fw_setenv osAB_next B</pre></li><li class="- topic/li li" data-ofbid="d106743e477__20250121171541">将只读文件系统设置为下次从 B 分区启动：<div class="- topic/p p" data-ofbid="d106743e479__20250121171541">
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_nv5_4fq_wcc" data-ofbid="section_x5r_j1q_wcc__pre_nv5_4fq_wcc">fw_setenv rodataAB_next B</pre>
+                                </div></li><li class="- topic/li li" data-ofbid="d106743e484__20250121171541">
+                                <div class="- topic/p p" data-ofbid="d106743e486__20250121171541">将读写文件系统设置为下次从 A
+                                    分区启动：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_qwq_d54_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_qwq_d54_tdc">fw_setenv dataAB_next A</pre></div>
+                            </li></ul></li><li class="- topic/li li" data-ofbid="d106743e491__20250121171541">
+                        <div class="- topic/p p" data-ofbid="d106743e493__20250121171541">使用 <code class="+ topic/ph pr-d/codeph ph codeph">fw_printenv</code>
+                            命令查看当前的环境变量配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_lgp_g54_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_lgp_g54_tdc">fw_printenv</pre></div>
+                        <div class="- topic/p p" data-ofbid="d106743e501__20250121171541">输出结果示例如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_l5y_454_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_l5y_454_tdc">MTD=spi0.<span class="hl-number">0</span>:<span class="hl-number">1</span>m(spl),<span class="hl-number">256</span>k(env),<span class="hl-number">256</span>k(env_r),<span class="hl-number">4</span>m(os),<span class="hl-number">4</span>m(os_r),<span class="hl-number">12</span>m(rodata),<span class="hl-number">12</span>m(rodata_r),<span class="hl-number">40</span>m(data),<span class="hl-number">40</span>m(data_r)bootlimit=<span class="hl-number">5</span>rodata_partname=blk_rodata
+rodata_partname_r=blk_rodata_r
+data_partname=blk_data
+data_partname_r=blk_data_r
+bootcount=<span class="hl-number">1u</span>pgrade_available=<span class="hl-number">0</span>osAB_now=A # 当前系统启动分区为 A 分区 rodataAB_now=A # 当前只读系统挂载为 A 分区 dataAB_now=B # 当前读写系统挂载为 B 分区 osAB_next=B # 下次系统启动分区为 B 分区 rodataAB_next=B # 下次只读系统挂载为 B 分区 dataAB_next=A # 下次读写系统挂载为 A 分区
+</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d106743e506__20250121171541">重启设备，使设置生效。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_rfq_r54_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_rfq_r54_tdc">reboot</pre></li></ol>
+                <p class="- topic/p p" data-ofbid="d106743e511__20250121171541">如果需要回退到之前的分区配置，只需再次设置相应的环境变量即可。</p>
+            </div><div class="- topic/example example" id="section_x5r_j1q_wcc__example_mfw_l54_tdc" data-ofbid="section_x5r_j1q_wcc__example_mfw_l54_tdc"><h3 class="- topic/title title sectiontitle">在 Boot 中进行回退操作 </h3>
+                
+                <ol class="- topic/ol ol" id="section_x5r_j1q_wcc__ol_k1b_3v4_tdc" data-ofbid="section_x5r_j1q_wcc__ol_k1b_3v4_tdc"><li class="- topic/li li" data-ofbid="d106743e520__20250121171541">
+                        <div class="- topic/p p" data-ofbid="d106743e522__20250121171541">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">fw_setenv</span> 命令设置下次启动时系统、只读文件系统和读写文件系统的分区。<ul class="- topic/ul ul" id="section_x5r_j1q_wcc__ul_rmk_kv4_tdc" data-ofbid="section_x5r_j1q_wcc__ul_rmk_kv4_tdc"><li class="- topic/li li" data-ofbid="d106743e528__20250121171541">
+                                    <div class="- topic/p p" data-ofbid="d106743e530__20250121171541">将系统设置为下次从 A
+                                        分区启动。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__pre_pv5_4fq_wcc" data-ofbid="section_x5r_j1q_wcc__pre_pv5_4fq_wcc">fw_setenv osAB_next A</pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d106743e535__20250121171541">
+                                    <div class="- topic/p p" data-ofbid="d106743e537__20250121171541">将只读文件系统设置为下次 A
+                                        分区启动。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_w3p_3v4_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_w3p_3v4_tdc">fw_setenv rodataAB_next A</pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d106743e542__20250121171541">
+                                    <div class="- topic/p p" data-ofbid="d106743e544__20250121171541">将读写文件系统设置为下次 B
+                                        分区启动。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_q2x_3v4_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_q2x_3v4_tdc">fw_setenv dataAB_next B</pre></div>
+                                </li></ul></div>
+                    </li><li class="- topic/li li" data-ofbid="d106743e550__20250121171541">使用 <code class="+ topic/ph pr-d/codeph ph codeph">reboot</code>
+                            命令重启设备，使设置生效。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="section_x5r_j1q_wcc__codeblock_kkd_jv4_tdc" data-ofbid="section_x5r_j1q_wcc__codeblock_kkd_jv4_tdc">reboot</pre><p class="- topic/p p" data-ofbid="d106743e557__20250121171541">如果需要回退到之前的分区配置，只需再次设置相应的环境变量即可。</p></li></ol>
+            </div></div></article></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__topic_v5r_j1q_wcc" data-tocid="id__topic_v5r_j1q_wcc">准备测试环境</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_dmd_p4q_gdc" data-tocid="id__section_dmd_p4q_gdc">测试流程</a></div></li><li class="topic-item"><a href="#section_x5r_j1q_wcc" data-tocid="section_x5r_j1q_wcc">测试验证</a><ul><li class="section-item"><div class="section-title"><a href="#section_x5r_j1q_wcc__id8" data-tocid="section_x5r_j1q_wcc__id8">验证 TF 卡 OTA</a></div></li><li class="section-item"><div class="section-title"><a href="#section_x5r_j1q_wcc__id10" data-tocid="section_x5r_j1q_wcc__id10">验证网络 OTA</a></div></li><li class="section-item"><div class="section-title"><a href="#section_x5r_j1q_wcc__id15" data-tocid="section_x5r_j1q_wcc__id15">升级判断</a></div></li><li class="section-item"><div class="section-title"><a href="#section_x5r_j1q_wcc__id16" data-tocid="section_x5r_j1q_wcc__id16">版本回退</a></div></li><li class="section-title"><a href="#section_x5r_j1q_wcc__example_ofj_k54_tdc" data-tocid="section_x5r_j1q_wcc__example_ofj_k54_tdc">在 RTT 中进行回退操作</a></li><li class="section-title"><a href="#section_x5r_j1q_wcc__example_mfw_l54_tdc" data-tocid="section_x5r_j1q_wcc__example_mfw_l54_tdc">在 Boot 中进行回退操作 </a></li></ul></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

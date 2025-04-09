@@ -1,0 +1,43 @@
+menuconfig AIC_WLAN_REALTEK
+    bool "Using Realtek wlan driver"
+    default n
+    depends on AIC_WIRELESS_LAN
+    select RT_USING_TIMER_SOFT
+    select AIC_USING_REALTEK_WLAN0
+
+    if AIC_WLAN_REALTEK
+    source "bsp/peripheral/wireless/realtek/Kconfig"
+    endif
+
+menuconfig WIFI_USING_SDIOWIFI_ATBM
+    bool "ATBM603X_WIFI"
+    depends on AIC_WIRELESS_LAN
+    select RT_USING_TIMER_SOFT
+    select RT_USING_WIFI
+    select RT_USING_SYSTEM_WORKQUEUE
+    default n
+
+    if WIFI_USING_SDIOWIFI_ATBM
+    source "bsp/peripheral/wireless/atbm603x/Kconfig.dev"
+    endif
+
+menuconfig AIC_WLAN_ASR
+    bool "Using ASR wlan driver"
+    default n
+    depends on AIC_WIRELESS_LAN
+    select RT_USING_TIMER_SOFT
+    select RT_USING_WIFI
+    select RT_USING_SYSTEM_WORKQUEUE
+
+    if AIC_WLAN_ASR
+    source "bsp/peripheral/wireless/asr/Kconfig"
+    endif
+
+menuconfig AIC_WLAN_AIC8800D40L
+    bool "AIC8800 wlan driver"
+    default n
+    depends on AIC_WIRELESS_LAN
+    if AIC_WLAN_AIC8800D40L
+    source "bsp/peripheral/wireless/aic8800/Kconfig.dev"
+    ##source "bsp/peripheral/wireless/aic8800/Kconfig.drv"
+    endif

@@ -1,0 +1,23 @@
+#-----------------------------
+# eFuse/SID devices local parameter
+#-----------------------------
+menu "SID Parameter"
+    depends on AIC_USING_SID
+
+    config EFUSE_WRITE_SUPPORT
+	bool "support efuse write"
+	default n
+
+    config EFUSE_MAX_WORD
+	int "set efuse max word"
+	default 16 if AIC_CHIP_D12X
+	default 64 if AIC_CHIP_D21X || AIC_CHIP_D13X || AIC_CHIP_G73X
+
+    config EFUSE_TIMING_VALUE
+	hex "set timing value"
+	default 0x0402FFD8 if AIC_CHIP_D21X
+	default 0x0402FFD8 if AIC_CHIP_D13X || AIC_CHIP_G73X
+	default 0x04021FF1 if AIC_CHIP_D12X
+	default 0x04021FF1 if AIC_CHIP_AIC1606SE
+endmenu
+

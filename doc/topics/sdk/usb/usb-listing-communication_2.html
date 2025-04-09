@@ -1,0 +1,450 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="USB 设备在正常工作之前，第一件要做的事情就是枚举。枚举的作用就是让设备从上述状态图中的 Powered 逐步进入 Configured 模式。 USB 枚举的主要目的是读出设备的所有配置信息。 Transaction 1 ~ Transaction 3 (Data Stage) 可以看到 Transaction 1 ~ Transaction 3 联合起来从 Device 传递回了 18 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-11-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_枚举通讯过程"/><meta name="DC.language" content="zh-CN"/><title>USB 枚举通讯过程</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-listing-communication.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-listing-communication_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_枚举通讯过程" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-listing-communication.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">USB 枚举通讯过程</h1><div class="date inPage">25 Nov 2024</div><div style="color: gray;">
+                    Read time: 10 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d66986e22__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_qdp_hgq_g1c" src="../../../images/usb/usb_device_state.png" alt="image19"/></div><br/></div><p class="- topic/p p" data-ofbid="d66986e26__20250121171522">USB 设备在正常工作之前，第一件要做的事情就是枚举。枚举的作用就是让设备从上述状态图中的 <code class="+ topic/ph pr-d/codeph ph codeph">Powered</code> 逐步进入
+                <code class="+ topic/ph pr-d/codeph ph codeph">Configured</code> 模式。</p><p class="- topic/p p" data-ofbid="d66986e34__20250121171522"></p><p class="- topic/p p" data-ofbid="d66986e35__20250121171522">USB 枚举的主要目的是读出设备的所有配置信息。</p><section class="- topic/section section" id="usb_枚举通讯过程__section_u2p_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_u2p_hgq_g1c"><h2 class="- topic/title title sectiontitle">Transaction 1 ~ Transaction 3 (Data Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e42__20250121171522">可以看到 <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 1</code> ~ <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 3</code> 联合起来从 Device
+                传递回了 18 个字节的数据给 Host， <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 1</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">Transaction
+                    2</code> 分别传输了 8 个字节数据， <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 2</code> 传递了 2 个字节数据。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_v2p_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_v2p_hgq_g1c"><span class="hl-number">12010002000000086</span>D0418C0014301020001</pre>
+            <p class="- topic/p p" data-ofbid="d66986e63__20250121171522">这 18 个字节数据就是 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer 0</code> 指定要读取的 <code class="+ topic/ph pr-d/codeph ph codeph">Device Descriptor</code>
+                ，其具体的格式如 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-8</code> 所示：</p>
+            <div class="- topic/p p" data-ofbid="d66986e75__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_w2p_hgq_g1c" src="../../../images/usb/standard_device_descriptor.png" alt="image28"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e81__20250121171522">注意在这个阶段当中的几个全局 <code class="+ topic/ph pr-d/codeph ph codeph">Field</code> 的值：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_x2p_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_x2p_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e88__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e90__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">ADDR</code> ：Device Address = 0</p>
+                </li><li class="- topic/li li" data-ofbid="d66986e95__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e97__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">ENDP</code> ：EndPoint = 0</p>
+                </li><li class="- topic/li li" data-ofbid="d66986e102__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e104__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">DATA0</code>/<code class="+ topic/ph pr-d/codeph ph codeph">DATA1</code> ：如果多次 Data Transaction
+                        传输的是一段连续数据， <code class="+ topic/ph pr-d/codeph ph codeph">DATA0</code>
+                        <code class="+ topic/ph pr-d/codeph ph codeph">DATA1</code> 连续翻转。如果多次 Data Transaction 传输的数据是不相关的，则不会翻转。</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d66986e119__20250121171522">读回的具体 <code class="+ topic/ph pr-d/codeph ph codeph">Device Descriptor</code> 解析如下：</p>
+            <div class="- topic/p p" data-ofbid="d66986e125__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_y2p_hgq_g1c" src="../../../images/usb/device_descriptor_analy.gif" alt="image29"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_z2p_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_z2p_hgq_g1c"><h2 class="- topic/title title sectiontitle">2.3. Transaction 4 (Status Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e135__20250121171522">状态阶段用于表示一次控制传输的结束。</p>
+            <p class="- topic/p p" data-ofbid="d66986e138__20250121171522">首先发送一个 OUT 包，注意令牌包主要是指明传输类型，这里就为 OUT 类型。然后发一个大小为 0 的 DATA 包，Device 回一个 ACK
+                握手包。本次传输结束。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_afp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_afp_hgq_g1c"><h2 class="- topic/title title sectiontitle">Reset (<code class="+ topic/ph pr-d/codeph ph codeph">Powered</code> → <code class="+ topic/ph pr-d/codeph ph codeph">Default</code>)</h2>
+            
+            <div class="- topic/p p" data-ofbid="d66986e152__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_bfp_hgq_g1c" src="../../../images/usb/mouse_enum_reset.jpg" alt="image30"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e157__20250121171522">Host 向 Device 发送了一个 Reset 信号，由上边的状态图可以看出，USB 由 <code class="+ topic/ph pr-d/codeph ph codeph">Powered</code> 模式进入了
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Default</code> 模式。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_cfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_cfp_hgq_g1c"><h2 class="- topic/title title sectiontitle">Tranfser 1 (Control No Data) (Set Device Address) (<code class="+ topic/ph pr-d/codeph ph codeph">Default</code> →
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Address</code>)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e177__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Tranfser 1</code> 的主要作用是设置 <code class="+ topic/ph pr-d/codeph ph codeph">Device Address</code> ，USB 由状态图中的
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Default</code> 模式进入了 <code class="+ topic/ph pr-d/codeph ph codeph">Address</code> 模式，是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Control
+                    No Data</code> 类型的 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 。其中：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_dfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_dfp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e198__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e200__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 5</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e207__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e209__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 6</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Status Stage</code></p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d66986e217__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_efp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer1.png" alt="image31"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_ffp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_ffp_hgq_g1c"><h2 class="- topic/title title sectiontitle">4.1. Transaction 5 (Setup Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e227__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Packet 275</code> 是核心，其中的 <code class="+ topic/ph pr-d/codeph ph codeph">Setup Data</code> 具体解析如下：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="usb_枚举通讯过程__table_gfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__table_gfp_hgq_g1c" data-cols="5"><caption></caption><colgroup><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/><col/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__1">Offset</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__2">Field</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__3">Size</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__4">Value</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__5">Description</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__1">0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__2">bmRequestType</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__4">0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__5">表示期望的 数据传输方 向为主机传 输给设备。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__1">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__2">bmRequest</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__4">0x05</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__5">代表了一个命令，根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-4</code> 可以得知代表
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">SET_ADDRESS</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__1">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__2">wValue</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__4">0x03 0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Device
+                                    Address</code> 即 ： <code class="+ topic/ph pr-d/codeph ph codeph">Device Address</code> =
+                                0x03</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__1">4</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__2">wIndex</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__4">0x00 0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是：
+                                <code class="+ topic/ph pr-d/codeph ph codeph">Zero</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__1">6</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__2">wLength</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__4">0x00 0x00</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_枚举通讯过程__table_gfp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是：
+                                <code class="+ topic/ph pr-d/codeph ph codeph">Zero</code></td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_hfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_hfp_hgq_g1c"><h2 class="- topic/title title sectiontitle">4.2. Transaction 6 (Status Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e340__20250121171522">状态阶段用于表示一次控制传输的结束。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_ifp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_ifp_hgq_g1c"><h2 class="- topic/title title sectiontitle">Tranfser 2 (Control Read) (Get Device Descriptor)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e348__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 2</code> 的作用是重新获取了一遍设备描述符 <code class="+ topic/ph pr-d/codeph ph codeph">Get Device Descriptor</code>
+                ，不同之处不是用默认地址 0 获取的，而是用刚才配置的 Device Address 0x03 来获取的。它是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Control
+                    Read</code> 类型的 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 。其中：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_jfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_jfp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e363__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e365__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 7</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e372__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e374__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 8~10</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Data Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e381__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e383__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 11</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Status Stage</code></p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d66986e391__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_kfp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer2.png" alt="image32"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e396__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 2</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer 0</code> 的主要区别在于，一是有了明确的设置地址。另外：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_lfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_lfp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e406__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e408__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 0</code> 第一次获得设备描述符主要为了得到端点 0 可以发送的数据的大小，所以只要一个
+                            <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 1</code> 的 8 个字节数据就可。</p>
+                </li><li class="- topic/li li" data-ofbid="d66986e416__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e418__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 2</code> 完成了整个设备描述符的读取工作。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_mfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_mfp_hgq_g1c"><h2 class="- topic/title title sectiontitle">6. Tranfser 3 (Control Read) (Get Config Descriptor)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e430__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 3</code> 的作用是获取配置描述符 <code class="+ topic/ph pr-d/codeph ph codeph">Get Configuration Descriptor</code>
+                ，它是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Control Read</code> 类型的 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 。其中：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_nfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_nfp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e445__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e447__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 12</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e454__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e456__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 13~14</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Data Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e463__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e465__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 15</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Status Stage</code></p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d66986e473__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_ofp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer3.png" alt="image33"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_pfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_pfp_hgq_g1c"><h2 class="- topic/title title sectiontitle">6.1. Transaction 12 (Setup Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e483__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Packet 275</code> 是核心，其中的 <code class="+ topic/ph pr-d/codeph ph codeph">Setup Data</code> 具体解析如下：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="usb_枚举通讯过程__table_qfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__table_qfp_hgq_g1c" data-cols="5"><caption></caption><colgroup><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/><col/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__1">Offset</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__2">Field</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__3">Size</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__4">Value</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__5">Description</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__1">0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__2">bmRequestType</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__4">0x80</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__5">表示期望的数据传输方向为设备传输给 主机，这条命令的接收者为设备。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__1">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__2">bmRequest</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__4">0x06</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__5">代表了一个命令，根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-4</code> 可以得知代表的命令为获取描述符
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">GET_DESCRIPTOR</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__1">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__2">wValue</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__4">0x00 0x02</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Descriptor
+                                    Type</code> + <code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Index</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__1">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__2"><code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Index</code></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__4">0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__5">想要获取的描述符 index 为 0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__1">3</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__2"><code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Type</code></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__4">0x02</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-5</code> 可以得知，想要 获取的描述符为
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">Configuration Descriptor</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__1">4</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__2">wIndex</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__4">0x00 0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Zero</code>
+                                or <code class="+ topic/ph pr-d/codeph ph codeph">Language ID</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__1">6</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__2">wLength</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__4">0x09 0x00</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_枚举通讯过程__table_qfp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是：<code class="+ topic/ph pr-d/codeph ph codeph">Description
+                                    Length</code> 即：请求 Device 发送 <code class="+ topic/ph pr-d/codeph ph codeph">Configuration
+                                    Descriptor</code> 的 9 个字节</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_rfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_rfp_hgq_g1c"><h2 class="- topic/title title sectiontitle">6.2. Transaction 13~14 (Data Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e631__20250121171522">可以看到 <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 13~14</code> 联合起来从 Device 传递回了 9 个字节的数据给 Host，
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 13</code> 传输了 8 个字节数据， <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 14</code> 传递了
+                1 个字节数据。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_sfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_sfp_hgq_g1c"><span class="hl-number">09022200010100</span>A032</pre>
+            <p class="- topic/p p" data-ofbid="d66986e646__20250121171522">这 9 个字节数据就是 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer 12</code> 指定要读取的 <code class="+ topic/ph pr-d/codeph ph codeph">Configuration
+                    Descriptor</code> ，其具体的格式如 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-10</code> 所示：</p>
+            <div class="- topic/p p" data-ofbid="d66986e658__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_tfp_hgq_g1c" src="../../../images/usb/standard_configuration_descriptor.png" alt="image34"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e664__20250121171522">读回的具体 <code class="+ topic/ph pr-d/codeph ph codeph">Configuration Descriptor</code> 解析如下：</p>
+            <div class="- topic/p p" data-ofbid="d66986e670__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_ufp_hgq_g1c" src="../../../images/usb/config_descriptor_analy.jpg" alt="image35"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_vfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_vfp_hgq_g1c"><h2 class="- topic/title title sectiontitle">6.3. Transaction 15 (Status Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e680__20250121171522">状态阶段用于表示一次控制传输的结束。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_wfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_wfp_hgq_g1c"><h2 class="- topic/title title sectiontitle">7. Tranfser 4 (Control Read) (Get 4 Descriptors)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e688__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 4</code> 的作用是一次性获取了 4 个描述符 <code class="+ topic/ph pr-d/codeph ph codeph">Get 4 Descriptors</code> ，它是一个
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Control Read</code> 类型的 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 。其中：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_xfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_xfp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e703__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e705__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 16</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e712__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e714__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 17~21</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Data Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e721__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e723__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 22</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Status Stage</code></p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d66986e731__20250121171522">从格式上看它使用的命令 <code class="+ topic/ph pr-d/codeph ph codeph">Setup Data</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer 3</code> 一样，仅仅读取长度从
+                    <code class="+ topic/ph pr-d/codeph ph codeph">0x09</code> 改成了 <code class="+ topic/ph pr-d/codeph ph codeph">0x22</code> ，就一次性读出了 4 个描述符。
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Transfer 3</code> 的主要作用是读取 <code class="+ topic/ph pr-d/codeph ph codeph">Descriptors</code> 的总长度，
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Transfer 4</code> 根据这个长度读取了所有 <code class="+ topic/ph pr-d/codeph ph codeph">Descriptors</code> 。</p>
+            <div class="- topic/p p" data-ofbid="d66986e759__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_yfp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer4.png" alt="image36"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_zfp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_zfp_hgq_g1c"><h2 class="- topic/title title sectiontitle">7.1. Configuration Descriptor</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_agp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_agp_hgq_g1c"><span class="hl-number">09022200010100</span>A032</pre>
+            <p class="- topic/p p" data-ofbid="d66986e772__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 17~18</code> 提供了 9 字节的 <code class="+ topic/ph pr-d/codeph ph codeph">Configuration
+                    Descriptor</code> 数据，具体内容和解析如上一节一样。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_bgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_bgp_hgq_g1c"><h2 class="- topic/title title sectiontitle">7.2. Interface Descriptor</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_cgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_cgp_hgq_g1c"><span class="hl-number">090400000103010200</span></pre>
+            <p class="- topic/p p" data-ofbid="d66986e788__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 18~19</code> 提供了 9 字节的 <code class="+ topic/ph pr-d/codeph ph codeph">Interface Descriptor</code>
+                数据，具体内容和解析如下：</p>
+            <div class="- topic/p p" data-ofbid="d66986e796__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_dgp_hgq_g1c" src="../../../images/usb/interface_descriptor_analy.jpg" alt="image37"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e801__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Interface Descriptor</code> 具体的格式如 Table 9-12 所示：</p>
+            <div class="- topic/p p" data-ofbid="d66986e807__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_egp_hgq_g1c" src="../../../images/usb/standard_interface_descriptor.png" alt="image38"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_fgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_fgp_hgq_g1c"><h2 class="- topic/title title sectiontitle">7.3. HID Descriptor</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_ggp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_ggp_hgq_g1c"><span class="hl-number">092111010001223400</span></pre>
+            <p class="- topic/p p" data-ofbid="d66986e820__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 19~20</code> 提供了 9 字节的 <code class="+ topic/ph pr-d/codeph ph codeph">HID Descriptor</code>
+                数据，具体内容和解析如下：</p>
+            <div class="- topic/p p" data-ofbid="d66986e828__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_hgp_hgq_g1c" src="../../../images/usb/hid_descriptor_analy.jpg" alt="image39"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e833__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">HID Descriptor</code> 具体的格式如下所示：</p>
+            <div class="- topic/p p" data-ofbid="d66986e839__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_igp_hgq_g1c" src="../../../images/usb/standard_hid_descriptor.png" alt="image40"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_jgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_jgp_hgq_g1c"><h2 class="- topic/title title sectiontitle">7.4. Endpoint Descriptor</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_kgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_kgp_hgq_g1c"><span class="hl-number">0705810305000</span>A</pre>
+            <p class="- topic/p p" data-ofbid="d66986e852__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 20~21</code> 提供了 7 字节的 <code class="+ topic/ph pr-d/codeph ph codeph">Endpoint Descriptor</code>
+                数据，具体内容和解析如下：</p>
+            <div class="- topic/p p" data-ofbid="d66986e860__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_lgp_hgq_g1c" src="../../../images/usb/endpoint_descriptor_analy.gif" alt="image41"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e865__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Endpoint Descriptor</code> 具体的格式如 Table 9-13 所示：</p>
+            <div class="- topic/p p" data-ofbid="d66986e871__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_mgp_hgq_g1c" src="../../../images/usb/standard_endpoint_requests.png" alt="image42"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_ngp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_ngp_hgq_g1c"><h2 class="- topic/title title sectiontitle">8. Tranfser 5 (Control Read) (Get String 0 Descriptor)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e881__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 5</code> 的作用是获取了 index 0 的 <code class="+ topic/ph pr-d/codeph ph codeph">String Descriptor</code>
+                ，它是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Control Read</code> 类型的 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 。其中：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_ogp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_ogp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e896__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e898__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 23</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e905__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e907__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 24</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Data Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e914__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e916__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 25</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Status Stage</code></p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d66986e924__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_pgp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer5.png" alt="image43"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_qgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_qgp_hgq_g1c"><h2 class="- topic/title title sectiontitle">8.1. Transaction 23 (Setup Stage)</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_rgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_rgp_hgq_g1c"><span class="hl-number">800600030000F</span>F00</pre>
+            <p class="- topic/p p" data-ofbid="d66986e937__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Packet 366</code> 是核心，其中的 <code class="+ topic/ph pr-d/codeph ph codeph">Setup Data</code> 具体解析如下：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="usb_枚举通讯过程__table_sgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__table_sgp_hgq_g1c" data-cols="5"><caption></caption><colgroup><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/><col style="width:25%"/><col/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__1">Offset</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__2">Field</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__3">Size</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__4">Value</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__5">Description</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__1">0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__2">bmRequestType</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__4">0x80</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__5">表示期望的数据传输方向为设备传输给 主机，这条命令的接收者为设备。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__1">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__2">bmRequest</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__4">0x06</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__5">代表了一个命令，根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-4</code> 可以得知代表的命令为获取描述符
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">GET_DESCRIPTOR</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__1">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__2">wValue</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__4">0x00 0x03</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Descriptor
+                                    Type</code> + <code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Index</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__1">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__2"><code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Index</code></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__4">0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__5">想要获取的描述符 index 为 0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__1">3</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__2"><code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Type</code></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__4">0x03</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-5</code> 可以得知，想要获取 的描述符为 <code class="+ topic/ph pr-d/codeph ph codeph">String
+                                    Descriptor</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__1">4</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__2">wIndex</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__4">0x00 0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Zero</code>
+                                or <code class="+ topic/ph pr-d/codeph ph codeph">Language ID</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__1">6</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__2">wLength</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__4">0xFF 0x00</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_枚举通讯过程__table_sgp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时 代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Description
+                                    Length</code> 即：请求 Device 发送 <code class="+ topic/ph pr-d/codeph ph codeph">String
+                                    Descriptor</code> 最大长度 255 个字节</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_tgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_tgp_hgq_g1c"><h2 class="- topic/title title sectiontitle">8.2. Transaction 24 (Data Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e1086__20250121171522">可以看到 <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 24</code> 联合起来从 Device 传递回了 4 个字节的数据给 Host。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_ugp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_ugp_hgq_g1c"><span class="hl-number">04030904</span></pre>
+            <p class="- topic/p p" data-ofbid="d66986e1095__20250121171522">index 0 <code class="+ topic/ph pr-d/codeph ph codeph">String Descriptor</code> ，表示的是 设备支持的语言。解析格式如下：</p>
+            <div class="- topic/p p" data-ofbid="d66986e1101__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_vgp_hgq_g1c" src="../../../images/usb/standard_string0_descriptor.png" alt="image44"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e1107__20250121171522">所以 <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 24</code> 读回的 <code class="+ topic/ph pr-d/codeph ph codeph">Language ID</code> 为
+                    <code class="+ topic/ph pr-d/codeph ph codeph">0x0409</code> 即美国英语。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_wgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_wgp_hgq_g1c"><h2 class="- topic/title title sectiontitle">9. Tranfser 6 (Control Read) (Get String 2 Descriptor)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e1124__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 6</code> 的作用是获取了 index 2 的 <code class="+ topic/ph pr-d/codeph ph codeph">String Descriptor</code>
+                ，它是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Control Read</code> 类型的 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 。其中：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_xgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_xgp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e1139__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e1141__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 26</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e1148__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e1150__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 27~31</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Data Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e1157__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e1159__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 32</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Status Stage</code></p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d66986e1167__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_ygp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer6.png" alt="image45"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_zgp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_zgp_hgq_g1c"><h2 class="- topic/title title sectiontitle">9.1. Transaction 26 (Setup Stage)</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_ahp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_ahp_hgq_g1c"><span class="hl-number">800602030904F</span>F00</pre>
+            <p class="- topic/p p" data-ofbid="d66986e1180__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Packet 366</code> 是核心，其中的 <code class="+ topic/ph pr-d/codeph ph codeph">Setup Data</code> 具体解析如下：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="usb_枚举通讯过程__table_bhp_hgq_g1c" data-ofbid="usb_枚举通讯过程__table_bhp_hgq_g1c" data-cols="5"><caption></caption><colgroup><col style="width:14.285714285714285%"/><col style="width:14.285714285714285%"/><col style="width:14.285714285714285%"/><col style="width:14.285714285714285%"/><col style="width:42.857142857142854%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__1">Offset</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__2">Field</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__3">Size</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__4">Value</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__5">Description</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__1">0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__2">bmRequestType</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__4">0x80</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__5">表示期望的数据传输方向为设备传输给主机，这条 命令的接收者为设备。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__1">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__2">bmRequest</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__4">0x06</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__5">代表了一个命令，根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-4</code> 可以得知代 表的命令为获取描述符
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">GET_DESCRIPTOR</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__1">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__2">wValue</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__4">0x02 0x03</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Descriptor
+                                    Type</code> + <code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Index</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__1">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__2"><code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Index</code></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__4">0x02</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__5">想要获取的描述符 index 为 2</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__1">3</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__2"><code class="+ topic/ph pr-d/codeph ph codeph">Descriptor Type</code></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__4">0x03</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-5</code> 可以得知，想要获取的描述符为 <code class="+ topic/ph pr-d/codeph ph codeph">String
+                                    Descriptor</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__1">4</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__2">wIndex</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__4">0x09 0x04</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Language
+                                    ID</code> 即 0x0409 美国英语</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__1">6</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__2">wLength</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__4">0xFF 0x00</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_枚举通讯过程__table_bhp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Description
+                                    Length</code> 即：请求 Device 发送 <code class="+ topic/ph pr-d/codeph ph codeph">String Descriptor</code>
+                                最大长度 255 个字节</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_chp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_chp_hgq_g1c"><h2 class="- topic/title title sectiontitle">9.2. Transaction 27~31 (Data Stage)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e1326__20250121171522">可以看到 <code class="+ topic/ph pr-d/codeph ph codeph">Transaction 27~31</code> 联合起来从 Device 传递回了 36 个字节的数据给 Host。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_dhp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_dhp_hgq_g1c"><span class="hl-number">240355005300420020004F</span>00700074006900630061006C0020004D006F00750073006500</pre>
+            <p class="- topic/p p" data-ofbid="d66986e1335__20250121171522">index 2 <code class="+ topic/ph pr-d/codeph ph codeph">String Descriptor</code> ，表示的是一个字符串。解析格式如下：</p>
+            <div class="- topic/p p" data-ofbid="d66986e1341__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_ehp_hgq_g1c" src="../../../images/usb/standard_string_descriptor.png" alt="image46"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e1347__20250121171522">即读回了一个 34 字节的 unicode 字符串 <code class="+ topic/ph pr-d/codeph ph codeph">55 00 53 00 42 00 20 00 4F 00 70 00 74 00 69 00 63
+                    00 61 00 6C 00 20 00 4D 00 6F 00 75 00 73 00 65 00</code> 转成 Ascii 码为
+                    <code class="+ topic/ph pr-d/codeph ph codeph">USB Optical Mouse</code> 。</p>
+            <p class="- topic/p p" data-ofbid="d66986e1356__20250121171522">在上几节读取 <code class="+ topic/ph pr-d/codeph ph codeph">Device Descriptor</code> 时， <code class="+ topic/ph pr-d/codeph ph codeph">iProduct</code> 字段的值为 0x2 即
+                    <code class="+ topic/ph pr-d/codeph ph codeph">index 2 String Descriptor</code> ，所以 <code class="+ topic/ph pr-d/codeph ph codeph">iProduct</code> 就是
+                    <code class="+ topic/ph pr-d/codeph ph codeph">USB Optical Mouse</code> 。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_fhp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_fhp_hgq_g1c"><h2 class="- topic/title title sectiontitle">0. Tranfser 7 (Control Read) (Get String 1 Descriptor)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e1379__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transfer 7</code> 的作用是获取了 index 1 的 <code class="+ topic/ph pr-d/codeph ph codeph">String Descriptor</code>
+                ，它是一个 <code class="+ topic/ph pr-d/codeph ph codeph">Control Read</code> 类型的 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 。其中：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_ghp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_ghp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e1394__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e1396__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 33</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e1403__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e1405__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 34~36</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Data Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e1412__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e1414__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 37</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Status Stage</code></p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d66986e1422__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_hhp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer7.png" alt="image47"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d66986e1427__20250121171522">解析方式和上一节一样，最终读出了 16 字节的 unicode 字符串 <code class="+ topic/ph pr-d/codeph ph codeph">4C 00 6F 00 67 00 69 00 74 00 65 00 63 00
+                    68 00</code> 转成 Ascii 码为 <code class="+ topic/ph pr-d/codeph ph codeph">Logitech</code> 。</p>
+            <p class="- topic/p p" data-ofbid="d66986e1437__20250121171522">即 <code class="+ topic/ph pr-d/codeph ph codeph">Device Descriptor</code> 中的 <code class="+ topic/ph pr-d/codeph ph codeph">iManufacturer</code> 字段为
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Logitech</code> 。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_ihp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_ihp_hgq_g1c"><h2 class="- topic/title title sectiontitle">1. Tranfser 8 (Control No Data) (Set Configured) (<code class="+ topic/ph pr-d/codeph ph codeph">Address</code> →
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Configured</code>)</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e1460__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Tranfser 8</code> 的主要作用是设置 <code class="+ topic/ph pr-d/codeph ph codeph">Configured</code> ，USB 由状态图中的
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Address</code> 模式进入了 <code class="+ topic/ph pr-d/codeph ph codeph">Configured</code> 模式，是一个
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Control No Data</code> 类型的 <code class="+ topic/ph pr-d/codeph ph codeph">Transfer</code> 。其中：</p>
+            <ul class="- topic/ul ul" id="usb_枚举通讯过程__ul_jhp_hgq_g1c" data-ofbid="usb_枚举通讯过程__ul_jhp_hgq_g1c"><li class="- topic/li li" data-ofbid="d66986e1481__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e1483__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 38</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code></p>
+                </li><li class="- topic/li li" data-ofbid="d66986e1490__20250121171522">
+                    <p class="- topic/p p" data-ofbid="d66986e1492__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Transaction 39</code> ： <code class="+ topic/ph pr-d/codeph ph codeph">Status Stage</code></p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d66986e1500__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_khp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer8.png" alt="image48"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_lhp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_lhp_hgq_g1c"><h2 class="- topic/title title sectiontitle">Transaction 38 (Setup Stage)</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_枚举通讯过程__pre_mhp_hgq_g1c" data-ofbid="usb_枚举通讯过程__pre_mhp_hgq_g1c"><span class="hl-number">0009010300000000</span></pre>
+            <p class="- topic/p p" data-ofbid="d66986e1513__20250121171522"><code class="+ topic/ph pr-d/codeph ph codeph">Packet 439</code> 是核心，其中的 <code class="+ topic/ph pr-d/codeph ph codeph">Setup Data</code> 具体解析如下：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="usb_枚举通讯过程__table_nhp_hgq_g1c" data-ofbid="usb_枚举通讯过程__table_nhp_hgq_g1c" data-cols="5"><caption></caption><colgroup><col style="width:20%"/><col style="width:20%"/><col style="width:20%"/><col style="width:20%"/><col style="width:20%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__1">Offset</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__2">Field</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__3">Size</th><th class="- topic/entry entry colsep-1 rowsep-1" id="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__4">Value</th><th class="- topic/entry entry colsep-0 rowsep-1" id="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__5">Description</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__1">0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__2">bmRequestType</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__4">0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__5">表示期望的数据传输方向为主机传输给设备</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__1">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__2">bmRequest</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__3">1</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__4">0x09</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__5">代表了一个命令，根据 <code class="+ topic/ph pr-d/codeph ph codeph">Tab le 9-4</code> 可以得知 代表的命令为
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">SET_CONFIGURATION</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__1">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__2">wValue</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__4">0x01 0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时代表的是： <code class="+ topic/ph pr-d/codeph ph codeph">Configuration
+                                    Value</code> 即配置 0x01</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__1">4</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__2">wIndex</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__4">0x00 0x00</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时
+                                <code class="+ topic/ph pr-d/codeph ph codeph">Zero</code></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__1">6</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__2">wLength</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__3">2</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__4">0x00 0x00</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="usb_枚举通讯过程__table_nhp_hgq_g1c__entry__5">根据 <code class="+ topic/ph pr-d/codeph ph codeph">Table 9-3</code> 可以得知，此时
+                                <code class="+ topic/ph pr-d/codeph ph codeph">Zero</code></td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_ohp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_ohp_hgq_g1c"><h2 class="- topic/title title sectiontitle">Tranfser 9</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e1623__20250121171522">好像也没干成什么事。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_php_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_php_hgq_g1c"><h2 class="- topic/title title sectiontitle">Tranfser 10</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e1631__20250121171522">获得 HID 描述符。</p>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_qhp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_qhp_hgq_g1c"><h2 class="- topic/title title sectiontitle">Tranfser 11</h2>
+            
+            <p class="- topic/p p" data-ofbid="d66986e1639__20250121171522">是枚举成功后，两次 host 与 device 之间传输数据。这里只截了部分图。Host 每个 bInterval 这么多时间就对 device 查询一下，看有没有数据要传，比如有没有键子被按下。每次都是，host 向 device 发送一个 IN 令牌包，如果没有数据，device 就回一个 NAK。</p>
+            <div class="- topic/p p" data-ofbid="d66986e1642__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_rhp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer11.png" alt="image49"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_枚举通讯过程__section_shp_hgq_g1c" data-ofbid="usb_枚举通讯过程__section_shp_hgq_g1c"><h2 class="- topic/title title sectiontitle">Tranfser 12</h2>
+            
+            <div class="- topic/p p" data-ofbid="d66986e1652__20250121171522"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_枚举通讯过程__image_thp_hgq_g1c" src="../../../images/usb/mouse_enum_transfer12.png" alt="image50"/></div><br/></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_u2p_hgq_g1c" data-tocid="usb_枚举通讯过程__section_u2p_hgq_g1c">Transaction 1 ~ Transaction 3 (Data Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_z2p_hgq_g1c" data-tocid="usb_枚举通讯过程__section_z2p_hgq_g1c">2.3. Transaction 4 (Status Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_afp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_afp_hgq_g1c">Reset (<code class="+ topic/ph pr-d/codeph ph codeph">Powered</code> → <code class="+ topic/ph pr-d/codeph ph codeph">Default</code>)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_cfp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_cfp_hgq_g1c">Tranfser 1 (Control No Data) (Set Device Address) (<code class="+ topic/ph pr-d/codeph ph codeph">Default</code> →
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Address</code>)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_ffp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_ffp_hgq_g1c">4.1. Transaction 5 (Setup Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_hfp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_hfp_hgq_g1c">4.2. Transaction 6 (Status Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_ifp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_ifp_hgq_g1c">Tranfser 2 (Control Read) (Get Device Descriptor)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_mfp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_mfp_hgq_g1c">6. Tranfser 3 (Control Read) (Get Config Descriptor)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_pfp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_pfp_hgq_g1c">6.1. Transaction 12 (Setup Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_rfp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_rfp_hgq_g1c">6.2. Transaction 13~14 (Data Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_vfp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_vfp_hgq_g1c">6.3. Transaction 15 (Status Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_wfp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_wfp_hgq_g1c">7. Tranfser 4 (Control Read) (Get 4 Descriptors)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_zfp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_zfp_hgq_g1c">7.1. Configuration Descriptor</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_bgp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_bgp_hgq_g1c">7.2. Interface Descriptor</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_fgp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_fgp_hgq_g1c">7.3. HID Descriptor</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_jgp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_jgp_hgq_g1c">7.4. Endpoint Descriptor</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_ngp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_ngp_hgq_g1c">8. Tranfser 5 (Control Read) (Get String 0 Descriptor)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_qgp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_qgp_hgq_g1c">8.1. Transaction 23 (Setup Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_tgp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_tgp_hgq_g1c">8.2. Transaction 24 (Data Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_wgp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_wgp_hgq_g1c">9. Tranfser 6 (Control Read) (Get String 2 Descriptor)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_zgp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_zgp_hgq_g1c">9.1. Transaction 26 (Setup Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_chp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_chp_hgq_g1c">9.2. Transaction 27~31 (Data Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_fhp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_fhp_hgq_g1c">0. Tranfser 7 (Control Read) (Get String 1 Descriptor)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_ihp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_ihp_hgq_g1c">1. Tranfser 8 (Control No Data) (Set Configured) (<code class="+ topic/ph pr-d/codeph ph codeph">Address</code> →
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Configured</code>)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_lhp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_lhp_hgq_g1c">Transaction 38 (Setup Stage)</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_ohp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_ohp_hgq_g1c">Tranfser 9</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_php_hgq_g1c" data-tocid="usb_枚举通讯过程__section_php_hgq_g1c">Tranfser 10</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_qhp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_qhp_hgq_g1c">Tranfser 11</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_%E6%9E%9A%E4%B8%BE%E9%80%9A%E8%AE%AF%E8%BF%87%E7%A8%8B__section_shp_hgq_g1c" data-tocid="usb_枚举通讯过程__section_shp_hgq_g1c">Tranfser 12</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

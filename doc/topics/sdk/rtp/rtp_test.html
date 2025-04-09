@@ -1,0 +1,250 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="测试环境 硬件 带触屏功能的屏幕 带 RTP 接口的开发板 USB Type-C 数据线，用于给开发板供电、烧写 USB 转串口的线，用于连接开发板的调试串口 手写笔，可以更方便精准的点击 RTP 软件 PC 端的串口终端软件，用于 PC 和开发板进行串口通信 AiBurn 烧写工具 tslib 开源库，用于管理 input 设备和事件、以及坐标校准，luban 中已集成 ts_draw ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="rtp_test_guide"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/rtp/rtp_test.dita"/><meta name="wh-out-relpath" content="topics/sdk/rtp/rtp_test.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="rtp_test_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/rtp/rtp_test.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d342115e22__20250121172114">测试环境<ul class="- topic/ul ul" id="rtp_test_guide__ul_hmj_5ty_21c" data-ofbid="rtp_test_guide__ul_hmj_5ty_21c"><li class="- topic/li li" data-ofbid="d342115e25__20250121172114">硬件<ul class="- topic/ul ul" id="rtp_test_guide__ul_kwm_tty_21c" data-ofbid="rtp_test_guide__ul_kwm_tty_21c"><li class="- topic/li li" data-ofbid="d342115e28__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e30__20250121172114">带触屏功能的屏幕</p>
+                        </li><li class="- topic/li li" data-ofbid="d342115e33__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e35__20250121172114">带 RTP 接口的开发板</p>
+                        </li><li class="- topic/li li" data-ofbid="d342115e38__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e40__20250121172114">USB Type-C 数据线，用于给开发板供电、烧写</p>
+                        </li><li class="- topic/li li" data-ofbid="d342115e43__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e45__20250121172114">USB 转串口的线，用于连接开发板的调试串口</p>
+                        </li><li class="- topic/li li" data-ofbid="d342115e48__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e50__20250121172114">手写笔，可以更方便精准的点击 RTP</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d342115e53__20250121172114">软件<ul class="- topic/ul ul" id="rtp_test_guide__ul_lwm_tty_21c" data-ofbid="rtp_test_guide__ul_lwm_tty_21c"><li class="- topic/li li" data-ofbid="d342115e56__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e58__20250121172114">PC 端的串口终端软件，用于 PC 和开发板进行串口通信</p>
+                        </li><li class="- topic/li li" data-ofbid="d342115e61__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e63__20250121172114">AiBurn 烧写工具</p>
+                        </li><li class="- topic/li li" data-ofbid="d342115e66__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e68__20250121172114">tslib 开源库，用于管理 input 设备和事件、以及坐标校准，luban 中已集成</p>
+                        </li><li class="- topic/li li" data-ofbid="d342115e71__20250121172114">
+                            <p class="- topic/p p" data-ofbid="d342115e73__20250121172114">ts_draw 测试工具，用于测试触屏的坐标事件、跳点统计等，luban 中已集成</p>
+                        </li></ul></li></ul></div><section class="- topic/section section" id="rtp_test_guide__section_mwm_tty_21c" data-ofbid="rtp_test_guide__section_mwm_tty_21c"><h2 class="- topic/title title sectiontitle">软件配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d342115e81__20250121172114">
+                <ol class="- topic/ol ol" id="rtp_test_guide__ul_umr_b5y_21c" data-ofbid="rtp_test_guide__ul_umr_b5y_21c"><li class="- topic/li li" data-ofbid="d342115e84__20250121172114"><strong class="+ topic/ph hi-d/b ph b">tslib</strong>：在 Luban 的根目录下通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make menuconfig</span> 可以打开
+                            <code class="+ topic/ph pr-d/codeph ph codeph">tslib</code>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_test_guide__pre_nwm_tty_21c" data-ofbid="rtp_test_guide__pre_nwm_tty_21c">Third-party packages
+    [*] tslib</pre></li><li class="- topic/li li" data-ofbid="d342115e96__20250121172114"><strong class="+ topic/ph hi-d/b ph b">ts_draw</strong>：<div class="- topic/p p" data-ofbid="d342115e100__20250121172114">在 Luban 的根目录下通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make menuconfig</span>
+                            可以打开，最终在板子上会看到工具
+                            ts_draw：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_test_guide__pre_pwm_tty_21c" data-ofbid="rtp_test_guide__pre_pwm_tty_21c">Artinchip packages
+    Sample code
+        [*] test-touchscreen</pre></div><p class="- topic/p p" data-ofbid="d342115e107__20250121172114">ts_draw 会调用 tslib 接口，所以依赖
+                            tslib 的运行环境，所以运行前必须先配置好 tslib。</p></li></ol>
+            </div>
+        </section><section class="- topic/section section" id="rtp_test_guide__section_qwm_tty_21c" data-ofbid="rtp_test_guide__section_qwm_tty_21c"><h2 class="- topic/title title sectiontitle">配置 tslib 运行环境</h2>
+            
+            <p class="- topic/p p" data-ofbid="d342115e116__20250121172114">在板子的 shell 中执行以下命令配置几个环境变量：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_test_guide__pre_rwm_tty_21c" data-ofbid="rtp_test_guide__pre_rwm_tty_21c">exportTSLIB_FBDEVICE=/dev/fb0
+exportPOINTERCAL_CALIBFILE=/usr/etc/ts-calib.conf
+exportTSLIB_CONSOLEDEVICE=none
+exportTSLIB_TSDEVICE=/dev/input/event0
+exportTSLIB_PLUGINDIR=/usr/lib/ts
+exportTSLIB_CALIBFILE=/tmp/pointercal
+</pre>
+        </section><section class="- topic/section section" id="rtp_test_guide__section_swm_tty_21c" data-ofbid="rtp_test_guide__section_swm_tty_21c"><h2 class="- topic/title title sectiontitle">坐标校准</h2>
+            
+            <p class="- topic/p p" data-ofbid="d342115e127__20250121172114">配置好 tslib 运行环境后，在板子的 shell 中执行 ts_calibrate 工具，在触屏界面会出现一个校准界面，按照提示，点击 5 个小十字的中心，完成校准。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_test_guide__pre_twm_tty_21c" data-ofbid="rtp_test_guide__pre_twm_tty_21c"># ts_calibrate
+xres = <span class="hl-number">1024</span>, yres = <span class="hl-number">600</span></pre>
+        </section><section class="- topic/section section" id="rtp_test_guide__section_uwm_tty_21c" data-ofbid="rtp_test_guide__section_uwm_tty_21c"><h2 class="- topic/title title sectiontitle">读取坐标值</h2>
+            
+            <p class="- topic/p p" data-ofbid="d342115e138__20250121172114">在板子的 shell 中执行 ts_draw 测试工具，点击触屏 draw 会打印出每次坐标事件。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_test_guide__pre_vwm_tty_21c" data-ofbid="rtp_test_guide__pre_vwm_tty_21c"># ts_draw -d
+FB res: X <span class="hl-number">1024</span>, Y <span class="hl-number">600</span>，Size <span class="hl-number">2457600</span>, Border <span class="hl-number">0</span>, Jump thd <span class="hl-number">4</span>
+<span class="hl-number">1646290364.886053</span>: X -  <span class="hl-number">734</span> Y -  <span class="hl-number">280</span> P -   <span class="hl-number">34</span>
+<span class="hl-number">1646290364.906078</span>: X -  <span class="hl-number">734</span> Y -  <span class="hl-number">280</span> P -   <span class="hl-number">49</span>
+<span class="hl-number">1646290364.926056</span>: X -  <span class="hl-number">734</span> Y -  <span class="hl-number">280</span> P -   <span class="hl-number">65</span>
+<span class="hl-number">1646290364.946044</span>: X -  <span class="hl-number">734</span> Y -  <span class="hl-number">280</span> P -   <span class="hl-number">76</span>
+<span class="hl-number">1646290364.966063</span>: X -  <span class="hl-number">734</span> Y -  <span class="hl-number">279</span> P -   <span class="hl-number">98</span>
+<span class="hl-number">1646290364.986043</span>: X -  <span class="hl-number">735</span> Y -  <span class="hl-number">279</span> P -  <span class="hl-number">117</span></pre>
+            <div class="- topic/note note tip note_tip" id="rtp_test_guide__note_vmk_mns_4dc" data-ofbid="rtp_test_guide__note_vmk_mns_4dc"><span class="note__title">提示：</span> 
+                <p class="- topic/p p" data-ofbid="d342115e146__20250121172114">上述坐标是通过 calibrate 校准后的坐标，如果要查看原始坐标可增加参数-r。</p>
+            </div>
+        </section><section class="- topic/section section" id="rtp_test_guide__section_ewm_25y_21c" data-ofbid="rtp_test_guide__section_ewm_25y_21c"><h2 class="- topic/title title sectiontitle">跳点分析</h2>
+            
+            <div class="- topic/p p" data-ofbid="d342115e155__20250121172114">ts_draw 具备一个功能，就是统计跳点的个数，判断方法是看到连续出现的两个坐标间距太大就认为是跳点。“间距”门限默认是 4，可以通过参数设置该值。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_test_guide__pre_xwm_tty_21c" data-ofbid="rtp_test_guide__pre_xwm_tty_21c"><em class="+ topic/ph hi-d/i ph i"># ts_draw -h</em>
+Usage: ts_draw [Options], built on Apr <span class="hl-number">27202214</span>:<span class="hl-number">42</span>:<span class="hl-number">38</span>
+    -r, --raw       Use the raw coordinate, <strong class="hl-keyword">default</strong>: disable
+    -d, --debug     Open more debug information, <strong class="hl-keyword">default</strong>: disable
+    -b, --border    The width of border(will ignore), <strong class="hl-keyword">default</strong> <span class="hl-number">0</span>
+    -j, --jumb-thd  The threshold to determinate jumb sample, <strong class="hl-keyword">default</strong> <span class="hl-number">4</span>
+    -h, --help
+
+<em class="+ topic/ph hi-d/i ph i"># ts_draw  -j <span class="hl-number">3</span></em>
+FB res: X <span class="hl-number">800</span>, Y <span class="hl-number">480</span>，Size <span class="hl-number">1536000</span>, Boarder <span class="hl-number">0</span>, Jump thd <span class="hl-number">3</span>
+Stats: Sum <span class="hl-number">44</span>, Out <span class="hl-number">0</span>(<span class="hl-number">0.00</span>%), Jump <span class="hl-number">1</span>(<span class="hl-number">2.27</span>%), Period <span class="hl-number">5.06</span> ms
+
+Stats: Sum <span class="hl-number">265</span>, Out <span class="hl-number">0</span>(<span class="hl-number">0.00</span>%), Jump <span class="hl-number">1</span>(<span class="hl-number">0.38</span>%), Period <span class="hl-number">5.06</span> ms
+</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#rtp_test_guide__section_mwm_tty_21c" data-tocid="rtp_test_guide__section_mwm_tty_21c">软件配置</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_test_guide__section_qwm_tty_21c" data-tocid="rtp_test_guide__section_qwm_tty_21c">配置 tslib 运行环境</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_test_guide__section_swm_tty_21c" data-tocid="rtp_test_guide__section_swm_tty_21c">坐标校准</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_test_guide__section_uwm_tty_21c" data-tocid="rtp_test_guide__section_uwm_tty_21c">读取坐标值</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_test_guide__section_ewm_25y_21c" data-tocid="rtp_test_guide__section_ewm_25y_21c">跳点分析</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

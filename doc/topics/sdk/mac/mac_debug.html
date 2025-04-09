@@ -1,0 +1,290 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="调试开关 以太网调试开关 通过 scons --menuconfig 命令打开 Luban-Lite 的配置选项如下路径，选中 Luban-Lite 的打印等级开关，可以将 Luban-Lite 的打印等级调到最高等级(debug)，可以实时观测以太网驱动内部的打印消息。 Rt-Thread options ---&gt; RT-Thread Components ---&gt; Utilities ---&gt; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-24"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mac_debug_guide"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mac/mac_debug.dita"/><meta name="wh-out-relpath" content="topics/sdk/mac/mac_debug.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mac_debug_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mac/mac_debug.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">24 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="mac_debug_guide__section_ok1_lpp_g1c" data-ofbid="mac_debug_guide__section_ok1_lpp_g1c"><h2 class="- topic/title title sectiontitle">调试开关</h2>
+            
+            <div class="- topic/p p" data-ofbid="d214778e27__20250121171643">
+                <ul class="- topic/ul ul" id="mac_debug_guide__ul_lwr_mpp_g1c" data-ofbid="mac_debug_guide__ul_lwr_mpp_g1c"><li class="- topic/li li" data-ofbid="d214778e30__20250121171643">以太网调试开关<div class="- topic/p p" data-ofbid="d214778e32__20250121171643">通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 命令打开 Luban-Lite
+                            的配置选项如下路径，选中 Luban-Lite 的打印等级开关，可以将 Luban-Lite
+                            的打印等级调到最高等级(debug)，可以实时观测以太网驱动内部的打印消息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__codeblock_pkd_npp_g1c" data-ofbid="mac_debug_guide__codeblock_pkd_npp_g1c">Rt-Thread options ---&gt;
+    RT-Thread Components ---&gt;
+        Utilities ---&gt;
+            [*] Enable ulog
+                The <strong class="hl-keyword">static</strong> output log level. (Debug) ---&gt;</pre></div></li><li class="- topic/li li" data-ofbid="d214778e39__20250121171643">LwIP 协议栈调试开关<div class="- topic/p p" data-ofbid="d214778e41__20250121171643">通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 命令打开 Luban-Lite
+                            的配置选项如下路径，选中 LwIP 的调试开关,一般只打开 <code class="+ topic/ph pr-d/codeph ph codeph">Enable Debugging of IP</code>
+                            就可以观察到是否正常收发数据。
+                            如有其他调试需求，可根据自身需要打开其他调试开关：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__codeblock_iv1_4pp_g1c" data-ofbid="mac_debug_guide__codeblock_iv1_4pp_g1c">Local packages options ---&gt;
+    Third-party packages options ---&gt;
+        LwIP: Light weight TCP/IP stack
+            [*] Enable LwIP Debugging Options ---&gt;
+                ...
+                [*] Enable Debugging of IP
+                ...</pre></div></li><li class="- topic/li li" data-ofbid="d214778e51__20250121171643">特殊功能调试开关<div class="- topic/p p" data-ofbid="d214778e53__20250121171643">Luban-Lite 支持一些自定义的测试命令，包括有 test_mqtt， iperf 命令， test_eth
+                                命令。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__codeblock_kff_ppp_g1c" data-ofbid="mac_debug_guide__codeblock_kff_ppp_g1c">Drivers options ---&gt;
+    lwIP example ---&gt;
+        [ ] Enable MQTT protocol test command
+        [ ] Enable iperf test cmd
+        [ ] Enable ethernet loopback test command</pre><ul class="- topic/ul ul" id="mac_debug_guide__ul_cdv_js3_zbc" data-ofbid="mac_debug_guide__ul_cdv_js3_zbc"><li class="- topic/li li" data-ofbid="d214778e58__20250121171643">
+                                    <dl class="- topic/dl dl" id="mac_debug_guide__dl_ddv_js3_zbc" data-ofbid="mac_debug_guide__dl_ddv_js3_zbc"><dt class="- topic/dt dt dlterm" data-ofbid="d214778e62__20250121171643">Enable MQTT protocol test command</dt><dd class="- topic/dd dd">
+                                                <p class="- topic/p p" data-ofbid="d214778e66__20250121171643">可用于测试 lwIP 的 MQTT 功能， 需要打开 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using MQTT
+                                                  protocol</span> 选项</p>
+                                            </dd></dl>
+                                </li><li class="- topic/li li" data-ofbid="d214778e73__20250121171643">
+                                    <dl class="- topic/dl dl" id="mac_debug_guide__dl_edv_js3_zbc" data-ofbid="mac_debug_guide__dl_edv_js3_zbc"><dt class="- topic/dt dt dlterm" data-ofbid="d214778e77__20250121171643">Enable iperf test command</dt><dd class="- topic/dd dd">
+                                                <p class="- topic/p p" data-ofbid="d214778e81__20250121171643">可用于测试 lwIP 的以太网 TCP 上下行网速</p>
+                                            </dd></dl>
+                                </li><li class="- topic/li li" data-ofbid="d214778e85__20250121171643">
+                                    <dl class="- topic/dl dl" id="mac_debug_guide__dl_fdv_js3_zbc" data-ofbid="mac_debug_guide__dl_fdv_js3_zbc"><dt class="- topic/dt dt dlterm" data-ofbid="d214778e89__20250121171643">Enable ethernet loopback test command</dt><dd class="- topic/dd dd">
+                                                <p class="- topic/p p" data-ofbid="d214778e93__20250121171643">可用于以太网的回环测试，需要插入回环网线</p>
+                                            </dd></dl>
+                                </li></ul></div></li></ul>
+            </div>
+        </section><section class="- topic/section section" id="mac_debug_guide__section_rzy_lzr_21c" data-ofbid="mac_debug_guide__section_rzy_lzr_21c"><h2 class="- topic/title title sectiontitle">功能验证</h2>
+            
+            <p class="- topic/p p" data-ofbid="d214778e104__20250121171643">网络模块是否可以正常工作可以通过如下顺序排查：</p>
+            <ul class="- topic/ul ul" id="mac_debug_guide__ul_szy_lzr_21c" data-ofbid="mac_debug_guide__ul_szy_lzr_21c"><li class="- topic/li li" data-ofbid="d214778e108__20250121171643">
+                    <p class="- topic/p p" data-ofbid="d214778e110__20250121171643">本机 MAC 和 PHY 的连接是否成功</p>
+                </li><li class="- topic/li li" data-ofbid="d214778e113__20250121171643">
+                    <p class="- topic/p p" data-ofbid="d214778e115__20250121171643">本机 PHY 和对端 PHY 的连接是否成功</p>
+                </li><li class="- topic/li li" data-ofbid="d214778e118__20250121171643">
+                    <p class="- topic/p p" data-ofbid="d214778e120__20250121171643">是否可以通信</p>
+                </li></ul>
+            <ol class="- topic/ol ol" id="mac_debug_guide__ol_k22_tzr_21c" data-ofbid="mac_debug_guide__ol_k22_tzr_21c"><li class="- topic/li li" data-ofbid="d214778e125__20250121171643">MAC 与 PHY 连接成功<p class="- topic/p p" data-ofbid="d214778e127__20250121171643">MAC 与 PHY 是否连接成功，主要就是观察 MAC 能否通过 MDIO
+                        接口正常访问 PHY 寄存器。Luban-Lite 读写 PHY 寄存器的接口为
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">aicmac_read_phy_reg</span> 和
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">aicmac_write_phy_reg</span>。在网卡启动过程及启动完成后，都会不间断的访问 PHY
+                        寄存器。</p><div class="- topic/p p" data-ofbid="d214778e135__20250121171643">如果 MAC 与 PHY 连接失败，则会有类似与以下的打印消息出现。如果出现类似打印，则需要排查 pinmux、phy-addr
+                        是否配置正确，并检查 PHY
+                        芯片的电源、时钟、及复位引脚是否正常<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__codeblock_tyn_xpp_g1c" data-ofbid="mac_debug_guide__codeblock_tyn_xpp_g1c">[E] aicmac port0 write phy <span class="hl-number">1</span> reg <span class="hl-number">0</span> timeout
+</pre></div><p class="- topic/p p" data-ofbid="d214778e139__20250121171643">如果 MAC 与 PHY 正常连接，则不会有异常信息打印</p></li><li class="- topic/li li" data-ofbid="d214778e141__20250121171643">本机 PHY 和对端 PHY 的连接是否成功<p class="- topic/p p" data-ofbid="d214778e143__20250121171643">典型的 PHY 电路都留有 PHY 的连接状态指示灯，因此判断本机
+                        PHY 与对端 PHY 是否连接成功的主要 方法就是观察 PHY 指示灯是否正常点亮。如果插上网线后，PHY 指示灯正常点亮则说明 PHY 连接成功。
+                        否则，则说明 PHY 连接失败，可以检查本地 PHY 和对端 PHY 是否没有打开自协商功能且强制配置 的通信速率不相符（可能性很小），并检查 PHY
+                        芯片的时钟、电源、复位引脚是否正常。</p><div class="- topic/p p" data-ofbid="d214778e145__20250121171643">如果使用的 PHY 电路没有预留 PHY 指示灯，则需要通过 PHY 芯片的状态寄存器去检查 PHY
+                        的连接状态。 Luban-Lite 中通过 <span class="+ topic/keyword pr-d/parmname keyword parmname">aicphy_update_link</span> 接口去读取 PHY
+                        的连接状态。如果本机 PHY 与对端 PHY
+                        芯片连接成功，则会有调试信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__codeblock_mwf_xpp_g1c" data-ofbid="mac_debug_guide__codeblock_mwf_xpp_g1c">[I] aicphy_poll_thread()<span class="hl-number">635</span>  Port <span class="hl-number">0</span> link UP! autoneg mode: speed <span class="hl-number">100</span>M, full duplex, flow control on.</pre></div></li><li class="- topic/li li" data-ofbid="d214778e152__20250121171643">网络可通信<p class="- topic/p p" data-ofbid="d214778e154__20250121171643">经过上述的排查，MAC 和 PHY，PHY 和远端 PHY 的通路均正常，则可以进行网络通信验证：</p><ul class="- topic/ul ul" id="mac_debug_guide__ul_xcm_bqp_g1c" data-ofbid="mac_debug_guide__ul_xcm_bqp_g1c"><li class="- topic/li li" data-ofbid="d214778e157__20250121171643">
+                            <ul class="- topic/ul ul" id="mac_debug_guide__ul_eln_bqp_g1c" data-ofbid="mac_debug_guide__ul_eln_bqp_g1c"><li class="- topic/li li" data-ofbid="d214778e160__20250121171643">
+                                    <p class="- topic/p p" data-ofbid="d214778e162__20250121171643">通过主机 ping 板卡来验证是否可以通信(建议方式)</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__pre_fln_bqp_g1c" data-ofbid="mac_debug_guide__pre_fln_bqp_g1c">E:<strong class="+ topic/ph hi-d/b ph b">\c</strong>ode<strong class="+ topic/ph hi-d/b ph b">\n</strong>ewstlubanlite<strong class="+ topic/ph hi-d/b ph b">\l</strong>uban-lite&gt;ping <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>
+
+Pinging <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span> with <span class="hl-number">32</span> bytes of data:
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>: bytes=<span class="hl-number">32</span>time=<span class="hl-number">2</span>ms TTL=<span class="hl-number">255</span>
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>: bytes=<span class="hl-number">32</span>time=<span class="hl-number">1</span>ms TTL=<span class="hl-number">255</span>
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>: bytes=<span class="hl-number">32</span>time=<span class="hl-number">1</span>ms TTL=<span class="hl-number">255</span>
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>: bytes=<span class="hl-number">32</span> time&lt;<span class="hl-number">1</span>ms TTL=<span class="hl-number">255</span>
+
+Ping statistics <strong class="+ topic/ph hi-d/b ph b"><strong class="hl-keyword">for</strong></strong><span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>:
+    Packets: Sent=<span class="hl-number">4</span>, Received=<span class="hl-number">4</span>, Lost=<span class="hl-number">0</span>(<span class="hl-number">0</span>% loss),
+Approximate round trip times<strong class="+ topic/ph hi-d/b ph b">in</strong> milli-seconds:
+    Minimum= <span class="hl-number">0</span>ms, Maximum= <span class="hl-number">2</span>ms, Average= <span class="hl-number">1</span>ms
+</pre>
+                                </li><li class="- topic/li li" data-ofbid="d214778e183__20250121171643">
+                                    <p class="- topic/p p" data-ofbid="d214778e185__20250121171643">使能 ping 功能，通过板卡 ping 对端来验证是否可以通信</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__pre_hln_bqp_g1c" data-ofbid="mac_debug_guide__pre_hln_bqp_g1c">[I] aicphy_poll_thread()<span class="hl-number">635</span>  Port <span class="hl-number">0</span> link UP! autoneg mode: speed <span class="hl-number">100</span>M, full duplex, flow control on.</pre>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__codeblock_j23_qbs_5dc" data-ofbid="mac_debug_guide__codeblock_j23_qbs_5dc">ping <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span></pre>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_debug_guide__codeblock_msp_qbs_5dc" data-ofbid="mac_debug_guide__codeblock_msp_qbs_5dc">Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>: time=<span class="hl-number">3</span>ms
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>: time=<span class="hl-number">3</span>ms
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>: time=<span class="hl-number">3</span>ms
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>: time=<span class="hl-number">3</span>ms
+
+Ping statistics <strong class="+ topic/ph hi-d/b ph b"><strong class="hl-keyword">for</strong></strong><span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>:
+    Packets: Sent=<span class="hl-number">4</span>Received=<span class="hl-number">4L</span>ost=<span class="hl-number">0</span>(<span class="hl-number">0</span>% loss)</pre>
+                                </li></ul>
+                        </li></ul></li></ol>
+            <div class="- topic/sectiondiv sectiondiv">
+                
+                <p class="- topic/p p" data-ofbid="d214778e211__20250121171643">如果通信不正常，在没有对驱动进行修改的情况下，一般不会是寄存器配置的问题，可能的原因有</p>
+                <ul class="- topic/ul ul" id="mac_debug_guide__ul_rz1_b1s_21c" data-ofbid="mac_debug_guide__ul_rz1_b1s_21c"><li class="- topic/li li" data-ofbid="d214778e215__20250121171643">
+                        <p class="- topic/p p" data-ofbid="d214778e217__20250121171643">clk 配置，检查 MAC 使用的内外部时钟是否正确</p>
+                    </li><li class="- topic/li li" data-ofbid="d214778e220__20250121171643">
+                        <p class="- topic/p p" data-ofbid="d214778e222__20250121171643">clk 频率，测量 MII Data 的 TX/RX Clk 的频率，满足当前标准</p>
+                    </li><li class="- topic/li li" data-ofbid="d214778e225__20250121171643">
+                        <p class="- topic/p p" data-ofbid="d214778e227__20250121171643">时延，如果使用的是千兆网络或百兆网络的内部时钟，确定时延的配置和硬件匹配</p>
+                    </li><li class="- topic/li li" data-ofbid="d214778e230__20250121171643">
+                        <p class="- topic/p p" data-ofbid="d214778e232__20250121171643">防火墙，确认路由器，对端设备不受防火墙的隔离保护</p>
+                    </li></ul>
+                <p class="- topic/p p" data-ofbid="d214778e236__20250121171643">如果以上问题均排除，则请获取日志提交原厂分析</p>
+            </div>
+        </section><section class="- topic/section section" id="mac_debug_guide__section_u1z_lzr_21c" data-ofbid="mac_debug_guide__section_u1z_lzr_21c"><h2 class="- topic/title title sectiontitle">辅助工具</h2>
+            
+            <div class="- topic/p p" data-ofbid="d214778e245__20250121171643">
+                <ul class="- topic/ul ul" id="mac_debug_guide__ul_f42_h1s_21c" data-ofbid="mac_debug_guide__ul_f42_h1s_21c"><li class="- topic/li li" data-ofbid="d214778e248__20250121171643"> 数据包分析<p class="- topic/p p" data-ofbid="d214778e250__20250121171643">一般使用 WiredShark
+                            抓包工具进行数据包的分析，可以借助其分析发送和接收的数据内容，从而分析通信双方的行为</p><div class="- topic/p p" data-ofbid="d214778e252__20250121171643"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mac_debug_guide__image_v1z_lzr_21c" src="../../../images/mac/wireshark.jpg" width="576" alt="wireshark1"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d214778e256__20250121171643">网速测试<p class="- topic/p p" data-ofbid="d214778e258__20250121171643">压力测试的模型是搭建一个简单的 C/S 模型，Client 以最大资源利用发送数据，Server
+                                端接收数据并进行相应计算</p><p class="- topic/p p" data-ofbid="d214778e260__20250121171643"><span class="- topic/ph ph">Luban-Lite</span> 自带可用于进行压力测试的工具，<span class="- topic/ph ph">iperf1.7.0</span>，以全速进行数据的收发，并进行丢包，错包，发送速率计算等辅助工作</p><p class="- topic/p p" data-ofbid="d214778e267__20250121171643">网速测试因为需要验证收到的信息的准确性，因此有比较大的计算任务，所以也受
+                            CPU 和 DDR 频率的影响</p></li></ul>
+            </div>
+            <div class="- topic/p p" data-ofbid="d214778e271__20250121171643"><strong class="+ topic/ph hi-d/b ph b">iperf1.7.0</strong><ul class="- topic/ul ul" id="mac_debug_guide__ul_csb_nqp_g1c" data-ofbid="mac_debug_guide__ul_csb_nqp_g1c"><li class="- topic/li li" data-ofbid="d214778e275__20250121171643">server 命令<p class="- topic/p p" data-ofbid="d214778e277__20250121171643"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">iperf -s</span> 以 TCP
+                        服务端的方式监听用户端的数据，可用于测试网络接收速度</p></li><li class="- topic/li li" data-ofbid="d214778e281__20250121171643">client 命令<p class="- topic/p p" data-ofbid="d214778e283__20250121171643"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">iperf -c 192.168.3.2 </span>， 以 TCP 用户端的方式和 server
+                            192.168.3.2 进行测试，可用于测试网络发送速度</p></li></ul></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#mac_debug_guide__section_ok1_lpp_g1c" data-tocid="mac_debug_guide__section_ok1_lpp_g1c">调试开关</a></div></li><li class="section-item"><div class="section-title"><a href="#mac_debug_guide__section_rzy_lzr_21c" data-tocid="mac_debug_guide__section_rzy_lzr_21c">功能验证</a></div></li><li class="section-item"><div class="section-title"><a href="#mac_debug_guide__section_u1z_lzr_21c" data-tocid="mac_debug_guide__section_u1z_lzr_21c">辅助工具</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

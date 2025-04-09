@@ -1,0 +1,215 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="测试环境： 硬件 开发板，或 D211 的 FPGA 板 示波器，用于观察输出 PWM 信号的波形 软件：PC 端的串口终端软件，用于 PC 和开发板进行串口通信 软件配置 背光测试中，需要依赖 Backlight 的功能： 在内核中打开 Backlight 模块，详见 内核配置 。 在 DTS 中配置 Backlight 和 PWMx 通道的关联，详见 背光控制配置 。 背光测试 利用 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-18"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="pwm_test_guide"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/pwm/pwm_test.dita"/><meta name="wh-out-relpath" content="topics/sdk/pwm/pwm_test.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="pwm_test_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/pwm/pwm_test.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">18 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d115492e22__20250121171557">测试环境：<ul class="- topic/ul ul" id="pwm_test_guide__ul_mxh_djs_21c" data-ofbid="pwm_test_guide__ul_mxh_djs_21c"><li class="- topic/li li" data-ofbid="d115492e25__20250121171557">硬件<ul class="- topic/ul ul" id="pwm_test_guide__ul_jh4_cjs_21c" data-ofbid="pwm_test_guide__ul_jh4_cjs_21c"><li class="- topic/li li" data-ofbid="d115492e28__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d115492e30__20250121171557">开发板，或 D211 的 FPGA 板</p>
+                        </li><li class="- topic/li li" data-ofbid="d115492e33__20250121171557">
+                            <p class="- topic/p p" data-ofbid="d115492e35__20250121171557">示波器，用于观察输出 PWM 信号的波形</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d115492e38__20250121171557">软件：PC 端的串口终端软件，用于 PC 和开发板进行串口通信</li></ul></div><section class="- topic/section section" id="pwm_test_guide__section_lh4_cjs_21c" data-ofbid="pwm_test_guide__section_lh4_cjs_21c"><h2 class="- topic/title title sectiontitle">软件配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d115492e45__20250121171557">背光测试中，需要依赖 Backlight 的功能：<ol class="- topic/ol ol" id="pwm_test_guide__ol_mh4_cjs_21c" data-ofbid="pwm_test_guide__ol_mh4_cjs_21c"><li class="- topic/li li" data-ofbid="d115492e48__20250121171557">
+                        <p class="- topic/p p" data-ofbid="d115492e50__20250121171557">在内核中打开 Backlight 模块，详见 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_config.html#pwm_configuration__section_hqy_23s_21c">内核配置</a>。</p>
+                    </li><li class="- topic/li li" data-ofbid="d115492e57__20250121171557">
+                        <p class="- topic/p p" data-ofbid="d115492e59__20250121171557">在 DTS 中配置 Backlight 和 PWMx 通道的关联，详见 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_config.html#pwm_configuration__li_qjm_hjs_21c">背光控制配置</a>。</p>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="pwm_test_guide__section_nh4_cjs_21c" data-ofbid="pwm_test_guide__section_nh4_cjs_21c"><h2 class="- topic/title title sectiontitle">背光测试</h2>
+            
+            <p class="- topic/p p" data-ofbid="d115492e72__20250121171557">利用 Linux Backlight 子系统生成的 Sysfs 节点，就可以逐级控制背光的亮度变化，详见设置背光<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_debug.html#pwm_debug_guide__li_ms1_2h1_tdc">设置背光</a>。</p>
+        </section><section class="- topic/section section" id="pwm_test_guide__section_oh4_cjs_21c" data-ofbid="pwm_test_guide__section_oh4_cjs_21c"><h2 class="- topic/title title sectiontitle">测试 PWM 信号</h2>
+            
+            <p class="- topic/p p" data-ofbid="d115492e84__20250121171557">需要借助示波器，方法是：</p>
+            <ol class="- topic/ol ol" id="pwm_test_guide__ol_ph4_cjs_21c" data-ofbid="pwm_test_guide__ol_ph4_cjs_21c"><li class="- topic/li li" data-ofbid="d115492e88__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d115492e90__20250121171557">通过 Sysfs 节点中的 <code class="+ topic/ph pr-d/codeph ph codeph">config</code> 节点，设置 PWM 某通道的参数，方法见<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_debug.html#pwm_debug_guide__section_czn_c5r_sdc">动态配置 PWM 通道</a>。</p>
+                </li><li class="- topic/li li" data-ofbid="d115492e100__20250121171557">
+                    <p class="- topic/p p" data-ofbid="d115492e102__20250121171557">用示波器查看该 PWM 通道的信号输出是否符合预期。</p>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d115492e106__20250121171557">以下是一些典型的参数组合，可参考：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="pwm_test_guide__table_qh4_cjs_21c" data-ofbid="pwm_test_guide__table_qh4_cjs_21c" data-cols="9"><caption></caption><colgroup><col style="width:20.07992007992008%"/><col style="width:9.990009990009991%"/><col style="width:9.990009990009991%"/><col style="width:9.990009990009991%"/><col style="width:9.990009990009991%"/><col style="width:9.990009990009991%"/><col style="width:9.990009990009991%"/><col style="width:9.990009990009991%"/><col style="width:9.990009990009991%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__1">Mode</th><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__2">CBD</th><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__3">CBU</th><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__4">CAD</th><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__5">CAU</th><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__6">PRD</th><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__7">ZRO</th><th class="- topic/entry entry colsep-1 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__8">
+                                <p class="- topic/p p" data-ofbid="d115492e138__20250121171557">Def</p>
+                                <p class="- topic/p p" data-ofbid="d115492e141__20250121171557">level</p>
+                            </th><th class="- topic/entry entry colsep-0 rowsep-1" id="pwm_test_guide__table_qh4_cjs_21c__entry__9">
+                                <p class="- topic/p p" data-ofbid="d115492e146__20250121171557">本 SoC</p>
+                                <p class="- topic/p p" data-ofbid="d115492e149__20250121171557">测试结果</p>
+                            </th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__1" rowspan="4">
+                                <p class="- topic/p p" data-ofbid="d115492e156__20250121171557">Up</p>
+                                <p class="- topic/p p" data-ofbid="d115492e159__20250121171557">count</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">1</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">负占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">正占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">1</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">负占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">正占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__1" rowspan="4">
+                                <p class="- topic/p p" data-ofbid="d115492e232__20250121171557">Down</p>
+                                <p class="- topic/p p" data-ofbid="d115492e235__20250121171557">count</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">正占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">1</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">负占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">正占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">1</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">负占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__1" rowspan="2">
+                                <p class="- topic/p p" data-ofbid="d115492e308__20250121171557">Up-Down</p>
+                                <p class="- topic/p p" data-ofbid="d115492e311__20250121171557">count</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">low</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">high</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">正占空比</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__4">low</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__5">high</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__6">high</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__7">low</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__8">1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="pwm_test_guide__table_qh4_cjs_21c__entry__9">负占空比</td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d115492e349__20250121171557">其中，“正占空比”和“负占空比” 的意思是指当通过 Backlight 节点设置背光亮度时，得到的占空比结果是正向、还是反向的。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#pwm_test_guide__section_lh4_cjs_21c" data-tocid="pwm_test_guide__section_lh4_cjs_21c">软件配置</a></div></li><li class="section-item"><div class="section-title"><a href="#pwm_test_guide__section_nh4_cjs_21c" data-tocid="pwm_test_guide__section_nh4_cjs_21c">背光测试</a></div></li><li class="section-item"><div class="section-title"><a href="#pwm_test_guide__section_oh4_cjs_21c" data-tocid="pwm_test_guide__section_oh4_cjs_21c">测试 PWM 信号</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

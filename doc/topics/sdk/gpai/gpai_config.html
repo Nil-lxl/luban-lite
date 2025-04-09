@@ -1,0 +1,254 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="内核配置 配置 IIO 在 SDK 根目录下执行 make menuconfig ，进入 menuconfig 配置界面，按如下选择： ArtInChip Luban SDK Configuration Linux kernel Advance setting Linux Kernel Tools &lt;*&gt;iio 配置 GPAI 在 SDK 根目录下，执行下列命令，进入 kernel ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="gpai_configuration"/><meta name="DC.language" content="zh-CN"/><title>GPAI 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/gpai/gpai_config.dita"/><meta name="wh-out-relpath" content="topics/sdk/gpai/gpai_config.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="gpai_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/gpai/gpai_config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">GPAI 配置</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="gpai_configuration__section_gpv_1zq_sdc" data-ofbid="gpai_configuration__section_gpv_1zq_sdc"><h2 class="- topic/title title sectiontitle">内核配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d312164e27__20250121171816">
+                <ol class="- topic/ol ol" id="gpai_configuration__ol_uhl_glr_21c" data-ofbid="gpai_configuration__ol_uhl_glr_21c"><li class="- topic/li li" data-ofbid="d312164e30__20250121171816">配置 IIO<p class="- topic/p p" data-ofbid="d312164e32__20250121171816">在 SDK 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make menuconfig</span>，进入 menuconfig
+                            配置界面，按如下选择：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="gpai_configuration__pre_dsd_ntq_21c" data-ofbid="gpai_configuration__pre_dsd_ntq_21c">ArtInChip Luban SDK Configuration
+    Linux kernel
+        Advance setting
+            Linux Kernel Tools
+                &lt;*&gt;iio</pre></li><li class="- topic/li li" data-ofbid="d312164e39__20250121171816">配置 GPAI<div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d312164e43__20250121171816">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="gpai_configuration__codeblock_wg1_3ml_sdc" data-ofbid="gpai_configuration__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d312164e48__20250121171816">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d312164e51__20250121171816">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="gpai_configuration__codeblock_uss_hml_sdc" data-ofbid="gpai_configuration__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div><p class="- topic/p p" data-ofbid="d312164e57__20250121171816">在
+                            SDK 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make kernel-menuconfig</span>，进入 kernel
+                            的功能配置，按如下选择：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="gpai_configuration__pre_fsd_ntq_21c" data-ofbid="gpai_configuration__pre_fsd_ntq_21c">Linux
+    Device Drivers
+        &lt;*&gt; Industrial I/O support
+            Analog to digital converters
+                &lt;*&gt; ArtInChip GPAI driver</pre></li></ol>
+            </div>
+        </section><section class="- topic/section section" id="gpai_configuration__section_l45_czq_sdc" data-ofbid="gpai_configuration__section_l45_czq_sdc"><h2 class="- topic/title title sectiontitle">DTS 参数配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d312164e71__20250121171816">
+                <ol class="- topic/ol ol" id="gpai_configuration__ol_hr2_3lr_21c" data-ofbid="gpai_configuration__ol_hr2_3lr_21c"><li class="- topic/li li" data-ofbid="d312164e74__20250121171816">GPAI 自定义参数 <p class="- topic/p p" data-ofbid="d312164e76__20250121171816">GPAI 驱动支持从 DTS 中配置自定义参数，如下表所示：</p><div class="table-container"><table class="- topic/table table frame-all" id="gpai_configuration__table_hsd_ntq_21c" data-ofbid="gpai_configuration__table_hsd_ntq_21c" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">GPAI 自定义参数</span></caption><colgroup><col style="width:22.961104140526977%"/><col style="width:12.547051442910917%"/><col style="width:18.946047678795484%"/><col style="width:45.54579673776662%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="gpai_configuration__table_hsd_ntq_21c__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="gpai_configuration__table_hsd_ntq_21c__entry__2">类型</th><th class="- topic/entry entry colsep-1 rowsep-1" id="gpai_configuration__table_hsd_ntq_21c__entry__3">取值范围</th><th class="- topic/entry entry colsep-0 rowsep-1" id="gpai_configuration__table_hsd_ntq_21c__entry__4">功能说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="gpai_configuration__table_hsd_ntq_21c__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">aic,sample-period-ms</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="gpai_configuration__table_hsd_ntq_21c__entry__2">正整数</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="gpai_configuration__table_hsd_ntq_21c__entry__3">&gt; 0, (0, 10000]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="gpai_configuration__table_hsd_ntq_21c__entry__4">周期采样模式下的周期值，单位：ms</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="gpai_configuration__table_hsd_ntq_21c__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">aic,high-level-thd</span></td><td class="- topic/entry entry colsep-1 rowsep-1" headers="gpai_configuration__table_hsd_ntq_21c__entry__2">正整数</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="gpai_configuration__table_hsd_ntq_21c__entry__3">&gt; 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="gpai_configuration__table_hsd_ntq_21c__entry__4">高电平报警阈值</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="gpai_configuration__table_hsd_ntq_21c__entry__1"><span class="+ topic/keyword pr-d/parmname keyword parmname">aic,low-level-thd</span></td><td class="- topic/entry entry colsep-1 rowsep-0" headers="gpai_configuration__table_hsd_ntq_21c__entry__2">正整数</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="gpai_configuration__table_hsd_ntq_21c__entry__3">&gt; 0</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="gpai_configuration__table_hsd_ntq_21c__entry__4">低电平报警阈值</td></tr></tbody></table></div><div class="- topic/note note note note_note" id="gpai_configuration__note_mhg_jlr_21c" data-ofbid="gpai_configuration__note_mhg_jlr_21c"><span class="note__title">注：</span> 
+                            <p class="- topic/p p" data-ofbid="d312164e129__20250121171816">采样周期范围值属于 GPAI V1.0 的规范。GPAI V0.1 的周期有效范围不到 3 ms，不推荐。</p>
+                        </div></li><li class="- topic/li li" data-ofbid="d312164e132__20250121171816">D211 配置<div class="- topic/p p" data-ofbid="d312164e134__20250121171816">在 <span class="+ topic/ph sw-d/filepath ph filepath">common/d211.dtsi</span> 中的 GPAI
+                            控制器定义：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="gpai_configuration__codeblock_ngs_klr_21c" data-ofbid="gpai_configuration__codeblock_ngs_klr_21c">gpai: gpai@<span class="hl-number">19251000</span> {
+    compatible = <span class="hl-string">"artinchip,aic-gpai-v1.0"</span>;
+    reg = &lt;<span class="hl-number">0x0</span> <span class="hl-number">0x19251000</span> <span class="hl-number">0x0</span> <span class="hl-number">0x1000</span>&gt;;
+    interrupts-extended = &lt;&amp;plic0 <span class="hl-number">92</span> IRQ_TYPE_LEVEL_HIGH&gt;;
+    clocks = &lt;&amp;cmu CLK_GPAI&gt;, &lt;&amp;cmu CLK_APB1&gt;;
+    clock-names = <span class="hl-string">"gpai"</span>, <span class="hl-string">"pclk"</span>;
+    resets = &lt;&amp;rst RESET_GPAI&gt;;
+};</pre></div></li><li class="- topic/li li" id="gpai_configuration__li_zkk_psr_21c" data-ofbid="gpai_configuration__li_zkk_psr_21c">Board 配置<p class="- topic/p p" data-ofbid="d312164e143__20250121171816"><span class="+ topic/ph sw-d/filepath ph filepath">xxx/board.dts</span>
+                            中的参数配置需要区分通道号，每个通道可以单独使能。</p><div class="- topic/p p" data-ofbid="d312164e147__20250121171816">使能的通道，需要指定该通道用到的 GPIO 配置，如
+                                <span class="+ topic/ph ui-d/uicontrol ph uicontrol">gpai7_pins</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="gpai_configuration__codeblock_mvh_llr_21c" data-ofbid="gpai_configuration__codeblock_mvh_llr_21c">&amp;gpai {
+    status = <span class="hl-string">"okay"</span>;
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;gpai7_pins&gt;;
+
+    gpai0 {
+        aic,sample-period-ms = &lt;<span class="hl-number">10</span>&gt;;
+        aic,high-level-thd = &lt;<span class="hl-number">1830</span>&gt;;
+        aic,low-level-thd = &lt;<span class="hl-number">1800</span>&gt;;
+        status = <span class="hl-string">"disabled"</span>;
+    };
+
+    gpai1 {
+        status = <span class="hl-string">"disabled"</span>;
+    };
+
+    gpai2 {
+        status = <span class="hl-string">"disabled"</span>;
+    };
+
+    gpai3 {
+        status = <span class="hl-string">"disabled"</span>;
+    };
+
+    gpai4 {
+        status = <span class="hl-string">"disabled"</span>;
+    };
+
+    gpai5 {
+        status = <span class="hl-string">"disabled"</span>;
+    };
+
+    gpai6 {
+        status = <span class="hl-string">"disabled"</span>;
+    };
+
+    gpai7 {
+        status = <span class="hl-string">"okay"</span>;
+    };
+};</pre></div></li></ol>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#gpai_configuration__section_gpv_1zq_sdc" data-tocid="gpai_configuration__section_gpv_1zq_sdc">内核配置</a></div></li><li class="section-item"><div class="section-title"><a href="#gpai_configuration__section_l45_czq_sdc" data-tocid="gpai_configuration__section_l45_czq_sdc">DTS 参数配置</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

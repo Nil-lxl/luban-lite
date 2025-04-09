@@ -1,0 +1,575 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 表 1 . 相关模块 源码路径 SPI Driver framework kernel/rt-thread/components/drivers/spi Driver bsp/artinchip/drv/qspi HAL bsp/artinchip/hal/qspi 模块架构 图 1 . Luban-Lite QSPI 框图 RT-Thread 透过其定义的 QSPI/SPI ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/spi/spi_user_guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/spi/spi_test_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/spi/spi_faq_2.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e5855"/><meta name="wh-source-relpath" content="topics/sdk/spi/spi_design_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/spi/spi_design_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_nww_hzh_pzb"><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="spi"><div class="title"><a href="../../../topics/sdk/spi/spi_user_guide_2.html"><span class="ph">Q</span>SPI 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/spi/spi_design_lite.html">设计说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/spi/spi_test_lite.html" title="测试指南" aria-label="上一主题: 测试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/spi/spi_faq_2.html" title="常见问题" aria-label="下一主题: 常见问题" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="can-d5856e4886" class="topicref" data-id="can" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-d5856e4886-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/can/can_user_guide_2.html" id="can-d5856e4886-link">CAN 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4958" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4958-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cap/cap_user_guide.html" id="id-d5856e4958-link">CAP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5018" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5018-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/qep/qep_user_guide.html" id="id-d5856e5018-link">QEP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cir-d5856e5228" class="topicref" data-id="cir" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cir-d5856e5228-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_user_guide_2.html" id="cir-d5856e5228-link">CIR 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="gpai-user-guide-d5856e5336" class="topicref" data-id="gpai-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action gpai-user-guide-d5856e5336-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpai/gpai_user_guide_2.html" id="gpai-user-guide-d5856e5336-link">GPAI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5408" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5408-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpio/gpio_user_guide.html" id="id-d5856e5408-link">GPIO 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c_user_guide-d5856e5480" class="topicref" data-id="i2c_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c_user_guide-d5856e5480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2c/i2c_user_guide_2.html" id="i2c_user_guide-d5856e5480-link">I2C 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5576" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5576-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/psadc/psadc_user_guide_2.html" id="id-d5856e5576-link">PSADC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5648" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5648-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pwm/pwm_user_guide_2.html" id="id-d5856e5648-link">PWM 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="rtp-user-guide-d5856e5721" class="topicref" data-id="rtp-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action rtp-user-guide-d5856e5721-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtp/rtp_user_guide_2.html" id="rtp-user-guide-d5856e5721-link">RTP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="spi-d5856e5805" class="topicref" data-id="spi" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action spi-d5856e5805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_user_guide_2.html" id="spi-d5856e5805-link"><span class="ph">Q</span>SPI 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e5819" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_config_lite.html" id="id-d5856e5819-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e5831" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_debug_lite.html" id="id-d5856e5831-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e5843" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_test_lite.html" id="id-d5856e5843-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e5855" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_design_lite.html" id="id-d5856e5855-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="spi_common_issues-d5856e5867" class="topicref" data-id="spi_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_faq_2.html" id="spi_common_issues-d5856e5867-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="uart_user_guide-d5856e5879" class="topicref" data-id="uart_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart_user_guide-d5856e5879-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_user_guide_2.html" id="uart_user_guide-d5856e5879-link">UART 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_user_guide-d5856e5951" class="topicref" data-id="usb_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_user_guide-d5856e5951-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb_user_guide_2.html" id="usb_user_guide-d5856e5951-link">USB 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e6011" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e6011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_user_guide_2.html" id="id-d5856e6011-link">MAC 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/spi/spi_design_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 6 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+            
+            <div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" data-ofbid="d30070e24__20250121171509" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:32.36245954692557%"/><col style="width:67.63754045307444%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__id2__entry__1">相关模块</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__id2__entry__2">源码路径</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id2__entry__1">SPI Driver framework</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id2__entry__2"><span class="+ topic/ph sw-d/filepath ph filepath">kernel/rt-thread/components/drivers/spi</span></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id2__entry__1">Driver</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id2__entry__2"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/qspi</span></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id2__entry__1">HAL</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__id2__entry__2"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/hal/qspi</span></td></tr></tbody></table></div></section><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">模块架构</h2>
+            
+            <figure class="- topic/fig fig fignone" id="id__id10" data-ofbid="id__id10"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" src="../../../images/spi/spi_kernel_arch_lite.png" alt="spi_kernel_arch"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title"><span class="- topic/ph ph">Luban-Lite</span> QSPI 框图</span></figcaption></figure><p class="- topic/p p" data-ofbid="d30070e67__20250121171509">RT-Thread 透过其定义的 QSPI/SPI 驱动框架，向上提供了 QSPI/SPI 接口，并且通过这一层接口支持各种应用，包括 SPI NAND,
+                SPI NOR。</p><p class="- topic/p p" data-ofbid="d30070e69__20250121171509">ArtInChip 提供了 QSPI HAL 层，并且实现了对接 RT-Thread 的驱动层。由于 QSPI 传输需要使用 DMA，因此
+                DMA HAL 是一个相关模块。</p></section><section class="- topic/section section" id="id__hal-drv" data-ofbid="id__hal-drv"><h2 class="- topic/title title sectiontitle">HAL 与 DRV</h2>
+            
+            <p class="- topic/p p" data-ofbid="d30070e76__20250121171509">ArtInChip 的 QSPI 驱动按照 HAL 层 + Driver 层的结构进行设计，其中 HAL 层为硬件抽象层，提供系统无关的硬件驱动实现； 在 HAL
+                层之上，可根据不同 RTOS 的驱动框架，实现对应的 QSPI DRV 层进行对接。</p><figure class="- topic/fig fig fignone" id="id__id11" data-ofbid="id__id11"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" src="../../../images/spi/spi_hal.png" alt="spi_hal"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">HAL and DRV</span></figcaption></figure><p class="- topic/p p" data-ofbid="d30070e84__20250121171509">QSPI HAL 的特点:</p><ol class="- topic/ol ol arabic simple" id="id__ol_rgk_ql3_fdc" data-ofbid="id__ol_rgk_ql3_fdc"><li class="- topic/li li" data-ofbid="d30070e87__20250121171509">
+                    <p class="- topic/p p" data-ofbid="d30070e89__20250121171509">无状态</p>
+                </li><li class="- topic/li li" data-ofbid="d30070e92__20250121171509">
+                    <p class="- topic/p p" data-ofbid="d30070e94__20250121171509">支持 sync、async(irq) 模式</p>
+                </li><li class="- topic/li li" data-ofbid="d30070e97__20250121171509">
+                    <p class="- topic/p p" data-ofbid="d30070e99__20250121171509">支持 DMA、非 DMA 模式</p>
+                </li></ol><p class="- topic/p p" data-ofbid="d30070e102__20250121171509">QSPI HAL 相关的设备操作都需要通过 Handle 的方式进行。 由于 HAL 其内部无状态，不会进行空间分配，因此 Handle
+                的空间需要外部申请并且传入， 由 HAL 层进行使用。</p></section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">关键流程设计</h2>
+            
+            <ul class="- topic/ul ul" id="id__ul_c2z_vqs_4dc" data-ofbid="id__ul_c2z_vqs_4dc"><li class="- topic/li li" data-ofbid="d30070e110__20250121171509">
+                    <div class="- topic/div div section" id="id__qspi">
+                        <strong class="+ topic/ph hi-d/b ph b">添加 QSPI 总线</strong>
+                        <div class="- topic/p p" data-ofbid="d30070e117__20250121171509">在 RT-Thread 板级初始化过程中，会调用 rt_hw_qspi_bus_init() 函数，将板子支持的 QSPI 控制器(总线)
+                            添加到系统中。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_oyz_rl3_fdc" data-ofbid="id__codeblock_oyz_rl3_fdc">INIT_BOARD_EXPORT(rt_hw_qspi_bus_init); <em class="hl-comment">// bsp/artinchip/drv/qspi/drv_qspi.c</em>
+|-&gt; rt_qspi_bus_register(); <em class="hl-comment">// kernel/rt-thread/components/drivers/spi/qspi_core.c</em>
+    |-&gt; rt_spi_bus_register(); kernel/rt-thread/components/drivers/spi/spi_core.c
+        |-&gt; rt_spi_bus_device_init(); <em class="hl-comment">// kernel/rt-thread/components/drivers/spi/spi_dev.c</em>
+            |-&gt; rt_device_register(device, name, RT_DEVICE_FLAG_RDWR);</pre></div></div>
+                </li><li class="- topic/li li" data-ofbid="d30070e122__20250121171509">
+                    <div class="- topic/div div section" id="id__id5">
+                        <strong class="+ topic/ph hi-d/b ph b">添加 QSPI 设备</strong>
+                        <div class="- topic/p p" data-ofbid="d30070e129__20250121171509">将 QSPI
+                            设备挂载到总线上。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_nx2_sl3_fdc" data-ofbid="id__codeblock_nx2_sl3_fdc">aic_qspi_bus_attach_device(<span class="hl-string">"qspi0"</span>, <span class="hl-string">"GD25B127D"</span>, <span class="hl-number">0</span>, <span class="hl-number">4</span>, RT_NULL, RT_NULL); <em class="hl-comment">// bsp/artinchip/drv/qspi/drv_qspi.c</em>
+|-&gt; rt_spi_bus_attach_device(); <em class="hl-comment">// kernel/rt-thread/components/drivers/spi/spi_core.c</em>
+    |-&gt; rt_spidev_device_init(device, name); <em class="hl-comment">// kernel/rt-thread/components/drivers/spi/spi_dev.c</em>
+        |-&gt; rt_device_register(device, name, RT_DEVICE_FLAG_RDWR);</pre></div></div>
+                </li><li class="- topic/li li" data-ofbid="d30070e134__20250121171509">
+                    <div class="- topic/div div section" id="id__id6">
+                        <strong class="+ topic/ph hi-d/b ph b">初始化流程</strong>
+                        <div class="- topic/p p" data-ofbid="d30070e141__20250121171509">当 QSPI
+                            设备需要使用之前，必须进行初始化配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_z3j_sl3_fdc" data-ofbid="id__codeblock_z3j_sl3_fdc">rt_sfud_flash_probe_ex();
+|-&gt; rt_qspi_configure(qspi_dev, qspi_cfg); <em class="hl-comment">// kernel/rt-thread/components/drivers/spi/qspi_core.c</em>
+    |-&gt; rt_spi_configure(&amp;device-&gt;parent, &amp;cfg-&gt;parent); <em class="hl-comment">// kernel/rt-thread/components/drivers/spi/spi_core.c</em>
+        |-&gt; device-&gt;bus-&gt;ops-&gt;configure(device, &amp;device-&gt;config);
+            qspi_configure(device, &amp;device-&gt;config); <em class="hl-comment">// bsp/artinchip/drv/qspi/drv_qspi.c</em>
+            |-&gt; hal_qspi_master_init(&amp;qspi-&gt;handle, &amp;cfg);</pre></div></div>
+                </li><li class="- topic/li li" data-ofbid="d30070e146__20250121171509">
+                    <div class="- topic/div div section" id="id__id7">
+                        <strong class="+ topic/ph hi-d/b ph b">中断处理流程</strong>
+                        <p class="- topic/p p" data-ofbid="d30070e153__20250121171509">QSPI HAL 层提供了中断处理函数，但是是否使用中断模式由 DRV 层决定。 <span class="- topic/ph ph">Luban-Lite</span> SDK 中对接
+                            RT-Thread
+                            时，使能了中断处理模式。</p><div class="- topic/p p" data-ofbid="d30070e158__20250121171509">首先在初始化时，注册了对应的中断处理函数。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_pgq_sl3_fdc" data-ofbid="id__codeblock_pgq_sl3_fdc">qspi_configure(); <em class="hl-comment">// bsp/artinchip/drv/qspi/drv_qspi.c</em>
+|-&gt; aicos_request_irq(qspi-&gt;irq_num, qspi_irq_handler, <span class="hl-number">0</span>, NULL, (<strong class="hl-keyword">void</strong> *)&amp;qspi-&gt;handle);</pre></div><p class="- topic/p p" data-ofbid="d30070e162__20250121171509">中断发生时，QSPI
+                            DRV 层的中断处理函数，调用 HAL
+                        层的中断处理函数进行处理。</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_vjt_sl3_fdc" data-ofbid="id__codeblock_vjt_sl3_fdc">qspi_irq_handler(); p/artinchip/drv/qspi/drv_qspi.c
+|-&gt; hal_qspi_master_irq_handler(h);</pre></div>
+                </li></ul></section><section class="- topic/section section" id="id__id8" data-ofbid="id__id8"><h2 class="- topic/title title sectiontitle">数据结构</h2>
+            
+            <div class="- topic/p p" data-ofbid="d30070e172__20250121171509">HAL 层主要数据结构。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_bfg_rl3_fdc" data-ofbid="id__codeblock_bfg_rl3_fdc"><strong class="hl-keyword">struct</strong> qspi_master_config {
+    uint32_t idx;
+    uint32_t clk_in_hz;
+    uint32_t clk_id;
+    bool bit_mode;
+    bool wire3_en;
+    bool lsb_en;
+    bool cs_auto;
+    uint8_t cs_polarity;
+    uint8_t cpol;
+    uint8_t cpha;
+};</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_vx1_tl3_fdc" data-ofbid="id__codeblock_vx1_tl3_fdc"><strong class="hl-keyword">struct</strong> qspi_master_dma_config {
+    uint32_t port_id;
+    uint32_t tx_bus_width;
+    uint32_t tx_max_burst;
+    uint32_t rx_bus_width;
+    uint32_t rx_max_burst;
+};</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_qqb_tl3_fdc" data-ofbid="id__codeblock_qqb_tl3_fdc"><strong class="hl-keyword">struct</strong> qspi_transfer {
+    uint8_t *tx_data;
+    uint8_t *rx_data;
+    uint32_t data_len;
+};</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ggc_tl3_fdc" data-ofbid="id__codeblock_ggc_tl3_fdc"><strong class="hl-keyword">struct</strong> qspi_master_state {
+    uint32_t idx;
+    qspi_master_async_cb cb;
+    <strong class="hl-keyword">void</strong> *cb_priv;
+    uint32_t status;
+    uint32_t clk_id;
+    uint32_t bus_hz;
+    uint32_t bus_width;
+    <strong class="hl-keyword">struct</strong> qspi_master_dma_config dma_cfg;
+    <strong class="hl-keyword">void</strong> *dma_tx;
+    <strong class="hl-keyword">void</strong> *dma_rx;
+    uint8_t *async_tx; <em class="hl-comment">/* Used in Async Non-DMA mode */</em>
+    uint8_t *async_rx; <em class="hl-comment">/* Used in Async Non-DMA mode */</em>
+    uint32_t async_tx_remain; <em class="hl-comment">/* Used in Async Non-DMA mode */</em>
+    uint32_t async_rx_remain; <em class="hl-comment">/* Used in Async Non-DMA mode */</em>
+    uint32_t work_mode;
+    uint32_t done_mask;
+};</pre></div>
+        </section><section class="- topic/section section" id="id__id9" data-ofbid="id__id9"><h2 class="- topic/title title sectiontitle">接口设计</h2>
+            
+            <p class="- topic/p p" data-ofbid="d30070e188__20250121171509">RT-Thread 中的 QSPI 接口设计，在 RT-Thread 的文档中已经有详细说明。 此处介绍 QSPI HAL 层的接口设计。  </p><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_xyr_tl3_fdc" data-ofbid="id__table_xyr_tl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_init(qspi_master_handle *h, struct
+                                qspi_master_config *cfg)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">QSPI 控制器的初始化函数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                    <div class="- topic/div div">struct qspi_master_config *cfg</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器的初始化配置参数</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">初始化时，Handle 的空间由使用者负责分配和释放 </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_rhn_5l3_fdc" data-ofbid="id__table_rhn_5l3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_deinit</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_deinit(qspi_master_handle *h)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">QSPI 控制器的反初始化函数，在 QSPI 控制器关闭时使用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">-   </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_g5w_5l3_fdc" data-ofbid="id__table_g5w_5l3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_set_cs</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_set_cs(qspi_master_handle *h, uint32_t
+                                cs_num, bool enable)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">设置 SPI 设备的片选信号</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                    <div class="- topic/div div">bool enable</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">CS 信号是否有效</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">-   </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_tn2_vl3_fdc" data-ofbid="id__table_tn2_vl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_set_bus_freq</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_set_bus_freq(qspi_master_handle *h, uint32_t
+                                bus_hz)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">设置 QSPI 控制器的接口总线工作时钟</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                    <div class="- topic/div div">uint32_t bus_hz</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 接口总线的工作时钟</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">QSPI 控制器的模块输入时钟，在 hal_qspi_master_init() 调用时配置 </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_sgn_vl3_fdc" data-ofbid="id__table_sgn_vl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_set_bus_width</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_set_bus_width(qspi_master_handle *h, uint32_t
+                                bus_width)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">设置传输所使用的总线位宽</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                    <div class="- topic/div div">uint32_t bus_width</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 总线位宽，取值可以为 1、2、4</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">- </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_zhw_vl3_fdc" data-ofbid="id__table_zhw_vl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_dma_config</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_dma_config(qspi_master_handle *h, struct
+                                qspi_master_dma_config *cfg)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">配置和使能 DMA</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                    <div class="- topic/div div">struct qspi_master_dma_config *cfg</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器使用的 TX、RX DMA 通道配置</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">需要使能系统 DMA 进行数据传输，则需要在初始化时调用本 API，否则不使用系统 DMA。  </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_jc3_wl3_fdc" data-ofbid="id__table_jc3_wl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_register_cb</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_register_cb(qspi_master_handle *h,
+                                qspi_master_async_cb cb, void *priv)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">注册异步传输的回调函数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                    <div class="- topic/div div">qspi_master_async_cb cb</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 回调函数指针</div>
+                                    </div>
+                                    <div class="- topic/div div">void *priv</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 回调函数的私有数据</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">- </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_nxt_wl3_fdc" data-ofbid="id__table_nxt_wl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_transfer_async</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_transfer_async(qspi_master_handle *h, struct
+                                qspi_transfer *t);</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">异步数据传输接口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                    <div class="- topic/div div">struct qspi_transfer *t</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 传输的数据信息</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0"> 该函数启动硬件传输即返回，具体是否完成，需要检查硬件状态，或者等待回调函数 </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_hp2_xl3_fdc" data-ofbid="id__table_hp2_xl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_transfer_sync</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_transfer_sync(qspi_master_handle *h, struct
+                                qspi_transfer *t)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">同步数据传输接口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                    <div class="- topic/div div">struct qspi_transfer *t</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div"> 传输的数据信息</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 成功</div>
+                                    <div class="- topic/div div">其他: 失败</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">该函数为同步函数，阻塞式调用，数据传输完成或者出错才返回。 </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_mwr_xl3_fdc" data-ofbid="id__table_mwr_xl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_get_status</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">int hal_qspi_master_get_status(qspi_master_handle *h)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">传输状态读取接口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">0: 传输成功完成</div>
+                                    <div class="- topic/div div">其他: 传输失败，具体错误信息可参考 hal_qspi.h 中的定义</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">- </td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_chz_xl3_fdc" data-ofbid="id__table_chz_xl3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_qspi_master_irq_handler</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                函数原型
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">void hal_qspi_master_irq_handler(qspi_master_handle *h)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                功能说明
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">QSPI 中断处理接口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                参数定义
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">qspi_master_handle *h</div>
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">QSPI 控制器 Handle</div>
+                                    </div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">
+                                返回值
+                            </td><td class="- topic/entry entry colsep-0 rowsep-1">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">无</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">
+                                注意事项
+                            </td><td class="- topic/entry entry colsep-0 rowsep-0">使用者需要向系统注册中断，并且在中断回调函数中调用本 API 进行中断处理</td></tr></tbody></table></div></section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">源码说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">模块架构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__hal-drv" data-tocid="id__hal-drv">HAL 与 DRV</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">关键流程设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id8" data-tocid="id__id8">数据结构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id9" data-tocid="id__id9">接口设计</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

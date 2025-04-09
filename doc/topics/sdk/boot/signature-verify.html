@@ -1,0 +1,215 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="U-Boot 官方的代码，SPL 支持 FIT image 的签名。如果固件使用其他格式， 需要自行添加相应的校验支持。 FIT Image 签名校验 要实现验证 FIT Image 的签名，需要在配置中打开 CONFIG_SPL_FIT_SIGNATURE 选项： mmc_load_image_raw_sector(); // common/spl/spl_mmc.c |-&gt; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_lx3_tn3_pzb"/><meta name="DC.language" content="zh-CN"/><title>签名校验</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/signature-verify.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/signature-verify.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_lx3_tn3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/signature-verify.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">签名校验</h1><div class="date inPage">25 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d287591e22__20250121171755">U-Boot 官方的代码，SPL 支持 FIT image 的签名。如果固件使用其他格式， 需要自行添加相应的校验支持。</p><section class="- topic/section section" id="concept_lx3_tn3_pzb__section_lll_y1h_bzb" data-ofbid="concept_lx3_tn3_pzb__section_lll_y1h_bzb"><h2 class="- topic/title title sectiontitle">FIT Image 签名校验</h2>
+            
+            <div class="- topic/p p" data-ofbid="d287591e29__20250121171755">要实现验证 FIT Image 的签名，需要在配置中打开 CONFIG_SPL_FIT_SIGNATURE
+                选项：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_lx3_tn3_pzb__codeblock_psv_msy_c1c" data-ofbid="concept_lx3_tn3_pzb__codeblock_psv_msy_c1c">mmc_load_image_raw_sector(); <em class="hl-comment">// common/spl/spl_mmc.c</em>
+|-&gt; spl_get_load_buffer(-<strong class="hl-keyword">sizeof</strong>(*header), bd-&gt;blksz);
+|-&gt; blk_dread(bd, sector, <span class="hl-number">1</span>, header);
+|-&gt; image_get_magic(header) == FDT_MAGIC <em class="hl-comment">// 判断是否为 FIT Image</em>
+|-&gt; spl_load_simple_fit(spl_image, &amp;load, sector, header); <em class="hl-comment">// common/spl/spl_fit.c</em>
+    |-&gt; info-&gt;read(info, sector, sectors, fit);
+    |   h_spl_load_read(info, sector, sectors, fit); <em class="hl-comment">// common/spl/spl_mmc.c</em>
+    |   |-&gt; blk_dread(mmc_get_blk_desc(mmc), sector, count, buf);
+    |-&gt; node = spl_fit_get_image_node(fit, images, <span class="hl-string">"loadables"</span>, <span class="hl-number">0</span>);
+        |-&gt; spl_load_fit_image(info, sector, fit, base_offset, node,
+            |                 spl_image); <em class="hl-comment">// common/spl/spl_fit.c</em>
+            |-&gt; <em class="hl-comment">// 中间加载过程</em>
+            |-&gt; fit_image_verify_with_data(fit, node, src, length);
+                | <em class="hl-comment">// common/image-fit.c</em>
+                |-&gt; fit_image_check_sig(fit, noffset, data, size, -<span class="hl-number">1</span>, &amp;err_msg);
+                    |  <em class="hl-comment">// common/image-sig.c</em>
+                    |-&gt; fit_image_setup_verify();
+                    |-&gt; fit_image_hash_get_value();
+                    |-&gt; info.crypto-&gt;verify(&amp;info, &amp;region, <span class="hl-number">1</span>,
+                                            fit_value, fit_value_len);
+                        rsa_verify(&amp;info, &amp;region, <span class="hl-number">1</span>,
+                                   fit_value, fit_value_len);
+                                   <em class="hl-comment">// lib/rsa/rsa-verify.c</em></pre></div>
+            <p class="- topic/p p" data-ofbid="d287591e34__20250121171755">此处的 rsa-verify 可以对接到硬件 CE，具体可看 <span class="+ topic/keyword pr-d/parmname keyword parmname">UCLASS_MOD_EXP</span> 的相关内容。
+                如果没有硬件加速器的实现，则使用软件进行计算。</p>
+        </section><section class="- topic/section section" id="concept_lx3_tn3_pzb__section_oll_y1h_bzb" data-ofbid="concept_lx3_tn3_pzb__section_oll_y1h_bzb"><h2 class="- topic/title title sectiontitle">AIC Image 签名校验</h2>
+            
+            <p class="- topic/p p" data-ofbid="d287591e45__20250121171755">制作 SD 量产卡时，由于 Updater U-Boot 固件需要使用 AIC Image 格式， 因此 SD 量产卡启动过程中，SPL-Updater 需要解析 AIC
+                Image 格式。</p>
+            <p class="- topic/p p" data-ofbid="d287591e48__20250121171755">为了平台的安全，BROM 所执行的程序必须经过安全验证。BROM 只支持 AIC Image 格式的固件，因此这里 Updater U-Boot 必须使用 AIC
+                Image 格式。</p>
+            
+            <div class="- topic/p p" data-ofbid="d287591e51__20250121171755">在下列两种情况下，会使用 Updater U-Boot：<ul class="- topic/ul ul" id="concept_lx3_tn3_pzb__ul_wlw_mcx_5dc" data-ofbid="concept_lx3_tn3_pzb__ul_wlw_mcx_5dc"><li class="- topic/li li" data-ofbid="d287591e54__20250121171755">
+                        <p class="- topic/p p" data-ofbid="d287591e56__20250121171755">通过 USB 升级时，通过 BROM 将 Updater U-Boot 下载到 DRAM，并且由 BROM 执行。</p>
+                    </li><li class="- topic/li li" data-ofbid="d287591e59__20250121171755">
+                        <p class="- topic/p p" data-ofbid="d287591e61__20250121171755">将 Updater U-Boot  烧录到 SD 量产卡，从 SD 卡启动到 Updater U-Boot 进入升级程序。</p>
+                    </li></ul></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_lx3_tn3_pzb__section_lll_y1h_bzb" data-tocid="concept_lx3_tn3_pzb__section_lll_y1h_bzb">FIT Image 签名校验</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_lx3_tn3_pzb__section_oll_y1h_bzb" data-tocid="concept_lx3_tn3_pzb__section_oll_y1h_bzb">AIC Image 签名校验</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在构建系统镜像时，首先需要配置分区和镜像，包括定义不同的文件系统类型、大小以及挂载点。例如，使用 menuconfig 工具来选择和配置所需的软件包。 定制软件包 在 SDK 根目录下执行下列命令，进入 menuconfig 的功能配置界面： make menuconfig 导航到软件包选项，根据项目需求勾选所需的软件包，编译到该项目的镜像中。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../file-system/file-system-user-guide.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-11-01"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_gjb_tm3_pzb"/><meta name="DC.language" content="zh-CN"/><title>配置分区和镜像</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/advanced/lb_usage_fs_image.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/lb_usage_fs_image.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_gjb_tm3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/lb_usage_fs_image.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">配置分区和镜像</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d237356e27__20250121171656">在构建系统镜像时，首先需要配置分区和镜像，包括定义不同的文件系统类型、大小以及挂载点。例如，使用 menuconfig 工具来选择和配置所需的软件包。</p><section class="- topic/section section" id="concept_gjb_tm3_pzb__section_gvl_45h_bcc" data-ofbid="concept_gjb_tm3_pzb__section_gvl_45h_bcc"><h2 class="- topic/title title sectiontitle">定制软件包</h2>
+            
+            <div class="- topic/p p" data-ofbid="d237356e34__20250121171656">
+                <ol class="- topic/ol ol" id="concept_gjb_tm3_pzb__ol_uyp_5st_qdc" data-ofbid="concept_gjb_tm3_pzb__ol_uyp_5st_qdc"><li class="- topic/li li" data-ofbid="d237356e37__20250121171656">
+                        <div class="- topic/p p" data-ofbid="d237356e39__20250121171656">在 SDK 根目录下执行下列命令，进入 menuconfig
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_gjb_tm3_pzb__codeblock_lbx_z5s_sdc" data-ofbid="concept_gjb_tm3_pzb__codeblock_lbx_z5s_sdc">make menuconfig</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d237356e44__20250121171656">
+                        <p class="- topic/p p" data-ofbid="d237356e46__20250121171656">导航到软件包选项，根据项目需求勾选所需的软件包，编译到该项目的镜像中。</p>
+                        <div class="- topic/p p" data-ofbid="d237356e49__20250121171656">烧录到目标板的系统镜像，包含一些必要和可能需要的软件。在编译之前，根据不同的项目需求，勾选必须的软件包。软件包类型如下：<ul class="- topic/ul ul" id="concept_gjb_tm3_pzb__ul_xsr_y5g_bzb" data-ofbid="concept_gjb_tm3_pzb__ul_xsr_y5g_bzb"><li class="- topic/li li" data-ofbid="d237356e52__20250121171656">
+                                    <p class="- topic/p p" data-ofbid="d237356e54__20250121171656">ArtInChip 开发的软件包</p>
+                                    
+                                    <div class="- topic/p p" data-ofbid="d237356e59__20250121171656">
+                                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_gjb_tm3_pzb__image_ysr_y5g_bzb" src="../../../images/sdk/artinchip-package.png" width="576"/></div><br/>
+                                    </div>
+                                </li><li class="- topic/li li" data-ofbid="d237356e65__20250121171656">
+                                    <p class="- topic/p p" data-ofbid="d237356e67__20250121171656">Third Party 开源的软件包</p>
+                                    <div class="- topic/p p" data-ofbid="d237356e70__20250121171656">
+                                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_gjb_tm3_pzb__image_zsr_y5g_bzb" src="../../../images/tool/third-party-package.png" width="576"/></div><br/>
+                                    </div>
+                                </li></ul></div>
+                    </li><li class="- topic/li li" data-ofbid="d237356e76__20250121171656">
+                        <p class="- topic/p p" data-ofbid="d237356e78__20250121171656">保存配置并退出 menuconfig。</p>
+                    </li><li class="- topic/li li" data-ofbid="d237356e81__20250121171656">
+                        <div class="- topic/p p" data-ofbid="d237356e83__20250121171656">使用下列命令生成固件镜像。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_gjb_tm3_pzb__codeblock_nsd_3tt_qdc" data-ofbid="concept_gjb_tm3_pzb__codeblock_nsd_3tt_qdc">make</pre></div>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="concept_gjb_tm3_pzb__section_jby_45h_bcc" data-ofbid="concept_gjb_tm3_pzb__section_jby_45h_bcc"><h2 class="- topic/title title sectiontitle">配置 RootFS 镜像</h2>
+            
+            <p class="- topic/p p" data-ofbid="d237356e95__20250121171656">RootFS 是系统启动时挂载的第一个文件系统，包含了操作系统的基本环境和用户空间程序。如需在 RootFS 中添加额外的程序和数据，可以通过 RootFS
+                Overlay 功能进行配置。</p>
+            <p class="- topic/p p" data-ofbid="d237356e98__20250121171656">不同项目，所需要使用的文件系统不同，在创建该项目是基本上已经决定，不需要修改。例如将外部编译的测试程序打包到 RootFS 中，可以使用 RootFS Overlay
+                的配置。在 <span class="+ topic/ph sw-d/filepath ph filepath"><var class="+ topic/keyword sw-d/varname keyword varname">System Configuration</var>/<var class="+ topic/keyword sw-d/varname keyword varname">Root filesystem
+                        overlay directories</var></span> 中可配置需要合并的目录。</p>
+            <p class="- topic/p p" data-ofbid="d237356e108__20250121171656">以下图为例，<span class="+ topic/ph sw-d/filepath ph filepath"><var class="+ topic/keyword sw-d/varname keyword varname">rootfs_overlay_folder</var></span> 为
+                    <span class="+ topic/ph sw-d/filepath ph filepath">Luban/rootfs_overlay_folder</span>，生成 RootFS 镜像时，该目录的内容会被合并到
+                RootFS 中。</p>
+            <div class="- topic/p p" data-ofbid="d237356e118__20250121171656">
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_gjb_tm3_pzb__image_fnk_bvg_bzb" src="../../../images/sdk/rootfs_overlay.png" width="576"/></div><br/>
+            </div>
+        </section><section class="- topic/section section" id="concept_gjb_tm3_pzb__section_xk1_p5h_bcc" data-ofbid="concept_gjb_tm3_pzb__section_xk1_p5h_bcc"><h2 class="- topic/title title sectiontitle">配置 UserFS 镜像</h2>
+            
+            <div class="- topic/p p" data-ofbid="d237356e128__20250121171656">除了 RootFS 之外，系统镜像还可能包含其他分区的文件系统镜像。为了方便制作其他分区的文件系统镜像，增加了配置支持最多生成三个文件系统镜像文件。<div class="- topic/note note note note_note" id="concept_gjb_tm3_pzb__note_u3l_k5t_qdc" data-ofbid="concept_gjb_tm3_pzb__note_u3l_k5t_qdc"><span class="note__title">注：</span> 关于 UserFS 的详细说明，可查看。</div></div>
+            <div class="- topic/p p" data-ofbid="d237356e133__20250121171656">
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_gjb_tm3_pzb__image_q1z_cvg_bzb" src="../../../images/sdk/userfs-1.png" width="576"/></div><br/>
+            </div>
+            <p class="- topic/p p" data-ofbid="d237356e138__20250121171656">配置内容包括名字、文件系统类型、参数信息以及需要合并的文件目录，示例如下：</p>
+            <div class="- topic/p p" data-ofbid="d237356e141__20250121171656">
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_gjb_tm3_pzb__image_r1z_cvg_bzb" src="../../../images/sdk/userfs-2.png" width="576"/></div><br/>
+            </div>
+            <div class="- topic/note note note note_note" id="concept_gjb_tm3_pzb__note_kxj_dvg_bzb" data-ofbid="concept_gjb_tm3_pzb__note_kxj_dvg_bzb"><span class="note__title">注：</span> 文件系统镜像中的内容，也可以在编译的时候生成并安装到指定文件系统中。</div>
+        </section></div></article></main></div>
+                        
+                        
+                        <div class=" wh_related_links d-print-none "><nav aria-label="Related Links" role="navigation" class="- topic/related-links related-links"><div class="- topic/linklist linklist relinfo" xml:lang="zh-CN" lang="zh-CN"><strong>相关信息</strong><ul class="linklist related_link"><li class="linklist"><a class="- topic/link link navheader_parent_path" title=""></a></li><li class="linklist"><a class="- topic/link link navheader_parent_path" href="../file-system/file-system-user-guide.html" title="文件系统使用指南">文件系统使用指南</a></li></ul></div></nav></div>
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_gjb_tm3_pzb__section_gvl_45h_bcc" data-tocid="concept_gjb_tm3_pzb__section_gvl_45h_bcc">定制软件包</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_gjb_tm3_pzb__section_jby_45h_bcc" data-tocid="concept_gjb_tm3_pzb__section_jby_45h_bcc">配置 RootFS 镜像</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_gjb_tm3_pzb__section_xk1_p5h_bcc" data-tocid="concept_gjb_tm3_pzb__section_xk1_p5h_bcc">配置 UserFS 镜像</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="xxx_spinand_table 数据结构为第二级索引，描述厂商的系列器件信息，是 SPI NAND 驱动的核心，描述了下列参数信息： static const struct spinand_info foresee_spinand_table[] = { SPINAND_INFO( &#34;F35SQA002G&#34; , ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-17"/><meta name="DC.date.modified" content="2024-12-13"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="spi_nand_table"/><meta name="DC.language" content="zh-CN"/><title>配置 xxx_spinand_table</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/spinand/spi-nand_table.dita"/><meta name="wh-out-relpath" content="topics/sdk/spinand/spi-nand_table.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="spi_nand_table" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/spinand/spi-nand_table.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">配置 <code class="+ topic/ph pr-d/codeph ph codeph">xxx_spinand_table</code></h1><div class="date inPage">13 Dec 2024</div><div style="color: gray;">
+                    Read time: 5 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d322405e25__20250121171826"><code class="+ topic/ph pr-d/codeph ph codeph">xxx_spinand_table</code> 数据结构为第二级索引，描述厂商的系列器件信息，是 SPI NAND
+            驱动的核心，描述了下列参数信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_ccr_dry_c1c" data-ofbid="spi_nand_table__codeblock_ccr_dry_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> spinand_info foresee_spinand_table[] = {
+    SPINAND_INFO(<span class="hl-string">"F35SQA002G"</span>,
+        SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, <span class="hl-number">0x72</span>),
+        NAND_MEMORG(<span class="hl-number">1</span>, <span class="hl-number">2048</span>, <span class="hl-number">64</span>, <span class="hl-number">64</span>, <span class="hl-number">2048</span>, <span class="hl-number">40</span>, <span class="hl-number">1</span>, <span class="hl-number">1</span>, <span class="hl-number">1</span>),
+        NAND_ECCREQ(<span class="hl-number">1</span>, <span class="hl-number">528</span>),
+        SPINAND_INFO_OP_VARIANTS(&amp;read_cache_variants,
+                    &amp;write_cache_variants,
+                    &amp;update_cache_variants),
+        SPINAND_HAS_QE_BIT,
+        SPINAND_ECCINFO(&amp;f35sqa_ooblayout,
+                    f35sqa_ecc_get_status)),
+};</pre></div><section class="- topic/section section" id="spi_nand_table__section_odw_vkb_ndc" data-ofbid="spi_nand_table__section_odw_vkb_ndc"><h2 class="- topic/title title sectiontitle">配置 <code class="+ topic/ph pr-d/codeph ph codeph">NAND_MEMORG</code></h2>
+            
+            <div class="- topic/p p" data-ofbid="d322405e38__20250121171826">芯片存储结构 <code class="+ topic/ph pr-d/codeph ph codeph">memorg</code> 通过 NAND_MEMORG 结构描述。一般情况下，器件数据手册会在开头描述
+                    <code class="+ topic/ph pr-d/codeph ph codeph">memorg</code> 信息。<code class="+ topic/ph pr-d/codeph ph codeph">NAND_MEMORG</code>
+                的参数示例描述如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_pwq_3ry_c1c" data-ofbid="spi_nand_table__codeblock_pwq_3ry_c1c">#<span class="hl-directive">define</span> NAND_MEMORG(bpc, ps, os, ppe, epl, mbb, ppl, lpt, nt)
+    {
+            .bits_per_cell = (bpc),         <em class="hl-comment">// Cell 是 NAND 的最小单元，一般只能存储 1bit，少有其他值得</em>
+            .pagesize = (ps),               <em class="hl-comment">// 页大小，大部分的器件的页通过（N + Mbytes）的方式描述，N 为页大小，M 为 oob</em>
+            .oobsize = (os),                <em class="hl-comment">//界外大小，一般用于存放 ECC 校验数据或其它数据，和 pagesize  共同描述</em>
+            .pages_per_eraseblock = (ppe),  <em class="hl-comment">// 一个擦除块有多少个页</em>
+            .eraseblocks_per_lun = (epl),   <em class="hl-comment">//  一个 lun（die）有多少个擦除块,1Gb/(64 x 2048 x 8) = 1024</em>
+            .max_bad_eraseblocks_per_lun = (mbb), <em class="hl-comment">//器件出厂的最大坏块数，一般在数据手册中通过 bad blocks 查找到</em>
+            .planes_per_lun = (ppl),        <em class="hl-comment">//一般设置为 1，单 die</em>
+            .luns_per_target = (lpt),       <em class="hl-comment">//一般设置为 1</em>
+            .ntargets = (nt),               <em class="hl-comment">//一般设置为 1</em>
+    }</pre></div>
+        </section><div class="- topic/example example" id="spi_nand_table__example_l1g_4ry_c1c" data-ofbid="spi_nand_table__example_l1g_4ry_c1c"><h2 class="- topic/title title sectiontitle">配置 FM25S01A 中的 <code class="+ topic/ph pr-d/codeph ph codeph">NAND_MEMORG</code></h2>
+            
+            <p class="- topic/p p" data-ofbid="d322405e59__20250121171826">对于 <code class="+ topic/ph pr-d/codeph ph codeph">FM25S01A</code>，按照下列描述配置参数 NAND_MEMORG (1, 2048, 64, 64, 1024, 20, 1, 1,
+                1)</p>
+            <ul class="- topic/ul ul" id="spi_nand_table__ul_uqq_nqy_c1c" data-ofbid="spi_nand_table__ul_uqq_nqy_c1c"><li class="- topic/li li" data-ofbid="d322405e66__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e68__20250121171826">single cell， 则 bpc 设置为 1</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e71__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e73__20250121171826">Page size： 2048 + 64 bytes， 则 pagesize = 2048， oobsize = 64</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e76__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e78__20250121171826">Block size： 64 pages， 则 pages_per_eraseblock = 64</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e81__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e83__20250121171826">eraseblocks_per_lun 通过计算所得，该器件容量为 1Gb，一个 block 的容量为 （64 pages x 2048 bytes）=
+                        128KB，则 1Gb / 128KB = 1024, 注意 bit 和 byte 的单位</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e86__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e88__20250121171826">max_bad_eraseblocks_per_lun：0014h (16 进制) = 20（十进制）</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e91__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e93__20250121171826">ppl，lpt，nt 描述的是该器件中有几个单元，大部分为 1，lun 对应器件上的 die，即有几个晶圆</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d322405e97__20250121171826">
+                <figure class="- topic/fig fig fignone" id="spi_nand_table__fig_vdf_lmb_ndc" data-ofbid="spi_nand_table__fig_vdf_lmb_ndc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nand_table__image_vqq_nqy_c1c" src="../../../images/memory/FM25S01A-1.png" width="288" alt="FM25S01A-1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">FM25S01A 数据手册描述示例</span></figcaption></figure>
+            </div>
+        </div><div class="- topic/example example" id="spi_nand_table__example_css_pry_c1c" data-ofbid="spi_nand_table__example_css_pry_c1c"><h2 class="- topic/title title sectiontitle">配置 F35SQA002G 中的 <code class="+ topic/ph pr-d/codeph ph codeph">NAND_MEMORG</code></h2>
+            
+            <p class="- topic/p p" data-ofbid="d322405e114__20250121171826">对于 <code class="+ topic/ph pr-d/codeph ph codeph">F35SQA002G</code>，按照下列描述配置参数 NAND_MEMORG(1, 2048, 64, 64, 2048, 40, 1,
+                1, 1)</p>
+            <ul class="- topic/ul ul" id="spi_nand_table__ul_xqq_nqy_c1c" data-ofbid="spi_nand_table__ul_xqq_nqy_c1c"><li class="- topic/li li" data-ofbid="d322405e121__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e123__20250121171826">cell 未明确， bpc 设置为 1</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e126__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e128__20250121171826">Page size： 2k + 64 bytes， 则 pagesize = 2048， oobsize = 64</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e131__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e133__20250121171826">Block size： 64 pages， 则 pages_per_eraseblock = 64</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e136__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e138__20250121171826">eraseblocks_per_lun 通过计算所得，该器件容量为 2Gb（256MB），一个 block 的容量为 （64 pages x 2048
+                        bytes）= 128KB，则 256M / 128KB = 2048</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e141__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e143__20250121171826">max_bad_eraseblocks_per_lun：0028h (16 进制) = 40 （十进制）</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e146__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e148__20250121171826">ppl，lpt，nt 描述的是该器件中有几个单元，大部分为 1，lun 对应器件上的 die，即有几个晶圆</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d322405e152__20250121171826">
+                <figure class="- topic/fig fig fignone" id="spi_nand_table__fig_g31_cmb_ndc" data-ofbid="spi_nand_table__fig_g31_cmb_ndc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nand_table__image_yqq_nqy_c1c" src="../../../images/memory/F35SQA-1.png" width="384" alt="F35SQA-1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">F35SQA002G 数据手册描述示例</span></figcaption></figure>
+            </div>
+        </div><section class="- topic/section section" id="spi_nand_table__section_zqq_nqy_c1c" data-ofbid="spi_nand_table__section_zqq_nqy_c1c"><h2 class="- topic/title title sectiontitle">NAND_ECCREQ</h2>
+            
+            <p class="- topic/p p" data-ofbid="d322405e167__20250121171826"> Error Correcting Code (ECC)，可以在数据手册中搜索 <code class="+ topic/ph pr-d/codeph ph codeph">ECC</code> 字样获得， 如 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="spi-nand_table.html#spi_nand_table__fig_g31_cmb_ndc">F35SQA002G 数据手册描述示例</a>所示。 NAND_ECCREQ 参数用来描述每个 stp byte
+                包含多少位的内部 ECC：</p>
+            <ul class="- topic/ul ul" id="spi_nand_table__ul_arq_nqy_c1c" data-ofbid="spi_nand_table__ul_arq_nqy_c1c"><li class="- topic/li li" data-ofbid="d322405e178__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e180__20250121171826">对于 FM25S01A：NAND_ECCREQ(1, 512)</p>
+                </li><li class="- topic/li li" data-ofbid="d322405e183__20250121171826">
+                    <p class="- topic/p p" data-ofbid="d322405e185__20250121171826">对于 F35SQA002G：NAND_ECCREQ(1, 528)</p>
+                </li></ul>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_xvm_wsy_c1c" data-ofbid="spi_nand_table__codeblock_xvm_wsy_c1c">#<span class="hl-directive">define</span> NAND_ECCREQ(str, stp) { .strength = (str), .step_size = (stp) }</pre>
+        </section><section class="- topic/section section" id="spi_nand_table__section_crq_nqy_c1c" data-ofbid="spi_nand_table__section_crq_nqy_c1c"><h2 class="- topic/title title sectiontitle">SPINAND_INFO_OP_VARIANTS</h2>
+            
+            <div class="- topic/p p" data-ofbid="d322405e197__20250121171826">在配置 SPI NAND 设备时，SPINAND_INFO_OP_VARIANTS
+                结构用于定义不同总线宽度下的缓存操作接口，包括读取缓存、写入缓存和更新缓存的操作：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_iqk_zsy_c1c" data-ofbid="spi_nand_table__codeblock_iqk_zsy_c1c">#<span class="hl-directive">define</span> SPINAND_INFO_OP_VARIANTS(__read, __write, __update)         \
+{                                                               \
+        .read_cache = __read,                                   \
+        .write_cache = __write,                                 \
+        .update_cache = __update,                               \
+}</pre></div>
+            <div class="- topic/p p" data-ofbid="d322405e202__20250121171826">以下是如何根据数据手册设置缓存操作的详细步骤：<ul class="- topic/ul ul" id="spi_nand_table__ol_wzp_bty_c1c" data-ofbid="spi_nand_table__ol_wzp_bty_c1c"><li class="- topic/li li" data-ofbid="d322405e205__20250121171826"><strong class="+ topic/ph hi-d/b ph b">read_cache_variants</strong><p class="- topic/p p" data-ofbid="d322405e208__20250121171826">根据数据手册中的命令列表，为不同的总线宽度配置读取缓存操作。可以在数据手册中搜索
+                            commands 或者 command set 获得 command 列表进行设置。例如：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_hsn_zsy_c1c" data-ofbid="spi_nand_table__codeblock_hsn_zsy_c1c">        SPINAND_PAGE_READ_FROM_CACHE_QUADIO_OP(<span class="hl-number">0</span>, <span class="hl-number">1</span>, NULL, <span class="hl-number">0</span>),   <em class="hl-comment">//command id：0xeb</em>
+        SPINAND_PAGE_READ_FROM_CACHE_X4_OP(<span class="hl-number">0</span>, <span class="hl-number">1</span>, NULL, <span class="hl-number">0</span>),      <em class="hl-comment">//command id：0x6b</em>
+        SPINAND_PAGE_READ_FROM_CACHE_DUALIO_OP(<span class="hl-number">0</span>, <span class="hl-number">1</span>, NULL, <span class="hl-number">0</span>),  <em class="hl-comment">//command id：0xbb</em>
+        SPINAND_PAGE_READ_FROM_CACHE_X2_OP(<span class="hl-number">0</span>, <span class="hl-number">1</span>, NULL, <span class="hl-number">0</span>),      <em class="hl-comment">//command id：0x3b</em>
+        SPINAND_PAGE_READ_FROM_CACHE_OP(true, <span class="hl-number">0</span>, <span class="hl-number">1</span>, NULL, <span class="hl-number">0</span>),   <em class="hl-comment">//command id：0x0b</em>
+        SPINAND_PAGE_READ_FROM_CACHE_OP(false, <span class="hl-number">0</span>, <span class="hl-number">1</span>, NULL, <span class="hl-number">0</span>)); <em class="hl-comment">//command id：0x03</em></pre><div class="- topic/p p" data-ofbid="d322405e212__20250121171826">
+                            <ul class="- topic/ul ul" id="spi_nand_table__ul_ogm_lnb_ndc" data-ofbid="spi_nand_table__ul_ogm_lnb_ndc"><li class="- topic/li li" data-ofbid="d322405e215__20250121171826">
+                                    <div class="- topic/p p" data-ofbid="d322405e217__20250121171826">SPINAND_PAGE_READ_FROM_CACHE_QUADIO_OP(0, 1, NULL, 0) <ul class="- topic/ul ul" id="spi_nand_table__ul_xgc_gty_c1c" data-ofbid="spi_nand_table__ul_xgc_gty_c1c"><li class="- topic/li li" data-ofbid="d322405e220__20250121171826"> (0, 1, NULL, 0) 分别表示地址、dummy 的 bite 长度、读取数据的 buf
+                                                  以及读取数据的长度参数。详细配置值解析如下：<ul class="- topic/ul ul" id="spi_nand_table__ul_grq_nqy_c1c" data-ofbid="spi_nand_table__ul_grq_nqy_c1c"><li class="- topic/li li" data-ofbid="d322405e223__20250121171826">0：后续赋值，以此设为规定值 0。</li><li class="- topic/li li" data-ofbid="d322405e225__20250121171826">1：大部分为 1，少数部分为 2，可在数据手册中查找获得。<p class="- topic/p p" data-ofbid="d322405e227__20250121171826">如果器件对 0xeb 的
+                                                  dummy 没有明确标识，则设置为 1。</p></li><li class="- topic/li li" data-ofbid="d322405e229__20250121171826">NULL：续赋值，此处固定为 NULL。</li><li class="- topic/li li" data-ofbid="d322405e231__20250121171826">0：后续赋值，所以设置为固定值 0。</li></ul></li><li class="- topic/li li" data-ofbid="d322405e233__20250121171826">在 (0, 1, NULL, 0) 代表的四个参数中，仅需从数据手册中去获取 dummy
+                                                的长度即可，其他均赋固定值。</li><li class="- topic/li li" data-ofbid="d322405e235__20250121171826">如果器件支持的命令较少，需要去掉部分不支持的操作。可根据 variants 的 command id
+                                                来判断，如```F35SQA002G```不支持 0xeb 和 0xbb 命令。</li></ul></div>
+                                </li><li class="- topic/li li" data-ofbid="d322405e238__20250121171826">SPINAND_PAGE_READ_FROM_CACHE_OP<ul class="- topic/ul ul" id="spi_nand_table__ul_hrq_nqy_c1c" data-ofbid="spi_nand_table__ul_hrq_nqy_c1c"><li class="- topic/li li" data-ofbid="d322405e242__20250121171826">
+                                            <p class="- topic/p p" data-ofbid="d322405e244__20250121171826">设置两次，分别设为 normal read 0x3 和 fast read 0xb</p>
+                                        </li><li class="- topic/li li" data-ofbid="d322405e247__20250121171826">
+                                            <p class="- topic/p p" data-ofbid="d322405e249__20250121171826">第一个参数为 fast read 标志，对于支持 0x0b 和 0x03
+                                                两个命令的器件，此二者必须成对存在，并且参数一致</p>
+                                        </li></ul><div class="- topic/p p" data-ofbid="d322405e253__20250121171826">
+                                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nand_table__image_irq_nqy_c1c" src="../../../images/memory/FM25S01A-com2.png" width="480" alt="FM25S01A-com2"/></div><br/>
+                                    </div><div class="- topic/p p" data-ofbid="d322405e259__20250121171826">
+                                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nand_table__image_jrq_nqy_c1c" src="../../../images/memory/F35SQA-com2.png" width="480" alt="F35SQA-com2"/></div><br/>
+                                    </div></li></ul>
+                        </div></li><li class="- topic/li li" data-ofbid="d322405e266__20250121171826"><strong class="+ topic/ph hi-d/b ph b">write_cache_variants</strong><p class="- topic/p p" data-ofbid="d322405e269__20250121171826">所有器件的写缓存操作设置都一致，不需要根据数据手册更改：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_wbw_zsy_c1c" data-ofbid="spi_nand_table__codeblock_wbw_zsy_c1c"><strong class="hl-keyword">static</strong> SPINAND_OP_VARIANTS(update_cache_variants,
+            SPINAND_PROG_LOAD_X4(false, <span class="hl-number">0</span>, NULL, <span class="hl-number">0</span>),
+            SPINAND_PROG_LOAD(false, <span class="hl-number">0</span>, NULL, <span class="hl-number">0</span>));</pre></li><li class="- topic/li li" data-ofbid="d322405e273__20250121171826"><strong class="+ topic/ph hi-d/b ph b">update_cache_variants</strong><p class="- topic/p p" data-ofbid="d322405e276__20250121171826">所有器件的更新缓存操作设置都一致，不需要根据数据手册更改：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_fqx_zsy_c1c" data-ofbid="spi_nand_table__codeblock_fqx_zsy_c1c"><strong class="hl-keyword">static</strong> SPINAND_OP_VARIANTS(update_cache_variants,
+            SPINAND_PROG_LOAD_X4(false, <span class="hl-number">0</span>, NULL, <span class="hl-number">0</span>),
+            SPINAND_PROG_LOAD(false, <span class="hl-number">0</span>, NULL, <span class="hl-number">0</span>));</pre></li></ul></div>
+        </section><section class="- topic/section section" id="spi_nand_table__section_orq_nqy_c1c" data-ofbid="spi_nand_table__section_orq_nqy_c1c"><h2 class="- topic/title title sectiontitle">SPINAND_ECCINFO</h2><p class="- topic/p p" data-ofbid="d322405e284__20250121171826">SPI NAND 的坏块管理分为两部分：器件内部硬件逻辑进行的管理，和器件对外提供给用户手工操作的管理逻辑。</p>
+            <p class="- topic/p p" data-ofbid="d322405e287__20250121171826">ECCINFO 即表示对外暴露给用户进行手工操作的区域。即便不设置 ECCINFO 信息，坏块管理依然处于工作状态。器件自身的坏块管理更高效，因此一般占 ECC
+                容量的大部分。现在大部分器件都不再提供用户操作接口，因为使用门槛比较高。</p>
+            <div class="- topic/p p" data-ofbid="d322405e290__20250121171826">以下是 ECCINFO 的配置示例：<ul class="- topic/ul ul" id="spi_nand_table__ul_qrq_nqy_c1c" data-ofbid="spi_nand_table__ul_qrq_nqy_c1c"><li class="- topic/li li" data-ofbid="d322405e293__20250121171826">
+                        <p class="- topic/p p" data-ofbid="d322405e295__20250121171826">Toshiba 的 TC58CYG0S3HRAIJ 的 ECC 为 64Byte：</p>
+                        <div class="- topic/p p" data-ofbid="d322405e298__20250121171826">
+                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nand_table__image_srq_nqy_c1c" src="../../../images/spinand/toshiba-ecc.png" width="480" alt="toshiba-ecc"/></div><br/>
+                        </div>
+                        <div class="- topic/p p" data-ofbid="d322405e305__20250121171826">
+                            <ol class="- topic/ol ol" id="spi_nand_table__ol_shj_3qb_ndc" data-ofbid="spi_nand_table__ol_shj_3qb_ndc"><li class="- topic/li li" data-ofbid="d322405e308__20250121171826">使用定义宏 <code class="+ topic/ph pr-d/codeph ph codeph">SPINAND_ECCINFO</code> 定义 ECCINFO
+                                        结构体，其中包含两个函数指针：<code class="+ topic/ph pr-d/codeph ph codeph">ooblayout</code> 和
+                                        <code class="+ topic/ph pr-d/codeph ph codeph">get_status</code>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_ehd_1ty_c1c" data-ofbid="spi_nand_table__codeblock_ehd_1ty_c1c">#<span class="hl-directive">define</span> SPINAND_ECCINFO(__ooblayout, __get_status)
+    .eccinfo = {
+        .ooblayout = __ooblayout,   <em class="hl-comment">//ooblayot 操作函数集合</em>
+        .get_status = __get_status, <em class="hl-comment">//获取 ECC 状态</em>
+    }</pre></li><li class="- topic/li li" data-ofbid="d322405e321__20250121171826">
+                                    <div class="- topic/p p" data-ofbid="d322405e323__20250121171826">配置 <code class="+ topic/ph pr-d/codeph ph codeph">toshiba_spi_nand</code> 的
+                                        ECCINFO，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_table__codeblock_blq_2qb_ndc" data-ofbid="spi_nand_table__codeblock_blq_2qb_ndc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> tx58cxgxsxraix_ooblayout_ecc(<strong class="hl-keyword">struct</strong> mtd_info *mtd, <strong class="hl-keyword">int</strong> section,
+                                    <strong class="hl-keyword">struct</strong> mtd_oob_region *region)
+{
+        <strong class="hl-keyword">if</strong> (section &gt; <span class="hl-number">0</span>)
+                <strong class="hl-keyword">return</strong> -ERANGE;
+
+        region-&gt;offset = mtd-&gt;oobsize / <span class="hl-number">2</span>;  <em class="hl-comment">//ECC 总长度为 128Byte，64B 为对外</em>
+        region-&gt;length = mtd-&gt;oobsize / <span class="hl-number">2</span>;  <em class="hl-comment">//长度也为 64</em>
+
+        <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}</pre></div>
+                                </li></ol>
+                        </div>
+                    </li><li class="- topic/li li" data-ofbid="d322405e333__20250121171826">
+                        <p class="- topic/p p" data-ofbid="d322405e335__20250121171826">FM25S01A 和 F35SQA002G 两款器件都没有提供外部使用接口：</p>
+                        <div class="- topic/p p" data-ofbid="d322405e338__20250121171826">
+                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nand_table__image_trq_nqy_c1c" src="../../../images/memory/FM25S01A-ecc.png" width="480" alt="FM25S01A-ecc"/></div><br/>
+                        </div>
+                        <div class="- topic/p p" data-ofbid="d322405e345__20250121171826">
+                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="spi_nand_table__image_urq_nqy_c1c" src="../../../images/memory/F35SQA-ecc.png" width="480" alt="F35SQA-ecc"/></div><br/>
+                        </div>
+                    </li></ul></div></section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#spi_nand_table__section_odw_vkb_ndc" data-tocid="spi_nand_table__section_odw_vkb_ndc">配置 <code class="+ topic/ph pr-d/codeph ph codeph">NAND_MEMORG</code></a></div></li><li class="section-title"><a href="#spi_nand_table__example_l1g_4ry_c1c" data-tocid="spi_nand_table__example_l1g_4ry_c1c">配置 FM25S01A 中的 <code class="+ topic/ph pr-d/codeph ph codeph">NAND_MEMORG</code></a></li><li class="section-title"><a href="#spi_nand_table__example_css_pry_c1c" data-tocid="spi_nand_table__example_css_pry_c1c">配置 F35SQA002G 中的 <code class="+ topic/ph pr-d/codeph ph codeph">NAND_MEMORG</code></a></li><li class="section-item"><div class="section-title"><a href="#spi_nand_table__section_zqq_nqy_c1c" data-tocid="spi_nand_table__section_zqq_nqy_c1c">NAND_ECCREQ</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_nand_table__section_crq_nqy_c1c" data-tocid="spi_nand_table__section_crq_nqy_c1c">SPINAND_INFO_OP_VARIANTS</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_nand_table__section_orq_nqy_c1c" data-tocid="spi_nand_table__section_orq_nqy_c1c">SPINAND_ECCINFO</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

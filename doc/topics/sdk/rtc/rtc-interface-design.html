@@ -1,0 +1,237 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="以下接口是 Linux RTC 子系统需要的标准接口。 外部接口 Linux 对用户态提供了一组 RTC 的 ioctl 接口，用户态可以通过设备节点/dev/rtc0 来访问：（详见 include/upai/linux/rtc.h） # define RTC_AIE_ON _IO( 'p' , 0x01 ) /* Alarm int. enable on */ # define ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-07-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="rtc_interface_design"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/rtc/rtc-interface-design.dita"/><meta name="wh-out-relpath" content="topics/sdk/rtc/rtc-interface-design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="rtc_interface_design" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/rtc/rtc-interface-design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">接口设计</h1><div class="date inPage">15 Jul 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d343680e22__20250121172118">以下接口是 Linux RTC 子系统需要的标准接口。</p><section class="- topic/section section" id="rtc_interface_design__section_wck_2ws_c1c" data-ofbid="rtc_interface_design__section_wck_2ws_c1c"><h2 class="- topic/title title sectiontitle">外部接口</h2>
+            
+            <div class="- topic/p p" data-ofbid="d343680e29__20250121172118">Linux
+                对用户态提供了一组 RTC 的 ioctl 接口，用户态可以通过设备节点/dev/rtc0 来访问：（详见 include/upai/linux/rtc.h）<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_interface_design__codeblock_jdf_gws_c1c" data-ofbid="rtc_interface_design__codeblock_jdf_gws_c1c">#<span class="hl-directive">define</span> RTC_AIE_ON  _IO(<span class="hl-string">'p'</span>, <span class="hl-number">0x01</span>)  <em class="hl-comment">/* Alarm int. enable on     */</em>
+#<span class="hl-directive">define</span> RTC_AIE_OFF _IO(<span class="hl-string">'p'</span>, <span class="hl-number">0x02</span>)  <em class="hl-comment">/* ... off          */</em>
+#<span class="hl-directive">define</span> RTC_UIE_ON  _IO(<span class="hl-string">'p'</span>, <span class="hl-number">0x03</span>)  <em class="hl-comment">/* Update int. enable on    */</em>
+#<span class="hl-directive">define</span> RTC_UIE_OFF _IO(<span class="hl-string">'p'</span>, <span class="hl-number">0x04</span>)  <em class="hl-comment">/* ... off          */</em>
+#<span class="hl-directive">define</span> RTC_PIE_ON  _IO(<span class="hl-string">'p'</span>, <span class="hl-number">0x05</span>)  <em class="hl-comment">/* Periodic int. enable on  */</em>
+#<span class="hl-directive">define</span> RTC_PIE_OFF _IO(<span class="hl-string">'p'</span>, <span class="hl-number">0x06</span>)  <em class="hl-comment">/* ... off          */</em>
+#<span class="hl-directive">define</span> RTC_WIE_ON  _IO(<span class="hl-string">'p'</span>, <span class="hl-number">0x0f</span>)  <em class="hl-comment">/* Watchdog int. enable on  */</em>
+#<span class="hl-directive">define</span> RTC_WIE_OFF _IO(<span class="hl-string">'p'</span>, <span class="hl-number">0x10</span>)  <em class="hl-comment">/* ... off          */</em>
+
+#<span class="hl-directive">define</span> RTC_ALM_SET _IOW(<span class="hl-string">'p'</span>, <span class="hl-number">0x07</span>, <strong class="hl-keyword">struct</strong> rtc_time) <em class="hl-comment">/* Set alarm time  */</em>
+#<span class="hl-directive">define</span> RTC_ALM_READ    _IOR(<span class="hl-string">'p'</span>, <span class="hl-number">0x08</span>, <strong class="hl-keyword">struct</strong> rtc_time) <em class="hl-comment">/* Read alarm time */</em>
+#<span class="hl-directive">define</span> RTC_RD_TIME _IOR(<span class="hl-string">'p'</span>, <span class="hl-number">0x09</span>, <strong class="hl-keyword">struct</strong> rtc_time) <em class="hl-comment">/* Read RTC time   */</em>
+#<span class="hl-directive">define</span> RTC_SET_TIME    _IOW(<span class="hl-string">'p'</span>, <span class="hl-number">0x0a</span>, <strong class="hl-keyword">struct</strong> rtc_time) <em class="hl-comment">/* Set RTC time    */</em>
+#<span class="hl-directive">define</span> RTC_IRQP_READ   _IOR(<span class="hl-string">'p'</span>, <span class="hl-number">0x0b</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>)   <em class="hl-comment">/* Read IRQ rate   */</em>
+#<span class="hl-directive">define</span> RTC_IRQP_SET    _IOW(<span class="hl-string">'p'</span>, <span class="hl-number">0x0c</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>)   <em class="hl-comment">/* Set IRQ rate    */</em>
+#<span class="hl-directive">define</span> RTC_EPOCH_READ  _IOR(<span class="hl-string">'p'</span>, <span class="hl-number">0x0d</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>)   <em class="hl-comment">/* Read epoch      */</em>
+#<span class="hl-directive">define</span> RTC_EPOCH_SET   _IOW(<span class="hl-string">'p'</span>, <span class="hl-number">0x0e</span>, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>)   <em class="hl-comment">/* Set epoch       */</em>
+
+#<span class="hl-directive">define</span> RTC_WKALM_SET   _IOW(<span class="hl-string">'p'</span>, <span class="hl-number">0x0f</span>, <strong class="hl-keyword">struct</strong> rtc_wkalrm)<em class="hl-comment">/* Set wakeup alarm*/</em>
+#<span class="hl-directive">define</span> RTC_WKALM_RD    _IOR(<span class="hl-string">'p'</span>, <span class="hl-number">0x10</span>, <strong class="hl-keyword">struct</strong> rtc_wkalrm)<em class="hl-comment">/* Get wakeup alarm*/</em>
+
+#<span class="hl-directive">define</span> RTC_PLL_GET _IOR(<span class="hl-string">'p'</span>, <span class="hl-number">0x11</span>, <strong class="hl-keyword">struct</strong> rtc_pll_info)  <em class="hl-comment">/* Get PLL correction */</em>
+#<span class="hl-directive">define</span> RTC_PLL_SET _IOW(<span class="hl-string">'p'</span>, <span class="hl-number">0x12</span>, <strong class="hl-keyword">struct</strong> rtc_pll_info)  <em class="hl-comment">/* Set PLL correction */</em></pre></div>
+            <p class="- topic/p p" data-ofbid="d343680e34__20250121172118"><a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="rtc-demo.html">Demo</a> 就是调用的这些接口完成 alarm 配置，以及 hwclock 工具也是调用上述接口。</p>
+        </section><section class="- topic/section section" id="rtc_interface_design__section_q4p_kws_c1c" data-ofbid="rtc_interface_design__section_q4p_kws_c1c"><h2 class="- topic/title title sectiontitle">RTC 相关的内部接口</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_srz_jws_c1c" data-ofbid="rtc_interface_design__table_srz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_rtc_read_time</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_srz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_srz_jws_c1c__entry__2">static int aic_rtc_read_time(struct device *dev, struct rtc_time
+                                *tm)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_srz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_srz_jws_c1c__entry__2">读取当前的 RTC 时间</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_srz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_srz_jws_c1c__entry__2">
+                                <ul class="- topic/ul ul" id="rtc_interface_design__ul_sk2_tgj_bcc" data-ofbid="rtc_interface_design__ul_sk2_tgj_bcc"><li class="- topic/li li" data-ofbid="d343680e69__20250121172118">dev - 指向 RTC 设备的指针 </li><li class="- topic/li li" data-ofbid="d343680e71__20250121172118">tm - 用于存放获取到的时间信息</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_srz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_srz_jws_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_srz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_srz_jws_c1c__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_trz_jws_c1c" data-ofbid="rtc_interface_design__table_trz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_rtc_set_time</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_trz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_trz_jws_c1c__entry__2">static int aic_rtc_set_time(struct device *dev, struct rtc_time
+                                *tm)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_trz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_trz_jws_c1c__entry__2">设置 RTC 时间</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_trz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_trz_jws_c1c__entry__2">
+                                <ul class="- topic/ul ul" id="rtc_interface_design__ul_b25_tgj_bcc" data-ofbid="rtc_interface_design__ul_b25_tgj_bcc"><li class="- topic/li li" data-ofbid="d343680e109__20250121172118">dev - 指向 RTC 设备的指针 </li><li class="- topic/li li" data-ofbid="d343680e111__20250121172118">tm - 需要设置的时间信息</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_trz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_trz_jws_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_trz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_trz_jws_c1c__entry__2">更新 RTC 控制器的秒数，需要先暂停 RTC 计数，设置完秒数，再使能 RTC。</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_urz_jws_c1c" data-ofbid="rtc_interface_design__table_urz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_rtc_read_alarm</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_urz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_urz_jws_c1c__entry__2">static int aic_rtc_read_alarm(struct device *dev, struct
+                                rtc_wkalrm *alarm)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_urz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_urz_jws_c1c__entry__2">读取当前的 Alarm 状态信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_urz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_urz_jws_c1c__entry__2">
+                                <ul class="- topic/ul ul" id="rtc_interface_design__ul_crh_5gj_bcc" data-ofbid="rtc_interface_design__ul_crh_5gj_bcc"><li class="- topic/li li" data-ofbid="d343680e149__20250121172118">dev - 指向 RTC 设备的指针 </li><li class="- topic/li li" data-ofbid="d343680e151__20250121172118">alarm - 用于保存读取到的当前 Alarm 信息，包括下一次超时时间和超时状态</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_urz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_urz_jws_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_urz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_urz_jws_c1c__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_vrz_jws_c1c" data-ofbid="rtc_interface_design__table_vrz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_rtc_set_alarm</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_vrz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_vrz_jws_c1c__entry__2">static int aic_rtc_set_alarm(struct device *dev, struct
+                                rtc_wkalrm *alarm)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_vrz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_vrz_jws_c1c__entry__2">设置一个 Alarm，并使能 Alarm 中断</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_vrz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_vrz_jws_c1c__entry__2">
+                                <ul class="- topic/ul ul" id="rtc_interface_design__ul_gn5_5gj_bcc" data-ofbid="rtc_interface_design__ul_gn5_5gj_bcc"><li class="- topic/li li" data-ofbid="d343680e189__20250121172118">dev - 指向 RTC 设备的指针 </li><li class="- topic/li li" data-ofbid="d343680e191__20250121172118">alarm - 需要设置的 Alarm 信息</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_vrz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_vrz_jws_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_vrz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_vrz_jws_c1c__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_wrz_jws_c1c" data-ofbid="rtc_interface_design__table_wrz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_rtc_alarm_irq_enable</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_wrz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_wrz_jws_c1c__entry__2">static int aic_rtc_alarm_irq_enable(struct device *dev, unsigned
+                                int enabled)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_wrz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_wrz_jws_c1c__entry__2">开关 Alarm 中断</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_wrz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_wrz_jws_c1c__entry__2">
+                                <ul class="- topic/ul ul" id="rtc_interface_design__ul_gwf_vgj_bcc" data-ofbid="rtc_interface_design__ul_gwf_vgj_bcc"><li class="- topic/li li" data-ofbid="d343680e230__20250121172118">dev - 指向 RTC 设备的指针 </li><li class="- topic/li li" data-ofbid="d343680e232__20250121172118">enabled - 使能标记</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_wrz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_wrz_jws_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_wrz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_wrz_jws_c1c__entry__2">-</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="rtc_interface_design__section_j2s_mws_c1c" data-ofbid="rtc_interface_design__section_j2s_mws_c1c"><h2 class="- topic/title title sectiontitle">系统状态备份相关的内部接口</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_xrz_jws_c1c" data-ofbid="rtc_interface_design__table_xrz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_rtc_set_bak</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_xrz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_xrz_jws_c1c__entry__2">void aic_rtc_set_bak(u32 offset, u32 mask, u32 shift, u32
+                                val)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_xrz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_xrz_jws_c1c__entry__2">设置 BAK 寄存器中某几个（连续的）bit</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_xrz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_xrz_jws_c1c__entry__2">
+                                <ul class="- topic/ul ul" id="rtc_interface_design__ul_lzp_vgj_bcc" data-ofbid="rtc_interface_design__ul_lzp_vgj_bcc"><li class="- topic/li li" data-ofbid="d343680e275__20250121172118">offset - 寄存器的偏移地址，取值范围：0、4、8、12</li><li class="- topic/li li" data-ofbid="d343680e277__20250121172118">mask - 待设置的 bit 掩码 </li><li class="- topic/li li" data-ofbid="d343680e279__20250121172118">shift - 待设置的 bit 需要左移多少位 </li><li class="- topic/li li" data-ofbid="d343680e281__20250121172118">val - 待设置的实际值</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_xrz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_xrz_jws_c1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_xrz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_xrz_jws_c1c__entry__2">设置过程：先将 val 左移，然后再做掩码处理</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_yrz_jws_c1c" data-ofbid="rtc_interface_design__table_yrz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_rtc_get_bak</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_yrz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_yrz_jws_c1c__entry__2">u32 aic_rtc_get_bak(u32 offset, u32 mask, u32 shift)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_yrz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_yrz_jws_c1c__entry__2">读取 BAK 寄存器中某几个（连续的）bit</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_yrz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_yrz_jws_c1c__entry__2">
+                                <ul class="- topic/ul ul" id="rtc_interface_design__ul_pbm_wgj_bcc" data-ofbid="rtc_interface_design__ul_pbm_wgj_bcc"><li class="- topic/li li" data-ofbid="d343680e319__20250121172118">offset - 寄存器的偏移地址，取值范围：0、4、8、12</li><li class="- topic/li li" data-ofbid="d343680e321__20250121172118">mask - 待读取的 bit 掩码 </li><li class="- topic/li li" data-ofbid="d343680e323__20250121172118">shift - 待读取的 bit 需要右移多少位</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_yrz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_yrz_jws_c1c__entry__2">实际读取到的寄存器值</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_yrz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_yrz_jws_c1c__entry__2">读取过程：先将读取到的寄存器当前值做掩码处理，然后再右移</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_zrz_jws_c1c" data-ofbid="rtc_interface_design__table_zrz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_set_software_reboot_reason</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_zrz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_zrz_jws_c1c__entry__2">void aic_set_software_reboot_reason(enum aic_reboot_reason
+                                reason)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_zrz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_zrz_jws_c1c__entry__2">设置 reason 到 SYS_BAK 寄存器</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_zrz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_zrz_jws_c1c__entry__2">reason - aic_reboot_reason 类型的启动原因</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_zrz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_zrz_jws_c1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_zrz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_zrz_jws_c1c__entry__2">aic_reboot_reason 详见  <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="rtc-key-procedure.html#rtc_key_procedures__section_l1w_z5s_c1c">Reboot Reason 的设计</a></td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_interface_design__table_asz_jws_c1c" data-ofbid="rtc_interface_design__table_asz_jws_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_get_software_reboot_reason</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_interface_design__table_asz_jws_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_interface_design__table_asz_jws_c1c__entry__2">enum aic_reboot_reason
+                                aic_get_software_reboot_reason(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_asz_jws_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_asz_jws_c1c__entry__2">从 BAK 寄存器中读取上一次系统的 Reboot reason 类型</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_asz_jws_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_asz_jws_c1c__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_interface_design__table_asz_jws_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_interface_design__table_asz_jws_c1c__entry__2">aic_reboot_reason 类型的启动原因</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_interface_design__table_asz_jws_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_interface_design__table_asz_jws_c1c__entry__2">aic_reboot_reason 详见 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="rtc-key-procedure.html#rtc_key_procedures__section_l1w_z5s_c1c">Reboot Reason 的设计</a></td></tr></tbody></table></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#rtc_interface_design__section_wck_2ws_c1c" data-tocid="rtc_interface_design__section_wck_2ws_c1c">外部接口</a></div></li><li class="section-item"><div class="section-title"><a href="#rtc_interface_design__section_q4p_kws_c1c" data-tocid="rtc_interface_design__section_q4p_kws_c1c">RTC 相关的内部接口</a></div></li><li class="section-item"><div class="section-title"><a href="#rtc_interface_design__section_j2s_mws_c1c" data-tocid="rtc_interface_design__section_j2s_mws_c1c">系统状态备份相关的内部接口</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

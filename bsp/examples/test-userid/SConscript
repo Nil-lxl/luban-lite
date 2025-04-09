@@ -1,0 +1,13 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('KERNEL_RTTHREAD') and GetDepend('AIC_USERID_BARE_TEST'):
+    src += Glob('test_userid.c')
+
+group = DefineGroup('test-userid', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

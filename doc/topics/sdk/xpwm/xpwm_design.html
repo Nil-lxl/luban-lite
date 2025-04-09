@@ -1,0 +1,257 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 源代码位于 bsp/artinchip/ ： bsp/artinchip/drv/xpwm/drv_xpwm.c，XPWM/PWM Driver 层实现 bsp/artinchip/hal/xpwm/hal_xpwm.c，XPWM/PWM HAL 层实现 bsp/artinchip/include/hal/hal_xpwm.h，XPWM/PWM HAL 层接口头文件 模块架构 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-10-30"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/xpwm/xpwm_design.dita"/><meta name="wh-out-relpath" content="topics/sdk/xpwm/xpwm_design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/xpwm/xpwm_design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">30 Oct 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+            
+            <p class="- topic/p p" data-ofbid="d285672e22__20250121171754">源代码位于 <code class="+ topic/ph pr-d/codeph ph codeph">bsp/artinchip/</code>：</p><ul class="- topic/ul ul simple" data-ofbid="d285672e27__20250121171754"><li class="- topic/li li" data-ofbid="d285672e28__20250121171754">
+                    <p class="- topic/p p" data-ofbid="d285672e30__20250121171754">bsp/artinchip/drv/xpwm/drv_xpwm.c，XPWM/PWM Driver 层实现</p>
+                </li><li class="- topic/li li" data-ofbid="d285672e33__20250121171754">
+                    <p class="- topic/p p" data-ofbid="d285672e35__20250121171754">bsp/artinchip/hal/xpwm/hal_xpwm.c，XPWM/PWM HAL 层实现</p>
+                </li><li class="- topic/li li" data-ofbid="d285672e38__20250121171754">
+                    <p class="- topic/p p" data-ofbid="d285672e40__20250121171754">bsp/artinchip/include/hal/hal_xpwm.h，XPWM/PWM HAL 层接口头文件</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">模块架构</h2>
+                        
+                        <p class="- topic/p p" data-ofbid="d285672e49__20250121171754">XPWM/PWM 驱动 Driver 层采用 RT-Thread 的 PWM 设备驱动框架。HAL 层也可以支持 Baremetal
+                            方式或配合自定义的设备驱动框架进行使用。</p>
+                        <figure class="- topic/fig fig fignone" id="id__id7" data-ofbid="id__id7"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" src="../../../images/xpwm/sw_system13.png" alt="sw_system13"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">XPWM/PWM 驱动的软件架构图</span></figcaption></figure>
+                    </section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">关键流程设计</h2>
+            
+            <div class="- topic/div div section" id="id__id5">
+                <strong class="+ topic/ph hi-d/b ph b">初始化流程</strong>
+                <p class="- topic/p p" data-ofbid="d285672e69__20250121171754">XPWM/PWM 驱动的初始化接口通过 <code class="+ topic/ph pr-d/codeph ph codeph">INIT_DEVICE_EXPORT(drv_xpwm_init)</code> 完成，主要是通过调用
+                    PWM 子系统的接口 rt_device_pwm_register() 注册一个 PWM 设备。</p><p class="- topic/p p" data-ofbid="d285672e74__20250121171754">XPWM/PWM
+                    控制器的初始化过程，主要步骤有：</p><ol class="- topic/ol ol arabic simple" data-ofbid="d285672e76__20250121171754"><li class="- topic/li li" data-ofbid="d285672e77__20250121171754">
+                        <p class="- topic/p p" data-ofbid="d285672e79__20250121171754">初始化模块的 clk</p>
+                    </li><li class="- topic/li li" data-ofbid="d285672e82__20250121171754">
+                        <p class="- topic/p p" data-ofbid="d285672e84__20250121171754">初始化模块的默认参数</p>
+                    </li><li class="- topic/li li" data-ofbid="d285672e87__20250121171754">
+                        <p class="- topic/p p" data-ofbid="d285672e89__20250121171754">向设备框架中注册 PWM 设备</p>
+                    </li></ol></div></section><section class="- topic/section section" id="id__id6" data-ofbid="id__id6"><h2 class="- topic/title title sectiontitle">数据结构设计</h2>
+            
+            <div class="- topic/div div section" id="id__struct-aic-xpwm-arg">
+                <strong class="+ topic/ph hi-d/b ph b">struct aic_xpwm_arg</strong>
+                <div class="- topic/p p" data-ofbid="d285672e102__20250121171754">属于 HAL 层接口，记录每一个 PWM
+                    通道的配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_dbw_tj3_fdc" data-ofbid="id__codeblock_dbw_tj3_fdc"><strong class="hl-keyword">struct</strong> aic_xpwm_arg {
+    u16 available;
+    u16 id;
+    u32 tb_clk_rate;
+    u32 freq;
+    u32 period;
+    u32 duty;
+    s32 def_level;
+    u32 dma_en;
+    u32 fifo_en;
+    u32 fifo_th;
+    u32 pul_limit_en;
+    <strong class="hl-keyword">enum</strong> xpwm_polarity polarity;
+    <strong class="hl-keyword">struct</strong> xpwm_int_s xpwm_int;
+    <strong class="hl-keyword">struct</strong> aic_xpwm_transfer_info t_info;
+};</pre></div></div></section><section class="- topic/section section" id="id__driver" data-ofbid="id__driver"><h2 class="- topic/title title sectiontitle">Driver 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d285672e111__20250121171754">以下接口是 PWM 设备驱动框架需要的标准接口。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_m55_5j3_fdc" data-ofbid="id__codeblock_m55_5j3_fdc"><strong class="hl-keyword">struct</strong> rt_pwm_ops
+{
+    rt_err_t (*control)(<strong class="hl-keyword">struct</strong> rt_device_pwm *device, <strong class="hl-keyword">int</strong> cmd, <strong class="hl-keyword">void</strong> *arg);
+};</pre></div><div class="table-container"><table class="- topic/table table frame-all" id="id__table_ejd_vj3_fdc" data-ofbid="id__table_ejd_vj3_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_pwm_control</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ejd_vj3_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_ejd_vj3_fdc__entry__2">static rt_err_t drv_xpwm_control(struct rt_device_pwm *device,
+                                int cmd, void *arg)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ejd_vj3_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ejd_vj3_fdc__entry__2">（类似 ioctl 的接口方式）配置一个 XPWM/PWM 通道</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ejd_vj3_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ejd_vj3_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">device - 指向 XPWM/PWM 设备的指针</div>
+                                    <div class="- topic/div div">cmd - ioctl 命令码</div>
+                                    <div class="- topic/div div">arg - 命令参数，指向 struct rt_pwm_configuration 结构的指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ejd_vj3_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ejd_vj3_fdc__entry__2">0，成功； &lt; 0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ejd_vj3_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_ejd_vj3_fdc__entry__2">-</td></tr></tbody></table></div></section><section class="- topic/section section" id="id__hal" data-ofbid="id__hal"><h2 class="- topic/title title sectiontitle">HAL 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d285672e165__20250121171754">HAL 层的函数接口声明存放在 hal_xpwm.h
+                中，主要接口有：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xcb_wj3_fdc" data-ofbid="id__codeblock_xcb_wj3_fdc"><strong class="hl-keyword">void</strong> hal_xpwm_ch_init(u32 ch, u32 default_level, <strong class="hl-keyword">enum</strong> xpwm_polarity polarity);
+<strong class="hl-keyword">int</strong> hal_xpwm_set(u32 ch, u32 duty_ns, u32 period_ns, u32 pulse_cnt);
+<strong class="hl-keyword">int</strong> hal_xpwm_get(u32 ch, u32 *duty_ns, u32 *period_ns);
+<strong class="hl-keyword">int</strong> hal_xpwm_enable(u32 ch);
+<strong class="hl-keyword">int</strong> hal_xpwm_disable(u32 ch);
+u32 hal_xpwm_int_stat(u32 ch);
+<strong class="hl-keyword">void</strong> hal_xpwm_int_clr(u32 ch, u32 mask);
+<strong class="hl-keyword">int</strong> hal_xpwm_set_fifo(u32 ch, u32 pul_num, u32 pul_prd, u32 pul_cmp);
+<strong class="hl-keyword">void</strong> hal_xpwm_cnt_en(u32 ch, u32 val);
+<strong class="hl-keyword">int</strong> hal_xpwm_is_enable(u32 ch);
+<strong class="hl-keyword">void</strong> hal_xpwm_resume(u32 ch);
+<strong class="hl-keyword">void</strong> hal_xpwm_fifo_flush(u32 ch);
+<strong class="hl-keyword">void</strong> hal_xpwm_irq_en_set(u32 ch, <strong class="hl-keyword">struct</strong> xpwm_int_s *xpwm_int);
+bool hal_ch_is_xpwm(u32 ch);
+<strong class="hl-keyword">int</strong> xpwm_cal_prd_duty(u32 ch, u32 duty_ns, u32 period_ns);
+#<strong class="hl-keyword">if</strong> defined (AIC_XPWM_FIFO_MODE) &amp;&amp; defined (AIC_DMA_DRV)
+<strong class="hl-keyword">void</strong> hal_xpwm_dma_config(u32 ch, dma_async_callback callback, <strong class="hl-keyword">void</strong> *callback_param);
+#endif</pre></div><div class="- topic/note note tip note_tip" id="id__note_h4n_qn3_ddc" data-ofbid="id__note_h4n_qn3_ddc"><span class="note__title">提示：</span> 
+                <p class="- topic/p p" data-ofbid="d285672e171__20250121171754">硬件上 PWM 与 XPWM 为同一模块共 24 路。 驱动中的 PWM 是使用 XPWM 的 PWM 功能来实现，软件上划分 0-7 路为 XPWM， 8-23
+                    路为 PWM。</p>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">源码说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">模块架构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">关键流程设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id6" data-tocid="id__id6">数据结构设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__driver" data-tocid="id__driver">Driver 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__hal" data-tocid="id__hal">HAL 层接口设计</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

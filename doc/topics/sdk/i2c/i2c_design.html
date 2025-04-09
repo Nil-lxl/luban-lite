@@ -1,0 +1,209 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源代码位于： linux-5.10/drivers/i2c/busses/ I2C 的驱动文件如下： 文件 说明 i2c-artinchip.h aic I2C 公用头文件，I2C 模块的寄存器定义，结构体定义等 i2c-artinchip-master.c I2C 作为 master 时的驱动文件 i2c-artinchip-slave.c I2C 作为 slave 时的驱动文件 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="i2c_design_intro"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/i2c/i2c_design.dita"/><meta name="wh-out-relpath" content="topics/sdk/i2c/i2c_design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="i2c_design_intro" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/i2c/i2c_design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d126682e22__20250121171601">源代码位于：<span class="+ topic/ph sw-d/filepath ph filepath">linux-5.10/drivers/i2c/busses/</span></p><p class="- topic/p p" data-ofbid="d126682e26__20250121171601"> I2C 的驱动文件如下：</p><div class="table-container"><table class="- topic/table table frame-all" id="i2c_design_intro__table_lnt_y5r_21c" data-ofbid="i2c_design_intro__table_lnt_y5r_21c" data-cols="2"><caption></caption><colgroup><col style="width:39.0625%"/><col style="width:60.9375%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="i2c_design_intro__table_lnt_y5r_21c__entry__1">文件</th><th class="- topic/entry entry colsep-0 rowsep-1" id="i2c_design_intro__table_lnt_y5r_21c__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="i2c_design_intro__table_lnt_y5r_21c__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">i2c-artinchip.h</span></td><td class="- topic/entry entry colsep-0 rowsep-1" headers="i2c_design_intro__table_lnt_y5r_21c__entry__2">aic I2C 公用头文件，I2C 模块的寄存器定义，结构体定义等</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="i2c_design_intro__table_lnt_y5r_21c__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">i2c-artinchip-master.c</span></td><td class="- topic/entry entry colsep-0 rowsep-1" headers="i2c_design_intro__table_lnt_y5r_21c__entry__2">I2C 作为 master 时的驱动文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="i2c_design_intro__table_lnt_y5r_21c__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">i2c-artinchip-slave.c</span></td><td class="- topic/entry entry colsep-0 rowsep-1" headers="i2c_design_intro__table_lnt_y5r_21c__entry__2">I2C 作为 slave 时的驱动文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="i2c_design_intro__table_lnt_y5r_21c__entry__1"><span class="+ topic/ph sw-d/filepath ph filepath">i2c-artinchip-common.c</span></td><td class="- topic/entry entry colsep-0 rowsep-0" headers="i2c_design_intro__table_lnt_y5r_21c__entry__2">I2C 一些公用寄存器读写函数的实现，以及 driver 的定义</td></tr></tbody></table></div><section class="- topic/section section" id="i2c_design_intro__section_mnt_y5r_21c" data-ofbid="i2c_design_intro__section_mnt_y5r_21c"><h2 class="- topic/title title sectiontitle">模块架构</h2>
+            
+            <p class="- topic/p p" data-ofbid="d126682e68__20250121171601">linux 中 C 子系统的体系结构如下图所示</p>
+            <div class="- topic/p p" data-ofbid="d126682e71__20250121171601">
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="i2c_design_intro__image_nnt_y5r_21c" src="../../../images/i2c/subsystem_arch.png" alt="subsystem_arch"/></div><br/>
+            </div>
+            <div class="- topic/p p" data-ofbid="d126682e78__20250121171601">在 C 子系统中，SOC 厂商需要实现的就是 adapter 部分的驱动，I2C adapter 是对 controller 的软件抽象。具体到上图，就是实现
+                adapter 的 algorithm 以及特定 SOC 的 I2C 代码部分。I2C 模块支持 master 和 slave 两种模式，所以 adapter
+                的驱动实现也就分为两部分：I2C master 驱动和 slave 驱动。<ul class="- topic/ul ul" id="i2c_design_intro__ul_dwk_2vr_21c" data-ofbid="i2c_design_intro__ul_dwk_2vr_21c"><li class="- topic/li li" data-ofbid="d126682e81__20250121171601">
+                        <p class="- topic/p p" data-ofbid="d126682e83__20250121171601">I2C master</p>
+                        <p class="- topic/p p" data-ofbid="d126682e86__20250121171601">I2C 作为 master 时，驱动的实现主要包括 4 个部分：</p>
+                        <ol class="- topic/ol ol" id="i2c_design_intro__ol_pnt_y5r_21c" data-ofbid="i2c_design_intro__ol_pnt_y5r_21c"><li class="- topic/li li" data-ofbid="d126682e90__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126682e92__20250121171601">硬件参数配置：主要是设置 C 工作的主机模式，7bit 或 10bit 寻址，寻址的从机地址设置，FIFO
+                                    设置以及总线传输速率等。</p>
+                            </li><li class="- topic/li li" data-ofbid="d126682e95__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126682e97__20250121171601">SCL 时序参数设置：根据设置的总线传输速率，设置 SCL 的高低电平时间。</p>
+                            </li><li class="- topic/li li" data-ofbid="d126682e100__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126682e102__20250121171601">i2c_algorithm 的实现：作为主机端，主要是 xfer 的实现。在驱动实现中，以 message
+                                    为单位进行数据的收发，数据的传输采用中断的方式。</p>
+                            </li><li class="- topic/li li" data-ofbid="d126682e105__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126682e107__20250121171601">中断的处理：处理 master 端的数据收发，并产生相应的 start、ack、nack、restart、stop 信号。</p>
+                            </li></ol>
+                    </li><li class="- topic/li li" data-ofbid="d126682e111__20250121171601">I2C slave<p class="- topic/p p" data-ofbid="d126682e113__20250121171601">I2C 作为从机时，需要一个相应的后端软件(对 C 从设备的软件模拟)，该后端软件与 adapter 驱动，组合成具有相应功能的
+                            C 从设备。内核的 C 子系统框架中提供了一个 EEPROM 的软件后端，与 slave 驱动一起，可以作为一个具有 C 接口的 EEPROM
+                            使用。</p><div class="- topic/p p" data-ofbid="d126682e115__20250121171601">
+                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="i2c_design_intro__image_grg_kvr_21c" src="../../../images/i2c/twi_slave.png" width="384" alt="twi_slave"/></div><br/>
+                        </div><p class="- topic/p p" data-ofbid="d126682e121__20250121171601">I2C 作为 slave 时，驱动的实现主要包括 3 个部分：</p><ol class="- topic/ol ol" id="i2c_design_intro__ol_hrg_kvr_21c" data-ofbid="i2c_design_intro__ol_hrg_kvr_21c"><li class="- topic/li li" data-ofbid="d126682e124__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126682e126__20250121171601">硬件参数配置：设置 C 工作的从模式，FIFO 设置等。</p>
+                            </li><li class="- topic/li li" data-ofbid="d126682e129__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126682e131__20250121171601">i2c_algorithm 的实现：作为从机端，主要是 slave 和 unreg_slave 的实现。reg_slave
+                                    用于将一个 client 注册到从模式的 i2c adapter 上，unreg_slave 的功能与 slave
+                                    相反。</p>
+                            </li><li class="- topic/li li" data-ofbid="d126682e134__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126682e136__20250121171601">中断的处理：处理 C 从机接收到的各种中断信号，并调用相应的回调函数进行数据的读写。</p>
+                            </li></ol></li></ul></div>
+            <p class="- topic/p p" data-ofbid="d126682e140__20250121171601">综上，I2C 模块的驱动实现，主要的工作有：</p>
+            <ul class="- topic/ul ul" id="i2c_design_intro__ul_d4q_kvr_21c" data-ofbid="i2c_design_intro__ul_d4q_kvr_21c"><li class="- topic/li li" data-ofbid="d126682e145__20250121171601">
+                    <p class="- topic/p p" data-ofbid="d126682e147__20250121171601">提供 C 控制器的 platform 驱动，初始化 C 适配器，判断 C 模块工作的主从模式，执行不同的初始化流程。</p>
+                </li><li class="- topic/li li" data-ofbid="d126682e150__20250121171601">
+                    <p class="- topic/p p" data-ofbid="d126682e152__20250121171601">I2C 模块作为主机时，提供 C 适配器的 algorithm，并用具体适配器的 xfer 函数填充 i2c_algorithm 的 xfer 指针，并把
+                        algorithm 指针赋值给 i2c_adapter 的 algo 指针。处理 master 端时序的设置以及 I2C
+                        作为主机时的各种中断信号处理。</p>
+                </li><li class="- topic/li li" data-ofbid="d126682e155__20250121171601">
+                    <p class="- topic/p p" data-ofbid="d126682e157__20250121171601">I2C 模块作为从机时，提供 C 适配器的 algorithm，实现具体适配器的 slave 和 unreg_slave 函数，并把 algorithm
+                        指针赋值给 i2c_adapter 的 algo 指针。处理 C 作为从机时的各种中断信号处理。</p>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

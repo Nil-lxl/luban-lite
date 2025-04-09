@@ -1,0 +1,178 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Usb Host Controller 提供了 endpoint 层级的数据收发，主要分为以下种类： Usb1.0 有两种控制器标准： OHCI 康柏的开放主机控制器接口， UHCI Intel 的通用主机控制器接口。它们的主要区别是 UHCI 更加依赖软件驱动，因此对 CPU 要求更高，但是自身的硬件会更廉价。 Usb2.0 只有一种控制器标准： EHCI 。因为 EHCI 只支持高速传输，所以 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-24"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_host_controller_layer"/><meta name="DC.language" content="zh-CN"/><title>USB Host Controller Layer</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-host-controller_layer.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-host-controller_layer.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_host_controller_layer" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-host-controller_layer.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">USB Host Controller Layer</h1><div class="date inPage">24 Jan 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d153972e22__20250121171614">Usb Host Controller 提供了 endpoint 层级的数据收发，主要分为以下种类：</p><ul class="- topic/ul ul" id="usb_host_controller_layer__ul_pnp_2pz_21c" data-ofbid="usb_host_controller_layer__ul_pnp_2pz_21c"><li class="- topic/li li" data-ofbid="d153972e25__20250121171614">
+                <p class="- topic/p p" data-ofbid="d153972e27__20250121171614">Usb1.0 有两种控制器标准： <code class="+ topic/ph pr-d/codeph ph codeph">OHCI</code> 康柏的开放主机控制器接口， <code class="+ topic/ph pr-d/codeph ph codeph">UHCI</code> Intel
+                    的通用主机控制器接口。它们的主要区别是 UHCI 更加依赖软件驱动，因此对 CPU 要求更高，但是自身的硬件会更廉价。</p>
+            </li><li class="- topic/li li" data-ofbid="d153972e36__20250121171614">
+                <p class="- topic/p p" data-ofbid="d153972e38__20250121171614">Usb2.0 只有一种控制器标准： <code class="+ topic/ph pr-d/codeph ph codeph">EHCI</code> 。因为 <code class="+ topic/ph pr-d/codeph ph codeph">EHCI</code>
+                    只支持高速传输，所以 EHCI 控制器包括四个虚拟的全速或者慢速控制器。 <code class="+ topic/ph pr-d/codeph ph codeph">EHCI</code> 主要用于 USB 2.0，老的 USB 1.1
+                    用 <code class="+ topic/ph pr-d/codeph ph codeph">OHCI</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">UHCI</code> 。 <code class="+ topic/ph pr-d/codeph ph codeph">EHCI</code> 为了兼容 USB
+                    1.1，将老的 <code class="+ topic/ph pr-d/codeph ph codeph">OHCI</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">UHCI</code> 合并到 <code class="+ topic/ph pr-d/codeph ph codeph">EHCI</code>
+                    规范里。</p>
+            </li><li class="- topic/li li" data-ofbid="d153972e69__20250121171614">
+                <p class="- topic/p p" data-ofbid="d153972e71__20250121171614">USB 3.0 控制器标准： <code class="+ topic/ph pr-d/codeph ph codeph">XHCI</code> 。 <code class="+ topic/ph pr-d/codeph ph codeph">XHCI</code> 是 Intel
+                    最新开发的主机控制器接口，广泛用户 Intel 六代 Skylake 处理器对应的 100 系列主板上，支持 USB3.0 接口，往下也兼容 USB2.0 。
+                    XHCI 英文全称 <code class="+ topic/ph pr-d/codeph ph codeph">eXtensible Host Controller Interface</code>
+                    ，是一种可扩展的主机控制器接口，是 Intel 开发的 USB 主机控制器。Intel 系列芯片的 USB 协议采用的就是
+                        <code class="+ topic/ph pr-d/codeph ph codeph">XHCI</code> 主控，主要面向 USB 3.0 标准的，同时也兼容 2.0 以下的设备。</p>
+            </li></ul></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

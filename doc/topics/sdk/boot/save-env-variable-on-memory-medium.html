@@ -1,0 +1,261 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在使用过程中，保存在存储设备上的环境变量内容可能会被修改，因此选择存储位置时需要考虑存储介质的特点。 比如 MTD 设备上要注意保存在独立的擦除块上，以免在修改时影响其他数据的完整性。 常见的保存方式有下面两种： 与 U-Boot 一起保存 在使用 MMC 存储时，有些方案会将 ENV 保存在 U-Boot 的分区，并且放在 U-Boot 分区的尾部。 通过在 DTS 中指定分区名字即可访问到。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_qhg_gl3_pzb"/><meta name="DC.language" content="zh-CN"/><title>存储介质上的保存</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/save-env-variable-on-memory-medium.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/save-env-variable-on-memory-medium.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_qhg_gl3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/save-env-variable-on-memory-medium.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">存储介质上的保存</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d223299e22__20250121171648">在使用过程中，保存在存储设备上的环境变量内容可能会被修改，因此选择存储位置时需要考虑存储介质的特点。 比如 MTD
+            设备上要注意保存在独立的擦除块上，以免在修改时影响其他数据的完整性。</p><p class="- topic/p p" data-ofbid="d223299e24__20250121171648">常见的保存方式有下面两种：</p><ul class="- topic/ul ul" id="concept_qhg_gl3_pzb__ul_ehm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__ul_ehm_d1h_bzb"><li class="- topic/li li" data-ofbid="d223299e27__20250121171648">
+                <p class="- topic/p p" data-ofbid="d223299e29__20250121171648">与 U-Boot 一起保存</p>
+                <p class="- topic/p p" data-ofbid="d223299e32__20250121171648">在使用 MMC 存储时，有些方案会将 ENV 保存在 U-Boot 的分区，并且放在 U-Boot 分区的尾部。 通过在 DTS
+                    中指定分区名字即可访问到。</p>
+            </li><li class="- topic/li li" data-ofbid="d223299e35__20250121171648">
+                <p class="- topic/p p" data-ofbid="d223299e37__20250121171648">单独分区保存</p>
+                <p class="- topic/p p" data-ofbid="d223299e40__20250121171648">多数方案使用单独的分区保存。</p>
+            </li></ul><p class="- topic/p p" data-ofbid="d223299e43__20250121171648">在 ArtInChip 平台上，不同存储介质上 ENV 的默认保存设置如下文所述。</p><section class="- topic/section section" id="concept_qhg_gl3_pzb__section_fhm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__section_fhm_d1h_bzb"><h2 class="- topic/title title sectiontitle">MMC</h2>
+            
+            <p class="- topic/p p" data-ofbid="d223299e50__20250121171648">MMC 的 ENV 存储位置可以通过下面几个方式进行设置：</p>
+            <ul class="- topic/ul ul" id="concept_qhg_gl3_pzb__ul_ghm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__ul_ghm_d1h_bzb"><li class="- topic/li li" data-ofbid="d223299e54__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e56__20250121171648">Kconfig 配置指定 Offset 和 大小</p>
+                    <ul class="- topic/ul ul" id="concept_qhg_gl3_pzb__ul_hhm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__ul_hhm_d1h_bzb"><li class="- topic/li li" data-ofbid="d223299e60__20250121171648">
+                            <p class="- topic/p p" data-ofbid="d223299e62__20250121171648">CONFIG_ENV_OFFSET</p>
+                        </li><li class="- topic/li li" data-ofbid="d223299e65__20250121171648">
+                            <p class="- topic/p p" data-ofbid="d223299e67__20250121171648">CONFIG_ENV_OFFSET_REDUND</p>
+                        </li><li class="- topic/li li" data-ofbid="d223299e70__20250121171648">
+                            <p class="- topic/p p" data-ofbid="d223299e72__20250121171648">CONFIG_ENV_SIZE</p>
+                        </li><li class="- topic/li li" data-ofbid="d223299e75__20250121171648">
+                            <p class="- topic/p p" data-ofbid="d223299e77__20250121171648">CONFIG_ENV_IS_IN_MMC</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d223299e81__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e83__20250121171648">DTS 中配置 offset，Kconfig 配置大小</p>
+                    <ul class="- topic/ul ul" id="concept_qhg_gl3_pzb__ul_ihm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__ul_ihm_d1h_bzb"><li class="- topic/li li" data-ofbid="d223299e87__20250121171648">
+                            <p class="- topic/p p" data-ofbid="d223299e89__20250121171648">“u-boot,mmc-env-offset”</p>
+                        </li><li class="- topic/li li" data-ofbid="d223299e92__20250121171648">
+                            <p class="- topic/p p" data-ofbid="d223299e94__20250121171648">“u-boot,mmc-env-offset-redundant”</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d223299e98__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e100__20250121171648">DTS 中配置分区名字，Kconfig 配置大小</p>
+                    <ul class="- topic/ul ul" id="concept_qhg_gl3_pzb__ul_jhm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__ul_jhm_d1h_bzb"><li class="- topic/li li" data-ofbid="d223299e104__20250121171648">
+                            <p class="- topic/p p" data-ofbid="d223299e106__20250121171648">“u-boot,mmc-env-partition”</p>
+                        </li></ul>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d223299e111__20250121171648">目前默认的配置使用最后一种方式，通过 DTS 中的 config 节点配置：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_qhg_gl3_pzb__pre_khm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__pre_khm_d1h_bzb">config{u-boot,mmc-env-partition=<span class="hl-string">"env"</span>;};</pre>
+            <p class="- topic/p p" data-ofbid="d223299e118__20250121171648">u-boot,mmc-env-partition = “env” 表示环境变量使用独立分区的方式，保存在 mmc 设备的”env”分区上。</p>
+            <p class="- topic/p p" data-ofbid="d223299e121__20250121171648">通过 Kconfig 设置 <span class="+ topic/keyword pr-d/parmname keyword parmname">CONFIG_ENV_SIZE</span> 大小为 16KB。</p>
+            <p class="- topic/p p" data-ofbid="d223299e127__20250121171648">保存 ENV 数据的区域为该分区的前 <span class="+ topic/keyword pr-d/parmname keyword parmname">CONFIG_ENV_SIZE</span> 大小。相关的源码在文件：
+                    <span class="+ topic/ph sw-d/filepath ph filepath">board/artinchip/d211/mmc_env.c</span> 。</p>
+        </section><section class="- topic/section section" id="concept_qhg_gl3_pzb__section_lhm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__section_lhm_d1h_bzb"><h2 class="- topic/title title sectiontitle">SPI NAND</h2>
+            
+            <p class="- topic/p p" data-ofbid="d223299e141__20250121171648">U-Boot 项目的源码本身没有支持 SPI NAND 启动，环境变量也没有支持从 SPI NAND 读取， ArtInChip 平台增加了 SPI NAND
+                的支持。</p>
+            <p class="- topic/p p" data-ofbid="d223299e144__20250121171648">ENV 存储位置的配置通过 Kconfig 进行，需要配置的选项有下面几个：</p>
+            <ul class="- topic/ul ul" id="concept_qhg_gl3_pzb__ul_mhm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__ul_mhm_d1h_bzb"><li class="- topic/li li" data-ofbid="d223299e148__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e150__20250121171648">CONFIG_ENV_OFFSET</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e153__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e155__20250121171648">CONFIG_ENV_SIZE</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e158__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e160__20250121171648">CONFIG_ENV_RANGE</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d223299e164__20250121171648">相应的源码在 <span class="+ topic/ph sw-d/filepath ph filepath">env/spinand.c</span> 。</p>
+        </section><section class="- topic/section section" id="concept_qhg_gl3_pzb__section_nhm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__section_nhm_d1h_bzb"><h2 class="- topic/title title sectiontitle">SPI NOR</h2>
+            
+            <p class="- topic/p p" data-ofbid="d223299e175__20250121171648">U-Boot 原本已经支持从 SPI NOR 启动和加载 ENV 内容。ENV 的存储位置通过 Kconfig 进行， 需要配置的选项有下面几个：</p>
+            <ul class="- topic/ul ul" id="concept_qhg_gl3_pzb__ul_ohm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__ul_ohm_d1h_bzb"><li class="- topic/li li" data-ofbid="d223299e179__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e181__20250121171648">CONFIG_ENV_SPI_BUS</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e184__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e186__20250121171648">CONFIG_ENV_SPI_CS</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e189__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e191__20250121171648">CONFIG_ENV_SPI_MAX_HZ</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e194__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e196__20250121171648">CONFIG_ENV_SPI_MODE</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e199__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e201__20250121171648">CONFIG_ENV_OFFSET</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e204__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e206__20250121171648">CONFIG_ENV_OFFSET_REDUND</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e209__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e211__20250121171648">CONFIG_ENV_SECT_SIZE</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e214__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e216__20250121171648">CONFIG_ENV_SIZE</p>
+                </li><li class="- topic/li li" data-ofbid="d223299e219__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e221__20250121171648">CONFIG_ENV_IS_IN_SPI_FLASH</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d223299e225__20250121171648">相应的源码在 <span class="+ topic/ph sw-d/filepath ph filepath">env/sf.c</span> 。</p>
+        </section><section class="- topic/section section" id="concept_qhg_gl3_pzb__section_phm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__section_phm_d1h_bzb"><h2 class="- topic/title title sectiontitle">RAM</h2>
+            
+            <p class="- topic/p p" data-ofbid="d223299e236__20250121171648">ArtInChip 平台上增加了从 DRAM 指定地址加载环境变量的功能，主要用于 USB 升级的场景。 在 USB 升级的过程中，主机端会先发送一个 env.bin
+                到设备指定内存地址，然后再启动 u-boot 进行升级。</p>
+            <p class="- topic/p p" data-ofbid="d223299e239__20250121171648">相关的配置通过 Kconfig 进行，需要配置的选项有：</p>
+            <ul class="- topic/ul ul" id="concept_qhg_gl3_pzb__ul_qhm_d1h_bzb" data-ofbid="concept_qhg_gl3_pzb__ul_qhm_d1h_bzb"><li class="- topic/li li" data-ofbid="d223299e243__20250121171648">
+                    <p class="- topic/p p" data-ofbid="d223299e245__20250121171648">CONFIG_ENV_RAM_ADDR</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d223299e249__20250121171648">相应的源码在 <span class="+ topic/ph sw-d/filepath ph filepath">board/artinchip/d211/env_location.c</span> 。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_qhg_gl3_pzb__section_fhm_d1h_bzb" data-tocid="concept_qhg_gl3_pzb__section_fhm_d1h_bzb">MMC</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_qhg_gl3_pzb__section_lhm_d1h_bzb" data-tocid="concept_qhg_gl3_pzb__section_lhm_d1h_bzb">SPI NAND</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_qhg_gl3_pzb__section_nhm_d1h_bzb" data-tocid="concept_qhg_gl3_pzb__section_nhm_d1h_bzb">SPI NOR</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_qhg_gl3_pzb__section_phm_d1h_bzb" data-tocid="concept_qhg_gl3_pzb__section_phm_d1h_bzb">RAM</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

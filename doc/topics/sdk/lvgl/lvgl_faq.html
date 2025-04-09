@@ -1,0 +1,285 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="UI 图片未加载 现象 UI 界面未显示要加载的图片。 原因分析 逐步排除以下原因： Using File System Image 0 与 Using File System Image 1 中打包的资源文件路径是否正确。 Using File System Image 0 与 Using File System Image 1 在 image_cfg.json 中对应的分区表配置是否正确。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/lvgl/lvgl_introduction.html"/><meta name="DC.relation" content="../../../topics/sdk/lvgl/lvgl_special_func.html"/><meta name="DC.relation" content="../../../topics/chapter-title/chapter-interface-sdk.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>常见问题</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e4856"/><meta name="wh-source-relpath" content="topics/sdk/lvgl/lvgl_faq.dita"/><meta name="wh-out-relpath" content="topics/sdk/lvgl/lvgl_faq.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html">LVGL 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_faq.html">常见问题</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/lvgl/lvgl_special_func.html" title="屏幕旋转" aria-label="上一主题: 屏幕旋转" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/chapter-title/chapter-interface-sdk.html" title="接口" aria-label="下一主题: 接口" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e4736" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_configure.html" id="id-d5856e4736-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4748" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_debug_guide.html" id="id-d5856e4748-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4760" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_test_guide.html" id="id-d5856e4760-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4772" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4772-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_design_guide.html" id="id-d5856e4772-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4832" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_add_app.html" id="id-d5856e4832-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e4844" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_special_func.html" id="id-d5856e4844-link">屏幕旋转</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e4856" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_faq.html" id="id-d5856e4856-link">常见问题</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/lvgl/lvgl_faq.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">常见问题</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_zk2_hpf_fdc" data-ofbid="id__section_zk2_hpf_fdc"><h2 class="- topic/title title sectiontitle">UI 图片未加载</h2>
+            
+            <div class="- topic/div div section" id="id__id2">
+                <strong class="+ topic/ph hi-d/b ph b">现象</strong>
+                <p class="- topic/p p" data-ofbid="d217187e29__20250121171645">UI
+                    界面未显示要加载的图片。</p></div>
+            <div class="- topic/div div section" id="id__id3">
+                <strong class="+ topic/ph hi-d/b ph b">原因分析</strong>
+                <p class="- topic/p p" data-ofbid="d217187e37__20250121171645">逐步排除以下原因：</p><ol class="- topic/ol ol arabic simple" id="id__ol_vjv_nmh_fdc" data-ofbid="id__ol_vjv_nmh_fdc"><li class="- topic/li li" data-ofbid="d217187e40__20250121171645">
+                        <p class="- topic/p p" data-ofbid="d217187e42__20250121171645">Using File System Image 0 与 Using File System Image 1
+                            中打包的资源文件路径是否正确。</p>
+                    </li><li class="- topic/li li" data-ofbid="d217187e45__20250121171645">
+                        <p class="- topic/p p" data-ofbid="d217187e47__20250121171645">Using File System Image 0 与 Using File System Image 1 在 image_cfg.json
+                            中对应的分区表配置是否正确。</p>
+                    </li><li class="- topic/li li" data-ofbid="d217187e50__20250121171645">
+                        <p class="- topic/p p" data-ofbid="d217187e52__20250121171645">所需要的文件系统的编译选项是否打开，例如：Using File System Image 0 使用
+                            fatfs。</p>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="id__section_dqb_pmh_fdc" data-ofbid="id__section_dqb_pmh_fdc"><h2 class="- topic/title title sectiontitle">LVGL 线程 TIMEOUT</h2>
+            
+            <div class="- topic/div div section" id="id__id4">
+                <strong class="+ topic/ph hi-d/b ph b">现象</strong>
+                <p class="- topic/p p" data-ofbid="d217187e66__20250121171645">通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">ps</span> 命令查看线程运行状况， LVGL 显示 TIMEOUT，但 UI
+                    依然在正常运行。</p></div>
+            <div class="- topic/div div section" id="id__id5">
+                <strong class="+ topic/ph hi-d/b ph b">原因分析</strong>
+                <p class="- topic/p p" data-ofbid="d217187e77__20250121171645">通常情况下是因为 TIMEOUT 的显示是因为查看线程状态时， LVGL 刚好休眠，多次使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">ps</span> 命令查看，即可看到 LVGL
+                    线程 OK 的状态。</p>
+            </div>
+        </section><section class="- topic/section section" id="id__section_jgt_qmh_fdc" data-ofbid="id__section_jgt_qmh_fdc"><h2 class="- topic/title title sectiontitle">如何优化性能</h2>
+            
+            
+            <p class="- topic/p p" data-ofbid="d217187e89__20250121171645">如需优化 LVGL 库界面开发的性能，可以按照以下建议执行：</p>
+            
+            
+            <ol class="- topic/ol ol arabic simple" id="id__ol_wjv_nmh_fdc" data-ofbid="id__ol_wjv_nmh_fdc"><li class="- topic/li li" data-ofbid="d217187e93__20250121171645">
+                    <p class="- topic/p p" data-ofbid="d217187e95__20250121171645">增加图片缓存。</p>
+                    <div class="- topic/p p" data-ofbid="d217187e98__20250121171645">LVGL 内部的图片缓存机制，可以设置图片缓存张数，缓存越多速度越快，但是占用的内存也会越多，只要没有达到图片缓存张数的上限，
+                        新的图片就会在内存中缓存下来，LVGL
+                            在下次使用同样图片时候，就不需要重复解码，加快了显示速度。合理设置图片缓存可以显著提升性能。在内存有限的情况下，可以通过以下方式进一步优化：<ul class="- topic/ul ul" id="id__ul_udy_gnh_fdc" data-ofbid="id__ul_udy_gnh_fdc"><li class="- topic/li li" data-ofbid="d217187e101__20250121171645">根据实际需求动态调整图片缓存的大小。例如，在需要频繁切换的场景中增加缓存数量，而在其他场景中减少缓存数量。</li><li class="- topic/li li" data-ofbid="d217187e103__20250121171645">释放不必要的缓存在确定某些图片不再需要时，及时释放其缓存。例如，可以在场景切换时调用<span class="+ topic/keyword pr-d/apiname keyword apiname">lv_img_cache_invalidate_src(NULL)</span>来释放所有缓存。</li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_jnv_rmh_fdc" data-ofbid="id__codeblock_jnv_rmh_fdc"><em class="hl-comment">// 释放对象 img_obj 的图片缓存</em>
+lv_img_cache_invalidate_src(lv_img_get_src(img_obj));
+
+<em class="hl-comment">// 释放所有的图片缓存，在场景切换时候，确定不需要已有的图片缓存可以这么调用</em>
+lv_img_cache_invalidate_src(NULL);</pre></div>
+                    
+                    <div class="- topic/p p" data-ofbid="d217187e113__20250121171645">如下配置中设置了八张图片缓存：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ytd_smh_fdc" data-ofbid="id__codeblock_ytd_smh_fdc">Application options  ---&gt;
+    *** Filesystem related ***
+    [*] Using File System Image <span class="hl-number">0</span>  ---&gt;
+    [ ] Using File System Image <span class="hl-number">1</span>  ----
+    *** lvgl demo select related ***
+    -*- LVGL (official): powerful and easy-to-use embedded GUI library  ---&gt;
+    -*- ArtInChip lvgl demo
+        select lvgl demo (lvgl demo with basic function)  ---&gt;
+            (X) lvgl demo with basic function
+            ( ) lvgl demo of meter
+        (<span class="hl-number">16</span>)  LVGL color depth(<span class="hl-number">32</span>/<span class="hl-number">16</span>)
+        (<span class="hl-number">8</span>)   LVGL image cached number
+    (/rodata/lvgl_data) LVGL Resource Directory</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d217187e119__20250121171645">
+                    <p class="- topic/p p" data-ofbid="d217187e121__20250121171645">选择合适的颜色深度和图片格式可以有效减少处理的数据量，例如
+                        rgb565
+                        格式，从而提升 UI 的处理速度。</p>
+                    <div class="- topic/p p" data-ofbid="d217187e124__20250121171645">显示采用 rgb565 格式和 argb8888 相比减少了处理的数据量，可以提升 UI
+                        的处理速度。以下示例中，LVGL
+                        color depth 为 16，并且配置 framebuffer 为
+                        rgb565：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_szv_smh_fdc" data-ofbid="id__codeblock_szv_smh_fdc">Application options  ---&gt;
+    *** Filesystem related ***
+    [*] Using File System Image <span class="hl-number">0</span>  ---&gt;
+    [ ] Using File System Image <span class="hl-number">1</span>  ----
+    *** lvgl demo select related ***
+    -*- LVGL (official): powerful and easy-to-use embedded GUI library  ---&gt;
+    -*- ArtInChip lvgl demo
+        select lvgl demo (lvgl demo with basic function)  ---&gt;
+            (X) lvgl demo with basic function
+            ( ) lvgl demo of meter
+        (<span class="hl-number">16</span>)  LVGL color depth(<span class="hl-number">32</span>/<span class="hl-number">16</span>)
+        (<span class="hl-number">8</span>)   LVGL image cached number
+    (/rodata/lvgl_data) LVGL Resource Directory</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d217187e129__20250121171645">
+                    <p class="- topic/p p" data-ofbid="d217187e131__20250121171645">对于不透明的图片，可以选择采用
+                        JPEG
+                        格。JPEG
+                        图片的解码速度通常比
+                        PNG
+                        速度快。</p>
+                </li><li class="- topic/li li" data-ofbid="d217187e134__20250121171645">
+                    <div class="- topic/p p" data-ofbid="d217187e136__20250121171645">在定时器或动画回调函数中，避免执行耗时过长的函数，以免影响
+                        UI 的流畅性。可以考虑以下方法：<ul class="- topic/ul ul" id="id__ul_f2k_14h_fdc" data-ofbid="id__ul_f2k_14h_fdc"><li class="- topic/li li" data-ofbid="d217187e139__20250121171645">
+                                <p class="- topic/p p" data-ofbid="d217187e141__20250121171645">LVGL 的 UI 绘制是单线程的，将耗时操作放到后台线程中执行，避免阻塞主线程。</p>
+                            </li><li class="- topic/li li" data-ofbid="d217187e144__20250121171645">
+                                <p class="- topic/p p" data-ofbid="d217187e146__20250121171645">将大任务拆分成多个小任务，通过多次调用来完成，每次只处理一小部分工作。</p>
+                            </li></ul></div>
+                </li></ol>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_zk2_hpf_fdc" data-tocid="id__section_zk2_hpf_fdc">UI 图片未加载</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_dqb_pmh_fdc" data-tocid="id__section_dqb_pmh_fdc">LVGL 线程 TIMEOUT</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_jgt_qmh_fdc" data-tocid="id__section_jgt_qmh_fdc">如何优化性能</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

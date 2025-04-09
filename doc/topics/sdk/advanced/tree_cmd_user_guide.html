@@ -1,0 +1,186 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="tree 命令是 Linux 系统中一个用于以树状图形式显示目录结构的命令： 显示当前目录结构 ：直接输入 tree 命令，不跟任何参数，将显示当前目录下的文件和子目录结构。 指定目录显示 ：通过在 tree 命令后加上路径参数，可以查看特定目录的结构。 递归显示 ：默认情况下， tree 命令会递归地显示目录下的所有文件和子目录。 常用选项 -a ：显示所有文件，包括隐藏文件。 -d ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-12-11"/><meta name="DC.date.modified" content="2024-12-19"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="tree-cmd-user-guide"/><title>tree 命令参考指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/advanced/tree_cmd_user_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/tree_cmd_user_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="tree-cmd-user-guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/tree_cmd_user_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">tree</span> 命令参考指南</h1><div class="date inPage">19 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d92819e27__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">tree</span> 命令是 Linux 系统中一个用于以树状图形式显示目录结构的命令：</p><ul class="- topic/ul ul" id="tree-cmd-user-guide__ul_yjx_x4h_rdc" data-ofbid="tree-cmd-user-guide__ul_yjx_x4h_rdc"><li class="- topic/li li" data-ofbid="d92819e32__20250121171531"><strong class="+ topic/ph hi-d/b ph b">显示当前目录结构</strong>：直接输入<code class="+ topic/ph pr-d/codeph ph codeph">tree</code>命令，不跟任何参数，将显示当前目录下的文件和子目录结构。</li><li class="- topic/li li" data-ofbid="d92819e39__20250121171531"><strong class="+ topic/ph hi-d/b ph b">指定目录显示</strong>：通过在<code class="+ topic/ph pr-d/codeph ph codeph">tree</code>命令后加上路径参数，可以查看特定目录的结构。</li><li class="- topic/li li" data-ofbid="d92819e46__20250121171531"><strong class="+ topic/ph hi-d/b ph b">递归显示</strong>：默认情况下，<code class="+ topic/ph pr-d/codeph ph codeph">tree</code>命令会递归地显示目录下的所有文件和子目录。</li></ul><p class="- topic/p p" data-ofbid="d92819e53__20250121171531"><strong class="+ topic/ph hi-d/b ph b">常用选项</strong></p><ul class="- topic/ul ul" id="tree-cmd-user-guide__ul_u12_fph_rdc" data-ofbid="tree-cmd-user-guide__ul_u12_fph_rdc"><li class="- topic/li li" data-ofbid="d92819e57__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-a</span>：显示所有文件，包括隐藏文件。</li><li class="- topic/li li" data-ofbid="d92819e61__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-d</span>：只显示目录，不显示文件。</li><li class="- topic/li li" data-ofbid="d92819e65__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-f</span>：在每个文件或目录前显示完整的相对路径。</li><li class="- topic/li li" data-ofbid="d92819e69__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-i</span>：不使用缩进和线条，仅显示文件和目录名称。</li><li class="- topic/li li" data-ofbid="d92819e73__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-l</span>：按修改时间排序。</li><li class="- topic/li li" data-ofbid="d92819e77__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-r</span>：反转显示顺序。</li><li class="- topic/li li" data-ofbid="d92819e81__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-s</span>：显示文件大小。</li><li class="- topic/li li" data-ofbid="d92819e85__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-L</span> level：限制显示的层数。</li><li class="- topic/li li" data-ofbid="d92819e89__20250121171531"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">-P</span> pattern：只显示符合模式的文件和目录。</li></ul><div class="- topic/example example" id="tree-cmd-user-guide__example_mvx_1ph_rdc" data-ofbid="tree-cmd-user-guide__example_mvx_1ph_rdc"><h2 class="- topic/title title sectiontitle">查看编译完成后的目录结构</h2>
+            
+            <p class="- topic/p p" data-ofbid="d92819e98__20250121171531">使用 SCons 命令编译 <span class="- topic/ph ph">Luban-Lite</span> SDK 完成后，生成的库文件位于 <span class="+ topic/ph sw-d/filepath ph filepath">output</span>
+                目录下，包含各个配置编译生成的目录， 例如编译后生成的
+                    <span class="+ topic/ph sw-d/filepath ph filepath">d21x_demo100-nand_rt-thread_helloworld</span> 目录。</p>
+            <div class="- topic/p p" data-ofbid="d92819e110__20250121171531">在 <span class="+ topic/ph sw-d/filepath ph filepath">output</span> 下，使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">tree -L 2</span>
+                命令会显示当前目录及其子目录的层级结构，详情如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tree-cmd-user-guide__codeblock_d5d_xlq_gdc" data-ofbid="tree-cmd-user-guide__codeblock_d5d_xlq_gdc">tree -L <span class="hl-number">2</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tree-cmd-user-guide__codeblock_vj2_h4h_rdc" data-ofbid="tree-cmd-user-guide__codeblock_vj2_h4h_rdc">.
+├── d21x_demo100-nand_rt-thread_helloworld
+│   ├── application
+│   ├── bsp
+│   ├── images
+│   ├── kernel
+│   ├── libs
+│   ├── packages
+│   └── target</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tree-cmd-user-guide__codeblock_ql5_xlq_gdc" data-ofbid="tree-cmd-user-guide__codeblock_ql5_xlq_gdc">tree -L <span class="hl-number">2</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tree-cmd-user-guide__codeblock_w44_h4h_rdc" data-ofbid="tree-cmd-user-guide__codeblock_w44_h4h_rdc">.
+├── d21x_demo100-nand_rt-thread_helloworld
+│   ├── application # 存放编译过程中， ``$SDK/application`` 源码目录生成的 ``*.o`` 文件；
+│   ├── bsp         # 存放编译过程中， ``$SDK/bsp`` 源码目录生成的 ``*.o`` 文件，包括驱动模块、外设驱动等；
+│   ├── images      # 编译生成的镜像文件、函数符号表等文件；
+│   ├── kernel      # 存放 Luban-Lite 操作系统内核模块编译生成的 ``*.o`` 文件；
+│   ├── libs        # ``application`` 目录里或用户自定义生成的库文件存放于此目录；
+│   ├── packages    # 编译后 ``$SDK/packages`` 目录后，生成的 ``*.o`` 文件；主要包括 ``artinchip`` 和 ``third-party`` 两部分；
+│   └── target      # 针对选择的板卡，生成的 ``board.o``、 ``pinmux.o`` 和 ``sys_clk.o`` ；</pre></div>
+        </div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

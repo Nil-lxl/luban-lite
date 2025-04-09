@@ -1,0 +1,16 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('KERNEL_BAREMETAL') and GetDepend('AIC_HRTIMER_DRV_TEST'):
+    if GetDepend('AIC_HRTIMER_DRV_V10') or GetDepend('AIC_HRTIMER_DRV_V11'):
+        src += Glob('test_hrtimer.c')
+    elif GetDepend('AIC_HRTIMER_DRV_V12'):
+        src += Glob('test_hrtimer_pwm.c')
+
+group = DefineGroup('test-hrtimer', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

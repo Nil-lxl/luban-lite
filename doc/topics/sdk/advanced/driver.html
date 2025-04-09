@@ -1,0 +1,308 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节以添加 GT911 电容屏驱动为例，介绍外设驱动的添加方法。 添加外设 获取源码 从 https://github.com/RiceChen/gt911 下载 GT911 的 RT-Thread 驱动源码位，并将其解压至 bsp/peripheral/touch 目录下。 源码结构如下： touch$ tree . ├── gt911 │ ├── inc │ │ └── gt911.h │ ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/advanced/sdk-usage.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/pinmux.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/app.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>添加驱动</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1367"/><meta name="wh-source-relpath" content="topics/sdk/advanced/driver.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/driver.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/driver.html">添加驱动</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/advanced/pinmux.html" title="引脚配置" aria-label="上一主题: 引脚配置" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/advanced/app.html" title="添加应用" aria-label="下一主题: 添加应用" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1169" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1169-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/commands.html" id="id-d5856e1169-link">命令详解 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1207" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/architecture.html" id="id-d5856e1207-link">设计框架</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1219" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sconstruct.html" id="id-d5856e1219-link">SConstruct </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1231" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/compile.html" id="id-d5856e1231-link">编译选项介绍</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1243" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition.html" id="id-d5856e1243-link">配置分区</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1255" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1255-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/image_burn_and_config.html" id="id-d5856e1255-link">配置烧录镜像</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1339" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/gdb.html" id="id-d5856e1339-link">GDB 调试</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1353" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/pinmux.html" id="id-d5856e1353-link">引脚配置</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e1367" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/driver.html" id="id-d5856e1367-link">添加驱动</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1379" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/app.html" id="id-d5856e1379-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1392" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/hellowold.html" id="id-d5856e1392-link">hellowold</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1404" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/burnin_test.html" id="id-d5856e1404-link">烤机测试</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/driver.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">添加驱动</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d147895e22__20250121171610">本节以添加 GT911 电容屏驱动为例，介绍外设驱动的添加方法。</p><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">添加外设</h2>
+            <ol class="- topic/ol ol" id="id__ol_j1n_yjq_gdc" data-ofbid="id__ol_j1n_yjq_gdc"><li class="- topic/li li" data-ofbid="d147895e29__20250121171610">
+                    <div class="- topic/div div section" id="id__id3"><strong class="+ topic/ph hi-d/b ph b">获取源码</strong>
+                        <p class="- topic/p p" data-ofbid="d147895e35__20250121171610">从 <a class="- topic/xref xref reference external" href="https://github.com/RiceChen/gt911" target="_blank" rel="external noopener">https://github.com/RiceChen/gt911</a> 下载 GT911 的 RT-Thread
+                            驱动源码位，并将其解压至 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch</span>
+                            目录下。</p><div class="- topic/p p" data-ofbid="d147895e44__20250121171610">源码结构如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_axx_xjq_gdc" data-ofbid="id__codeblock_axx_xjq_gdc">touch$ tree
+.
+├── gt911
+│   ├── inc
+│   │   └── gt911.h
+│   ├── Kconfig
+│   └── src
+│       └── gt911.c
+└── SConscript</pre></div></div>
+                </li><li class="- topic/li li" data-ofbid="d147895e49__20250121171610">
+                    <div class="- topic/div div section" id="id__sconscript"><strong class="+ topic/ph hi-d/b ph b">修改</strong>
+                        <strong class="+ topic/ph hi-d/b ph b">SConscript 文件</strong><div class="- topic/p p" data-ofbid="d147895e57__20250121171610">在<span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch/SConscript</span>
+                            文件中，添加对 GT911
+                            驱动源码的引用，具体操作内容如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_pwg_4vp_wcc" data-ofbid="id__pre_pwg_4vp_wcc">Import(<span class="hl-string">'AIC_ROOT'</span>)
+Import(<span class="hl-string">'PRJ_KERNEL'</span>)
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob(<span class="hl-string">'*.c'</span>)
+CPPPATH = []
+
+<strong class="hl-keyword">if</strong> GetDepend(<span class="hl-string">'AIC_TOUCH_PANEL_GT911'</span>):
+    CPPPATH.append(cwd + <span class="hl-string">'/gt911/inc'</span>)
+    src += Glob(<span class="hl-string">'gt911/src/*.c'</span>)
+
+group = DefineGroup(<span class="hl-string">'touch'</span>, src, depend = [<span class="hl-string">''</span>], CPPPATH = CPPPATH)
+
+Return(<span class="hl-string">'group'</span>)</pre></div><p class="- topic/p p" data-ofbid="d147895e64__20250121171610">如果后续需要添加其他 touch 的驱动，可参考 GT911 模板将其添加到
+                            SConscript 文件中。</p></div>
+                </li><li class="- topic/li li" data-ofbid="d147895e67__20250121171610">
+                    <div class="- topic/div div section" id="id__pinmux"><strong class="+ topic/ph hi-d/b ph b">修改 <span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span>文件</strong>
+                        <div class="- topic/p p" data-ofbid="d147895e76__20250121171610">根据原理图，在 <span class="+ topic/ph sw-d/filepath ph filepath">target/&lt;cpu&gt;/&lt;board&gt;/pinmux.c</span> 中添加
+                            RST、INT、SCK 和 SDA
+                            引脚的定义：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wp1_bkq_gdc" data-ofbid="id__codeblock_wp1_bkq_gdc"><strong class="hl-keyword">struct</strong> aic_pinmux aic_pinmux_config[] = {
+...
+#ifdef AIC_USING_I2C3
+    {<span class="hl-number">1</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.8"</span>},  <em class="hl-comment">// RST</em>
+    {<span class="hl-number">1</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.9"</span>},  <em class="hl-comment">// INT</em>
+    {<span class="hl-number">4</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.10"</span>}, <em class="hl-comment">// SCK</em>
+    {<span class="hl-number">4</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.11"</span>}, <em class="hl-comment">// SDA</em>
+#endif
+...
+};</pre></div><div class="- topic/note note note note_note" id="id__note_evg_rmc_5cc" data-ofbid="id__note_evg_rmc_5cc"><span class="note__title">注：</span> 
+                            <p class="- topic/p p" data-ofbid="d147895e85__20250121171610">每个板卡的 <span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span>都定义了各个端口的 GPIO 引脚及功能，新增接口前应检查。</p>
+                        </div><div class="- topic/p p" data-ofbid="d147895e91__20250121171610">根据原理图，GT911：<ul class="- topic/ul ul simple" id="id__ul_qwg_4vp_wcc" data-ofbid="id__ul_qwg_4vp_wcc"><li class="- topic/li li" data-ofbid="d147895e94__20250121171610">
+                                    <p class="- topic/p p" data-ofbid="d147895e96__20250121171610">使用 I2C3 接口 作为驱动。</p>
+                                </li><li class="- topic/li li" data-ofbid="d147895e99__20250121171610">
+                                    <p class="- topic/p p" data-ofbid="d147895e101__20250121171610">除了 I2C 的 SCK 和 SDA 引脚 以外，还需要用到 RST 和 INT 引脚。</p>
+                                </li></ul></div></div>
+                </li><li class="- topic/li li" data-ofbid="d147895e105__20250121171610">
+                    <div class="- topic/div div section" id="id__kconfig"><strong class="+ topic/ph hi-d/b ph b">配置源码 Kconfig </strong>
+                        <div class="- topic/p p" data-ofbid="d147895e111__20250121171610">在驱动源码 Kconfig <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch/gt911/Kconfig</span> 文件夹中，添加
+                            GT911
+                            驱动的配置选项。内容如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_nhj_ckq_gdc" data-ofbid="id__codeblock_nhj_ckq_gdc">$ cat Kconfig
+
+menu <span class="hl-string">"Gt911 touch panel options"</span>
+
+config AIC_TOUCH_PANEL_GT911
+    bool <span class="hl-string">"Using touch panel gt911"</span>
+    <strong class="hl-keyword">default</strong> n
+    select AIC_I2C_DRV
+
+config AIC_TOUCH_PANEL_GT911_I2C_CHA
+    string <span class="hl-string">"gt911 using i2c channel index"</span>
+    <strong class="hl-keyword">default</strong> <span class="hl-string">"i2c3"</span>
+    depends on AIC_TOUCH_PANEL_GT911
+
+config AIC_TOUCH_PANEL_GT911_RST_PIN
+    string <span class="hl-string">"gt911 reset pin"</span>
+    <strong class="hl-keyword">default</strong> <span class="hl-string">"PA.8"</span>
+    depends on AIC_TOUCH_PANEL_GT911
+
+config AIC_TOUCH_PANEL_GT911_INT_PIN
+    string <span class="hl-string">"gt911 irq pin"</span>
+    <strong class="hl-keyword">default</strong> <span class="hl-string">"PA.9"</span>
+    depends on AIC_TOUCH_PANEL_GT911
+
+endmenu</pre></div></div>
+                </li><li class="- topic/li li" data-ofbid="d147895e119__20250121171610">
+                    <div class="- topic/div div section" id="id__id5">添加<strong class="+ topic/ph hi-d/b ph b">外设驱动 Kconfig</strong> 的引用。<div class="- topic/p p" data-ofbid="d147895e126__20250121171610">在
+                                <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/Kconfig</span> 文件中，添加对驱动源码 Kconfig
+                            路径的引用：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_hyw_r25_hdc" data-ofbid="id__codeblock_hyw_r25_hdc">...
+#--------------------------------------------
+# touch panel driver global option
+#--------------------------------------------
+
+menu <span class="hl-string">"Touch Panel Support"</span>
+source <span class="hl-string">"bsp/peripheral/touch/gt911/Kconfig"</span>
+endmenu
+
+...</pre></div>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d147895e135__20250121171610">
+                    <div class="- topic/div div section" id="id__menuconfig"><strong class="+ topic/ph hi-d/b ph b">配置 menuconfig </strong>
+                        <div class="- topic/p p" data-ofbid="d147895e141__20250121171610">运行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 或 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">me</span> (OneStep
+                            命令)，打开 <span class="+ topic/keyword pr-d/parmname keyword parmname">I2C3</span> 并配置为 <span class="+ topic/keyword pr-d/parmname keyword parmname">Master</span>，使能 GT911
+                            驱动。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ygm_2kq_gdc" data-ofbid="id__codeblock_ygm_2kq_gdc">Board options  ---&gt;
+    [*] Using I2c3
+        I2c3 Parameter  ---&gt;
+            I2c3 Master &amp;&amp; Slave  (Master)  ---&gt;
+Drivers options  ---&gt;
+    Peripheral  ---&gt;
+        Touch Panel Support  ---&gt;
+            Gt911 touch panel options  ---&gt;
+                [*] Using touch panel gt911
+                (i2c0) gt911 using i2c channel index
+                (PA.<span class="hl-number">10</span>) gt911 reset pin
+                (PA.<span class="hl-number">11</span>) gt911 irq pin</pre></div></div>
+                </li><li class="- topic/li li" data-ofbid="d147895e158__20250121171610">
+                    <div class="- topic/div div section" id="id__id6"><strong class="+ topic/ph hi-d/b ph b">编译</strong>
+                        <p class="- topic/p p" data-ofbid="d147895e164__20250121171610">完成驱动添加和配置后，使用命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 或 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">m</span>
+                            ( OneStep 命令 ) 对 SDK 进行编译。</p>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d147895e174__20250121171610">
+                    <div class="- topic/div div section" id="id__id7"><strong class="+ topic/ph hi-d/b ph b">验证</strong>
+                        <p class="- topic/p p" data-ofbid="d147895e180__20250121171610">烧写镜像，系统启动之后，通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">list_device</span> 命令
+                            查看设备节点是否已成功枚举，如下所示：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_wwg_4vp_wcc" data-ofbid="id__pre_wwg_4vp_wcc">list_device</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_utn_gnm_tdc" data-ofbid="id__codeblock_utn_gnm_tdc">device           type         ref count
+-------- -------------------- ----------
+...
+gt911    Touch Device         <span class="hl-number">1</span>
+...
+</pre><p class="- topic/p p" data-ofbid="d147895e189__20250121171610">如果列表中出现 gt911 设备，表示已成功添加该设备。</p></div>
+                </li></ol>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

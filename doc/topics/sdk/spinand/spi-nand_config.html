@@ -1,0 +1,239 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="配置驱动层次关系 SPI NAND 属于 SPI 的从设备，在内核中相关驱动通过 SPI MEM 对接到 SPI 子系统。 SPI 控制器初始化 在初始化过程中，SPI 驱动会检查 SPI 控制器下是否有挂载的 SPI NAND 设备。如有，则将 SPI NAND 设备添加到 SPI BUS 中： aic_spi_probe(dev); |-&gt; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-17"/><meta name="DC.date.modified" content="2024-12-18"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="spi_nand_configuration"/><meta name="DC.language" content="zh-CN"/><title>SPI NAND 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/spinand/spi-nand_config.dita"/><meta name="wh-out-relpath" content="topics/sdk/spinand/spi-nand_config.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="spi_nand_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/spinand/spi-nand_config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SPI NAND 配置</h1><div class="date inPage">18 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="spi_nand_configuration__section_tbw_cqy_c1c" data-ofbid="spi_nand_configuration__section_tbw_cqy_c1c"><h2 class="- topic/title title sectiontitle">配置驱动层次关系</h2>
+            
+            <div class="- topic/p p" data-ofbid="d93658e28__20250121171531">SPI NAND 属于 SPI 的从设备，在内核中相关驱动通过 <code class="+ topic/ph pr-d/codeph ph codeph">SPI MEM</code> 对接到 SPI 子系统。<ol class="- topic/ol ol" id="spi_nand_configuration__ol_ycc_ggb_ndc" data-ofbid="spi_nand_configuration__ol_ycc_ggb_ndc"><li class="- topic/li li" data-ofbid="d93658e34__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d93658e36__20250121171531"><strong class="+ topic/ph hi-d/b ph b">SPI 控制器初始化</strong></p>
+                        <div class="- topic/p p" data-ofbid="d93658e40__20250121171531">在初始化过程中，SPI 驱动会检查 SPI 控制器下是否有挂载的 SPI NAND 设备。如有，则将 SPI NAND 设备添加到 SPI BUS
+                            中：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_configuration__codeblock_lqy_dqy_c1c" data-ofbid="spi_nand_configuration__codeblock_lqy_dqy_c1c">aic_spi_probe(dev);
+|-&gt; spi_register_controller(ctlr);/spi_register_master(ctlr);/ spi_register_master 是一个宏
+    |-&gt; of_register_spi_devices(ctlr);
+        |-&gt; spi = of_register_spi_device(ctlr, nc);
+            |-&gt; spi = spi_alloc_device(ctlr);
+            |-&gt; of_spi_parse_dt(ctlr, spi, nc);
+            |-&gt; rc = spi_add_device(spi);
+                <em class="hl-comment">// 将 SPI device 添加到 SPI 总线 spi_bus_type 中</em></pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d93658e47__20250121171531"><strong class="+ topic/ph hi-d/b ph b">设备匹配与驱动加载</strong>:<p class="- topic/p p" data-ofbid="d93658e51__20250121171531">在调用 <code class="+ topic/ph pr-d/codeph ph codeph">spi_add_device</code>
+                            的过程中，会查找和匹配对应设备的驱动程序。如发现对应的驱动程序未被添加到系统中，则先将设备添加到
+                            BUS，等到对应驱动程序被添加至系统中后再次进行匹配。</p><p class="- topic/p p" data-ofbid="d93658e56__20250121171531">SPI NAND 模块的驱动源码路径为
+                                <span class="+ topic/ph sw-d/filepath ph filepath">source/linux-5.10/drivers/mtd/nand/spi/</span>。</p></li></ol>
+            </div>
+        </section><section class="- topic/section section" id="spi_nand_configuration__section_wbw_cqy_c1c" data-ofbid="spi_nand_configuration__section_wbw_cqy_c1c"><h2 class="- topic/title title sectiontitle">修改 DTS</h2>
+            
+            <div class="- topic/p p" data-ofbid="d93658e68__20250121171531">要在实际项目中使用 SPI NAND 设备，还需要修改 DTS 配置文件，详细流程如下所示：<ol class="- topic/ol ol" id="spi_nand_configuration__ol_pd1_wgb_ndc" data-ofbid="spi_nand_configuration__ol_pd1_wgb_ndc"><li class="- topic/li li" data-ofbid="d93658e71__20250121171531">
+                        <div class="- topic/p p" data-ofbid="d93658e73__20250121171531">在 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中具体的 SPI 控制器下添加
+                                <code class="+ topic/ph pr-d/codeph ph codeph">spi-nand</code>
+                            设备。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_configuration__codeblock_izd_gqy_c1c" data-ofbid="spi_nand_configuration__codeblock_izd_gqy_c1c">&amp;spi1 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;spi1_pins_a&gt;;
+    status = <span class="hl-string">"okay"</span>;
+    spi-max-frequency = &lt;<span class="hl-number">100000000</span>&gt;;
+    spi-flash@<span class="hl-number">0</span> {
+        #address-cells = &lt;<span class="hl-number">1</span>&gt;;
+        #size-cells = &lt;<span class="hl-number">1</span>&gt;;
+        compatible = <span class="hl-string">"spi-nand"</span>;         <em class="hl-comment">//固定值，所有 SPINand 驱动均声明此</em>
+        spi-max-frequency = &lt;<span class="hl-number">100000000</span>&gt;; <em class="hl-comment">//最大频率，固定值</em>
+        spi-tx-bus-width = &lt;<span class="hl-number">4</span>&gt;;
+        spi-rx-bus-width = &lt;<span class="hl-number">4</span>&gt;;
+        reg = &lt;<span class="hl-number">0</span>&gt;;                       <em class="hl-comment">//固定值，一般不需修改</em>
+        status = <span class="hl-string">"okay"</span>;
+    };
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d93658e84__20250121171531">
+                        <div class="- topic/p p" data-ofbid="d93658e86__20250121171531">在 <span class="+ topic/ph sw-d/filepath ph filepath">board-u-boot.dtsi</span> 文件中，将添加的
+                                <code class="+ topic/ph pr-d/codeph ph codeph">spi-nand</code> 设备标记为
+                                <kbd class="+ topic/ph sw-d/userinput ph userinput">u-boot,dm-pre-reloc</kbd>，确保 SPL
+                            能够识别和使用该设备。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_configuration__codeblock_nsp_fqy_c1c" data-ofbid="spi_nand_configuration__codeblock_nsp_fqy_c1c">&amp;spi1 {
+    u-boot,dm-pre-reloc;
+    spi-flash@<span class="hl-number">0</span> {
+        u-boot,dm-pre-reloc;
+    };
+};</pre></div>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="spi_nand_configuration__section_zbw_cqy_c1c" data-ofbid="spi_nand_configuration__section_zbw_cqy_c1c"><h2 class="- topic/title title sectiontitle">配置 BUS Width</h2>
+            
+            <div class="- topic/p p" data-ofbid="d93658e106__20250121171531">根据 SPI NAND 芯片的总线宽度，正确设置 <code class="+ topic/ph pr-d/codeph ph codeph">spi-tx-bus-width</code> 和
+                    <code class="+ topic/ph pr-d/codeph ph codeph">spi-rx-bus-width</code>：<ul class="- topic/ul ul" id="spi_nand_configuration__ul_acw_cqy_c1c" data-ofbid="spi_nand_configuration__ul_acw_cqy_c1c"><li class="- topic/li li" data-ofbid="d93658e115__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d93658e117__20250121171531">标准 SPI NAND 配置为 1</p>
+                    </li><li class="- topic/li li" data-ofbid="d93658e120__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d93658e122__20250121171531">Dual SPI NAND 配置为 2</p>
+                    </li><li class="- topic/li li" data-ofbid="d93658e125__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d93658e127__20250121171531">Quad SPI NAND 配置为 4</p>
+                    </li></ul></div>
+            <div class="- topic/p p" data-ofbid="d93658e131__20250121171531">宽总线的 SPI NAND 芯片可以在窄总线下工作，虽然宽总线设备会出现读写速度损失。例如，对于 Quad SPI
+                NAND，配置示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spi_nand_configuration__codeblock_fsm_2hb_ndc" data-ofbid="spi_nand_configuration__codeblock_fsm_2hb_ndc">spi-tx-bus-width = &lt;<span class="hl-number">4</span>&gt;;
+spi-rx-bus-width = &lt;<span class="hl-number">4</span>&gt;;</pre></div>
+            <div class="- topic/note note note note_note" id="spi_nand_configuration__note_xrf_jhb_ndc" data-ofbid="spi_nand_configuration__note_xrf_jhb_ndc"><span class="note__title">注：</span> 窄总线设备无法在宽总线模式下工作。</div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#spi_nand_configuration__section_tbw_cqy_c1c" data-tocid="spi_nand_configuration__section_tbw_cqy_c1c">配置驱动层次关系</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_nand_configuration__section_wbw_cqy_c1c" data-tocid="spi_nand_configuration__section_wbw_cqy_c1c">修改 DTS</a></div></li><li class="section-item"><div class="section-title"><a href="#spi_nand_configuration__section_zbw_cqy_c1c" data-tocid="spi_nand_configuration__section_zbw_cqy_c1c">配置 BUS Width</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

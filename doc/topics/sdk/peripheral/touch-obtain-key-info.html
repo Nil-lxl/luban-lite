@@ -1,0 +1,310 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="执行 CTP 移植流程之前，须获取触摸 IC 的关键信息，包括但不限于： 从机设备地址 触摸坐标信息，须至少包含下列信息： 触摸点 ID 号 X 轴坐标值 Y 轴坐标值 触摸点个数 硬件上电时序 从机设备地址 获取触摸芯片的从机地址是主控和外设通信的关键步骤，常见的获取从机设备地址的方法如下所示： 执行硬件扫描： 通过 i2c-tools ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-configure.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="touch_obtain_key_info"/><title>获取和配置 IC 关键信息</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="touch_obtain_key_info-d5856e2196"/><meta name="wh-source-relpath" content="topics/sdk/peripheral/touch-obtain-key-info.dita"/><meta name="wh-out-relpath" content="topics/sdk/peripheral/touch-obtain-key-info.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="touch_obtain_key_info" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/peripheral/touch.html">CTP 移植指南</a></div></div></li><li class="active"><div class="topicref" data-id="touch_obtain_key_info"><div class="title"><a href="../../../topics/sdk/peripheral/touch-obtain-key-info.html">获取和配置 IC 关键信息</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html" title="修改已有 CTP 驱动" aria-label="上一主题: 修改已有 CTP 驱动" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/peripheral/touch-configure.html" title="测试指南" aria-label="下一主题: 测试指南" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e2136" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/keyadc.html" id="id-d5856e2136-link">按键矩阵</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2148" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2148-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch.html" id="id-d5856e2148-link">CTP 移植指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="touch-migrate-ctp-process-d5856e2160" class="topicref" data-id="touch-migrate-ctp-process" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html" id="touch-migrate-ctp-process-d5856e2160-link">新建 CTP 驱动</a></div></div></li><li role="treeitem"><div data-tocid="ctp-drive-migrate-demo-d5856e2172" class="topicref" data-id="ctp-drive-migrate-demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html" id="ctp-drive-migrate-demo-d5856e2172-link">驱动文件移植解析</a></div></div></li><li role="treeitem"><div data-tocid="touch_revise_existing_gt911_drive-d5856e2184" class="topicref" data-id="touch_revise_existing_gt911_drive" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html" id="touch_revise_existing_gt911_drive-d5856e2184-link">修改已有 CTP 驱动</a></div></div></li><li role="treeitem" class="active"><div data-tocid="touch_obtain_key_info-d5856e2196" class="topicref" data-id="touch_obtain_key_info" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-obtain-key-info.html" id="touch_obtain_key_info-d5856e2196-link">获取和配置 IC 关键信息</a></div></div></li><li role="treeitem"><div data-tocid="touch-configure-d5856e2208" class="topicref" data-id="touch-configure" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-configure.html" id="touch-configure-d5856e2208-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="touch_faq-d5856e2220" class="topicref" data-id="touch_faq" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-faq.html" id="touch_faq-d5856e2220-link">常见问题</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e2232" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/wifi.html" id="id-d5856e2232-link">无线网络</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/peripheral/touch-obtain-key-info.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">获取和配置 IC 关键信息</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 6 minute(s)
+                </div><div class="- topic/body body"><div class="- topic/p p" data-ofbid="d258943e26__20250121171716">执行 CTP 移植流程之前，须获取触摸 IC 的关键信息，包括但不限于：<ul class="- topic/ul ul" id="touch_obtain_key_info__ul_tvc_wyv_12c" data-ofbid="touch_obtain_key_info__ul_tvc_wyv_12c"><li class="- topic/li li" data-ofbid="d258943e29__20250121171716">
+                    <p class="- topic/p p" data-ofbid="d258943e31__20250121171716">从机设备地址</p>
+                </li><li class="- topic/li li" data-ofbid="d258943e34__20250121171716">
+                    <div class="- topic/p p" data-ofbid="d258943e36__20250121171716">触摸坐标信息，须至少包含下列信息：<ul class="- topic/ul ul" id="touch_obtain_key_info__ul_klg_4gb_b2c" data-ofbid="touch_obtain_key_info__ul_klg_4gb_b2c"><li class="- topic/li li" data-ofbid="d258943e39__20250121171716">触摸点 ID 号</li><li class="- topic/li li" data-ofbid="d258943e41__20250121171716">X 轴坐标值</li><li class="- topic/li li" data-ofbid="d258943e43__20250121171716">Y 轴坐标值</li><li class="- topic/li li" data-ofbid="d258943e45__20250121171716">触摸点个数</li><li class="- topic/li li" data-ofbid="d258943e47__20250121171716">硬件上电时序</li></ul></div>
+                </li></ul></div><section class="- topic/section section" id="touch_obtain_key_info__section_crj_xyv_12c" data-ofbid="touch_obtain_key_info__section_crj_xyv_12c"><h2 class="- topic/title title sectiontitle">从机设备地址</h2>
+            
+            <div class="- topic/p p" data-ofbid="d258943e55__20250121171716">获取触摸芯片的从机地址是主控和外设通信的关键步骤，常见的获取从机设备地址的方法如下所示：<ul class="- topic/ul ul" id="touch_obtain_key_info__ul_q1g_zyv_12c" data-ofbid="touch_obtain_key_info__ul_q1g_zyv_12c"><li class="- topic/li li" data-ofbid="d258943e58__20250121171716">
+                        <p class="- topic/p p" data-ofbid="d258943e60__20250121171716">执行硬件扫描：</p>
+                        <div class="- topic/p p" data-ofbid="d258943e63__20250121171716">通过 <code class="+ topic/ph pr-d/codeph ph codeph">i2c-tools</code> 扫描硬件获取从机设备的地址，须确保硬件连接正常。详细流程如下：<ol class="- topic/ol ol" id="touch_obtain_key_info__ul_e5t_dzv_12c" data-ofbid="touch_obtain_key_info__ul_e5t_dzv_12c"><li class="- topic/li li" data-ofbid="d258943e69__20250121171716">使能 <code class="+ topic/ph pr-d/codeph ph codeph">i2c-tools</code> 测试代码。
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_bqk_kzv_12c" data-ofbid="touch_obtain_key_info__codeblock_bqk_kzv_12c">Local packages options  ---&gt;
+    Third-party packages options  ---&gt;
+        [*] i2c-tools: a collection of i2c tools including scan/read/write</pre></li><li class="- topic/li li" data-ofbid="d258943e76__20250121171716">
+                                    <p class="- topic/p p" data-ofbid="d258943e78__20250121171716">在任意串口执行 <code class="+ topic/ph pr-d/codeph ph codeph">i2c scan <var class="+ topic/keyword sw-d/varname keyword varname">i2c
+                                            interface</var></code> 命令，例如：</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_vjt_tzv_12c" data-ofbid="touch_obtain_key_info__codeblock_vjt_tzv_12c">i2c scan i2c1</pre>
+                                    <p class="- topic/p p" data-ofbid="d258943e89__20250121171716"><var class="+ topic/keyword sw-d/varname keyword varname">i2c interface</var> 需按照实际使用的接口进行设置。</p>
+                                    <div class="- topic/p p" data-ofbid="d258943e94__20250121171716">系统输出示例如下，表示 GT911 当前的从机地址为
+                                        0x5D：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_msp_yzv_12c" data-ofbid="touch_obtain_key_info__codeblock_msp_yzv_12c"><span class="hl-number">00</span> <span class="hl-number">01</span> <span class="hl-number">02</span> <span class="hl-number">03</span> <span class="hl-number">04</span> <span class="hl-number">05</span> <span class="hl-number">06</span> <span class="hl-number">07</span> <span class="hl-number">08</span> <span class="hl-number">09</span> <span class="hl-number">0</span>A <span class="hl-number">0</span>B <span class="hl-number">0</span>C <span class="hl-number">0</span>D <span class="hl-number">0E</span> <span class="hl-number">0F</span>
+<span class="hl-number">00</span>: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+<span class="hl-number">10</span>: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+<span class="hl-number">20</span>: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+<span class="hl-number">30</span>: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+<span class="hl-number">40</span>: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+<span class="hl-number">50</span>: -- -- -- -- -- -- -- -- -- -- -- -- -- <span class="hl-number">5</span>D -- --
+<span class="hl-number">60</span>: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+<span class="hl-number">70</span>: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --</pre></div>
+                                </li></ol></div>
+                        <div class="- topic/note note note note_note" id="touch_obtain_key_info__note_kgt_c1w_12c" data-ofbid="touch_obtain_key_info__note_kgt_c1w_12c"><span class="note__title">注：</span> 
+                            <code class="+ topic/ph pr-d/codeph ph codeph">i2c-tools</code>
+                            也可以用于检测主控与外设之间的硬件连接关系是否正常。如果执行上述命令后扫描不到任何从机地址，则需检查硬件是否正常以及
+                            I<sup class="+ topic/ph hi-d/sup ph sup">2</sup>C 是否有外部上拉电阻等情况。</div>
+                    </li><li class="- topic/li li" data-ofbid="d258943e109__20250121171716">
+                        <p class="- topic/p p" data-ofbid="d258943e111__20250121171716">从对应 IC 的规格书中获取信息。</p>
+                        <div class="- topic/p p" data-ofbid="d258943e114__20250121171716">通常情况下，IC 规格书会按照以下方式列示相关从机地址：<ul class="- topic/ul ul" id="touch_obtain_key_info__ul_thd_t1w_12c" data-ofbid="touch_obtain_key_info__ul_thd_t1w_12c"><li class="- topic/li li" data-ofbid="d258943e117__20250121171716">
+                                    <div class="- topic/p p" data-ofbid="d258943e119__20250121171716">直接提供 7 位从机地址。例如，GSL3676 的规格书中列示了 7 位从机地址为 0x40。<br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_gsy_dbw_12c" src="../../../images/ctp/gsl_slave_addr.png" width="240" alt="gsl_slave_addr"/></div><br/></div>
+                                    <div class="- topic/p p" data-ofbid="d258943e125__20250121171716">如果直接列示了从机地址，则在新建或修改 CTP 驱动时，直接使用该从机地址，例如位
+                                        0x40。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_fkq_sbw_12c" data-ofbid="touch_obtain_key_info__codeblock_fkq_sbw_12c">#<span class="hl-directive">define</span> GSL3676_SLAVE_ADDR                  <span class="hl-number">0x40</span>
+gsl3676_client.client_addr = GSL3676_SLAVE_ADDR;</pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d258943e130__20250121171716">
+                                    <p class="- topic/p p" data-ofbid="d258943e132__20250121171716">列示含读写位（8 位）的从机地址。例如，GT911 的规格书给出 0xBA/ 0xBB
+                                        的从机地址，差值为 1，说明列示的地址为 8 位，含读写位。</p>
+                                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_asb_bcw_12c" src="../../../images/ctp/gt911_slave_addr.png" width="384" alt="gt911_slave_addr"/></div><br/>
+                                    <div class="- topic/p p" data-ofbid="d258943e139__20250121171716">如果列示了含读写位的 8 位从机地址，则在新建或修改 CTP 驱动时，须将地址右移 1 位，例如将 0xBA/0xBB
+                                        右移 1 位后得到 0x5D
+                                        的从机地址。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_avn_gcw_12c" data-ofbid="touch_obtain_key_info__codeblock_avn_gcw_12c">#<span class="hl-directive">define</span> GT911_ADDRESS_HIGH <span class="hl-number">0x5D</span>
+gt911_client.client_addr = GT911_ADDRESS_HIGH;</pre></div>
+                                </li></ul></div>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="touch_obtain_key_info__section_hz5_4cw_12c" data-ofbid="touch_obtain_key_info__section_hz5_4cw_12c"><h2 class="- topic/title title sectiontitle">触摸点 ID 号</h2>
+            
+            <div class="- topic/p p" data-ofbid="d258943e151__20250121171716">坐标数据的数组内容存储都是以 ID 作为下标索引，可在规格书中搜索包含 ID 字样的字段，示例如下：<ul class="- topic/ul ul" id="touch_obtain_key_info__ul_u4z_3gb_b2c" data-ofbid="touch_obtain_key_info__ul_u4z_3gb_b2c"><li class="- topic/li li" data-ofbid="d258943e154__20250121171716">Track ID 示例：<div class="- topic/p p" data-ofbid="d258943e156__20250121171716">
+                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_hbl_rfb_b2c" src="../../../images/ctp/ft7252_track_id.png" alt="ft7252_track_id"/></div><br/>
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_yql_tfb_b2c" data-ofbid="touch_obtain_key_info__codeblock_yql_tfb_b2c"> off_set = read_index * C145HAX01_POINT_INFO_LEN;
+ read_id = (read_buf[off_set + <span class="hl-number">3</span>] &gt;&gt; <span class="hl-number">4</span>) &amp; <span class="hl-number">0x0f</span>;
+ pre_id[read_index] = read_id;
+ input_x = ((read_buf[off_set + <span class="hl-number">1</span>] &amp; <span class="hl-number">0x0f</span>) &lt;&lt; <span class="hl-number">8</span>) | read_buf[off_set + <span class="hl-number">2</span>];
+ input_y = ((read_buf[off_set + <span class="hl-number">3</span>] &amp; <span class="hl-number">0xf</span>) &lt;&lt; <span class="hl-number">8</span>) | read_buf[off_set + <span class="hl-number">4</span>];</pre>
+                        </div></li><li class="- topic/li li" data-ofbid="d258943e165__20250121171716">Touch ID 示例：<br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_pvh_dgb_b2c" src="../../../images/ctp/gt911_track_id.png" alt="gt911_track_id"/></div><br/><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_efg_3gb_b2c" data-ofbid="touch_obtain_key_info__codeblock_efg_3gb_b2c"> off_set = read_index * <span class="hl-number">8</span>;
+ read_id = read_buf[off_set] &amp; <span class="hl-number">0x0f</span>;
+ pre_id[read_index] = read_id;
+ input_x = read_buf[off_set + <span class="hl-number">1</span>] | (read_buf[off_set + <span class="hl-number">2</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* x */</em>
+ input_y = read_buf[off_set + <span class="hl-number">3</span>] | (read_buf[off_set + <span class="hl-number">4</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* y */</em>
+ input_w = read_buf[off_set + <span class="hl-number">5</span>] | (read_buf[off_set + <span class="hl-number">6</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* size */</em></pre></li></ul></div>
+        </section><section class="- topic/section section" id="touch_obtain_key_info__section_i2g_vgb_b2c" data-ofbid="touch_obtain_key_info__section_i2g_vgb_b2c"><h2 class="- topic/title title sectiontitle">XY 坐标计算</h2>
+            
+            <p class="- topic/p p" data-ofbid="d258943e178__20250121171716">常见 CTP 的 XY 在 16 bit 的数据范围内，一般由两个字节组合而成，需要通过一定的逻辑计算出真实的坐标值。</p>
+            <div class="- topic/p p" data-ofbid="d258943e181__20250121171716">在处理 CTP 的 XY 坐标时，通常需要将两个字节组合成一个 16
+                    位的数据。一个坐标值通常由高位和低位组合而成。以下是如何通过逻辑操作从读取缓冲区中提取坐标值并将其存储为变量的详细步骤：<figure class="- topic/fig fig fignone" id="touch_obtain_key_info__fig_y1b_ygb_b2c" data-ofbid="touch_obtain_key_info__fig_y1b_ygb_b2c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_z1b_ygb_b2c" src="../../../images/ctp/gt911_xy_coordinate.png" width="384" alt="gt911_xy_coordinate"/></div><br/></figure><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_zmm_1hb_b2c" data-ofbid="touch_obtain_key_info__codeblock_zmm_1hb_b2c"> off_set = read_index * <span class="hl-number">8</span>;
+ read_id = read_buf[off_set] &amp; <span class="hl-number">0x0f</span>;
+ pre_id[read_index] = read_id;
+ input_x = read_buf[off_set + <span class="hl-number">1</span>] | (read_buf[off_set + <span class="hl-number">2</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* x */</em>
+ input_y = read_buf[off_set + <span class="hl-number">3</span>] | (read_buf[off_set + <span class="hl-number">4</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* y */</em>
+ input_w = read_buf[off_set + <span class="hl-number">5</span>] | (read_buf[off_set + <span class="hl-number">6</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* size */</em></pre></div>
+        </section><section class="- topic/section section" id="touch_obtain_key_info__section_sqp_xhb_b2c" data-ofbid="touch_obtain_key_info__section_sqp_xhb_b2c"><h2 class="- topic/title title sectiontitle">触摸点个数</h2>
+            
+            <p class="- topic/p p" data-ofbid="d258943e195__20250121171716">触摸事件可分为按下、移动和抬起，事件的获取是通过当前触摸点个数与上一次触摸点个数比较得到的，下面是几种比较常见的获取当前触摸点个数的方式：</p>
+            <ul class="- topic/ul ul" id="touch_obtain_key_info__ul_hgx_yhb_b2c" data-ofbid="touch_obtain_key_info__ul_hgx_yhb_b2c"><li class="- topic/li li" data-ofbid="d258943e199__20250121171716">
+                    <p class="- topic/p p" data-ofbid="d258943e201__20250121171716">从寄存器可以直接获取当前的触摸点个数</p>
+                    <figure class="- topic/fig fig fignone" id="touch_obtain_key_info__fig_igx_yhb_b2c" data-ofbid="touch_obtain_key_info__fig_igx_yhb_b2c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_jgx_yhb_b2c" src="../../../images/ctp/gt911_real_time_touch_num.png" width="480" alt="gt911_real_time_touch_num"/></div><br/></figure>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_fmj_l3b_b2c" data-ofbid="touch_obtain_key_info__codeblock_fmj_l3b_b2c">touch_num = point_status &amp; <span class="hl-number">0x0f</span>; <em class="hl-comment">/* get point num */</em></pre>
+                </li><li class="- topic/li li" data-ofbid="d258943e212__20250121171716">
+                    <p class="- topic/p p" data-ofbid="d258943e214__20250121171716">通过每根手指的触摸事件间接计算：</p>
+                    <figure class="- topic/fig fig fignone" data-ofbid="d258943e217__20250121171716"><div class="- topic/figgroup figgroup"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_j2c_bjb_b2c" src="../../../images/sdk/st77922_real_time_touch_num1.png" width="480"/></div><br/><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_j2c_bjb_b2d" src="../../../images/sdk/st77922_real_time_touch_num2.png" width="480"/></div><br/><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_j2c_bjb_b2e" src="../../../images/sdk/st77922_real_time_touch_num3.png" width="480"/></div><br/></div></figure>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_htr_m3b_b2c" data-ofbid="touch_obtain_key_info__codeblock_htr_m3b_b2c"> cmd[<span class="hl-number">0</span>] = (rt_uint8_t)((ST77922_TOUCH_INFO &gt;&gt; <span class="hl-number">8</span>) &amp; <span class="hl-number">0xFF</span>);
+ cmd[<span class="hl-number">1</span>] = (rt_uint8_t)(ST77922_TOUCH_INFO &amp; <span class="hl-number">0xFF</span>);
+ <em class="hl-comment">/* read point num is touch_num */</em>
+ <strong class="hl-keyword">if</strong> (st77922_read_regs(&amp;st77922_client, cmd, read_buf, <strong class="hl-keyword">sizeof</strong>(read_buf)) != RT_EOK) {
+     rt_kprintf(<span class="hl-string">"read point failed\n"</span>);
+     read_num = <span class="hl-number">0</span>;
+     <strong class="hl-keyword">goto</strong> __exit;
+ }
+
+ <strong class="hl-keyword">for</strong> (i = <span class="hl-number">0</span>; i &lt; ST77922_MAX_TOUCH; i++) {
+     num_valid = ((read_buf[<span class="hl-number">7</span> * i + <span class="hl-number">4</span>] &amp; <span class="hl-number">0x80</span>) != <span class="hl-number">0</span>) ? <span class="hl-number">1</span> : <span class="hl-number">0</span>;
+     touch_num += num_valid;
+ }</pre>
+                </li></ul>
+        </section><section class="- topic/section section" id="touch_obtain_key_info__section_wxj_zhb_b2c" data-ofbid="touch_obtain_key_info__section_wxj_zhb_b2c"><h2 class="- topic/title title sectiontitle">TP 硬件上电时序</h2>
+            
+            <figure class="- topic/fig fig fignone" id="touch_obtain_key_info__fig_xxj_zhb_b2c" data-ofbid="touch_obtain_key_info__fig_xxj_zhb_b2c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_obtain_key_info__image_yxj_zhb_b2c" src="../../../images/ctp/gt911_power_on.png" width="384" alt="gt911_power_on"/></div><br/></figure>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_obtain_key_info__codeblock_cyx_f3b_b2c" data-ofbid="touch_obtain_key_info__codeblock_cyx_f3b_b2c"> rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);
+ rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_LOW);
+ rt_thread_delay(<span class="hl-number">10</span>);
+ <em class="hl-comment">// irq output 0</em>
+ rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_OUTPUT);
+ rt_pin_write(cfg-&gt;irq_pin.pin, PIN_LOW);
+ rt_thread_delay(<span class="hl-number">2</span>);
+ <em class="hl-comment">// rst output 1</em>
+ rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);
+ rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_HIGH);
+ rt_thread_delay(<span class="hl-number">5</span>);
+ <em class="hl-comment">// rst input</em>
+ rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_INPUT);
+ <em class="hl-comment">//irq output 0</em>
+ rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_OUTPUT);
+ rt_pin_write(cfg-&gt;irq_pin.pin, PIN_LOW);
+ rt_thread_delay(<span class="hl-number">50</span>);
+ rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_INPUT);</pre>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#touch_obtain_key_info__section_crj_xyv_12c" data-tocid="touch_obtain_key_info__section_crj_xyv_12c">从机设备地址</a></div></li><li class="section-item"><div class="section-title"><a href="#touch_obtain_key_info__section_hz5_4cw_12c" data-tocid="touch_obtain_key_info__section_hz5_4cw_12c">触摸点 ID 号</a></div></li><li class="section-item"><div class="section-title"><a href="#touch_obtain_key_info__section_i2g_vgb_b2c" data-tocid="touch_obtain_key_info__section_i2g_vgb_b2c">XY 坐标计算</a></div></li><li class="section-item"><div class="section-title"><a href="#touch_obtain_key_info__section_sqp_xhb_b2c" data-tocid="touch_obtain_key_info__section_sqp_xhb_b2c">触摸点个数</a></div></li><li class="section-item"><div class="section-title"><a href="#touch_obtain_key_info__section_wxj_zhb_b2c" data-tocid="touch_obtain_key_info__section_wxj_zhb_b2c">TP 硬件上电时序</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

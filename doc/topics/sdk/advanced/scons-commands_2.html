@@ -1,0 +1,287 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="SCons 是一个跨平台的构建系统，被广泛应用于软件开发项目中，支持在 Windows 和 Linux 上使用，且用法相同。本节列示了常用的 SCons 命令和功能。 scons --list-def 解压缩 SDK 后，使用 scons --list-def 命令可以罗列 SDK 中发布的所有项目名称，方便用户查看和管理可用的项目资源。示例如下： scons --list-def ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-11-14"/><meta name="DC.date.modified" content="2024-12-24"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="scons-commands"/><meta name="DC.language" content="zh-CN"/><title>scons 命令参考指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/advanced/scons-commands.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/scons-commands_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="scons-commands" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/scons-commands.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">scons 命令参考指南 </h1><div class="date inPage">24 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d86456e23__20250121171529">SCons 是一个跨平台的构建系统，被广泛应用于软件开发项目中，支持在 Windows 和 Linux 上使用，且用法相同。本节列示了常用的 SCons 命令和功能。</p><section class="- topic/section section" id="scons-commands__id2" data-ofbid="scons-commands__id2"><h2 class="- topic/title title sectiontitle">scons --list-def</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e30__20250121171529">解压缩 SDK 后，使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --list-def</span> 命令可以罗列 SDK
+                中发布的所有项目名称，方便用户查看和管理可用的项目资源。示例如下：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__pre_udn_1vp_wcc" data-ofbid="scons-commands__pre_udn_1vp_wcc">scons --list-def</pre>
+            <div class="- topic/p p" data-ofbid="d86456e39__20250121171529">输出示例结果如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__codeblock_rgr_qv1_rdc" data-ofbid="scons-commands__codeblock_rgr_qv1_rdc">scons: Reading SConscript files ...
+Built-in configs:
+  <span class="hl-number">0.</span> d12x_demo68-nand_baremetal_bootloader
+  <span class="hl-number">1.</span> d12x_demo68-nand_rt-thread_helloworld
+  <span class="hl-number">2.</span> d12x_demo68-nor_baremetal_bootloader
+  <span class="hl-number">3.</span> d12x_demo68-nor_rt-thread_helloworld
+  <span class="hl-number">4.</span> d12x_hmi-nor_baremetal_bootloader
+  <span class="hl-number">5.</span> d12x_hmi-nor_rt-thread_helloworld
+  <span class="hl-number">6.</span> d13x_demo88-nand_baremetal_bootloader
+  <span class="hl-number">7.</span> d13x_demo88-nand_rt-thread_helloworld
+  <span class="hl-number">8.</span> d13x_demo88-nor_baremetal_bootloader
+  <span class="hl-number">9.</span> d13x_demo88-nor_rt-thread_helloworld
+  <span class="hl-number">10.</span> d13x_kunlunpi88-nor_baremetal_bootloader
+  <span class="hl-number">11.</span> d13x_kunlunpi88-nor_rt-thread_helloworld
+  <span class="hl-number">12.</span> d21x_demo128-nand_baremetal_bootloader
+  <span class="hl-number">13.</span> d21x_demo128-nand_rt-thread_helloworld
+  <span class="hl-number">14.</span> g73x_demo100-nor_baremetal_bootloader
+  <span class="hl-number">15.</span> g73x_demo100-nor_rt-thread_helloworld</pre></div>
+        </section><section class="- topic/section section" id="scons-commands__id3" data-ofbid="scons-commands__id3"><h2 class="- topic/title title sectiontitle">scons --apply-def=<var class="+ topic/keyword sw-d/varname keyword varname">项目索引或名称</var></h2>
+            
+            <div class="- topic/p p" data-ofbid="d86456e51__20250121171529">使用命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --apply-def=[项目索引或名称]</span>
+                    可以选择特定的项目配置进行构建，命令中可以使用项目名称或项目索引完成构建：<ul class="- topic/ul ul" id="scons-commands__ol_xlc_yrx_5cc" data-ofbid="scons-commands__ol_xlc_yrx_5cc"><li class="- topic/li li" data-ofbid="d86456e57__20250121171529">使用数字索引，例如 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">--apply-def=3</span>，即应用列表中的第三个配置（从 0 开始计数）。以下示例表示应用名为
+                            <span class="+ topic/ph sw-d/filepath ph filepath">d12x_demo68-nor_rt-thread_helloworld_defconfig</span>
+                        的配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__codeblock_bby_vlq_gdc" data-ofbid="scons-commands__codeblock_bby_vlq_gdc">scons --apply-def=<span class="hl-number">3</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__codeblock_ecr_rq5_4dc" data-ofbid="scons-commands__codeblock_ecr_rq5_4dc">scons: Reading SConscript files ...
+Load config from target\configs\d12x_demo68-nor_rt-thread_helloworld_defconfig
+
+scons --apply-def=d12x_demo68-nor_rt-thread_helloworld_defconfig
+scons: Reading SConscript files ...
+Load config from target\configs\d12x_demo68-nor_rt-thread_helloworld_defconfig</pre></li><li class="- topic/li li" data-ofbid="d86456e69__20250121171529">直接使用配置名称，例如
+                            <span class="+ topic/keyword sw-d/cmdname keyword cmdname">--apply-def=d12x_demo68-nor_rt-thread_helloworld_defconfig</span>。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__codeblock_ztf_wlq_gdc" data-ofbid="scons-commands__codeblock_ztf_wlq_gdc">scons --apply-def=d12x_demo68-nor_rt-thread_helloworld_defconfig</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__codeblock_uns_gnh_rdc" data-ofbid="scons-commands__codeblock_uns_gnh_rdc">scons: Reading SConscript files ...
+Load config from target\configs\d12x_demo68-nor_rt-thread_helloworld_defconfig</pre></li></ul></div>
+        </section><section class="- topic/section section" id="scons-commands__id4" data-ofbid="scons-commands__id4"><h2 class="- topic/title title sectiontitle">scons --menuconfig</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e84__20250121171529">使用命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 可以调出 menuconfig 图形界面，以便根据需要调整项目设置。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__pre_wdn_1vp_wcc" data-ofbid="scons-commands__pre_wdn_1vp_wcc">scons --menuconfig</pre>
+            <div class="- topic/p p" data-ofbid="d86456e93__20250121171529">menuconfig GUI 界面示例如下：<figure class="- topic/fig fig fignone" id="scons-commands__fig_vyl_x2p_fdc" data-ofbid="scons-commands__fig_vyl_x2p_fdc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="scons-commands__image_xdn_1vp_wcc" src="../../../images/sdk/lbl-menuconfig1.png" width="672" alt="lbl-menuconfig"/></div><br/></figure></div>
+            <p class="- topic/p p" data-ofbid="d86456e100__20250121171529">完成配置后，保存并退出配置界面，SCons 会根据所做的更改重新编译项目。</p>
+            <div class="- topic/note note note note_note" id="scons-commands__note_y5z_d13_rdc" data-ofbid="scons-commands__note_y5z_d13_rdc"><span class="note__title">注：</span> 关于 menuconfig 的更多信息，可查看 <a class="- topic/xref xref" href="menuconfig_user_guide.html">menuconfig 命令工具参考指南</a>。</div>
+        </section><section class="- topic/section section" id="scons-commands__id5" data-ofbid="scons-commands__id5"><h2 class="- topic/title title sectiontitle">scons</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e116__20250121171529">使用命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons</span> 开始构建过程，编译成功后生成镜像文件。默认在简洁模式下进行构建，不会输出编译选项等信息。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__pre_ydn_1vp_wcc" data-ofbid="scons-commands__pre_ydn_1vp_wcc">scons</pre>
+            <div class="- topic/p p" data-ofbid="d86456e125__20250121171529">根据下列打印信息示例，编译成功后生成的文件路径为
+                    <span class="+ topic/ph sw-d/filepath ph filepath">e:\luban-lite\output\d12x_demo68-nor_rt-thread_helloworld\images\d12x_demo68-nor_v1.0.0.img</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__codeblock_t1r_wlq_gdc" data-ofbid="scons-commands__codeblock_t1r_wlq_gdc">Creating e:\luban-lite\output/d12x_demo68-nor_rt-thread_helloworld/images/usbupg-ddr-init.aic ...
+Creating e:\luban-lite\output/d12x_demo68-nor_rt-thread_helloworld/images/bootloader.aic ...
+Creating e:\luban-lite\output/d12x_demo68-nor_rt-thread_helloworld/images/os.aic ...
+Image header is generated.
+Meta data <strong class="hl-keyword">for</strong> image components:
+            Meta <strong class="hl-keyword">for</strong> image.updater.psram       offset <span class="hl-number">0x1600</span>     size <span class="hl-number">0x6010</span> (<span class="hl-number">24592</span>)
+            Meta <strong class="hl-keyword">for</strong> image.updater.spl         offset <span class="hl-number">0x7e00</span>     size <span class="hl-number">0x2d310</span> (<span class="hl-number">185104</span>)
+            Meta <strong class="hl-keyword">for</strong> image.info                offset <span class="hl-number">0x0</span>        size <span class="hl-number">0x800</span> (<span class="hl-number">2048</span>)
+            Meta <strong class="hl-keyword">for</strong> image.target.spl          offset <span class="hl-number">0x35600</span>    size <span class="hl-number">0x2d310</span> (<span class="hl-number">185104</span>)
+            Meta <strong class="hl-keyword">for</strong> image.target.os           offset <span class="hl-number">0x62e00</span>    size <span class="hl-number">0xd8800</span> (<span class="hl-number">886784</span>)
+            Meta <strong class="hl-keyword">for</strong> image.target.rodata       offset <span class="hl-number">0x13b600</span>   size <span class="hl-number">0x2b000</span> (<span class="hl-number">176128</span>)
+            Meta <strong class="hl-keyword">for</strong> image.target.data         offset <span class="hl-number">0x166600</span>   size <span class="hl-number">0x700000</span> (<span class="hl-number">7340032</span>)
+    Packing file data:
+            uartupg-psram-init.aic
+            bootloader.aic
+            bootloader.aic
+            d12x_os.itb
+            rodata.fatfs
+            data.lfs
+    Image file is generated: e:/luban-lite/output/d12x_demo68-nor_rt-thread_helloworld/images/d12x_demo68-nor_v1.<span class="hl-number">0.0</span>.img
+
+Luban-Lite is built successfully
+
+scons: done building targets.</pre></div>
+        </section><section class="- topic/section section" id="scons-commands__section_wwc_nnh_rdc" data-ofbid="scons-commands__section_wwc_nnh_rdc"><h2 class="- topic/title title sectiontitle">scons --verbose</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e138__20250121171529">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --verbose</span> 可以显示更详细的编译信息，包括编译器选项等，便于调试。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_u4k_zqh_rdc" data-ofbid="scons-commands__section_u4k_zqh_rdc"><h2 class="- topic/title title sectiontitle">scons --clean</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e149__20250121171529">运行命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --clean</span>
+                清除上一次编译构建过程中生成的所有临时文件，确保在下一次编译构建时，所有源文件都会被重新编译。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__pre_zdn_1vp_wcc" data-ofbid="scons-commands__pre_zdn_1vp_wcc">scons --clean</pre>
+            <p class="- topic/p p" data-ofbid="d86456e158__20250121171529">或者使用缩写命令：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="scons-commands__codeblock_qnl_nx1_rdc" data-ofbid="scons-commands__codeblock_qnl_nx1_rdc">scons -c</pre>
+        </section><section class="- topic/section section" id="scons-commands__section_upy_xnh_rdc" data-ofbid="scons-commands__section_upy_xnh_rdc"><h2 class="- topic/title title sectiontitle">scons --save-def</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e169__20250121171529">保存当前板卡默认配置。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_rd4_frh_rdc" data-ofbid="scons-commands__section_rd4_frh_rdc"><h2 class="- topic/title title sectiontitle">scons --info</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e177__20250121171529">显示当前工程信息，可使用简洁命令 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons i</span>。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_epm_3rh_rdc" data-ofbid="scons-commands__section_epm_3rh_rdc"><h2 class="- topic/title title sectiontitle">scons distclean</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e188__20250121171529">清除工具链和输出目录。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_wnq_jrh_rdc" data-ofbid="scons-commands__section_wnq_jrh_rdc"><h2 class="- topic/title title sectiontitle">scons target=<var class="+ topic/keyword sw-d/varname keyword varname">TARGET</var></h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e198__20250121171529">生成目标工程，例如 <span class="+ topic/ph sw-d/filepath ph filepath">eclipse/eclipse_sdk</span>，其中 <var class="+ topic/keyword sw-d/varname keyword varname">TARGET</var>
+                是需要生成的目标工程名称。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_ukq_lrh_rdc" data-ofbid="scons-commands__section_ukq_lrh_rdc"><h2 class="- topic/title title sectiontitle">scons genconfig</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e213__20250121171529">通过 <span class="+ topic/ph sw-d/filepath ph filepath">rtconfig.h</span> 生成 <span class="+ topic/ph sw-d/filepath ph filepath">.config</span> 文件。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_nx5_mrh_rdc" data-ofbid="scons-commands__section_nx5_mrh_rdc"><h2 class="- topic/title title sectiontitle">scons useconfig=<var class="+ topic/keyword sw-d/varname keyword varname">USECONFIG</var></h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e229__20250121171529">通过配置文件生成 <span class="+ topic/ph sw-d/filepath ph filepath">rtconfig.h</span>，其中 <var class="+ topic/keyword sw-d/varname keyword varname">USECONFIG</var>
+                是需要使用的配置文件路径。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_pwc_3th_rdc" data-ofbid="scons-commands__section_pwc_3th_rdc"><h2 class="- topic/title title sectiontitle">scons --run-qemu</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e243__20250121171529">运行当前编译出来的 qemu 目标文件。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_ljd_jth_rdc" data-ofbid="scons-commands__section_ljd_jth_rdc"><h2 class="- topic/title title sectiontitle">scons --list-size</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e251__20250121171529">size 命令列出所有 <span class="+ topic/ph sw-d/filepath ph filepath">.o</span> 文件下 <span class="+ topic/ph sw-d/filepath ph filepath">text/data/bss</span> 中各个
+                section 的大小。</p>
+        </section><section class="- topic/section section" id="scons-commands__section_ldh_lth_rdc" data-ofbid="scons-commands__section_ldh_lth_rdc"><h2 class="- topic/title title sectiontitle">scons --pkgs-update</h2>
+            
+            <p class="- topic/p p" data-ofbid="d86456e265__20250121171529">下载选择的在线 packages。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#scons-commands__id2" data-tocid="scons-commands__id2">scons --list-def</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__id3" data-tocid="scons-commands__id3">scons --apply-def=<var class="+ topic/keyword sw-d/varname keyword varname">项目索引或名称</var></a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__id4" data-tocid="scons-commands__id4">scons --menuconfig</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__id5" data-tocid="scons-commands__id5">scons</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_wwc_nnh_rdc" data-tocid="scons-commands__section_wwc_nnh_rdc">scons --verbose</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_u4k_zqh_rdc" data-tocid="scons-commands__section_u4k_zqh_rdc">scons --clean</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_upy_xnh_rdc" data-tocid="scons-commands__section_upy_xnh_rdc">scons --save-def</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_rd4_frh_rdc" data-tocid="scons-commands__section_rd4_frh_rdc">scons --info</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_epm_3rh_rdc" data-tocid="scons-commands__section_epm_3rh_rdc">scons distclean</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_wnq_jrh_rdc" data-tocid="scons-commands__section_wnq_jrh_rdc">scons target=<var class="+ topic/keyword sw-d/varname keyword varname">TARGET</var></a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_ukq_lrh_rdc" data-tocid="scons-commands__section_ukq_lrh_rdc">scons genconfig</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_nx5_mrh_rdc" data-tocid="scons-commands__section_nx5_mrh_rdc">scons useconfig=<var class="+ topic/keyword sw-d/varname keyword varname">USECONFIG</var></a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_pwc_3th_rdc" data-tocid="scons-commands__section_pwc_3th_rdc">scons --run-qemu</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_ljd_jth_rdc" data-tocid="scons-commands__section_ljd_jth_rdc">scons --list-size</a></div></li><li class="section-item"><div class="section-title"><a href="#scons-commands__section_ldh_lth_rdc" data-tocid="scons-commands__section_ldh_lth_rdc">scons --pkgs-update</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Driver 层接口设计 表 1 . drv_cir_init 函数原型 rt_err_t drv_cir_init(rt_device_t pdev) 功能说明 CIR 模块初始化 参数定义 pdev: 指向 CIR 设备的指针 返回值 执行成功返回 RT_EOK 注意事项 - 表 2 . drv_cir_open 函数原型 rt_err_t drv_cir_open(rt_device_t ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/cir/cir_design_2.html"/><meta name="DC.relation" content="../../../topics/sdk/cir/cir_data_struct_2.html"/><meta name="DC.relation" content="../../../topics/sdk/cir/cir_faq_2.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="cir_interface_design_luban_lite"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="cir_interface_design_luban_lite-d5856e5312"/><meta name="wh-source-relpath" content="topics/sdk/cir/cir_interface_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/cir/cir_interface_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="cir_interface_design_luban_lite" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_nww_hzh_pzb"><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="cir"><div class="title"><a href="../../../topics/sdk/cir/cir_user_guide_2.html">CIR 使用指南</a></div></div></li><li><div class="topicref" data-id="cir_design_intro"><div class="title"><a href="../../../topics/sdk/cir/cir_design_2.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="cir_interface_design_luban_lite"><div class="title"><a href="../../../topics/sdk/cir/cir_interface_lite.html">接口设计</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/cir/cir_data_struct_2.html" title="数据结构设计" aria-label="上一主题: 数据结构设计" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/cir/cir_faq_2.html" title="常见问题" aria-label="下一主题: 常见问题" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="can-d5856e4886" class="topicref" data-id="can" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-d5856e4886-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/can/can_user_guide_2.html" id="can-d5856e4886-link">CAN 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4958" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4958-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cap/cap_user_guide.html" id="id-d5856e4958-link">CAP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5018" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5018-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/qep/qep_user_guide.html" id="id-d5856e5018-link">QEP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="cir-d5856e5228" class="topicref" data-id="cir" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action cir-d5856e5228-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_user_guide_2.html" id="cir-d5856e5228-link">CIR 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e5240" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_config_lite.html" id="id-d5856e5240-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="cir_debug_guide-d5856e5252" class="topicref" data-id="cir_debug_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_debug_2.html" id="cir_debug_guide-d5856e5252-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e5264" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_test_lite.html" id="id-d5856e5264-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="cir_design_intro-d5856e5276" class="topicref" data-id="cir_design_intro" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action cir_design_intro-d5856e5276-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_design_2.html" id="cir_design_intro-d5856e5276-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="cir_key_procedures-d5856e5288" class="topicref" data-id="cir_key_procedures" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_key_procedures_2.html" id="cir_key_procedures-d5856e5288-link">关键流程设计</a></div></div></li><li role="treeitem"><div data-tocid="cir_data_structure_design-d5856e5300" class="topicref" data-id="cir_data_structure_design" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_data_struct_2.html" id="cir_data_structure_design-d5856e5300-link">数据结构设计</a></div></div></li><li role="treeitem" class="active"><div data-tocid="cir_interface_design_luban_lite-d5856e5312" class="topicref" data-id="cir_interface_design_luban_lite" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_interface_lite.html" id="cir_interface_design_luban_lite-d5856e5312-link">接口设计</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e5324" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_faq_2.html" id="id-d5856e5324-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="gpai-user-guide-d5856e5336" class="topicref" data-id="gpai-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action gpai-user-guide-d5856e5336-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpai/gpai_user_guide_2.html" id="gpai-user-guide-d5856e5336-link">GPAI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5408" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5408-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpio/gpio_user_guide.html" id="id-d5856e5408-link">GPIO 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c_user_guide-d5856e5480" class="topicref" data-id="i2c_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c_user_guide-d5856e5480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2c/i2c_user_guide_2.html" id="i2c_user_guide-d5856e5480-link">I2C 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5576" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5576-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/psadc/psadc_user_guide_2.html" id="id-d5856e5576-link">PSADC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5648" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5648-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pwm/pwm_user_guide_2.html" id="id-d5856e5648-link">PWM 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="rtp-user-guide-d5856e5721" class="topicref" data-id="rtp-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action rtp-user-guide-d5856e5721-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtp/rtp_user_guide_2.html" id="rtp-user-guide-d5856e5721-link">RTP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-d5856e5805" class="topicref" data-id="spi" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-d5856e5805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_user_guide_2.html" id="spi-d5856e5805-link"><span class="ph">Q</span>SPI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="uart_user_guide-d5856e5879" class="topicref" data-id="uart_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart_user_guide-d5856e5879-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_user_guide_2.html" id="uart_user_guide-d5856e5879-link">UART 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_user_guide-d5856e5951" class="topicref" data-id="usb_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_user_guide-d5856e5951-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb_user_guide_2.html" id="usb_user_guide-d5856e5951-link">USB 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e6011" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e6011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_user_guide_2.html" id="id-d5856e6011-link">MAC 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/cir/cir_interface_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">接口设计</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="cir_interface_design_luban_lite__section_i5q_kvk_g1c" data-ofbid="cir_interface_design_luban_lite__section_i5q_kvk_g1c"><h2 class="- topic/title title sectiontitle">Driver 层接口设计</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="cir_interface_design_luban_lite__table_x2k_tzh_fdc" data-ofbid="cir_interface_design_luban_lite__table_x2k_tzh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_cir_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__2">rt_err_t drv_cir_init(rt_device_t pdev)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__2">CIR 模块初始化</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__2">pdev: 指向 CIR 设备的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__2">执行成功返回 RT_EOK</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="cir_interface_design_luban_lite__table_x2k_tzh_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="cir_interface_design_luban_lite__table_y2k_tzh_fdc" data-ofbid="cir_interface_design_luban_lite__table_y2k_tzh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_cir_open</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__2">rt_err_t drv_cir_open(rt_device_t pdev, rt_uint16_t
+                                oflag)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__2">打开红外模块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">pdev: 指向 CIR 设备的指针</div>
+                                    <div class="- topic/div div">oflag: 打开设备时设置的标志</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__2">执行成功返回 RT_EOK，否则返回-RT_EINVAL</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="cir_interface_design_luban_lite__table_y2k_tzh_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> oflag 可设置的值:</div>
+                                    <div class="- topic/div div">RT_DEVICE_FLAG_WRONLY</div>
+                                    <div class="- topic/div div">RT_DEVICE_FLAG_RDONLY</div>
+                                    <div class="- topic/div div">RT_DEVICE_FLAG_RDWR</div>
+                                    <div class="- topic/div div">RT_DEVICE_FLAG_INT_RX</div>
+                                    <div class="- topic/div div"> 设置 RT_DEVICE_FLAG_RDONLY 时，必须同时设置
+                                        RT_DEVICE_FLAG_INT_RX</div>
+                                </div>
+                            </td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="cir_interface_design_luban_lite__table_z2k_tzh_fdc" data-ofbid="cir_interface_design_luban_lite__table_z2k_tzh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_cir_close</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__2">rt_err_t drv_cir_close(rt_device_t pdev)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__2">关闭红外模块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">pdev: 指向 CIR 设备的指针</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__2">执行成功返回 RT_EOK</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="cir_interface_design_luban_lite__table_z2k_tzh_fdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="cir_interface_design_luban_lite__table_afk_tzh_fdc" data-ofbid="cir_interface_design_luban_lite__table_afk_tzh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_cir_read</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__2">rt_size_t drv_cir_read(rt_device_t pdev, rt_off_t pos, void
+                                *buffer, rt_size_t size)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__2">读取 CIR 接收到的红外信号</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">pdev: 指向 CIR 设备的指针</div>
+                                    <div class="- topic/div div">buffer: 指向接收数据的指针</div>
+                                    <div class="- topic/div div">size: 读取的数据字节数</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__2">执行成功返回 0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="cir_interface_design_luban_lite__table_afk_tzh_fdc__entry__2">-</td></tr></tbody></table></div>
+            
+        </section><section class="- topic/section section" id="cir_interface_design_luban_lite__section_zcn_fvk_g1c" data-ofbid="cir_interface_design_luban_lite__section_zcn_fvk_g1c"><h2 class="- topic/title title sectiontitle">HAL 层接口设计</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="cir_interface_design_luban_lite__table_bfk_tzh_fdc" data-ofbid="cir_interface_design_luban_lite__table_bfk_tzh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_cir_set_tx_carrier</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__2">int hal_cir_set_tx_carrier(aic_cir_ctrl_t * aic_cir_ctrl, uint8_t
+                                protocol, uint32_t tx_duty);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__2">设置 CIR 的发送载波参数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">aic_cir_ctrl: 指向 aic_cir_ctrl_t 的指针</div>
+                                    <div class="- topic/div div">protocol: 使用的 CIR 协议</div>
+                                    <div class="- topic/div div">tx_duty: 协议的占空比</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__2">执行成功返回 0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="cir_interface_design_luban_lite__table_bfk_tzh_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">protocol 取值: NEC, 0; RC5, 1</div>
+                                    <div class="- topic/div div">tx_duty: 若占空比为 33%，则 tx_duty 设置为 33</div>
+                                </div>
+                            </td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="cir_interface_design_luban_lite__table_cfk_tzh_fdc" data-ofbid="cir_interface_design_luban_lite__table_cfk_tzh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_cir_send_data</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__2">void hal_cir_send_data(aic_cir_ctrl_t * aic_cir_ctrl, uint8_t *
+                                tx_data, uint32_t size);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__2">CIR 发送数据</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">aic_cir_ctrl: 指向 aic_cir_ctrl_t 的指针</div>
+                                    <div class="- topic/div div">tx_data: 指向要发送的数据指针</div>
+                                    <div class="- topic/div div">size: 发送的数据字节数</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__2">执行成功返回 0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="cir_interface_design_luban_lite__table_cfk_tzh_fdc__entry__2">- </td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="cir_interface_design_luban_lite__table_dfk_tzh_fdc" data-ofbid="cir_interface_design_luban_lite__table_dfk_tzh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_cir_set_rx_sample_clock</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__2">void hal_cir_set_rx_sample_clock(aic_cir_ctrl_t * aic_cir_ctrl,
+                                uint8_t protocol);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__2">设置 CIR 接收采样时钟</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">aic_cir_ctrl: 指向 aic_cir_ctrl_t 的指针</div>
+                                    <div class="- topic/div div">protocol: 使用的 CIR 协议</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__2">执行成功返回 0</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="cir_interface_design_luban_lite__table_dfk_tzh_fdc__entry__2">-</td></tr></tbody></table></div>
+            
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#cir_interface_design_luban_lite__section_i5q_kvk_g1c" data-tocid="cir_interface_design_luban_lite__section_i5q_kvk_g1c">Driver 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#cir_interface_design_luban_lite__section_zcn_fvk_g1c" data-tocid="cir_interface_design_luban_lite__section_zcn_fvk_g1c">HAL 层接口设计</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

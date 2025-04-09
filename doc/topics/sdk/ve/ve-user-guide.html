@@ -1,0 +1,217 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Video Engine (VE) 是 ArtInChip 自主研发的视频加速引擎，支持视频、图片的编解码功能。 在 RTOS 系统中，中间件 Media Process Platform (MPP) 直接调用 VE 的 drv 层驱动接口，实现对视频、图片多媒体文件的编解码。 表 1 . 术语定义 术语 定义 注释说明 VE Video Engine 视频加速引擎 MPP Media ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ve"/><meta name="DC.language" content="zh-CN"/><title>VE 使用指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/ve/ve-user-guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/ve/ve-user-guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ve" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ve/ve-user-guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">VE 使用指南</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody" id="ve__conbody_d3b_db3_p1c"><p class="- topic/p p" data-ofbid="d288045e22__20250121171756">Video Engine (VE) 是 ArtInChip 自主研发的视频加速引擎，支持视频、图片的编解码功能。</p><p class="- topic/p p" data-ofbid="d288045e24__20250121171756">在 RTOS 系统中，中间件 Media Process Platform (MPP) 直接调用 VE 的 drv
+            层驱动接口，实现对视频、图片多媒体文件的编解码。</p><div class="table-container"><table class="- topic/table table frame-all" id="ve__table_mdr_nd3_bdc" data-ofbid="ve__table_mdr_nd3_bdc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">术语定义</span></caption><colgroup><col style="width:20.703933747412005%"/><col style="width:37.47412008281574%"/><col style="width:41.821946169772254%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve__table_mdr_nd3_bdc__entry__1">术语</th><th class="- topic/entry entry colsep-1 rowsep-1" id="ve__table_mdr_nd3_bdc__entry__2">定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve__table_mdr_nd3_bdc__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_mdr_nd3_bdc__entry__1">VE</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_mdr_nd3_bdc__entry__2">Video Engine</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve__table_mdr_nd3_bdc__entry__3">视频加速引擎</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve__table_mdr_nd3_bdc__entry__1">MPP</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve__table_mdr_nd3_bdc__entry__2">Media Process Platform</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ve__table_mdr_nd3_bdc__entry__3">通用多媒体处理软件平台</td></tr></tbody></table></div><p class="- topic/p p" data-ofbid="d288045e56__20250121171756">VE 支持的视频编解码标准如下：</p><div class="table-container"><table class="- topic/table table frame-all" id="ve__table_agl_w13_p1c" data-ofbid="ve__table_agl_w13_p1c" data-cols="6"><caption></caption><colgroup><col style="width:22.37903225806452%"/><col style="width:13.911290322580644%"/><col style="width:10.080645161290324%"/><col style="width:18.245967741935484%"/><col style="width:15.725806451612904%"/><col style="width:19.657258064516128%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="ve__table_agl_w13_p1c__entry__1">标准</th><th class="- topic/entry entry colsep-1 rowsep-1" id="ve__table_agl_w13_p1c__entry__2">Profile</th><th class="- topic/entry entry colsep-1 rowsep-1" id="ve__table_agl_w13_p1c__entry__3">Level</th><th class="- topic/entry entry colsep-1 rowsep-1" id="ve__table_agl_w13_p1c__entry__4">最大分辨率</th><th class="- topic/entry entry colsep-1 rowsep-1" id="ve__table_agl_w13_p1c__entry__5">最小分辨率</th><th class="- topic/entry entry colsep-0 rowsep-1" id="ve__table_agl_w13_p1c__entry__6">最大码率</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__1">H264/AVC decoder</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__2">BP/MP/HP</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__3">4.2</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__4">1920x1088</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__5">16x16</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve__table_agl_w13_p1c__entry__6">80 Mbps</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__1">MJPEG decoder</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__2">Baseline</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__4">8192x8192</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__5">16x16</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve__table_agl_w13_p1c__entry__6">120 Mbps (YUV444)</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__1">PNG decoder</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__2">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__4">4096x4096</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="ve__table_agl_w13_p1c__entry__5">-</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="ve__table_agl_w13_p1c__entry__6">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve__table_agl_w13_p1c__entry__1">JPEG encoder</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve__table_agl_w13_p1c__entry__2">Baseline</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve__table_agl_w13_p1c__entry__3">-</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve__table_agl_w13_p1c__entry__4">8192x8192</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="ve__table_agl_w13_p1c__entry__5">16x16</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="ve__table_agl_w13_p1c__entry__6">120 Mbps (YUV444)</td></tr></tbody></table></div><section class="- topic/section section" id="ve__section_igz_l4l_4dc" data-ofbid="ve__section_igz_l4l_4dc"><h2 class="- topic/title title sectiontitle">特性说明</h2>
+            
+            <div class="- topic/p p" data-ofbid="d288045e138__20250121171756">
+                <dl class="- topic/dl dl simple" id="ve__dl_odr_nd3_bdc" data-ofbid="ve__dl_odr_nd3_bdc"><dt class="- topic/dt dt dlterm" data-ofbid="d288045e142__20250121171756">H.264/AVC 解码器:</dt><dd class="- topic/dd dd">
+                            <ul class="- topic/ul ul simple" id="ve__ul_pdr_nd3_bdc" data-ofbid="ve__ul_pdr_nd3_bdc"><li class="- topic/li li" data-ofbid="d288045e147__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e149__20250121171756">全兼容 ITU-T 建议 H.264 规定的 BP、MP 和 HP</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e152__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e154__20250121171756">支持 CABAC/CAVLC</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e157__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e159__20250121171756">支持可变块大小(16x16, 16x8, 8x16, 8x8, 8x4, 4x8 and 4x4)</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e162__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e164__20250121171756">支持错误检查</p>
+                                </li></ul>
+                        </dd><dt class="- topic/dt dt dlterm" data-ofbid="d288045e169__20250121171756">MJPEG 基线解码器</dt><dd class="- topic/dd dd">
+                            <ul class="- topic/ul ul simple" id="ve__ul_qdr_nd3_bdc" data-ofbid="ve__ul_qdr_nd3_bdc"><li class="- topic/li li" data-ofbid="d288045e174__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e176__20250121171756">兼容 ISO/IEC 10918-1 JPEG 基线</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e179__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e181__20250121171756">支持 1 或者 3 个颜色分量</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e184__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e186__20250121171756">支持 8 bit 位深</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e189__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e191__20250121171756">支持 4:2:0, 4:2:2, 2:2:4, 4:4:4 和 4:0:0 颜色格式(每个 MCU 包括最多 6 个
+                                        8x8 块)</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e194__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e196__20250121171756">支持 1/2、1/4、1/8 缩放</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e199__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e201__20250121171756">支持 0、90、180、270 度旋转以及水平、垂直镜像，不能和缩放同时开启</p>
+                                </li></ul>
+                        </dd><dt class="- topic/dt dt dlterm" data-ofbid="d288045e206__20250121171756">PNG 解码器</dt><dd class="- topic/dd dd">
+                            <ul class="- topic/ul ul simple" id="ve__ul_rdr_nd3_bdc" data-ofbid="ve__ul_rdr_nd3_bdc"><li class="- topic/li li" data-ofbid="d288045e211__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e213__20250121171756">支持 PNG8，存储方式为索引色存储，索引色位深支持 1，2，4，8 bit，索引最多 256 色，支持通过数据块
+                                        tRNS 来设置索引透明度</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e216__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e218__20250121171756">支持 PNG24，每个像素包含 R, G, B 三个通道，每个通道 8 bits</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e221__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e223__20250121171756">支持 PNG32，每个像素包含 R, G, B 和 alpha 四个通道，每个通道 8 bits</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e226__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e228__20250121171756">支持 PNG 标准 5 种 filter（none，sub，up，average，paeth）</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e231__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e233__20250121171756">支持标准的 zlib 和 gzip 解压缩，LZ77 最大窗口为 32K</p>
+                                </li></ul>
+                        </dd><dt class="- topic/dt dt dlterm" data-ofbid="d288045e238__20250121171756">JPEG 编码器</dt><dd class="- topic/dd dd">
+                            <ul class="- topic/ul ul simple" id="ve__ul_sdr_nd3_bdc" data-ofbid="ve__ul_sdr_nd3_bdc"><li class="- topic/li li" data-ofbid="d288045e243__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e245__20250121171756">兼容 ISO/IEC 10918-1 JPEG 基线</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e248__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e250__20250121171756">支持 1 或者 3 个颜色分量</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e253__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e255__20250121171756">支持 8 bit 位深</p>
+                                </li><li class="- topic/li li" data-ofbid="d288045e258__20250121171756">
+                                    <p class="- topic/p p" data-ofbid="d288045e260__20250121171756">支持 4:2:0, 4:2:2, 2:2:4, 4:4:4 和 4:0:0 颜色格式</p>
+                                </li></ul>
+                        </dd></dl>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

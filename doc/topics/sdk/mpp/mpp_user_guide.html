@@ -1,0 +1,170 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Media Process Platform (MPP) 是 ArtInChip 自主研发的通用多媒体处理软件平台，适用于 ArtInChip 芯片系列。支持在 RTOS 平台上运行， 屏蔽了 ArtInChip 不同芯片平台多种多媒体硬件模块（VE、GE 等）版本的差异，为使用者提供简单易用的多媒体处理 API，支持多种多媒体解决方案。 目前支持硬件模块包括： VE：视频、图片编解码功能 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp"/><meta name="DC.language" content="zh-CN"/><title>MPP 使用指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp_user_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp_user_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mpp" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mpp/mpp_user_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">MPP 使用指南</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d336975e22__20250121171848">Media Process Platform (MPP) 是 ArtInChip 自主研发的通用多媒体处理软件平台，适用于 ArtInChip 芯片系列。支持在 <span class="- topic/ph ph">RTOS</span> 平台上运行， 屏蔽了 ArtInChip 不同芯片平台多种多媒体硬件模块（VE、GE
+            等）版本的差异，为使用者提供简单易用的多媒体处理 API，支持多种多媒体解决方案。</p><div class="- topic/p p" data-ofbid="d336975e27__20250121171848">目前支持硬件模块包括：<ul class="- topic/ul ul" id="mpp__ul_lym_s2h_d1c" data-ofbid="mpp__ul_lym_s2h_d1c"><li class="- topic/li li" data-ofbid="d336975e30__20250121171848">
+                    <p class="- topic/p p" data-ofbid="d336975e32__20250121171848">VE：视频、图片编解码功能</p>
+                </li><li class="- topic/li li" data-ofbid="d336975e35__20250121171848">
+                    <p class="- topic/p p" data-ofbid="d336975e37__20250121171848">GE：2D 图形加速</p>
+                </li></ul></div><div class="table-container"><table class="- topic/table table frame-all" id="mpp__table_e5l_q2h_d1c" data-ofbid="mpp__table_e5l_q2h_d1c" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">术语定义</span></caption><colgroup><col style="width:23.310023310023308%"/><col style="width:35.66433566433567%"/><col style="width:41.02564102564102%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp__table_e5l_q2h_d1c__entry__1">术语</th><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp__table_e5l_q2h_d1c__entry__2">定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp__table_e5l_q2h_d1c__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__1">GE</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__2">Graphic Engine</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__3">图形加速引擎</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__1">VE</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__2">Video Engine</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__3">视频加速引擎</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__1">MPP</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__2">Media Process Platform</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__3">通用多媒体处理软件平台</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__1">VIN</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__2">Video Input</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__3">视频输入（采集）模块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__1">packet</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__2">video bitstream packet</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp__table_e5l_q2h_d1c__entry__3">一帧视频或图片码流数据</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp__table_e5l_q2h_d1c__entry__1">frame</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp__table_e5l_q2h_d1c__entry__2">frame</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp__table_e5l_q2h_d1c__entry__3">一帧解码后的视频或图片数据</td></tr></tbody></table></div><p class="- topic/p p" data-ofbid="d336975e98__20250121171848">MPP 在系统架构的层次图如下图：</p><figure class="- topic/fig fig fignone" id="mpp__fig_iwh_t2h_d1c" data-ofbid="mpp__fig_iwh_t2h_d1c"><div class="- topic/p p" data-ofbid="d336975e103__20250121171848"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp__image_mym_s2h_d1c" src="../../../images/mpp/mpp_system1.png" width="576" alt="mpp_system1"/></div><br/></div><figcaption data-caption-side="bottom" class="- topic/title title figcap"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">MPP 系统框架层次图</span></figcaption></figure><ul class="- topic/ul ul" id="mpp__ul_nym_s2h_d1c" data-ofbid="mpp__ul_nym_s2h_d1c"><li class="- topic/li li" data-ofbid="d336975e108__20250121171848">Hardware<div class="- topic/p p" data-ofbid="d336975e110__20250121171848">硬件层是 ArtInChip 系列芯片平台的多媒体硬件加速引擎 VE/GE。<ul class="- topic/ul ul" id="mpp__ul_wqt_y2h_d1c" data-ofbid="mpp__ul_wqt_y2h_d1c"><li class="- topic/li li" data-ofbid="d336975e113__20250121171848">VE 模块硬件层接口请参考芯片用户手册 VE 模块</li><li class="- topic/li li" data-ofbid="d336975e115__20250121171848">GE 模块硬件层接口请参考芯片用户手册 GE 模块</li><li class="- topic/li li" data-ofbid="d336975e117__20250121171848">DVP 模块硬件层接口请参考芯片用户手册 DVP 模块</li></ul></div></li><li class="- topic/li li" data-ofbid="d336975e119__20250121171848">Driver<ul class="- topic/ul ul" id="mpp__ul_uwz_x2h_d1c" data-ofbid="mpp__ul_uwz_x2h_d1c"><li class="- topic/li li" data-ofbid="d336975e122__20250121171848">VE 模块驱动请参考 。</li><li class="- topic/li li" data-ofbid="d336975e124__20250121171848">GE 模块驱动请参考 。</li><li class="- topic/li li" data-ofbid="d336975e126__20250121171848">DVP 模块驱动，请参考 </li></ul></li><li class="- topic/li li" data-ofbid="d336975e128__20250121171848">MPP<p class="- topic/p p" data-ofbid="d336975e130__20250121171848">包括视频解码 mpp_decoder、视频编码 mpp_encoder、2D 图像处理 mpp_ge 等功能模块。</p></li><li class="- topic/li li" data-ofbid="d336975e132__20250121171848">Application<div class="- topic/p p" data-ofbid="d336975e134__20250121171848">
+                    <ul class="- topic/ul ul" id="mpp__ul_idg_w34_f1c" data-ofbid="mpp__ul_idg_w34_f1c"><li class="- topic/li li" data-ofbid="d336975e137__20250121171848">提供简易播放器应用 mpp_player</li><li class="- topic/li li" data-ofbid="d336975e139__20250121171848">对接第三方开源库 OpenMAX、GStreamer、LVGL 等。</li></ul>
+                </div></li></ul></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="SPI 驱动（详见 drivers/spi/spi-artinchip.c ）中调用了 DMA 进行数据传输，其使用过程可以当作 Demo 参考。 DMA 通道的申请 static int aic_spi_probe( struct platform_device *pdev) { ... aicspi-&gt;dma_rx = ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-11-26"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="demo"/><meta name="DC.language" content="zh-CN"/><title>Demo</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/dma/dma-demo.dita"/><meta name="wh-out-relpath" content="topics/sdk/dma/dma-demo.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="demo" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/dma/dma-demo.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Demo</h1><div class="date inPage">26 Nov 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d71724e22__20250121171522">SPI 驱动（详见 <span class="+ topic/ph sw-d/filepath ph filepath">drivers/spi/spi-artinchip.c</span>）中调用了 DMA 进行数据传输，其使用过程可以当作 Demo
+            参考。</p><section class="- topic/section section" id="demo__section_qfl_wkz_xbc" data-ofbid="demo__section_qfl_wkz_xbc"><h2 class="- topic/title title sectiontitle">DMA 通道的申请</h2>
+            
+            <div class="- topic/p p" data-ofbid="d71724e32__20250121171522">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="demo__codeblock_wqc_3qs_c1c" data-ofbid="demo__codeblock_wqc_3qs_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> aic_spi_probe(<strong class="hl-keyword">struct</strong> platform_device *pdev)
+{
+    ...
+
+    aicspi-&gt;dma_rx = dma_request_slave_channel(aicspi-&gt;dev, <span class="hl-string">"rx"</span>);
+    <strong class="hl-keyword">if</strong> (!aicspi-&gt;dma_rx)
+        dev_warn(aicspi-&gt;dev, <span class="hl-string">"failed to request rx dma channel\n"</span>);
+
+    aicspi-&gt;dma_tx = dma_request_slave_channel(aicspi-&gt;dev, <span class="hl-string">"tx"</span>);
+    <strong class="hl-keyword">if</strong> (!aicspi-&gt;dma_tx)
+        dev_warn(aicspi-&gt;dev, <span class="hl-string">"failed to request tx dma channel\n"</span>);
+
+    ...
+}</pre>
+            </div>
+        </section><section class="- topic/section section" id="demo__section_n52_mzt_mdc" data-ofbid="demo__section_n52_mzt_mdc"><h2 class="- topic/title title sectiontitle">DMA 数据提交</h2>
+            
+            <div class="- topic/p p" data-ofbid="d71724e43__20250121171522">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="demo__codeblock_dz3_3qs_c1c" data-ofbid="demo__codeblock_dz3_3qs_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> aic_spi_dma_rx_cfg(<strong class="hl-keyword">struct</strong> aic_spi *aicspi, <strong class="hl-keyword">struct</strong> spi_transfer *t)
+{
+    <strong class="hl-keyword">struct</strong> dma_async_tx_descriptor *dma_desc = NULL;
+    <strong class="hl-keyword">struct</strong> dma_slave_config dma_conf = {<span class="hl-number">0</span>};
+
+    dma_conf.direction = DMA_DEV_TO_MEM;
+    dma_conf.src_addr = aicspi-&gt;dma_addr_rx;
+    dma_conf.src_addr_width = DMA_SLAVE_BUSWIDTH_<span class="hl-number">1</span>_BYTE;
+    dma_conf.dst_addr_width = DMA_SLAVE_BUSWIDTH_<span class="hl-number">1</span>_BYTE;
+    dma_conf.src_maxburst = <span class="hl-number">1</span>;
+    dma_conf.dst_maxburst = <span class="hl-number">1</span>;
+    dmaengine_slave_config(aicspi-&gt;dma_rx, &amp;dma_conf);
+
+    dma_desc = dmaengine_prep_slave_sg(aicspi-&gt;dma_rx, t-&gt;rx_sg.sgl,
+                       t-&gt;rx_sg.nents, dma_conf.direction,
+                       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+    <strong class="hl-keyword">if</strong> (!dma_desc) {
+        dev_err(aicspi-&gt;dev, <span class="hl-string">"spi-%d prepare slave sg failed.\n"</span>,
+            aicspi-&gt;ctlr-&gt;bus_num);
+        <strong class="hl-keyword">return</strong> -EINVAL;
+    }
+
+    dma_desc-&gt;callback = aic_spi_dma_cb_rx;
+    dma_desc-&gt;callback_param = (<strong class="hl-keyword">void</strong> *)aicspi;
+    dmaengine_submit(dma_desc);
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}</pre>
+            </div>
+        </section><section class="- topic/section section" id="demo__section_kt4_mzt_mdc" data-ofbid="demo__section_kt4_mzt_mdc"><h2 class="- topic/title title sectiontitle">启动 DMA 数据传输</h2>
+            
+            <div class="- topic/p p" data-ofbid="d71724e54__20250121171522">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="demo__codeblock_mln_3qs_c1c" data-ofbid="demo__codeblock_mln_3qs_c1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> aic_spi_dma_rx_start(<strong class="hl-keyword">struct</strong> spi_device *spi, <strong class="hl-keyword">struct</strong> spi_transfer *t)
+{
+    <strong class="hl-keyword">struct</strong> aic_spi *aicspi = spi_controller_get_devdata(spi-&gt;master);
+    <strong class="hl-keyword">int</strong> ret = <span class="hl-number">0</span>;
+
+    spi_ctlr_dma_rx_enable(aicspi-&gt;base_addr);
+    ret = aic_spi_dma_rx_cfg(aicspi, t);
+    <strong class="hl-keyword">if</strong> (ret &lt; <span class="hl-number">0</span>)
+        <strong class="hl-keyword">return</strong> ret;
+    dma_async_issue_pending(aicspi-&gt;dma_rx);
+
+    <strong class="hl-keyword">return</strong> ret;
+}
+</pre>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#demo__section_qfl_wkz_xbc" data-tocid="demo__section_qfl_wkz_xbc">DMA 通道的申请</a></div></li><li class="section-item"><div class="section-title"><a href="#demo__section_n52_mzt_mdc" data-tocid="demo__section_n52_mzt_mdc">DMA 数据提交</a></div></li><li class="section-item"><div class="section-title"><a href="#demo__section_kt4_mzt_mdc" data-tocid="demo__section_kt4_mzt_mdc">启动 DMA 数据传输</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

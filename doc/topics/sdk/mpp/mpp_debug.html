@@ -1,0 +1,239 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="MPP 调试 MPP 调试 log 等级分为 ERROR, WARNING, INFO, DEBUG, VERBOSE。通过 LOGL_DEFAULT 定义 MPP 全局的 log 等级。 默认 log 等级为 INFO。 源文件路径： aic-mpp/base/log.h enum log_level { LOGL_ERROR = 0 , LOGL_WARNING, LOGL_INFO, ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp_debug_guide"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp_debug.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp_debug.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mpp_debug_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mpp/mpp_debug.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="mpp_debug_guide__section_k3r_zfh_d1c" data-ofbid="mpp_debug_guide__section_k3r_zfh_d1c"><h2 class="- topic/title title sectiontitle">MPP 调试</h2>
+                
+                <p class="- topic/p p" data-ofbid="d169931e27__20250121171620">MPP 调试 log 等级分为 ERROR, WARNING, INFO, DEBUG, VERBOSE。通过 LOGL_DEFAULT 定义 MPP 全局的
+                log 等级。 默认 log 等级为 INFO。</p>
+                <div class="- topic/p p" data-ofbid="d169931e30__20250121171620">源文件路径：<span class="+ topic/ph sw-d/filepath ph filepath">aic-mpp/base/log.h</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_vrr_cgh_d1c" data-ofbid="mpp_debug_guide__codeblock_vrr_cgh_d1c"><strong class="hl-keyword">enum</strong> log_level {
+    LOGL_ERROR = <span class="hl-number">0</span>,
+    LOGL_WARNING,
+    LOGL_INFO,
+    LOGL_DEBUG,
+    LOGL_VERBOSE,
+
+    LOGL_COUNT,
+
+    LOGL_DEFAULT = LOGL_INFO,
+    LOGL_FORCE_DEBUG = <span class="hl-number">0x10</span>,
+};</pre></div>
+            </section><section class="- topic/section section" id="mpp_debug_guide__section_m3r_zfh_d1c" data-ofbid="mpp_debug_guide__section_m3r_zfh_d1c"><h2 class="- topic/title title sectiontitle">子模块调试</h2>
+            
+            <div class="- topic/p p" data-ofbid="d169931e42__20250121171620">打开子模块调试 log
+                方式，在子模块中添加：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_tvw_cgh_d1c" data-ofbid="mpp_debug_guide__codeblock_tvw_cgh_d1c">#<span class="hl-directive">define</span> LOG_DEBUG</pre></div>
+        </section><section class="- topic/section section" id="mpp_debug_guide__section_o3r_zfh_d1c" data-ofbid="mpp_debug_guide__section_o3r_zfh_d1c"><h2 class="- topic/title title sectiontitle">MPP Heap 调试</h2>
+            
+            <div class="- topic/p p" data-ofbid="d169931e52__20250121171620">打开 MPP Heap 调试开关，可查看 MPP 中间件对预留内存的使用情况。<ol class="- topic/ol ol" id="mpp_debug_guide__ol_h5d_gcr_sdc" data-ofbid="mpp_debug_guide__ol_h5d_gcr_sdc"><li class="- topic/li li" data-ofbid="d169931e55__20250121171620">
+                        <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d169931e59__20250121171620">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_wg1_3ml_sdc" data-ofbid="mpp_debug_guide__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d169931e64__20250121171620">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d169931e67__20250121171620">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_uss_hml_sdc" data-ofbid="mpp_debug_guide__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                    </li><li class="- topic/li li" data-ofbid="d169931e74__20250121171620">在内核配置界面，按如下选择：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_rvn_dgh_d1c" data-ofbid="mpp_debug_guide__codeblock_rvn_dgh_d1c">Linux
+    Memory Management options  ---&gt;
+        [*]   MPP debugfs interface</pre></li><li class="- topic/li li" data-ofbid="d169931e78__20250121171620">
+                        <div class="- topic/p p" data-ofbid="d169931e80__20250121171620">系统启动后挂载
+                            debugfs<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_ukx_dgh_d1c" data-ofbid="mpp_debug_guide__codeblock_ukx_dgh_d1c">mount -t debugfs none /sys/kernel/debug/</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d169931e85__20250121171620">进入 mpp 目录后，使用下列命令查看对应节点，即可获取 mpp heap 的内存使用情况。<div class="- topic/p p" data-ofbid="d169931e87__20250121171620">进入 mpp
+                            目录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_vdk_2gh_d1c" data-ofbid="mpp_debug_guide__codeblock_vdk_2gh_d1c">cd /sys/kernel/dedbug/mpp/</pre></div><div class="- topic/p p" data-ofbid="d169931e91__20250121171620">使用下列获取所有节点列表：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_xzw_ncr_sdc" data-ofbid="mpp_debug_guide__codeblock_xzw_ncr_sdc">ls</pre></div><div class="- topic/p p" data-ofbid="d169931e95__20250121171620">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_dct_pcr_sdc" data-ofbid="mpp_debug_guide__codeblock_dct_pcr_sdc">bitmap    count     maxchunk  used</pre><ul class="- topic/ul ul" id="mpp_debug_guide__ul_s3r_zfh_d1c" data-ofbid="mpp_debug_guide__ul_s3r_zfh_d1c"><li class="- topic/li li" data-ofbid="d169931e100__20250121171620">
+                                    <p class="- topic/p p" data-ofbid="d169931e102__20250121171620">count : MPP Heap 中包含的 page 总数</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_tlf_4cr_sdc" data-ofbid="mpp_debug_guide__codeblock_tlf_4cr_sdc">cat count</pre>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_crb_vcr_sdc" data-ofbid="mpp_debug_guide__codeblock_crb_vcr_sdc"><span class="hl-number">2048</span></pre>
+                                </li><li class="- topic/li li" data-ofbid="d169931e111__20250121171620">
+                                    <p class="- topic/p p" data-ofbid="d169931e113__20250121171620">used : MPP Heap 中已被申请的 page 总数</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_fqw_vcr_sdc" data-ofbid="mpp_debug_guide__codeblock_fqw_vcr_sdc">cat used</pre>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_lyj_wcr_sdc" data-ofbid="mpp_debug_guide__codeblock_lyj_wcr_sdc"><span class="hl-number">600</span></pre>
+                                </li><li class="- topic/li li" data-ofbid="d169931e122__20250121171620">
+                                    <p class="- topic/p p" data-ofbid="d169931e124__20250121171620">maxchunk : MPP Heap 中还能申请到最大的连续 page 总数</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_u15_5cr_sdc" data-ofbid="mpp_debug_guide__codeblock_u15_5cr_sdc">cat maxchunk</pre>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_c2d_xcr_sdc" data-ofbid="mpp_debug_guide__codeblock_c2d_xcr_sdc"><span class="hl-number">1448</span></pre>
+                                </li><li class="- topic/li li" data-ofbid="d169931e133__20250121171620">
+                                    <p class="- topic/p p" data-ofbid="d169931e135__20250121171620">bitmap : MPP Heap 中记录 page 状态的 bitmap</p>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_xkh_xcr_sdc" data-ofbid="mpp_debug_guide__codeblock_xkh_xcr_sdc">cat bitmap</pre>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_debug_guide__codeblock_rrq_xcr_sdc" data-ofbid="mpp_debug_guide__codeblock_rrq_xcr_sdc"><span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span>
+<span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">4294967295</span> <span class="hl-number">16777215</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span>
+<span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span> <span class="hl-number">0</span></pre>
+                                    <div class="- topic/p p" data-ofbid="d169931e144__20250121171620">
+                                        <ul class="- topic/ul ul" id="mpp_debug_guide__ul_wqx_1dr_sdc" data-ofbid="mpp_debug_guide__ul_wqx_1dr_sdc"><li class="- topic/li li" data-ofbid="d169931e147__20250121171620">一个 page 大小为 4K ， bitmap 节点打印输出十进制数据。</li><li class="- topic/li li" data-ofbid="d169931e149__20250121171620">4294967295 转换为十六进制为 <code class="+ topic/ph pr-d/codeph ph codeph">0xFFFFFFFF</code>，二进制为
+                                                  <code class="+ topic/ph pr-d/codeph ph codeph">0b11111111111111111111111111111111</code>
+                                                。</li><li class="- topic/li li" data-ofbid="d169931e157__20250121171620"> 一个 bit 表示一个 page 的状态，1 表示已被申请，0 表示空闲。</li><li class="- topic/li li" data-ofbid="d169931e159__20250121171620">4294967295 表示 32 个 page 全部被占用，总共 32 * 4K 大小。</li></ul>
+                                        <div class="- topic/note note note note_note" id="mpp_debug_guide__note_gdz_zfh_d1c" data-ofbid="mpp_debug_guide__note_gdz_zfh_d1c"><span class="note__title">注：</span> 
+                                            <p class="- topic/p p" data-ofbid="d169931e164__20250121171620">实际调试时要注意大小端问题。</p>
+                                        </div>
+                                    </div>
+                                </li></ul></div></li></ol></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#mpp_debug_guide__section_k3r_zfh_d1c" data-tocid="mpp_debug_guide__section_k3r_zfh_d1c">MPP 调试</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp_debug_guide__section_m3r_zfh_d1c" data-tocid="mpp_debug_guide__section_m3r_zfh_d1c">子模块调试</a></div></li><li class="section-item"><div class="section-title"><a href="#mpp_debug_guide__section_o3r_zfh_d1c" data-tocid="mpp_debug_guide__section_o3r_zfh_d1c">MPP Heap 调试</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

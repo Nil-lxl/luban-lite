@@ -1,0 +1,311 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="RGB Display Interface &amp;rgb0 { pinctrl-names = &#34;default&#34; ; pinctrl- 0 = &lt;&amp;lcd_pins&gt;; status = &#34;okay&#34; ; port@ 0 { reg = &lt; 0 &gt;; rgb0_in: endpoint { remote-endpoint = &lt;&amp;de0_out&gt;; }; }; port@ 1 { reg = &lt; 1 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-11-22"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="display_dts_parameter_display_interface"/><meta name="DC.language" content="zh-CN"/><title>Display Interface</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/display/display_parameter_display_interface.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_parameter_display_interface.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="display_dts_parameter_display_interface" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_parameter_display_interface.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Display Interface</h1><div class="date inPage">22 Nov 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="display_dts_parameter_display_interface__section_jqx_xxf_d1c" data-ofbid="display_dts_parameter_display_interface__section_jqx_xxf_d1c"><h2 class="- topic/title title sectiontitle">RGB Display Interface</h2>
+            
+            <div class="- topic/p p" data-ofbid="d266130e27__20250121171733">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_dts_parameter_display_interface__codeblock_zp1_1yf_d1c" data-ofbid="display_dts_parameter_display_interface__codeblock_zp1_1yf_d1c">&amp;rgb0 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;lcd_pins&gt;;
+    status = <span class="hl-string">"okay"</span>;
+
+    port@<span class="hl-number">0</span> {
+        reg = &lt;<span class="hl-number">0</span>&gt;;
+        rgb0_in: endpoint {
+            remote-endpoint = &lt;&amp;de0_out&gt;;
+        };
+    };
+
+    port@<span class="hl-number">1</span> {
+        reg = &lt;<span class="hl-number">1</span>&gt;;
+        rgb0_out: endpoint {
+            remote-endpoint = &lt;&amp;panel_rgb_in&gt;;
+        };
+    };
+};</pre>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_dts_parameter_display_interface__table_ckr_jvs_ldc" data-ofbid="display_dts_parameter_display_interface__table_ckr_jvs_ldc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">RGB Display Interface 参数描述</span></caption><colgroup><col style="width:20.370370370370374%"/><col style="width:79.62962962962962%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__1">参数名称</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__2">描述</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__1">pinctrl-names</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__2">设置为“default” 。<p class="- topic/p p" data-ofbid="d266130e50__20250121171733">SDK 预先定义了需要用到的同一功能的端口组，方便后续直接使用，可在
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">target/aicxxx/common/aicxxx-pinctrl.dtsi</span>
+                                        文件中查看定义。</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__1">pinctrl-0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__2">指示 rgb 显示接口预先定义的端口组。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__1">port@0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__2">数据输入端口，连接 display engine 结点</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__1">port@1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_dts_parameter_display_interface__table_ckr_jvs_ldc__entry__2">数据输出端口，连接 panel rgb 结点</td></tr></tbody></table></div>
+            </div>
+        </section><section class="- topic/section section" id="display_dts_parameter_display_interface__section_rn1_txf_d1c" data-ofbid="display_dts_parameter_display_interface__section_rn1_txf_d1c"><h2 class="- topic/title title sectiontitle">LVDS Display Interface</h2>
+                
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_dts_parameter_display_interface__codeblock_bh2_wxf_d1c" data-ofbid="display_dts_parameter_display_interface__codeblock_bh2_wxf_d1c">&amp;lvds0 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;lvds0_pins&gt;;
+    lines = &lt;<span class="hl-number">0x43210</span>&gt;;
+    link-swap = &lt;<span class="hl-number">0</span>&gt;;
+    status = <span class="hl-string">"okay"</span>;
+
+    port@<span class="hl-number">0</span> {
+        reg = &lt;<span class="hl-number">0</span>&gt;;
+        lvds0_in: endpoint {
+            remote-endpoint = &lt;&amp;de0_out&gt;;
+        };
+    };
+
+    port@<span class="hl-number">1</span> {
+        reg = &lt;<span class="hl-number">1</span>&gt;;
+        lvds0_out: endpoint {
+            remote-endpoint = &lt;&amp;panel_lvds_in&gt;;
+        };
+    };
+};</pre>
+            <div class="table-container"><table class="- topic/table table frame-all" id="display_dts_parameter_display_interface__table_cjz_kws_ldc" data-ofbid="display_dts_parameter_display_interface__table_cjz_kws_ldc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">LVDS Display Interface 参数描述</span></caption><colgroup><col style="width:20.370370370370374%"/><col style="width:79.62962962962962%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__1">参数名称</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__2">描述</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__1">pinctrl-names</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__2">设置为“default” 。<p class="- topic/p p" data-ofbid="d266130e98__20250121171733">SDK 预先定义了需要用到的同一功能的端口组，方便后续直接使用，可在
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">target/aicxxx/common/aicxxx-pinctrl.dtsi</span>
+                                    文件中查看定义。</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__1">pinctrl-0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__2">指示 lvds 显示接口预先定义的端口组。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__1">port@0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__2">数据输入端口，连接 display engine 结点</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__1">port@1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_dts_parameter_display_interface__table_cjz_kws_ldc__entry__2">数据输出端口，连接 panel lvds 结点</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="display_dts_parameter_display_interface__table_vng_pws_ldc" data-ofbid="display_dts_parameter_display_interface__table_vng_pws_ldc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">LVDS Display Interface 非必需参数描述</span></caption><colgroup><col style="width:13.869625520110956%"/><col style="width:19.001386962552015%"/><col style="width:67.12898751733704%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__2">类型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__3">描述</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__1">link-swap</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__2">Integer</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__3">link0 与 link1 整组交换</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__1">lines</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__2">Integer</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__3">控制 lvds link 内部 5 个通道的差分信号输出，允许 5 对差分信号任意互换。5 个通道分别为 D3 CK D2 D1
+                                D0，缺省值为 0x43210：<ul class="- topic/ul ul" id="display_dts_parameter_display_interface__ul_tjh_vws_ldc" data-ofbid="display_dts_parameter_display_interface__ul_tjh_vws_ldc"><li class="- topic/li li" data-ofbid="d266130e150__20250121171733">
+                                        <p class="- topic/p p" data-ofbid="d266130e152__20250121171733">0x43210 表示 D3 通道输出 D3，CK 通道输出 CK，D2 通道输出 D2，D1 通道输出 D1，D0
+                                            通道输出 D0</p>
+                                    </li><li class="- topic/li li" data-ofbid="d266130e155__20250121171733">
+                                        <p class="- topic/p p" data-ofbid="d266130e157__20250121171733">0x01234 表示 D3 通道输出 D0，CK 通道输出 D1，D2 通道输出 D2，D1 通道输出 CK，D0
+                                            通道输出 D3。</p>
+                                    </li></ul></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__1">pols</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__2">Integer</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__3">LVDS 差分信号极性控制。低 5 bit 分别控制 LVDS 五个通道差分信号的极性。通道顺序为 D3 CK D2 D1
+                                    D0。<p class="- topic/p p" data-ofbid="d266130e167__20250121171733">0x3 表示 D1 D0 通道极性反相，0x8 表示 CK 通道反相。</p><p class="- topic/p p" data-ofbid="d266130e169__20250121171733">pols 属性受 lines
+                                    属性影响，如果 CK 通道选择输出 D0，则该 bit 控制 D0 相位，0x8 表示 D0 反相。</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d266130e174__20250121171733">sync-ctrl</p>
+                            </td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__2">Boolean</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__3">同步前端信号模式，默认开启。防止前端输出半帧数据时打开 LVDS 模块，出现显示异常</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__1">phys</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__2">Integer</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_dts_parameter_display_interface__table_vng_pws_ldc__entry__3">LVDS 参考电压控制。数值直接写入 LVDS_0_PHY_CTL 和 LVDS_1_PHY_CTL
+                                寄存器，参考芯片用户手册进行配置。</td></tr></tbody></table></div>
+                <div class="- topic/note note note note_note" id="display_dts_parameter_display_interface__note_exw_5xf_d1c" data-ofbid="display_dts_parameter_display_interface__note_exw_5xf_d1c"><span class="note__title">注：</span> 
+                    <p class="- topic/p p" data-ofbid="d266130e191__20250121171733">lines、pols 和 phys 属性会同时作用于 link0 和 link1。</p>
+                </div>
+            </section><section class="- topic/section section" id="display_dts_parameter_display_interface__section_e41_txf_d1c" data-ofbid="display_dts_parameter_display_interface__section_e41_txf_d1c"><h2 class="- topic/title title sectiontitle">MIPI-DSI Display Interface</h2>
+                
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_dts_parameter_display_interface__codeblock_b2c_5xf_d1c" data-ofbid="display_dts_parameter_display_interface__codeblock_b2c_5xf_d1c">&amp;dsi0 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;dsi_pins&gt;;
+    data-lanes = &lt;<span class="hl-number">3</span> <span class="hl-number">0</span> <span class="hl-number">1</span> <span class="hl-number">2</span>&gt;;
+    lane-polarities = &lt;<span class="hl-number">1</span> <span class="hl-number">0</span> <span class="hl-number">1</span> <span class="hl-number">0</span>&gt;;
+    data-clk-inverse;
+    status = <span class="hl-string">"okay"</span>;
+
+    port@<span class="hl-number">0</span> {
+        reg = &lt;<span class="hl-number">0</span>&gt;;
+        dsi0_in: endpoint {
+            remote-endpoint = &lt;&amp;de0_out&gt;;
+        };
+    };
+
+    port@<span class="hl-number">1</span> {
+        reg = &lt;<span class="hl-number">1</span>&gt;;
+            dsi0_out: endpoint {
+            remote-endpoint = &lt;&amp;panel_dsi_in&gt;;
+        };
+    };
+};
+</pre>
+            <div class="table-container"><table class="- topic/table table frame-all" id="display_dts_parameter_display_interface__table_yhh_vxs_ldc" data-ofbid="display_dts_parameter_display_interface__table_yhh_vxs_ldc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">MIPI-DSI Display Interface 参数描述</span></caption><colgroup><col style="width:20.370370370370374%"/><col style="width:79.62962962962962%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__1">参数名称</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__2">描述</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__1">pinctrl-names</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__2">设置为“default” 。<p class="- topic/p p" data-ofbid="d266130e221__20250121171733">SDK 预先定义了需要用到的同一功能的端口组，方便后续直接使用，可在
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">target/aicxxx/common/aicxxx-pinctrl.dtsi</span>
+                                    文件中查看定义。</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__1">pinctrl-0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__2">指示 dsi 显示接口预先定义的端口组。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__1">port@0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__2">数据输入端口，连接 display engine 结点</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__1">port@1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_dts_parameter_display_interface__table_yhh_vxs_ldc__entry__2">数据输出端口，连接 panel dsi 结点</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="display_dts_parameter_display_interface__table_l1l_yxs_ldc" data-ofbid="display_dts_parameter_display_interface__table_l1l_yxs_ldc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">MIPI DSI Display Interface 非必需参数描述</span></caption><colgroup><col style="width:13.869625520110956%"/><col style="width:19.001386962552015%"/><col style="width:67.12898751733704%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__2">类型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__3">描述</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__1">data-clk-inverse</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__2">Boolean</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__3">CLK Lane 正负极取反</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__1">data-lanes</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__2">Array</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__3">
+                                <div class="- topic/p p" data-ofbid="d266130e272__20250121171733">数据通道输出选择，<ul class="- topic/ul ul" id="display_dts_parameter_display_interface__ul_azb_dys_ldc" data-ofbid="display_dts_parameter_display_interface__ul_azb_dys_ldc"><li class="- topic/li li" data-ofbid="d266130e275__20250121171733">
+                                            <p class="- topic/p p" data-ofbid="d266130e277__20250121171733">&lt;0 1 2 3&gt; ：数据通道 0 输出 DATA0，数据通道 1 输出
+                                                DATA1，以此类推。默认值。</p>
+                                        </li><li class="- topic/li li" data-ofbid="d266130e280__20250121171733">
+                                            <p class="- topic/p p" data-ofbid="d266130e282__20250121171733">&lt;3 0 1 2&gt; ：数据通道 0 输出 DATA3，数据通道 1 输出 DATA0，数据通道 2
+                                                输出 DATA1，数据通道 3 输出 DATA2</p>
+                                        </li><li class="- topic/li li" data-ofbid="d266130e285__20250121171733">
+                                            <p class="- topic/p p" data-ofbid="d266130e287__20250121171733">如果是两个 lane，可配置成 &lt;0 1&gt;，数据通道 0 输出 DATA0, 数据通道 1 输出
+                                                DATA1</p>
+                                        </li></ul></div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__1">lane-polarities</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__2">Array</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_dts_parameter_display_interface__table_l1l_yxs_ldc__entry__3">数据通道极性，是否正负极取反，默认为 &lt;0 0 0 0&gt;，与 data-lanes
+                                    配置的通道顺序保持一致。<p class="- topic/p p" data-ofbid="d266130e298__20250121171733">data-lanes = &lt;3 0 1 2&gt;; lane-polarities =
+                                    &lt;1 0 1 0&gt;; 表示 DATA3 和 DATA1 正负极取反</p></td></tr></tbody></table></div>
+            </section><section class="- topic/section section" id="display_dts_parameter_display_interface__section_b3j_qmr_gdc" data-ofbid="display_dts_parameter_display_interface__section_b3j_qmr_gdc"><h2 class="- topic/title title sectiontitle">MIPI-DBI Display Interface</h2>
+            
+            <div class="- topic/p p" data-ofbid="d266130e306__20250121171733">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_dts_parameter_display_interface__codeblock_unb_rmr_gdc" data-ofbid="display_dts_parameter_display_interface__codeblock_unb_rmr_gdc">&amp;dbi0 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;lcd_pins&gt;;
+    status = <span class="hl-string">"okay"</span>;
+
+    port@<span class="hl-number">0</span> {
+        reg = &lt;<span class="hl-number">0</span>&gt;;
+        dbi0_in: endpoint {
+            remote-endpoint = &lt;&amp;de0_out&gt;;
+        };
+    };
+
+    port@<span class="hl-number">1</span> {
+        reg = &lt;<span class="hl-number">1</span>&gt;;
+        dbi0_out: endpoint {
+            remote-endpoint = &lt;&amp;panel_dbi_in&gt;;
+        };
+    };
+};</pre>
+            </div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="display_dts_parameter_display_interface__table_jfj_jys_ldc" data-ofbid="display_dts_parameter_display_interface__table_jfj_jys_ldc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">MIPI-DBI Display Interface 参数描述</span></caption><colgroup><col style="width:20.370370370370374%"/><col style="width:79.62962962962962%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__1">参数名称</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__2">描述</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__1">pinctrl-names</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__2">设置为“default” 。<p class="- topic/p p" data-ofbid="d266130e330__20250121171733">SDK 预先定义了需要用到的同一功能的端口组，方便后续直接使用，可在
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">target/aicxxx/common/aicxxx-pinctrl.dtsi</span>
+                                    文件中查看定义。</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__1">pinctrl-0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__2">指示 dbi 显示接口预先定义的端口组。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__1">port@0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__2">数据输入端口，连接 display engine 结点</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__1">port@1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_dts_parameter_display_interface__table_jfj_jys_ldc__entry__2">数据输出端口，连接 panel dbi 结点</td></tr></tbody></table></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#display_dts_parameter_display_interface__section_jqx_xxf_d1c" data-tocid="display_dts_parameter_display_interface__section_jqx_xxf_d1c">RGB Display Interface</a></div></li><li class="section-item"><div class="section-title"><a href="#display_dts_parameter_display_interface__section_rn1_txf_d1c" data-tocid="display_dts_parameter_display_interface__section_rn1_txf_d1c">LVDS Display Interface</a></div></li><li class="section-item"><div class="section-title"><a href="#display_dts_parameter_display_interface__section_e41_txf_d1c" data-tocid="display_dts_parameter_display_interface__section_e41_txf_d1c">MIPI-DSI Display Interface</a></div></li><li class="section-item"><div class="section-title"><a href="#display_dts_parameter_display_interface__section_b3j_qmr_gdc" data-tocid="display_dts_parameter_display_interface__section_b3j_qmr_gdc">MIPI-DBI Display Interface</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

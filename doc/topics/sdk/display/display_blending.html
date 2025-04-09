@@ -1,0 +1,376 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="对于显示引擎 (Display Engine) 支持一个 UI 图层和一个 Video 图层的产品系列，可以使用 blending 功能，将两个或多个图像图层以某种方式结合在一起，以产生新的图像效果。在 UI 图层和 Video 图层重叠的区域，可以进行 Color Key 操作和 Alpha 叠加操作，其中 Color Key 操作优先于 Alpha 叠加。 Alpha Blending ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/display/display_user_guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_burn_process.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_startup_ui.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>Blending</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e3918"/><meta name="wh-source-relpath" content="topics/sdk/display/display_blending.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_blending.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html">Display 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/display/display_blending.html">Blending</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/display/display_burn_process.html" title="烧录进度条" aria-label="上一主题: 烧录进度条" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/display/display_startup_ui.html" title="开机动画" aria-label="下一主题: 开机动画" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3726" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3726-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_config_lite.html" id="id-d5856e3726-link">Display 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3762" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_debug_lite.html" id="id-d5856e3762-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3774" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_test_guide_lite.html" id="id-d5856e3774-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="display_design_intro-d5856e3786" class="topicref" data-id="display_design_intro" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action display_design_intro-d5856e3786-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display-design_intro_2.html" id="display_design_intro-d5856e3786-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3858" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_panel_port_lite.html" id="id-d5856e3858-link">屏适配指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3870" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3870-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_fb_rotation_lite.html" id="id-d5856e3870-link">屏幕旋转</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3894" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_color_property_lite.html" id="id-d5856e3894-link">色彩调整</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3906" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_burn_process.html" id="id-d5856e3906-link">烧录进度条</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e3918" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_blending.html" id="id-d5856e3918-link">Blending</a></div></div></li><li role="treeitem"><div data-tocid="startup-ui-d5856e3930" class="topicref" data-id="startup-ui" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_startup_ui.html" id="startup-ui-d5856e3930-link">开机动画</a></div></div></li><li role="treeitem"><div data-tocid="concept_smb_cl3_pzb-d5856e3943" class="topicref" data-id="concept_smb_cl3_pzb" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_faq_screen_2.html" id="concept_smb_cl3_pzb-d5856e3943-link">调屏常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_blending.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Blending</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 6 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d89622e19__20250121171530">对于显示引擎 (Display Engine) 支持一个 UI 图层和一个 Video 图层的产品系列，可以使用 blending
+            功能，将两个或多个图像图层以某种方式结合在一起，以产生新的图像效果。在 UI 图层和 Video 图层重叠的区域，可以进行 Color Key 操作和 Alpha
+            叠加操作，其中 Color Key 操作优先于 Alpha 叠加。</p><section class="- topic/section section" id="id__section_hr3_c1t_2dc" data-ofbid="id__section_hr3_c1t_2dc"><h2 class="- topic/title title sectiontitle">Alpha Blending</h2>
+            
+            
+            <div class="- topic/p p" data-ofbid="d89622e26__20250121171530">Alpha 叠加涉及到使用 alpha 通道来确定图像的透明度级别。Alpha 值通常在 0 到 255 之间，其中 0 表示完全透明，255 表示完全不透明。通过调整
+                alpha 值，可以控制图层之间的混合程度。<div class="- topic/note note note note_note" id="id__note_vj4_qn3_ddc" data-ofbid="id__note_vj4_qn3_ddc"><span class="note__title">注：</span> 
+                    <p class="- topic/p p" data-ofbid="d89622e30__20250121171530">Video 图层不支持配置 Alpha。</p>
+                </div></div>
+            
+            <div class="- topic/div div section" id="id__alpha-blending">
+                <p class="- topic/p p" data-ofbid="d89622e36__20250121171530">UI alpha
+                    包含以下多种模式：</p>
+                <ol class="- topic/ol ol arabic simple" id="id__ol_zpr_yzs_2dc" data-ofbid="id__ol_zpr_yzs_2dc"><li class="- topic/li li" data-ofbid="d89622e40__20250121171530">
+                        <p class="- topic/p p" data-ofbid="d89622e42__20250121171530">pixels alpha 模式：默认模式，根据像素
+                            alpha
+                            值确定透明度，ui_alpha
+                            = pixel_alpha, 当 pixel alpha 不存在时，ui_alpha = 255。</p>
+                    </li><li class="- topic/li li" data-ofbid="d89622e45__20250121171530">
+                        <p class="- topic/p p" data-ofbid="d89622e47__20250121171530">全局 alpha
+                            模式：使用统一的
+                            G_ALPHA 值，ui_alpha = G_ALPHA，G_ALPHA 为设置的全局 alpha
+                            值，取值范围为 0~255</p>
+                    </li><li class="- topic/li li" data-ofbid="d89622e50__20250121171530">
+                        <p class="- topic/p p" data-ofbid="d89622e52__20250121171530">混合 alpha
+                            模式：将两者结合的模式，ui_alpha
+                            = pixels alpha * G_ALPHA / 255</p>
+                    </li></ol>
+                <div class="- topic/p p" data-ofbid="d89622e56__20250121171530">UI 图层和 Video
+                    图层透明度混合计算：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_qt1_mbt_2dc" data-ofbid="id__codeblock_qt1_mbt_2dc">r_out = (r_ui * alpha_ui + r_video * (<span class="hl-number">255</span> - alpha_ui))/<span class="hl-number">255</span>
+g_out = (g_ui * alpha_ui + g_video * (<span class="hl-number">255</span> - alpha_ui))/<span class="hl-number">255</span>
+b_out = (b_ui * alpha_ui + b_video * (<span class="hl-number">255</span> - alpha_ui))/<span class="hl-number">255</span></pre>
+                </div>
+                <div class="- topic/div div section" id="id__id1">
+                    <strong class="+ topic/ph hi-d/b ph b">数据结构</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_yd5_mbt_2dc" data-ofbid="id__codeblock_yd5_mbt_2dc">#<span class="hl-directive">define</span> AICFB_PIXEL_ALPHA_MODE      <span class="hl-number">0</span>
+#<span class="hl-directive">define</span> AICFB_GLOBAL_ALPHA_MODE     <span class="hl-number">1</span>
+#<span class="hl-directive">define</span> AICFB_MIXDER_ALPHA_MODE     <span class="hl-number">2</span>
+
+<span class="hl-tag-doctype-comment">/**
+ * struct aicfb_alpha_config - aicfb layer alpha blending config
+ *
+ * @layer_id: the layer id
+ *
+ * @enable
+ *  0: disable alpha
+ *  1: enable alpha
+ *
+ * @mode: alpha mode
+ *  0: pixel alpha mode
+ *  1: global alpha mode
+ *  2: mixder alpha mode(alpha = pixel alpha * global alpha / 255)
+ *
+ * @value: global alpha value (0~255)
+ *  used by global alpha mode and mixer alpha mode
+ *
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_alpha_config {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> mode;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> value;
+};
+
+<span class="hl-tag-doctype-comment">/** get layer alpha blendig config */</span>
+#<span class="hl-directive">define</span> AICFB_GET_ALPHA_CONFIG  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x26</span>, \
+                <strong class="hl-keyword">struct</strong> aicfb_alpha_config)
+
+<span class="hl-tag-doctype-comment">/** update layer alpha blendig config */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_ALPHA_CONFIG  _IOW(IOC_TYPE_FB, <span class="hl-number">0x27</span>, \
+                <strong class="hl-keyword">struct</strong> aicfb_alpha_config)</pre>
+                </div>
+                <div class="- topic/div div section" id="id__id2">
+                    <strong class="+ topic/ph hi-d/b ph b">使用例程</strong>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_o2g_nbt_2dc" data-ofbid="id__codeblock_o2g_nbt_2dc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> set_ui_layer_alpha(<strong class="hl-keyword">int</strong> val)
+{
+    <strong class="hl-keyword">int</strong> ret = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">struct</strong> aicfb_alpha_config alpha = {<span class="hl-number">0</span>};
+
+    alpha.layer_id = AICFB_LAYER_TYPE_UI;
+    alpha.mode     = AICFB_GLOBAL_ALPHA_MODE;
+    alpha.enable   = <span class="hl-number">1</span>;
+    alpha.value    = val;
+    ret = mpp_fb_ioctl(g_mpp_fb, AICFB_UPDATE_ALPHA_CONFIG, &amp;alpha);
+    <strong class="hl-keyword">if</strong> (ret &lt; <span class="hl-number">0</span>)
+        ERR(<span class="hl-string">"ioctl update alpha config failed!\n"</span>);
+
+    <strong class="hl-keyword">return</strong> ret;
+}</pre></div>
+                <div class="- topic/div div section" id="id__id3">
+                    <strong class="+ topic/ph hi-d/b ph b">常见问题及解决方法</strong>
+                    <ol class="- topic/ol ol arabic" id="id__ol_aqr_yzs_2dc" data-ofbid="id__ol_aqr_yzs_2dc"><li class="- topic/li li" data-ofbid="d89622e85__20250121171530">
+                            <p class="- topic/p p" data-ofbid="d89622e87__20250121171530">默认配置下 Video 图层不显示 。</p>
+                            <p class="- topic/p p" data-ofbid="d89622e90__20250121171530"><span class="- topic/ph ph">Luban-Lite</span> Lite SDK UI alpha
+                                默认使用
+                                pixel alpha
+                                模式，检查是否启用了
+                                alpha 配置，并确保 Video 图层的 alpha 模式正确。</p>
+                            <ol class="- topic/ol ol loweralpha simple" type="a" id="id__ol_dqr_yzs_2dc" data-ofbid="id__ol_dqr_yzs_2dc"><li class="- topic/li li" data-ofbid="d89622e96__20250121171530">
+                                    <p class="- topic/p p" data-ofbid="d89622e98__20250121171530">pixel alpha 为 0xFF</p>
+                                </li><li class="- topic/li li" data-ofbid="d89622e101__20250121171530">
+                                    <p class="- topic/p p" data-ofbid="d89622e103__20250121171530">framebuffer 缺失 alpha
+                                        分量</p>
+                                </li></ol>
+                        </li><li class="- topic/li li" data-ofbid="d89622e107__20250121171530">
+                            <p class="- topic/p p" data-ofbid="d89622e109__20250121171530">Framebuffer RGB565/RGB888 格式设置 UI pixel alpha 模式不生效 。</p>
+                            <p class="- topic/p p" data-ofbid="d89622e112__20250121171530">确保
+                                framebuffer 格式支持 alpha 分量，例如，RGB565/RGB888 格式不支持 alpha，需要使用 RGBA8888
+                                或其他支持 alpha 的格式。framebuffer 16/24 bit RGB 格式缺失
+                                pixel alpha，ui_alpha 默认为 255，UI 图层不透明，Video 图层不可见。</p>
+                        </li></ol></div>
+            </div>
+        </section><section class="- topic/section section" id="id__section_lwp_c1t_2dc" data-ofbid="id__section_lwp_c1t_2dc"><h2 class="- topic/title title sectiontitle">Color Key</h2>
+            
+            
+            <p class="- topic/p p" data-ofbid="d89622e122__20250121171530"><strong class="+ topic/ph hi-d/b ph b">Color Key</strong> 用于通过指定一种颜色（通常是不常见的颜色，如绿色或蓝色），使得图像中的这种颜色变得透明，从而可以与其他图层进行合成。</p>
+            
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d89622e129__20250121171530">通过设置 8 bit R，G，B 三原色进行 Color Key
+                    操作：</p>
+                <div class="- topic/div div section" id="id__id4">
+                    <strong class="+ topic/ph hi-d/b ph b">数据结构</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_tn3_4bt_2dc" data-ofbid="id__codeblock_tn3_4bt_2dc"><span class="hl-tag-doctype-comment">/**
+ * struct aicfb_ck_config - aicfb layer color key blending config
+ *
+ * @layer_id: the layer id
+ *
+ * @ck_enable
+ *  0: disable color key
+ *  1: enable color key
+ *
+ *
+ * @ck_value: color key rgb value to match the layer pixels
+ *  bit[31:24]: reserved
+ *  bit[23:16]: R value
+ *  bit[15:8]: G value
+ *  bit[7:0]: B value
+ *
+ */</span>
+<strong class="hl-keyword">struct</strong> aicfb_ck_config {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> layer_id;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> enable;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> value;
+};
+
+<span class="hl-tag-doctype-comment">/** get layer color key config */</span>
+#<span class="hl-directive">define</span> AICFB_GET_CK_CONFIG  _IOWR(IOC_TYPE_FB, <span class="hl-number">0x28</span>, <strong class="hl-keyword">struct</strong> aicfb_ck_config)
+
+<span class="hl-tag-doctype-comment">/** update layer color key config */</span>
+#<span class="hl-directive">define</span> AICFB_UPDATE_CK_CONFIG  _IOW(IOC_TYPE_FB, <span class="hl-number">0x29</span>, <strong class="hl-keyword">struct</strong> aicfb_ck_config)</pre></div>
+                <div class="- topic/div div section" id="id__id5">
+                    <strong class="+ topic/ph hi-d/b ph b">使用例程</strong>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ix5_4bt_2dc" data-ofbid="id__codeblock_ix5_4bt_2dc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> set_ui_color_key(<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> r, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> g, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> b)
+{
+    <strong class="hl-keyword">struct</strong> aicfb_ck_config ck = {<span class="hl-number">0</span>};
+    <strong class="hl-keyword">int</strong> ret = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> val;
+
+    val = (r &lt;&lt; <span class="hl-number">16</span>) | (g &lt;&lt; <span class="hl-number">8</span>) | (b &lt;&lt; <span class="hl-number">0</span>);
+
+    ck.layer_id = AICFB_LAYER_TYPE_UI;
+    ck.enable   = <span class="hl-number">1</span>;
+    ck.value    = val;
+    ret = mpp_fb_ioctl(g_fb_fd, AICFB_UPDATE_CK_CONFIG, &amp;ck);
+    <strong class="hl-keyword">if</strong> (ret &lt; <span class="hl-number">0</span>)
+        printf(<span class="hl-string">"ioctl() failed! errno: %d[%s]\n"</span>, errno, strerror(errno));
+
+    <strong class="hl-keyword">return</strong> ret;
+}</pre><div class="- topic/note note note note_note" id="id__note_wj4_qn3_ddc" data-ofbid="id__note_wj4_qn3_ddc"><span class="note__title">注：</span> 
+                        
+                        <p class="- topic/p p" data-ofbid="d89622e148__20250121171530">Video 图层不支持配置 Color Key，确保仅在 UI 和 Video 图层的重叠区域进行 Color Key 操作。</p>
+                        
+                        
+                    </div>
+                </div>
+                <div class="- topic/div div section" id="id__rgb565-color-key">
+                    <strong class="+ topic/ph hi-d/b ph b">RGB565 Color Key</strong>
+                    <div class="- topic/p p" data-ofbid="d89622e158__20250121171530">缺失的 bit 需要循环移位补齐，比如 G 只有 6 bit，缺失的低 2 bit
+                        用高位来补齐：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_yhg_pbt_2dc" data-ofbid="id__codeblock_yhg_pbt_2dc"><span class="hl-number">0</span>b101111 &gt; <span class="hl-number">0</span>b10111110
+<span class="hl-number">0</span>b10111  &gt; <span class="hl-number">0</span>b10111101</pre></div></div>
+            </div>
+            
+            <div class="- topic/p p" data-ofbid="d89622e164__20250121171530">例如有一个 6-bit 的 G 值，需要补齐成 8-bit，则 <span class="+ topic/keyword pr-d/parmname keyword parmname">g_extended</span> 就是 0b10111110：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_gvb_5dt_2dc" data-ofbid="id__codeblock_gvb_5dt_2dc"><strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> g = <span class="hl-number">0</span>b101111; <em class="hl-comment">// 原始 6-bit G 值</em>
+<strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> g_extended = (g &lt;&lt; <span class="hl-number">2</span>) | (g &gt;&gt; <span class="hl-number">4</span>); <em class="hl-comment">// 补齐到 8-bit</em>
+</pre></div>
+            
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_hr3_c1t_2dc" data-tocid="id__section_hr3_c1t_2dc">Alpha Blending</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_lwp_c1t_2dc" data-tocid="id__section_lwp_c1t_2dc">Color Key</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

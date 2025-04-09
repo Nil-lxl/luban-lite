@@ -1,0 +1,21 @@
+{
+	"terminal.integrated.profiles.windows": {
+		"PowerShell": {
+			"source": "PowerShell",
+			"icon": "terminal-powershell",
+			"args": ["${workspaceFolder}/win_cmd.bat"],
+		},
+		"Command Prompt": {
+			"path": [
+				"${env:windir}\\Sysnative\\cmd.exe",
+				"${env:windir}\\System32\\cmd.exe"
+			],
+			"icon": "terminal-cmd",
+			"args": ["/K ${workspaceFolder}/win_cmd.bat"],
+		},
+		"Git Bash": {
+			"source": "Git Bash",
+			"args": ["-c \"source ${workspaceFolder}/tools/onestep.sh\""],
+		},
+	}
+}

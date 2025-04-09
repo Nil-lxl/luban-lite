@@ -1,0 +1,311 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍了 SDMC 的参数配置流程。 内核配置 在 SDK 根目录下，执行下列命令，进入 kernel 的功能配置界面： make kernel-menuconfig 或使用简写命令 make km 在内核配置界面，按如下选择： Linux Device Drivers &lt;*&gt; MMC/SD/SDIO card support &lt;*&gt; MMC block device driver &lt;*&gt; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-16"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="sdmc_configuration"/><meta name="DC.language" content="zh-CN"/><title>SDMC 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/sdmc/sdmc-config.dita"/><meta name="wh-out-relpath" content="topics/sdk/sdmc/sdmc-config.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="sdmc_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/sdmc/sdmc-config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SDMC 配置</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d135546e23__20250121171607">本节介绍了 SDMC 的参数配置流程。</p><section class="- topic/section section" id="sdmc_configuration__section_azr_42w_mdc" data-ofbid="sdmc_configuration__section_azr_42w_mdc"><h2 class="- topic/title title sectiontitle">内核配置</h2>
+            
+            <ol class="- topic/ol ol" data-ofbid="d135546e30__20250121171607"><li class="- topic/li li" data-ofbid="d135546e31__20250121171607">
+                    <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d135546e35__20250121171607">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_configuration__codeblock_wg1_3ml_sdc" data-ofbid="sdmc_configuration__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d135546e40__20250121171607">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d135546e43__20250121171607">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_configuration__codeblock_uss_hml_sdc" data-ofbid="sdmc_configuration__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                </li><li class="- topic/li li" data-ofbid="d135546e50__20250121171607">
+                    <div class="- topic/p p" data-ofbid="d135546e52__20250121171607">在内核配置界面，按如下选择：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_configuration__pre_wpl_v4t_c1c" data-ofbid="sdmc_configuration__pre_wpl_v4t_c1c">Linux
+    Device Drivers
+        &lt;*&gt; MMC/SD/SDIO card support
+            &lt;*&gt;   MMC block device driver
+            &lt;*&gt;   ArtInChip Memory Card Interface</pre></div>
+                </li></ol>
+        </section><section class="- topic/section section" id="sdmc_configuration__section_gwl_q2w_mdc" data-ofbid="sdmc_configuration__section_gwl_q2w_mdc"><h2 class="- topic/title title sectiontitle">SDMC 的扩展 DTS 参数</h2>
+            
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d135546e65__20250121171607">SDMC 驱动基于 Linux 内核的 MMC 子系统，而 MMC 子系统提供了很多常用的参数，详见代码
+                        <span class="+ topic/ph sw-d/filepath ph filepath">drivers/mmc/core/host.c</span> 中的函数
+                        <span class="+ topic/keyword pr-d/apiname keyword apiname">mmc_of_parse()</span>。下表展示了部分扩展 DTS 参数：</p>
+                <div class="- topic/p p" data-ofbid="d135546e74__20250121171607">
+                    <div class="table-container"><table class="- topic/table table frame-all" id="sdmc_configuration__table_wfx_x4t_c1c" data-ofbid="sdmc_configuration__table_wfx_x4t_c1c" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"><strong class="+ topic/ph hi-d/b ph b">SDMC 的扩展 DTS 参数</strong></span></caption><colgroup><col style="width:22.37093690248566%"/><col style="width:19.120458891013385%"/><col style="width:21.606118546845124%"/><col style="width:36.90248565965583%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_wfx_x4t_c1c__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_wfx_x4t_c1c__entry__2">类型</th><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_wfx_x4t_c1c__entry__3">取值范围</th><th class="- topic/entry entry colsep-0 rowsep-1" id="sdmc_configuration__table_wfx_x4t_c1c__entry__4">功能说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__1">max-frequenc</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__2">Integer</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__3">&gt; 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__4">控制器可输出的最大频率</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__1">bus-width</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__2">Integer</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__3">1, 4, 8</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__4">控制器的数据位宽</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__1">sd-uhs-sdr50</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__2">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__3">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__4">配置 SDCard 的 SDR50 模式</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__1">no-sd</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__2">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__3">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__4">关闭 SDCard 的功能支持</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__1">no-sdio</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__2">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__3">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__4">关闭 SDIO 的功能支持</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__1">no-mmc</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__2">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__3">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="sdmc_configuration__table_wfx_x4t_c1c__entry__4">关闭 eMMC 的功能支持</td></tr></tbody></table></div>
+                </div>
+                <div class="- topic/p p" data-ofbid="d135546e152__20250121171607">SDMC 驱动在此基础上扩展了下列关于 FIFO 设置的参数：<div class="table-container"><table class="- topic/table table frame-all" id="sdmc_configuration__table_z11_bpt_c1c" data-ofbid="sdmc_configuration__table_z11_bpt_c1c" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">SDMC 的扩展 FIFO 参数</span></caption><colgroup><col style="width:22.244094488188974%"/><col style="width:19.685039370078737%"/><col style="width:21.653543307086615%"/><col style="width:36.417322834645674%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_z11_bpt_c1c__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_z11_bpt_c1c__entry__2">类型</th><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_z11_bpt_c1c__entry__3">取值范围</th><th class="- topic/entry entry colsep-0 rowsep-1" id="sdmc_configuration__table_z11_bpt_c1c__entry__4">功能说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_z11_bpt_c1c__entry__1">aic,fifo-depth</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_z11_bpt_c1c__entry__2">Integer</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_z11_bpt_c1c__entry__3">[1, 128]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_z11_bpt_c1c__entry__4">控制器的 FIFO 深度</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_z11_bpt_c1c__entry__1">aic,fifo-watermark-aligned</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_z11_bpt_c1c__entry__2">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_z11_bpt_c1c__entry__3">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="sdmc_configuration__table_z11_bpt_c1c__entry__4">FIFO 水位是按 2 的整数次幂对齐</td></tr></tbody></table></div></div>
+            </div>
+        </section><section class="- topic/section section" id="sdmc_configuration__section_gzq_3jw_mdc" data-ofbid="sdmc_configuration__section_gzq_3jw_mdc"><h2 class="- topic/title title sectiontitle">D211 配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d135546e198__20250121171607">
+                <div class="- topic/div div">
+                    <div class="- topic/p p" data-ofbid="d135546e202__20250121171607">SDMC V1.0 包含三个接口，分别为 SDMC0、SDMC1 和 SDMC2，在 DTS 中体现为三个独立的设备节点。
+                            <span class="+ topic/ph sw-d/filepath ph filepath">common/d211.dtsi</span>
+                        中的参数配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_configuration__codeblock_awp_dpt_c1c" data-ofbid="sdmc_configuration__codeblock_awp_dpt_c1c">sdmc0: sdmc@<span class="hl-number">10440000</span> {
+    compatible = <span class="hl-string">"artinchip,aic-sdmc-v1.0"</span>;
+    reg = &lt;<span class="hl-number">0x0</span> <span class="hl-number">0x10440000</span> <span class="hl-number">0x0</span> <span class="hl-number">0x1000</span>&gt;;
+    interrupts-extended = &lt;&amp;plic0 <span class="hl-number">46</span> IRQ_TYPE_LEVEL_HIGH&gt;;
+    clocks = &lt;&amp;cmu CLK_SDMMC0&gt;;
+    clock-names = <span class="hl-string">"ciu"</span>;
+    resets = &lt;&amp;rst RESET_SDMMC0&gt;;
+    reset-names = <span class="hl-string">"reset"</span>;
+    #address-cells = &lt;<span class="hl-number">1</span>&gt;;
+    #size-cells = &lt;<span class="hl-number">0</span>&gt;;
+    max-frequency = &lt;<span class="hl-number">24000000</span>&gt;;
+    clock-frequency = &lt;<span class="hl-number">48000000</span>&gt;;
+    bus-width = &lt;<span class="hl-number">4</span>&gt;;
+    fifo-depth = &lt;<span class="hl-number">128</span>&gt;;
+};
+
+sdmc1: sdmc@<span class="hl-number">10450000</span> {
+    compatible = <span class="hl-string">"artinchip,aic-sdmc-v1.0"</span>;
+    reg = &lt;<span class="hl-number">0x0</span> <span class="hl-number">0x10450000</span> <span class="hl-number">0x0</span> <span class="hl-number">0x1000</span>&gt;;
+    interrupts-extended = &lt;&amp;plic0 <span class="hl-number">47</span> IRQ_TYPE_LEVEL_HIGH&gt;;
+    clocks = &lt;&amp;cmu CLK_SDMMC1&gt;;
+    clock-names = <span class="hl-string">"ciu"</span>;
+    resets = &lt;&amp;rst RESET_SDMMC1&gt;;
+    reset-names = <span class="hl-string">"reset"</span>;
+    #address-cells = &lt;<span class="hl-number">1</span>&gt;;
+    #size-cells = &lt;<span class="hl-number">0</span>&gt;;
+    max-frequency = &lt;<span class="hl-number">24000000</span>&gt;;
+    clock-frequency = &lt;<span class="hl-number">48000000</span>&gt;;
+    bus-width = &lt;<span class="hl-number">4</span>&gt;;
+    fifo-depth = &lt;<span class="hl-number">128</span>&gt;;
+};
+
+sdmc2: sdmc@<span class="hl-number">10460000</span> {
+    compatible = <span class="hl-string">"artinchip,aic-sdmc-v1.0"</span>;
+    reg = &lt;<span class="hl-number">0x0</span> <span class="hl-number">0x10460000</span> <span class="hl-number">0x0</span> <span class="hl-number">0x1000</span>&gt;;
+    interrupts-extended = &lt;&amp;plic0 <span class="hl-number">48</span> IRQ_TYPE_LEVEL_HIGH&gt;;
+    clocks = &lt;&amp;cmu CLK_SDMMC2&gt;;
+    clock-names = <span class="hl-string">"ciu"</span>;
+    resets = &lt;&amp;rst RESET_SDMMC2&gt;;
+    reset-names = <span class="hl-string">"reset"</span>;
+    #address-cells = &lt;<span class="hl-number">1</span>&gt;;
+    #size-cells = &lt;<span class="hl-number">0</span>&gt;;
+};</pre></div>
+                </div>
+            </div>
+        </section><section class="- topic/section section" id="sdmc_configuration__section_dp2_kjw_mdc" data-ofbid="sdmc_configuration__section_dp2_kjw_mdc"><h2 class="- topic/title title sectiontitle">Board 配置</h2>
+            
+            <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d135546e219__20250121171607">本节按照以下功能定义三个控制器为例，进行 Board 配置：<ul class="- topic/ul ul" id="sdmc_configuration__ol_wkm_fpt_c1c" data-ofbid="sdmc_configuration__ol_wkm_fpt_c1c"><li class="- topic/li li" data-ofbid="d135546e222__20250121171607">
+                            <p class="- topic/p p" data-ofbid="d135546e224__20250121171607">SDMC0 - eMMC</p>
+                        </li><li class="- topic/li li" data-ofbid="d135546e227__20250121171607">
+                            <p class="- topic/p p" data-ofbid="d135546e229__20250121171607">SDMC1 - SDCard</p>
+                        </li><li class="- topic/li li" data-ofbid="d135546e232__20250121171607">
+                            <p class="- topic/p p" data-ofbid="d135546e234__20250121171607">SDMC2 - SDIO</p>
+                        </li></ul></div>
+                <div class="- topic/p p" data-ofbid="d135546e238__20250121171607"><span class="+ topic/ph sw-d/filepath ph filepath">xxx/board.dts</span>
+                    中的配置参数如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_configuration__codeblock_bzt_fpt_c1c" data-ofbid="sdmc_configuration__codeblock_bzt_fpt_c1c">&amp;sdmc0 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;sdmc0_pins&gt;;
+    no-sd;
+    no-sdio;
+    status = <span class="hl-string">"okay"</span>;
+};
+
+&amp;sdmc1 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;sdmc1_pins&gt;;
+    no-mmc;
+    no-sdio;
+    status = <span class="hl-string">"okay"</span>;
+};
+
+&amp;sdmc2 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;sdmc2_pins&gt;;
+    no-mmc;
+    no-sd;
+    status = <span class="hl-string">"disabled"</span>;
+};</pre></div>
+            </div>
+        </section><section class="- topic/section section" id="sdmc_configuration__section_e3z_kjw_mdc" data-ofbid="sdmc_configuration__section_e3z_kjw_mdc"><h2 class="- topic/title title sectiontitle">热插拔配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d135546e251__20250121171607">SDMC 热插拔功能基于 Linux 内核的 MMC 子系统，MMC 子系统提供了下列热插拔实现方式：<div class="- topic/note note note note_note" id="sdmc_configuration__note_gfm_tfw_mdc" data-ofbid="sdmc_configuration__note_gfm_tfw_mdc"><span class="note__title">注：</span> SDMC1
+                    控制器硬件支持热插拔中断，且 SDMC 驱动中默认已使能，无需另外配置。本节主要介绍 SDMC0/2 控制器的热插拔配置。</div><ul class="- topic/ul ul" id="sdmc_configuration__ol_vcv_hpt_c1c" data-ofbid="sdmc_configuration__ol_vcv_hpt_c1c"><li class="- topic/li li" data-ofbid="d135546e256__20250121171607">轮询监控：每隔一段时间扫描一次 mmc 硬件总线，一般是 HZ，1s）。<div class="- topic/p p" data-ofbid="d135546e258__20250121171607">对于 SDMC0 控制器，如需以轮询监控方式配置热插拔功能，则在
+                                <span class="+ topic/ph sw-d/filepath ph filepath">xxx/board.dts</span>
+                            中配置如下参数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_configuration__codeblock_wgn_kpt_c1c" data-ofbid="sdmc_configuration__codeblock_wgn_kpt_c1c">&amp;sdmc0 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;sdmc0_pins&gt;;
+    broken-cd;
+    status = <span class="hl-string">"okay"</span>;
+};</pre></div></li><li class="- topic/li li" data-ofbid="d135546e265__20250121171607">中断监控：通过 card detect (cd) 引脚电平变化触发中断，从而告知 CPU 当前 sdcard 插入状态发生了变化。<div class="- topic/p p" data-ofbid="d135546e267__20250121171607">对于 SDMC2
+                            控制器，如需以中断监控方式配置热插拔，则在 <span class="+ topic/ph sw-d/filepath ph filepath">xxx/board.dts</span>
+                            中配置参如下参数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_configuration__codeblock_nvv_kpt_c1c" data-ofbid="sdmc_configuration__codeblock_nvv_kpt_c1c">&amp;sdmc2 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;sdmc2_pins&gt;;
+    cd-inverted;<em class="hl-comment">//根据硬件设计配置</em>
+    cd-gpios = &lt;&amp;gpio_c <span class="hl-number">8</span> GPIO_ACTIVE_HIGH&gt;;<em class="hl-comment">//根据硬件设计配置</em>
+    cd-debounce-delay-ms = &lt;<span class="hl-number">250</span>&gt;;
+    status = <span class="hl-string">"okay"</span>;
+};</pre></div></li></ul></div>
+            <div class="- topic/p p" data-ofbid="d135546e275__20250121171607">MMC 子系统中提供了以下关于热插拔的参数，如下表所示：<div class="table-container"><table class="- topic/table table frame-all" id="sdmc_configuration__table_wcv_hpt_c1c" data-ofbid="sdmc_configuration__table_wcv_hpt_c1c" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">热插拔配置参数</span></caption><colgroup><col style="width:23.2597623089983%"/><col style="width:16.97792869269949%"/><col style="width:28.183361629881148%"/><col style="width:31.57894736842105%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_wcv_hpt_c1c__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_wcv_hpt_c1c__entry__2">类型</th><th class="- topic/entry entry colsep-1 rowsep-1" id="sdmc_configuration__table_wcv_hpt_c1c__entry__3">取值范围</th><th class="- topic/entry entry colsep-0 rowsep-1" id="sdmc_configuration__table_wcv_hpt_c1c__entry__4">功能说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__1">cd-inverted</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__2">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__3">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__4">gpio 检测电平翻转</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__1">cd-debounce-delay-ms</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__2">Integer</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__3">&gt; 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__4">gpio 消抖（默认 200 ms）</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__1">broken-cd</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__2">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__3">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__4">配置为轮询监控功能</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__1">cd-gpios</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__2">Array</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__3">同普通 gpio 配置</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="sdmc_configuration__table_wcv_hpt_c1c__entry__4">配置中断监控的 gpio 值</td></tr></tbody></table></div></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#sdmc_configuration__section_azr_42w_mdc" data-tocid="sdmc_configuration__section_azr_42w_mdc">内核配置</a></div></li><li class="section-item"><div class="section-title"><a href="#sdmc_configuration__section_gwl_q2w_mdc" data-tocid="sdmc_configuration__section_gwl_q2w_mdc">SDMC 的扩展 DTS 参数</a></div></li><li class="section-item"><div class="section-title"><a href="#sdmc_configuration__section_gzq_3jw_mdc" data-tocid="sdmc_configuration__section_gzq_3jw_mdc">D211 配置</a></div></li><li class="section-item"><div class="section-title"><a href="#sdmc_configuration__section_dp2_kjw_mdc" data-tocid="sdmc_configuration__section_dp2_kjw_mdc">Board 配置</a></div></li><li class="section-item"><div class="section-title"><a href="#sdmc_configuration__section_e3z_kjw_mdc" data-tocid="sdmc_configuration__section_e3z_kjw_mdc">热插拔配置</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

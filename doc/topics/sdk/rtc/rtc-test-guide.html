@@ -1,0 +1,232 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="RTC 测试所需的测试环境如下： 硬件 ：开发板上安装有电池，用于给 RTC 供电 软件 ： PC 端的串口终端软件，用于 PC 和开发板进行串口通信 Linux 内核原生的 rtctest 工具 配置软件 在 Luban 的根目录下通过 make menuconfig 打开 rtctest ： Linux kernel Advance setting Linux Kernel Tools [*] ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-13"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="rtc_test_guide"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/rtc/rtc-test-guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/rtc/rtc-test-guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="rtc_test_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/rtc/rtc-test-guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">13 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d110729e22__20250121171550">RTC 测试所需的测试环境如下：<ul class="- topic/ul ul" id="rtc_test_guide__ol_rrk_pls_c1c" data-ofbid="rtc_test_guide__ol_rrk_pls_c1c"><li class="- topic/li li" data-ofbid="d110729e25__20250121171550"><strong class="+ topic/ph hi-d/b ph b">硬件</strong>：开发板上安装有电池，用于给 RTC 供电</li><li class="- topic/li li" data-ofbid="d110729e29__20250121171550"><strong class="+ topic/ph hi-d/b ph b">软件</strong>：<ul class="- topic/ul ul" id="rtc_test_guide__ul_ocq_hts_c1c" data-ofbid="rtc_test_guide__ul_ocq_hts_c1c"><li class="- topic/li li" data-ofbid="d110729e34__20250121171550">
+                            <p class="- topic/p p" data-ofbid="d110729e36__20250121171550">PC 端的串口终端软件，用于 PC 和开发板进行串口通信</p>
+                        </li><li class="- topic/li li" data-ofbid="d110729e39__20250121171550">
+                            <p class="- topic/p p" data-ofbid="d110729e41__20250121171550">Linux 内核原生的 rtctest 工具</p>
+                        </li></ul></li></ul></div><section class="- topic/section section" id="rtc_test_guide__section_glm_yj5_mdc" data-ofbid="rtc_test_guide__section_glm_yj5_mdc"><h2 class="- topic/title title sectiontitle">配置软件</h2>
+            
+            <div class="- topic/p p" data-ofbid="d110729e49__20250121171550">在 Luban 的根目录下通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make menuconfig</span> 打开
+                <code class="+ topic/ph pr-d/codeph ph codeph">rtctest</code>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_test_guide__codeblock_yjz_jts_c1c" data-ofbid="rtc_test_guide__codeblock_yjz_jts_c1c">Linux kernel
+    Advance setting
+        Linux Kernel Tools
+            [*] selftests</pre></div>
+        </section><section class="- topic/section section" id="rtc_test_guide__section_w1y_wj5_mdc" data-ofbid="rtc_test_guide__section_w1y_wj5_mdc"><h2 class="- topic/title title sectiontitle"><code class="+ topic/ph pr-d/codeph ph codeph">rtctest</code> 测试</h2>
+            
+            <div class="- topic/p p" data-ofbid="d110729e67__20250121171550">
+                <ol class="- topic/ol ol" id="rtc_test_guide__ol_ujs_kj5_mdc" data-ofbid="rtc_test_guide__ol_ujs_kj5_mdc"><li class="- topic/li li" data-ofbid="d110729e70__20250121171550">
+                        <div class="- topic/p p" data-ofbid="d110729e72__20250121171550">进入<code class="+ topic/ph pr-d/codeph ph codeph">rtctest</code> 所在目录
+                                <span class="+ topic/ph sw-d/filepath ph filepath">/usr/lib/kselftests/rtc/</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_test_guide__codeblock_zzz_mj5_mdc" data-ofbid="rtc_test_guide__codeblock_zzz_mj5_mdc">cd /usr/lib/kselftests/rtc/</pre>
+                        </div>
+                        <p class="- topic/p p" data-ofbid="d110729e83__20250121171550"><code class="+ topic/ph pr-d/codeph ph codeph">rtctest</code> 的主要功能是测试 RTC 的 Alarm 功能。</p>
+                    </li><li class="- topic/li li" data-ofbid="d110729e88__20250121171550">
+                        <div class="- topic/p p" data-ofbid="d110729e90__20250121171550">执行下列命令运行
+                            <code class="+ topic/ph pr-d/codeph ph codeph">rtctest</code>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_test_guide__codeblock_q24_nj5_mdc" data-ofbid="rtc_test_guide__codeblock_q24_nj5_mdc">./rtctest</pre></div>
+                        <div class="- topic/p p" data-ofbid="d110729e98__20250121171550">输出结果示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_test_guide__codeblock_bfr_mts_c1c" data-ofbid="rtc_test_guide__codeblock_bfr_mts_c1c">TAP version <span class="hl-number">13</span>
+<span class="hl-number">1.</span><span class="hl-number">.7</span>
+# Starting <span class="hl-number">7</span> tests from <span class="hl-number">2</span> test cases.
+#  RUN           rtc.date_read ...
+# rtctest.c:<span class="hl-number">49</span>:date_read:Current RTC date/time is <span class="hl-number">05</span>/<span class="hl-number">01</span>/<span class="hl-number">1970</span> <span class="hl-number">21</span>:<span class="hl-number">50</span>:<span class="hl-number">57.</span>
+#            OK  rtc.date_read
+ok <span class="hl-number">1</span> rtc.date_read
+#  RUN           rtc.uie_read ...
+#            OK  rtc.uie_read
+ok <span class="hl-number">2</span> rtc.uie_read
+#  RUN           rtc.uie_select ...
+#            OK  rtc.uie_select
+ok <span class="hl-number">3</span> rtc.uie_select
+#  RUN           rtc.alarm_alm_set ...
+# rtctest.c:<span class="hl-number">137</span>:alarm_alm_set:Alarm time now set to <span class="hl-number">21</span>:<span class="hl-number">51</span>:<span class="hl-number">06.</span>
+# rtctest.c:<span class="hl-number">156</span>:alarm_alm_set:data: <span class="hl-number">1</span>a0
+#            OK  rtc.alarm_alm_set
+ok <span class="hl-number">4</span> rtc.alarm_alm_set
+#  RUN           rtc.alarm_wkalm_set ...
+# rtctest.c:<span class="hl-number">195</span>:alarm_wkalm_set:Alarm time now set to <span class="hl-number">05</span>/<span class="hl-number">01</span>/<span class="hl-number">1970</span> <span class="hl-number">21</span>:<span class="hl-number">51</span>:<span class="hl-number">09.</span>
+#            OK  rtc.alarm_wkalm_set
+ok <span class="hl-number">5</span> rtc.alarm_wkalm_set
+#  RUN           rtc.alarm_alm_set_minute ...
+# rtctest.c:<span class="hl-number">239</span>:alarm_alm_set_minute:Alarm time now set to <span class="hl-number">21</span>:<span class="hl-number">52</span>:<span class="hl-number">00.</span>
+# rtctest.c:<span class="hl-number">258</span>:alarm_alm_set_minute:data: <span class="hl-number">1</span>a0
+#            OK  rtc.alarm_alm_set_minute
+ok <span class="hl-number">6</span> rtc.alarm_alm_set_minute
+#  RUN           rtc.alarm_wkalm_set_minute ...
+# rtctest.c:<span class="hl-number">297</span>:alarm_wkalm_set_minute:Alarm time now set to <span class="hl-number">05</span>/<span class="hl-number">01</span>/<span class="hl-number">1970</span> <span class="hl-number">21</span>:<span class="hl-number">53</span>:<span class="hl-number">00.</span>
+#            OK  rtc.alarm_wkalm_set_minute
+ok <span class="hl-number">7</span> rtc.alarm_wkalm_set_minute
+# PASSED: <span class="hl-number">7</span> / <span class="hl-number">7</span> tests passed.
+# Totals: pass:<span class="hl-number">7</span> fail:<span class="hl-number">0</span> xfail:<span class="hl-number">0</span> xpass:<span class="hl-number">0</span> skip:<span class="hl-number">0</span> error:<span class="hl-number">0</span></pre></div>
+                    </li></ol>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#rtc_test_guide__section_glm_yj5_mdc" data-tocid="rtc_test_guide__section_glm_yj5_mdc">配置软件</a></div></li><li class="section-item"><div class="section-title"><a href="#rtc_test_guide__section_w1y_wj5_mdc" data-tocid="rtc_test_guide__section_w1y_wj5_mdc"><code class="+ topic/ph pr-d/codeph ph codeph">rtctest</code> 测试</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

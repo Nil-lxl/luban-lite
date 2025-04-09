@@ -1,0 +1,211 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="UDC Driver 在需要完成的工作有两点： 把 UDC 硬件注册成标准的 Gadget Device，以便提供标准的 Gadget API 给 Gadget Function 驱动来使用。 提供 endpoint 资源池，处理 endpoint 层级的数据收发。 需要处理部分 Endpoint0 Setup 逻辑。 Init UDC 驱动把资源初始化好以后，注册成一个标准的 gadget ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-08-08"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_aic_udc_driver"/><meta name="DC.language" content="zh-CN"/><title>AIC UDC Driver</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-aic_udc_driver.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-aic_udc_driver.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_aic_udc_driver" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-aic_udc_driver.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">AIC UDC Driver</h1><div class="date inPage">8 Aug 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d283000e22__20250121171752"><code class="+ topic/ph pr-d/codeph ph codeph">UDC Driver</code> 在需要完成的工作有两点：</p><ul class="- topic/ul ul" id="usb_aic_udc_driver__ul_u4y_nqz_21c" data-ofbid="usb_aic_udc_driver__ul_u4y_nqz_21c"><li class="- topic/li li" data-ofbid="d283000e27__20250121171752">
+                <p class="- topic/p p" data-ofbid="d283000e29__20250121171752">把 UDC 硬件注册成标准的 Gadget Device，以便提供标准的 Gadget API 给 Gadget Function 驱动来使用。</p>
+            </li><li class="- topic/li li" data-ofbid="d283000e32__20250121171752">
+                <p class="- topic/p p" data-ofbid="d283000e34__20250121171752">提供 endpoint 资源池，处理 endpoint 层级的数据收发。</p>
+            </li><li class="- topic/li li" data-ofbid="d283000e37__20250121171752">
+                <p class="- topic/p p" data-ofbid="d283000e39__20250121171752">需要处理部分 Endpoint0 Setup 逻辑。</p>
+            </li></ul><section class="- topic/section section" id="usb_aic_udc_driver__section_qjy_pqz_21c" data-ofbid="usb_aic_udc_driver__section_qjy_pqz_21c"><h2 class="- topic/title title sectiontitle">Init</h2>
+            
+            <div class="- topic/p p" data-ofbid="d283000e47__20250121171752"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_aic_udc_driver__image_tks_4qz_21c" src="../../../images/usb/usb_udc_init.png" alt="image7"/></div><br/></div>
+            <p class="- topic/p p" data-ofbid="d283000e52__20250121171752">UDC 驱动把资源初始化好以后，注册成一个标准的 gadget 设备。</p>
+        </section><section class="- topic/section section" id="usb_aic_udc_driver__section_uks_4qz_21c" data-ofbid="usb_aic_udc_driver__section_uks_4qz_21c"><h2 class="- topic/title title sectiontitle">gadget.ops</h2>
+            
+            <p class="- topic/p p" data-ofbid="d283000e60__20250121171752">UDC 驱动需要提供 gadget 设备的操作函数集 <code class="+ topic/ph pr-d/codeph ph codeph">gadget.ops</code>。简单定义如下：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_aic_udc_driver__pre_vks_4qz_21c" data-ofbid="usb_aic_udc_driver__pre_vks_4qz_21c">staticconststructusb_gadget_opsaic_usb_gadget_ops={.get_frame=aic_gg_getframe,.udc_start=aic_gg_udc_start,.udc_stop=aic_gg_udc_stop,.pullup=aic_gg_pullup,.vbus_session=aic_gg_vbus_session,.vbus_draw=aic_gg_vbus_draw,};</pre>
+            <p class="- topic/p p" data-ofbid="d283000e69__20250121171752">其中的核心函数为 <code class="+ topic/ph pr-d/codeph ph codeph">.udc_start()</code> ，在调用该函数以后 UDC 才真正进入工作状态。其主要流程如下：</p>
+            <div class="- topic/p p" data-ofbid="d283000e75__20250121171752"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_aic_udc_driver__image_wks_4qz_21c" src="../../../images/usb/usb_udc_start.png" alt="image8"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_aic_udc_driver__section_xks_4qz_21c" data-ofbid="usb_aic_udc_driver__section_xks_4qz_21c"><h2 class="- topic/title title sectiontitle">ep.ops</h2>
+            
+            <p class="- topic/p p" data-ofbid="d283000e85__20250121171752">UDC 驱动需要提供 endpoint 的操作函数集 <code class="+ topic/ph pr-d/codeph ph codeph">ep.ops</code>。简单定义如下：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_aic_udc_driver__pre_yks_4qz_21c" data-ofbid="usb_aic_udc_driver__pre_yks_4qz_21c">staticconststructusb_ep_opsaic_usb_ep_ops={.enable=aic_ep_enable,.disable=aic_ep_disable,.alloc_request=aic_ep_alloc_request,.free_request=aic_ep_free_request,.queue=aic_ep_queue_request,.dequeue=aic_ep_dequeue_request,.set_halt=aic_ep_sethalt,};</pre>
+            <p class="- topic/p p" data-ofbid="d283000e94__20250121171752">其中 <code class="+ topic/ph pr-d/codeph ph codeph">.queue()</code> 函数负责接收 Gadget Function 驱动发送下来的
+                    <code class="+ topic/ph pr-d/codeph ph codeph">usb_request</code>。其主要流程如下：</p>
+            <div class="- topic/p p" data-ofbid="d283000e103__20250121171752"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_aic_udc_driver__image_zks_4qz_21c" src="../../../images/usb/usb_udc_queue.png" alt="image9"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_aic_udc_driver__section_als_4qz_21c" data-ofbid="usb_aic_udc_driver__section_als_4qz_21c"><h2 class="- topic/title title sectiontitle">Interrupt</h2>
+            
+            <p class="- topic/p p" data-ofbid="d283000e113__20250121171752">UDC 驱动主要承担的是数据收发，在上一节收到 <code class="+ topic/ph pr-d/codeph ph codeph">usb_request</code>
+                请求以后，接下来就是等待硬件处理完成产生中断了。中断处理的主要流程如下：</p>
+            <div class="- topic/p p" data-ofbid="d283000e119__20250121171752"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_aic_udc_driver__image_bls_4qz_21c" src="../../../images/usb/usb_udc_interrupt_flow.png" alt="image10"/></div><br/></div>
+        </section><section class="- topic/section section" id="usb_aic_udc_driver__section_cls_4qz_21c" data-ofbid="usb_aic_udc_driver__section_cls_4qz_21c"><h2 class="- topic/title title sectiontitle">EP0 Setup</h2>
+            
+            <p class="- topic/p p" data-ofbid="d283000e129__20250121171752">UDC 驱动还有一项重要工作就是负责 EP0 Control 状态机的处理。USB ep0 上的 Control Transfer 处理分为 3 个阶段：
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Setup Stage</code> 、 <code class="+ topic/ph pr-d/codeph ph codeph">Data In/Out Stage</code> 、
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Status In/Out Stage</code> 。具体对应以下 5 种状态：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_aic_udc_driver__pre_dls_4qz_21c" data-ofbid="usb_aic_udc_driver__pre_dls_4qz_21c"><em class="hl-comment">/*Gadgetep0states*/</em>enumep0_state{EP0_SETUP,EP0_DATA_IN,EP0_DATA_OUT,EP0_STATUS_IN,EP0_STATUS_OUT,};</pre>
+            <p class="- topic/p p" data-ofbid="d283000e144__20250121171752">这几种状态之间的转换流程如下所示：</p>
+            <div class="- topic/p p" data-ofbid="d283000e147__20250121171752"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="usb_aic_udc_driver__image_els_4qz_21c" src="../../../images/usb/usb_udc_ep0_control.png" alt="image11"/></div><br/></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_aic_udc_driver__section_qjy_pqz_21c" data-tocid="usb_aic_udc_driver__section_qjy_pqz_21c">Init</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_aic_udc_driver__section_uks_4qz_21c" data-tocid="usb_aic_udc_driver__section_uks_4qz_21c">gadget.ops</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_aic_udc_driver__section_xks_4qz_21c" data-tocid="usb_aic_udc_driver__section_xks_4qz_21c">ep.ops</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_aic_udc_driver__section_als_4qz_21c" data-tocid="usb_aic_udc_driver__section_als_4qz_21c">Interrupt</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_aic_udc_driver__section_cls_4qz_21c" data-tocid="usb_aic_udc_driver__section_cls_4qz_21c">EP0 Setup</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

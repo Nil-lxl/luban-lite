@@ -1,0 +1,244 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍 RTC 的参数配置。 内核配置 在 SDK 根目录下，执行下列命令，进入 kernel 的功能配置界面： make kernel-menuconfig 或使用简写命令 make km 在内核配置界面，按如下选择打开 RTC 驱动： Linux Device Drivers [*] Real Time Clock [*] ArtInChip Soc RTC 配置 DTS 参数 RTC ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="rtc_configuration"/><meta name="DC.language" content="zh-CN"/><title>RTC 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/rtc/rtc-config-guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/rtc/rtc-config-guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="rtc_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/rtc/rtc-config-guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">RTC 配置</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d283243e22__20250121171752">本节介绍 RTC 的参数配置。</p><section class="- topic/section section" id="rtc_configuration__section_gm2_db5_mdc" data-ofbid="rtc_configuration__section_gm2_db5_mdc"><h2 class="- topic/title title sectiontitle">内核配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d283243e29__20250121171752">
+                <ol class="- topic/ol ol" id="rtc_configuration__ol_vwc_f1s_sdc" data-ofbid="rtc_configuration__ol_vwc_f1s_sdc"><li class="- topic/li li" data-ofbid="d283243e32__20250121171752">
+                        <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d283243e36__20250121171752">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_wg1_3ml_sdc" data-ofbid="rtc_configuration__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d283243e41__20250121171752">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d283243e44__20250121171752">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_uss_hml_sdc" data-ofbid="rtc_configuration__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                    </li><li class="- topic/li li" data-ofbid="d283243e51__20250121171752">
+                        <div class="- topic/p p" data-ofbid="d283243e53__20250121171752">在内核配置界面，按如下选择打开 RTC
+                            驱动：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__pre_jcx_zrs_c1c" data-ofbid="rtc_configuration__pre_jcx_zrs_c1c">Linux
+    Device Drivers
+        [*] Real Time Clock
+            [*] ArtInChip Soc RTC</pre></div>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="rtc_configuration__section_j1r_y15_mdc" data-ofbid="rtc_configuration__section_j1r_y15_mdc"><h2 class="- topic/title title sectiontitle">配置 DTS 参数</h2>
+            
+            <div class="- topic/p p" data-ofbid="d283243e65__20250121171752">RTC 驱动支持从 DTS 中配置的自定义参数如下表所示：<div class="- topic/note note note note_note" id="rtc_configuration__note_cs1_lc5_mdc" data-ofbid="rtc_configuration__note_cs1_lc5_mdc"><span class="note__title">注：</span> <code class="+ topic/ph pr-d/codeph ph codeph">aic,alarm-io-output</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">aic,32k-io-output</code>
+                    共用一个 IO 输出，只能二选一。</div></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="rtc_configuration__table_zjx_1ss_c1c" data-ofbid="rtc_configuration__table_zjx_1ss_c1c" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">RTC 自定义参数</span></caption><colgroup><col style="width:16.186252771618626%"/><col style="width:12.749445676274945%"/><col style="width:11.086474501108649%"/><col style="width:14.412416851441243%"/><col style="width:45.565410199556545%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_configuration__table_zjx_1ss_c1c__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_configuration__table_zjx_1ss_c1c__entry__2">适用版本</th><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_configuration__table_zjx_1ss_c1c__entry__3">类型</th><th class="- topic/entry entry colsep-1 rowsep-1" id="rtc_configuration__table_zjx_1ss_c1c__entry__4">取值范围</th><th class="- topic/entry entry colsep-0 rowsep-1" id="rtc_configuration__table_zjx_1ss_c1c__entry__5">功能说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__1">aic,alarm-io-output</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__2">V0.1/V1.0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__3">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__4">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__5">是否使能 alarm 的 IO 输出功能</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__1">aic,32k-io-output</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__2">V1.0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__3">Boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__4">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__5">是否使能 32K 时钟输出功能</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__1">clock-rate</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__2">V1.0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__3">Integer</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__4">3276800±3196</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="rtc_configuration__table_zjx_1ss_c1c__entry__5">时钟源的实测频率值*100，用于时钟校准。<p class="- topic/p p" data-ofbid="d283243e130__20250121171752">这种取值方式可提高校准的精度，使得校准可以精确到 0.03
+                                Hz。</p></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_configuration__table_zjx_1ss_c1c__entry__1">aic,clock-driver</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_configuration__table_zjx_1ss_c1c__entry__2">V1.0</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_configuration__table_zjx_1ss_c1c__entry__3">Integer</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="rtc_configuration__table_zjx_1ss_c1c__entry__4">[0, 15]</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="rtc_configuration__table_zjx_1ss_c1c__entry__5">Clock 驱动能力，数值越小越省功耗<p class="- topic/p p" data-ofbid="d283243e143__20250121171752">需要通过一个 Sysfs 节点 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="rtc-debug-guide.html#rtc_debug_guide__li_sysfs_drivecap_scan">驱动能力扫描</a>
+                                    来获得取值。</p></td></tr></tbody></table></div>
+            <div class="- topic/p p" data-ofbid="d283243e150__20250121171752"><strong class="+ topic/ph hi-d/b ph b">D211 配置</strong><ul class="- topic/ul ul" id="rtc_configuration__ul_ylh_bb5_mdc" data-ofbid="rtc_configuration__ul_ylh_bb5_mdc"><li class="- topic/li li" data-ofbid="d283243e154__20250121171752">
+                        <div class="- topic/p p" data-ofbid="d283243e156__20250121171752"><span class="+ topic/ph sw-d/filepath ph filepath">common/d211.dtsi</span>
+                            中的参数配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_tgp_2ss_c1c" data-ofbid="rtc_configuration__codeblock_tgp_2ss_c1c">rtc: rtc@<span class="hl-number">19030000</span> {
+    compatible = <span class="hl-string">"artinchip,aic-rtc-v1.0"</span>;
+    reg = &lt;<span class="hl-number">0x0</span> <span class="hl-number">0x19030000</span> <span class="hl-number">0x0</span> <span class="hl-number">0x1000</span>&gt;;
+    interrupts-extended = &lt;&amp;plic0 <span class="hl-number">50</span> IRQ_TYPE_LEVEL_HIGH&gt;;
+    clocks = &lt;&amp;cmu CLK_RTC&gt;;
+    resets = &lt;&amp;rst RESET_RTC&gt;;
+};</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d283243e163__20250121171752">
+                        <div class="- topic/p p" data-ofbid="d283243e165__20250121171752"><span class="+ topic/ph sw-d/filepath ph filepath">xxx/board.dts</span>
+                            中的参数配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_amt_2ss_c1c" data-ofbid="rtc_configuration__codeblock_amt_2ss_c1c">&amp;rtc {
+    aic,alarm-io-output;
+    clock-rate = &lt;<span class="hl-number">3276851</span>&gt;;
+    aic,clock-driver = &lt;<span class="hl-number">13</span>&gt;;
+    status = <span class="hl-string">"okay"</span>;
+};</pre></div>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="rtc_configuration__section_t1l_v15_mdc" data-ofbid="rtc_configuration__section_t1l_v15_mdc"><h2 class="- topic/title title sectiontitle">配置时区</h2>
+            
+            <div class="- topic/p p" data-ofbid="d283243e178__20250121171752">Luban SDK 提供了时区管理功能，默认配置时区为 <code class="+ topic/ph pr-d/codeph ph codeph">Asia/Shanghai</code>，即中国的 +8 时区。
+                    按照下列流程，可以配置和管理时钟：<ol class="- topic/ol ol" id="rtc_configuration__ul_nbz_jb5_mdc" data-ofbid="rtc_configuration__ul_nbz_jb5_mdc"><li class="- topic/li li" data-ofbid="d283243e184__20250121171752">在 Luban 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make
+                        menuconfig</span>，进入功能配置界面，选择时区配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__pre_ahy_hss_c1c" data-ofbid="rtc_configuration__pre_ahy_hss_c1c">System configuration
+    (Asia/Shanghai) <strong class="hl-keyword">default</strong> local time</pre></li><li class="- topic/li li" data-ofbid="d283243e191__20250121171752">
+                        <div class="- topic/p p" data-ofbid="d283243e193__20250121171752">执行下列 Shell
+                                命令，查看系统中是否有时区配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_e1w_4b5_mdc" data-ofbid="rtc_configuration__codeblock_e1w_4b5_mdc">date</pre><ul class="- topic/ul ul" id="rtc_configuration__ul_cpj_nb5_mdc" data-ofbid="rtc_configuration__ul_cpj_nb5_mdc"><li class="- topic/li li" data-ofbid="d283243e198__20250121171752">如果系统输出中包含 “UTC”
+                                        字样，表示未配置时区，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_y3l_j1s_sdc" data-ofbid="rtc_configuration__codeblock_y3l_j1s_sdc">Tue Jan  <span class="hl-number">601</span>:<span class="hl-number">41</span>:<span class="hl-number">27</span> UTC <span class="hl-number">1970</span></pre><p class="- topic/p p" data-ofbid="d283243e202__20250121171752">此时，RTC
+                                            时间和系统时间（<span class="+ topic/keyword sw-d/cmdname keyword cmdname">date</span> 命令的输出）一致。</p></li><li class="- topic/li li" data-ofbid="d283243e207__20250121171752">如果系统输出中包含 “CST” 字样，表示已经配置了 +8
+                                        时区：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_e4z_j1s_sdc" data-ofbid="rtc_configuration__codeblock_e4z_j1s_sdc">Tue Jan  <span class="hl-number">601</span>:<span class="hl-number">41</span>:<span class="hl-number">27</span> CST <span class="hl-number">1970</span></pre><div class="- topic/p p" data-ofbid="d283243e211__20250121171752">此时
+                                        RTC
+                                        时间和系统时间会出现一个时区差：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__pre_chy_hss_c1c" data-ofbid="rtc_configuration__pre_chy_hss_c1c">系统时间 = RTC 时间 + 时区</pre></div><div class="- topic/p p" data-ofbid="d283243e215__20250121171752">以
+                                        +8 时区为例，通过 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="rtc-debug-guide.html#rtc_debug_guide__section_cnr_4c5_mdc">hwclock 命令</a>
+                                            可以查看时区差：<ul class="- topic/ul ul" id="rtc_configuration__ul_qbc_1bs_sdc" data-ofbid="rtc_configuration__ul_qbc_1bs_sdc"><li class="- topic/li li" data-ofbid="d283243e222__20250121171752">系统时间：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__pre_dhy_hss_c1c" data-ofbid="rtc_configuration__pre_dhy_hss_c1c">date</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_tr1_x1s_sdc" data-ofbid="rtc_configuration__codeblock_tr1_x1s_sdc">Tue Jan  <span class="hl-number">601</span>:<span class="hl-number">49</span>:<span class="hl-number">53</span> CST <span class="hl-number">1970</span></pre></li><li class="- topic/li li" data-ofbid="d283243e228__20250121171752">
+                                                <div class="- topic/p p" data-ofbid="d283243e230__20250121171752">原始 RTC
+                                                  时间<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_xxh_cbs_sdc" data-ofbid="rtc_configuration__codeblock_xxh_cbs_sdc">hwclock </pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_pqb_bbs_sdc" data-ofbid="rtc_configuration__codeblock_pqb_bbs_sdc">Mon Jan  <span class="hl-number">517</span>:<span class="hl-number">49</span>:<span class="hl-number">17</span> <span class="hl-number">19700.000000</span> seconds</pre></div>
+                                            </li><li class="- topic/li li" data-ofbid="d283243e237__20250121171752">RTC 时间 +
+                                                  时区，和系统时间一致<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_whk_dbs_sdc" data-ofbid="rtc_configuration__codeblock_whk_dbs_sdc">hwclock  -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_configuration__codeblock_mwn_fbs_sdc" data-ofbid="rtc_configuration__codeblock_mwn_fbs_sdc">Tue Jan  <span class="hl-number">601</span>:<span class="hl-number">49</span>:<span class="hl-number">20</span> <span class="hl-number">19700.000000</span> seconds</pre><p class="- topic/p p" data-ofbid="d283243e243__20250121171752">在打开时区的情况下，使用
+                                                  <span class="+ topic/keyword sw-d/cmdname keyword cmdname">hwclock -wu</span> 命令可以从系统时间同步到 RTC
+                                                  时间的设置。</p><p class="- topic/p p" data-ofbid="d283243e248__20250121171752">查看 RTC 时间的方式也应该加参数
+                                                  <code class="+ topic/ph pr-d/codeph ph codeph">-u</code>，指示 hwclock 工具 RTC 中保存的是 UTC
+                                                  时间。</p></li></ul></div></li></ul></div>
+                    </li></ol></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#rtc_configuration__section_gm2_db5_mdc" data-tocid="rtc_configuration__section_gm2_db5_mdc">内核配置</a></div></li><li class="section-item"><div class="section-title"><a href="#rtc_configuration__section_j1r_y15_mdc" data-tocid="rtc_configuration__section_j1r_y15_mdc">配置 DTS 参数</a></div></li><li class="section-item"><div class="section-title"><a href="#rtc_configuration__section_t1l_v15_mdc" data-tocid="rtc_configuration__section_t1l_v15_mdc">配置时区</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

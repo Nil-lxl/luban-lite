@@ -1,0 +1,189 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在执行启动流程调试或者模块调试时，通过串口打印信息进行调试是一种常见的方法。通过 Kconfig 配置中的 ArtInChip debug 选项，可以使能打印信息，详细流程如下： 进入 U-Boot 菜单配置界面： make uboot-menuconfig 在菜单配置中，找到并展开 ArtInChip debug 选项： ArtInChip debug ---&gt; [ ] Enable early ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-16"/><meta name="DC.date.modified" content="2024-12-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="print_setting_d21x"/><meta name="DC.language" content="zh-CN"/><title>打印设置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/print-setting-d21x.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/print-setting-d21x.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="print_setting_d21x" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/print-setting-d21x.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">打印设置</h1><div class="date inPage">16 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d249741e23__20250121171702">在执行启动流程调试或者模块调试时，通过串口打印信息进行调试是一种常见的方法。通过 <span class="+ topic/ph sw-d/filepath ph filepath">Kconfig</span> 配置中的
+                <span class="+ topic/ph ui-d/uicontrol ph uicontrol">ArtInChip debug</span> 选项，可以使能打印信息，详细流程如下：<ol class="- topic/ol ol" id="print_setting_d21x__ol_r5s_4nj_sdc" data-ofbid="print_setting_d21x__ol_r5s_4nj_sdc"><li class="- topic/li li" data-ofbid="d249741e32__20250121171702">进入 U-Boot
+                    菜单配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="print_setting_d21x__codeblock_o4r_pnj_sdc" data-ofbid="print_setting_d21x__codeblock_o4r_pnj_sdc">make uboot-menuconfig</pre></li><li class="- topic/li li" data-ofbid="d249741e36__20250121171702">
+                    <div class="- topic/p p" data-ofbid="d249741e38__20250121171702">在菜单配置中，找到并展开 <code class="+ topic/ph pr-d/codeph ph codeph">ArtInChip debug</code>
+                        选项：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="print_setting_d21x__pre_yv5_fvr_c1c" data-ofbid="print_setting_d21x__pre_yv5_fvr_c1c">ArtInChip debug  ---&gt;</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="print_setting_d21x__pre_zv5_fvr_c1c" data-ofbid="print_setting_d21x__pre_zv5_fvr_c1c">[ ] Enable early print information
+[ ] Enable device binding log
+[ ] Enable mmc driver log
+[ ] Enable spi-nand driver log
+[ ] Enable spi-nor driver log
+[ ] Enable spi driver log
+[ ] Enable mmc framework trace log
+[ ] Show boot time
+[ ] Show UBI debug log
+</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d249741e48__20250121171702">
+                    <p class="- topic/p p" data-ofbid="d249741e50__20250121171702">勾选 <span class="+ topic/keyword pr-d/parmname keyword parmname">Enable early print information</span>
+                        选项，可以将串口初始化之前的调试信息打印出来。</p>
+                    <div class="- topic/note note note note_note" id="print_setting_d21x__note_wnc_gvr_c1c" data-ofbid="print_setting_d21x__note_wnc_gvr_c1c"><span class="note__title">注：</span> 
+                        <p class="- topic/p p" data-ofbid="d249741e58__20250121171702">在 SPL 中，如果使用了 <span class="+ topic/keyword pr-d/parmname keyword parmname">TINY_PRINTF</span> 宏，则避免同时使能 <span class="+ topic/keyword pr-d/parmname keyword parmname">Enable
+                                early print information</span>，否则可能会产生冲突，导致调试信息无法正确打印。</p>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d249741e68__20250121171702">
+                    <p class="- topic/p p" data-ofbid="d249741e70__20250121171702">完成配置后，保存并退出菜单配置界面。</p>
+                </li><li class="- topic/li li" data-ofbid="d249741e73__20250121171702">
+                    <p class="- topic/p p" data-ofbid="d249741e75__20250121171702">编译 U-Boot</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="print_setting_d21x__codeblock_orr_vnj_sdc" data-ofbid="print_setting_d21x__codeblock_orr_vnj_sdc">make</pre>
+                </li></ol></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

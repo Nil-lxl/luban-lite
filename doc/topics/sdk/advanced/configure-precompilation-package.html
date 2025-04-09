@@ -1,0 +1,183 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="遵照以下步骤配置预编译包： 在 SDK 根目录下执行下列命令，进入 menuconfig 的功能配置界面： make menuconfig 在 menuconfig 的功能配置界面，选择以下任意一种编译方式，以 Busybox 为例。 对于一个组件包，用户可以通过 menuconfig 配置界面选择以下任意一种编译方式： 注： 关于两种编译方式的对比和详细描述，可查看 预编译包优势 。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_ixg_ql3_pzb"/><meta name="DC.language" content="zh-CN"/><title>配置预编译包</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/advanced/configure-precompilation-package.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/configure-precompilation-package.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_ixg_ql3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/configure-precompilation-package.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">配置预编译包</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;"></div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d254143e22__20250121171706">遵照以下步骤配置预编译包：<ol class="- topic/ol ol" id="concept_ixg_ql3_pzb__ol_khs_wyw_3zb" data-ofbid="concept_ixg_ql3_pzb__ol_khs_wyw_3zb"><li class="- topic/li li" data-ofbid="d254143e25__20250121171706">
+                    <div class="- topic/p p" data-ofbid="d254143e27__20250121171706">在 SDK 根目录下执行下列命令，进入 menuconfig
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_ixg_ql3_pzb__codeblock_lbx_z5s_sdc" data-ofbid="concept_ixg_ql3_pzb__codeblock_lbx_z5s_sdc">make menuconfig</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d254143e32__20250121171706">在 menuconfig 的功能配置界面，选择以下任意一种编译方式，以 <span class="+ topic/ph sw-d/filepath ph filepath">Busybox</span>
+                        为例。<div class="- topic/p p" data-ofbid="d254143e37__20250121171706">对于一个组件包，用户可以通过 menuconfig 配置界面选择以下任意一种编译方式：<div class="- topic/note note note note_note" id="concept_ixg_ql3_pzb__note_rmt_ygj_pdc" data-ofbid="concept_ixg_ql3_pzb__note_rmt_ygj_pdc"><span class="note__title">注：</span> 
+                            <p class="- topic/p p" data-ofbid="d254143e41__20250121171706">关于两种编译方式的对比和详细描述，可查看<a class="- topic/xref xref" href="pre-compilation-package.html">预编译包优势</a>。</p>
+                        </div></div><div class="- topic/p p" data-ofbid="d254143e48__20250121171706">
+                        <ol class="- topic/ol ol" type="a" id="concept_ixg_ql3_pzb__ol_ehg_nzw_3zb" data-ofbid="concept_ixg_ql3_pzb__ol_ehg_nzw_3zb"><li class="- topic/li li" id="concept_ixg_ql3_pzb__li_c5c_szw_3zb" data-ofbid="concept_ixg_ql3_pzb__li_c5c_szw_3zb">从源码编译：确保取消勾选 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Use prebuilt binary
+                                    instead of building from source</span>，表示系统会从源码开始编译
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">Busybox</span>。如选择此步骤，则跳过<a class="- topic/xref xref" href="configure-precompilation-package.html#concept_ixg_ql3_pzb__li_o1n_y1x_3zb">2.b</a>。<div class="- topic/p p" data-ofbid="d254143e63__20250121171706">
+                                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_ixg_ql3_pzb__image_umn_3zw_3zb" src="../../../images/sdk/prebuilt-2.png" width="480"/></div><br/>
+                                </div></li><li class="- topic/li li" id="concept_ixg_ql3_pzb__li_o1n_y1x_3zb" data-ofbid="concept_ixg_ql3_pzb__li_o1n_y1x_3zb">使用预编译包：确保勾选 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Use prebuilt binary
+                                    instead of building from
+                                    source</span>，表示系统会优先使用预编译的二进制包。如选择此步骤，则跳过<a class="- topic/xref xref" href="configure-precompilation-package.html#concept_ixg_ql3_pzb__li_c5c_szw_3zb">2.a</a>。<div class="- topic/p p" data-ofbid="d254143e76__20250121171706">
+                                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_ixg_ql3_pzb__image_zll_21x_3zb" src="../../../images/sdk/prebuilt-1.png" width="480"/></div><br/>
+                                </div></li></ol>
+                    </div><p class="- topic/p p" data-ofbid="d254143e81__20250121171706">Luban SDK 在编译时会自动检查是否有预编译包，如果该组件包对应的预编译二进制包文件不存在，则自动转为源码编译。
+                        如果源码包也不存在，则出现编译报错。</p></li><li class="- topic/li li" id="concept_ixg_ql3_pzb__li_sq3_szw_3zb" data-ofbid="concept_ixg_ql3_pzb__li_sq3_szw_3zb">保存选项并退出配置界面。</li><li class="- topic/li li" data-ofbid="d254143e85__20250121171706">在 Luban SDK 根目录下，分别执行下列编译命令：<ul class="- topic/ul ul" id="concept_ixg_ql3_pzb__ul_d5h_wbr_ldc" data-ofbid="concept_ixg_ql3_pzb__ul_d5h_wbr_ldc"><li class="- topic/li li" data-ofbid="d254143e88__20250121171706">
+                            <p class="- topic/p p" data-ofbid="d254143e90__20250121171706"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">make busybox</span>：编译 <span class="+ topic/ph sw-d/filepath ph filepath">Busybox</span>
+                                源码包</p>
+                        </li><li class="- topic/li li" data-ofbid="d254143e98__20250121171706">
+                            <p class="- topic/p p" data-ofbid="d254143e100__20250121171706"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">make all</span>：编译整个项目</p>
+                        </li></ul></li><li class="- topic/li li" data-ofbid="d254143e105__20250121171706">检查编译结果。<p class="- topic/p p" data-ofbid="d254143e107__20250121171706">如果选择了<a class="- topic/xref xref" href="configure-precompilation-package.html#concept_ixg_ql3_pzb__li_o1n_y1x_3zb">2.b</a>，则在最终编译结果中， Busybox 组件包会从预编译二进制包解压缩和安装。</p></li></ol></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

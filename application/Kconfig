@@ -1,0 +1,447 @@
+menu "Application options"
+
+#============================================
+# Filesystem related:
+#============================================
+
+comment "Filesystem related"
+
+menuconfig AIC_USING_FS_IMAGE_0
+    bool "Using File System Image 0"
+    default n
+
+if AIC_USING_FS_IMAGE_0
+choice
+    prompt "Select File System Type"
+    default AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_0
+    config AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0
+        bool "FATFS"
+    config AIC_USING_FS_IMAGE_TYPE_UFFS_FOR_0
+        bool "UFFS"
+    config AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_0
+        bool "LittleFS"
+endchoice
+
+config AIC_FS_IMAGE_DIR_0
+    string "Data Directory"
+    default "packages/artinchip/lvgl-apps/base_demo/lvgl_src/"
+
+config AIC_FS_IMAGE_NAME_0
+    string "Image Name"
+    default "app.lfs"
+
+if AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0
+config AIC_FATFS_AUTO_SIZE_FOR_0
+    bool "auto calcuate image size"
+    default y
+config AIC_FATFS_SECTOR_SIZE_FOR_0
+    int "sector size"
+    depends on !AIC_FATFS_AUTO_SIZE_FOR_0
+    default 512
+
+config AIC_FATFS_SECTOR_COUNT_FOR_0
+    int "sector count"
+    depends on !AIC_FATFS_AUTO_SIZE_FOR_0
+    default 2048
+
+config AIC_FATFS_DEFAULT_VOLAB_0
+    bool "using default volume label"
+    default y
+config AIC_FATFS_VOLAB_0
+    string "volume label"
+    depends on !AIC_FATFS_DEFAULT_VOLAB_0
+    default "aic-disk"
+endif
+
+# Parameters for LittleFS
+if AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_0
+config AIC_LITTLEFS_BLOCK_SIZE_FOR_0
+    int "Erase block size"
+    default 4096
+config AIC_LITTLEFS_PAGE_SIZE_FOR_0
+    int "Page size"
+    default 256
+endif
+
+endif
+
+menuconfig AIC_USING_FS_IMAGE_1
+    bool "Using File System Image 1"
+    default n
+
+if AIC_USING_FS_IMAGE_1
+choice
+    prompt "Select File System Type"
+    default AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_1
+    config AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1
+        bool "FATFS"
+    config AIC_USING_FS_IMAGE_TYPE_UFFS_FOR_1
+        bool "UFFS"
+    config AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_1
+        bool "LittleFS"
+endchoice
+
+config AIC_FS_IMAGE_DIR_1
+    string "Data Directory"
+    default "fs_user"
+
+config AIC_FS_IMAGE_NAME_1
+    string "Image Name"
+    default "user"
+
+if AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1
+config AIC_FATFS_AUTO_SIZE_FOR_1
+    bool "auto calcuate image size"
+    default y
+config AIC_FATFS_SECTOR_SIZE_FOR_1
+    int "sector size"
+    depends on !AIC_FATFS_AUTO_SIZE_FOR_1
+    default 512
+
+config AIC_FATFS_SECTOR_COUNT_FOR_1
+    int "sector count"
+    depends on !AIC_FATFS_AUTO_SIZE_FOR_1
+    default 2048
+
+config AIC_FATFS_DEFAULT_VOLAB_1
+    bool "using default volume label"
+    default y
+config AIC_FATFS_VOLAB_1
+    string "volume label"
+    depends on !AIC_FATFS_DEFAULT_VOLAB_1
+    default "aic-disk"
+endif
+
+# Parameters for LittleFS
+if AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_1
+config AIC_LITTLEFS_BLOCK_SIZE_FOR_1
+    int "Erase block size"
+    default 4096
+config AIC_LITTLEFS_PAGE_SIZE_FOR_1
+    int "Page size"
+    default 256
+endif
+
+endif
+
+if AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0 || AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1
+    config AIC_USING_FS_IMAGE_TYPE_FATFS_CLUSTER_SIZE
+        int "size of cluster in fatfs image"
+        default 8
+
+    config AIC_FATFS_ENABLE_WRITE_IN_SPINOR
+        bool "FATFS enable write func in spinor"
+        depends on AIC_SPINOR_DRV
+        default n
+endif
+
+config GENERATE_BURNER_IMAGE
+    bool "Generate burner format image"
+    default n
+
+comment "LVGL demo select related"
+
+# Kconfig file for package LVGL
+menuconfig LPKG_USING_LVGL
+    bool "LVGL (official): powerful and easy-to-use embedded GUI library"
+    default n
+
+if LPKG_USING_LVGL
+    choice
+        prompt "Select LVGL Version"
+        default LVGL_V_8
+
+        config LVGL_V_8
+            bool "LVGL V8"
+
+        config LVGL_V_9
+            bool "LVGL V9"
+    endchoice
+
+    config LPKG_LVGL_PATH
+        string
+        default "/packages/multimedia/LVGL/LVGL"
+
+    config LPKG_LVGL_THREAD_PRIO
+        int "Priority of LVGL thread"
+        default 20
+
+    config LPKG_LVGL_THREAD_STACK_SIZE
+        int "Stack size of LVGL thread"
+        default 4096
+
+    config LPKG_LVGL_DISP_REFR_PERIOD
+        int "Display refresh period (ms)"
+        default 5 # official suggestion
+
+    config LPKG_USING_LVGL_SQUARELINE
+        bool "Support SquareLine Studio"
+        default n
+
+    config LPKG_LVGL_USING_EXAMPLES
+        bool "Enable built-in examples"
+        default n
+
+    config LPKG_LVGL_USING_DEMOS
+        bool "Enable built-in demos"
+        default n
+
+endif
+
+menuconfig AIC_LVGL_DEMO
+    tristate "ArtInChip LVGL demo"
+    select LPKG_USING_LVGL
+    default n
+
+if AIC_LVGL_DEMO
+choice
+    prompt "select LVGL demo"
+    default AIC_LVGL_BASE_DEMO
+    depends on AIC_LVGL_DEMO
+
+config AIC_LVGL_UI_BUILDER
+    select LPKG_USING_FREETYPE
+    bool "LVGL Support AiUIBuider"
+
+config AIC_LVGL_BASE_DEMO
+    bool "LVGL demo with basic function"
+
+config AIC_LVGL_METER_DEMO
+    bool "LVGL demo of meter"
+
+config AIC_LVGL_DEMO_HUB_DEMO
+    bool "LVGL demo hub"
+    help
+    "At present, only 1024x600, 480x272 resoulution in supported, and different resources are used for different resolutions"
+
+config AIC_LVGL_VSCODE_DEMO
+    bool "LVGL vscode emultarot import demo"
+    help
+    "assets in packages/artinchip/lvgl-ui/aic_demo/vscode_simulator/hello_demo/lvgl_src"
+
+config AIC_LVGL_LAUNCHER_DEMO
+    bool "LVGL launcher demo"
+
+config AIC_LVGL_DASHBOARD_DEMO
+    bool "LVGL dashboard demo"
+
+config AIC_LVGL_ELEVATOR_DEMO
+    bool "LVGL elevator demo"
+
+config AIC_LVGL_SLIDE_DEMO
+    bool "LVGL sliding demo"
+
+config AIC_LVGL_SIMPLE_PLAYER_DEMO
+    bool "LVGL simple player demo"
+
+config AIC_LVGL_GIF_DEMO
+    bool "LVGL gif demo"
+
+config AIC_LVGL_MUSIC_DEMO
+    bool "LVGL music demos"
+    select LPKG_LVGL_USING_DEMOS
+
+config AIC_LVGL_DEMO_WIDGETS
+    bool "LVGL widgets demos"
+    select LPKG_LVGL_USING_DEMOS
+
+config AIC_LVGL_DEMO_BENCHMARK
+    bool "LVGL demo benchmark"
+    select LPKG_LVGL_USING_DEMOS
+
+config AIC_LVGL_USB_OSD_DEMO
+    bool "LVGL usb osd demo"
+    select LPKG_LVGL_USING_DEMOS
+    select LPKG_USING_CJSON
+    select AIC_PWM_BACKLIGHT_BYPASS if AIC_PWM_BACKLIGHT
+
+config AIC_LVGL_IMAGE_DEMO
+    bool "LVGL image demo"
+
+endchoice
+
+config LV_COLOR_DEPTH
+    int "LVGL color depth(32/16)"
+    default 32
+    depends on LPKG_USING_LVGL
+config LV_CACHE_IMG_NUM
+    int "LVGL image cached number"
+    default 2
+    depends on LPKG_USING_LVGL
+
+config LV_CACHE_DEF_SIZE
+    hex "LVGL image cached size"
+    default 0x800000
+    depends on LVGL_V_9
+
+config LV_IMAGE_HEADER_CACHE_DEF_CNT
+    int "LVGL image header cached number"
+    default 20
+    depends on LVGL_V_9
+
+config LV_DISPLAY_ROTATE_EN
+    bool "LVGL enable display rotation"
+    default n
+    depends on LPKG_USING_LVGL
+
+choice
+    prompt "LVGL rotation degree"
+    default LV_ROTATE_0
+    depends on LPKG_USING_LVGL
+    depends on LV_DISPLAY_ROTATE_EN
+
+config LV_ROTATE_0
+    bool "0"
+
+config LV_ROTATE_90
+    bool "90"
+
+config LV_ROTATE_180
+    bool "180"
+
+config LV_ROTATE_270
+    bool "270"
+endchoice
+
+config LV_ROTATE_DEGREE
+    int
+    default 0 if LV_ROTATE_0
+    default 90 if LV_ROTATE_90
+    default 180 if LV_ROTATE_180
+    default 270 if LV_ROTATE_270
+
+config MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE
+    bool "Limit the output size of MPP JPEG decoder"
+    default n
+    depends on LPKG_USING_LVGL
+
+if !AIC_LVGL_MUSIC_DEMO && !AIC_LVGL_DEMO_WIDGETS && !AIC_LVGL_DEMO_BENCHMARK
+    config LV_USE_CONF_CUSTOM
+        bool "LVGL use custom config"
+        default y
+        depends on LPKG_USING_LVGL
+endif
+
+if MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE
+    config MPP_JPEG_DEC_MAX_OUT_WIDTH
+        int "Max output width of MPP JPEG decoder"
+        default 2048
+
+    config MPP_JPEG_DEC_MAX_OUT_HEIGHT
+        int "Max output height of MPP JPEG decoder"
+        default 2048
+endif
+
+# Parameters for LVGL meter demo
+if AIC_LVGL_METER_DEMO
+    config LV_METER_SIMPLE_POINT
+        bool "LVGL meter demo use simple point"
+        default n
+endif
+
+config AIC_USE_TOUCH_MONKEY_TEST
+    bool "LVGL use monkey touch test"
+    default n
+config AIC_USE_TOUCH_MONKEY_TEST_PERIOD_RANG_MIN
+    int "touch monkey period range min"
+    default 20
+    depends on AIC_USE_TOUCH_MONKEY_TEST
+config AIC_USE_TOUCH_MONKEY_TEST_PERIOD_RANG_MAX
+    int "touch monkey period range max"
+    default 50
+    depends on AIC_USE_TOUCH_MONKEY_TEST
+config AIC_USE_TOUCH_MONKEY_TEST_INPUT_RANG_MIN
+    int "touch monkey input range min"
+    default -10
+    depends on AIC_USE_TOUCH_MONKEY_TEST
+config AIC_USE_TOUCH_MONKEY_TEST_INPUT_RANG_MAX
+    int "touch monkey input range max"
+    default 10
+    depends on AIC_USE_TOUCH_MONKEY_TEST
+
+# Parameters for LVGL elevator demo
+if AIC_LVGL_ELEVATOR_DEMO
+    config LV_ELEVATOR_UART_COMMAND
+        bool "LVGL elevator demo use uart send command"
+        default n
+endif # AIC_LVGL_ELEVATOR_DEMO
+
+# Parameters for LVGL usb osd demo
+if AIC_LVGL_USB_OSD_DEMO
+    choice
+        prompt "Select LOGO Type"
+        default LV_USB_OSD_LOGO_TYPE_IMAGE
+
+        config LV_USB_OSD_LOGO_TYPE_IMAGE
+            bool "Image"
+
+        config LV_USB_OSD_LOGO_TYPE_VIDEO
+            bool "Video"
+    endchoice
+
+    config LV_USB_OSD_LOGO_IMAGE
+        string "LOGO Image Name"
+        depends on LV_USB_OSD_LOGO_TYPE_IMAGE
+        default "logo.png"
+
+    config LV_USB_OSD_LOGO_VIDEO
+        string "Video resource Name"
+        depends on LV_USB_OSD_LOGO_TYPE_VIDEO
+        default "logo.mp4"
+
+    config LV_USB_OSD_SCREEN_LOCK_TIME
+        int "Default Screen Lock Time(s), 0 to Never Lock"
+        default 15
+
+    choice
+        prompt "Default Screen Lock Mode"
+            default LV_USB_OSD_SCREEN_LOCK_DISP_LOGO
+
+        config LV_USB_OSD_SCREEN_LOCK_DISP_LOGO
+            bool "Display LOGO"
+        config LV_USB_OSD_SCREEN_LOCK_DISP_PIC
+            bool "Display Pictures"
+        config LV_USB_OSD_SCREEN_LOCK_DISP_VIDEO
+            bool "Display Video"
+            depends on !AIC_SPINOR_DRV
+        config LV_USB_OSD_SCREEN_LOCK_BLANK
+            bool "Blank Screen"
+    endchoice
+
+    config LV_USB_OSD_SCREEN_LOCK_MODE
+        int
+        default 0 if LV_USB_OSD_SCREEN_LOCK_DISP_LOGO
+        default 1 if LV_USB_OSD_SCREEN_LOCK_DISP_PIC
+        default 2 if LV_USB_OSD_SCREEN_LOCK_DISP_VIDEO
+        default 3 if LV_USB_OSD_SCREEN_LOCK_BLANK
+
+    if LV_USB_OSD_SCREEN_LOCK_DISP_LOGO
+        config LV_USB_OSD_SCREEN_BLANK_TIME_AFTER_LOCK
+            int "Screen Blank Time(s) After Screen Lock, 0 to Never"
+            default 300
+    endif #LV_USB_OSD_SCREEN_LOCK_DISP_LOGO
+
+    config LV_USB_OSD_SETTINGS_MENU
+        bool "Enable USB OSD Settings Menu"
+        default y
+
+    if LV_USB_OSD_SETTINGS_MENU
+        config LV_USB_OSD_SETTINGS_WAKEUP_KEY
+            string "USB OSD Settings Menu Wakeup Key"
+            default "PD.6"
+    endif #LV_USB_OSD_SETTINGS_MENU
+
+    config LV_USB_OSD_PLAY_VIDEO
+        bool
+        default n if AIC_SPINOR_DRV
+        default y if AIC_SPINAND_DRV && !LV_USB_OSD_LOGO_TYPE_VIDEO
+
+endif # AIC_LVGL_USB_OSD_DEMO
+
+endif # AIC_LVGL_DEMO
+
+config LVGL_STORAGE_PATH
+    string "LVGL Resource Directory"
+    default "/rodata/lvgl_data"
+endmenu
+

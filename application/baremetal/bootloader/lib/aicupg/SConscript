@@ -1,0 +1,36 @@
+# RT-Thread building script for component
+
+from building import *
+
+Import('rtconfig')
+
+cwd     = GetCurrentDir()
+src     = Glob('basic_cmd.c')
+src     += Glob('fwc_cmd.c')
+src     += Glob('ram_fwc.c')
+src     += Glob('upg_main.c')
+src     += Glob('data_trans_layer.c')
+if GetDepend('AICUPG_UART_ENABLE'):
+    src     += Glob('upg_uart.c')
+    src     += Glob('trans_rw_data.c')
+if GetDepend('AICUPG_MMC_ARTINCHIP'):
+    src     += Glob('mmc_fwc.c')
+if GetDepend('AICUPG_NAND_ARTINCHIP'):
+    src     += Glob('nand_fwc.c')
+    src     += Glob('nand_fwc_spl.c')
+if GetDepend('AICUPG_NOR_ARTINCHIP'):
+    src     += Glob('nor_fwc.c')
+if GetDepend('AIC_BOOTLOADER_FATFS_SUPPORT'):
+    src     += Glob('upg_fat.c')
+    src     += Glob('upg_fat_direct.c')
+    src     += Glob('upg_fat_direct_mmc.c')
+    src     += Glob('upg_fat_direct_nor.c')
+    src     += Glob('upg_fat_direct_nand.c')
+if GetDepend('AICUPG_LOG_BUFFER_SUPPORT'):
+    src     += Glob('log_buf.c')
+CPPPATH = [cwd]
+ASFLAGS = ''
+
+group = DefineGroup('BLDRV', src, depend = [''], CPPPATH = CPPPATH, ASFLAGS = ASFLAGS)
+
+Return('group')

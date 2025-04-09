@@ -1,0 +1,27 @@
+
+# Kconfig file for package at24cxx
+menuconfig LPKG_USING_AT24CXX
+    bool "at24cxx: eeprom at24cxx driver library."
+    default n
+
+if LPKG_USING_AT24CXX
+
+    config LPKG_AT24CXX_PATH
+        string
+        default "/packages/third-party/at24cxx"
+
+    choice
+        prompt "Version"
+        default LPKG_USING_AT24CXX_LATEST_VERSION
+        help
+            Select the package version
+
+        config LPKG_USING_AT24CXX_LATEST_VERSION
+            bool "latest"
+    endchoice
+
+    config LPKG_AT24CXX_VER
+       string
+       default "latest"    if LPKG_USING_AT24CXX_LATEST_VERSION
+
+endif

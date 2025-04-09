@@ -1,0 +1,326 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="调试开关 以太网调试开关 通过 scons --menuconfig 命令打开 Luban-Lite 的配置选项如下路径 选中 Luban-Lite 的打印等级开关，可以将 Luban-Lite 的打印等级调到最高等级(debug)，然后 就可以实时观测以太网驱动内部的打印消息 Rt-Thread options ---&gt; RT-Thread Components ---&gt; Utilities ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_user_guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_config_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_test_2.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e6035"/><meta name="wh-source-relpath" content="topics/sdk/mac/mac_debug_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/mac/mac_debug_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_nww_hzh_pzb"><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/mac/mac_user_guide_2.html">MAC 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/mac/mac_debug_lite.html">调试指南</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/mac/mac_config_lite.html" title="参数配置" aria-label="上一主题: 参数配置" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/mac/mac_test_2.html" title="测试指南" aria-label="下一主题: 测试指南" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="can-d5856e4886" class="topicref" data-id="can" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-d5856e4886-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/can/can_user_guide_2.html" id="can-d5856e4886-link">CAN 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4958" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4958-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cap/cap_user_guide.html" id="id-d5856e4958-link">CAP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5018" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5018-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/qep/qep_user_guide.html" id="id-d5856e5018-link">QEP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cir-d5856e5228" class="topicref" data-id="cir" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cir-d5856e5228-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_user_guide_2.html" id="cir-d5856e5228-link">CIR 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="gpai-user-guide-d5856e5336" class="topicref" data-id="gpai-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action gpai-user-guide-d5856e5336-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpai/gpai_user_guide_2.html" id="gpai-user-guide-d5856e5336-link">GPAI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5408" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5408-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpio/gpio_user_guide.html" id="id-d5856e5408-link">GPIO 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c_user_guide-d5856e5480" class="topicref" data-id="i2c_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c_user_guide-d5856e5480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2c/i2c_user_guide_2.html" id="i2c_user_guide-d5856e5480-link">I2C 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5576" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5576-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/psadc/psadc_user_guide_2.html" id="id-d5856e5576-link">PSADC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e5648" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e5648-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pwm/pwm_user_guide_2.html" id="id-d5856e5648-link">PWM 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="rtp-user-guide-d5856e5721" class="topicref" data-id="rtp-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action rtp-user-guide-d5856e5721-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtp/rtp_user_guide_2.html" id="rtp-user-guide-d5856e5721-link">RTP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-d5856e5805" class="topicref" data-id="spi" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-d5856e5805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_user_guide_2.html" id="spi-d5856e5805-link"><span class="ph">Q</span>SPI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="uart_user_guide-d5856e5879" class="topicref" data-id="uart_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart_user_guide-d5856e5879-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_user_guide_2.html" id="uart_user_guide-d5856e5879-link">UART 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_user_guide-d5856e5951" class="topicref" data-id="usb_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_user_guide-d5856e5951-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb_user_guide_2.html" id="usb_user_guide-d5856e5951-link">USB 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e6011" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e6011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_user_guide_2.html" id="id-d5856e6011-link">MAC 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e6023" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_config_lite.html" id="id-d5856e6023-link">参数配置</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e6035" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_debug_lite.html" id="id-d5856e6035-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="mac_test_guide-d5856e6047" class="topicref" data-id="mac_test_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_test_2.html" id="mac_test_guide-d5856e6047-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e6059" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_design_lite.html" id="id-d5856e6059-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="mac_common_issues-d5856e6071" class="topicref" data-id="mac_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_faq_2.html" id="mac_common_issues-d5856e6071-link">常见问题</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mac/mac_debug_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">调试开关</h2>
+            
+            <div class="- topic/div div section" id="id__id3">
+                <strong class="+ topic/ph hi-d/b ph b">以太网调试开关</strong>
+                <div class="- topic/p p" data-ofbid="d150640e29__20250121171611">通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 命令打开 <span class="- topic/ph ph">Luban-Lite</span> 的配置选项如下路径 选中 <span class="- topic/ph ph">Luban-Lite</span>
+                    的打印等级开关，可以将 <span class="- topic/ph ph">Luban-Lite</span> 的打印等级调到最高等级(debug)，然后
+                    就可以实时观测以太网驱动内部的打印消息<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wqm_nyn_fdc" data-ofbid="id__codeblock_wqm_nyn_fdc">Rt-Thread options ---&gt;
+    RT-Thread Components ---&gt;
+        Utilities ---&gt;
+            [*] Enable ulog
+                The <strong class="hl-keyword">static</strong> output log level. (Debug) ---&gt;</pre></div></div>
+            <div class="- topic/div div section" id="id__lwip">
+                <strong class="+ topic/ph hi-d/b ph b"> LwIP 协议栈调试开关</strong>
+                <div class="- topic/p p" data-ofbid="d150640e51__20250121171611">通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 命令打开 <span class="- topic/ph ph">Luban-Lite</span> 的配置选项如下路径 选中 lwIP
+                    的调试开关,一般只打开 <code class="+ topic/ph pr-d/codeph ph codeph">"Enable Debugging of IP"</code> 就可以观察到是否正常收发数据。
+                    如有其他调试需求，可根据自身需要打开其他调试开关<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_apz_nyn_fdc" data-ofbid="id__codeblock_apz_nyn_fdc">Local packages options ---&gt;
+    Third-party packages options ---&gt;
+        lwIP: Light weight TCP/IP stack
+            [*] Enable lwIP Debugging Options ---&gt;
+                ...
+                [*] Enable Debugging of IP
+                ...</pre></div></div>
+            <div class="- topic/div div section" id="id__id4">
+                <strong class="+ topic/ph hi-d/b ph b"> 特殊功能调试开关</strong>
+                <div class="- topic/p p" data-ofbid="d150640e70__20250121171611"><span class="- topic/ph ph">Luban-Lite</span> 支持一些自定义的测试命令，包括有 test_mqtt， iperf 命令， test_eth
+                    命令。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_qgy_4yn_fdc" data-ofbid="id__codeblock_qgy_4yn_fdc">Drivers options ---&gt;
+    lwIP example ---&gt;
+        [ ] Enable MQTT protocol test command
+        [ ] Enable iperf test cmd
+        [ ] Enable ethernet loopback test command</pre>
+                </div><ul class="- topic/ul ul simple" id="id__ul_k1q_yc3_bdc" data-ofbid="id__ul_k1q_yc3_bdc"><li class="- topic/li li" data-ofbid="d150640e78__20250121171611">
+                        <dl class="- topic/dl dl simple" id="id__dl_l1q_yc3_bdc" data-ofbid="id__dl_l1q_yc3_bdc"><dt class="- topic/dt dt dlterm" data-ofbid="d150640e82__20250121171611">Enable MQTT protocol test command</dt><dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d150640e86__20250121171611">可用于测试 lwIP 的 MQTT 功能， 需要打开 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Using MQTT protocol</span>
+                                        选项</p>
+                                </dd></dl>
+                    </li><li class="- topic/li li" data-ofbid="d150640e93__20250121171611">
+                        <dl class="- topic/dl dl simple" id="id__dl_m1q_yc3_bdc" data-ofbid="id__dl_m1q_yc3_bdc"><dt class="- topic/dt dt dlterm" data-ofbid="d150640e97__20250121171611">Enable iperf test command</dt><dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d150640e101__20250121171611">可用于测试 lwIP 的以太网 TCP 上下行网速</p>
+                                </dd></dl>
+                    </li><li class="- topic/li li" data-ofbid="d150640e105__20250121171611">
+                        <dl class="- topic/dl dl simple" id="id__dl_n1q_yc3_bdc" data-ofbid="id__dl_n1q_yc3_bdc"><dt class="- topic/dt dt dlterm" data-ofbid="d150640e109__20250121171611">Enable ethernet loopback test command</dt><dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d150640e113__20250121171611">可用于以太网的回环测试，需要插入回环网线</p>
+                                </dd></dl>
+                    </li></ul>
+            </div>
+        </section><section class="- topic/section section" id="id__id5" data-ofbid="id__id5"><h2 class="- topic/title title sectiontitle">功能验证</h2>
+            
+            <p class="- topic/p p" data-ofbid="d150640e125__20250121171611">网络模块是否可以正常工作可以通过如下顺序排查：</p>
+            <ul class="- topic/ul ul simple" id="id__ul_o1q_yc3_bdc" data-ofbid="id__ul_o1q_yc3_bdc"><li class="- topic/li li" data-ofbid="d150640e129__20250121171611">
+                    <p class="- topic/p p" data-ofbid="d150640e131__20250121171611">本机 MAC 和 PHY 的连接是否成功</p>
+                </li><li class="- topic/li li" data-ofbid="d150640e134__20250121171611">
+                    <p class="- topic/p p" data-ofbid="d150640e136__20250121171611">本机 PHY 和对端 PHY 的连接是否成功</p>
+                </li><li class="- topic/li li" data-ofbid="d150640e139__20250121171611">
+                    <p class="- topic/p p" data-ofbid="d150640e141__20250121171611">是否可以通信</p>
+                </li></ul>
+            <div class="- topic/div div section" id="id__mac-phy">
+                <strong class="+ topic/ph hi-d/b ph b">MAC 与 PHY 连接成功</strong>
+                <p class="- topic/p p" data-ofbid="d150640e150__20250121171611">MAC 与 PHY 是否连接成功，主要就是观察 MAC 能否通过 MDIO 接口正常访问 PHY 寄存器。<span class="- topic/ph ph">Luban-Lite</span> 读写 PHY 寄存器的接口为
+                    “aicmac_read_phy_reg” 和 “aicmac_write_phy_reg”。在网卡启动 过程及启动完成后，都会不间断的访问 PHY
+                    寄存器。</p><p class="- topic/p p" data-ofbid="d150640e155__20250121171611">如果 MAC 与 PHY 连接失败，则会有类似与以下的打印消息出现。如果出现类似打印，则需要排查 pinmux、phy-addr
+                    是否配置正确，并检查 PHY
+                    芯片的电源、时钟、及复位引脚是否正常</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_p1q_yc3_bdc" data-ofbid="id__codeblock_p1q_yc3_bdc">[E] aicmac port0 write phy <span class="hl-number">1</span> reg <span class="hl-number">0</span> timeout</pre><p class="- topic/p p" data-ofbid="d150640e159__20250121171611">如果
+                    MAC 与 PHY 正常连接，则不会有异常信息打印</p></div>
+            <div class="- topic/div div section" id="id__phy-phy">
+                <strong class="+ topic/ph hi-d/b ph b">本机 PHY 和对端 PHY 的连接是否成功</strong>
+                <p class="- topic/p p" data-ofbid="d150640e167__20250121171611">典型的 PHY 电路都留有 PHY 的连接状态指示灯，因此判断本机 PHY 与对端 PHY 是否连接成功的主要 方法就是观察 PHY
+                    指示灯是否正常点亮。如果插上网线后，PHY 指示灯正常点亮则说明 PHY 连接成功。 否则，则说明 PHY 连接失败，可以检查本地 PHY 和对端 PHY
+                    是否没有打开自协商功能且强制配置 的通信速率不相符（可能性很小），并检查 PHY 芯片的时钟、电源、复位引脚是否正常。</p><p class="- topic/p p" data-ofbid="d150640e169__20250121171611">如果使用的 PHY
+                    电路没有预留 PHY 指示灯，则需要通过 PHY 芯片的状态寄存器去检查 PHY 的连接状态。 <span class="- topic/ph ph">Luban-Lite</span> 中通过
+                    “aicphy_update_link” 接口去读取 PHY 的连接状态 如果 本机 PHY 与对端 PHY 芯片连接成功，则会有调试信息
+                </p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_q1q_yc3_bdc" data-ofbid="id__codeblock_q1q_yc3_bdc">[I] aicphy_poll_thread()<span class="hl-number">635</span>  Port <span class="hl-number">0</span> link UP! autoneg mode: speed <span class="hl-number">100</span>M, full duplex, flow control on.</pre></div>
+            <div class="- topic/div div section" id="id__id6">
+                <strong class="+ topic/ph hi-d/b ph b">网络可通信</strong>
+                <p class="- topic/p p" data-ofbid="d150640e183__20250121171611">经过上述的排查，MAC 和 PHY，PHY 和远端 PHY 的通路均正常，则可以进行网络通信验证 </p><div class="- topic/div div section" id="id__id7">
+                    <strong class="+ topic/ph hi-d/b ph b">验证方法</strong>
+                    <ul class="- topic/ul ul simple" id="id__ul_r1q_yc3_bdc" data-ofbid="id__ul_r1q_yc3_bdc"><li class="- topic/li li" data-ofbid="d150640e191__20250121171611">
+                            <div class="- topic/p p" data-ofbid="d150640e193__20250121171611">通过主机 ping
+                                板卡来验证是否可以通信(建议方式)<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_s1q_yc3_bdc" data-ofbid="id__codeblock_s1q_yc3_bdc">E:\code\newstlubanlite\<span class="- topic/ph ph">Luban-Lite</span>&gt;ping <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>
+
+Pinging <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span> with <span class="hl-number">32</span> bytes of data:
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>: bytes=<span class="hl-number">32</span>time=<span class="hl-number">2</span>ms TTL=<span class="hl-number">255</span>
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>: bytes=<span class="hl-number">32</span>time=<span class="hl-number">1</span>ms TTL=<span class="hl-number">255</span>
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>: bytes=<span class="hl-number">32</span>time=<span class="hl-number">1</span>ms TTL=<span class="hl-number">255</span>
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.5</span>: bytes=<span class="hl-number">32</span> time&lt;<span class="hl-number">1</span>ms TTL=<span class="hl-number">255</span>
+
+Ping statistics for192.<span class="hl-number">168.1</span>.<span class="hl-number">5</span>:
+    Packets: Sent=<span class="hl-number">4</span>, Received=<span class="hl-number">4</span>, Lost=<span class="hl-number">0</span>(<span class="hl-number">0</span>% loss),
+Approximate round trip timesin milli-seconds:
+    Minimum= <span class="hl-number">0</span>ms, Maximum= <span class="hl-number">2</span>ms, Average= <span class="hl-number">1</span>ms
+</pre></div>
+                        </li><li class="- topic/li li" data-ofbid="d150640e201__20250121171611">
+                            <div class="- topic/p p" data-ofbid="d150640e203__20250121171611">使能 ping 功能，通过板卡 ping
+                                对端来验证是否可以通信<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_u1q_yc3_bdc" data-ofbid="id__codeblock_u1q_yc3_bdc">aic/&gt; [I] aicphy_poll_thread()<span class="hl-number">635</span>  Port <span class="hl-number">0</span> link UP! autoneg mode: speed <span class="hl-number">100</span>M, full duplex, flow control on.
+aic/&gt; ping <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>
+aic/&gt; Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>: time=<span class="hl-number">3</span>ms
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>: time=<span class="hl-number">3</span>ms
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>: time=<span class="hl-number">3</span>ms
+Reply from <span class="hl-number">192.168</span>.<span class="hl-number">1.2</span>: time=<span class="hl-number">3</span>ms
+
+Ping statistics for192.<span class="hl-number">168.1</span>.<span class="hl-number">2</span>:
+    Packets: Sent=<span class="hl-number">4</span>Received=<span class="hl-number">4L</span>ost=<span class="hl-number">0</span>(<span class="hl-number">0</span>% loss)</pre></div>
+                        </li></ul></div><div class="- topic/div div section" id="id__id8">
+                    <strong class="+ topic/ph hi-d/b ph b">问题分析</strong>
+                    <p class="- topic/p p" data-ofbid="d150640e213__20250121171611">如果通信不正常，在没有对驱动进行修改的情况下，一般不会是寄存器配置的问题，可能的原因有</p><ul class="- topic/ul ul simple" id="id__ul_v1q_yc3_bdc" data-ofbid="id__ul_v1q_yc3_bdc"><li class="- topic/li li" data-ofbid="d150640e216__20250121171611">
+                            <p class="- topic/p p" data-ofbid="d150640e218__20250121171611">clk 配置，检查 MAC 使用的内外部时钟是否正确</p>
+                        </li><li class="- topic/li li" data-ofbid="d150640e221__20250121171611">
+                            <p class="- topic/p p" data-ofbid="d150640e223__20250121171611">clk 频率，测量 MII Data 的 TX/RX Clk 的频率，满足当前标准</p>
+                        </li><li class="- topic/li li" data-ofbid="d150640e226__20250121171611">
+                            <p class="- topic/p p" data-ofbid="d150640e228__20250121171611">时延，如果使用的是千兆网络或百兆网络的内部时钟，确定时延的配置和硬件匹配</p>
+                        </li><li class="- topic/li li" data-ofbid="d150640e231__20250121171611">
+                            <p class="- topic/p p" data-ofbid="d150640e233__20250121171611">防火墙，确认路由器，对端设备不受防火墙的隔离保护</p>
+                        </li></ul><p class="- topic/p p" data-ofbid="d150640e236__20250121171611">如果以上问题均排除，则请获取日志提交原厂分析</p></div></div>
+        </section><section class="- topic/section section" id="id__id9" data-ofbid="id__id9"><h2 class="- topic/title title sectiontitle">辅助工具</h2>
+            
+            <div class="- topic/div div section" id="id__id10">
+                <strong class="+ topic/ph hi-d/b ph b">数据包分析</strong>
+                <p class="- topic/p p" data-ofbid="d150640e250__20250121171611">一般使用 WiredShark 抓包工具进行数据包的分析，可以借助其分析发送和接收的数据内容，从而分析通信双方的行为</p><figure class="- topic/fig fig fignone" data-ofbid="d150640e252__20250121171611"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_w1q_yc3_bdc" src="../../../images/mac/wireshark.jpg" width="576" alt="wireshark"/></div><br/></figure>
+            </div>
+            <div class="- topic/div div section" id="id__id11">
+                <strong class="+ topic/ph hi-d/b ph b">网速测试</strong>
+                <p class="- topic/p p" data-ofbid="d150640e263__20250121171611">压力测试的模型是搭建一个简单的 C/S 模型，Client 以最大资源利用发送数据，Server 端接收 数据并进行相应计算</p><p class="- topic/p p" data-ofbid="d150640e265__20250121171611"><span class="- topic/ph ph">Luban-Lite</span>
+                    自带一种可用于进行压力测试的工具：iperf1.7.0，其会以全速进行数据的收发， 并进行丢包，错包，发送速率计算等辅助工作。
+                    </p><p class="- topic/p p" data-ofbid="d150640e269__20250121171611">网速测试因为需要验证收到的信息的准确性，因此有比较大的计算任务，所以也受 CPU 和 DDR 频率的影响</p><div class="- topic/div div section" id="id__iperf1-7-0">
+                    <strong class="+ topic/ph hi-d/b ph b">iperf1.7.0</strong>
+                    <ul class="- topic/ul ul simple" id="id__ul_x1q_yc3_bdc" data-ofbid="id__ul_x1q_yc3_bdc"><li class="- topic/li li" data-ofbid="d150640e277__20250121171611">
+                            <dl class="- topic/dl dl simple" id="id__dl_y1q_yc3_bdc" data-ofbid="id__dl_y1q_yc3_bdc"><dt class="- topic/dt dt dlterm" data-ofbid="d150640e281__20250121171611">server 命令</dt><dd class="- topic/dd dd">
+                                        <p class="- topic/p p" data-ofbid="d150640e285__20250121171611">iperf -s 以 TCP 服务端的方式监听用户端的数据，可用于测试网络接收速度</p>
+                                    </dd></dl>
+                        </li><li class="- topic/li li" data-ofbid="d150640e289__20250121171611">
+                            <dl class="- topic/dl dl simple" id="id__dl_z1q_yc3_bdc" data-ofbid="id__dl_z1q_yc3_bdc"><dt class="- topic/dt dt dlterm" data-ofbid="d150640e293__20250121171611">client 命令</dt><dd class="- topic/dd dd">
+                                        <p class="- topic/p p" data-ofbid="d150640e297__20250121171611">iperf -c 192.168.3.2 ， 以 TCP 用户端的方式和 server 192.168.3.2
+                                            进行测试，可用于 测试网络发送速度</p>
+                                    </dd></dl>
+                        </li></ul></div></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">调试开关</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id5" data-tocid="id__id5">功能验证</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id9" data-tocid="id__id9">辅助工具</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

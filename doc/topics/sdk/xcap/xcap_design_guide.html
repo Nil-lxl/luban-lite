@@ -1,0 +1,426 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 源代码位于 bsp/artinchip/ ： bsp/artinchip/drv/inputcap/drv_inputcap.c，CAP Driver 层实现 bsp/artinchip/hal/inputcap/hal_inputcap.c，CAP 模块的 HAL 层实现 bsp/artinchip/include/hal/hal_inputcap.h，CAP 模块的 HAL ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-11-21"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/xcap/xcap_design_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/xcap/xcap_design_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/xcap/xcap_design_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">21 Nov 2024</div><div style="color: gray;">
+                    Read time: 7 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_ww1_hpf_fdc" data-ofbid="id__section_ww1_hpf_fdc"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+            
+            <p class="- topic/p p" data-ofbid="d75423e22__20250121171523">源代码位于 <code class="+ topic/ph pr-d/codeph ph codeph">bsp/artinchip/</code>：</p>
+            <ul class="- topic/ul ul simple" id="id__ul_ncl_zyh_fdc" data-ofbid="id__ul_ncl_zyh_fdc"><li class="- topic/li li" data-ofbid="d75423e29__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d75423e31__20250121171523">bsp/artinchip/drv/inputcap/drv_inputcap.c，CAP Driver 层实现</p>
+                </li><li class="- topic/li li" data-ofbid="d75423e34__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d75423e36__20250121171523">bsp/artinchip/hal/inputcap/hal_inputcap.c，CAP 模块的 HAL 层实现</p>
+                </li><li class="- topic/li li" data-ofbid="d75423e39__20250121171523">
+                    <p class="- topic/p p" data-ofbid="d75423e41__20250121171523">bsp/artinchip/include/hal/hal_inputcap.h，CAP 模块的 HAL 层接口头文件</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__section_vbn_1zh_fdc" data-ofbid="id__section_vbn_1zh_fdc"><h2 class="- topic/title title sectiontitle">模块架构</h2>
+            
+            <div class="- topic/div div section" id="id__id3">
+                <p class="- topic/p p" data-ofbid="d75423e52__20250121171523">CAP 驱动 Driver 层采用 RT-Thread 的 INPUT CAPTURE 设备驱动框架。HAL 层也可以支持 Baremetal
+                    方式或配合自定义的设备驱动框架进行使用。 </p>
+                <figure class="- topic/fig fig fignone" id="id__id7" data-ofbid="id__id7"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_ocl_zyh_fdc" src="../../../images/cap/sw_system12.png" alt="sw_system12"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">CAP 驱动的软件架构图</span></figcaption></figure>
+            </div>
+        </section><section class="- topic/section section" id="id__section_bbz_1zh_fdc" data-ofbid="id__section_bbz_1zh_fdc"><h2 class="- topic/title title sectiontitle">关键流程设计</h2>
+            
+            <div class="- topic/div div section" id="id__id5">
+                <strong class="+ topic/ph hi-d/b ph b">初始化流程</strong>
+                <p class="- topic/p p" data-ofbid="d75423e73__20250121171523">CAP 驱动的初始化接口通过 <code class="+ topic/ph pr-d/codeph ph codeph">INIT_DEVICE_EXPORT(drv_inputcap_init)</code> 完成，主要是通过调用
+                    INPUT CAPTURE 子系统的接口 rt_device_inputcapture_register() 注册一个 CAP 设备。</p><p class="- topic/p p" data-ofbid="d75423e78__20250121171523">CAP
+                    控制器的配置过程，主要步骤有：</p><ol class="- topic/ol ol arabic simple" id="id__ol_pcl_zyh_fdc" data-ofbid="id__ol_pcl_zyh_fdc"><li class="- topic/li li" data-ofbid="d75423e81__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75423e83__20250121171523">初始化 CAP 模块的 clk</p>
+                    </li><li class="- topic/li li" data-ofbid="d75423e86__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75423e88__20250121171523">使能 CAP 指定通道的 clk</p>
+                    </li><li class="- topic/li li" data-ofbid="d75423e91__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75423e93__20250121171523">设置 CAP 捕捉事件</p>
+                    </li><li class="- topic/li li" data-ofbid="d75423e96__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75423e98__20250121171523">使能 CAP 的中断或 DMA</p>
+                    </li><li class="- topic/li li" data-ofbid="d75423e101__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75423e103__20250121171523">启动 CAP 计数</p>
+                    </li></ol></div>
+        </section><section class="- topic/section section" id="id__section_tkj_bzh_fdc" data-ofbid="id__section_tkj_bzh_fdc"><h2 class="- topic/title title sectiontitle">数据结构设计</h2>
+            
+            <div class="- topic/div div section" id="id__struct-aic-inputcap-pdata">
+                <strong class="+ topic/ph hi-d/b ph b">struct aic_inputcap_pdata</strong>
+                <div class="- topic/p p" data-ofbid="d75423e117__20250121171523">属于 HAL 层接口，记录每一个 CAP
+                    通道的捕捉数据信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_vgj_dzh_fdc" data-ofbid="id__codeblock_vgj_dzh_fdc"><strong class="hl-keyword">struct</strong> aic_inputcap_pdata {
+    u8 id;
+    u8 isr_event;
+    <strong class="hl-keyword">enum</strong> inputcap_polarity event0_pol;
+    <strong class="hl-keyword">enum</strong> inputcap_polarity event1_pol;
+    u32 cur_cnt;
+    u32 last_cnt;
+    <strong class="hl-keyword">struct</strong> aic_inputcap_transfer_info t_info0;
+    <strong class="hl-keyword">struct</strong> aic_inputcap_transfer_info t_info1;
+};</pre></div>
+            </div>
+            <div class="- topic/div div section" id="id__struct-aic-inputcap">
+                <strong class="+ topic/ph hi-d/b ph b">struct aic_inputcap</strong>
+                <div class="- topic/p p" data-ofbid="d75423e128__20250121171523">属于 Driver 层接口，记录一个 CAP
+                    设备的配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xnw_dzh_fdc" data-ofbid="id__codeblock_xnw_dzh_fdc"><strong class="hl-keyword">struct</strong> aic_inputcap {
+    <strong class="hl-keyword">struct</strong> rt_inputcapture_device rtdev;
+    <strong class="hl-keyword">struct</strong> aic_inputcap_pdata *data;
+};</pre></div></div>
+        </section><section class="- topic/section section" id="id__section_tfx_czh_fdc" data-ofbid="id__section_tfx_czh_fdc"><h2 class="- topic/title title sectiontitle">Driver 层接口设计</h2>
+            
+                <div class="- topic/p p" data-ofbid="d75423e138__20250121171523">以下接口是 INPUT CAPTURE
+                    设备驱动框架的标准接口。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_q13_2zh_fdc" data-ofbid="id__codeblock_q13_2zh_fdc"><strong class="hl-keyword">struct</strong> rt_inputcapture_ops
+{
+    rt_err_t (*init)(<strong class="hl-keyword">struct</strong> rt_inputcapture_device *inputcapture);
+    rt_err_t (*open)(<strong class="hl-keyword">struct</strong> rt_inputcapture_device *inputcapture);
+    rt_err_t (*close)(<strong class="hl-keyword">struct</strong> rt_inputcapture_device *inputcapture);
+    rt_err_t (*get_pulsewidth)(<strong class="hl-keyword">struct</strong> rt_inputcapture_device *inputcapture, rt_uint32_t *pulsewidth_us);
+    #<strong class="hl-keyword">if</strong> defined (AIC_INPUTCAP_DRV) &amp;&amp; defined (AIC_DMA_DRV)
+    rt_err_t (*set_buf)(<strong class="hl-keyword">struct</strong> rt_inputcapture_device *inputcapture, <strong class="hl-keyword">struct</strong> rt_inputcapture_fifo_buf *ptr);
+    #endif
+};</pre></div>
+                <p class="- topic/p p" data-ofbid="d75423e143__20250121171523">其中 <code class="+ topic/ph pr-d/codeph ph codeph">(*set_buf)</code> 为 CAP 拓展的接口，用于 DMA 模式。 </p>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_qcl_zyh_fdc" data-ofbid="id__table_qcl_zyh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_inputcap_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_qcl_zyh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_qcl_zyh_fdc__entry__2">static rt_err_t aic_inputcap_init(struct
+                                    rt_inputcapture_device *inputcapture)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qcl_zyh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qcl_zyh_fdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qcl_zyh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qcl_zyh_fdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">inputcapture - 指向 rt_inputcapture_device 设备的指针</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qcl_zyh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qcl_zyh_fdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_qcl_zyh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_qcl_zyh_fdc__entry__2">- </td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_rcl_zyh_fdc" data-ofbid="id__table_rcl_zyh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_inputcap_open</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_rcl_zyh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_rcl_zyh_fdc__entry__2">static rt_err_t aic_inputcap_open(struct
+                                    rt_inputcapture_device *inputcapture)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rcl_zyh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rcl_zyh_fdc__entry__2">并配置使能 CAP</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rcl_zyh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rcl_zyh_fdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">inputcapture - 指向 rt_inputcapture_device 设备的指针</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rcl_zyh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rcl_zyh_fdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_rcl_zyh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_rcl_zyh_fdc__entry__2">- </td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_scl_zyh_fdc" data-ofbid="id__table_scl_zyh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_inputcap_close</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_scl_zyh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_scl_zyh_fdc__entry__2">static rt_err_t aic_inputcap_close(struct
+                                    rt_inputcapture_device *inputcapture)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_scl_zyh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_scl_zyh_fdc__entry__2">关闭 CAP</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_scl_zyh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_scl_zyh_fdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">inputcapture - 指向 rt_inputcapture_device 设备的指针</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_scl_zyh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_scl_zyh_fdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_scl_zyh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_scl_zyh_fdc__entry__2">- </td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_tcl_zyh_fdc" data-ofbid="id__table_tcl_zyh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_inputcap_get_pulsewidth</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_tcl_zyh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_tcl_zyh_fdc__entry__2">static rt_err_t aic_inputcap_get_pulsewidth(struct
+                                    rt_inputcapture_device *inputcapture, rt_uint32_t
+                                    *pulsewidth_us)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tcl_zyh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tcl_zyh_fdc__entry__2">计算脉冲间隔时间</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tcl_zyh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tcl_zyh_fdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">inputcapture - 指向 rt_inputcapture_device 设备的指针</div>
+                                        <div class="- topic/div div">pulsewidth_us - RT-Thread 回调参数脉冲间隔变量的指针</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_tcl_zyh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_tcl_zyh_fdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_tcl_zyh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_tcl_zyh_fdc__entry__2">- </td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_ucl_zyh_fdc" data-ofbid="id__table_ucl_zyh_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_inputcap_setbuf</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ucl_zyh_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_ucl_zyh_fdc__entry__2">static rt_err_t aic_inputcap_setbuf(struct
+                                    rt_inputcapture_device *inputcapture, struct
+                                    rt_inputcapture_fifo_buf *ptr)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ucl_zyh_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ucl_zyh_fdc__entry__2">设置 DMA 的 BUFF 地址</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ucl_zyh_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ucl_zyh_fdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">inputcapture - 指向 rt_inputcapture_device 设备的指针</div>
+                                        <div class="- topic/div div">ptr - 指向 rt_inputcapture_fifo_buf FIFO 地址、长度信息</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ucl_zyh_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ucl_zyh_fdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ucl_zyh_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_ucl_zyh_fdc__entry__2">当使用 DMA 模式才需要设置</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="id__section_wyd_hzh_fdc" data-ofbid="id__section_wyd_hzh_fdc"><h2 class="- topic/title title sectiontitle">HAL 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d75423e361__20250121171523">HAL 层的函数接口声明存放在 hal_cap.h
+                中，主要接口有：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_r5g_3zh_fdc" data-ofbid="id__codeblock_r5g_3zh_fdc"><strong class="hl-keyword">void</strong> hal_inputcap_evnt_en(u32 i, u32 event, u32 enable);
+<strong class="hl-keyword">void</strong> hal_inputcap_pol_set(u32 i, u32 event, <strong class="hl-keyword">enum</strong> inputcap_polarity event_pol);
+<strong class="hl-keyword">void</strong> hal_inputcap_cnt_en(u32 i, u32 enable);
+u32 hal_inputcap_get_cnt(u32 i);
+<strong class="hl-keyword">void</strong> hal_inputcap_set_fifo(u32 i, u32 fifo, u32 enable);
+u32 hal_inputcap_int_stat(u32 i);
+<strong class="hl-keyword">void</strong> hal_inputcap_int_clr(u32 i, u32 mask);
+u32 hal_inputcap_get_event_fifo(u32 i, u32 fifo);
+<strong class="hl-keyword">void</strong> hal_inputcap_fifo_flush(u32 i, u32 fifo);
+#ifdef AIC_DMA_DRV
+<strong class="hl-keyword">void</strong> hal_inputcap_dma_config(<strong class="hl-keyword">struct</strong> aic_inputcap_pdata *chan, u32 event,
+                                        dma_async_callback callback, <strong class="hl-keyword">void</strong> *callback_param);
+#endif</pre></div>
+        </section><section class="- topic/section section" id="id__section_lbm_hzh_fdc" data-ofbid="id__section_lbm_hzh_fdc"><h2 class="- topic/title title sectiontitle">Demo</h2>
+            
+            <div class="- topic/p p" data-ofbid="d75423e371__20250121171523">本 Demo 是 test_inputcap
+                的部分源码（bsp/examples/test-inputcap/test_inputcap.c）：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_y5n_3zh_fdc" data-ofbid="id__codeblock_y5n_3zh_fdc">#<span class="hl-directive">define</span> WATER_MARK      <span class="hl-number">64</span>
+
+#ifdef AIC_DMA_DRV
+#<span class="hl-directive">define</span> INPUTCAP_CLK_RATE        <span class="hl-number">48000000</span>
+rt_uint32_t data_buf0[WATER_MARK] __attribute__((aligned(<span class="hl-number">32</span>))) = {<span class="hl-number">0</span>};
+rt_uint32_t data_buf1[WATER_MARK] __attribute__((aligned(<span class="hl-number">32</span>))) = {<span class="hl-number">0</span>};
+rt_uint8_t event0_flag = <span class="hl-number">0</span>;
+rt_uint8_t event1_flag = <span class="hl-number">0</span>;
+#endif
+
+<em class="hl-comment">/* callback function */</em>
+<strong class="hl-keyword">static</strong> rt_err_t inputcap_cb(rt_device_t dev, rt_size_t size)
+{
+#ifdef AIC_DMA_DRV
+    rt_uint8_t *p = dev-&gt;user_data;
+
+    <strong class="hl-keyword">if</strong> ((rt_uint32_t)*p == <span class="hl-number">0</span>)
+        event0_flag = <span class="hl-number">1</span>;
+    <strong class="hl-keyword">else</strong>
+        event1_flag = <span class="hl-number">1</span>;
+
+#ifdef ULOG_USING_ISR_LOG
+    rt_uint32_t temp_cnt;
+    <strong class="hl-keyword">if</strong> ((rt_uint32_t)*p == <span class="hl-number">0</span>) {
+        <strong class="hl-keyword">for</strong> (<strong class="hl-keyword">int</strong> i = <span class="hl-number">0</span>; i &lt; WATER_MARK - <span class="hl-number">1</span>; i++) {
+            <strong class="hl-keyword">if</strong> (data_buf0[i + <span class="hl-number">1</span>] &gt; data_buf0[i])
+                temp_cnt = data_buf0[i + <span class="hl-number">1</span>] - data_buf0[i];
+            <strong class="hl-keyword">else</strong>
+                temp_cnt = data_buf0[i + <span class="hl-number">1</span>] + ((<span class="hl-number">0xFFFFFFFF</span> - data_buf0[i]) + <span class="hl-number">1</span>);
+
+            rt_kprintf(<span class="hl-string">"%s event%d: pulsewidth:%d us\n"</span>, &amp;dev-&gt;parent.name, (rt_uint32_t)*p, temp_cnt / (INPUTCAP_CLK_RATE / <span class="hl-number">1000000</span>));
+        }
+    } <strong class="hl-keyword">else</strong> {
+        <strong class="hl-keyword">for</strong> (<strong class="hl-keyword">int</strong> i = <span class="hl-number">0</span>; i &lt; WATER_MARK - <span class="hl-number">1</span>; i++) {
+            <strong class="hl-keyword">if</strong> (data_buf1[i + <span class="hl-number">1</span>] &gt; data_buf1[i])
+                temp_cnt = data_buf1[i + <span class="hl-number">1</span>] - data_buf1[i];
+            <strong class="hl-keyword">else</strong>
+                temp_cnt = data_buf1[i + <span class="hl-number">1</span>] + ((<span class="hl-number">0xFFFFFFFF</span> - data_buf1[i]) + <span class="hl-number">1</span>);
+
+            rt_kprintf(<span class="hl-string">"%s event%d: pulsewidth:%d us\n"</span>, &amp;dev-&gt;parent.name, (rt_uint32_t)*p, temp_cnt / (INPUTCAP_CLK_RATE / <span class="hl-number">1000000</span>));
+        }
+    }
+#endif
+
+#<strong class="hl-keyword">else</strong>
+    <strong class="hl-keyword">struct</strong> rt_inputcapture_data inputcap_data[WATER_MARK];
+    rt_device_read(dev, <span class="hl-number">0</span>, (<strong class="hl-keyword">void</strong> *)inputcap_data, size);
+#ifdef ULOG_USING_ISR_LOG
+    <strong class="hl-keyword">for</strong> (<strong class="hl-keyword">int</strong> i = <span class="hl-number">0</span>; i &lt; size; i++)
+        rt_kprintf(<span class="hl-string">"%s: pulsewidth:%d us\n"</span>, &amp;dev-&gt;parent.name, inputcap_data[i].pulsewidth_us);
+#endif
+#endif
+    <strong class="hl-keyword">return</strong> RT_EOK;
+}
+
+<strong class="hl-keyword">int</strong> test_inputcap(<strong class="hl-keyword">int</strong> argc, <strong class="hl-keyword">char</strong> **argv)
+{
+    rt_uint32_t watermark = WATER_MARK;
+    rt_device_t inputcap_dev = RT_NULL;
+    <strong class="hl-keyword">char</strong> device_name[<span class="hl-number">8</span>] = {<span class="hl-string">"incap"</span>};
+    <strong class="hl-keyword">int</strong> ret;
+
+    <strong class="hl-keyword">if</strong> (argc != <span class="hl-number">2</span>) {
+        rt_kprintf(<span class="hl-string">"Usage: test_inputcap 0\n"</span>);
+        <strong class="hl-keyword">return</strong> -RT_EINVAL;
+    }
+
+    strcat(device_name, argv[<span class="hl-number">1</span>]);
+
+    inputcap_dev =  rt_device_find(device_name);
+    <strong class="hl-keyword">if</strong> (inputcap_dev == RT_NULL) {
+        rt_kprintf(<span class="hl-string">"Can't find %s device!\n"</span>, device_name);
+        <strong class="hl-keyword">return</strong> -RT_EEMPTY;
+    }
+
+#ifdef AIC_DMA_DRV
+    <strong class="hl-keyword">struct</strong> rt_inputcapture_fifo_buf buf_para;
+    buf_para.event0_buf = data_buf0;
+    buf_para.event0_buflen = <strong class="hl-keyword">sizeof</strong>(data_buf0);
+    buf_para.event1_buf = data_buf1;
+    buf_para.event1_buflen = <strong class="hl-keyword">sizeof</strong>(data_buf1);
+    ret = rt_device_control(inputcap_dev, INPUTCAPTURE_CMD_SET_DATA_BUF, (<strong class="hl-keyword">void</strong> *)&amp;buf_para);
+    <strong class="hl-keyword">if</strong> (ret != RT_EOK) {
+        rt_kprintf(<span class="hl-string">"Failed to set %s device watermark!\n"</span>, device_name);
+        <strong class="hl-keyword">return</strong> ret;
+    }
+#endif
+    ret = rt_device_control(inputcap_dev, INPUTCAPTURE_CMD_SET_WATERMARK, &amp;watermark);
+    <strong class="hl-keyword">if</strong> (ret != RT_EOK) {
+        rt_kprintf(<span class="hl-string">"Failed to set %s device watermark!\n"</span>, device_name);
+        <strong class="hl-keyword">return</strong> ret;
+    }
+
+    <em class="hl-comment">/* set callback function */</em>
+    rt_device_set_rx_indicate(inputcap_dev, inputcap_cb);
+
+    ret = rt_device_open(inputcap_dev, RT_DEVICE_OFLAG_RDWR);
+    <strong class="hl-keyword">if</strong> (ret != RT_EOK) {
+        rt_kprintf(<span class="hl-string">"Failed to open %s device!\n"</span>, device_name);
+        <strong class="hl-keyword">return</strong> ret;
+    }
+
+    rt_kprintf(<span class="hl-string">"inputcap%d open.\n"</span>, atoi(argv[<span class="hl-number">1</span>]));
+
+#ifdef AIC_DMA_DRV
+    <strong class="hl-keyword">int</strong> wait_count = <span class="hl-number">1000</span>;
+    <strong class="hl-keyword">while</strong> (<span class="hl-number">1</span>) {
+        <strong class="hl-keyword">if</strong> (event0_flag == <span class="hl-number">1</span> &amp;&amp; event1_flag == <span class="hl-number">1</span>) {
+            event0_flag = <span class="hl-number">0</span>;
+            event1_flag = <span class="hl-number">0</span>;
+            rt_device_close(inputcap_dev);
+            <strong class="hl-keyword">break</strong>;
+        }
+        rt_thread_mdelay(<span class="hl-number">10</span>);
+        wait_count--;
+        <strong class="hl-keyword">if</strong> (wait_count == <span class="hl-number">0</span>) {
+            rt_kprintf(<span class="hl-string">"no signal input!\n"</span>);
+            rt_device_close(inputcap_dev);
+            <strong class="hl-keyword">break</strong>;
+        }
+    }
+    rt_kprintf(<span class="hl-string">"inputcap%d close.\n"</span>, atoi(argv[<span class="hl-number">1</span>]));
+#endif
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}
+MSH_CMD_EXPORT_ALIAS(test_inputcap, test_inputcap, Test the inputcap);</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_ww1_hpf_fdc" data-tocid="id__section_ww1_hpf_fdc">源码说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_vbn_1zh_fdc" data-tocid="id__section_vbn_1zh_fdc">模块架构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_bbz_1zh_fdc" data-tocid="id__section_bbz_1zh_fdc">关键流程设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_tkj_bzh_fdc" data-tocid="id__section_tkj_bzh_fdc">数据结构设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_tfx_czh_fdc" data-tocid="id__section_tfx_czh_fdc">Driver 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_wyd_hzh_fdc" data-tocid="id__section_wyd_hzh_fdc">HAL 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_lbm_hzh_fdc" data-tocid="id__section_lbm_hzh_fdc">Demo</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

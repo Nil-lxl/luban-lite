@@ -1,0 +1,31 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('rtconfig')
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+CPPPATH = [cwd]
+src = Glob('*.c')
+lib_src = []
+VERSION = ''
+if GetDepend(['LVGL_V_8']):
+    lib_src += Glob('v8/*.c')
+    CPPPATH.append(cwd + '/v8')
+    VERSION = 'v8'
+
+if GetDepend(['LVGL_V_9']):
+    lib_src += Glob('v9/*.c')
+    CPPPATH.append(cwd + '/v9')
+    VERSION = 'v9'
+
+PATH = AIC_ROOT + '/packages/artinchip/lvgl-ui/aic_widgets/aic_canvas/'
+lib_name = 'aic_canvas_' + VERSION + '_' + rtconfig.CPUNAME + '.a'
+if os.path.exists(PATH + VERSION + '/lv_aic_canvas.c'):
+    DefineGroup(PATH + lib_name, lib_src, depend = [''], LIBRARY='')
+
+group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL'], CPPPATH = CPPPATH, LIBS =
+        ['aic_canvas_' + VERSION+ '_' + rtconfig.CPUNAME], LIBPATH = [PATH])
+
+Return('group')

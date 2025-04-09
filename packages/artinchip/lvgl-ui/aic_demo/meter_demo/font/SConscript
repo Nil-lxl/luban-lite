@@ -1,0 +1,12 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+src = []
+CPPPATH = [cwd]
+
+src += Glob('./*.c')
+group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_METER_DEMO'], CPPPATH = CPPPATH)
+
+Return('group')

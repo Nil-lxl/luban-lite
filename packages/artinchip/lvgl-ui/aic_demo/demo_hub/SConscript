@@ -1,0 +1,32 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+src = Glob('*.c')
+CPPPATH = [cwd]
+
+list = os.listdir(cwd)
+for d in list:
+    path = os.path.join(cwd, d)
+    if os.path.isfile(os.path.join(path, 'SConscript')):
+        group = group + SConscript(os.path.join(d, 'SConscript'))
+
+if GetDepend(['PANEL_HACTIVE']):
+    hactice = GetDepend('PANEL_HACTIVE')
+else:
+    hactice = 480
+
+if hactice == 1024:
+    install=[
+            ('assets/1024x600/', 'rodata/'),
+            ]
+else:
+    install=[
+            ('assets/480x272/', 'rodata/'),
+            ]
+
+group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_DEMO_HUB_DEMO'], CPPPATH = CPPPATH,
+        INSTALL=install)
+
+Return('group')

@@ -1,0 +1,16 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('RT_USING_FINSH'):
+    if GetDepend('FINSH_USING_MSH') and GetDepend('RT_USING_FAL'):
+        src = Glob('test_fal.c')
+    if GetDepend('RT_USING_SFUD') and GetDepend('RT_USING_SPI'):
+        src += Glob('test_sfud.c')
+
+group = DefineGroup('test-spinor', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

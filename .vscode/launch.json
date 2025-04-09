@@ -1,0 +1,189 @@
+{
+	// Usage：
+	// 1. Modify the ELF file path
+	// 2. Modify the IP and Port of DebugServer
+	// 3. Modify the breakpoint define
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "D12x/D13x Load",
+			"type": "cppdbg",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"program": "${cwd}/output/d13x_demo88-nand_rt-thread_helloworld/images/d13x.elf",	// FIXME
+			"args": [],
+			"stopAtEntry": false,
+			"environment": [],
+			"externalConsole": true,
+			"MIMode": "gdb",
+			"miDebuggerPath": "${cwd}/toolchain/bin/riscv64-unknown-elf-gdb.exe",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"text": "set arch riscv:rv32"
+				},
+				{
+					"text": "set height 0"
+				},
+				{
+					"text": "mem 0x30040000 0x3013ffff rw"
+				},
+				{
+					"text": "mem 0x10000000 0x19ffffff rw"
+				},
+				{
+					"text": "mem 0x40000000 0x41ffffff rw"
+				},
+				{
+					"text": "target remote 172.16.x.x:3333"	// FIXME
+				},
+				{
+					// MUST use full path
+					"text": "load e:/workspace/luban-lite/output/d13x_demo88-nand_rt-thread_helloworld/images/d13x.elf"	// FIXME
+				},
+				{
+					// MUST use full path
+					"text": "file e:/workspace/luban-lite/output/d13x_demo88-nand_rt-thread_helloworld/images/d13x.elf"	// FIXME
+				},
+				{
+					"text": "set $a0=0"
+				},
+				{
+					"text": "set $a1=0"
+				},
+				{
+					// FIXME
+					"text": "b rt_hw_board_init"
+				}
+			]
+		},
+		{
+			"name": "D12x/D13x connect only",
+			"type": "cppdbg",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"program": "${cwd}/output/d13x_demo88-nand_rt-thread_helloworld/images/d13x.elf",	// FIXME
+			"args": [],
+			"stopAtEntry": false,
+			"environment": [],
+			"externalConsole": true,
+			"MIMode": "gdb",
+			"miDebuggerPath": "${cwd}/toolchain/bin/riscv64-unknown-elf-gdb.exe",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"text": "set arch riscv:rv32"
+				},
+				{
+					"text": "set height 0"
+				},
+				{
+					"text": "mem 0x30040000 0x3013ffff rw"
+				},
+				{
+					"text": "mem 0x10000000 0x19ffffff rw"
+				},
+				{
+					"text": "mem 0x40000000 0x41ffffff rw"
+				},
+				{
+					"text": "target remote 172.16.x.x:3333"	// FIXME
+				},
+				{
+					// MUST use full path
+					"text": "file e:/workspace/luban-lite/output/d13x_demo88-nand_rt-thread_helloworld/images/d13x.elf"	// FIXME
+				},
+				{
+					// FIXME
+					"text": "b rt_hw_board_init"
+				}
+			]
+		},
+		{
+			"name": "D21x Load",
+			"type": "cppdbg",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"program": "${cwd}/output/d21x_demo88-nand_rt-thread_helloworld/images/d21x.elf",	// FIXME
+			"args": [],
+			"stopAtEntry": false,
+			"environment": [],
+			"externalConsole": true,
+			"MIMode": "gdb",
+			"miDebuggerPath": "${cwd}/toolchain/bin/riscv64-unknown-elf-gdb.exe",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"text": "set height 0"
+				},
+				{
+					"text": "target remote 172.16.x.x:3333"	// FIXME
+				},
+				{
+					// MUST use full path
+					"text": "load e:/workspace/luban-lite/output/d21x_demo88-nand_rt-thread_helloworld/images/d21x.elf"	// FIXME
+				},
+				{
+					// MUST use full path
+					"text": "file e:/workspace/luban-lite/output/d21x_demo88-nand_rt-thread_helloworld/images/d21x.elf"	// FIXME
+				},
+				{
+					"text": "set $a0=0"
+				},
+				{
+					"text": "set $a1=0"
+				},
+				{
+					// FIXME
+					"text": "b rt_hw_board_init"
+				}
+			]
+		},
+		{
+			"name": "D21x connect only",
+			"type": "cppdbg",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"program": "${cwd}/output/d21x_demo88-nand_rt-thread_helloworld/images/d21x.elf",	// FIXME
+			"args": [],
+			"stopAtEntry": false,
+			"environment": [],
+			"externalConsole": true,
+			"MIMode": "gdb",
+			"miDebuggerPath": "${cwd}/toolchain/bin/riscv64-unknown-elf-gdb.exe",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"text": "set height 0"
+				},
+				{
+					"text": "target remote 172.16.x.x:3333"	// FIXME
+				},
+				{
+					// MUST use full path
+					"text": "file e:/workspace/luban-lite/output/d21x_demo88-nand_rt-thread_helloworld/images/d21x.elf"	// FIXME
+				},
+				{
+					// FIXME
+					"text": "b rt_hw_board_init"
+				}
+			]
+		}
+	]
+}

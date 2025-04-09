@@ -1,0 +1,296 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本章节描述 SPI NAND 驱动的相关配置和使用。 驱动框架 SPI NAND 的操作基于 SPI 命令，除了个别型号可能有不同之外，基本上操作和行为都是一致的， 所以 U-Boot 中已经实现了共用版本的 SPI NAND 驱动，具体器件只需要添加小部分驱动代码即可。 相关配置： CONFIG_MTD CONFIG_DM_SPI CONFIG_SPI_MEM ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-18"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="spiNand_1"/><meta name="DC.language" content="zh-CN"/><title>SPI NAND</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/spi-nand-drivers.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/spi-nand-drivers.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="spiNand_1" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/spi-nand-drivers.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SPI NAND</h1><div class="date inPage">18 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d141869e22__20250121171609">本章节描述 SPI NAND 驱动的相关配置和使用。</p><section class="- topic/section section" id="spiNand_1__section_iqb_3ch_bzb" data-ofbid="spiNand_1__section_iqb_3ch_bzb"><h2 class="- topic/title title sectiontitle">驱动框架</h2>
+            
+            <p class="- topic/p p" data-ofbid="d141869e29__20250121171609">SPI NAND 的操作基于 SPI 命令，除了个别型号可能有不同之外，基本上操作和行为都是一致的， 所以 U-Boot 中已经实现了共用版本的 SPI NAND
+                驱动，具体器件只需要添加小部分驱动代码即可。</p>
+            <p class="- topic/p p" data-ofbid="d141869e32__20250121171609">相关配置：</p>
+            <ul class="- topic/ul ul" id="spiNand_1__ul_kqb_3ch_bzb" data-ofbid="spiNand_1__ul_kqb_3ch_bzb"><li class="- topic/li li" data-ofbid="d141869e36__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d141869e38__20250121171609">CONFIG_MTD</p>
+                </li><li class="- topic/li li" data-ofbid="d141869e41__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d141869e43__20250121171609">CONFIG_DM_SPI</p>
+                </li><li class="- topic/li li" data-ofbid="d141869e46__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d141869e48__20250121171609">CONFIG_SPI_MEM</p>
+                </li><li class="- topic/li li" data-ofbid="d141869e51__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d141869e53__20250121171609">CONFIG_MTD_SPI_NAND</p>
+                </li><li class="- topic/li li" data-ofbid="d141869e56__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d141869e58__20250121171609">CONFIG_SPL_SPI_NAND_ARTINCHIP</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d141869e62__20250121171609">源码位于 <span class="+ topic/ph sw-d/filepath ph filepath">drivers/mtd/nand/spi/</span>。</p>
+        </section><section class="- topic/section section" id="spiNand_1__section_nqb_3ch_bzb" data-ofbid="spiNand_1__section_nqb_3ch_bzb"><h2 class="- topic/title title sectiontitle">驱动接口</h2>
+            
+            <p class="- topic/p p" data-ofbid="d141869e73__20250121171609">SPI NAND 属于 MTD 设备，使用 MTD 相关接口。具体参考：</p>
+            <ul class="- topic/ul ul" id="spiNand_1__ul_pqb_3ch_bzb" data-ofbid="spiNand_1__ul_pqb_3ch_bzb"><li class="- topic/li li" data-ofbid="d141869e77__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d141869e79__20250121171609"><span class="+ topic/ph sw-d/filepath ph filepath">include/linux/mtd/mtd.h</span></p>
+                </li></ul>
+        </section><section class="- topic/section section" id="spiNand_1__section_qqb_3ch_bzb" data-ofbid="spiNand_1__section_qqb_3ch_bzb"><h2 class="- topic/title title sectiontitle">初始化和读写</h2>
+            
+            <div class="- topic/p p" data-ofbid="d141869e89__20250121171609">SPI NAND 是挂载在 SPI 总线上的 MTD 设备，初始化 probe 在 MTD 设备第一次被使用时触发。 调用
+                    <span class="+ topic/keyword pr-d/apiname keyword apiname">mtd_probe_devices()</span> 是对 MTD
+                设备驱动初始化的常用方式。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spiNand_1__codeblock_hzh_gvx_sdc" data-ofbid="spiNand_1__codeblock_hzh_gvx_sdc">mtd_probe_devices(<strong class="hl-keyword">void</strong>)
+|-&gt; mtd_probe_uclass_mtd_devs(<strong class="hl-keyword">void</strong>) <em class="hl-comment">// drivers/mtd/mtd_uboot.c</em>
+    |   <em class="hl-comment">// 通过 while 循环，逐个 UCLASS_MTD 设备 find</em>
+    |-&gt; uclass_find_device(UCLASS_MTD, idx, &amp;dev)
+    |-&gt; mtd_probe(dev)
+        |-&gt; device_probe(dev)
+            |-&gt; spinand_probe(dev) <em class="hl-comment">// drivers/mtd/nand/spi/core.c</em>
+                |   <em class="hl-comment">// spinand = dev_get_priv(dev);</em>
+                |   <em class="hl-comment">// slave = dev_get_parent_priv(dev);</em>
+                |   <em class="hl-comment">// mtd = dev_get_uclass_priv(dev);</em>
+                |   <em class="hl-comment">// nand = &amp;spinand-&gt;base;</em>
+                |   <em class="hl-comment">//</em>
+                |   <em class="hl-comment">// spinand-&gt;slave = slave;</em>
+                |
+                |-&gt; spinand_init(spinand);
+                |   |-&gt; spinand_detect(spinand);
+                |   |   |-&gt; spinand_manufacturer_detect(spinand);
+                |   |       |                 <em class="hl-comment">// drivers/mtd/nand/spi/core.c</em>
+                |   |       |-&gt; spinand_manufacturers[i]-&gt;ops-&gt;detect(spinand);
+                |   |           <em class="hl-comment">// 尝试厂商的 detect 函数</em>
+                |   |
+                |   |-&gt; spinand_manufacturer_init(spinand);
+                |   |-&gt; nanddev_init(nand, &amp;spinand_ops, THIS_MODULE);
+                |   |   |                         <em class="hl-comment">// drivers/mtd/nand/core.c</em>
+                |   |   |   <em class="hl-comment">// mtd-&gt;type = memorg-&gt;bits_per_cell == 1 ?</em>
+                |   |   |   <em class="hl-comment">//          MTD_NANDFLASH : MTD_MLCNANDFLASH;</em>
+                |   |   |
+                |   |   |-&gt; nanddev_bbt_init(nand) <em class="hl-comment">// drivers/mtd/nand/bbt.c</em>
+                |   |       <em class="hl-comment">// 此处仅申请标记坏块的 Cache 空间，不做坏块检查</em>
+                |   |
+                |   |-&gt; <em class="hl-comment">// mtd = spinand-&gt;base.mtd</em>
+                |       <em class="hl-comment">//</em>
+                |       <em class="hl-comment">// mtd-&gt;_read_oob = spinand_mtd_read;</em>
+                |       <em class="hl-comment">// mtd-&gt;_write_oob = spinand_mtd_write;</em>
+                |       <em class="hl-comment">// mtd-&gt;_block_isbad = spinand_mtd_block_isbad;</em>
+                |       <em class="hl-comment">// mtd-&gt;_block_markbad = spinand_mtd_block_markbad;</em>
+                |       <em class="hl-comment">// mtd-&gt;_block_isreserved = spinand_mtd_block_isreserved;</em>
+                |       <em class="hl-comment">// mtd-&gt;_erase = spinand_mtd_erase;</em>
+                |       <em class="hl-comment">//</em>
+                |       <em class="hl-comment">// 此处完成 mtd 的初始化</em>
+                |
+                |-&gt; add_mtd_device(mtd);
+                    |-&gt; idr_alloc(&amp;mtd_idr, mtd, <span class="hl-number">0</span>, <span class="hl-number">0</span>, GFP_KERNEL);
+                            <em class="hl-comment">// 添加到 mtd_idr 列表中</em></pre></div>
+            <div class="- topic/p p" data-ofbid="d141869e97__20250121171609">NAND 存储设备在访问前，通常要做一次坏块检查。U-Boot
+                中在添加分区的时候进行检查坏块：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spiNand_1__codeblock_kpw_gvx_sdc" data-ofbid="spiNand_1__codeblock_kpw_gvx_sdc">do_mtd_list();  <em class="hl-comment">// cmd/mtd.c</em>
+|-&gt; mtd_probe_devices(); <em class="hl-comment">// drivers/mtd/mtd_uboot.c</em>
+    |-&gt; add_mtd_partitions(); <em class="hl-comment">// drivers/mtd/mtdpart.c</em>
+        |-&gt; allocate_partition(); <em class="hl-comment">// drivers/mtd/mtdpart.c</em>
+        |   |   <em class="hl-comment">// 这里做坏块统计</em>
+        |   |-&gt; mtd_block_isbad(); <em class="hl-comment">// drivers/mtd/mtdcore.c</em>
+        |       |-&gt; mtd-&gt;_block_isbad(mtd, ofs);
+        |           spinand_mtd_block_isbad(); <em class="hl-comment">// drivers/mtd/nand/spi/core.c</em>
+        |           |-&gt; nanddev_isbad(); <em class="hl-comment">// drivers/mtd/nand/core.c</em>
+        |               |-&gt; spinand_isbad(); <em class="hl-comment">// drivers/mtd/nand/spi/core.c</em>
+        |                   |-&gt; spinand_read_page();
+        |
+        |-&gt; add_mtd_device(slave); <em class="hl-comment">// drivers/mtd/mtdcore.c</em></pre></div>
+            <div class="- topic/p p" data-ofbid="d141869e102__20250121171609">上层应用，如 mtd 命令和 UBI，通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">mtd_read</span> / <span class="+ topic/keyword pr-d/apiname keyword apiname">mtd_write</span> API
+                进行读写等操作。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spiNand_1__codeblock_uml_hvx_sdc" data-ofbid="spiNand_1__codeblock_uml_hvx_sdc">mtd_read
+|-&gt; mtd-&gt;_read_oob(mtd, from, &amp;ops);
+    part_read_oob(mtd, from, &amp;ops); <em class="hl-comment">// drivers/mtd/mtdpart.c</em>
+    |-&gt; mtd-&gt;parent-&gt;_read_oob(mtd-&gt;parent, from + mtd-&gt;offset, ops);
+        spinand_mtd_read(mtd, from, &amp;ops); <em class="hl-comment">// drivers/mtd/nand/spi/core.c</em>
+        |-&gt; spinand_read_page(spinand, &amp;iter.req, enable_ecc);
+            |-&gt; spinand_load_page_op(spinand, req);
+            |   |-&gt; spi_mem_exec_op(spinand-&gt;slave, &amp;op); <em class="hl-comment">// drivers/spi/spi-mem.c</em>
+            |       |-&gt; ops-&gt;mem_ops-&gt;exec_op(slave, op);
+            |           aic_spi_mem_exec_op(slave, op);
+            |           <em class="hl-comment">// drivers/spi/artinchip_spi.c</em>
+            |
+            |-&gt; spinand_read_from_cache_op(spinand, req);
+                |-&gt; spi_mem_exec_op(spinand-&gt;slave, &amp;op);
+                    |-&gt; ops-&gt;mem_ops-&gt;exec_op(slave, op);
+                        aic_spi_mem_exec_op(slave, op);
+                        <em class="hl-comment">// drivers/spi/artinchip_spi.c</em></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spiNand_1__codeblock_q4g_3vx_sdc" data-ofbid="spiNand_1__codeblock_q4g_3vx_sdc">mtd_write
+|-&gt; mtd-&gt;_write_oob(mtd, to, &amp;ops);
+    part_write_oob(mtd, to, &amp;ops); <em class="hl-comment">// drivers/mtd/mtdpart.c</em>
+    |-&gt; mtd-&gt;parent-&gt;_write_oob(mtd-&gt;parent, to + mtd-&gt;offset, ops);
+        spinand_mtd_write(mtd, to, &amp;ops);
+        |-&gt; spinand_write_page(spinand, &amp;iter.req);
+            |-&gt; spinand_write_enable_op(spinand);
+            |-&gt; spinand_write_to_cache_op(spinand, req);
+            |-&gt; spinand_program_op(spinand, req);
+                |-&gt; spi_mem_exec_op(spinand-&gt;slave, &amp;op); <em class="hl-comment">// drivers/spi/spi-mem.c</em>
+                    |-&gt; ops-&gt;mem_ops-&gt;exec_op(slave, op);
+                        aic_spi_mem_exec_op(slave, op);
+                        <em class="hl-comment">// drivers/spi/artinchip_spi.c</em></pre></div>
+        </section><section class="- topic/section section" id="spiNand_1__section_vqb_3ch_bzb" data-ofbid="spiNand_1__section_vqb_3ch_bzb"><h2 class="- topic/title title sectiontitle">添加新器件</h2>
+            
+            <p class="- topic/p p" data-ofbid="d141869e120__20250121171609">U-Boot 的代码仅配置了数量有限的 SPI NAND 器件，在使用新器件时，需要在代码中增加对新器件的支持。</p>
+            <p class="- topic/p p" id="spiNand_1__p_ejw_gzx_sdc" data-ofbid="spiNand_1__p_ejw_gzx_sdc">查看 <span class="+ topic/ph sw-d/filepath ph filepath">drivers/mtd/nand/spi/</span> 源码目录，确认 SPI NAND
+                器件的厂商是否在支持列表。例如，查看源码目录中是否存在 <span class="+ topic/ph sw-d/filepath ph filepath">winbond.c</span> 。如果不存在，则需要添加新厂商支持，详情可查看
+                    <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="../spinand/spi-nand-transplant-guide.html">SPI NAND 移植</a>。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#spiNand_1__section_iqb_3ch_bzb" data-tocid="spiNand_1__section_iqb_3ch_bzb">驱动框架</a></div></li><li class="section-item"><div class="section-title"><a href="#spiNand_1__section_nqb_3ch_bzb" data-tocid="spiNand_1__section_nqb_3ch_bzb">驱动接口</a></div></li><li class="section-item"><div class="section-title"><a href="#spiNand_1__section_qqb_3ch_bzb" data-tocid="spiNand_1__section_qqb_3ch_bzb">初始化和读写</a></div></li><li class="section-item"><div class="section-title"><a href="#spiNand_1__section_vqb_3ch_bzb" data-tocid="spiNand_1__section_vqb_3ch_bzb">添加新器件</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

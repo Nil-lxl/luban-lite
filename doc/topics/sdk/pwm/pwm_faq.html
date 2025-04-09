@@ -1,0 +1,226 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="每个 PWM 控制器的两路输出信号有什么关系？ 每个控制器可以控制两路输出 PWM 信号，这两路信号从设计上有三个约束条件： 共用同一个 time-base 信号 ， 即共用一路输入时钟信号，也共用了一个计数器 共用同一个 PWM 信号频率 配置参数。 共用同一个 占空比 配置参数。 上述 “PWM 信号频率” 和 “占空比” 由 PWM 的 调用者运行时配置 。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-13"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>常见问题</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/pwm/pwm_faq.dita"/><meta name="wh-out-relpath" content="topics/sdk/pwm/pwm_faq.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/pwm/pwm_faq.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">常见问题</h1><div class="date inPage">13 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_atp_kls_21c" data-ofbid="id__section_atp_kls_21c"><h2 class="- topic/title title sectiontitle">每个 PWM 控制器的两路输出信号有什么关系？</h2>
+            
+            <p class="- topic/p p" data-ofbid="d101208e22__20250121171536">每个控制器可以控制两路输出 PWM 信号，这两路信号从设计上有三个约束条件：</p>
+            <ol class="- topic/ol ol" id="id__ol_btp_kls_21c" data-ofbid="id__ol_btp_kls_21c"><li class="- topic/li li" data-ofbid="d101208e26__20250121171536">
+                    <p class="- topic/p p" data-ofbid="d101208e28__20250121171536">共用同一个 <strong class="+ topic/ph hi-d/b ph b">time-base 信号</strong>，<span class="- topic/ph ph">即共用一路输入时钟信号，也共用了一个计数器</span></p>
+                </li><li class="- topic/li li" data-ofbid="d101208e36__20250121171536">
+                    <p class="- topic/p p" data-ofbid="d101208e38__20250121171536">共用同一个 <strong class="+ topic/ph hi-d/b ph b">PWM 信号频率</strong> 配置参数。</p>
+                </li><li class="- topic/li li" data-ofbid="d101208e44__20250121171536">
+                    <p class="- topic/p p" data-ofbid="d101208e46__20250121171536">共用同一个 <strong class="+ topic/ph hi-d/b ph b">占空比</strong> 配置参数。</p>
+                </li></ol>
+            <p class="- topic/p p" data-ofbid="d101208e53__20250121171536">上述 “PWM 信号频率” 和 “占空比” 由 PWM 的 <strong class="+ topic/ph hi-d/b ph b">调用者运行时配置</strong>。 两路信号可以完全相同，也可以做到亮点差别：</p>
+            <ol class="- topic/ol ol" id="id__ol_ctp_kls_21c" data-ofbid="id__ol_ctp_kls_21c"><li class="- topic/li li" data-ofbid="d101208e60__20250121171536">
+                    <p class="- topic/p p" data-ofbid="d101208e62__20250121171536">相位相反，在占空比上看到的是一个为正、一个为负。</p>
+                </li><li class="- topic/li li" data-ofbid="d101208e65__20250121171536">
+                    <p class="- topic/p p" data-ofbid="d101208e67__20250121171536">可以关闭其中一路，在 DTS 参数中将对应的 Action 配置为 “none” 即可。</p>
+                </li></ol>
+        </section><section class="- topic/section section" id="id__section_dtp_kls_21c" data-ofbid="id__section_dtp_kls_21c"><h2 class="- topic/title title sectiontitle">PWM 信号的占空比是反向的</h2>
+            
+            <p class="- topic/p p" data-ofbid="d101208e76__20250121171536">得到的占空比相位是反向的。比如配置 80%，得到的是 20%。</p>
+            <p class="- topic/p p" data-ofbid="d101208e79__20250121171536"><strong class="+ topic/ph hi-d/b ph b">原因分析</strong></p>
+            <p class="- topic/p p" data-ofbid="d101208e83__20250121171536">PWM 信号的电平跳变方向完全是由几个关键时点的配置参数决定，所以如果碰到占空比反向的情况，直接的调整方法是将配置参数反向设置即可。</p>
+            <p class="- topic/p p" data-ofbid="d101208e86__20250121171536"><a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_config.html#pwm_configuration__section_mrf_pzy_gdc">pwm_config.html#pwm_configuration__section_mrf_pzy_gdc</a>
+                提供了一些典型的参考配置，可以看到相邻的“负占空比”和“正占空比”参数配置基本是反向的。</p>
+        </section><section class="- topic/section section" id="id__section_fpz_q1z_gdc" data-ofbid="id__section_fpz_q1z_gdc"><h2 class="- topic/title title sectiontitle">PWM 输出频率范围如何计算</h2>
+            
+            <p class="- topic/p p" data-ofbid="d101208e95__20250121171536">目前 Luban-Lite 中会根据配置的周期（单位纳秒），自动计算出最佳工作时基。本节仅描述如何计算同一时基下的最大最小频率。</p>
+            <p class="- topic/p p" data-ofbid="d101208e98__20250121171536">PWM 输出频率与工作时钟频率、配置的周期以及 <code class="+ topic/ph pr-d/codeph ph codeph">action</code>信息相关。</p>
+            <p class="- topic/p p" data-ofbid="d101208e104__20250121171536">工作时钟频率和父时钟、分频有关。更多时钟问题，参考 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="pwm_config.html#pwm_configuration__section_lhg_fyn_4dc">时钟配置</a>。</p>
+            <div class="- topic/p p" data-ofbid="d101208e111__20250121171536">以 24 MHz 为例，可推导出最大最小频率：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_f43_hbz_gdc" data-ofbid="id__codeblock_f43_hbz_gdc">Tclk = <span class="hl-number">1</span> / fclk
+Tprd = Tclk * (prd + <span class="hl-number">1</span>)
+Tprd = (prd + <span class="hl-number">1</span>) / fclk
+fprd = fclk / (prd + <span class="hl-number">1</span>)</pre><ul class="- topic/ul ul" id="id__ul_ms2_3bz_gdc" data-ofbid="id__ul_ms2_3bz_gdc"><li class="- topic/li li" data-ofbid="d101208e116__20250121171536">
+                        <p class="- topic/p p" data-ofbid="d101208e118__20250121171536"><code class="+ topic/ph pr-d/codeph ph codeph">fclk</code>：工作时钟频率。</p>
+                    </li><li class="- topic/li li" data-ofbid="d101208e123__20250121171536">
+                        <p class="- topic/p p" data-ofbid="d101208e125__20250121171536"><code class="+ topic/ph pr-d/codeph ph codeph">fprd</code>：PWM 输出频率：</p>
+                    </li></ul></div>
+            <div class="- topic/p p" data-ofbid="d101208e132__20250121171536">根据上述公式可以获得 PWM 的输出频率，如下所示：<ul class="- topic/ul ul" id="id__ul_lmy_xbz_gdc" data-ofbid="id__ul_lmy_xbz_gdc"><li class="- topic/li li" data-ofbid="d101208e135__20250121171536"><p class="- topic/p p" data-ofbid="d101208e136__20250121171536">最小频率： fprd = 24000000 / (0xFFFF + 1) ≈ 367 Hz </p><p class="- topic/p p" data-ofbid="d101208e138__20250121171536"><code class="+ topic/ph pr-d/codeph ph codeph">PRD</code>
+                            则可以不动作，“互补”工作交由 <code class="+ topic/ph pr-d/codeph ph codeph">ZRO</code> 与 <code class="+ topic/ph pr-d/codeph ph codeph">CMP</code>
+                            即可。</p><img class="- topic/image image" id="id__image_gsx_gcz_gdd" src="../../../images/sdk/minfreq.png" alt="mminfreq"/>
+                    </li><li class="- topic/li li" data-ofbid="d101208e152__20250121171536"><p class="- topic/p p" data-ofbid="d101208e153__20250121171536">最大频率： fprd = 24000000 / (1 + 1) = 12 MHz</p><p class="- topic/p p" data-ofbid="d101208e155__20250121171536">当 <code class="+ topic/ph pr-d/codeph ph codeph">prd 寄存器</code>
+                            设置为 1 （最小为 1 ）时，<code class="+ topic/ph pr-d/codeph ph codeph">action</code>
+                            <code class="+ topic/ph pr-d/codeph ph codeph">CMP</code> 部分应配置为不动作，<code class="+ topic/ph pr-d/codeph ph codeph">PRD</code> 与
+                                <code class="+ topic/ph pr-d/codeph ph codeph">ZRO</code> 互补高低电平，即可输出 12 MHz。</p><img class="- topic/image image" id="id__image_gsx_gcz_gdc" src="../../../images/sdk/maxfreq.png" alt="maxfreq"/></li></ul></div>
+            
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d101208e180__20250121171536">最大频率可与最小频率、正常输出频率时一样，只配置 <code class="+ topic/ph pr-d/codeph ph codeph">CMP</code> 与 <code class="+ topic/ph pr-d/codeph ph codeph">ZRO</code> 动作，
+                        <code class="+ topic/ph pr-d/codeph ph codeph">PRD</code> 不动作，此时配置 <code class="+ topic/ph pr-d/codeph ph codeph">cmp 寄存器</code> 与
+                        <code class="+ topic/ph pr-d/codeph ph codeph">prd 寄存器</code> 相等理论上能产生一样的效果。但由于驱动中默认设计当 <code class="+ topic/ph pr-d/codeph ph codeph">cmp 寄存器</code> 与
+                        <code class="+ topic/ph pr-d/codeph ph codeph">prd 寄存器</code> 相等时，为了输出 100% 占空比，<code class="+ topic/ph pr-d/codeph ph codeph">cmp 寄存器</code> 会默认增加
+                    1。这个问题我们在下章节毛刺问题作出解析。</p>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_atp_kls_21c" data-tocid="id__section_atp_kls_21c">每个 PWM 控制器的两路输出信号有什么关系？</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_dtp_kls_21c" data-tocid="id__section_dtp_kls_21c">PWM 信号的占空比是反向的</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_fpz_q1z_gdc" data-tocid="id__section_fpz_q1z_gdc">PWM 输出频率范围如何计算</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

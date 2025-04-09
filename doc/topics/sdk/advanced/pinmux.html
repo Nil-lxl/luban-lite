@@ -1,0 +1,248 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 Luban-Lite SDK 中，修改同一个 pinmux.c 文件，可以配置相同板卡的 GPIO 引脚功能。 例如，对于以下 D133CBS RISC-V Kunlun Pi 开发板，可以使用 target/d13x/kunlunpi88-nor/pinmux.c 文件来配置 GPIO 引脚功能。 注： 每一个需要使用到的引脚都应显式地设置为指定功能，包括通用 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/advanced/sdk-usage.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/gdb.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/driver.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>引脚配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1353"/><meta name="wh-source-relpath" content="topics/sdk/advanced/pinmux.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/pinmux.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/pinmux.html">引脚配置</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/advanced/gdb.html" title="GDB 调试" aria-label="上一主题: GDB 调试" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/advanced/driver.html" title="添加驱动" aria-label="下一主题: 添加驱动" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1169" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1169-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/commands.html" id="id-d5856e1169-link">命令详解 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1207" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/architecture.html" id="id-d5856e1207-link">设计框架</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1219" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sconstruct.html" id="id-d5856e1219-link">SConstruct </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1231" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/compile.html" id="id-d5856e1231-link">编译选项介绍</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1243" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition.html" id="id-d5856e1243-link">配置分区</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1255" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1255-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/image_burn_and_config.html" id="id-d5856e1255-link">配置烧录镜像</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1339" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/gdb.html" id="id-d5856e1339-link">GDB 调试</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e1353" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/pinmux.html" id="id-d5856e1353-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1367" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/driver.html" id="id-d5856e1367-link">添加驱动</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1379" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/app.html" id="id-d5856e1379-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1392" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/hellowold.html" id="id-d5856e1392-link">hellowold</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1404" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/burnin_test.html" id="id-d5856e1404-link">烤机测试</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/pinmux.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">引脚配置</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d228597e24__20250121171649">在 <span class="- topic/ph ph">Luban-Lite</span> SDK 中，修改同一个 <span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span> 文件，可以配置相同板卡的 GPIO
+            引脚功能。</p><p class="- topic/p p" data-ofbid="d228597e32__20250121171649">例如，对于以下 D133CBS RISC-V Kunlun Pi
+            开发板，可以使用<span class="+ topic/ph sw-d/filepath ph filepath">target/d13x/kunlunpi88-nor/pinmux.c</span> 文件来配置 GPIO 引脚功能。</p><div class="- topic/note note note note_note" id="id__note_irv_qn3_ddc" data-ofbid="id__note_irv_qn3_ddc"><span class="note__title">注：</span> 每一个需要使用到的引脚都应显式地设置为指定功能，包括通用
+            GPIO、I2C、UART、SPI 等功能。</div><section class="- topic/section section" id="id__pinmux-c" data-ofbid="id__pinmux-c"><h2 class="- topic/title title sectiontitle">配置 <span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span>文件</h2>
+            
+            <p class="- topic/p p" data-ofbid="d228597e51__20250121171649">在 <span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span>中，根据需要修改结构体数组来配置每个引脚的功能。 <span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span> 文件路径：
+                <span class="+ topic/ph sw-d/filepath ph filepath">target/&lt;CPU&gt;/&lt;board&gt;/pinmux.c</span>。</p>
+            <div class="- topic/note note note note_note" id="id__note_jrv_qn3_ddc" data-ofbid="id__note_jrv_qn3_ddc"><span class="note__title">注：</span> 项目中的 BootLoader 和 RT-Thread 共享 pinmux 配置， 因此在修改 pinmux.c
+                之后，必须先编译
+                BootLoader， 再编译 RT-Thread，否则 pinmux 配置可能无法生效。<p class="- topic/p p" data-ofbid="d228597e69__20250121171649">自 V1.0.4 之后，<span class="- topic/ph ph">Luban-Lite</span> 支持使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">mb</span> 命令，一键编译 BootLoader 和
+                    RT-Thread。</p></div>
+            <div class="- topic/p p" data-ofbid="d228597e78__20250121171649">在 <span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span>中，通过结构体数组，对所有 pin
+                脚的功能进行管理，并在系统启动时统一做配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_p1l_4jq_gdc" data-ofbid="id__codeblock_p1l_4jq_gdc"><strong class="hl-keyword">struct</strong> aic_pinmux aic_pinmux_config[] = {
+    ...
+};</pre></div>
+            <div class="- topic/div div section" id="id__id3">
+                <div class="- topic/p p" data-ofbid="d228597e88__20250121171649">每个 pin 脚的配置，使用结构体描述。例如，PA.0 和 PA.1
+                    引脚的配置如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ard_rjq_gdc" data-ofbid="id__codeblock_ard_rjq_gdc"><strong class="hl-keyword">struct</strong> aic_pinmux
+{
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong>       func;    <em class="hl-comment">// 功能编号</em>
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong>       bias;    <em class="hl-comment">// 内部上下拉设置，一般无需修改</em>
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong>       drive;   <em class="hl-comment">// 驱动能力，若需要修改，请联系专业人士确认</em>
+    <strong class="hl-keyword">char</strong> *              name;    <em class="hl-comment">// 引脚名称字符串，例如 "PA.0"</em>
+};</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_cj4_sjq_gdc" data-ofbid="id__codeblock_cj4_sjq_gdc"><strong class="hl-keyword">struct</strong> aic_pinmux aic_pinmux_config[] = {
+#ifdef AIC_USING_UART0
+    <em class="hl-comment">/* uart0 */</em>
+    {<span class="hl-number">5</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.0"</span>},   <em class="hl-comment">// PA.0 配置功能 5，用作串口 0</em>
+    {<span class="hl-number">5</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PA.1"</span>},   <em class="hl-comment">// PA.1 配置功能 5，用作串口 0</em>
+#endif
+...
+};</pre></div>
+                <p class="- topic/p p" data-ofbid="d228597e95__20250121171649">PA.0 和 PA.1 引脚功能均设置为 5，用作串口 0。注意，同一个引脚只能配置一个功能。</p>
+                <div class="- topic/note note note note_note" id="id__note_krv_qn3_ddc" data-ofbid="id__note_krv_qn3_ddc"><span class="note__title">注：</span> 若要配置某 pin 脚用于通用 GPIO 功能，则需将功能配置为
+                    1。关于引脚功能的详细描述，可参考用户手册中的引脚复用功能表。</div>
+            </div>
+        </section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">使用检查工具 <code class="+ topic/ph pr-d/codeph ph codeph">pinmux_check</code></h2>
+            <p class="- topic/p p" data-ofbid="d228597e108__20250121171649">为检查引脚功能配置，<span class="- topic/ph ph">Luban-Lite</span> 提供 <code class="+ topic/ph pr-d/codeph ph codeph">pinmux_check</code> 工具。具体使用流程如下所示：</p>
+            <ol class="- topic/ol ol" id="id__ol_um2_bqc_5cc" data-ofbid="id__ol_um2_bqc_5cc"><li class="- topic/li li" data-ofbid="d228597e118__20250121171649">在 RT-Thread 配置中，选择启用 pinmux_check
+                    工具，执行编译和烧录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_pxw_vjq_gdc" data-ofbid="id__codeblock_pxw_vjq_gdc">Local packages options  ---&gt;
+    ArtInChip packages options  ---&gt;
+        [*] aic-pinmux-check  ---&gt;
+            [*]   Enable pinmux check tools</pre></li><li class="- topic/li li" data-ofbid="d228597e122__20250121171649">
+                    <div class="- topic/p p" data-ofbid="d228597e124__20250121171649">系统启动之后，输入 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">pinmux_check-h</span>
+                        命令，查看帮助菜单。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_tdh_wjq_gdc" data-ofbid="id__codeblock_tdh_wjq_gdc">pinmux_check -h</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_uqk_kjj_5dc" data-ofbid="id__codeblock_uqk_kjj_5dc">Compile time: Apr <span class="hl-number">23</span> <span class="hl-number">2024</span> <span class="hl-number">15</span>:<span class="hl-number">39</span>:<span class="hl-number">22</span>
+Usage: pinmux_check [options]
+        -s, --start            print PIN start from PXn . Default as start from PA0
+        -c, --count            print PIN count.
+        -h, --help
+
+Example：
+    pinmux_check -s PA0 -c <span class="hl-number">2</span></pre></div>
+                </li><li class="- topic/li li" data-ofbid="d228597e134__20250121171649">
+                    <div class="- topic/p p" data-ofbid="d228597e136__20250121171649">查看 PA0、PA1
+                        的引脚配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_qxp_wjq_gdc" data-ofbid="id__codeblock_qxp_wjq_gdc">pinmux_check -s PA0 -c <span class="hl-number">2</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_mbr_kjj_5dc" data-ofbid="id__codeblock_mbr_kjj_5dc">PA0: <span class="hl-number">0x00000035</span>, fun[<span class="hl-number">5</span>], drv[<span class="hl-number">3</span>], pull[<span class="hl-number">0</span>], IE[<span class="hl-number">0</span>], OE[<span class="hl-number">0</span>], IE_FORCE[<span class="hl-number">0</span>]    # fun[<span class="hl-number">5</span>] 表示 PA0 配置为功能 <span class="hl-number">5</span>，drv[<span class="hl-number">3</span>]表示驱动能力为 <span class="hl-number">3</span>；
+PA1: <span class="hl-number">0x00000035</span>, fun[<span class="hl-number">5</span>], drv[<span class="hl-number">3</span>], pull[<span class="hl-number">0</span>], IE[<span class="hl-number">0</span>], OE[<span class="hl-number">0</span>], IE_FORCE[<span class="hl-number">0</span>]    # fun[<span class="hl-number">5</span>] 表示 PA1 配置为功能 <span class="hl-number">5</span>，drv[<span class="hl-number">3</span>]表示驱动能力为 <span class="hl-number">3</span>；</pre></div>
+                </li></ol>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__pinmux-c" data-tocid="id__pinmux-c">配置 <span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span>文件</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">使用检查工具 <code class="+ topic/ph pr-d/codeph ph codeph">pinmux_check</code></a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

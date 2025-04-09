@@ -1,0 +1,403 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="目录总览 代码下载完成后，在代码根目录执行 tree -L 2 命令，可以看到如下所示 SDK 目录结构： 注： 以下目录结构仅为参考示例，具体以实际代码库为准。 tree -L 2 ├── application // 存放 APP 入口，helloword 应用的 main 函数 │ ├── baremetal │ ├── freertos │ ├── Kconfig │ └── ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/env/sourcecode.html"/><meta name="DC.relation" content="../../../topics/sdk/env/sourcecode.html"/><meta name="DC.relation" content="../../../topics/sdk/env/eclipse.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>代码结构</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1030"/><meta name="wh-source-relpath" content="topics/sdk/advanced/sourcecode.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/sourcecode.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/env/sourcecode.html">准备代码</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/sourcecode.html">代码结构</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/env/sourcecode.html" title="准备代码" aria-label="上一主题: 准备代码" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/env/eclipse.html" title="Eclipse" aria-label="下一主题: Eclipse" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1018" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1018-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sourcecode.html" id="id-d5856e1018-link">准备代码</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="id-d5856e1030" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sourcecode.html" id="id-d5856e1030-link">代码结构</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e1042" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/eclipse.html" id="id-d5856e1042-link">Eclipse</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1054" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/ubuntu2004.html" id="id-d5856e1054-link">Ubuntu</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1066" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/vscode.html" id="id-d5856e1066-link">VSCode</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1078" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1078-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/vmware.html" id="id-d5856e1078-link">VMWare 安装</a><div class="wh-tooltip"><p class="shortdesc">如需在虚拟机上进行 <span class="ph">Luban-Lite</span> 的开发工作，可以参考本节的安装说明。</p></div></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1138" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/windows.html" id="id-d5856e1138-link">Windows</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/sourcecode.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">代码结构</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 6 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_k3v_dkp_wcc" data-ofbid="id__section_k3v_dkp_wcc"><h2 class="- topic/title title sectiontitle">目录总览</h2>
+            
+            <div class="- topic/p p" data-ofbid="d250021e27__20250121171702">代码下载完成后，在代码根目录执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">tree -L 2</span> 命令，可以看到如下所示 SDK 目录结构：<div class="- topic/note note note note_note" id="id__note_vgd_hkx_zcc" data-ofbid="id__note_vgd_hkx_zcc"><span class="note__title">注：</span> 以下目录结构仅为参考示例，具体以实际代码库为准。</div></div>
+            <div class="- topic/p p" data-ofbid="d250021e35__20250121171702">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_mpb_st4_rcc" data-ofbid="id__pre_mpb_st4_rcc">tree -L <span class="hl-number">2</span></pre>
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_o5z_zxk_sdc" data-ofbid="id__codeblock_o5z_zxk_sdc">├── application     <em class="hl-comment">// 存放 APP 入口，helloword 应用的 main 函数</em>
+│   ├── baremetal
+│   ├── freertos
+│   ├── Kconfig
+│   └── rt-thread
+├── bsp <em class="hl-comment">// 存放 BSP 代码，和 RT-Thread 原生的 bsp 目录功能相同</em>
+│   ├── artinchip <em class="hl-comment">// ArtInChip SoC 内部的 driver、hal 以及最小系统 sys 代码</em>
+│   ├── common    <em class="hl-comment">// 公共头文件</em>
+│   ├── peripheral       <em class="hl-comment">// 一些外设模块的驱动</em>
+│   ├── examples_bare    <em class="hl-comment">// 各模块在裸机环境的示例代码</em>
+│   └── examples         <em class="hl-comment">// 各模块在 RTOS 环境的示例代码</em>
+│       ├── test-alarm
+│       ├── test-audio
+│       ├── test-can
+│       ├── test-dma
+│       ├── test-qspi
+│       ├── test-touch
+│       └── test-uart
+├── doc <em class="hl-comment">// </em><span class="- topic/ph ph">Luban-Lite</span> SDK 的介绍文档
+│   ├── luban-lite_driver_development_guid.md  <em class="hl-comment">// 设备驱动开发指南</em>
+│   ├── luban-lite_sdk_design.md <em class="hl-comment">// SDK 设计说明</em>
+│   ├── luban-lite_user_guid_linux.md <em class="hl-comment">// Linux 环境的用户使用说明</em>
+│   └── luban-lite_user_guid_windows.md <em class="hl-comment">// Windows 环境的用户使用说明</em>
+├── win_env.bat <em class="hl-comment">// 启动 RT-Thread 的 env 工具，用于 Windows 环境的开发</em>
+├── win_cmd.bat <em class="hl-comment">// 启动 CMD.exe，用于 Windows 环境的开发</em>
+├── kernel <em class="hl-comment">// 存放各种 RTOS 内核</em>
+│   ├── baremetal
+│   ├── common
+│   ├── freertos
+│   └── rt-thread
+├── output <em class="hl-comment">// SDK 的编译输出</em>
+├── packages <em class="hl-comment">// 组件包</em>
+│   ├── artinchip <em class="hl-comment">// ArtInChip 开发的组件包</em>
+│   └── third-party <em class="hl-comment">// 第三方的组件包</em>
+├── target <em class="hl-comment">// 方案（板）级的代码和配置</em>
+│   ├── configs <em class="hl-comment">// 整个方案的 SDK 配置文件</em>
+│   ├── d12x    <em class="hl-comment">//D12x 开发板配置</em>
+│   │   ├── common
+│   │   ├── demo68-nand
+│   │   ├── demo68-nor
+│   │   └── hmi-nor
+│   ├── d13x    <em class="hl-comment">//D13x 开发板配置</em>
+│   │   ├── common
+│   │   ├── demo88-nand
+│   │   ├── demo88-nor
+│   │   └── kunlunpi88-nor
+│   ├── d21x    <em class="hl-comment">//D21x 开发板配置</em>
+│   │   ├── common
+│   │   └── demo128-nand
+│   └── g73x    <em class="hl-comment">//G73x 开发板配置</em>
+│       ├── common
+│       └── demo100-nor
+├── toolchain <em class="hl-comment">// 解压后的工具链存放目录</em>
+└── tools <em class="hl-comment">// 一些工具</em>
+    ├── onestep.sh  <em class="hl-comment">// ArtInChip 开发的 OneStep 命令行增强工具</em>
+    └── toolchain <em class="hl-comment">// 工具链的压缩包</em>
+</pre>
+            </div>
+        </section><section class="- topic/section section" id="id__application" data-ofbid="id__application"><h2 class="- topic/title title sectiontitle">application</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250021e52__20250121171702">存放应用和各种示例：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_u34_z5p_wcc" data-ofbid="id__pre_u34_z5p_wcc">├── baremetal           <em class="hl-comment">//baremetal 裸机</em>
+│   ├── bootloader      <em class="hl-comment">//系统的引导加载程序</em>
+│   └── helloworld      <em class="hl-comment">//系统示例</em>
+└── rt-thread
+    └── helloworld      <em class="hl-comment">//系统示例</em></pre>
+        </section><section class="- topic/section section" id="id__bsp" data-ofbid="id__bsp"><h2 class="- topic/title title sectiontitle">bsp</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250021e63__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">bsp</span> 目录是 SoC 的核心，封装了该 SoC 的所有接口和驱动：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_v34_z5p_wcc" data-ofbid="id__pre_v34_z5p_wcc">├── artinchip
+│   ├── drv                 <em class="hl-comment">//驱动</em>
+│   ├── drv_nare            <em class="hl-comment">//裸机驱动</em>
+│   ├── hal                 <em class="hl-comment">//硬件抽象</em>
+│   ├── include
+│   ├── SConscript
+│   └── sys                 <em class="hl-comment">//最小系统</em>
+├── common
+│   ├── crc32
+│   ├── include
+│   ├── partition
+│   ├── private_param
+│   ├── SConscript
+│   └── utils
+├── Kconfig
+├── examples                <em class="hl-comment">//模块示例</em>
+│   ├── SConscript
+│   ├── test-adc
+│   ├── test-alarm
+│   ├── test-audio
+├── peripheral              <em class="hl-comment">//三方外设驱动封装</em>
+│   ├── Kconfig
+│   ├── SConscript
+│   ├── camera
+│   ├── codec
+│   ├── touch               <em class="hl-comment">//触控</em>
+│   └── wireless            <em class="hl-comment">//无线</em>
+└── SConscript</pre>
+        </section><section class="- topic/section section" id="id__doc" data-ofbid="id__doc"><h2 class="- topic/title title sectiontitle">doc</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250021e76__20250121171702">遵从 RT-Thread 原始建议使用 Markdown 编写的 SDK 的简单设计和使用文档。</p>
+        </section><section class="- topic/section section" id="id__kernel" data-ofbid="id__kernel"><h2 class="- topic/title title sectiontitle">kernel</h2>
+            
+            <div class="- topic/p p" data-ofbid="d250021e84__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">kernel</span> 是 RTOS 系统的核心，该目录实现了 <span class="- topic/ph ph">Luban-Lite</span>
+                支持的三种运行方式的内核以及 AIC 公共接口：<ul class="- topic/ul ul" id="id__ul_f15_vkq_3dc" data-ofbid="id__ul_f15_vkq_3dc"><li class="- topic/li li" data-ofbid="d250021e92__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">baremetal</span>
+                        <p class="- topic/p p" data-ofbid="d250021e96__20250121171702">裸机系统的接口封装</p></li><li class="- topic/li li" data-ofbid="d250021e98__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">freertos</span>
+                        <p class="- topic/p p" data-ofbid="d250021e102__20250121171702">FreeRTOS 内核的实现</p></li><li class="- topic/li li" data-ofbid="d250021e104__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">rt-thread</span>
+                        <p class="- topic/p p" data-ofbid="d250021e108__20250121171702">RT-Thread 内核的实现</p></li><li class="- topic/li li" data-ofbid="d250021e110__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">common</span>
+                        <p class="- topic/p p" data-ofbid="d250021e114__20250121171702">AIC 公共接口的封装</p></li></ul></div>
+        </section><section class="- topic/section section" id="id__package" data-ofbid="id__package"><h2 class="- topic/title title sectiontitle">package</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250021e122__20250121171702">组件包，包括 ArtInChip 开发的组件和 三方组件，支持从 RT-Thread 在线下载：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_w34_z5p_wcc" data-ofbid="id__pre_w34_z5p_wcc">├── artinchip           <em class="hl-comment">//ArtInChip 开发</em>
+│   ├── Kconfig
+│   ├── aic-dm-apps
+|   ├── lvgl-ui
+|   ├── ota
+│   ├── mpp
+│   └── SConscript
+├── Kconfig
+├── SConscript
+└── third-party         <em class="hl-comment">//三方组件</em>
+    ├── bonnie
+    ├── cherryusb
+    ├── cpu_usage
+    ├── Kconfig
+    ├── littlefs
+    ├── lvgl
+    ├── lwip
+    ├── mklittlefs
+    ├── ramdisk
+    ├── SConscript
+    └── uffs</pre>
+        </section><section class="- topic/section section" id="id__target" data-ofbid="id__target"><h2 class="- topic/title title sectiontitle">target</h2>
+            <p class="- topic/p p" data-ofbid="d250021e132__20250121171702">存储方案（开发板）的配置信息：</p>
+            <ul class="- topic/ul ul" id="id__ul_sny_rnq_3dc" data-ofbid="id__ul_sny_rnq_3dc"><li class="- topic/li li" data-ofbid="d250021e136__20250121171702">
+                    <div class="- topic/div div section" id="id__configs"><strong class="+ topic/ph hi-d/b ph b">configs</strong>
+                        <p class="- topic/p p" data-ofbid="d250021e142__20250121171702">存放某一个方案（开发板）的功能配置信息：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_x34_z5p_wcc" data-ofbid="id__pre_x34_z5p_wcc">d12x_demo128-nand_baremetal_bootloader_defconfig    <em class="hl-comment">//bootlaoder 的配置</em>
+d12x_demo128-nand_rt-thread_helloworld_defconfig    <em class="hl-comment">//rt-thread 的配置</em></pre><p class="- topic/p p" data-ofbid="d250021e146__20250121171702">config
+                            文件的内容示例：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_y34_z5p_wcc" data-ofbid="id__pre_y34_z5p_wcc">cat d12x_demo88-nor_rt-thread_helloworld_defconfig</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wbr_jwj_sdc" data-ofbid="id__codeblock_wbr_jwj_sdc">CONFIG_SOC_THEAD_SMART=y
+# CONFIG_QEMU_RUN is not set
+CONFIG_PRJ_CUSTOM_LDS=<span class="hl-string">""</span>
+CONFIG_AIC_CHIP_D21X=y
+CONFIG_CACHE_LINE_SIZE=<span class="hl-number">64</span>
+CONFIG_AIC_CMU_DRV=y
+CONFIG_AIC_CMU_DRV_V10=y
+CONFIG_AIC_CMU_DRV_VER=<span class="hl-string">"10"</span></pre>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d250021e154__20250121171702">
+                    <div class="- topic/div div section" id="id__d12x"><strong class="+ topic/ph hi-d/b ph b">d12x</strong>
+                        <p class="- topic/p p" data-ofbid="d250021e161__20250121171702">存放某一个方案（开发板）的参数配置信息，以代码的方式存在。</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_z34_z5p_wcc" data-ofbid="id__pre_z34_z5p_wcc">├── demo128-nand
+│   ├── board.c
+│   ├── include
+│   ├── Kconfig.board
+│   ├── pack
+│   ├── pinmux.c
+│   ├── SConscript
+│   └── sys_clk.c
+</pre><ul class="- topic/ul ul simple" id="id__ul_aj4_z5p_wcc" data-ofbid="id__ul_aj4_z5p_wcc"><li class="- topic/li li" data-ofbid="d250021e168__20250121171702">
+                                <p class="- topic/p p" data-ofbid="d250021e170__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">Kconfig.board</span>：提供方案的外设选择项</p>
+                            </li><li class="- topic/li li" data-ofbid="d250021e175__20250121171702">
+                                <p class="- topic/p p" data-ofbid="d250021e177__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">pinmux.c</span>：该方案的 pinmux 配置</p>
+                            </li><li class="- topic/li li" data-ofbid="d250021e182__20250121171702">
+                                <p class="- topic/p p" data-ofbid="d250021e184__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">SConscript</span>：该方案目录的编译配置</p>
+                            </li><li class="- topic/li li" data-ofbid="d250021e189__20250121171702">
+                                <p class="- topic/p p" data-ofbid="d250021e191__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">sys_clk.c</span>：该方案的 clk 配置</p>
+                            </li><li class="- topic/li li" data-ofbid="d250021e196__20250121171702">
+                                <p class="- topic/p p" data-ofbid="d250021e198__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">include</span>：该方案特殊的 include 文件，主要是
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">board.c</span> 的接口</p>
+                            </li><li class="- topic/li li" data-ofbid="d250021e206__20250121171702">
+                                <p class="- topic/p p" data-ofbid="d250021e208__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">pack</span>：该方案在打包固件时的配置，如 ddr，分区等配置信息</p>
+                            </li><li class="- topic/li li" data-ofbid="d250021e213__20250121171702">
+                                <p class="- topic/p p" data-ofbid="d250021e215__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">board.c</span>：该方案的初始化运行接口</p>
+                            </li></ul></div>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__toolchain" data-ofbid="id__toolchain"><h2 class="- topic/title title sectiontitle">toolchain</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250021e227__20250121171702">原始为空目录，用于存放解压后的工具链。</p>
+        </section><section class="- topic/section section" id="id__tools" data-ofbid="id__tools"><h2 class="- topic/title title sectiontitle">tools</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250021e235__20250121171702">该目录用于存放一些常用工具</p>
+            <ul class="- topic/ul ul" id="id__ul_bj4_z5p_wcc" data-ofbid="id__ul_bj4_z5p_wcc"><li class="- topic/li li" data-ofbid="d250021e239__20250121171702">
+                    <p class="- topic/p p" data-ofbid="d250021e241__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">onestep.sh</span>： Linux 上使用的 OneStep 脚本</p>
+                </li><li class="- topic/li li" data-ofbid="d250021e246__20250121171702">
+                    <p class="- topic/p p" data-ofbid="d250021e248__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">env</span>： 环境搭建和运行需要的三方工具</p>
+                </li><li class="- topic/li li" data-ofbid="d250021e253__20250121171702">
+                    <p class="- topic/p p" data-ofbid="d250021e255__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">script</span>： 编译和打包固件需要的脚本</p>
+                </li><li class="- topic/li li" data-ofbid="d250021e260__20250121171702">
+                    <p class="- topic/p p" data-ofbid="d250021e262__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">toolchain</span>： 工具链包</p>
+                    <ul class="- topic/ul ul simple" id="id__ul_dj4_z5p_wcc" data-ofbid="id__ul_dj4_z5p_wcc"><li class="- topic/li li" data-ofbid="d250021e268__20250121171702">
+                            <p class="- topic/p p" data-ofbid="d250021e270__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">Xuantie-900-gcc-elf-newlib-x86_64-V2.6.1-20220906.tar.gz</span>:
+                                Linux 工具链</p>
+                        </li><li class="- topic/li li" data-ofbid="d250021e277__20250121171702">
+                            <p class="- topic/p p" data-ofbid="d250021e279__20250121171702"><span class="+ topic/ph sw-d/filepath ph filepath">Xuantie-900-gcc-elf-newlib-mingw-V2.6.1-20220906.tar.gz</span>:
+                                Windows 工具链</p>
+                        </li></ul>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__releasenote-md" data-ofbid="id__releasenote-md"><h2 class="- topic/title title sectiontitle">ReleaseNote.md</h2>
+            
+            <p class="- topic/p p" data-ofbid="d250021e291__20250121171702">该文件记录当前 SDK 版本号及主要更新内容，示例如下：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_ej4_z5p_wcc" data-ofbid="id__pre_ej4_z5p_wcc"># V1.<span class="hl-number">0.5</span> #
+## 新增 ##
+- 调屏：支持和 AiPQ V1.<span class="hl-number">1.1</span> 工具配合使用
+- 新增 LVGL Demo：
+- 支持 VSCode 模拟器的工程导入
+- 增加压力测试、独立控件、Gif、slide、lv_ffmpeg、DVP 回显等参考实现
+...</pre>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_k3v_dkp_wcc" data-tocid="id__section_k3v_dkp_wcc">目录总览</a></div></li><li class="section-item"><div class="section-title"><a href="#id__application" data-tocid="id__application">application</a></div></li><li class="section-item"><div class="section-title"><a href="#id__bsp" data-tocid="id__bsp">bsp</a></div></li><li class="section-item"><div class="section-title"><a href="#id__doc" data-tocid="id__doc">doc</a></div></li><li class="section-item"><div class="section-title"><a href="#id__kernel" data-tocid="id__kernel">kernel</a></div></li><li class="section-item"><div class="section-title"><a href="#id__package" data-tocid="id__package">package</a></div></li><li class="section-item"><div class="section-title"><a href="#id__target" data-tocid="id__target">target</a></div></li><li class="section-item"><div class="section-title"><a href="#id__toolchain" data-tocid="id__toolchain">toolchain</a></div></li><li class="section-item"><div class="section-title"><a href="#id__tools" data-tocid="id__tools">tools</a></div></li><li class="section-item"><div class="section-title"><a href="#id__releasenote-md" data-tocid="id__releasenote-md">ReleaseNote.md</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

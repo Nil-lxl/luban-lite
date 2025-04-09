@@ -1,0 +1,511 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="GPTimer 的源代码位于 bsp/artinchip/ ： bsp/artinchip/drv/gpt/drv_gpt.c ，GPTimer Driver 层实现 bsp/artinchip/include/drv/drv_gptimer.h ，GPTimer Driver 层接口 bsp/artinchip/hal/gpt/hal_gpt.c ，GTPimer 模块的 HAL 层实现 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/gptimer/gptimer_design_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/gptimer/gptimer_design_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/gptimer/gptimer_design_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 9 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d204928e17__20250121171637">GPTimer
+            的源代码位于
+                <span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/</span>：</p><ul class="- topic/ul ul simple" id="id__ul_emq_n3d_bdc" data-ofbid="id__ul_emq_n3d_bdc"><li class="- topic/li li" data-ofbid="d204928e23__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e25__20250121171637"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/gpt/drv_gpt.c</span>，GPTimer
+                    Driver 层实现</p>
+                    </li><li class="- topic/li li" data-ofbid="d204928e30__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e32__20250121171637"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/drv/drv_gptimer.h</span>，GPTimer
+                    Driver 层接口</p>
+                    </li><li class="- topic/li li" data-ofbid="d204928e37__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e39__20250121171637"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/hal/gpt/hal_gpt.c</span>，GTPimer
+                    模块的 HAL 层实现</p>
+                    </li><li class="- topic/li li" data-ofbid="d204928e44__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e46__20250121171637"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_gpt.h</span>，GTPimer
+                    模块的 HAL 层接口头文件</p>
+                    </li></ul><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">模块架构</h2>
+            
+            <p class="- topic/p p" data-ofbid="d204928e56__20250121171637">GPTimer 驱动 Driver 层采用 RT-Thread 的 hwtimer 设备驱动框架。HAL 层也可以支持 Baremetal
+                方式或配合自定义的设备驱动框架进行使用。</p><figure class="- topic/fig fig fignone" id="id__id7" data-ofbid="id__id7"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_fmq_n3d_bdc" src="../../../images/gptimer/gptimer_sw_system.png" alt="sw_system"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">GPTimer 驱动的软件架构图</span></figcaption></figure></section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">关键流程设计</h2>
+            
+            <div class="- topic/div div section" id="id__id5">
+                
+                
+                <p class="- topic/p p" data-ofbid="d204928e71__20250121171637">GPTimer 的初始化和配置过程是确保其能够正确工作的关键步骤。</p>
+                
+                
+                <p class="- topic/p p" data-ofbid="d204928e74__20250121171637">GPTimer
+                    控制器的详细配置步骤如下：</p>
+                <ol class="- topic/ol ol arabic simple" id="id__ol_gmq_n3d_bdc" data-ofbid="id__ol_gmq_n3d_bdc"><li class="- topic/li li" data-ofbid="d204928e78__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e80__20250121171637">初始化 GPTimer 模块的时钟 (clk)，包括时钟源和分频器等参数，确保 GPTimer 以正确的频率运行。</p>
+                        
+                        
+                    </li><li class="- topic/li li" data-ofbid="d204928e87__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e89__20250121171637">设置 GPTimer
+                            的计数值
+                            (cnt)。</p>
+                    </li><li class="- topic/li li" data-ofbid="d204928e92__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e94__20250121171637">根据需求，设置
+                            GPTimer
+                            的工作模式，例如单次触发、周期性触发等。</p>
+                    </li><li class="- topic/li li" data-ofbid="d204928e97__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e99__20250121171637">使能 GPTimer
+                            的中断。</p>
+                    </li><li class="- topic/li li" data-ofbid="d204928e102__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e104__20250121171637">启动 GPTimer
+                            计数。</p>
+                    </li><li class="- topic/li li" data-ofbid="d204928e107__20250121171637">
+                        <p class="- topic/p p" data-ofbid="d204928e109__20250121171637">注册 hwtimer 设备。</p>
+                        <p class="- topic/p p" data-ofbid="d204928e112__20250121171637">在 RT-Thread 中，通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_hwtimer_register()</span> 函数注册一个
+                            hwtimer 设备。</p>
+                        
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="id__id6" data-ofbid="id__id6"><h2 class="- topic/title title sectiontitle">数据结构设计</h2>
+            
+            <div class="- topic/div div section" id="id__struct-gptimer-info">
+                <strong class="+ topic/ph hi-d/b ph b">struct gptimer_info</strong>
+                <div class="- topic/p p" data-ofbid="d204928e130__20250121171637">属于 Driver 层接口，记录一个 GPTimer
+                    设备的配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_jng_cqt_cdc" data-ofbid="id__codeblock_jng_cqt_cdc"><strong class="hl-keyword">struct</strong> gptimer_info {
+    <strong class="hl-keyword">char</strong> name[<span class="hl-number">12</span>];
+    u32 id;
+    <strong class="hl-keyword">struct</strong> irq_flag gptirq_flag;
+    rt_hwtimer_t gptimer;
+};</pre></div></div><div class="- topic/div div section" id="id__struct-gptimer-para">
+                <strong class="+ topic/ph hi-d/b ph b">struct gptimer_para</strong>
+                <div class="- topic/p p" data-ofbid="d204928e139__20250121171637">属于 Driver 层接口，用于设置 GPTimer
+                    的工作模式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_wnv_cqt_cdc" data-ofbid="id__codeblock_wnv_cqt_cdc"><strong class="hl-keyword">struct</strong> gptimer_match_out
+{
+    u8 is_en;
+    <strong class="hl-keyword">enum</strong> gpt_out_init out_init;
+    <strong class="hl-keyword">enum</strong> gpt_cmp_out cmpa_out;
+    <strong class="hl-keyword">enum</strong> gpt_cmp_out cmpb_out;
+};
+<strong class="hl-keyword">struct</strong> gptimer_match
+{
+    <strong class="hl-keyword">enum</strong> gpt_cmp_act cmpa_act;
+    <strong class="hl-keyword">enum</strong> gpt_cmp_act cmpb_act;
+    <strong class="hl-keyword">struct</strong> gptimer_match_out outval[GPT_OUT_NUMS];
+};
+<strong class="hl-keyword">struct</strong> gptimer_para
+{
+    <strong class="hl-keyword">enum</strong> gptimer_mode gptimer_mode;
+    <strong class="hl-keyword">enum</strong> gpt_trg_mode gptimer_trgmode;
+    <strong class="hl-keyword">struct</strong> gptimer_match matchval;
+};</pre></div></div></section><section class="- topic/section section" id="id__driver" data-ofbid="id__driver"><h2 class="- topic/title title sectiontitle">Driver 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d204928e148__20250121171637"><span class="+ topic/keyword pr-d/apiname keyword apiname">struct rt_hwtimer_ops</span> 是 RT-Thread 中定义的 hwtimer
+                    设备驱动框架的标准接口，包含了一组函数指针，用于初始化、启动、停止、获取计数值和控制定时器等操作。<div class="- topic/note note note note_note" id="id__note_otz_zqt_cdc" data-ofbid="id__note_otz_zqt_cdc"><span class="note__title">注：</span> 各个操作参数的详细说明，可查看下列表格。</div></div>
+                <div class="- topic/p p" data-ofbid="d204928e155__20250121171637">以下示例展示了如何定义并实现 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_hwtimer_ops</span>
+                接口，并将其应用到一个定时器设备上。通过这种方式，可以方便地扩展和管理不同的定时器设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_it4_dqt_cdc" data-ofbid="id__codeblock_it4_dqt_cdc"><strong class="hl-keyword">struct</strong> rt_hwtimer_ops
+{
+    <strong class="hl-keyword">void</strong> (*init)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer, rt_uint32_t state);
+    #ifdef AIC_GPTIMER_DRV
+    rt_err_t (*start)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer, rt_uint32_t cnt, rt_hwtimer_mode_t mode, <strong class="hl-keyword">void</strong> *args);
+    #<strong class="hl-keyword">else</strong>
+    rt_err_t (*start)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer, rt_uint32_t cnt, rt_hwtimer_mode_t mode);
+    #endif
+    <strong class="hl-keyword">void</strong> (*stop)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer);
+    rt_uint32_t (*count_get)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer);
+    rt_err_t (*control)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer, rt_uint32_t cmd, <strong class="hl-keyword">void</strong> *args);
+};</pre></div>
+                <p class="- topic/p p" data-ofbid="d204928e166__20250121171637">为了拓展 GPTimer 的功能，<span class="+ topic/keyword pr-d/apiname keyword apiname">(*start)</span> 接口中新增了 <span class="+ topic/keyword pr-d/parmname keyword parmname">args</span> 参数，用于设置
+                GPTimer 的工作模式。</p>
+            <div class="- topic/div div section" id="id__drv-gptimer-init">
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_kmq_n3d_bdc" data-ofbid="id__table_kmq_n3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_gptimer_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_kmq_n3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_kmq_n3d_bdc__entry__2">static void drv_gptimer_init(rt_hwtimer_t *timer, rt_uint32_t
+                                    state)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_kmq_n3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_kmq_n3d_bdc__entry__2">初始化配置一路 Timer</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_kmq_n3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_kmq_n3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">timer - 指向 rt_hwtimer_t 设备的指针</div>
+                                        <div class="- topic/div div">state - 1，表示打开；0，表示关闭</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_kmq_n3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_kmq_n3d_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_kmq_n3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_kmq_n3d_bdc__entry__2">-</td></tr></tbody></table></div>
+            </div>
+            <div class="- topic/div div section" id="id__drv-hrtimer-start">
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_lmq_n3d_bdc" data-ofbid="id__table_lmq_n3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_hrtimer_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_lmq_n3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_lmq_n3d_bdc__entry__2">static rt_err_t drv_gptimer_start(rt_hwtimer_t *timer,
+                                    rt_uint32_t cnt, rt_hwtimer_mode_t mode, void *args)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lmq_n3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lmq_n3d_bdc__entry__2">启动 Timer</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lmq_n3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lmq_n3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">timer - 指向 rt_hwtimer_t 设备的指针</div>
+                                        <div class="- topic/div div">cnt - Timer 的超时计数，单位是:1/Freq 秒</div>
+                                        <div class="- topic/div div">mode - Oneshot、或 Period 类型</div>
+                                        <div class="- topic/div div">args - 指向 GPtimer 工作模式参数指针</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lmq_n3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lmq_n3d_bdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_lmq_n3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_lmq_n3d_bdc__entry__2">输出模式下 CMPA 值默认为 cnt 值的四分之一，CMPB 值默认为 cnt 值的二分之一</td></tr></tbody></table></div>
+            </div>
+            <div class="- topic/div div section" id="id__drv-hrtimer-stop">
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_mmq_n3d_bdc" data-ofbid="id__table_mmq_n3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_hrtimer_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_mmq_n3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_mmq_n3d_bdc__entry__2">static void drv_gptimer_stop(rt_hwtimer_t *timer)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mmq_n3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mmq_n3d_bdc__entry__2">停止 Timer</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mmq_n3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mmq_n3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">timer - 指向 rt_hwtimer_t 设备的指针</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_mmq_n3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_mmq_n3d_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_mmq_n3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_mmq_n3d_bdc__entry__2">-</td></tr></tbody></table></div>
+            </div>
+            <div class="- topic/div div section" id="id__drv-hrtimer-ctrl">
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_nmq_n3d_bdc" data-ofbid="id__table_nmq_n3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_hrtimer_ctrl</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_nmq_n3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_nmq_n3d_bdc__entry__2">static rt_err_t drv_gptimer_ctrl(rt_hwtimer_t *timer,
+                                    rt_uint32_t cmd, void *args)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nmq_n3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_nmq_n3d_bdc__entry__2">GPTimer 驱动的 ioctl 接口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nmq_n3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_nmq_n3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">timer - 指向 rt_hwtimer_t 设备的指针</div>
+                                        <div class="- topic/div div">cmd - ioctl 命令码</div>
+                                        <div class="- topic/div div">args - ioctl 命令相应的参数</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_nmq_n3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_nmq_n3d_bdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_nmq_n3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_nmq_n3d_bdc__entry__2">目前仅支持设置 Timer 的 Freq 值</td></tr></tbody></table></div>
+            </div>
+        </section><section class="- topic/section section" id="id__hal" data-ofbid="id__hal"><h2 class="- topic/title title sectiontitle">HAL 层接口设计</h2>
+                
+                <div class="- topic/p p" data-ofbid="d204928e371__20250121171637"><span class="+ topic/ph sw-d/filepath ph filepath">hal_gpt.h</span>
+                是一个头文件，其中声明了与通用定时器 (GPT) 相关的函数接口。HAL
+                层主要包含以下函数接口：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_j34_jvt_cdc" data-ofbid="id__codeblock_j34_jvt_cdc">u32 hal_gpt_int_stat(u32 i);
+<strong class="hl-keyword">void</strong> hal_gpt_int_clr(u32 i, u32 mask);
+<strong class="hl-keyword">void</strong> hal_gpt_clk_div_set(u32 i, u32 div);
+<strong class="hl-keyword">void</strong> hal_gpt_ctl_set(u32 i, u32 trg_db, <strong class="hl-keyword">enum</strong> gpt_trg_mode trg_mode, <strong class="hl-keyword">enum</strong> gpt_run_mode run_mode);
+<strong class="hl-keyword">void</strong> hal_gpt_en(u32 i, u32 enable);
+<strong class="hl-keyword">void</strong> hal_gpt_clr(u32 i);
+<strong class="hl-keyword">void</strong> hal_gpt_irq_en(u32 i, <strong class="hl-keyword">enum</strong> gpt_irq_mode irq_mode, u32 enable);
+<strong class="hl-keyword">void</strong> hal_gpt_irq_disable(u32 i);
+<strong class="hl-keyword">void</strong> hal_gpt_set_max(u32 i, u32 val);
+<strong class="hl-keyword">void</strong> hal_gpt_out_init(u32 i, u32 out_num, <strong class="hl-keyword">struct</strong> gptimer_match cfg, u32 cmpa_val, u32 cmpb_val);
+<strong class="hl-keyword">void</strong> hal_gpt_out_en(u32 i, u32 out_num, u32 enable);</pre></div>
+            </section><section class="- topic/section section" id="id__demo" data-ofbid="id__demo"><h2 class="- topic/title title sectiontitle">Demo</h2>
+            
+            
+            <div class="- topic/p p" data-ofbid="d204928e388__20250121171637">本
+                Demo 是 test_gptimer
+                    的部分源码（<span class="+ topic/ph sw-d/filepath ph filepath">bsp/examples/test-gptimer/test_gptimer.c</span>）：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_sf2_smt_cdc" data-ofbid="id__codeblock_sf2_smt_cdc"><strong class="hl-keyword">struct</strong> test_gptimer_para {
+    rt_hwtimerval_t tm;
+    <strong class="hl-keyword">struct</strong> gptimer_para gpt_para;
+};
+
+<strong class="hl-keyword">struct</strong> gptimer_match_out g_outval[GPT_OUT_NUMS] = {
+    {<span class="hl-number">1</span>, OUT_INIT_LOW, CMP_OUT_HIGH, CMP_OUT_LOW},
+    {<span class="hl-number">1</span>, OUT_INIT_HIGH, CMP_OUT_LOW, CMP_OUT_HIGH},
+    {<span class="hl-number">0</span>, OUT_INIT_LOW, CMP_OUT_HIGH, CMP_OUT_LOW},
+    {<span class="hl-number">0</span>, OUT_INIT_LOW, CMP_OUT_HIGH, CMP_OUT_LOW},
+};
+
+<strong class="hl-keyword">enum</strong> gpt_cmp_act g_cmpa_act = GPTIMER_CNT_CONTINUE;
+<strong class="hl-keyword">enum</strong> gpt_cmp_act g_cmpb_act = GPTIMER_CNT_CONTINUE;
+
+<em class="hl-comment">/* Timer timeout callback function */</em>
+<strong class="hl-keyword">static</strong> rt_err_t gptimer_cb(rt_device_t dev, rt_size_t size)
+{
+    <strong class="hl-keyword">struct</strong> gptimer_info *info = (<strong class="hl-keyword">struct</strong> gptimer_info *)dev-&gt;user_data;
+
+#ifdef ULOG_USING_ISR_LOG
+    <strong class="hl-keyword">if</strong> (g_debug)
+        printf(<span class="hl-string">"%d/%d gptimer%d timeout callback! Elapsed %ld us\n"</span>,
+               g_loop_cnt, g_loop_max,
+               info-&gt;id, aic_timer_get_us() - g_start_us);
+#endif
+
+    g_start_us = aic_timer_get_us();
+    g_loop_cnt++;
+    <strong class="hl-keyword">if</strong> ((g_loop_max &gt; <span class="hl-number">1</span>) &amp;&amp; (g_loop_cnt &gt; g_loop_max))
+        rt_device_control(g_gptimer_dev[info-&gt;id], HWTIMER_CTRL_STOP, NULL);
+
+    <strong class="hl-keyword">return</strong> RT_EOK;
+}
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> cmd_test_gptimer(<strong class="hl-keyword">int</strong> argc, <strong class="hl-keyword">char</strong> *argv[])
+{
+    rt_err_t ret = RT_EOK;
+    u32 c, ch = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">struct</strong> test_gptimer_para para = {<span class="hl-number">0</span>};
+    rt_hwtimer_mode_t mode = HWTIMER_MODE_ONESHOT;
+    <strong class="hl-keyword">enum</strong> gptimer_mode gpt_mode = GPTIMER_MODE_COUNT;
+    <strong class="hl-keyword">enum</strong> gpt_trg_mode trg_mode = GPT_TRG_MODE_AUTO;
+    u32 freq= <span class="hl-number">1000000</span>;
+
+    optind = <span class="hl-number">0</span>;
+    g_debug = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">while</strong> ((c = getopt_long(argc, argv, sopts, lopts, NULL)) != -<span class="hl-number">1</span>) {
+        <strong class="hl-keyword">switch</strong> (c) {
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'m'</span>:
+            <strong class="hl-keyword">if</strong> (strncasecmp(<span class="hl-string">"period"</span>, optarg, strlen(optarg)) == <span class="hl-number">0</span>)
+                mode = HWTIMER_MODE_PERIOD;
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'c'</span>:
+            ch = atoi(optarg);
+            <strong class="hl-keyword">if</strong> (ch &gt; TIMER_NUM) {
+                pr_err(<span class="hl-string">"Channel number %s is invalid\n"</span>, optarg);
+                <strong class="hl-keyword">return</strong>;
+            }
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'s'</span>:
+            para.tm.sec = atoi(optarg);
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'u'</span>:
+            para.tm.usec = atoi(optarg);
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'d'</span>:
+            g_debug = <span class="hl-number">1</span>;
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'g'</span>:
+            <strong class="hl-keyword">if</strong> (strncasecmp(<span class="hl-string">"count"</span>, optarg, strlen(optarg)) == <span class="hl-number">0</span>)
+                gpt_mode = GPTIMER_MODE_COUNT;
+            <strong class="hl-keyword">else</strong> <strong class="hl-keyword">if</strong> (strncasecmp(<span class="hl-string">"match"</span>, optarg, strlen(optarg)) == <span class="hl-number">0</span>)
+                gpt_mode = GPTIMER_MODE_MATCH;
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'a'</span>:
+            <strong class="hl-keyword">if</strong> (strncasecmp(<span class="hl-string">"auto"</span>, optarg, strlen(optarg)) == <span class="hl-number">0</span>)
+                trg_mode = GPT_TRG_MODE_AUTO;
+            <strong class="hl-keyword">else</strong> <strong class="hl-keyword">if</strong> (strncasecmp(<span class="hl-string">"rsi"</span>, optarg, strlen(optarg)) == <span class="hl-number">0</span>)
+                trg_mode = GPT_TRG_MODE_RSI;
+            <strong class="hl-keyword">else</strong> <strong class="hl-keyword">if</strong> (strncasecmp(<span class="hl-string">"fall"</span>, optarg, strlen(optarg)) == <span class="hl-number">0</span>)
+                trg_mode = GPT_TRG_MODE_FALL;
+            <strong class="hl-keyword">else</strong> <strong class="hl-keyword">if</strong> (strncasecmp(<span class="hl-string">"bil"</span>, optarg, strlen(optarg)) == <span class="hl-number">0</span>)
+                trg_mode = GPT_TRG_MODE_BILATERAL;
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'f'</span>:
+            freq = atoi(optarg);
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'h'</span>:
+            usage(argv[<span class="hl-number">0</span>]);
+            <strong class="hl-keyword">return</strong>;
+
+        <strong class="hl-keyword">default</strong>:
+            pr_err(<span class="hl-string">"Invalid argument\n"</span>);
+            usage(argv[<span class="hl-number">0</span>]);
+            <strong class="hl-keyword">return</strong>;
+        }
+    }
+
+    <strong class="hl-keyword">if</strong> ((para.tm.sec == <span class="hl-number">0</span>) &amp;&amp; (para.tm.usec == <span class="hl-number">0</span>)) {
+        pr_err(<span class="hl-string">"Invalid argument\n"</span>);
+        usage(argv[<span class="hl-number">0</span>]);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    <strong class="hl-keyword">if</strong> (!g_gptimer_dev[ch]) {
+        <strong class="hl-keyword">char</strong> name[<span class="hl-number">10</span>] = <span class="hl-string">""</span>;
+
+        snprintf(name, <span class="hl-number">10</span>, <span class="hl-string">"gptimer%d"</span>, ch);
+
+        <em class="hl-comment">/* find timer device */</em>
+        g_gptimer_dev[ch] = rt_device_find(name);
+        <strong class="hl-keyword">if</strong> (g_gptimer_dev[ch] == RT_NULL) {
+            pr_err(<span class="hl-string">"Can't find %s device!\n"</span>, name);
+            <strong class="hl-keyword">return</strong>;
+        }
+
+        <em class="hl-comment">/* Open the device in read-write mode */</em>
+        ret = rt_device_open(g_gptimer_dev[ch], RT_DEVICE_OFLAG_RDWR);
+        <strong class="hl-keyword">if</strong> (ret != RT_EOK) {
+            pr_err(<span class="hl-string">"Failed to open %s device!\n"</span>, name);
+            <strong class="hl-keyword">return</strong>;
+        }
+    }
+
+    para.gpt_para.gptimer_mode = gpt_mode;
+    para.gpt_para.gptimer_trgmode = trg_mode;
+
+    <strong class="hl-keyword">if</strong> (gpt_mode == GPTIMER_MODE_MATCH) {
+        para.gpt_para.matchval.cmpa_act = g_cmpa_act;
+        para.gpt_para.matchval.cmpb_act = g_cmpb_act;
+        memcpy(&amp;para.gpt_para.matchval.outval[<span class="hl-number">0</span>], g_outval, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> gptimer_match_out) * <span class="hl-number">4</span>);
+    }
+
+    <em class="hl-comment">/* set timeout callback function */</em>
+    rt_device_set_rx_indicate(g_gptimer_dev[ch], gptimer_cb);
+
+    <em class="hl-comment">/* set the timer mode, oneshot or period */</em>
+    ret = rt_device_control(g_gptimer_dev[ch], HWTIMER_CTRL_MODE_SET, &amp;mode);
+    <strong class="hl-keyword">if</strong> (ret != RT_EOK) {
+        pr_err(<span class="hl-string">"Failed to set mode! ret is %d\n"</span>, ret);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    <em class="hl-comment">/* set the timer frequency to freqHz */</em>
+    ret = rt_device_control(g_gptimer_dev[ch], HWTIMER_CTRL_FREQ_SET, &amp;freq);
+    <strong class="hl-keyword">if</strong> (ret != RT_EOK) {
+        pr_err(<span class="hl-string">"Failed to set the freq! ret is %d\n"</span>, ret);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    printf(<span class="hl-string">"gptimer%d: Create a timer of %d.%06d sec, %s mode\n"</span>,
+           ch, (u32)para.tm.sec, (u32)para.tm.usec,
+           mode == HWTIMER_MODE_ONESHOT ? <span class="hl-string">"Oneshot"</span> : <span class="hl-string">"Period"</span>);
+    <strong class="hl-keyword">if</strong> (mode != HWTIMER_MODE_ONESHOT) {
+        g_loop_max = GPTIMER_MAX_ELAPSE / (para.tm.sec * USEC_PER_SEC + para.tm.usec);
+        printf(<span class="hl-string">"\tWill loop %d times\n"</span>, g_loop_max);
+    }
+
+    g_loop_cnt = <span class="hl-number">0</span>;
+    g_start_us = aic_timer_get_us();
+    <strong class="hl-keyword">if</strong> (!rt_device_write(g_gptimer_dev[ch], <span class="hl-number">0</span>, &amp;para, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> test_gptimer_para))) {
+        pr_err(<span class="hl-string">"set timeout value failed\n"</span>);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    <em class="hl-comment">// rt_device_close(g_gptimer_dev[ch]);</em>
+}
+MSH_CMD_EXPORT_ALIAS(cmd_test_gptimer, test_gptimer, test gptimer);</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">模块架构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">关键流程设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id6" data-tocid="id__id6">数据结构设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__driver" data-tocid="id__driver">Driver 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__hal" data-tocid="id__hal">HAL 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__demo" data-tocid="id__demo">Demo</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

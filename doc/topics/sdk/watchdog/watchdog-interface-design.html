@@ -1,0 +1,222 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="以下接口是 Linux Watchdog 子系统需要的标准接口。 外部接口 Linux 对用户态提供了一组 Watchdog 的 ioctl 接口，用户态可以通过设备节点 /dev/watchdogX 来访问：（详见 include/upai/linux/watchdog.h ） struct watchdog_info { __u32 options; /* Options the ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-07-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="Watchdog_interface_design"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/watchdog/watchdog-interface-design.dita"/><meta name="wh-out-relpath" content="topics/sdk/watchdog/watchdog-interface-design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="Watchdog_interface_design" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/watchdog/watchdog-interface-design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">接口设计</h1><div class="date inPage">15 Jul 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d257796e22__20250121171714">以下接口是 Linux Watchdog 子系统需要的标准接口。</p><section class="- topic/section section" id="Watchdog_interface_design__section_vvn_1gt_c1c" data-ofbid="Watchdog_interface_design__section_vvn_1gt_c1c"><h2 class="- topic/title title sectiontitle">外部接口</h2>
+            
+            <div class="- topic/p p" data-ofbid="d257796e29__20250121171714">Linux 对用户态提供了一组 Watchdog 的 ioctl 接口，用户态可以通过设备节点 <span class="+ topic/ph sw-d/filepath ph filepath">/dev/watchdogX</span>
+                来访问：（详见
+                <span class="+ topic/ph sw-d/filepath ph filepath">include/upai/linux/watchdog.h</span>）<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="Watchdog_interface_design__codeblock_vrx_bgt_c1c" data-ofbid="Watchdog_interface_design__codeblock_vrx_bgt_c1c"><strong class="hl-keyword">struct</strong> watchdog_info {
+    __u32 options;      <em class="hl-comment">/* Options the card/driver supports */</em>
+    __u32 firmware_version; <em class="hl-comment">/* Firmware version of the card */</em>
+    __u8  identity[<span class="hl-number">32</span>]; <em class="hl-comment">/* Identity of the board */</em>
+};
+
+#<span class="hl-directive">define</span> WDIOC_GETSUPPORT        _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">0</span>, <strong class="hl-keyword">struct</strong> watchdog_info)
+#<span class="hl-directive">define</span> WDIOC_GETSTATUS     _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">1</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_GETBOOTSTATUS _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">2</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_GETTEMP           _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">3</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_SETOPTIONS        _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">4</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_KEEPALIVE     _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">5</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_SETTIMEOUT     _IOWR(WATCHDOG_IOCTL_BASE, <span class="hl-number">6</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_GETTIMEOUT     _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">7</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_SETPRETIMEOUT _IOWR(WATCHDOG_IOCTL_BASE, <span class="hl-number">8</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_GETPRETIMEOUT _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">9</span>, <strong class="hl-keyword">int</strong>)
+#<span class="hl-directive">define</span> WDIOC_GETTIMELEFT       _IOR(WATCHDOG_IOCTL_BASE, <span class="hl-number">10</span>, <strong class="hl-keyword">int</strong>)</pre></div>
+            <p class="- topic/p p" data-ofbid="d257796e40__20250121171714"><a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="watchdog-demo.html">Demo</a> 就是调用的这些接口 Watchdog 的访问。</p>
+        </section><section class="- topic/section section" id="Watchdog_interface_design__section_jcj_lgt_c1c" data-ofbid="Watchdog_interface_design__section_jcj_lgt_c1c"><h2 class="- topic/title title sectiontitle">内部接口</h2>
+            
+            
+                <div class="table-container"><table class="- topic/table table frame-all" id="Watchdog_interface_design__table_jck_jgt_c1c" data-ofbid="Watchdog_interface_design__table_jck_jgt_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_wdt_start</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="Watchdog_interface_design__table_jck_jgt_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="Watchdog_interface_design__table_jck_jgt_c1c__entry__2">static int aic_wdt_start(struct watchdog_device
+                                    *wdt_dev)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_jck_jgt_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_jck_jgt_c1c__entry__2">使能一个 Watchdog 通道（device）</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_jck_jgt_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_jck_jgt_c1c__entry__2">wdt_dev - 指向 Watchdog 设备的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_jck_jgt_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_jck_jgt_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="Watchdog_interface_design__table_jck_jgt_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="Watchdog_interface_design__table_jck_jgt_c1c__entry__2">如果当前通道的 Watchdog 已经是使能状态，将执行 ping 操作（喂狗）。</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="Watchdog_interface_design__table_kck_jgt_c1c" data-ofbid="Watchdog_interface_design__table_kck_jgt_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_wdt_stop</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="Watchdog_interface_design__table_kck_jgt_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="Watchdog_interface_design__table_kck_jgt_c1c__entry__2">static int aic_wdt_stop(struct watchdog_device
+                                    *wdt_dev)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_kck_jgt_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_kck_jgt_c1c__entry__2">关闭一个 Watchdog 通道（device）</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_kck_jgt_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_kck_jgt_c1c__entry__2">wdt_dev - 指向 Watchdog 设备的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_kck_jgt_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_kck_jgt_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="Watchdog_interface_design__table_kck_jgt_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="Watchdog_interface_design__table_kck_jgt_c1c__entry__2">-</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="Watchdog_interface_design__table_lck_jgt_c1c" data-ofbid="Watchdog_interface_design__table_lck_jgt_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_wdt_pin</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="Watchdog_interface_design__table_lck_jgt_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="Watchdog_interface_design__table_lck_jgt_c1c__entry__2">static int aic_wdt_ping(struct watchdog_device
+                                    *wdt_dev)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_lck_jgt_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_lck_jgt_c1c__entry__2">清零指定的 Watchdog 通道计数器，相当于“喂狗”操作</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_lck_jgt_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_lck_jgt_c1c__entry__2">wdt_dev - 指向 Watchdog 设备的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_lck_jgt_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_lck_jgt_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="Watchdog_interface_design__table_lck_jgt_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="Watchdog_interface_design__table_lck_jgt_c1c__entry__2">需要先调用 aic_wdt_start()，再调用此接口</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="Watchdog_interface_design__table_mck_jgt_c1c" data-ofbid="Watchdog_interface_design__table_mck_jgt_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_wdt_set_timeout</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="Watchdog_interface_design__table_mck_jgt_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="Watchdog_interface_design__table_mck_jgt_c1c__entry__2">static int aic_wdt_set_timeout(struct watchdog_device
+                                    *wdt_dev, unsigned int timeout)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_mck_jgt_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_mck_jgt_c1c__entry__2">给指定的 Watchdog 设备设置一个超时</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_mck_jgt_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_mck_jgt_c1c__entry__2">wdt_dev - 指向 Watchdog 设备的指针 timetout - 超时的数值，单位：秒</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_mck_jgt_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_mck_jgt_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="Watchdog_interface_design__table_mck_jgt_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="Watchdog_interface_design__table_mck_jgt_c1c__entry__2">1. 在 Watchdog 初始化时配置的最大、最小 timeout 参数，Watchdog
+                                    Core 会去做校验，如果超出范围，将采用上一次有效的 timeout 参数值。2.
+                                    clr_thd 会和 timeout 一起设置到 Watchdog 控制器。</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="Watchdog_interface_design__table_nck_jgt_c1c" data-ofbid="Watchdog_interface_design__table_nck_jgt_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_wdt_set_pretimeout</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="Watchdog_interface_design__table_nck_jgt_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="Watchdog_interface_design__table_nck_jgt_c1c__entry__2">static int aic_wdt_set_pretimeout(struct watchdog_device
+                                    *wdt_dev,unsigned int pretimeout)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_nck_jgt_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_nck_jgt_c1c__entry__2">给指定的 Watchdog 设备设置一个预超时</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_nck_jgt_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_nck_jgt_c1c__entry__2">wdt_dev - 指向 Watchdog 设备的指针 pretimetout - 预超时的数值，单位：秒</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_nck_jgt_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_nck_jgt_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="Watchdog_interface_design__table_nck_jgt_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="Watchdog_interface_design__table_nck_jgt_c1c__entry__2">pretimeout 必须要小于该 Watchdog 通道的 timeout 参数，这个有效性检查会在 Core 中去做（所以合理的 ioctl 操作是先设置 timeout、再设置 pretimeout），如果 pretimeout 无效将返回出错。</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="Watchdog_interface_design__table_pck_jgt_c1c" data-ofbid="Watchdog_interface_design__table_pck_jgt_c1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_wdt_restart</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="Watchdog_interface_design__table_pck_jgt_c1c__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="Watchdog_interface_design__table_pck_jgt_c1c__entry__2">static int aic_wdt_restart(struct watchdog_device
+                                    *wdt_dev,unsigned long action, void *data)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_pck_jgt_c1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_pck_jgt_c1c__entry__2">用于重启整个系统（方法是设置 timeout 是 0，Watchdog 会立即触发超时重启）</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_pck_jgt_c1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_pck_jgt_c1c__entry__2">
+                                    <ul class="- topic/ul ul" id="Watchdog_interface_design__ul_djq_nmj_bcc" data-ofbid="Watchdog_interface_design__ul_djq_nmj_bcc"><li class="- topic/li li" data-ofbid="d257796e246__20250121171714">wdt_dev - 指向 Watchdog 设备的指针 </li><li class="- topic/li li" data-ofbid="d257796e248__20250121171714">action - 需要执行的操作类型（定义详见“注意事项”），目前统一按重启处理 </li><li class="- topic/li li" data-ofbid="d257796e250__20250121171714">data - 附加数据，暂未用到</li></ul>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="Watchdog_interface_design__table_pck_jgt_c1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="Watchdog_interface_design__table_pck_jgt_c1c__entry__2">0，成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="Watchdog_interface_design__table_pck_jgt_c1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="Watchdog_interface_design__table_pck_jgt_c1c__entry__2">-</td></tr></tbody></table></div>
+            
+            <div class="- topic/p p" data-ofbid="d257796e264__20250121171714">action 的定义详见
+                <span class="+ topic/ph sw-d/filepath ph filepath">include/linux/reboot.h</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="Watchdog_interface_design__codeblock_cfm_sgt_c1c" data-ofbid="Watchdog_interface_design__codeblock_cfm_sgt_c1c">#<span class="hl-directive">define</span> SYS_DOWN        <span class="hl-number">0x0001</span>  <em class="hl-comment">/* Notify of system down */</em>
+#<span class="hl-directive">define</span> SYS_RESTART     SYS_DOWN
+#<span class="hl-directive">define</span> SYS_HALT            <span class="hl-number">0x0002</span>  <em class="hl-comment">/* Notify of system halt */</em>
+#<span class="hl-directive">define</span> SYS_POWER_OFF   <span class="hl-number">0x0003</span>  <em class="hl-comment">/* Notify of system power off */</em></pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#Watchdog_interface_design__section_vvn_1gt_c1c" data-tocid="Watchdog_interface_design__section_vvn_1gt_c1c">外部接口</a></div></li><li class="section-item"><div class="section-title"><a href="#Watchdog_interface_design__section_jcj_lgt_c1c" data-tocid="Watchdog_interface_design__section_jcj_lgt_c1c">内部接口</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

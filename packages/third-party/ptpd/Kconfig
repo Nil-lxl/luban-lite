@@ -1,0 +1,81 @@
+menuconfig LPKG_USING_PTPD
+    bool "Enable IEEE1588 ptpd stack"
+    default n
+    select LPKG_USING_LWIP
+
+if LPKG_USING_PTPD
+
+    config LPKG_PTPD_THREAD_PRI
+        int "The priority of PTPD thread"
+        default 10
+
+    config LPKG_PTPD_THREAD_STACK_SIZE
+        int "The stack size of PTPD thread "
+        default 2048
+
+    config LPKG_PTPD_SLAVE_ONLY
+        bool "PTP slave only"
+        default n
+
+    config LPKG_PTPD_DELAY_MECHANISM
+        bool
+        choice
+        prompt "Delay mechanism of PTPD"
+        default LPKG_PTPD_DELAY_MECHANISM_E2E
+
+            config LPKG_PTPD_DELAY_MECHANISM_E2E
+                bool "E2E"
+
+            config LPKG_PTPD_DELAY_MECHANISM_P2P
+                bool "P2P"
+
+            config LPKG_PTPD_DELAY_MECHANISM_DISABLED
+                bool "DELAY_DISABLED"
+
+        endchoice
+
+    config LPKG_PTPD_MASTER_SYNC_INTERVA
+        int "PTPD master's synchronization cycle"
+        default 0
+
+    config LPKG_PTPD_MASTER_ANNOUNCE_INTERVA
+        int "PTPD master's announce cycle"
+        default 1
+
+    config LPKG_PTPD_MAX_ADJ_FREQ
+        int "Max frequency drift to try to adjust it"
+        default 4096
+
+    config LPKG_PTPD_MAX_ADJ_OFFSET
+        int "Max offset(ns) to try to adjust it"
+        default 4000000
+
+    config LPKG_PTPD_PI_CONTROLLER_P
+        int "Proportional parameters of PI controller"
+        default 39
+
+    config LPKG_PTPD_PI_CONTROLLER_I
+        int "Integral parameters of PI controler"
+        default 5
+
+    config LPKG_PTPD_STACK_DEBUG
+        bool
+        choice
+        prompt "The debug level of PTPD stack"
+        default LPKG_PTPD_DEBUG_ERR
+
+            config LPKG_PTPD_DEBUG_ERR
+                bool "Error"
+
+            config LPKG_PTPD_DEBUG_INFO
+                bool "Information"
+
+            config LPKG_PTPD_DEBUG_HANDLE
+                bool "Debug handle message"
+
+            config LPKG_PTPD_DEBUG_ALL
+                bool "Debug"
+
+        endchoice
+endif
+

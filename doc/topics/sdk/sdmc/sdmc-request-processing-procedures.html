@@ -1,0 +1,208 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="对于应用程序，通过读写的接口访问文件系统，文件系统访问块设备，MMC 设备在内核中被注册为一个块设备，当读写的操作传入到 MMC 块设备后，通过 MMC 子系统处理相关操作，对于 MMC 子系统其处理皆以请求的方式实现。 块层以上系统读写调用流程 在块层以上，通常是用户空间调用读写接口访问 MMC 设备，主要流程如下： 图 1 . 通用块设备的访问流程 在用户空间，应用程序调用 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-16"/><meta name="DC.date.modified" content="2024-11-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="sdmc_request_processing_procedures"/><meta name="DC.language" content="zh-CN"/><title>请求处理流程</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/sdmc/sdmc-request-processing-procedures.dita"/><meta name="wh-out-relpath" content="topics/sdk/sdmc/sdmc-request-processing-procedures.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="sdmc_request_processing_procedures" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/sdmc/sdmc-request-processing-procedures.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">请求处理流程</h1><div class="date inPage">15 Nov 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d338647e23__20250121171855">对于应用程序，通过读写的接口访问文件系统，文件系统访问块设备，MMC 设备在内核中被注册为一个块设备，当读写的操作传入到 MMC 块设备后，通过 MMC 子系统处理相关操作，对于 MMC 子系统其处理皆以请求的方式实现。</p><section class="- topic/section section" id="sdmc_request_processing_procedures__section_dmm_gst_c1c" data-ofbid="sdmc_request_processing_procedures__section_dmm_gst_c1c"><h2 class="- topic/title title sectiontitle">块层以上系统读写调用流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d338647e30__20250121171855">在块层以上，通常是用户空间调用读写接口访问 MMC 设备，主要流程如下：</p>
+            <figure class="- topic/fig fig fignone" id="sdmc_request_processing_procedures__fig_ltk_kst_c1c" data-ofbid="sdmc_request_processing_procedures__fig_ltk_kst_c1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="sdmc_request_processing_procedures__image_emm_gst_c1c" src="../../../images/memory/blkdev_access_flow.png" alt="blkdev_access_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">通用块设备的访问流程</span></figcaption></figure>
+            <ol class="- topic/ol ol" id="sdmc_request_processing_procedures__ol_fmm_gst_c1c" data-ofbid="sdmc_request_processing_procedures__ol_fmm_gst_c1c"><li class="- topic/li li" data-ofbid="d338647e41__20250121171855">在用户空间，应用程序调用 read/write 接口</li><li class="- topic/li li" data-ofbid="d338647e43__20250121171855">然后通过虚拟文件系统</li><li class="- topic/li li" data-ofbid="d338647e45__20250121171855">调用通用块层的接口对块设备进行 IO 请求</li><li class="- topic/li li" data-ofbid="d338647e47__20250121171855">IO 调度层负责使用特定算法对这些请求进行调度</li><li class="- topic/li li" data-ofbid="d338647e49__20250121171855">块设备驱动层调用具体的块设备接口访问设备</li></ol>
+        </section><section class="- topic/section section" id="sdmc_request_processing_procedures__section_gmm_gst_c1c" data-ofbid="sdmc_request_processing_procedures__section_gmm_gst_c1c"><h2 class="- topic/title title sectiontitle">MMC 子系统请求处理流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d338647e57__20250121171855">MMC 子系统被抽象成一个块设备，通用块层将 IO 请求调用到具体的块设备驱动层，在 MMC 块设备驱动中的请求处理流程如下：</p>
+            <figure class="- topic/fig fig fignone" id="sdmc_request_processing_procedures__fig_fnt_3st_c1c" data-ofbid="sdmc_request_processing_procedures__fig_fnt_3st_c1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="sdmc_request_processing_procedures__image_hmm_gst_c1c" src="../../../images/emmc/mmc_request_flow.png" alt="mmc_request_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">MMC 数据请求的处理流程</span></figcaption></figure>
+            <ol class="- topic/ol ol" id="sdmc_request_processing_procedures__ol_imm_gst_c1c" data-ofbid="sdmc_request_processing_procedures__ol_imm_gst_c1c"><li class="- topic/li li" data-ofbid="d338647e68__20250121171855">由于会有多个请求，在 block 中以队列的形式处理，在请求到达时，唤醒 mmc_queue_thread。</li><li class="- topic/li li" data-ofbid="d338647e70__20250121171855">调用 block 的请求处理，发出 request。</li><li class="- topic/li li" data-ofbid="d338647e72__20250121171855">block 的 request 会由 core 来实现。</li><li class="- topic/li li" data-ofbid="d338647e74__20250121171855">core 层会根据当前 host 驱动调用对应 host 的 ops 中的 request 接口去操作 controller。</li></ol>
+            <p class="- topic/p p" data-ofbid="d338647e77__20250121171855">函数调用关系：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_request_processing_procedures__pre_jmm_gst_c1c" data-ofbid="sdmc_request_processing_procedures__pre_jmm_gst_c1c">mmc_wait_for_req
+|--__mmc_start_req
+|--init_completion
+            |--mmc_start_request
+                |--mmc_mrq_prep
+                |--__mmc_start_request
+                    |--trace_mmc_request_start
+                    |--host-&gt;ops-&gt;request （即 request）
+</pre>
+        </section><section class="- topic/section section" id="sdmc_request_processing_procedures__section_kmm_gst_c1c" data-ofbid="sdmc_request_processing_procedures__section_kmm_gst_c1c"><h2 class="- topic/title title sectiontitle">Host 层驱动请求处理流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d338647e89__20250121171855">在访问 MMC 外设时，都是通过发送 CMD 的方式，在 host 层驱动中需要通过操作 controller 去实现 core 层的 request，主要流程如下：</p>
+            <figure class="- topic/fig fig fignone" id="sdmc_request_processing_procedures__fig_zkr_hst_c1c" data-ofbid="sdmc_request_processing_procedures__fig_zkr_hst_c1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="sdmc_request_processing_procedures__image_lmm_gst_c1c" src="../../../images/sdmc/host_request_flow.png" alt="host_request_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">Host 层驱动的请求处理流程</span></figcaption></figure>
+            <ol class="- topic/ol ol" id="sdmc_request_processing_procedures__ol_mmm_gst_c1c" data-ofbid="sdmc_request_processing_procedures__ol_mmm_gst_c1c"><li class="- topic/li li" data-ofbid="d338647e100__20250121171855">检测卡设备，需要判断当前卡设备是否被拔出。</li><li class="- topic/li li" data-ofbid="d338647e102__20250121171855">判断传输状态，如果当前传输状态不是 idle，那么将会将该请求放在请求队列里。</li><li class="- topic/li li" data-ofbid="d338647e104__20250121171855">处理 data，如果当前请求需要处理数据，则将数据先行处理，如果不需要处理数据则跳过。</li><li class="- topic/li li" data-ofbid="d338647e106__20250121171855">发送 CMD，解析请求中的 CMD 和参数，将其写入寄存器，然后触发 CMD 的发送。</li><li class="- topic/li li" data-ofbid="d338647e108__20250121171855">中断处理，在发送完 CMD 后，后续的工作需要等待中断的触发，在中断处理中会对外设返回的数据和状态进行处理。</li><li class="- topic/li li" data-ofbid="d338647e110__20250121171855">如果需要，发送 stop 命令，结束该次传输。</li></ol>
+            <div class="- topic/p p" data-ofbid="d338647e113__20250121171855">Host 层函数调用关系：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="sdmc_request_processing_procedures__codeblock_jrx_gst_c1c" data-ofbid="sdmc_request_processing_procedures__codeblock_jrx_gst_c1c">artinchip_mmc_request
+|--artinchip_mmc_get_cd
+|--artinchip_mmc_queue_request
+|--artinchip_mmc_start_request
+        |--artinchip_mmc_prepare_command
+        |--artinchip_mmc_submit_data
+        |--artinchip_mmc_start_command
+        |--artinchip_mmc_prep_stop_abort</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#sdmc_request_processing_procedures__section_dmm_gst_c1c" data-tocid="sdmc_request_processing_procedures__section_dmm_gst_c1c">块层以上系统读写调用流程</a></div></li><li class="section-item"><div class="section-title"><a href="#sdmc_request_processing_procedures__section_gmm_gst_c1c" data-tocid="sdmc_request_processing_procedures__section_gmm_gst_c1c">MMC 子系统请求处理流程</a></div></li><li class="section-item"><div class="section-title"><a href="#sdmc_request_processing_procedures__section_kmm_gst_c1c" data-tocid="sdmc_request_processing_procedures__section_kmm_gst_c1c">Host 层驱动请求处理流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

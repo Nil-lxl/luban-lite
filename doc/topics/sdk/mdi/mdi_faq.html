@@ -1,0 +1,249 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="屏幕显示画面卡顿 现象 屏幕显示的画面有明显卡顿情况。 原因分析 可能是 OS 的调度不够及时导致，导致 MDI 的帧采集不连贯。 解决方法 检查操作系统调度。 确保操作系统（OS）能够及时调度任务。如果 OS 的调度不够及时，可能会导致 MDI（多媒体接口）的帧采集不连贯，从而出现卡顿现象。 调整 MDI 驱动中的调试信息输出。如果 MDI ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-10-29"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>常见问题</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mdi/mdi_faq.dita"/><meta name="wh-out-relpath" content="topics/sdk/mdi/mdi_faq.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mdi/mdi_faq.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">常见问题</h1><div class="date inPage">29 Oct 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_fmh_rry_2dc" data-ofbid="id__section_fmh_rry_2dc"><h2 class="- topic/title title sectiontitle">屏幕显示画面卡顿</h2>
+            
+            <ul class="- topic/ul ul simple" id="id__ul_gjl_kry_2dc" data-ofbid="id__ul_gjl_kry_2dc"><li class="- topic/li li" data-ofbid="d106103e23__20250121171540">
+                    <p class="- topic/p p" data-ofbid="d106103e25__20250121171540">现象</p>
+                    
+                    <p class="- topic/p p" data-ofbid="d106103e28__20250121171540">屏幕显示的画面有明显卡顿情况。</p>
+                    
+                </li><li class="- topic/li li" data-ofbid="d106103e31__20250121171540">
+                    <p class="- topic/p p" data-ofbid="d106103e33__20250121171540">原因分析</p>
+                    <p class="- topic/p p" data-ofbid="d106103e36__20250121171540">可能是 OS 的调度不够及时导致，导致 MDI 的帧采集不连贯。</p>
+                </li><li class="- topic/li li" data-ofbid="d106103e39__20250121171540">
+                    <p class="- topic/p p" data-ofbid="d106103e41__20250121171540">解决方法</p>
+                    <ol class="- topic/ol ol arabic simple" id="id__ol_jjl_kry_2dc" data-ofbid="id__ol_jjl_kry_2dc"><li class="- topic/li li" data-ofbid="d106103e45__20250121171540">检查操作系统调度。<p class="- topic/p p" data-ofbid="d106103e47__20250121171540">确保操作系统（OS）能够及时调度任务。如果 OS 的调度不够及时，可能会导致
+                                MDI（多媒体接口）的帧采集不连贯，从而出现卡顿现象。</p></li><li class="- topic/li li" data-ofbid="d106103e49__20250121171540">调整 MDI 驱动中的调试信息输出。如果 MDI 驱动中的调试信息输出过多，会占用大量的系统资源，影响帧率。<ul class="- topic/ul ul" id="id__ul_xyb_tty_2dc" data-ofbid="id__ul_xyb_tty_2dc"><li class="- topic/li li" data-ofbid="d106103e52__20250121171540">关闭或降低调试信息的输出频率。如果 MDI 驱动中的调试信息打开了，每一帧数据处理都有输出
+                                    log，会影响帧率，需要关掉。</li><li class="- topic/li li" data-ofbid="d106103e54__20250121171540">提升 log 级别，减少不必要的日志记录。详见 <a class="- topic/xref xref" href="mdi_debug.html">调试指南</a></li></ul></li><li class="- topic/li li" data-ofbid="d106103e59__20250121171540">
+                            <p class="- topic/p p" data-ofbid="d106103e61__20250121171540">尝试增加 buffer 数量，保证 Buffer 队列中有充裕的空闲 buf。</p>
+                        </li></ol>
+                </li></ul>
+            
+        </section><section class="- topic/section section" id="id__section_gmh_rry_2dc" data-ofbid="id__section_gmh_rry_2dc"><h2 class="- topic/title title sectiontitle">出现
+                GE
+                Timeout
+                报错</h2>
+            
+            <div class="- topic/div div">
+                <ul class="- topic/ul ul simple" id="id__ul_kjl_kry_2dc" data-ofbid="id__ul_kjl_kry_2dc"><li class="- topic/li li" data-ofbid="d106103e74__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106103e76__20250121171540">现象</p>
+                        
+                        <p class="- topic/p p" data-ofbid="d106103e79__20250121171540">MDI-&gt;GE-&gt;MDI 场景，在采集几帧画面后就出现 GE Timeout，然后卡死</p>
+                        
+                    </li><li class="- topic/li li" data-ofbid="d106103e82__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106103e84__20250121171540">原因分析</p>
+                        <p class="- topic/p p" data-ofbid="d106103e87__20250121171540">由于高帧率和高分辨率的数据量过大，导致 GE 无法及时读取到数据，从而引发 Timeout 报错，并且因为 GE
+                            卡顿会导致整个数据流无法持续正常流转。 </p>
+                    </li><li class="- topic/li li" data-ofbid="d106103e90__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106103e92__20250121171540">解决方法</p>
+                        <ol class="- topic/ol ol" id="id__ol_usc_d5y_2dc" data-ofbid="id__ol_usc_d5y_2dc"><li class="- topic/li li" data-ofbid="d106103e96__20250121171540">
+                                <p class="- topic/p p" data-ofbid="d106103e98__20250121171540">检查并调整 Host 端数据源的帧率，将其降低到一个合适的值。</p>
+                            </li><li class="- topic/li li" data-ofbid="d106103e101__20250121171540">
+                                <p class="- topic/p p" data-ofbid="d106103e103__20250121171540">检查并调整分辨率设置，使其低于当前配置。</p>
+                            </li></ol>
+                    </li></ul>
+                
+                
+                
+            </div>
+        </section><section class="- topic/section section" id="id__section_mv4_sry_2dc" data-ofbid="id__section_mv4_sry_2dc"><h2 class="- topic/title title sectiontitle"> 画面出现规律的分割</h2>
+            
+            <div class="- topic/div div">
+                <ul class="- topic/ul ul simple" id="id__ul_njl_kry_2dc" data-ofbid="id__ul_njl_kry_2dc"><li class="- topic/li li" data-ofbid="d106103e117__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106103e119__20250121171540">现象</p>
+                        
+                        <p class="- topic/p p" data-ofbid="d106103e122__20250121171540">假如原图是一棵树，但最终显示出来是两棵树，或者一颗半，而且颜色失真。</p>
+                        
+                    </li><li class="- topic/li li" data-ofbid="d106103e125__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106103e127__20250121171540">原因分析</p>
+                        <p class="- topic/p p" data-ofbid="d106103e130__20250121171540">一般是 RGB565、RGB888 格式的误用导致。</p>
+                    </li><li class="- topic/li li" data-ofbid="d106103e133__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106103e135__20250121171540">解决方法</p>
+                        <p class="- topic/p p" data-ofbid="d106103e138__20250121171540">排查 Host 端发送的 0x3A 命令的数据内容是否符合实际的数据格式。如果不符合，则调整 0x3A 参数的数据。0x3A 数据定义详见
+                                <a class="- topic/xref xref" href="mdi_design.html">设计说明</a> 中的自定义 DBI 命令设计。</p>
+                        <ol class="- topic/ol ol arabic simple" id="id__ol_qjl_kry_2dc" data-ofbid="id__ol_qjl_kry_2dc"><li class="- topic/li li" data-ofbid="d106103e146__20250121171540">
+                                <p class="- topic/p p" data-ofbid="d106103e148__20250121171540">调整 DBI 和 DPI 的数据格式定义。</p>
+                            </li><li class="- topic/li li" data-ofbid="d106103e151__20250121171540">
+                                <p class="- topic/p p" data-ofbid="d106103e153__20250121171540">确认 SoC 的 MDI、DE 控制器参数配置，是否和 0x3A 命令保持一致。</p>
+                            </li></ol>
+                    </li></ul>
+                
+                
+                
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_fmh_rry_2dc" data-tocid="id__section_fmh_rry_2dc">屏幕显示画面卡顿</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_gmh_rry_2dc" data-tocid="id__section_gmh_rry_2dc">出现
+                GE
+                Timeout
+                报错</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_mv4_sry_2dc" data-tocid="id__section_mv4_sry_2dc"> 画面出现规律的分割</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

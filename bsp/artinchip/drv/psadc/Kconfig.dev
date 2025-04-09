@@ -1,0 +1,3 @@
+config AIC_PSADC_OBTAIN_DATA_BY_POLL
+    default n
+    bool "Polling read mode"

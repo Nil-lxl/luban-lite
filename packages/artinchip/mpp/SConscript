@@ -1,0 +1,225 @@
+Import('AIC_ROOT')
+Import('PRJ_OUT_DIR')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+path = [cwd + '/include']
+path += [cwd + '/base/include']
+path += [cwd + '/ge/include']
+
+path += [cwd + '/ve/include']
+path += [cwd + '/mpp_test']
+
+if GetDepend(['AIC_MPP_PLAYER_INTERFACE']):
+    #audio decoder
+    path += [cwd + '/middle_media/audio_decoder/include']
+    path += [cwd + '/middle_media/audio_decoder/decoder']
+
+    #base
+    path += [cwd + '/middle_media/base/include']
+    path += [cwd + '/middle_media/base/comm']
+    path += [cwd + '/middle_media/base/parser/mov']
+    path += [cwd + '/middle_media/base/parser/rawdata']
+    path += [cwd + '/middle_media/base/stream/file']
+    path += [cwd + '/middle_media/base/parser/mp3']
+    path += [cwd + '/middle_media/base/parser/wav']
+    path += [cwd + '/middle_media/base/parser/avi']
+    path += [cwd + '/middle_media/base/parser/flac']
+    path += [cwd + '/middle_media/base/parser/asf']
+    path += [cwd + '/middle_media/base/parser/mkv']
+    path += [cwd + '/middle_media/base/parser/ts']
+    path += [cwd + '/middle_media/base/parser/flv']
+
+    #mm
+    path += [cwd + '/middle_media/component/src']
+    path += [cwd + '/middle_media/component/include']
+
+    #player
+    path += [cwd + '/middle_media/player/include']
+    path += [cwd + '/middle_media/mini_audio_player']
+
+
+if GetDepend(['AIC_MPP_RECORDER_INTERFACE']):
+    path += [cwd + '/middle_media/audio_decoder/include']
+    #base
+    path += [cwd + '/middle_media/base/include']
+    path += [cwd + '/middle_media/base/comm']
+    path += [cwd + '/middle_media/base/muxer']
+    path += [cwd + '/middle_media/base/muxer/mp4']
+    path += [cwd + '/middle_media/base/stream/file']
+
+    #mm
+    path += [cwd + '/middle_media/component/src']
+    path += [cwd + '/middle_media/component/include']
+
+    #recoder
+    path += [cwd + '/middle_media/recorder/include']
+
+
+src = []
+
+CPPDEFINES = []
+
+# mpp
+if GetDepend(['LPKG_MPP']):
+    if GetDepend(['AIC_GE_DRV']):
+        src += Glob('./ge/*.c')
+    if GetDepend(['AIC_DE_DRV']):
+        src += Glob('./fb/*.c')
+    if GetDepend(['AIC_VE_DRV']):
+        src += Glob('./base/memory/*.c')
+        src += Glob('./base/thread/*.c')
+        src += Glob('./base/ringbuf/*.c')
+        src += Glob('ve/decoder/*.c')
+        src += Glob('ve/common/*.c')
+        src += Glob('ve/decoder/jpeg/*.c')
+        src += Glob('ve/decoder/png/*.c')
+        src += Glob('ve/decoder/zlib/*.c')
+        src += Glob('ve/encoder/*.c')
+        src += Glob('ve/encoder/jpeg/*.c')
+        if GetDepend(['AIC_MPP_H264_DEC_ENABLE']):
+            src += Glob('ve/decoder/h264/*.c')
+
+
+if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_VE_TEST']):
+    src += Glob('./mpp_test/pic_dec_test.c')
+    src += Glob('./mpp_test/mpp_dec_test.c')
+    src += Glob('./mpp_test/bit_stream_parser.c')
+    src += Glob('./mpp_test/pic_crop_test.c')
+    src += Glob('./mpp_test/jpeg_encode_test.c')
+    src += Glob('./mpp_test/unzip_test.c')
+
+    if GetDepend(['AIC_VE_DRV_V10']):
+        src += Glob('./mpp_test/test_mpp_dec.c')
+
+if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_GE_TEST']):
+    src += Glob('./mpp_test/ge_test/public/*.c')
+    src += Glob('./mpp_test/ge_test/*.c')
+
+if GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_FB_TEST']) :
+    src += Glob('./mpp_test/mpp_fb/*.c')
+
+if GetDepend(['AIC_MPP_PLAYER_INTERFACE']):
+    #audio decoder
+    src += Glob('middle_media/audio_decoder/decoder/*.c')
+    src += Glob('middle_media/audio_decoder/decoder/mp3/mp3_decoder.c')
+
+    # base
+    src += Glob('middle_media/base/message/aic_message.c')
+    src += Glob('middle_media/base/comm/*.c')
+    src += Glob('middle_media/base/parser/aic_parser.c')
+    src += Glob('middle_media/base/parser/mov/aic_mov_parser.c')
+    src += Glob('middle_media/base/parser/mov/mov_tags.c')
+    src += Glob('middle_media/base/parser/mov/mov.c')
+    src += Glob('middle_media/base/parser/rawdata/aic_raw_parser.c')
+    src += Glob('middle_media/base/render/aic_video_render.c')
+    src += Glob('middle_media/base/render/aic_audio_render_device.c')
+    src += Glob('middle_media/base/render/aic_audio_render_manager.c')
+    src += Glob('middle_media/base/stream/aic_stream.c')
+    src += Glob('middle_media/base/stream/file/aic_file_stream.c')
+    src += Glob('middle_media/base/parser/mp3/aic_mp3_parser.c')
+    src += Glob('middle_media/base/parser/mp3/mp3.c')
+    src += Glob('middle_media/base/parser/wav/aic_wav_parser.c')
+    src += Glob('middle_media/base/parser/wav/wav.c')
+
+    #component
+    src += Glob('middle_media/component/src/mm_demuxer_component.c')
+    src += Glob('middle_media/component/src/mm_adec_component.c')
+    src += Glob('middle_media/component/src/mm_vdec_component.c')
+    src += Glob('middle_media/component/src/mm_video_render_component.c')
+    src += Glob('middle_media/component/src/mm_audio_render_component.c')
+    src += Glob('middle_media/component/src/mm_clock_component.c')
+    src += Glob('middle_media/component/mm_core.c')
+
+    #player
+    src += Glob('middle_media/player/aic_player.c')
+    src += Glob('middle_media/player/player_demo.c')
+    src += Glob('middle_media/mini_audio_player/mini_audio_player.c')
+    src += Glob('middle_media/mini_audio_player/mini_audio_player_demo.c')
+
+if GetDepend(['AIC_MPP_PLAYER_VE_USE_FILL_FB']):
+    src += Glob('middle_media/player/player_dec_share_test.c')
+
+if GetDepend(['AIC_MPP_PLAYER_AUDIO_RENDER_SHARE_TEST']):
+    src += Glob('middle_media/player/player_audio_render_share_test.c')
+
+if GetDepend(['LPKG_USING_LIBFLAC']):
+    src += Glob('middle_media/audio_decoder/decoder/flac/flac_decoder.c')
+
+if GetDepend(['AIC_MPP_FLAC_DEMUX']):
+    src += Glob('middle_media/base/parser/flac/aic_flac_parser.c')
+    src += Glob('middle_media/base/parser/flac/flac.c')
+
+if GetDepend(['LPKG_USING_FFMPEG']):
+    src += Glob('middle_media/audio_decoder/decoder/wma/wma_decoder.c')
+
+if GetDepend(['LPKG_USING_FAAD2']):
+    src += Glob('middle_media/audio_decoder/decoder/aac/aac_decoder.c')
+
+if GetDepend(['AIC_MPP_AVI_DEMUX']):
+    src += Glob('middle_media/base/parser/avi/aic_avi_parser.c')
+    src += Glob('middle_media/base/parser/avi/avi.c')
+
+if GetDepend(['AIC_MPP_MKV_DEMUX']):
+    src += Glob('middle_media/base/parser/mkv/aic_mkv_parser.c')
+    src += Glob('middle_media/base/parser/mkv/matroska_tag.c')
+    src += Glob('middle_media/base/parser/mkv/matroska.c')
+
+if GetDepend(['AIC_MPP_TS_DEMUX']):
+    src += Glob('middle_media/base/parser/ts/aic_ts_parser.c')
+    src += Glob('middle_media/base/parser/ts/mpegts_audio.c')
+    src += Glob('middle_media/base/parser/ts/mpegts.c')
+
+if GetDepend(['AIC_MPP_FLV_DEMUX']):
+    src += Glob('middle_media/base/parser/flv/aic_flv_parser.c')
+    src += Glob('middle_media/base/parser/flv/flv.c')
+
+if GetDepend(['AIC_MPP_WMA_DEMUX']):
+    src += Glob('middle_media/base/parser/asf/aic_asf_parser.c')
+    src += Glob('middle_media/base/parser/asf/asf.c')
+
+
+if GetDepend(['AIC_MPP_RECORDER_INTERFACE']):
+    # base
+    src += Glob('middle_media/base/message/aic_message.c')
+    src += Glob('middle_media/base/comm/aic_tag.c')
+    src += Glob('middle_media/base/stream/aic_stream.c')
+    src += Glob('middle_media/base/stream/file/aic_file_stream.c')
+    src += Glob('middle_media/base/muxer/aic_muxer.c')
+    src += Glob('middle_media/base/muxer/mp4/aic_mp4_muxer.c')
+    src += Glob('middle_media/base/muxer/mp4/mp4_muxer.c')
+
+    #component
+    src += Glob('middle_media/component/src/mm_vin_component.c')
+    src += Glob('middle_media/component/src/mm_muxer_component.c')
+    src += Glob('middle_media/component/src/mm_venc_component.c')
+    src += Glob('middle_media/component/mm_core.c')
+
+    #recoder
+    src += Glob('middle_media/recorder/aic_recorder.c')
+    src += Glob('middle_media/recorder/recorder_demo.c')
+
+
+
+if GetDepend(['AIC_MPP_VIN']):
+    src += Glob('vin/mpp_vin_vb.c')
+    src += Glob('vin/mpp_vin.c')
+
+LOCAL_CCFLAGS = ''
+# LOCAL_CCFLAGS += ' -O0'
+
+LIBNAME = []
+if GetDepend(['AIC_MPP_AICP_DEC_ENABLE']):
+    prj_chip=GetDepend('PRJ_CHIP').strip('"')
+    LIBNAME = "mpp_aicp_dec_" + prj_chip
+
+lib_path = cwd + '/../aicp-dec/'
+
+if LIBNAME:
+    group = DefineGroup('mpp', src, depend = ['LPKG_MPP'], CPPPATH = path, CPPDEFINES = CPPDEFINES, LIBS = [LIBNAME], LIBPATH = [lib_path], LOCAL_CCFLAGS=LOCAL_CCFLAGS)
+else:
+    group = DefineGroup('mpp', src, depend = ['LPKG_MPP'], CPPPATH = path, CPPDEFINES = CPPDEFINES, LIBPATH = [lib_path], LOCAL_CCFLAGS=LOCAL_CCFLAGS)
+
+
+Return('group')

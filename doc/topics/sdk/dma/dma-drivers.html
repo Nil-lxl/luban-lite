@@ -1,0 +1,270 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="此处描述的 DMA 是 ArtInChip 平台上的系统 DMA。一些硬件 IP 内部自带的 DMA 不在这里描述的范围。 驱动框架 U-Boot 驱动模型支持 DMA，ArtInChip 平台中 DMA 驱动基于该框架进行实现。 相关配置为： CONFIG_DMA CONFIG_ARTINCHIP_DMA 相关源码有： include/dma.h drivers/dma/dma-uclass.c ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="dma_drivers"/><meta name="DC.language" content="zh-CN"/><title>DMA</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/dma/dma-drivers.dita"/><meta name="wh-out-relpath" content="topics/sdk/dma/dma-drivers.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="dma_drivers" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/dma/dma-drivers.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">DMA</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d142889e22__20250121171609">此处描述的 DMA 是 ArtInChip 平台上的系统 DMA。一些硬件 IP 内部自带的 DMA 不在这里描述的范围。</p><section class="- topic/section section" id="dma_drivers__section_og5_mnr_c1c" data-ofbid="dma_drivers__section_og5_mnr_c1c"><h2 class="- topic/title title sectiontitle">驱动框架</h2>
+            
+            <p class="- topic/p p" data-ofbid="d142889e29__20250121171609">U-Boot 驱动模型支持 DMA，ArtInChip 平台中 DMA 驱动基于该框架进行实现。 相关配置为：</p>
+            <ul class="- topic/ul ul" id="dma_drivers__ul_qg5_mnr_c1c" data-ofbid="dma_drivers__ul_qg5_mnr_c1c"><li class="- topic/li li" data-ofbid="d142889e33__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d142889e35__20250121171609">CONFIG_DMA</p>
+                </li><li class="- topic/li li" data-ofbid="d142889e38__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d142889e40__20250121171609">CONFIG_ARTINCHIP_DMA</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d142889e44__20250121171609">相关源码有：</p>
+            <ul class="- topic/ul ul" id="dma_drivers__ul_sg5_mnr_c1c" data-ofbid="dma_drivers__ul_sg5_mnr_c1c"><li class="- topic/li li" data-ofbid="d142889e48__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d142889e50__20250121171609"><span class="+ topic/ph sw-d/filepath ph filepath">include/dma.h</span></p>
+                </li><li class="- topic/li li" data-ofbid="d142889e54__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d142889e56__20250121171609"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/dma/dma-uclass.c</span></p>
+                </li><li class="- topic/li li" data-ofbid="d142889e60__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d142889e62__20250121171609"><span class="+ topic/ph sw-d/filepath ph filepath">drivers/dma/artinchip_dma.c</span></p>
+                </li></ul>
+        </section><section class="- topic/section section" id="dma_drivers__section_tg5_mnr_c1c" data-ofbid="dma_drivers__section_tg5_mnr_c1c"><h2 class="- topic/title title sectiontitle">驱动接口</h2>
+            
+            <div class="- topic/p p" data-ofbid="d142889e72__20250121171609">常用接口<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dma_drivers__codeblock_f3l_rnr_c1c" data-ofbid="dma_drivers__codeblock_f3l_rnr_c1c"><strong class="hl-keyword">int</strong> dma_enable(<strong class="hl-keyword">struct</strong> dma *dma);
+<strong class="hl-keyword">int</strong> dma_disable(<strong class="hl-keyword">struct</strong> dma *dma);
+<strong class="hl-keyword">int</strong> dma_request(<strong class="hl-keyword">struct</strong> udevice *dev, <strong class="hl-keyword">struct</strong> dma *dma);
+<strong class="hl-keyword">int</strong> dma_free(<strong class="hl-keyword">struct</strong> dma *dma);
+<strong class="hl-keyword">int</strong> dma_memcpy(<strong class="hl-keyword">void</strong> *dst, <strong class="hl-keyword">void</strong> *src, size_t len);
+<strong class="hl-keyword">int</strong> dma_prepare_rcv_buf(<strong class="hl-keyword">struct</strong> dma *dma, <strong class="hl-keyword">void</strong> *dst, size_t size);
+<strong class="hl-keyword">int</strong> dma_receive(<strong class="hl-keyword">struct</strong> dma *dma, <strong class="hl-keyword">void</strong> **dst, <strong class="hl-keyword">void</strong> *metadata);
+<strong class="hl-keyword">int</strong> dma_send(<strong class="hl-keyword">struct</strong> dma *dma, <strong class="hl-keyword">void</strong> *src, size_t len, <strong class="hl-keyword">void</strong> *metadata);</pre></div>
+        </section><section class="- topic/section section" id="dma_drivers__section_vg5_mnr_c1c" data-ofbid="dma_drivers__section_vg5_mnr_c1c"><h2 class="- topic/title title sectiontitle">实现说明</h2>
+            
+            <p class="- topic/p p" data-ofbid="d142889e82__20250121171609">ArtInChip 平台上有一个系统 DMA，其支持 8 个通道同时工作。如规格书所定义，DMA 可以在不同的硬件 IP 之间搬运数据，系统为各硬件 IP
+                分配了固定的数据端口号。 使用 DMA 时，软件需要先申请到一个空闲的 DMA 通道，并将源数据端口和目标数据端口等信息配置给 DMA 通道，然后启动 DMA
+                进行工作。</p>
+            <p class="- topic/p p" data-ofbid="d142889e85__20250121171609">然而上述的描述和使用方式并不能直接对应到 DTS 的配置方式以及 U-Boot 中的 DMA 表示方式， 中间需要做一些转换和说明。</p>
+            <p class="- topic/p p" data-ofbid="d142889e88__20250121171609">在 DTS 中，可以描述某个控制器是否支持 DMA，并且配置所使用的 DMA ID 号。 在 ArtInChip 平台中，实际只有一个 DMA，各硬件 IP
+                共享使用。在配置 DTS 时， 使用设备对应的 DMA 数据端口号作为 DMA ID，在运行时再给该 ID 分配可用的 DMA 通道。</p>
+            <div class="- topic/p p" data-ofbid="d142889e91__20250121171609">如下面的示例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dma_drivers__codeblock_mfj_qnr_c1c" data-ofbid="dma_drivers__codeblock_mfj_qnr_c1c">spi0: spi@<span class="hl-number">10400000</span> {
+    compatible = <span class="hl-string">"artinchip,aic-spi-v1.0"</span>;
+    reg = &lt;<span class="hl-number">0x0</span> <span class="hl-number">0x10400000</span> <span class="hl-number">0x0</span> <span class="hl-number">0x1000</span>&gt;;
+    interrupts-extended = &lt;&amp;plic0 <span class="hl-number">44</span> IRQ_TYPE_LEVEL_HIGH&gt;;
+    clocks = &lt;&amp;cmu CLK_SPI0&gt;;
+    resets = &lt;&amp;rst RESET_SPI0&gt;;
+    dmas = &lt;&amp;dma DMA_SPI0&gt;, &lt;&amp;dma DMA_SPI0&gt;;
+    dma-names = <span class="hl-string">"rx"</span>, <span class="hl-string">"tx"</span>;
+    #address-cells = &lt;<span class="hl-number">1</span>&gt;;
+    #size-cells = &lt;<span class="hl-number">0</span>&gt;;
+    spi-max-frequency = &lt;<span class="hl-number">24000000</span>&gt;;
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d142889e97__20250121171609">这里的 DMA 配置中，描述了 SPI0 控制器使用两个 DMA，分别是 “rx”, “tx”，它们的 DMA ID 都是 SPI0 对应的 DMA 数据端口号
+                10。</p>
+            <div class="- topic/p p" data-ofbid="d142889e100__20250121171609">上述的配置对应到 U-Boot 的 DMA 驱动实现时，会有一些问题。U-Boot DMA
+                在运行时使用下面的结构体表示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dma_drivers__codeblock_zxv_pnr_c1c" data-ofbid="dma_drivers__codeblock_zxv_pnr_c1c"><strong class="hl-keyword">struct</strong> dma {
+        <strong class="hl-keyword">struct</strong> udevice *dev;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> id;
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d142889e105__20250121171609">DMA 的实例化在 DMA 驱动框架 <span class="+ topic/ph sw-d/filepath ph filepath">dma-uclass.c</span> 中进行，其中的 <span class="+ topic/keyword pr-d/parmname keyword parmname">id</span> 值即为 DTS
+                中配置的 DMA ID。这里两个 DMA 使用了相同的 ID 号，如果直接使用，无法区分不同 DMA 所映射的 DMA 通道。</p>
+            <p class="- topic/p p" data-ofbid="d142889e114__20250121171609">ArtInChip 平台上通过对 DMA 结构体中的 <span class="+ topic/keyword pr-d/parmname keyword parmname">id</span> 进行了扩展，以方便区分实际使用的不同 DMA， 如下所示：</p>
+            <ul class="- topic/ul ul" id="dma_drivers__ul_zg5_mnr_c1c" data-ofbid="dma_drivers__ul_zg5_mnr_c1c"><li class="- topic/li li" data-ofbid="d142889e121__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d142889e123__20250121171609">bit[15:0] 表示 IP 端口号</p>
+                </li><li class="- topic/li li" data-ofbid="d142889e126__20250121171609">
+                    <p class="- topic/p p" data-ofbid="d142889e128__20250121171609">bit[31:16] 表示 DMA 通道号</p>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d142889e132__20250121171609">在 DMA 创建时赋值端口号区域，DMA request 时赋值通道号区域。由于上述两个动作是在一个调用中完成的，
+                因此不会有问题：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dma_drivers__codeblock_e3z_4nr_c1c" data-ofbid="dma_drivers__codeblock_e3z_4nr_c1c">dma_get_by_name(bus, <span class="hl-string">"tx"</span>, &amp;priv-&gt;tx_dma); <em class="hl-comment">// drivers/dma/dma-uclass.c</em>
+|-&gt; dma_get_by_index(dev, index, dma); <em class="hl-comment">// drivers/dma/dma-uclass.c</em>
+    |-&gt; dma_of_xlate_default(dma, &amp;args);
+    |   |-&gt; dma-&gt;id = args-&gt;args[<span class="hl-number">0</span>];
+    |
+    |-&gt; dma_request(dev_dma, dma); <em class="hl-comment">// drivers/dma/dma-uclass.c</em>
+        |-&gt; aic_dma_request(dma); <em class="hl-comment">// drivers/dma/artinchip_dma.c</em>
+            |-&gt; phy_ch = aic_dma_phy_request(ud);
+            |-&gt; dma-&gt;id |= (phy_ch &lt;&lt; AIC_DMA_PHY_CH_OFF);</pre></div>
+            <p class="- topic/p p" data-ofbid="d142889e138__20250121171609">U-Boot 对 <span class="+ topic/keyword pr-d/parmname keyword parmname">struct dma</span> 结构体中 <span class="+ topic/keyword pr-d/parmname keyword parmname">id</span> 的定义是唯一标识，只要能够做 DMA
+                区分即可， 因此上述扩展不会造成其他问题。</p>
+        </section><section class="- topic/section section" id="dma_drivers__section_bh5_mnr_c1c" data-ofbid="dma_drivers__section_bh5_mnr_c1c"><h2 class="- topic/title title sectiontitle">初始化流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d142889e152__20250121171609">DMA 驱动的初始化，在 DMA 第一次被使用时触发进行。</p>
+            <div class="- topic/p p" data-ofbid="d142889e155__20250121171609"><strong class="+ topic/ph hi-d/b ph b">情况 1：</strong> DRAM DMA
+                数据传输<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dma_drivers__codeblock_vdq_nnr_c1c" data-ofbid="dma_drivers__codeblock_vdq_nnr_c1c">dma_memcpy(dst_buf, src_buf, len);<em class="hl-comment">// drivers/dma/dma-uclass.c</em>
+|-&gt; dma_get_device(DMA_SUPPORTS_MEM_TO_MEM, &amp;dev);
+    |-&gt; uclass_first_device(UCLASS_DMA, &amp;dev)
+        |-&gt; uclass_find_first_device(id, index, &amp;dev);
+        |-&gt; uclass_get_device_tail(dev, ret, devp);
+            |-&gt; device_probe(dev); <em class="hl-comment">// drivers/core/device.c</em>
+                |-&gt; drv-&gt;probe(dev);
+                    aic_dma_probe(dev); <em class="hl-comment">// drivers/dma/artinchip_dma.c</em></pre></div>
+            <div class="- topic/p p" data-ofbid="d142889e162__20250121171609"><strong class="+ topic/ph hi-d/b ph b">情况 2：</strong> 根据 DTS 配置申请
+                DMA<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dma_drivers__codeblock_gbg_4nr_c1c" data-ofbid="dma_drivers__codeblock_gbg_4nr_c1c">dma_get_by_name(bus, <span class="hl-string">"tx"</span>, &amp;priv-&gt;tx_dma); <em class="hl-comment">// drivers/dma/dma-uclass.c</em>
+|-&gt; dma_get_by_index(dev, index, dma); <em class="hl-comment">// drivers/dma/dma-uclass.c</em>
+    |-&gt; uclass_get_device_by_ofnode(UCLASS_DMA, args.node, &amp;dev_dma);
+        |   <em class="hl-comment">// drivers/core/uclass.c</em>
+        |-&gt; uclass_find_device_by_ofnode(id, node, &amp;dev);
+        |-&gt; uclass_get_device_tail(dev, ret, devp);
+            |-&gt; device_probe(dev); <em class="hl-comment">// drivers/core/device.c</em>
+                |-&gt; drv-&gt;probe(dev);
+                    aic_dma_probe(dev); <em class="hl-comment">// drivers/dma/artinchip_dma.c</em></pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#dma_drivers__section_og5_mnr_c1c" data-tocid="dma_drivers__section_og5_mnr_c1c">驱动框架</a></div></li><li class="section-item"><div class="section-title"><a href="#dma_drivers__section_tg5_mnr_c1c" data-tocid="dma_drivers__section_tg5_mnr_c1c">驱动接口</a></div></li><li class="section-item"><div class="section-title"><a href="#dma_drivers__section_vg5_mnr_c1c" data-tocid="dma_drivers__section_vg5_mnr_c1c">实现说明</a></div></li><li class="section-item"><div class="section-title"><a href="#dma_drivers__section_bh5_mnr_c1c" data-tocid="dma_drivers__section_bh5_mnr_c1c">初始化流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

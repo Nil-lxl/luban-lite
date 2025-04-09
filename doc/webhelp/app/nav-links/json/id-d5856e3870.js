@@ -1,0 +1,1 @@
+oxy_webhelp_navlinks = {"id-d5856e3870":{"topics":[{"title":"场景选择","href":"topics\/sdk\/display\/display_fb_roatate_buffer_choice_lite.html","attributes":{"data-id":"display-roatate-buffer-choices"},"menu":{"hasChildren":false},"tocID":"display-roatate-buffer-choices-d5856e3882","topics":[]}]}};

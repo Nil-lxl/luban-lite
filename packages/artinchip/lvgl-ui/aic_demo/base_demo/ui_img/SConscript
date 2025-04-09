@@ -1,0 +1,24 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+CPPPATH = []
+src = []
+if GetDepend(['LVGL_V_8']):
+    src += Glob('v8/*.c')
+    CPPPATH.append(cwd + '/v8')
+
+if GetDepend(['LVGL_V_9']) and GetDepend(['AIC_CHIP_D21X']):
+    src += Glob('v9_argb8888/*.c')
+    CPPPATH.append(cwd + '/v9_argb8888')
+
+if GetDepend(['LVGL_V_9']) and not GetDepend(['AIC_CHIP_D21X']):
+    src += Glob('v9_rgb565a8/*.c')
+    CPPPATH.append(cwd + '/v9_rgb565a8')
+
+CPPPATH = [cwd]
+
+group = DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_BASE_DEMO'], CPPPATH = CPPPATH)
+
+Return('group')

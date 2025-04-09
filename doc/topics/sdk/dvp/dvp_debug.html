@@ -1,0 +1,273 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="调试开关 在 SDK 根目录下，执行下列命令，进入 kernel 的功能配置界面： make kernel-menuconfig 或使用简写命令 make km 在内核配置界面，打开 DVP 模块的 DEBUG 选项： Linux Kernel hacking Artinchip Debug [*] DVP driver debug 打开 DEBUG 选项后： 驱动以 -O0 编译。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="dvp_debug_guide"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/dvp/dvp_debug.dita"/><meta name="wh-out-relpath" content="topics/sdk/dvp/dvp_debug.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="dvp_debug_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/dvp/dvp_debug.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="dvp_debug_guide__section_jxx_tyg_d1c" data-ofbid="dvp_debug_guide__section_jxx_tyg_d1c"><h2 class="- topic/title title sectiontitle">调试开关</h2>
+            
+            <ol class="- topic/ol ol" id="dvp_debug_guide__ol_otl_bqq_sdc" data-ofbid="dvp_debug_guide__ol_otl_bqq_sdc"><li class="- topic/li li" data-ofbid="d136838e28__20250121171607">
+                    <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d136838e32__20250121171607">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_wg1_3ml_sdc" data-ofbid="dvp_debug_guide__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d136838e37__20250121171607">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d136838e40__20250121171607">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_uss_hml_sdc" data-ofbid="dvp_debug_guide__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                </li><li class="- topic/li li" data-ofbid="d136838e47__20250121171607">
+                    <div class="- topic/p p" data-ofbid="d136838e49__20250121171607">在内核配置界面，打开 DVP 模块的 DEBUG
+                        选项：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__pre_kxx_tyg_d1c" data-ofbid="dvp_debug_guide__pre_kxx_tyg_d1c">Linux
+    Kernel hacking
+        Artinchip Debug
+            [*] DVP driver debug</pre></div>
+                </li></ol>
+            <div class="- topic/p p" data-ofbid="d136838e55__20250121171607">打开 DEBUG 选项后：<ul class="- topic/ul ul" id="dvp_debug_guide__ol_ucp_mss_c1c" data-ofbid="dvp_debug_guide__ol_ucp_mss_c1c"><li class="- topic/li li" data-ofbid="d136838e58__20250121171607">
+                        <p class="- topic/p p" data-ofbid="d136838e60__20250121171607">驱动以<code class="+ topic/ph pr-d/codeph ph codeph">-O0</code> 编译。</p>
+                    </li><li class="- topic/li li" data-ofbid="d136838e66__20250121171607">
+                        <p class="- topic/p p" data-ofbid="d136838e68__20250121171607"><span class="+ topic/keyword pr-d/parmname keyword parmname">pr_dbg()</span> 和 <span class="+ topic/keyword pr-d/parmname keyword parmname">dev_dbg()</span> 调试信息会被编译。</p>
+                        <div class="- topic/p p" id="dvp_debug_guide__p_wvf_n3w_mdc" data-ofbid="dvp_debug_guide__p_wvf_n3w_mdc">在系统运行时，如果要打印 <span class="+ topic/keyword pr-d/parmname keyword parmname">pr_dbg()</span> 和
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">dev_dbg()</span> 信息，还需要调整 <span class="+ topic/keyword pr-d/parmname keyword parmname">loglevel</span> 为
+                                8，可以通过以下两种方式实现：<ul class="- topic/ul ul" id="dvp_debug_guide__ol_vcp_mss_c1c" data-ofbid="dvp_debug_guide__ol_vcp_mss_c1c"><li class="- topic/li li" data-ofbid="d136838e88__20250121171607">
+                                    <p class="- topic/p p" data-ofbid="d136838e90__20250121171607">在 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中修改
+                                            <span class="+ topic/keyword pr-d/parmname keyword parmname">bootargs</span>，增加
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">“loglevel=8”</span></p>
+                                </li><li class="- topic/li li" data-ofbid="d136838e101__20250121171607">
+                                    <div class="- topic/p p" data-ofbid="d136838e103__20250121171607">在板子启动到 Linux Shell
+                                        后，执行下列命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__pre_wcp_mss_c1c" data-ofbid="dvp_debug_guide__pre_wcp_mss_c1c">echo8 &gt; /proc/sys/kernel/printk</pre></div>
+                                </li></ul></div>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="dvp_debug_guide__section_oxx_tyg_d1c" data-ofbid="dvp_debug_guide__section_oxx_tyg_d1c"><h2 class="- topic/title title sectiontitle">Sysfs 节点</h2>
+            
+            <div class="- topic/p p" data-ofbid="d136838e115__20250121171607">
+                <ol class="- topic/ol ol" id="dvp_debug_guide__ol_pwb_wyg_d1c" data-ofbid="dvp_debug_guide__ol_pwb_wyg_d1c"><li class="- topic/li li" data-ofbid="d136838e118__20250121171607">
+                        <div class="- topic/p p" data-ofbid="d136838e120__20250121171607">在 Sysfs 中查看 video 设备的信息：<ul class="- topic/ul ul" id="dvp_debug_guide__ul_cnf_l1m_sdc" data-ofbid="dvp_debug_guide__ul_cnf_l1m_sdc"><li class="- topic/li li" data-ofbid="d136838e123__20250121171607">查看 <code class="+ topic/ph pr-d/codeph ph codeph">/dev/video0</code>
+                                        设备的信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_nyq_wyg_d1c" data-ofbid="dvp_debug_guide__codeblock_nyq_wyg_d1c">ls /dev/video0 -l</pre><div class="- topic/p p" data-ofbid="d136838e130__20250121171607">输出结果示例如下，其中主设备号为
+                                        81，次设备号为
+                                        0：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_gx2_31m_sdc" data-ofbid="dvp_debug_guide__codeblock_gx2_31m_sdc">crw-------    <span class="hl-number">1</span> root     root       <span class="hl-number">81</span>,   <span class="hl-number">0</span> Jan  <span class="hl-number">1</span>  <span class="hl-number">1970</span> /dev/video0</pre></div></li><li class="- topic/li li" data-ofbid="d136838e134__20250121171607">查看 <code class="+ topic/ph pr-d/codeph ph codeph">/sys/class/video4linux/v4l-subdev0/</code>
+                                        目录中的文件，了解视频子设备的详细信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_ozv_31m_sdc" data-ofbid="dvp_debug_guide__codeblock_ozv_31m_sdc">ls /sys/class/video4linux/v4l-subdev0/</pre><div class="- topic/p p" data-ofbid="d136838e141__20250121171607">输出结果示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_mbd_j1m_sdc" data-ofbid="dvp_debug_guide__codeblock_mbd_j1m_sdc">dev        dev_debug  device     index      name       subsystem  uevent</pre></div></li><li class="- topic/li li" data-ofbid="d136838e145__20250121171607">通过 <code class="+ topic/ph pr-d/codeph ph codeph">cat</code> 命令查看特定文件的内容，例如 <code class="+ topic/ph pr-d/codeph ph codeph">name</code>
+                                        文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_sdm_j1m_sdc" data-ofbid="dvp_debug_guide__codeblock_sdm_j1m_sdc">cat /sys/class/video4linux/v4l-subdev0/name</pre><p class="- topic/p p" data-ofbid="d136838e155__20250121171607">输出结果示例如下，表示视频子设备的名称是
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">ov5640
+                                    3-003c</code>：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_wft_j1m_sdc" data-ofbid="dvp_debug_guide__codeblock_wft_j1m_sdc">ov5640 <span class="hl-number">3</span>-<span class="hl-number">003</span>c</pre></li><li class="- topic/li li" data-ofbid="d136838e162__20250121171607">
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_sdb_k1m_sdc" data-ofbid="dvp_debug_guide__codeblock_sdb_k1m_sdc">cat /sys/class/video4linux/v4l-subdev1/name</pre>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_s3j_k1m_sdc" data-ofbid="dvp_debug_guide__codeblock_s3j_k1m_sdc">aic-dvp-sd</pre>
+                                </li><li class="- topic/li li" data-ofbid="d136838e170__20250121171607">
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_jrp_k1m_sdc" data-ofbid="dvp_debug_guide__codeblock_jrp_k1m_sdc">ls -l /sys/class/video4linux/</pre>
+                                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_dsw_k1m_sdc" data-ofbid="dvp_debug_guide__codeblock_dsw_k1m_sdc">lrwxrwxrwx    <span class="hl-number">1</span> root     root             <span class="hl-number">0</span> Jan  <span class="hl-number">1</span> <span class="hl-number">00</span>:<span class="hl-number">12</span> v4l-subdev0 -&gt; ../../devices/platform/soc/<span class="hl-number">99223000.</span>i2c/i2c-<span class="hl-number">3</span>/<span class="hl-number">3</span>-<span class="hl-number">003</span>c/video4linux/v4l-subdev0
+lrwxrwxrwx    <span class="hl-number">1</span> root     root             <span class="hl-number">0</span> Jan  <span class="hl-number">1</span> <span class="hl-number">00</span>:<span class="hl-number">12</span> v4l-subdev1 -&gt; ../../devices/platform/soc/<span class="hl-number">98830000.</span>dvp/video4linux/v4l-subdev1
+lrwxrwxrwx    <span class="hl-number">1</span> root     root             <span class="hl-number">0</span> Jan  <span class="hl-number">1</span> <span class="hl-number">00</span>:<span class="hl-number">12</span> video0 -&gt; ../../devices/platform/soc/<span class="hl-number">98830000.</span>dvp/video4linux/video0</pre>
+                                </li></ul></div>
+                    </li><li class="- topic/li li" data-ofbid="d136838e179__20250121171607">
+                        <p class="- topic/p p" data-ofbid="d136838e181__20250121171607">向对应的 Sysfs 节点写入一个整数值，修改 debug level，打开 V4L2 的 debug 开关。</p>
+                        <div class="- topic/p p" data-ofbid="d136838e184__20250121171607">例如，设置不同的模块和设备的 Debug 级别为
+                            3（即显示所有调试信息）：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_rsr_yyg_d1c" data-ofbid="dvp_debug_guide__codeblock_rsr_yyg_d1c">echo <span class="hl-number">0x3</span> &gt; /sys/module/videobuf2_v4l2/parameters/debug
+echo <span class="hl-number">0x3</span> &gt; /sys/module/videobuf2_common/parameters/debug
+echo <span class="hl-number">0x3</span> &gt; /sys/devices/platform/soc/<span class="hl-number">18830000.</span>dvp/video4linux/v4l-subdev1/dev_debug
+echo <span class="hl-number">0x3</span> &gt; /sys/devices/platform/soc/<span class="hl-number">18830000.</span>dvp/video4linux/video0/dev_debug
+</pre></div>
+                        <p class="- topic/p p" data-ofbid="d136838e189__20250121171607">V4L2 子系统使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">dprintk(level)</span> 接口来控制调试信息。当
+                                <span class="+ topic/keyword pr-d/apiname keyword apiname">dprintk(level)</span> 中的 level 值大于代码中的
+                                <span class="+ topic/keyword pr-d/apiname keyword apiname">dprintk(level)</span> 调用的 level
+                                值即可打印信息。<span class="+ topic/keyword pr-d/apiname keyword apiname">dprintk()</span> 一般用到两个 debug level：</p>
+                        <div class="table-container"><table class="- topic/table table frame-all" id="dvp_debug_guide__table_rxx_tyg_d1c" data-ofbid="dvp_debug_guide__table_rxx_tyg_d1c" data-cols="2"><caption></caption><colgroup><col style="width:25.510204081632654%"/><col style="width:74.48979591836735%"/></colgroup><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1">1</td><td class="- topic/entry entry colsep-0 rowsep-1">显示 ioctl 名称</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0">2</td><td class="- topic/entry entry colsep-0 rowsep-0">显示 API 的传入参数</td></tr></tbody></table></div>
+                    </li><li class="- topic/li li" data-ofbid="d136838e220__20250121171607">查看 DVP 的 Buf 队列情况<p class="- topic/p p" data-ofbid="d136838e222__20250121171607">DVP 驱动中实现了一个 sysfs 节点 buflist，查看当前三个 Qbuf、DQbuf、DVP 驱动中的
+                            buf list
+                            状态：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__pre_uxx_tyg_d1c" data-ofbid="dvp_debug_guide__pre_uxx_tyg_d1c">cat /sys/devices/platform/soc/<span class="hl-number">18830000.</span>dvp/buflist</pre><div class="- topic/p p" data-ofbid="d136838e226__20250121171607">输出结果示例如下，表示当前
+                            DVP 驱动中的缓冲区列表状态，其中 Q-buf 和 DQ-buf 列表均为空，而 D-buf
+                            列表中的所有缓冲区都处于完成状态：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_debug_guide__codeblock_vsq_hbm_sdc" data-ofbid="dvp_debug_guide__codeblock_vsq_hbm_sdc">In dvp-&gt;buf_list, the current buf <strong class="+ topic/ph hi-d/b ph b">in</strong> list:
+[<span class="hl-number">0</span>]: empty
+[<span class="hl-number">1</span>]: empty
+[<span class="hl-number">2</span>]: empty
+
+In V4L2 Q-buf list:
+[<span class="hl-number">0</span>]: empty
+[<span class="hl-number">1</span>]: empty
+[<span class="hl-number">2</span>]: empty
+
+In V4L2 DQ-buf list:
+[<span class="hl-number">0</span>], state: Done
+[<span class="hl-number">1</span>], state: Done
+[<span class="hl-number">2</span>], state: Done
+</pre></div></li></ol>
+            </div>
+        </section><section class="- topic/section section" id="dvp_debug_guide__section_vxx_tyg_d1c" data-ofbid="dvp_debug_guide__section_vxx_tyg_d1c"><h2 class="- topic/title title sectiontitle">V4L2 相关的其他工具</h2>
+            
+            <ul class="- topic/ul ul" id="dvp_debug_guide__ul_wxx_tyg_d1c" data-ofbid="dvp_debug_guide__ul_wxx_tyg_d1c"><li class="- topic/li li" data-ofbid="d136838e241__20250121171607">
+                    <p class="- topic/p p" data-ofbid="d136838e243__20250121171607">V4l2-ctl，v4l2 的命令行工具，用于管理和控制 Linux 系统中的视频设备。</p>
+                </li><li class="- topic/li li" data-ofbid="d136838e246__20250121171607">
+                    <p class="- topic/p p" data-ofbid="d136838e248__20250121171607">V4l2 兼容性测试</p>
+                </li><li class="- topic/li li" data-ofbid="d136838e251__20250121171607">
+                    <p class="- topic/p p" data-ofbid="d136838e253__20250121171607">V4l2-dbg，</p>
+                </li><li class="- topic/li li" data-ofbid="d136838e256__20250121171607">
+                    <p class="- topic/p p" data-ofbid="d136838e258__20250121171607">qv4l2，QT 测试程序</p>
+                </li></ul>
+            
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#dvp_debug_guide__section_jxx_tyg_d1c" data-tocid="dvp_debug_guide__section_jxx_tyg_d1c">调试开关</a></div></li><li class="section-item"><div class="section-title"><a href="#dvp_debug_guide__section_oxx_tyg_d1c" data-tocid="dvp_debug_guide__section_oxx_tyg_d1c">Sysfs 节点</a></div></li><li class="section-item"><div class="section-title"><a href="#dvp_debug_guide__section_vxx_tyg_d1c" data-tocid="dvp_debug_guide__section_vxx_tyg_d1c">V4L2 相关的其他工具</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

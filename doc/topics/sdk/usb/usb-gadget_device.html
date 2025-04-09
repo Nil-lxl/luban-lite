@@ -1,0 +1,525 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="上一节说过 Gadget Device 由 UDC Driver 创建。 dwc2_driver_probe() → usb_add_gadget_udc() → usb_add_gadget_udc_release() → usb_add_gadget() Gadget Device 的主要作用是提供了 Endpoint 资源，供 Function Layer 使用标准的 Gadget API ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-31"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_gadget_device"/><meta name="DC.language" content="zh-CN"/><title>Gadget Device</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-gadget_device.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-gadget_device.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_gadget_device" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-gadget_device.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Gadget Device</h1><div class="date inPage">31 Jan 2024</div><div style="color: gray;">
+                    Read time: 10 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d336238e22__20250121171845">上一节说过 Gadget Device 由 UDC Driver
+            创建。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__codeblock_rrv_zqz_21c" data-ofbid="usb_gadget_device__codeblock_rrv_zqz_21c">dwc2_driver_probe() → usb_add_gadget_udc() → usb_add_gadget_udc_release() → usb_add_gadget()</pre></div><p class="- topic/p p" data-ofbid="d336238e26__20250121171845">Gadget Device 的主要作用是提供了 Endpoint 资源，供 Function Layer 使用标准的 Gadget API 来进行访问。</p><section class="- topic/section section" id="usb_gadget_device__section_uq1_zqz_21c" data-ofbid="usb_gadget_device__section_uq1_zqz_21c"><h2 class="- topic/title title sectiontitle">Endpoint Alloc</h2>
+            
+            <p class="- topic/p p" data-ofbid="d336238e33__20250121171845">UDC Driver 在调用 usb_add_gadget_udc() 注册 Gadget Device 之前，初始化了 Gadget 的 Endpoint
+                资源链表：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__pre_vq1_zqz_21c" data-ofbid="usb_gadget_device__pre_vq1_zqz_21c">dwc2_driver_probe() → dwc2_gadget_init():
+
+<strong class="hl-keyword">int</strong> dwc2_gadget_init(<strong class="hl-keyword">struct</strong> dwc2_hsotg *hsotg)
+{
+
+    <em class="hl-comment">/* (1) 初始化 Gadget Device 的 Endpoint 资源链表为空  */</em>
+    INIT_LIST_HEAD(&amp;hsotg-&gt;gadget.ep_list);
+    hsotg-&gt;gadget.ep0 = &amp;hsotg-&gt;eps_out[<span class="hl-number">0</span>]-&gt;ep;
+
+
+    <em class="hl-comment">/* initialise the endpoints now the core has been initialised */</em>
+    <em class="hl-comment">/* (2) 初始化 UDC 拥有的 Endpoint，加入到 Gadget Device 的 Endpoint 资源链表中 */</em>
+    <strong class="hl-keyword">for</strong> (epnum = <span class="hl-number">0</span>; epnum &lt; hsotg-&gt;num_of_eps; epnum++) {
+        <strong class="hl-keyword">if</strong> (hsotg-&gt;eps_in[epnum])
+            dwc2_hsotg_initep(hsotg, hsotg-&gt;eps_in[epnum],
+                    epnum, <span class="hl-number">1</span>);
+        <strong class="hl-keyword">if</strong> (hsotg-&gt;eps_out[epnum])
+            dwc2_hsotg_initep(hsotg, hsotg-&gt;eps_out[epnum],
+                    epnum, <span class="hl-number">0</span>);
+    }
+
+}
+
+↓
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> dwc2_hsotg_initep(<strong class="hl-keyword">struct</strong> dwc2_hsotg *hsotg,
+                <strong class="hl-keyword">struct</strong> dwc2_hsotg_ep *hs_ep,
+                    <strong class="hl-keyword">int</strong> epnum,
+                    bool dir_in)
+{
+
+
+    INIT_LIST_HEAD(&amp;hs_ep-&gt;queue);
+    INIT_LIST_HEAD(&amp;hs_ep-&gt;ep.ep_list);
+
+    <em class="hl-comment">/* add to the list of endpoints known by the gadget driver */</em>
+    <em class="hl-comment">/* (2.1) UDC 中除了 endpoint0 以外，其他的 endpoint 都加入到 Device  的 Endpoint 资源链表 `gadget.ep_list` 中
+            endpoint0 的操作由 UDC 驱动自己来处理
+    */</em>
+    <strong class="hl-keyword">if</strong> (epnum)
+        list_add_tail(&amp;hs_ep-&gt;ep.ep_list, &amp;hsotg-&gt;gadget.ep_list);
+
+    <em class="hl-comment">/* (2.2) 初始化 endpoint 的结构体成员 */</em>
+    hs_ep-&gt;parent = hsotg;
+    hs_ep-&gt;ep.name = hs_ep-&gt;name;
+
+    <strong class="hl-keyword">if</strong> (hsotg-&gt;params.speed == DWC2_SPEED_PARAM_LOW)
+        usb_ep_set_maxpacket_limit(&amp;hs_ep-&gt;ep, <span class="hl-number">8</span>);
+    <strong class="hl-keyword">else</strong>
+        usb_ep_set_maxpacket_limit(&amp;hs_ep-&gt;ep,
+                    epnum ? <span class="hl-number">1024</span> : EP0_MPS_LIMIT);
+
+    <em class="hl-comment">/* (2.3) endpoint 最重要的结构体成员，endpoint 操作函数集
+        endpoint 的相关操作最后调用到这些函数上
+    */</em>
+    hs_ep-&gt;ep.ops = &amp;dwc2_hsotg_ep_ops;
+
+    <strong class="hl-keyword">if</strong> (epnum == <span class="hl-number">0</span>) {
+        hs_ep-&gt;ep.caps.type_control = true;
+    } <strong class="hl-keyword">else</strong> {
+        <strong class="hl-keyword">if</strong> (hsotg-&gt;params.speed != DWC2_SPEED_PARAM_LOW) {
+            hs_ep-&gt;ep.caps.type_iso = true;
+            hs_ep-&gt;ep.caps.type_bulk = true;
+        }
+        hs_ep-&gt;ep.caps.type_int = true;
+    }
+
+    <strong class="hl-keyword">if</strong> (dir_in)
+        hs_ep-&gt;ep.caps.dir_in = true;
+    <strong class="hl-keyword">else</strong>
+        hs_ep-&gt;ep.caps.dir_out = true;
+
+}
+</pre>
+            <p class="- topic/p p" data-ofbid="d336238e39__20250121171845">Gadget Device 准备好了 Endpoint 资源链表以后，通过 usb_add_gadget_udc() 注册。这样就可以 Function Layer
+                就可以通过调用 Gadget Api 来动态分配 Endpoint 了。例如：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__pre_wq1_zqz_21c" data-ofbid="usb_gadget_device__pre_wq1_zqz_21c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong>
+acm_bind(<strong class="hl-keyword">struct</strong> usb_configuration *c, <strong class="hl-keyword">struct</strong> usb_function *f)
+{
+
+    <em class="hl-comment">/* allocate instance-specific endpoints */</em>
+    <em class="hl-comment">/* (1) 从 Gadget Device 中分配一个 in endpoint */</em>
+    ep = usb_ep_autoconfig(cdev-&gt;gadget, &amp;acm_fs_in_desc);
+    <strong class="hl-keyword">if</strong> (!ep)
+        <strong class="hl-keyword">goto</strong> fail;
+    acm-&gt;port.in = ep;
+
+    <em class="hl-comment">/* (2) 从 Gadget Device 中分配一个 out endpoint */</em>
+    ep = usb_ep_autoconfig(cdev-&gt;gadget, &amp;acm_fs_out_desc);
+    <strong class="hl-keyword">if</strong> (!ep)
+        <strong class="hl-keyword">goto</strong> fail;
+    acm-&gt;port.out = ep;
+
+    <em class="hl-comment">/* (3) 从 Gadget Device 中分配一个 notify endpoint */</em>
+    ep = usb_ep_autoconfig(cdev-&gt;gadget, &amp;acm_fs_notify_desc);
+    <strong class="hl-keyword">if</strong> (!ep)
+        <strong class="hl-keyword">goto</strong> fail;
+    acm-&gt;notify = ep;
+
+}
+</pre>
+            <p class="- topic/p p" data-ofbid="d336238e46__20250121171845">其中通过 usb_ep_autoconfig() 函数从 Gadget Device 的 Endpoint 资源链表中分配空闲的 endpoint:</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__pre_xq1_zqz_21c" data-ofbid="usb_gadget_device__pre_xq1_zqz_21c">drivers\usb\gadget\function\f_acm.c:
+
+usb_ep_autoconfig() → usb_ep_autoconfig_ss():
+
+<strong class="hl-keyword">struct</strong> usb_ep *usb_ep_autoconfig_ss(
+    <strong class="hl-keyword">struct</strong> usb_gadget               *gadget,
+    <strong class="hl-keyword">struct</strong> usb_endpoint_descriptor  *desc,
+    <strong class="hl-keyword">struct</strong> usb_ss_ep_comp_descriptor *ep_comp
+)
+{
+    <strong class="hl-keyword">struct</strong> usb_ep   *ep;
+
+    <strong class="hl-keyword">if</strong> (gadget-&gt;ops-&gt;match_ep) {
+        ep = gadget-&gt;ops-&gt;match_ep(gadget, desc, ep_comp);
+        <strong class="hl-keyword">if</strong> (ep)
+            <strong class="hl-keyword">goto</strong> found_ep;
+    }
+
+    <em class="hl-comment">/* Second, look at endpoints until an unclaimed one looks usable */</em>
+    <em class="hl-comment">/* (1) 从 Gadget Device 的 Endpoint 资源链表中查找一个空闲的(ep-&gt;claimed 为空) 且符合要求的 endpoint  */</em>
+    list_for_each_entry (ep, &amp;gadget-&gt;ep_list, ep_list) {
+        <strong class="hl-keyword">if</strong> (usb_gadget_ep_match_desc(gadget, ep, desc, ep_comp))
+            <strong class="hl-keyword">goto</strong> found_ep;
+    }
+
+    <em class="hl-comment">/* Fail */</em>
+    <strong class="hl-keyword">return</strong> NULL;
+found_ep:
+
+    ...
+
+    ep-&gt;address = desc-&gt;bEndpointAddress;
+    ep-&gt;desc = NULL;
+    ep-&gt;comp_desc = NULL;
+    <em class="hl-comment">/* (2) 设置 endpoint 为已分配 */</em>
+    ep-&gt;claimed = true;
+    <strong class="hl-keyword">return</strong> ep;
+}
+</pre>
+        </section><section class="- topic/section section" id="usb_gadget_device__section_yq1_zqz_21c" data-ofbid="usb_gadget_device__section_yq1_zqz_21c"><h2 class="- topic/title title sectiontitle">EndPoint Access</h2>
+            
+            <p class="- topic/p p" data-ofbid="d336238e57__20250121171845">Gadget Device 不仅仅为 Gadget Api 提供了分配 endpoint 的支持，还支持对 endpoint 收发数据的底层支持。在上一节的
+                endpoint 初始化时，就已经设置 endpoint 的操作函数集 <code class="+ topic/ph pr-d/codeph ph codeph">dwc2_hsotg_ep_ops</code> ：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__pre_zq1_zqz_21c" data-ofbid="usb_gadget_device__pre_zq1_zqz_21c">dwc2_driver_probe() → dwc2_gadget_init() → dwc2_hsotg_initep():
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> dwc2_hsotg_initep(<strong class="hl-keyword">struct</strong> dwc2_hsotg *hsotg,
+                <strong class="hl-keyword">struct</strong> dwc2_hsotg_ep *hs_ep,
+                    <strong class="hl-keyword">int</strong> epnum,
+                    bool dir_in)
+{
+
+    <em class="hl-comment">/* (2.3) endpoint 最重要的结构体成员，endpoint 操作函数集
+        endpoint 的相关操作最后调用到这些函数上
+    */</em>
+    hs_ep-&gt;ep.ops = &amp;dwc2_hsotg_ep_ops;
+
+}
+
+↓
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> usb_ep_ops dwc2_hsotg_ep_ops = {
+    .enable         = dwc2_hsotg_ep_enable,
+    .disable        = dwc2_hsotg_ep_disable_lock,
+    .alloc_request  = dwc2_hsotg_ep_alloc_request,
+    .free_request   = dwc2_hsotg_ep_free_request,
+    .queue          = dwc2_hsotg_ep_queue_lock,
+    .dequeue        = dwc2_hsotg_ep_dequeue,
+    .set_halt       = dwc2_hsotg_ep_sethalt_lock,
+    <em class="hl-comment">/* note, don't believe we have any call for the fifo routines */</em>
+};
+</pre>
+            <p class="- topic/p p" data-ofbid="d336238e66__20250121171845">Gadget Api 提供了以下接口来操作 endpoint 读写数据。在 Host 侧对 endpoint 进行一次操作请求的数据结构是 <code class="+ topic/ph pr-d/codeph ph codeph">struct
+                    urb</code> ，而在 Device 侧也有类似的数据结构称为 <code class="+ topic/ph pr-d/codeph ph codeph">struct usb_request</code> ，对
+                endpoint 的数据读写就是围绕 <code class="+ topic/ph pr-d/codeph ph codeph">struct usb_request</code> 展开的：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__pre_ar1_zqz_21c" data-ofbid="usb_gadget_device__pre_ar1_zqz_21c">drivers\usb\gadget\function\f_acm.c:
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> acm_cdc_notify(<strong class="hl-keyword">struct</strong> f_acm *acm, u8 type, u16 value,
+        <strong class="hl-keyword">void</strong> *data, <strong class="hl-keyword">unsigned</strong> length)
+{
+    <strong class="hl-keyword">struct</strong> usb_ep                   *ep = acm-&gt;notify;
+    <strong class="hl-keyword">struct</strong> usb_request              *req;
+    <strong class="hl-keyword">struct</strong> usb_cdc_notification     *notify;
+    <strong class="hl-keyword">const</strong> <strong class="hl-keyword">unsigned</strong>                  len = <strong class="hl-keyword">sizeof</strong>(*notify) + length;
+    <strong class="hl-keyword">void</strong>                            *buf;
+    <strong class="hl-keyword">int</strong>                             status;
+
+    <em class="hl-comment">/* (1) 初始化 `struct usb_request` 数据结构 */</em>
+    req = acm-&gt;notify_req;
+    acm-&gt;notify_req = NULL;
+    acm-&gt;pending = false;
+
+    req-&gt;length = len;
+    notify = req-&gt;buf;
+    buf = notify + <span class="hl-number">1</span>;
+
+    notify-&gt;bmRequestType = USB_DIR_IN | USB_TYPE_CLASS
+            | USB_RECIP_INTERFACE;
+    notify-&gt;bNotificationType = type;
+    notify-&gt;wValue = cpu_to_le16(value);
+    notify-&gt;wIndex = cpu_to_le16(acm-&gt;ctrl_id);
+    notify-&gt;wLength = cpu_to_le16(length);
+    memcpy(buf, data, length);
+
+    <em class="hl-comment">/* ep_queue() can complete immediately if it fills the fifo... */</em>
+    spin_unlock(&amp;acm-&gt;lock);
+    <em class="hl-comment">/* (2) 提交 `usb_request` 请求到 endpoint 处理队列中 */</em>
+    status = usb_ep_queue(ep, req, GFP_ATOMIC);
+    spin_lock(&amp;acm-&gt;lock);
+
+}
+</pre>
+            <p class="- topic/p p" data-ofbid="d336238e82__20250121171845">其中 usb_ep_queue() 函数就会调用 endpoint 的操作函数集 <code class="+ topic/ph pr-d/codeph ph codeph">dwc2_hsotg_ep_ops</code> 中的
+                    <code class="+ topic/ph pr-d/codeph ph codeph">.queue</code> 函数：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__pre_br1_zqz_21c" data-ofbid="usb_gadget_device__pre_br1_zqz_21c"><strong class="hl-keyword">int</strong> usb_ep_queue(<strong class="hl-keyword">struct</strong> usb_ep *ep,
+                <strong class="hl-keyword">struct</strong> usb_request *req, gfp_t gfp_flags)
+{
+    <strong class="hl-keyword">int</strong> ret = <span class="hl-number">0</span>;
+
+    <strong class="hl-keyword">if</strong> (WARN_ON_ONCE(!ep-&gt;enabled &amp;&amp; ep-&gt;address)) {
+        ret = -ESHUTDOWN;
+        <strong class="hl-keyword">goto</strong> out;
+    }
+
+    <em class="hl-comment">/* (1) 实际调用 dwc2_hsotg_ep_queue_lock() */</em>
+    ret = ep-&gt;ops-&gt;queue(ep, req, gfp_flags);
+
+out:
+    trace_usb_ep_queue(ep, req, ret);
+
+    <strong class="hl-keyword">return</strong> ret;
+}
+</pre>
+        </section><section class="- topic/section section" id="usb_gadget_device__section_cr1_zqz_21c" data-ofbid="usb_gadget_device__section_cr1_zqz_21c"><h2 class="- topic/title title sectiontitle">UDC Control</h2>
+            
+            <p class="- topic/p p" data-ofbid="d336238e99__20250121171845">Gadget Device 还提供了 UDC 层级的一些操作函数，UDC Driver 在调用 usb_add_gadget_udc() 注册 Gadget Device
+                之前，初始化了 Gadget 的 操作函数集：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__pre_dr1_zqz_21c" data-ofbid="usb_gadget_device__pre_dr1_zqz_21c">dwc2_driver_probe() → dwc2_gadget_init():
+
+<strong class="hl-keyword">int</strong> dwc2_gadget_init(<strong class="hl-keyword">struct</strong> dwc2_hsotg *hsotg)
+{
+
+    hsotg-&gt;gadget.max_speed = USB_SPEED_HIGH;
+    <em class="hl-comment">/* (1) 初始化 Gadget Device 的操作函数集  */</em>
+    hsotg-&gt;gadget.ops = &amp;dwc2_hsotg_gadget_ops;
+    hsotg-&gt;gadget.name = dev_name(dev);
+    hsotg-&gt;remote_wakeup_allowed = <span class="hl-number">0</span>;
+
+}
+
+↓
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> usb_gadget_ops dwc2_hsotg_gadget_ops = {
+    .get_frame      = dwc2_hsotg_gadget_getframe,
+    .set_selfpowered        = dwc2_hsotg_set_selfpowered,
+    .udc_start              = dwc2_hsotg_udc_start,
+    .udc_stop               = dwc2_hsotg_udc_stop,
+    .pullup                 = dwc2_hsotg_pullup,
+    .vbus_session           = dwc2_hsotg_vbus_session,
+    .vbus_draw              = dwc2_hsotg_vbus_draw,
+};
+</pre>
+            <p class="- topic/p p" data-ofbid="d336238e105__20250121171845">Gadget Api 提供了一些内部函数来调用：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_device__pre_er1_zqz_21c" data-ofbid="usb_gadget_device__pre_er1_zqz_21c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">inline</strong> <strong class="hl-keyword">int</strong> usb_gadget_udc_start(<strong class="hl-keyword">struct</strong> usb_udc *udc)
+{
+    <strong class="hl-keyword">return</strong> udc-&gt;gadget-&gt;ops-&gt;udc_start(udc-&gt;gadget, udc-&gt;driver);
+}
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">inline</strong> <strong class="hl-keyword">void</strong> usb_gadget_udc_stop(<strong class="hl-keyword">struct</strong> usb_udc *udc)
+{
+    udc-&gt;gadget-&gt;ops-&gt;udc_stop(udc-&gt;gadget);
+}
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">inline</strong> <strong class="hl-keyword">void</strong> usb_gadget_udc_set_speed(<strong class="hl-keyword">struct</strong> usb_udc *udc,
+                        <strong class="hl-keyword">enum</strong> usb_device_speed speed)
+{
+    <strong class="hl-keyword">if</strong> (udc-&gt;gadget-&gt;ops-&gt;udc_set_speed) {
+        <strong class="hl-keyword">enum</strong> usb_device_speed s;
+
+        s = min(speed, udc-&gt;gadget-&gt;max_speed);
+        udc-&gt;gadget-&gt;ops-&gt;udc_set_speed(udc-&gt;gadget, s);
+    }
+}
+
+<strong class="hl-keyword">int</strong> usb_gadget_connect(<strong class="hl-keyword">struct</strong> usb_gadget *gadget)
+{
+    <strong class="hl-keyword">int</strong> ret = <span class="hl-number">0</span>;
+
+    <strong class="hl-keyword">if</strong> (!gadget-&gt;ops-&gt;pullup) {
+        ret = -EOPNOTSUPP;
+        <strong class="hl-keyword">goto</strong> out;
+    }
+
+    <strong class="hl-keyword">if</strong> (gadget-&gt;deactivated) {
+        <em class="hl-comment">/*
+        * If gadget is deactivated we only save new state.
+        * Gadget will be connected automatically after activation.
+        */</em>
+        gadget-&gt;connected = true;
+        <strong class="hl-keyword">goto</strong> out;
+    }
+
+    ret = gadget-&gt;ops-&gt;pullup(gadget, <span class="hl-number">1</span>);
+    <strong class="hl-keyword">if</strong> (!ret)
+        gadget-&gt;connected = <span class="hl-number">1</span>;
+
+out:
+    trace_usb_gadget_connect(gadget, ret);
+
+    <strong class="hl-keyword">return</strong> ret;
+}
+
+<strong class="hl-keyword">int</strong> usb_gadget_disconnect(<strong class="hl-keyword">struct</strong> usb_gadget *gadget)
+{
+    <strong class="hl-keyword">int</strong> ret = <span class="hl-number">0</span>;
+
+    <strong class="hl-keyword">if</strong> (!gadget-&gt;ops-&gt;pullup) {
+        ret = -EOPNOTSUPP;
+        <strong class="hl-keyword">goto</strong> out;
+    }
+
+    <strong class="hl-keyword">if</strong> (!gadget-&gt;connected)
+        <strong class="hl-keyword">goto</strong> out;
+
+    <strong class="hl-keyword">if</strong> (gadget-&gt;deactivated) {
+        <em class="hl-comment">/*
+        * If gadget is deactivated we only save new state.
+        * Gadget will stay disconnected after activation.
+        */</em>
+        gadget-&gt;connected = false;
+        <strong class="hl-keyword">goto</strong> out;
+    }
+
+    ret = gadget-&gt;ops-&gt;pullup(gadget, <span class="hl-number">0</span>);
+    <strong class="hl-keyword">if</strong> (!ret) {
+        gadget-&gt;connected = <span class="hl-number">0</span>;
+        gadget-&gt;udc-&gt;driver-&gt;disconnect(gadget);
+    }
+
+out:
+    trace_usb_gadget_disconnect(gadget, ret);
+
+    <strong class="hl-keyword">return</strong> ret;
+}</pre>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_gadget_device__section_uq1_zqz_21c" data-tocid="usb_gadget_device__section_uq1_zqz_21c">Endpoint Alloc</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_gadget_device__section_yq1_zqz_21c" data-tocid="usb_gadget_device__section_yq1_zqz_21c">EndPoint Access</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_gadget_device__section_cr1_zqz_21c" data-tocid="usb_gadget_device__section_cr1_zqz_21c">UDC Control</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

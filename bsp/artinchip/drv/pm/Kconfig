@@ -1,0 +1,23 @@
+#-----------------------------
+# devices local parameter
+#-----------------------------
+
+menu "PM configure"
+    depends on AIC_USING_PM
+
+    choice
+        prompt "Select default sleep mode"
+        default AIC_PM_POWER_DEFAULT_DEEP_MODE
+
+        config AIC_PM_POWER_DEFAULT_LIGHT_MODE
+            bool "light sleep mode"
+
+        config AIC_PM_POWER_DEFAULT_DEEP_MODE
+            bool "deep sleep mode"
+    endchoice
+
+    config AIC_BOARD_LEVEL_POWER_PIN
+        string "PM board level power switch"
+        default ""
+
+endmenu

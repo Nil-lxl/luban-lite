@@ -1,0 +1,231 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 RT-Thread 操作系统中，DFS (Device File System) 提供了一组基本的文件操作命令。以下是 ArtInChip SDK 编译过程中常见的 DFS 终端命令及其说明。 cd 改变当前工作目录。 cd filepath 示例：进入 data 目录 cd data ls 列出目录中的文件和子目录。 ls 比如，列出 data 目录中的文件和子目录，输出示例如下： ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../gpio/gpio_debug.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-12-11"/><meta name="DC.date.modified" content="2024-12-23"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="dfs_cmd_ref_guide"/><title>DFS 命令行工具参考指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/advanced/dfs_cmd_ref_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/dfs_cmd_ref_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="dfs_cmd_ref_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/dfs_cmd_ref_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">DFS</span> 命令行工具参考指南</h1><div class="date inPage">23 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d173868e27__20250121171622">在 RT-Thread 操作系统中，DFS (Device File System) 提供了一组基本的文件操作命令。以下是 ArtInChip SDK 编译过程中常见的 DFS
+            终端命令及其说明。</p><section class="- topic/section section" id="dfs_cmd_ref_guide__section_yqq_hhh_tdc" data-ofbid="dfs_cmd_ref_guide__section_yqq_hhh_tdc"><h2 class="- topic/title title sectiontitle">cd</h2>
+            
+            <div class="- topic/p p" data-ofbid="d173868e34__20250121171622">改变当前工作目录。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_k5f_3hh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_k5f_3hh_tdc">cd <var class="+ topic/keyword sw-d/varname keyword varname">filepath</var></pre></div>
+            <div class="- topic/p p" data-ofbid="d173868e41__20250121171622">示例：进入 <span class="+ topic/ph sw-d/filepath ph filepath">data</span>
+                目录<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_tc3_jhh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_tc3_jhh_tdc">cd data</pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_qkx_fhh_tdc" data-ofbid="dfs_cmd_ref_guide__section_qkx_fhh_tdc"><h2 class="- topic/title title sectiontitle">ls</h2>
+            
+            <div class="- topic/p p" data-ofbid="d173868e54__20250121171622">列出目录中的文件和子目录。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_o34_ghh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_o34_ghh_tdc">ls</pre></div>
+            <div class="- topic/p p" data-ofbid="d173868e59__20250121171622">比如，列出 <span class="+ topic/ph sw-d/filepath ph filepath">data</span>
+                目录中的文件和子目录，输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_wyx_nhh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_wyx_nhh_tdc">Directory /data:
+fb0.argb            <span class="hl-number">1536000</span>
+</pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_zkg_xz2_tdc" data-ofbid="dfs_cmd_ref_guide__section_zkg_xz2_tdc"><h2 class="- topic/title title sectiontitle">cp</h2>
+            
+            <div class="- topic/p p" data-ofbid="d173868e72__20250121171622">复制文件或目录。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_cxv_c1f_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_cxv_c1f_tdc">cp <var class="+ topic/keyword sw-d/varname keyword varname">orginal_filepath</var> <var class="+ topic/keyword sw-d/varname keyword varname">new_filepath</var></pre><div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">示例</strong>：将脚本放入新建目录中：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_b4f_dcl_sdc" data-ofbid="dfs_cmd_ref_guide__codeblock_b4f_dcl_sdc">cp package/artinchip/lvgl-ui/S00lvgl target/chip/board/rootfs_overlay/etc/init.d/S00lvgl</pre></div></div>
+            <div class="- topic/p p" data-ofbid="d173868e88__20250121171622">示例输出：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_cbn_thh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_cbn_thh_tdc">Copy data <span class="hl-number">1536000</span> B, speed <span class="hl-number">2.29</span> MB/s
+</pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_x2b_5hh_tdc" data-ofbid="dfs_cmd_ref_guide__section_x2b_5hh_tdc"><h2 class="- topic/title title sectiontitle">mv</h2>
+            
+            <div class="- topic/p p" data-ofbid="d173868e98__20250121171622">移动或重命名文件或目录。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_qt1_2rk_5dc" data-ofbid="dfs_cmd_ref_guide__codeblock_qt1_2rk_5dc">mv <var class="+ topic/keyword sw-d/varname keyword varname">original_filename</var> <var class="+ topic/keyword sw-d/varname keyword varname">new_filename</var></pre></div>
+            <div class="- topic/p p" data-ofbid="d173868e108__20250121171622">示例：重命名文件<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_qkp_5hh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_qkp_5hh_tdc">mv fb0.argb <var class="+ topic/keyword sw-d/varname keyword varname">fb1</var>.argb</pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_thp_vhh_tdc" data-ofbid="dfs_cmd_ref_guide__section_thp_vhh_tdc"><h2 class="- topic/title title sectiontitle">rm</h2>
+            
+            <div class="- topic/p p" data-ofbid="d173868e121__20250121171622">删除文件或目录。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_prc_whh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_prc_whh_tdc">rm fb0.argb</pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_ad3_ql3_rdc" data-ofbid="dfs_cmd_ref_guide__section_ad3_ql3_rdc"><h2 class="- topic/title title sectiontitle">mkdir</h2>
+            
+            <div class="- topic/p p" data-ofbid="d173868e131__20250121171622">创建目录。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_yvm_df1_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_yvm_df1_tdc">mkdir -p <var class="+ topic/keyword sw-d/varname keyword varname">new_dir</var></pre></div>
+            <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">示例</strong>：在
+                    <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">chip</var>/<var class="+ topic/keyword sw-d/varname keyword varname">board</var>/rootfs_overlay/</span>
+                目录下创建一个新目录存放脚本文件，例如
+                <span class="+ topic/ph sw-d/filepath ph filepath">/etc/init.d/</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_fg3_t3r_ldc" data-ofbid="dfs_cmd_ref_guide__codeblock_fg3_t3r_ldc">mkdir -p target/chip/board/rootfs_overlay/etc/init.d</pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_k4g_xhh_tdc" data-ofbid="dfs_cmd_ref_guide__section_k4g_xhh_tdc"><h2 class="- topic/title title sectiontitle">rmdir</h2>
+            
+            <div class="- topic/p p" data-ofbid="d173868e161__20250121171622">删除空目录。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_sys_xhh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_sys_xhh_tdc">rmdir new_dir</pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_kw4_yhh_tdc" data-ofbid="dfs_cmd_ref_guide__section_kw4_yhh_tdc"><h2 class="- topic/title title sectiontitle">cat</h2>
+            
+            <p class="- topic/p p" data-ofbid="d173868e171__20250121171622">显示文件内容。</p>
+            <div class="- topic/p p" data-ofbid="d173868e174__20250121171622">例如，使用 <code class="+ topic/ph pr-d/codeph ph codeph">cat</code> 命令读取 <span class="+ topic/ph sw-d/filepath ph filepath">otg_mode</span> 文件的内容，以查看当前的 USB OTG
+                模式。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_a41_zhh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_a41_zhh_tdc">cat /sys/devices/platform/soc/soc:usb-otg/otg_mode</pre></div>
+            <div class="- topic/p p" data-ofbid="d173868e185__20250121171622">系统输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_wdp_m3h_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_wdp_m3h_tdc"><strong class="hl-keyword">auto</strong></pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_xbx_g3s_sdc" data-ofbid="dfs_cmd_ref_guide__section_xbx_g3s_sdc"><h2 class="- topic/title title sectiontitle">echo</h2>
+            
+            <p class="- topic/p p" data-ofbid="d173868e195__20250121171622">向文件写入数据。</p>
+            <div class="- topic/p p" data-ofbid="d173868e198__20250121171622">例如，将 <code class="+ topic/ph pr-d/codeph ph codeph">auto</code> 写入 <span class="+ topic/ph sw-d/filepath ph filepath">otg_mode</span>
+                文件，使系统根据连接的设备自动切换角色。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_gxh_k3h_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_gxh_k3h_tdc">echo <strong class="hl-keyword">auto</strong> &gt; /sys/devices/platform/soc/soc:usb-otg/otg_mode</pre></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_bfg_4z2_tdc" data-ofbid="dfs_cmd_ref_guide__section_bfg_4z2_tdc"><h2 class="- topic/title title sectiontitle">chmod +x</h2>
+            
+            <p class="- topic/p p" data-ofbid="d173868e214__20250121171622">更改文件权限。</p>
+            <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">示例</strong><div class="- topic/p p" id="dfs_cmd_ref_guide__p_fwk_zz2_tdc" data-ofbid="dfs_cmd_ref_guide__p_fwk_zz2_tdc">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">chmod +x</span>
+                    命令将脚本设置为可执行文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_tll_jcl_sdc" data-ofbid="dfs_cmd_ref_guide__codeblock_tll_jcl_sdc">chmod +x target/chip/board/rootfs_overlay/etc/init.d/S00lvgl</pre></div></div>
+        </section><section class="- topic/section section" id="dfs_cmd_ref_guide__section_trg_bjh_tdc" data-ofbid="dfs_cmd_ref_guide__section_trg_bjh_tdc"><h2 class="- topic/title title sectiontitle">mount</h2>
+            
+            <div class="- topic/p p" data-ofbid="d173868e234__20250121171622">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dfs_cmd_ref_guide__codeblock_ixz_bjh_tdc" data-ofbid="dfs_cmd_ref_guide__codeblock_ixz_bjh_tdc">mount -t dfs elm,data=/dev/data,noatime=y /mnt/dfs</pre>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        <div class=" wh_related_links d-print-none "><nav aria-label="Related Links" role="navigation" class="- topic/related-links related-links"><div class="- topic/linklist linklist relinfo"><strong>相关信息</strong><ul class="linklist related_link"><li class="linklist"><a class="- topic/link link navheader_parent_path" href="../gpio/gpio_debug.html" title="GPIO 调试指南">GPIO 调试指南</a></li></ul></div></nav></div>
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_yqq_hhh_tdc" data-tocid="dfs_cmd_ref_guide__section_yqq_hhh_tdc">cd</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_qkx_fhh_tdc" data-tocid="dfs_cmd_ref_guide__section_qkx_fhh_tdc">ls</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_zkg_xz2_tdc" data-tocid="dfs_cmd_ref_guide__section_zkg_xz2_tdc">cp</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_x2b_5hh_tdc" data-tocid="dfs_cmd_ref_guide__section_x2b_5hh_tdc">mv</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_thp_vhh_tdc" data-tocid="dfs_cmd_ref_guide__section_thp_vhh_tdc">rm</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_ad3_ql3_rdc" data-tocid="dfs_cmd_ref_guide__section_ad3_ql3_rdc">mkdir</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_k4g_xhh_tdc" data-tocid="dfs_cmd_ref_guide__section_k4g_xhh_tdc">rmdir</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_kw4_yhh_tdc" data-tocid="dfs_cmd_ref_guide__section_kw4_yhh_tdc">cat</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_xbx_g3s_sdc" data-tocid="dfs_cmd_ref_guide__section_xbx_g3s_sdc">echo</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_bfg_4z2_tdc" data-tocid="dfs_cmd_ref_guide__section_bfg_4z2_tdc">chmod +x</a></div></li><li class="section-item"><div class="section-title"><a href="#dfs_cmd_ref_guide__section_trg_bjh_tdc" data-tocid="dfs_cmd_ref_guide__section_trg_bjh_tdc">mount</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

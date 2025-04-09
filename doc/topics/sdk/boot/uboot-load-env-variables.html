@@ -1,0 +1,222 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="如前面所述，环境变量的处理有两个阶段： 环境变量初始 环境变量读取 如下面的调用流程， env_init() 在 board_init_f() 阶段执行，但具体的加载过程 在 board_init_r() 阶段执行。 reset // arch/riscv/cpu/start.S |-&gt; save_boot_params // ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_tyf_bm3_pzb"/><meta name="DC.language" content="zh-CN"/><title>环境变量加载</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/uboot-load-env-variables.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/uboot-load-env-variables.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_tyf_bm3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/uboot-load-env-variables.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">环境变量加载</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d132916e22__20250121171606">
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d132916e26__20250121171606">如前面所述，环境变量的处理有两个阶段：</p>
+                <ol class="- topic/ol ol" id="concept_tyf_bm3_pzb__ol_vng_wbh_bzb" data-ofbid="concept_tyf_bm3_pzb__ol_vng_wbh_bzb"><li class="- topic/li li" data-ofbid="d132916e30__20250121171606">
+                        <p class="- topic/p p" data-ofbid="d132916e32__20250121171606">环境变量初始</p>
+                    </li><li class="- topic/li li" data-ofbid="d132916e35__20250121171606">
+                        <p class="- topic/p p" data-ofbid="d132916e37__20250121171606">环境变量读取</p>
+                    </li></ol>
+                <div class="- topic/p p" data-ofbid="d132916e41__20250121171606">如下面的调用流程， <span class="+ topic/keyword pr-d/apiname keyword apiname">env_init()</span> 在 <span class="+ topic/keyword pr-d/apiname keyword apiname">board_init_f()</span>
+                    阶段执行，但具体的加载过程 在 <span class="+ topic/keyword pr-d/apiname keyword apiname">board_init_r()</span>
+                    阶段执行。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_tyf_bm3_pzb__codeblock_fkq_nmr_c1c" data-ofbid="concept_tyf_bm3_pzb__codeblock_fkq_nmr_c1c">reset <em class="hl-comment">// arch/riscv/cpu/start.S</em>
+|-&gt; save_boot_params <em class="hl-comment">// arch/riscv/mach-artinchip/lowlevel_init.S</em>
+|-&gt; ...
+|-&gt; board_init_f(); <em class="hl-comment">// common/board_f.c</em>
+    |-&gt; setup_reloc(); <em class="hl-comment">// common/board_f.c</em>
+    |-&gt; jump_to_copy(); <em class="hl-comment">// common/board_f.c</em>
+        |-&gt; relocate_code(); <em class="hl-comment">// arch/riscv/cpu/start.S</em>
+            |-&gt; invalidate_icache_all()
+            |-&gt; flush_dcache_all()
+            |-&gt; board_init_r();
+                |   <em class="hl-comment">// 逐个调用 init_sequence_r 里面的函数，其中包括 initr_env</em>
+                |-&gt; initr_env(); <em class="hl-comment">// common/board_r.c</em>
+                    |-&gt; should_load_env(<strong class="hl-keyword">void</strong>);<em class="hl-comment">// common/board_r.c</em>
+                    |   <em class="hl-comment">// 由于没有在 DTS 中进行配置，总是返回 1</em>
+                    |   <em class="hl-comment">// fdtdec_get_config_int(gd-&gt;fdt_blob, "load-environment", 1);</em>
+                    |-&gt; env_relocate(); <em class="hl-comment">// env/common.c</em>
+                        |-&gt; env_load(); <em class="hl-comment">// env/env.c</em></pre></div>
+                <p class="- topic/p p" data-ofbid="d132916e55__20250121171606">U-Boot 支持在多种存储介质中保存环境变量，并且提供了一个插拔式的机制，用于实现从 不同的存储介质中加载环境变量内容。</p>
+                <div class="- topic/p p" data-ofbid="d132916e58__20250121171606">在添加新的环境变量加载器时，只需要实现对应存储介质的 <span class="+ topic/keyword pr-d/apiname keyword apiname">load</span> 和 <span class="+ topic/keyword pr-d/apiname keyword apiname">save</span> 函数，
+                    然后通过宏 <span class="+ topic/keyword pr-d/apiname keyword apiname">U_BOOT_ENV_LOCATION</span> 将对应的信息添加到
+                        <code class="+ topic/ph pr-d/codeph ph codeph">.u_boot_list_2</code> 链接段中。 比如下面的定义，将生成
+                        <code class="+ topic/ph pr-d/codeph ph codeph">.u_boot_list_2_env_driver_2_spinand</code>
+                    信息。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_tyf_bm3_pzb__codeblock_djh_4mr_c1c" data-ofbid="concept_tyf_bm3_pzb__codeblock_djh_4mr_c1c">U_BOOT_ENV_LOCATION(spinand) = {
+    .location   = ENVL_SPINAND,
+    ENV_NAME(<span class="hl-string">"SPINAND"</span>)
+    .load       = env_spinand_load,
+#<strong class="hl-keyword">if</strong> defined(CMD_SAVEENV)
+    .save       = env_save_ptr(env_spinand_save),
+#endif
+};</pre></div>
+                <div class="- topic/p p" data-ofbid="d132916e80__20250121171606"><span class="+ topic/keyword pr-d/apiname keyword apiname">env_driver_lookup()</span> 函数首先通过检查当前的启动设备，然后从
+                        <code class="+ topic/ph pr-d/codeph ph codeph">.u_boot_list_2</code> 段中查找对应启动设备的 ENV
+                    加载驱动，最后调用对应的驱动读取并导入环境变量内容。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_tyf_bm3_pzb__codeblock_jd5_4mr_c1c" data-ofbid="concept_tyf_bm3_pzb__codeblock_jd5_4mr_c1c">env_load(); <em class="hl-comment">// env/env.c</em>
+|-&gt; env_driver_lookup(ENVOP_LOAD, prio);
+|   |-&gt; loc = env_get_location(); <em class="hl-comment">// board/artinchip/d211/env_location.c</em>
+|   |   |-&gt; bd = aic_get_boot_device(); <em class="hl-comment">// 获取当前的启动设备</em>
+|   |
+|   |-&gt; _env_driver_lookup(loc);
+|       |-&gt; drv = ll_entry_start();
+|       <em class="hl-comment">// 查找指定存储介质的 env 加载驱动</em>
+|
+|-&gt; drv-&gt;load();
+        <em class="hl-comment">// 此处调用个存储介质的对应函数</em>
+        env_ram_load(); <em class="hl-comment">// board/artinchip/d211/env_location.c</em>
+        env_spinand_load(); <em class="hl-comment">// env/spinand.c</em>
+        env_sf_load(); <em class="hl-comment">// env/sf.c</em>
+        env_mmc_load(); <em class="hl-comment">// env/mmc.c</em></pre></div>
+                <p class="- topic/p p" data-ofbid="d132916e90__20250121171606">具体各种存储介质中，环境变量保存的位置可参考<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="save-env-variable-on-memory-medium.html">存储介质上的保存</a>。</p>
+            </div>
+        </div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

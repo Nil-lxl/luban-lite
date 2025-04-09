@@ -1,0 +1,175 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="表 1 . aic_clk_hw_fixed_parent_module 函数原型 struct clk_hw *aic_clk_hw_fixed_parent(void __iomem *base, const struct fixed_parent_clk_cfg *cfg) 功能说明 初始化 clock，并对时钟进行注册 参数定义 base：CMU 寄存器的基地址 cfg：指向配置参数的指针 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-07-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_nyl_l43_pzb"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/cmu/cmu-interface-design.dita"/><meta name="wh-out-relpath" content="topics/sdk/cmu/cmu-interface-design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_nyl_l43_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/cmu/cmu-interface-design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">接口设计</h1><div class="date inPage">15 Jul 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="table-container"><table class="- topic/table table frame-all" id="concept_nyl_l43_pzb__table_ab5_fsw_bzb" data-ofbid="concept_nyl_l43_pzb__table_ab5_fsw_bzb" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_clk_hw_fixed_parent_module</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__2">struct clk_hw *aic_clk_hw_fixed_parent(void __iomem *base, const
+                                struct fixed_parent_clk_cfg *cfg)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__2">初始化 clock，并对时钟进行注册</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__2">
+                                <ul class="- topic/ul ul" id="concept_nyl_l43_pzb__ul_xhg_lx3_bcc" data-ofbid="concept_nyl_l43_pzb__ul_xhg_lx3_bcc"><li class="- topic/li li" data-ofbid="d90323e46__20250121171530">base：CMU 寄存器的基地址 </li><li class="- topic/li li" data-ofbid="d90323e48__20250121171530">cfg：指向配置参数的指针</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__2">返回 struct clk_hw*类型的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_ab5_fsw_bzb__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="concept_nyl_l43_pzb__table_bb5_fsw_bzb" data-ofbid="concept_nyl_l43_pzb__table_bb5_fsw_bzb" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_clk_hw_multi_parent_module</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__2">struct clk_hw *aic_clk_hw_multi_parent(void __iomem *base, const
+                                struct multi_parent_clk_cfg *cfg)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__2">初始化 clock，并对时钟进行注册</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__2">
+                                <ul class="- topic/ul ul" id="concept_nyl_l43_pzb__ul_fwn_jx3_bcc" data-ofbid="concept_nyl_l43_pzb__ul_fwn_jx3_bcc"><li class="- topic/li li" data-ofbid="d90323e85__20250121171530">base：CMU 寄存器的基地址 </li><li class="- topic/li li" data-ofbid="d90323e87__20250121171530">cfg：指向配置参数的指针</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__2">返回 struct clk_hw*类型的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_bb5_fsw_bzb__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="concept_nyl_l43_pzb__table_cb5_fsw_bzb" data-ofbid="concept_nyl_l43_pzb__table_cb5_fsw_bzb" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_clk_hw_pll</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__2">struct clk_hw *aic_clk_hw_pll(void __iomem *base, const struct
+                                pll_clk_cfg *cfg)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__2">初始化 clock，并对时钟进行注册</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__2">
+                                <ul class="- topic/ul ul" id="concept_nyl_l43_pzb__ul_cf1_jx3_bcc" data-ofbid="concept_nyl_l43_pzb__ul_cf1_jx3_bcc"><li class="- topic/li li" data-ofbid="d90323e124__20250121171530">base：CMU 寄存器的基地址 </li><li class="- topic/li li" data-ofbid="d90323e126__20250121171530">cfg：指向配置参数的指针</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__2">返回 struct clk_hw*类型的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_cb5_fsw_bzb__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="concept_nyl_l43_pzb__table_db5_fsw_bzb" data-ofbid="concept_nyl_l43_pzb__table_db5_fsw_bzb" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_clk_hw_disp</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__2">struct clk_hw *aic_clk_hw_disp(void __iomem *base, const struct
+                                disp_clk_cfg *cfg)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__2">初始化 clock，并对时钟进行注册</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__2">
+                                <ul class="- topic/ul ul" id="concept_nyl_l43_pzb__ul_zkn_3x3_bcc" data-ofbid="concept_nyl_l43_pzb__ul_zkn_3x3_bcc"><li class="- topic/li li" data-ofbid="d90323e163__20250121171530">base：CMU 寄存器的基地址 </li><li class="- topic/li li" data-ofbid="d90323e165__20250121171530">cfg：指向配置参数的指针</li></ul>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__2">返回 struct clk_hw*类型的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_nyl_l43_pzb__table_db5_fsw_bzb__entry__2">-</td></tr></tbody></table></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

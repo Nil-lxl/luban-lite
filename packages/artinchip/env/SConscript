@@ -1,0 +1,18 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = [cwd]
+
+src = []
+
+if GetDepend('AIC_ENV_INTERFACE'):
+    src += Glob('env.c')
+
+if GetDepend('AIC_AB_SYSTEM_INTERFACE') and not GetDepend('AIC_BOOTLOADER'):
+    src += Glob('absystem_os.c')
+
+group = DefineGroup('env', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

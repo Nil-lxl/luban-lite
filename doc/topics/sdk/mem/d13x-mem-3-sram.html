@@ -1,0 +1,271 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="description" content="对于没有 SiP PSRAM 颗粒和 PSRAM Memory 空间的部分 型号，如需使用多媒体模块 DE/ GE/ VE ，必须使能 SRAM_S1 区域。SRAM_S1 区域可以被 DE/GE/VE 硬件访问，但其空间需要从 SRAM_S0 中划分。 SRAM 配置和 SRAM + PSRAM 配置区别是用 SRAM_S1 取代 PSRAM 来充当 CMA 区域，本节仅描述两者的差异部分。 ..."/><meta name="DC.relation" content="../../../topics/sdk/mem/d13x_mem_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/mem/d13x-mem-2-tcm-sram-psram.html"/><meta name="DC.relation" content="../../../topics/sdk/mem/d21x_mem_guide.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="d13x-mem-3-sram"/><meta name="DC.language" content="zh-CN"/>        
+      <title>SRAM</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="d13x-mem-3-sram-d5856e2515"/><meta name="wh-source-relpath" content="topics/sdk/mem/d13x-mem-3-sram.dita"/><meta name="wh-out-relpath" content="topics/sdk/mem/d13x-mem-3-sram.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="d13x-mem-3-sram" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="chapter-system"><div class="title"><a href="../../../topics/chapter-title/chapter-system.html">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li><div class="topicref" data-id="chapter-memory"><div class="title"><a href="../../../topics/sdk/mem/memory-user-guide.html">Memory 使用指南</a></div></div></li><li><div class="topicref" data-id="d13x-mem-guide"><div class="title"><a href="../../../topics/sdk/mem/d13x_mem_guide.html"> 内存使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="d13x-mem-3-sram"><div class="title"><a href="../../../topics/sdk/mem/d13x-mem-3-sram.html">SRAM</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/mem/d13x-mem-2-tcm-sram-psram.html" title="TCM + SRAM + PSRAM" aria-label="上一主题: TCM + SRAM + PSRAM" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/mem/d21x_mem_guide.html" title="内存使用指南" aria-label="下一主题: 内存使用指南" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-memory-d5856e2449" class="topicref" data-id="chapter-memory" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-memory-d5856e2449-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/memory-user-guide.html" id="chapter-memory-d5856e2449-link">Memory 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="mem-intro-d5856e2463" class="topicref" data-id="mem-intro" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/d12x_mem_guide.html" id="mem-intro-d5856e2463-link"> 内存使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="d13x-mem-guide-d5856e2475" class="topicref" data-id="d13x-mem-guide" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action d13x-mem-guide-d5856e2475-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/d13x_mem_guide.html" id="d13x-mem-guide-d5856e2475-link"> 内存使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="d13x-mem-1-sram-psram-d5856e2487" class="topicref" data-id="d13x-mem-1-sram-psram" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/d13x-mem-1-sram-psram.html" id="d13x-mem-1-sram-psram-d5856e2487-link">SRAM + PSRAM</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="d13x-mem-2-tcm-sram-psram-d5856e2501" class="topicref" data-id="d13x-mem-2-tcm-sram-psram" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/d13x-mem-2-tcm-sram-psram.html" id="d13x-mem-2-tcm-sram-psram-d5856e2501-link">TCM + SRAM + PSRAM</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" class="active"><div data-tocid="d13x-mem-3-sram-d5856e2515" class="topicref" data-id="d13x-mem-3-sram" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/d13x-mem-3-sram.html" id="d13x-mem-3-sram-d5856e2515-link">SRAM</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li><li role="treeitem"><div data-tocid="d21x-mem-guide-d5856e2529" class="topicref" data-id="d21x-mem-guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/d21x_mem_guide.html" id="d21x-mem-guide-d5856e2529-link"> 内存使用指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2541" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/memory-config-stack-size.html" id="id-d5856e2541-link">栈大小配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2553" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/memory-faq.html" id="id-d5856e2553-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="system_interrupt_user_guide-d5856e2565" class="topicref" data-id="system_interrupt_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action system_interrupt_user_guide-d5856e2565-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/interrupt/interrupt-user-guide.html" id="system_interrupt_user_guide-d5856e2565-link">Interrupt 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cmu-d5856e2601" class="topicref" data-id="cmu" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cmu-d5856e2601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cmu/cmu-introduction_2.html" id="cmu-d5856e2601-link">CMU 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_or5_kn3_pzb-d5856e2697" class="topicref" data-id="concept_or5_kn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_or5_kn3_pzb-d5856e2697-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-user-guide_2.html" id="concept_or5_kn3_pzb-d5856e2697-link">DMA 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2805" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-user-guide.html" id="id-d5856e2805-link">HRTimer 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2877" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2877-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_user_guide.html" id="id-d5856e2877-link">MTOP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_n2p_sn3_pzb-d5856e2937" class="topicref" data-id="concept_n2p_sn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_n2p_sn3_pzb-d5856e2937-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-user-guide_2.html" id="concept_n2p_sn3_pzb-d5856e2937-link">RTC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3057" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3057-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pm/pm_introduction.html" id="id-d5856e3057-link">Power Management 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="tsensor-d5856e3129" class="topicref" data-id="tsensor" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action tsensor-d5856e3129-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-user-guide_2.html" id="tsensor-d5856e3129-link">TSensor 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="watchdog-d5856e3249" class="topicref" data-id="watchdog" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action watchdog-d5856e3249-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/watchdog/watchdog-user-guide_2.html" id="watchdog-d5856e3249-link">Watchdog 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mem/d13x-mem-3-sram.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SRAM</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/shortdesc shortdesc"></p><p class="- topic/p p" data-ofbid="d217554e20__20250121171645">对于没有 SiP PSRAM 颗粒和 PSRAM Memory 空间的部分 型号，如需使用多媒体模块 DE/ GE/ VE
+            ，必须使能 SRAM_S1 区域。SRAM_S1 区域可以被 DE/GE/VE 硬件访问，但其空间需要从 SRAM_S0 中划分。</p><p class="- topic/p p" data-ofbid="d217554e22__20250121171645">SRAM 配置和<a class="- topic/xref xref" href="d13x-mem-1-sram-psram.html">SRAM + PSRAM</a> 配置区别是用 SRAM_S1 取代 PSRAM 来充当 CMA
+            区域，本节仅描述两者的差异部分。</p><section class="- topic/section section" id="d13x-mem-3-sram__section_hg5_zpj_bdc" data-ofbid="d13x-mem-3-sram__section_hg5_zpj_bdc"><h2 class="- topic/title title sectiontitle">内存布局和使用策略</h2>
+            
+            <div class="- topic/p p" data-ofbid="d217554e33__20250121171645">
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="d13x-mem-3-sram__image_nrn_gcd_bdc" src="../../../images/memory/d13x_mem_layout3.png" alt="d13x_mem_layout3"/></div><br/>
+            </div>
+            <p class="- topic/p p" data-ofbid="d217554e40__20250121171645">如图所示，针对 SRAM_S1 Memory 资源，软件会使用以下策略来进行分配：</p>
+            <ul class="- topic/ul ul simple" id="d13x-mem-3-sram__ul_orn_gcd_bdc" data-ofbid="d13x-mem-3-sram__ul_orn_gcd_bdc"><li class="- topic/li li" data-ofbid="d217554e44__20250121171645">
+                    <div class="- topic/p p" data-ofbid="d217554e46__20250121171645">将 SRAM_S1 分成两个区域： <ul class="- topic/ul ul" id="d13x-mem-3-sram__ul_qth_rbk_bdc" data-ofbid="d13x-mem-3-sram__ul_qth_rbk_bdc"><li class="- topic/li li" data-ofbid="d217554e49__20250121171645"><code class="+ topic/ph pr-d/codeph ph codeph">SRAM_S1 Software Region</code>：在 SRAM_S0
+                                不够系统软件用的情况下补充划分一部分 SRAM_S1 给软件使用。</li><li class="- topic/li li" data-ofbid="d217554e53__20250121171645"><code class="+ topic/ph pr-d/codeph ph codeph">SRAM_S1 CMA Region</code>：专供多媒体模块 MPP 使用</li></ul></div>
+                </li><li class="- topic/li li" data-ofbid="d217554e58__20250121171645">
+                    <div class="- topic/p p" data-ofbid="d217554e60__20250121171645">将每个 <span class="+ topic/keyword pr-d/parmname keyword parmname">Region</span> 进一步划分成以下子区域：<ul class="- topic/ul ul" id="d13x-mem-3-sram__ul_sd4_tzj_bdc" data-ofbid="d13x-mem-3-sram__ul_sd4_tzj_bdc"><li class="- topic/li li" data-ofbid="d217554e66__20250121171645">静态分配 <span class="+ topic/keyword pr-d/parmname keyword parmname">Static</span>：编译链接后可确认地址。</li><li class="- topic/li li" data-ofbid="d217554e71__20250121171645">动态分配 <span class="+ topic/keyword pr-d/parmname keyword parmname">Heap</span>：Heap 内存池运行时确定地址。</li></ul></div>
+                </li></ul>
+            <div class="- topic/p p" data-ofbid="d217554e78__20250121171645">综合上述策略，SRAM_S1 空间被软件划分成四块区域：<ul class="- topic/ul ul" id="d13x-mem-3-sram__ul_prn_gcd_bdc" data-ofbid="d13x-mem-3-sram__ul_prn_gcd_bdc"><li class="- topic/li li" data-ofbid="d217554e81__20250121171645">
+                        <p class="- topic/p p" data-ofbid="d217554e83__20250121171645"><code class="+ topic/ph pr-d/codeph ph codeph">SRAM_S1 SW Static</code>：系统静态分配区域，属于可选区域，通常情况下未配置。</p>
+                        <p class="- topic/p p" data-ofbid="d217554e88__20250121171645">如需链接到此区域，可在函数定义和全局变量定义中加入 <span class="+ topic/keyword pr-d/parmname keyword parmname">SRAM1_SW_DATA_DEFINE</span> 宏声明：</p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="d13x-mem-3-sram__codeblock_uw5_mpj_bdc" data-ofbid="d13x-mem-3-sram__codeblock_uw5_mpj_bdc"><em class="hl-comment">// 函数定义：</em>
+<strong class="hl-keyword">void</strong> SRAM1_SW_DATA_DEFINE test_func(<strong class="hl-keyword">void</strong>);
+
+<em class="hl-comment">// 全局变量定义：</em>
+SRAM1_SW_DATA_DEFINE <strong class="hl-keyword">int</strong> a = <span class="hl-number">1</span>;</pre>
+                    </li><li class="- topic/li li" data-ofbid="d217554e97__20250121171645">
+                        <p class="- topic/p p" data-ofbid="d217554e99__20250121171645"><code class="+ topic/ph pr-d/codeph ph codeph">SRAM_S1 SW Heap</code>：系统动态分配区域，即
+                                <code class="+ topic/ph pr-d/codeph ph codeph">heap_sram1_sw</code> 内存池，属于可选区域，通常情况下未配置。</p>
+                        <p class="- topic/p p" data-ofbid="d217554e107__20250121171645">使用以下函数，可从该内存池分配内存：</p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="d13x-mem-3-sram__codeblock_a2w_mpj_bdc" data-ofbid="d13x-mem-3-sram__codeblock_a2w_mpj_bdc">aicos_malloc(MEM_SRAM1_SW, size);</pre>
+                    </li><li class="- topic/li li" data-ofbid="d217554e113__20250121171645">
+                        <div class="- topic/p p" data-ofbid="d217554e115__20250121171645"><code class="+ topic/ph pr-d/codeph ph codeph">SRAM_S1 CMA Static</code>：CMA 静态分配区域，属于可选区域，通常情况下未配置。<ul class="- topic/ul ul" id="d13x-mem-3-sram__ul_b2j_ldn_mdc" data-ofbid="d13x-mem-3-sram__ul_b2j_ldn_mdc"><li class="- topic/li li" data-ofbid="d217554e120__20250121171645">
+                                    <p class="- topic/p p" data-ofbid="d217554e122__20250121171645">当 SRAM_S0 空间不够用时，通过 <code class="+ topic/ph pr-d/codeph ph codeph">menuconfig</code> 配置菜单，将
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">.text</span>、<span class="+ topic/keyword pr-d/parmname keyword parmname">.rodata</span>、<span class="+ topic/keyword pr-d/parmname keyword parmname">.data</span>
+                                        和 <span class="+ topic/keyword pr-d/parmname keyword parmname">.bss</span> 放置到 PSRAM 中，可链接到本区域。</p>
+                                </li><li class="- topic/li li" data-ofbid="d217554e140__20250121171645">
+                                    <div class="- topic/p p" data-ofbid="d217554e142__20250121171645">如需链接到此区域，可在函数定义和全局变量定义中加入 <span class="+ topic/keyword pr-d/parmname keyword parmname">CMA_DATA_DEFINE</span>
+                                        宏声明：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="d13x-mem-3-sram__codeblock_urn_gcd_bdc" data-ofbid="d13x-mem-3-sram__codeblock_urn_gcd_bdc"><em class="hl-comment">// 函数定义：</em>
+<strong class="hl-keyword">void</strong> CMA_DATA_DEFINE test_func(<strong class="hl-keyword">void</strong>);   <em class="hl-comment">// CMA_DATA_DEFINE = SRAM1_CMA_DATA_DEFINE</em>
+
+<em class="hl-comment">// 全局变量定义：</em>
+CMA_DATA_DEFINE <strong class="hl-keyword">int</strong> a = <span class="hl-number">1</span>;</pre></div>
+                                </li></ul></div>
+                    </li><li class="- topic/li li" data-ofbid="d217554e151__20250121171645">
+                        <p class="- topic/p p" data-ofbid="d217554e153__20250121171645"><code class="+ topic/ph pr-d/codeph ph codeph">SRAM_S1 CMA Heap</code>：CMA 动态分配区域，即 <span class="+ topic/keyword pr-d/parmname keyword parmname">heap_cma</span>
+                            内存池</p>
+                        <p class="- topic/p p" data-ofbid="d217554e161__20250121171645">使用以下函数,，可从该内存池分配内存。</p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="d13x-mem-3-sram__codeblock_rl1_npj_bdc" data-ofbid="d13x-mem-3-sram__codeblock_rl1_npj_bdc">aicos_malloc(MEM_CMA, size);        <em class="hl-comment">// MEM_CMA = MEM_SRAM1_CMA</em></pre>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="d13x-mem-3-sram__id16" data-ofbid="d13x-mem-3-sram__id16"><h2 class="- topic/title title sectiontitle">参数配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d217554e173__20250121171645">通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 命令进入 menuconfig
+                配置界面，配置下列 Meomry
+                相关参数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="d13x-mem-3-sram__codeblock_rpw_yxm_mdc" data-ofbid="d13x-mem-3-sram__codeblock_rpw_yxm_mdc">Board options  ---&gt;
+    Mem Options  ---&gt;</pre></div>
+            <ul class="- topic/ul ul" id="d13x-mem-3-sram__ul_zrn_gcd_bdc" data-ofbid="d13x-mem-3-sram__ul_zrn_gcd_bdc"><li class="- topic/li li" data-ofbid="d217554e182__20250121171645">
+                    <p class="- topic/p p" data-ofbid="d217554e184__20250121171645">SRAM_S1 总大小</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="d13x-mem-3-sram__codeblock_nyc_npj_bdc" data-ofbid="d13x-mem-3-sram__codeblock_nyc_npj_bdc">SRAM parameter  ---&gt;
+    (<span class="hl-number">0x100000</span>) SRAM Total Size    <em class="hl-comment">// 配置 SRAM 总大小为 1M</em>
+    SRAM_S1 Size (<span class="hl-number">512</span>K)           <em class="hl-comment">// 配置 SRAM_S1 大小为 512k，SRAM_S0 大小即为剩下的 512k</em>
+        ( ) <span class="hl-number">0</span>K
+        ( ) <span class="hl-number">128</span>K
+        ( ) <span class="hl-number">256</span>K
+        ( ) <span class="hl-number">384</span>K
+        (X) <span class="hl-number">512</span>K
+        ( ) <span class="hl-number">640</span>K</pre>
+                </li><li class="- topic/li li" data-ofbid="d217554e190__20250121171645">
+                    <p class="- topic/p p" data-ofbid="d217554e192__20250121171645">SRAM_S1 CMA 区域大小</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="d13x-mem-3-sram__codeblock_kd2_npj_bdc" data-ofbid="d13x-mem-3-sram__codeblock_kd2_npj_bdc">SRAM parameter  ---&gt;
+    (<span class="hl-number">0x0</span>) Software size in SRAM_S1 <em class="hl-comment">// 配置 SRAM_S1 开头 Software 区域大小为 0，剩余结尾 CMA 区域大小即为 512k</em></pre>
+                </li><li class="- topic/li li" data-ofbid="d217554e198__20250121171645">
+                    <p class="- topic/p p" data-ofbid="d217554e200__20250121171645"><span class="+ topic/keyword pr-d/parmname keyword parmname">.text</span>、<span class="+ topic/keyword pr-d/parmname keyword parmname">.rodata</span>、<span class="+ topic/keyword pr-d/parmname keyword parmname">.data</span> 和
+                        <span class="+ topic/keyword pr-d/parmname keyword parmname">.bss</span> 区域可选择配置到 SRAM_S0/SRAM_S1 中：</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="d13x-mem-3-sram__codeblock_h3f_npj_bdc" data-ofbid="d13x-mem-3-sram__codeblock_h3f_npj_bdc">ELF Sections memory locatio  ---&gt;
+    Section .text (SRAM_S0)  ---&gt;
+    Section .rodata (SRAM_S0)  ---&gt;
+    Section .data (SRAM_S0)  ---&gt;
+    Section .bss (SRAM_S1)  ---&gt;
+        ( ) SRAM_S0
+        (X) SRAM_S1      <em class="hl-comment">// 在 SRAM_S0 空间不足的情况下，选择把部分数据存放到 SRAM_S1 当中</em></pre>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#d13x-mem-3-sram__section_hg5_zpj_bdc" data-tocid="d13x-mem-3-sram__section_hg5_zpj_bdc">内存布局和使用策略</a></div></li><li class="section-item"><div class="section-title"><a href="#d13x-mem-3-sram__id16" data-tocid="d13x-mem-3-sram__id16">参数配置</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

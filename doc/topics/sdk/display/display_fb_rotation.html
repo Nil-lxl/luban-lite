@@ -1,0 +1,240 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="ArtInChip 平台支持屏幕旋转，支持竖屏横用和横屏竖用，兼容单缓冲 和双缓冲的应用程序。 Display Engine 并不提供旋转功能，旋转是由显示驱动调用 Graphics Engine 实现的。支持顺时针旋转 0°/ 90°/ 180°/ 270°。 LCD 适配 无论是竖屏横用，还是横屏竖用，在适配 LCD 屏幕时，按照屏幕的物理宽高配置时序参数即可，不需要将时序参数中的宽高互换。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-18"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_xpy_32b_ybc"/><meta name="DC.language" content="zh-CN"/><title>屏幕旋转</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/display/display_fb_rotation.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_fb_rotation.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_xpy_32b_ybc" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_fb_rotation.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">屏幕旋转</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/div div">
+                    <p class="- topic/p p" data-ofbid="d106524e25__20250121171540">ArtInChip 平台支持屏幕旋转，支持竖屏横用和横屏竖用，兼容单缓冲 和双缓冲的应用程序。</p>
+                    <p class="- topic/p p" data-ofbid="d106524e28__20250121171540">Display Engine 并不提供旋转功能，旋转是由显示驱动调用 Graphics Engine 实现的。支持顺时针旋转 0°/ 90°/ 180°/
+                        270°。</p>
+                </div><section class="- topic/section section" id="concept_xpy_32b_ybc__section_pyq_w3g_d1c" data-ofbid="concept_xpy_32b_ybc__section_pyq_w3g_d1c"><h2 class="- topic/title title sectiontitle">LCD 适配</h2>
+            
+            <div class="- topic/div div">
+                    <p class="- topic/p p" data-ofbid="d106524e38__20250121171540">无论是竖屏横用，还是横屏竖用，在适配 LCD 屏幕时，按照屏幕的物理宽高配置时序参数即可，不需要将时序参数中的宽高互换。</p>
+                    <p class="- topic/p p" data-ofbid="d106524e41__20250121171540">显示驱动在旋转时会根据旋转角度自动互换宽高。LCD 屏幕适配可参考<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="../../../reusables/reused-topics/../../topics/sdk/display/display_panel_port.html">屏适配指南</a>。</p>
+                </div>
+        </section><section class="- topic/section section" id="concept_xpy_32b_ybc__section_qyq_w3g_d1c" data-ofbid="concept_xpy_32b_ybc__section_qyq_w3g_d1c"><h2 class="- topic/title title sectiontitle">device tree</h2>
+            
+            <div class="- topic/p p" data-ofbid="d106524e54__20250121171540">屏幕旋转的 device tree 配置集中在 fb0 节点。以 720x1280
+                屏幕的竖屏横用场景为例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_xpy_32b_ybc__codeblock_tcn_1jg_d1c" data-ofbid="concept_xpy_32b_ybc__codeblock_tcn_1jg_d1c">&amp;fb0 {
+    artinchip,uboot-logo-on=&lt;<span class="hl-number">1</span>&gt;;
+    rotation-degress = &lt;<span class="hl-number">270</span>&gt;;
+    height-virtual = &lt;<span class="hl-number">1440</span>&gt;;  <em class="hl-comment">// 720 * 2</em>
+
+    port {
+        fb0_out: endpoint {
+            remote-endpoint = &lt;&amp;de0_in&gt;;
+        };
+    };
+};</pre></div>
+            <div class="- topic/p p" data-ofbid="d106524e59__20250121171540">如果不设置 disp-buf-num 属性，显示 buffer 个数与 height-virtual 绑定。<ul class="- topic/ul ul" id="concept_xpy_32b_ybc__ul_yyq_w3g_d1c" data-ofbid="concept_xpy_32b_ybc__ul_yyq_w3g_d1c"><li class="- topic/li li" data-ofbid="d106524e62__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106524e64__20250121171540">height-virtual 不设置，height-virtual 缺省等于 height，显示 buffer 个数为 1。</p>
+                    </li><li class="- topic/li li" data-ofbid="d106524e67__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106524e69__20250121171540">height-virtual 设置为 height 的两倍，使用双 framebuffer，显示 buffer 个数自动适配为 2。</p>
+                    </li></ul></div>
+            <div class="- topic/note note note note_note" id="concept_xpy_32b_ybc__note_o2d_spk_ndc" data-ofbid="concept_xpy_32b_ybc__note_o2d_spk_ndc"><span class="note__title">注：</span> 关于详细的参数描述，可查看<a class="- topic/xref xref" href="display_parameter_display_fb0.html">Display FB0</a>。</div>
+        </section><section class="- topic/section section" id="concept_xpy_32b_ybc__section_zyq_w3g_d1c" data-ofbid="concept_xpy_32b_ybc__section_zyq_w3g_d1c"><h2 class="- topic/title title sectiontitle">实现原理</h2>
+            
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d106524e87__20250121171540">屏幕旋转时，显示驱动管理着两种 buffer：</p>
+                <ul class="- topic/ul ul" id="concept_xpy_32b_ybc__ul_x4y_jrk_ndc" data-ofbid="concept_xpy_32b_ybc__ul_x4y_jrk_ndc"><li class="- topic/li li" data-ofbid="d106524e91__20250121171540">
+                        <p class="- topic/p p" data-ofbid="d106524e93__20250121171540">上层 GUI 应用使用的绘制 buffer，用于存储绘制的图像数据。</p>
+                        <p class="- topic/p p" data-ofbid="d106524e96__20250121171540">GUI 以横屏的方式在绘制 buf 中绘制好界面，然后<span class="- topic/ph ph">下发 ioctl
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">FBIOPAN_DISPLAY</span></span>。</p>
+                        <p class="- topic/p p" data-ofbid="d106524e104__20250121171540">如果配置了屏幕旋转，显示驱动在接收到 <span class="- topic/ph ph"><span class="+ topic/keyword pr-d/parmname keyword parmname">FBIOPAN_DISPLAY</span></span> 后，调用
+                            Graphics Engine 将横屏界面旋转为竖屏，并把数据 bitblt 到显示 buf 中。</p>
+                    </li><li class="- topic/li li" data-ofbid="d106524e111__20250121171540">
+                            <p class="- topic/p p" id="concept_xpy_32b_ybc__p_ltc_hrk_ndc" data-ofbid="concept_xpy_32b_ybc__p_ltc_hrk_ndc">Display Engine 使用的显示
+                                buffer，即底层显示引擎使用的缓冲区，用于将最终的图像数据传输到 LCD 屏幕上。</p>
+                            <p class="- topic/p p" data-ofbid="d106524e116__20250121171540">Display Engine 将显示 buf 中的数据传送给 LCD
+                                屏幕。显示缓冲区与绘制缓冲区在物理上是连续的内存块，但它们的布局会根据屏幕的旋转角度不同而有所变化。</p>
+                        </li></ul>
+            </div>
+            <div class="- topic/p p" data-ofbid="d106524e121__20250121171540">以竖屏横用为例，底层的内存使用情况如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_xpy_32b_ybc__codeblock_gpr_cjg_d1c" data-ofbid="concept_xpy_32b_ybc__codeblock_gpr_cjg_d1c">+--------------------+
+|                    |
+|      绘制 buf      |
+|                    |
++---------+----------+
+|         |
+|         |
+|         |
+|显示 buf |
+|         |
+|         |
++---------+</pre></div>
+            <p class="- topic/p p" data-ofbid="d106524e126__20250121171540">这两块 buf 其实是一大块物理连续内存，对应<span class="- topic/ph ph"> /dev/fb0</span>，只是横屏和竖屏的 stride
+                不同，才会有不同的内存布局。横屏竖用的原理类似。</p>
+            <div class="- topic/note note note note_note" id="concept_xpy_32b_ybc__note_prd_djg_d1c" data-ofbid="concept_xpy_32b_ybc__note_prd_djg_d1c"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d106524e134__20250121171540">在编写 GUI 应用程序时要注意，通过标准接口获得的参数与屏幕的实际宽高是相反的。 GUI 获取到横屏的参数，认为外接了一块横屏才会以横屏的方式绘制界面。</p>
+                <p class="- topic/p p" data-ofbid="d106524e137__20250121171540">此外，GUI 只能操作到绘制 buf ，显示 buf 对 GUI 来说是透明的。</p>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_xpy_32b_ybc__section_pyq_w3g_d1c" data-tocid="concept_xpy_32b_ybc__section_pyq_w3g_d1c">LCD 适配</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_xpy_32b_ybc__section_qyq_w3g_d1c" data-tocid="concept_xpy_32b_ybc__section_qyq_w3g_d1c">device tree</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_xpy_32b_ybc__section_zyq_w3g_d1c" data-tocid="concept_xpy_32b_ybc__section_zyq_w3g_d1c">实现原理</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

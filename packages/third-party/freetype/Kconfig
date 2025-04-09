@@ -1,0 +1,20 @@
+menuconfig LPKG_USING_FREETYPE
+    bool "freetype"
+    default n
+
+if LPKG_USING_FREETYPE
+    config LPKG_USING_FREETYPE_STATIC
+        bool "Compile using FREETYPE static link library"
+        default n
+
+    config TT_DISABLE_LOAD_HDMX
+        bool "Disable loading hdmx table"
+        default n
+
+if AIC_PSRAM_SW_SIZE > 0 && AIC_CHIP_D13X
+    config TT_USE_MEM_PSRAM_SW_HEAP
+        bool "FreeType using Psram SW Heap"
+        default n
+endif
+
+endif

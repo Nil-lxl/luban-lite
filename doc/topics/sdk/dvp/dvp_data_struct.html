@@ -1,0 +1,262 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="DVP 自定义的数据结构都在 aic_dvp.h 中。 struct aic_dvp：定义了 DVP 控制器的设备管理信息： struct aic_dvp { /* Device resources */ struct device *dev; void __iomem *regs; struct clk *clk; struct reset_control *rst; u32 clk_rate; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="dvp_data_structure"/><meta name="DC.language" content="zh-CN"/><title>数据结构设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/dvp/dvp_data_struct.dita"/><meta name="wh-out-relpath" content="topics/sdk/dvp/dvp_data_struct.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="dvp_data_structure" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/dvp/dvp_data_struct.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">数据结构设计</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d228403e22__20250121171649">DVP 自定义的数据结构都在 <span class="+ topic/ph sw-d/filepath ph filepath">aic_dvp.h</span> 中。<ul class="- topic/ul ul" id="dvp_data_structure__ul_wjp_2dh_d1c" data-ofbid="dvp_data_structure__ul_wjp_2dh_d1c"><li class="- topic/li li" data-ofbid="d228403e28__20250121171649">struct aic_dvp：定义了 DVP
+                    控制器的设备管理信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_data_structure__codeblock_pgx_fdh_d1c" data-ofbid="dvp_data_structure__codeblock_pgx_fdh_d1c"><strong class="hl-keyword">struct</strong> aic_dvp {
+    <em class="hl-comment">/* Device resources */</em>
+    <strong class="hl-keyword">struct</strong> device           *dev;
+
+    <strong class="hl-keyword">void</strong> __iomem            *regs;
+    <strong class="hl-keyword">struct</strong> clk          *clk;
+    <strong class="hl-keyword">struct</strong> reset_control        *rst;
+    u32             clk_rate;
+    <strong class="hl-keyword">int</strong>             irq;
+    <strong class="hl-keyword">int</strong>             ch;
+
+    <strong class="hl-keyword">struct</strong> vb2_v4l2_buffer      *vbuf[DVP_MAX_BUF];
+
+    <strong class="hl-keyword">struct</strong> aic_dvp_config       cfg; <em class="hl-comment">/* The configuration of DVP HW */</em>
+    <strong class="hl-keyword">struct</strong> v4l2_fwnode_bus_parallel bus; <em class="hl-comment">/* The format of input data */</em>
+    <strong class="hl-keyword">struct</strong> v4l2_pix_format_mplane   fmt; <em class="hl-comment">/* The format of output data */</em>
+
+    <em class="hl-comment">/* Main Device */</em>
+    <strong class="hl-keyword">struct</strong> v4l2_device      v4l2;
+    <strong class="hl-keyword">struct</strong> media_device     mdev;
+    <strong class="hl-keyword">struct</strong> video_device     vdev;
+    <strong class="hl-keyword">struct</strong> media_pad        vdev_pad;
+
+    <em class="hl-comment">/* Local subdev */</em>
+    <strong class="hl-keyword">struct</strong> v4l2_subdev      subdev;
+    <strong class="hl-keyword">struct</strong> media_pad        subdev_pads[DVP_SUBDEV_PAD_NUM];
+    <strong class="hl-keyword">struct</strong> v4l2_mbus_framefmt   subdev_fmt;
+
+    <em class="hl-comment">/* V4L2 Async variables */</em>
+    <strong class="hl-keyword">struct</strong> v4l2_async_subdev    asd;
+    <strong class="hl-keyword">struct</strong> v4l2_async_notifier  notifier;
+    <strong class="hl-keyword">struct</strong> v4l2_subdev      *src_subdev;
+    <strong class="hl-keyword">int</strong>             src_pad;
+
+    <em class="hl-comment">/* V4L2 variables */</em>
+    <strong class="hl-keyword">struct</strong> mutex            lock;
+
+    <em class="hl-comment">/* Videobuf2 */</em>
+    <strong class="hl-keyword">struct</strong> vb2_queue        queue;
+    <strong class="hl-keyword">struct</strong> list_head        buf_list;
+    spinlock_t          qlock;
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            sequence;
+};</pre></li><li class="- topic/li li" data-ofbid="d228403e32__20250121171649">struct aic_dvp_config：定义了 V4L2 媒体数据的配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_data_structure__codeblock_n1b_gdh_d1c" data-ofbid="dvp_data_structure__codeblock_n1b_gdh_d1c"><span class="hl-tag-doctype-comment">/**
+ * Save the configuration information for DVP controller.</span><span class="- topic/ph ph">
+ * @code:   media bus format code (MEDIA_BUS_FMT_*, in media-bus-format.h)
+ * @field:  used interlacing type (<strong class="hl-keyword">enum</strong> v4l2_field)
+ * @width:  frame width
+ * @height: frame height
+ */</span>
+<strong class="hl-keyword">struct</strong> aic_dvp_config {
+    <em class="hl-comment">/* Input format */</em>
+    <strong class="hl-keyword">enum</strong> dvp_input      input;
+    <strong class="hl-keyword">enum</strong> dvp_input_yuv_seq  input_seq;
+    <strong class="hl-keyword">enum</strong> v4l2_field     field;
+
+    <em class="hl-comment">/* Output format */</em>
+    <strong class="hl-keyword">enum</strong> dvp_output output;
+    u32     width;
+    u32     height;
+    u32     stride[DVP_MAX_PLANE];
+    u32     sizeimage[DVP_MAX_PLANE];
+};</pre></li><li class="- topic/li li" data-ofbid="d228403e39__20250121171649">aic_dvp_buf<div class="- topic/p p" data-ofbid="d228403e41__20250121171649">定义了 DVP 驱动的 Buf
+                        管理信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_data_structure__codeblock_ymc_gdh_d1c" data-ofbid="dvp_data_structure__codeblock_ymc_gdh_d1c"><strong class="hl-keyword">struct</strong> aic_dvp_buf {
+    <strong class="hl-keyword">struct</strong> vb2_v4l2_buffer  vb;
+    <strong class="hl-keyword">struct</strong> list_head    list;
+    dma_addr_t      paddr[DVP_MAX_PLANE];
+    bool            dvp_using;
+};</pre></div></li></ul></div><section class="- topic/section section" id="dvp_data_structure__section_ytx_qzm_4dc" data-ofbid="dvp_data_structure__section_ytx_qzm_4dc"><h2 class="- topic/title title sectiontitle"> 输入输出的数据格式</h2>
+            
+            <ul class="- topic/ul ul" id="dvp_data_structure__ul_upd_5xm_4dc" data-ofbid="dvp_data_structure__ul_upd_5xm_4dc"><li class="- topic/li li" data-ofbid="d228403e51__20250121171649">
+                    <div class="- topic/div div section" id="dvp_data_structure__enum-dvp-input">
+                        <strong class="+ topic/ph hi-d/b ph b">enum dvp_input</strong>
+                        <div class="- topic/p p" data-ofbid="d228403e58__20250121171649"><span class="- topic/ph ph">属于 HAL 层接口，</span>定义了 DVP
+                            输入数据的格式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_data_structure__codeblock_jf1_mkt_2dc" data-ofbid="dvp_data_structure__codeblock_jf1_mkt_2dc"><strong class="hl-keyword">enum</strong> dvp_input {
+    DVP_IN_RAW  = <span class="hl-number">0</span>,
+    DVP_IN_YUV422   = <span class="hl-number">1</span>,
+    DVP_IN_BT656    = <span class="hl-number">2</span>,
+};</pre></div></div>
+                </li><li class="- topic/li li" data-ofbid="d228403e65__20250121171649">
+                    <div class="- topic/div div section" id="dvp_data_structure__enum-dvp-input-yuv-seq">
+                        <strong class="+ topic/ph hi-d/b ph b">enum dvp_input_yuv_seq</strong>
+                        <div class="- topic/p p" data-ofbid="d228403e72__20250121171649"><span class="- topic/ph ph">属于 HAL 层接口，</span>定义了 DVP 输入数据的 YUV
+                            格式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_data_structure__codeblock_bkq_mkt_2dc" data-ofbid="dvp_data_structure__codeblock_bkq_mkt_2dc"><strong class="hl-keyword">enum</strong> dvp_input_yuv_seq {
+    DVP_YUV_DATA_SEQ_YUYV   = <span class="hl-number">0</span>,
+    DVP_YUV_DATA_SEQ_YVYU   = <span class="hl-number">1</span>,
+    DVP_YUV_DATA_SEQ_UYVY   = <span class="hl-number">2</span>,
+    DVP_YUV_DATA_SEQ_VYUY   = <span class="hl-number">3</span>,
+};</pre></div></div>
+                </li><li class="- topic/li li" data-ofbid="d228403e79__20250121171649">
+                    <div class="- topic/div div section" id="dvp_data_structure__enum-dvp-output">
+                        <strong class="+ topic/ph hi-d/b ph b">enum dvp_output</strong>
+                        <div class="- topic/p p" data-ofbid="d228403e86__20250121171649"><span class="- topic/ph ph">属于 HAL 层接口，</span>定义了 DVP
+                            输出数据的格式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dvp_data_structure__codeblock_l3v_mkt_2dc" data-ofbid="dvp_data_structure__codeblock_l3v_mkt_2dc"><strong class="hl-keyword">enum</strong> dvp_output {
+    DVP_OUT_RAW_PASSTHROUGH     = <span class="hl-number">0</span>,
+    DVP_OUT_YUV422_COMBINED_NV16    = <span class="hl-number">1</span>,
+    DVP_OUT_YUV420_COMBINED_NV12    = <span class="hl-number">2</span>,
+    };</pre></div></div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

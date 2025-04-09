@@ -1,0 +1,71 @@
+menu "uC/OS-II Kernel"
+
+menu "Tasks"
+
+config UCOS_TICKS_PER_SEC
+    int "Frequency of the RTOS tick interrupt (Hz)"
+    default 500
+    ---help---
+    The tick interrupt is used to measure time. Therefore a higher tick frequency means time can
+    be measured to a higher resolution. However, a high tick frequency also means that the RTOS
+    kernel will use more CPU time so be less efficient. The RTOS demo applications all use a tick
+    rate of 1000Hz. This is used to test the RTOS kernel and is higher than would normally be
+    required.
+    More than one task can share the same priority. The RTOS scheduler will share processor time
+    between tasks of the same priority by switching between the tasks during each RTOS tick. A high
+    tick rate frequency will therefore also have the effect of reducing the 'time slice' given to
+    each task.
+
+config UCOS_LOWEST_PRIO
+    int "The lowest priority that can be assigned"
+    default 63
+    range 2 254
+
+config UCOS_MAX_TASKS
+    int "Max number of tasks in your application"
+    default 62
+    range 2 254
+
+config UCOS_MAIN_THREAD_STACK_SIZE
+    int "Set main thread stack size (# of OS_STK wide entries) "
+    default 1024
+
+config UCOS_MAIN_THREAD_PRIORITY
+    int "Set main thread priority"
+    default 10
+
+config UCOS_TASK_TMR_STK_SIZE
+    int "The timer task stack size (# of OS_STK wide entries) "
+    default 512
+
+config UCOS_TASK_STAT_STK_SIZE
+    int "The Statistics task stack size (# of OS_STK wide entries) "
+    default 512
+
+config UCOS_TASK_IDLE_STK_SIZE
+    int "The Idle task stack size (# of OS_STK wide entries) "
+    default 128
+
+endmenu
+
+menu "Inter-Task Communication"
+
+config UCOS_MAX_EVENTS
+    int "Max number of event control blocks in your application"
+    default 10
+
+config UCOS_MAX_FLAGS
+    int "Max number of Event Flag Groups in your application"
+    default 10
+
+config UCOS_MAX_MEM_PART
+    int "Max number of memory partitions"
+    default 10
+
+config UCOS_MAX_QS
+    int "Max number of queue control blocks in your application"
+    default 10
+
+endmenu
+
+endmenu

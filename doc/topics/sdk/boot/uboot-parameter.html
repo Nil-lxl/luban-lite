@@ -1,0 +1,315 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="启动流程分为 正常启动 和 烧录启动 。在启动过程中，不同的启动流程传递的启动参数也不尽相同。本节介绍了各个启动流程中传递的启动参数。 正常启动流程 图 1 . 正常启动过程中的跳转 正常启动过程详细介绍： BROM 根据启动方式去定位 SPL 位置，初始化对应非易失性存储器，加载 SPL 到 SRAM 上，BROM 运行在 M-Mode。 SPL 被执行。 SPL PBP 部分代码初始化 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="_1601"/><meta name="DC.language" content="zh-CN"/><title>启动参数</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/uboot-parameter.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/uboot-parameter.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="_1601" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/uboot-parameter.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">启动参数</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d224531e22__20250121171649">启动流程分为<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="uboot-parameter.html#_1601__section_ibc_sfs_2bc">正常启动</a>和<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="uboot-parameter.html#_1601__section_mrr_sfs_2bc">烧录启动</a>。在启动过程中，不同的启动流程传递的启动参数也不尽相同。本节介绍了各个启动流程中传递的启动参数。</p><section class="- topic/section section" id="_1601__section_ibc_sfs_2bc" data-ofbid="_1601__section_ibc_sfs_2bc"><h2 class="- topic/title title sectiontitle">正常启动流程</h2>
+            
+            <figure class="- topic/fig fig fignone" id="_1601__fig_hf2_vfs_2bc" data-ofbid="_1601__fig_hf2_vfs_2bc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="_1601__image_egp_5fs_2bc" src="../../../images/boot/boot_param_riscv11.png" alt="boot_param_riscv"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">正常启动过程中的跳转</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d224531e44__20250121171649">正常启动过程详细介绍：</p>
+            <ol class="- topic/ol ol" id="_1601__ol_yl4_tfs_2bc" data-ofbid="_1601__ol_yl4_tfs_2bc"><li class="- topic/li li" data-ofbid="d224531e48__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e50__20250121171649">BROM 根据启动方式去定位 SPL 位置，初始化对应非易失性存储器，加载 SPL 到 SRAM 上，BROM 运行在 M-Mode。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e53__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e55__20250121171649">SPL 被执行。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e58__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e60__20250121171649">SPL PBP 部分代码初始化 DRAM，之后初始化非易失性存储器。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e63__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e65__20250121171649">SPL 加载 <span class="+ topic/ph sw-d/filepath ph filepath">u-boot.itb</span> (包含 OpenSBI,U-Boot,DTB) 到 DRAM。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e71__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e73__20250121171649">OpenSBI 被执行，切换到 Mode。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e76__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e78__20250121171649">U-Boot 被执行。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e81__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e83__20250121171649">U-Boot 加载设备树 DTB，环境变量 ENV。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e86__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e88__20250121171649">U-Boot 加载 Kernel，DTB 到 DRAM。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e91__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e93__20250121171649">Kernel 被执行，加载 DTB。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e96__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e98__20250121171649">Rootfs 被执行，切换到 U-Mode，整个系统启动完成。</p>
+                </li></ol>
+        </section><section class="- topic/section section" id="_1601__section_mrr_sfs_2bc" data-ofbid="_1601__section_mrr_sfs_2bc"><h2 class="- topic/title title sectiontitle">烧录启动流程</h2>
+            
+            <figure class="- topic/fig fig fignone" id="_1601__fig_bdm_ggs_2bc" data-ofbid="_1601__fig_bdm_ggs_2bc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="_1601__image_z34_wfs_2bc" src="../../../images/boot/boot_param_riscv2.png" alt="boot_param_riscv2"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">烧录启动过程中的跳转</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d224531e114__20250121171649">烧录启动过程详细介绍：</p>
+            <ol class="- topic/ol ol" id="_1601__ol_bj4_wfs_2bc" data-ofbid="_1601__ol_bj4_wfs_2bc"><li class="- topic/li li" data-ofbid="d224531e118__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e120__20250121171649">配置烧录启动方式，BROM 通过 usb-otg 加载 DDR-Init 到 SRAM 上。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e123__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e125__20250121171649">DDR-Init 被执行，初始化 DRAM。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e128__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e130__20250121171649">返回 BROM。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e133__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e135__20250121171649">BROM 通过 usb-otg 加载 ENV 到 DRAM。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e138__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e140__20250121171649">BROM 通过 usb-otg 加载 <span class="+ topic/ph sw-d/filepath ph filepath">u-boot.itb</span> (包含 OpenSBI,U-Boot,DTB)到
+                        DRAM。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e146__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e148__20250121171649">BROM 通过 usb-otg 加载 SPL 到 DRAM。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e151__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e153__20250121171649">SPL 被执行。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e156__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e158__20250121171649">SPL PBP 部分 SPL 代码初始化 DRAM,此阶段会检查 DRAM 是否已经被初始化，是则跳过。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e161__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e163__20250121171649">OpenSBI 被执行，切换到 S-Mode。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e166__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e168__20250121171649">U-Boot 被执行。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e171__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e173__20250121171649">U-Boot 加载设备树 DTB，环境变量 ENV（确定了程序烧录目的非易失性存储器）。</p>
+                </li><li class="- topic/li li" data-ofbid="d224531e177__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e179__20250121171649">U-Boot 进入到烧录模式，对目的非易失性存储器进行分区格式化，通过 usb-otg 加载烧录程序。</p>
+                </li></ol>
+            <div class="- topic/note note note note_note" id="_1601__note_k3j_xfs_2bc" data-ofbid="_1601__note_k3j_xfs_2bc"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d224531e185__20250121171649">烧录通过 U-Boot 实现，前面的过程都是在为 U-Boot 程序运行做准备。</p>
+            </div>
+            <p class="- topic/p p" data-ofbid="d224531e190__20250121171649">在上述各种跳转中，都会附带一些启动参数，用于将当前一级程序的信息传递给下一级程序， 辅助下一级程序的执行。</p>
+        </section><section class="- topic/section section" id="_1601__section_fkh_bgs_2bc" data-ofbid="_1601__section_fkh_bgs_2bc"><h2 class="- topic/title title sectiontitle">BROM 传递的参数</h2>
+            
+            <p class="- topic/p p" data-ofbid="d224531e198__20250121171649">BROM 跳转到 SPL 时传递的参数如下所示。</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="_1601__id8" data-ofbid="_1601__id8" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">BROM 传递的参数</span></caption><colgroup><col style="width:28.693181818181824%"/><col style="width:28.40909090909091%"/><col style="width:42.89772727272727%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601__id8__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601__id8__entry__2">寄存器</th><th class="- topic/entry entry colsep-0 rowsep-1" id="_1601__id8__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601__id8__entry__1">boot device</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601__id8__entry__2">a0,bit[3:0]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601__id8__entry__3">启动的存储介质 ID</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601__id8__entry__1">boot reason</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601__id8__entry__2">a0,bit[7:4]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601__id8__entry__3">启动的原因，如冷启动、热启动</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601__id8__entry__1">image id</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601__id8__entry__2">a0,bit[11:8]</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="_1601__id8__entry__3">使用的备份镜像 ID</td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d224531e239__20250121171649">OpenSBI 跳转到 U-Boot 时传递的参数如下表所示。</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="_1601__id9" data-ofbid="_1601__id9" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">OpenSBI 传递的参数</span></caption><colgroup><col style="width:28.57142857142857%"/><col style="width:28.57142857142857%"/><col style="width:42.857142857142854%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601__id9__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="_1601__id9__entry__2">寄存器</th><th class="- topic/entry entry colsep-0 rowsep-1" id="_1601__id9__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601__id9__entry__1">boot device</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601__id9__entry__2">a3,bit[3:0]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601__id9__entry__3">启动的存储介质 ID</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601__id9__entry__1">boot reason</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="_1601__id9__entry__2">a3,bit[7:4]</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="_1601__id9__entry__3">启动的原因，如冷启动、热启动</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601__id9__entry__1">image id</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="_1601__id9__entry__2">a3,bit[11:8]</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="_1601__id9__entry__3">使用的备份镜像 ID</td></tr></tbody></table></div>
+            <div class="- topic/p p" data-ofbid="d224531e281__20250121171649">传递参数结构体定义如下，具体实现可参考
+                    <span class="+ topic/ph sw-d/filepath ph filepath">arch/riscv/include/asm/arch-artinchip/boot_param.h</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="_1601__codeblock_b4k_kgs_2bc" data-ofbid="_1601__codeblock_b4k_kgs_2bc"><strong class="hl-keyword">union</strong> boot_params {
+    <em class="hl-comment">/*
+    * Save registers. Later's code use these register value to:
+    * 1. Get parameters from previous boot stage
+    * 2. Return to Boot ROM in some condition
+    *
+    * For SPL:
+    *      a0 is boot param
+    *      a1 is private data address
+    * For U-Boot:
+    *      a0 is hartid from opensbi
+    *      a1 is opensbi param
+    *      a2 is opensbi param
+    *      a3 is boot param from SPL
+    */</em>
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> regs[<span class="hl-number">22</span>];
+    <strong class="hl-keyword">struct</strong> {
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> a[<span class="hl-number">8</span>];  <em class="hl-comment">/* a0 ~ a7 */</em>
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> s[<span class="hl-number">12</span>]; <em class="hl-comment">/* s0 ~ s11 */</em>
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> sp;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> ra;
+    } r;
+};</pre></div>
+        </section><section class="- topic/section section" id="_1601__section_hkh_bgs_2bc" data-ofbid="_1601__section_hkh_bgs_2bc"><h2 class="- topic/title title sectiontitle">BROM 参数获取的过程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d224531e293__20250121171649">无论是 SPL 还是 U-Boot，在执行时的第一步动作就是保存这些启动参数， 具体实现可参考
+                <span class="+ topic/ph sw-d/filepath ph filepath">arch/riscv/cpu/start.S</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="_1601__codeblock_awp_lgs_2bc" data-ofbid="_1601__codeblock_awp_lgs_2bc">_start:
+        <em class="hl-comment">/* Allow the board to save important registers */</em>
+        j   save_boot_params
+save_boot_params_ret:</pre></div>
+            <div class="- topic/p p" data-ofbid="d224531e300__20250121171649"><span class="+ topic/keyword pr-d/parmname keyword parmname">save_boot_params</span> 的实现在源文件
+                <span class="+ topic/ph sw-d/filepath ph filepath">arch/riscv/mach-artinchip/lowlevel_init.S</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="_1601__codeblock_thq_mgs_2bc" data-ofbid="_1601__codeblock_thq_mgs_2bc">ENTRY(save_boot_params)
+    la      t0, boot_params_stash
+    SREG    a0, REGBYTES * <span class="hl-number">0</span>(t0)
+    SREG    a1, REGBYTES * <span class="hl-number">1</span>(t0)
+    SREG    a2, REGBYTES * <span class="hl-number">2</span>(t0)
+    SREG    a3, REGBYTES * <span class="hl-number">3</span>(t0)
+    SREG    a4, REGBYTES * <span class="hl-number">4</span>(t0)
+    SREG    a5, REGBYTES * <span class="hl-number">5</span>(t0)
+    SREG    a6, REGBYTES * <span class="hl-number">6</span>(t0)
+    SREG    a7, REGBYTES * <span class="hl-number">7</span>(t0)
+    SREG    s0, REGBYTES * <span class="hl-number">8</span>(t0)
+    SREG    s1, REGBYTES * <span class="hl-number">9</span>(t0)
+    SREG    s2, REGBYTES * <span class="hl-number">10</span>(t0)
+    SREG    s3, REGBYTES * <span class="hl-number">11</span>(t0)
+    SREG    s4, REGBYTES * <span class="hl-number">12</span>(t0)
+    SREG    s5, REGBYTES * <span class="hl-number">13</span>(t0)
+    SREG    s6, REGBYTES * <span class="hl-number">14</span>(t0)
+    SREG    s7, REGBYTES * <span class="hl-number">15</span>(t0)
+    SREG    s8, REGBYTES * <span class="hl-number">16</span>(t0)
+    SREG    s9, REGBYTES * <span class="hl-number">17</span>(t0)
+    SREG    s10, REGBYTES * <span class="hl-number">18</span>(t0)
+    SREG    s11, REGBYTES * <span class="hl-number">19</span>(t0)
+    SREG    sp, REGBYTES * <span class="hl-number">20</span>(t0)
+    SREG    ra, REGBYTES * <span class="hl-number">21</span>(t0)
+    j       save_boot_params_ret
+ENDPROC(save_boot_params)</pre></div>
+            <p class="- topic/p p" data-ofbid="d224531e309__20250121171649">传递的参数被保存在全局变量 <span class="+ topic/keyword pr-d/parmname keyword parmname">boot_params_stash</span> 中，SPL 或者 U-Boot 可从中获取相关信息。
+                在保存参数时，不仅将 a0,a1 寄存器保存起来，还将其他重要寄存器一起保存。</p>
+            <div class="- topic/p p" data-ofbid="d224531e315__20250121171649"><span class="+ topic/keyword pr-d/parmname keyword parmname">save_boot_params</span>使用到的相关宏定义在源文件<span class="+ topic/ph sw-d/filepath ph filepath">
+                    ``arch/riscv/mach-artinchip/lowlevel_init.S</span>。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="_1601__codeblock_usb_4gs_2bc" data-ofbid="_1601__codeblock_usb_4gs_2bc">#<span class="hl-directive">define</span> LREG                ld
+#<span class="hl-directive">define</span> SREG                sd
+#<span class="hl-directive">define</span> REGBYTES            <span class="hl-number">8</span></pre></div>
+        </section><section class="- topic/section section" id="_1601__section_lkh_bgs_2bc" data-ofbid="_1601__section_lkh_bgs_2bc"><h2 class="- topic/title title sectiontitle">参数获取接口</h2>
+            
+            <div class="- topic/p p" data-ofbid="d224531e330__20250121171649">无论是在 SPL 还是在 U-Boot
+                中，都可以通过下列接口获取上一级引导程序传递的参数。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="_1601__codeblock_dhv_4gs_2bc" data-ofbid="_1601__codeblock_dhv_4gs_2bc"><strong class="hl-keyword">enum</strong> boot_reason aic_get_boot_reason(<strong class="hl-keyword">void</strong>);
+<strong class="hl-keyword">enum</strong> boot_device aic_get_boot_device(<strong class="hl-keyword">void</strong>);</pre></div>
+            <p class="- topic/p p" data-ofbid="d224531e335__20250121171649">相关的定义可参考文件：</p>
+            <ul class="- topic/ul ul" id="_1601__ul_nkh_bgs_2bc" data-ofbid="_1601__ul_nkh_bgs_2bc"><li class="- topic/li li" data-ofbid="d224531e339__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e341__20250121171649"><span class="+ topic/ph sw-d/filepath ph filepath">arch/riscv/include/asm/arch-artinchip/boot_param.h</span></p>
+                </li><li class="- topic/li li" data-ofbid="d224531e345__20250121171649">
+                    <p class="- topic/p p" data-ofbid="d224531e347__20250121171649"><span class="+ topic/ph sw-d/filepath ph filepath">arch/riscv/mach-artinchip/boot_param.c</span></p>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#_1601__section_ibc_sfs_2bc" data-tocid="_1601__section_ibc_sfs_2bc">正常启动流程</a></div></li><li class="section-item"><div class="section-title"><a href="#_1601__section_mrr_sfs_2bc" data-tocid="_1601__section_mrr_sfs_2bc">烧录启动流程</a></div></li><li class="section-item"><div class="section-title"><a href="#_1601__section_fkh_bgs_2bc" data-tocid="_1601__section_fkh_bgs_2bc">BROM 传递的参数</a></div></li><li class="section-item"><div class="section-title"><a href="#_1601__section_hkh_bgs_2bc" data-tocid="_1601__section_hkh_bgs_2bc">BROM 参数获取的过程</a></div></li><li class="section-item"><div class="section-title"><a href="#_1601__section_lkh_bgs_2bc" data-tocid="_1601__section_lkh_bgs_2bc">参数获取接口</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

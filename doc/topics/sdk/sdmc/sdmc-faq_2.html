@@ -1,0 +1,246 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="SD 卡初始化失败 现象 启动后，SDMC 驱动初始化完成，但是 mount SD 卡时报错。 [I] aic_sdmc_probe() 571 SDMC1 driver loaded Reboot action: Worm-Reset, reason: Extend-Reset Startup time: 50.556 sec (from Power-On-Reset) 01 - 01 08 : ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/sdmc/sdmc-user-guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/sdmc/sdmc-design-guide-lite.html"/><meta name="DC.relation" content="../../../topics/sdk/psram/psram-user-guide.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>常见问题</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e3435"/><meta name="wh-source-relpath" content="topics/sdk/sdmc/sdmc-faq.dita"/><meta name="wh-out-relpath" content="topics/sdk/sdmc/sdmc-faq_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="chapter-memory"><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/sdmc/sdmc-user-guide_2.html">SDMC 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/sdmc/sdmc-faq_2.html">常见问题</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/sdmc/sdmc-design-guide-lite.html" title="设计说明" aria-label="上一主题: 设计说明" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/psram/psram-user-guide.html" title="PSRAM 使用指南" aria-label="下一主题: PSRAM 使用指南" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e3375" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e3375-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdmc-user-guide_2.html" id="id-d5856e3375-link">SDMC 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e3387" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdmc-config-lite.html" id="id-d5856e3387-link">SDMC 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3399" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdmc-debug_guide-lite.html" id="id-d5856e3399-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3411" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdmc-test-guide-lite.html" id="id-d5856e3411-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3423" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdmc-design-guide-lite.html" id="id-d5856e3423-link">设计说明</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e3435" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdmc-faq_2.html" id="id-d5856e3435-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3447" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3447-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/psram/psram-user-guide.html" id="id-d5856e3447-link">PSRAM 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi_nand_user_guide-d5856e3507" class="topicref" data-id="spi_nand_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi_nand_user_guide-d5856e3507-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spinand/spi-nand-user-guide_2.html" id="spi_nand_user_guide-d5856e3507-link">SPI NAND 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3591" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3591-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spinor/spinor_user_guide_lite.html" id="id-d5856e3591-link">SPI NOR 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/sdmc/sdmc-faq.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">常见问题</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__sd" data-ofbid="id__sd"><h2 class="- topic/title title sectiontitle">SD 卡初始化失败</h2>
+            
+            <div class="- topic/div div section" id="id__id2">
+                <strong class="+ topic/ph hi-d/b ph b">现象</strong>
+                <p class="- topic/p p" data-ofbid="d197013e29__20250121171632">启动后，SDMC 驱动初始化完成，但是 mount SD 卡时报错。</p></div>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_tlx_cyh_bdc" data-ofbid="id__codeblock_tlx_cyh_bdc">[I] aic_sdmc_probe()<span class="hl-number">571</span> SDMC1 driver loaded
+
+Reboot action: Worm-Reset, reason: Extend-Reset
+Startup time: <span class="hl-number">50.556</span> sec (from Power-On-Reset)
+
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">59</span>:<span class="hl-number">23</span> I/SDIO: SD card capacity <span class="hl-number">30547968</span> KB.
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">59</span>:<span class="hl-number">23</span> I/SDMC: SDMC1 BW <span class="hl-number">1</span>, sclk <span class="hl-number">50400</span> KHz, clk <span class="hl-number">25000</span> KHz(<span class="hl-number">25200</span> KHz), div <span class="hl-number">1</span>-<span class="hl-number">1</span>
+
+[I] aic_sdmc_set_iocfg()<span class="hl-number">423</span> SDMC1 Buswidth <span class="hl-number">4</span>, DDR mode <span class="hl-number">0</span>, Current clock: <span class="hl-number">25000</span> KHz
+found part[<span class="hl-number">0</span>], begin: <span class="hl-number">512</span>, size: <span class="hl-number">4194303.1023</span> GB  # 关键信息
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">59</span>:<span class="hl-number">23</span> I/SDIO: try to mount file system!
+can<span class="hl-string">'t find device:sd0p0 to be mounted.
+</span><span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">59</span>:<span class="hl-number">23</span> I/SDIO: try to mount file system!
+<span class="hl-number">01</span>-<span class="hl-number">01</span> <span class="hl-number">08</span>:<span class="hl-number">59</span>:<span class="hl-number">23</span> E/DFS: mount fs[elm] device[sd0] to / failed.
+</pre>
+            <div class="- topic/div div section" id="id__id3">
+                <strong class="+ topic/ph hi-d/b ph b">原因分析</strong>
+                <p class="- topic/p p" data-ofbid="d197013e40__20250121171632">SD 卡采用了 GPT（GUID Partition Table）格式的分区表，而 RT-Thread 的 FatFS 目前只支持 MBR（Master Boot
+                    Record）格式的分区表。</p><p class="- topic/p p" data-ofbid="d197013e42__20250121171632">在关键信息
+                        <code class="+ topic/ph pr-d/codeph ph codeph">foundpart[0],begin:512,size:4194303.1023GB</code> 之前，扫描到 SD 卡容量是
+                    32 GB：<code class="+ topic/ph pr-d/codeph ph codeph">30547968KB</code>, 容量和上面的分区 0 大小不符。</p></div>
+            <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">解决方案</strong><p class="- topic/p p" data-ofbid="d197013e54__20250121171632">备份好 SD 卡的数据后，<strong class="+ topic/ph hi-d/b ph b">以管理员身份</strong> 运行 AiBurn，在“格式化 SD 卡” 处选择 MBR
+                    分区表格式：</p><figure class="- topic/fig fig fignone" id="id__fig_i2r_3kh_tdc" data-ofbid="id__fig_i2r_3kh_tdc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_wlx_cyh_bdc" src="../../../images/sdmc/format_sdcard.png" width="576" alt="format_sdcard"/></div><br/></figure></div>
+        </section><section class="- topic/section section" id="id__u-sd" data-ofbid="id__u-sd"><h2 class="- topic/title title sectiontitle">U 盘和 SD 卡不能同时挂载</h2>
+            
+            <div class="- topic/div div section" id="id__id4">
+                <strong class="+ topic/ph hi-d/b ph b">现象</strong>
+                <p class="- topic/p p" data-ofbid="d197013e74__20250121171632">配置好 U 盘挂载功能和 SD 卡挂载功能，单独插入 U 盘或 SD 卡，可正常使用，同时插入后，无法同时使用。</p></div>
+            <div class="- topic/div div section" id="id__id5">
+                <strong class="+ topic/ph hi-d/b ph b">原因分析</strong>
+                <p class="- topic/p p" data-ofbid="d197013e82__20250121171632">SDK 默认配置中，对于文件系统挂载的数量和类型做了限制以节约资源。 通常情况下,进入 menuconfig 配置菜单修改如下两个 DFS 的配置即可同时挂载 U
+                    盘和 SD 卡。</p></div>
+            <div class="- topic/div div section" id="id__id6">
+                <strong class="+ topic/ph hi-d/b ph b">数量及类型</strong>
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xlx_cyh_bdc" data-ofbid="id__codeblock_xlx_cyh_bdc">Rt-Thread options  ---&gt;
+    RT-Thread Components  ---&gt;
+        [*] DFS: device virtual file system  ---&gt;
+        (<span class="hl-number">16</span>)   The maximal number of mounted file system
+        (<span class="hl-number">8</span>)   The maximal number of file system type
+</pre></div>
+            <div class="- topic/div div section" id="id__id7">
+                <strong class="+ topic/ph hi-d/b ph b">卷数量</strong>
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ylx_cyh_bdc" data-ofbid="id__codeblock_ylx_cyh_bdc">Rt-Thread options  ---&gt;
+    RT-Thread Components  ---&gt;
+        [*] DFS: device virtual file system  ---&gt;
+            [*]   Enable elm-chan fatfs
+                elm-chan<span class="hl-string">'s FatFs, Generic FAT Filesystem Module  ---&gt;
+</span>                    (<span class="hl-number">8</span>) Number of volumes (logical drives) to be used.
+</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__sd" data-tocid="id__sd">SD 卡初始化失败</a></div></li><li class="section-item"><div class="section-title"><a href="#id__u-sd" data-tocid="id__u-sd">U 盘和 SD 卡不能同时挂载</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

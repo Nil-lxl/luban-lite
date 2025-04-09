@@ -1,0 +1,232 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="description" content="对于合封 PSRAM 的芯片，如果需要使用 PSRAM，可以使用 PBP 程序对 PSRAM 进行初始化。 PBP 程序是 Boot ROM 运行的程序，设计为 Boot ROM 的扩展，用于做 DRAM/PSRAM 的初始化。 PBP 程序运行完之后，可以直接返回 Boot ROM 然后继续跳转执行用户的程序。 当前 PBP 程序可以完成以下功能： 配置下列参数，完成 PSRAM 的初始化。 ..."/><meta name="DC.relation" content="../../../topics/sdk/d13x_bare_boot/index.html"/><meta name="DC.relation" content="../../../topics/sdk/d13x_bare_boot/run_burn_cus_app.html"/><meta name="DC.relation" content="../../../topics/sdk/d13x_bare_boot/brom-load-limit-and-notes.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="init-config-prsam"/>        
+      <title>初始化并使用 PSRAM</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="init-config-prsam-d5856e1918"/><meta name="wh-source-relpath" content="topics/sdk/d13x_bare_boot/init-config-prsam.dita"/><meta name="wh-out-relpath" content="topics/sdk/d13x_bare_boot/init-config-prsam.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="init-config-prsam" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html">客制化启动</a></div></div></li><li class="active"><div class="topicref" data-id="init-config-prsam"><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/init-config-prsam.html">初始化并使用 PSRAM</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/d13x_bare_boot/run_burn_cus_app.html" title="运行和烧录客制化程序" aria-label="上一主题: 运行和烧录客制化程序" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/d13x_bare_boot/brom-load-limit-and-notes.html" title="Boot ROM 直接加载的限制与注意事项" aria-label="下一主题: Boot ROM 直接加载的限制与注意事项" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="generate-cus-brom-app-d5856e1890" class="topicref" data-id="generate-cus-brom-app" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/generate-cus-brom-app.html" id="generate-cus-brom-app-d5856e1890-link">生成客制化的 Boot ROM 启动程序</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="run-burn-cus-app-d5856e1904" class="topicref" data-id="run-burn-cus-app" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/run_burn_cus_app.html" id="run-burn-cus-app-d5856e1904-link">运行和烧录客制化程序</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" class="active"><div data-tocid="init-config-prsam-d5856e1918" class="topicref" data-id="init-config-prsam" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/init-config-prsam.html" id="init-config-prsam-d5856e1918-link">初始化并使用 PSRAM</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="brom-load-limit-and-notes-d5856e1932" class="topicref" data-id="brom-load-limit-and-notes" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/brom-load-limit-and-notes.html" id="brom-load-limit-and-notes-d5856e1932-link">Boot ROM 直接加载的限制与注意事项</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="reference-configuration-d5856e1946" class="topicref" data-id="reference-configuration" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/reference-configuration.html" id="reference-configuration-d5856e1946-link"><span class="ph filepath">image_cfg.json</span> 参考配置</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/d13x_bare_boot/init-config-prsam.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">初始化并使用 PSRAM</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/shortdesc shortdesc"></p><p class="- topic/p p" data-ofbid="d136393e20__20250121171607">对于合封 PSRAM 的芯片，如果需要使用 PSRAM，可以使用 PBP 程序对 PSRAM 进行初始化。</p><p class="- topic/p p" data-ofbid="d136393e22__20250121171607">PBP 程序是 Boot ROM 运行的程序，设计为 Boot ROM 的扩展，用于做 DRAM/PSRAM 的初始化。 PBP 程序运行完之后，可以直接返回 Boot ROM
+            然后继续跳转执行用户的程序。</p><div class="- topic/p p" data-ofbid="d136393e24__20250121171607">当前 PBP 程序可以完成以下功能：<ol class="- topic/ol ol" id="init-config-prsam__ul_ggg_g2r_gdc" data-ofbid="init-config-prsam__ul_ggg_g2r_gdc"><li class="- topic/li li" data-ofbid="d136393e27__20250121171607">
+                    <div class="- topic/p p" data-ofbid="d136393e29__20250121171607">配置下列参数，完成 PSRAM 的初始化。<ul class="- topic/ul ul" id="init-config-prsam__ul_mc3_j2r_gdc" data-ofbid="init-config-prsam__ul_mc3_j2r_gdc"><li class="- topic/li li" data-ofbid="d136393e32__20250121171607">
+                                <div class="- topic/p p" data-ofbid="d136393e34__20250121171607">需要使用下列工具：<ul class="- topic/ul ul" id="init-config-prsam__ul_jc5_j2r_gdc" data-ofbid="init-config-prsam__ul_jc5_j2r_gdc"><li class="- topic/li li" data-ofbid="d136393e37__20250121171607">
+                                            <p class="- topic/p p" data-ofbid="d136393e39__20250121171607">tools/scripts/mk_image.py</p>
+                                        </li><li class="- topic/li li" data-ofbid="d136393e42__20250121171607">
+                                            <p class="- topic/p p" data-ofbid="d136393e44__20250121171607">tools/scripts/mk_private_resource.py</p>
+                                        </li></ul></div>
+                            </li><li class="- topic/li li" data-ofbid="d136393e48__20250121171607">
+                                <div class="- topic/p p" data-ofbid="d136393e50__20250121171607">需要使用下列文件：<ul class="- topic/ul ul" id="init-config-prsam__ul_hzz_j2r_gdc" data-ofbid="init-config-prsam__ul_hzz_j2r_gdc"><li class="- topic/li li" data-ofbid="d136393e53__20250121171607">
+                                            <p class="- topic/p p" data-ofbid="d136393e55__20250121171607">bsp/artinchip/sys/d13x/d13x.pbp</p>
+                                        </li><li class="- topic/li li" data-ofbid="d136393e58__20250121171607">
+                                            <p class="- topic/p p" data-ofbid="d136393e60__20250121171607">target/d13x/demo88-nor/pack/pbp_cfg.json</p>
+                                        </li></ul></div>
+                            </li></ul></div>
+                </li><li class="- topic/li li" data-ofbid="d136393e65__20250121171607">配置启动镜像<div class="- topic/p p" data-ofbid="d136393e67__20250121171607">下列启动镜像 image_cfg.json
+                        文件的配置，可供参考：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="init-config-prsam__codeblock_enq_22r_gdc" data-ofbid="init-config-prsam__codeblock_enq_22r_gdc">{
+     <span class="hl-string">"pre-process"</span>: { <em class="hl-comment">// Pre-proccess to generate image components from raw data</em>
+        <span class="hl-string">"aicimage"</span>: { <em class="hl-comment">// Create aic boot image</em>
+             <span class="hl-string">"app.aic"</span>: {
+                <span class="hl-string">"loader"</span>: {
+                    <span class="hl-string">"file"</span>: <span class="hl-string">"app.bin"</span>,
+                    <span class="hl-string">"load address"</span>: <span class="hl-string">"0x30044000"</span>,
+                    <span class="hl-string">"entry point"</span>:  <span class="hl-string">"0x30044100"</span>, <em class="hl-comment">// 256 byte aic header</em>
+                },
+                <span class="hl-string">"resource"</span>: {
+                    <span class="hl-string">"pbp"</span>: <span class="hl-string">"d13x.pbp"</span>,
+                    <span class="hl-string">"private"</span>: <span class="hl-string">"pbp_cfg.bin"</span>,
+                },
+            },
+        },
+    },
+}
+</pre></div></li><li class="- topic/li li" data-ofbid="d136393e71__20250121171607">
+                    <p class="- topic/p p" data-ofbid="d136393e73__20250121171607"><strong class="+ topic/ph hi-d/b ph b">生成镜像</strong>
+                    </p>
+                    <div class="- topic/p p" data-ofbid="d136393e78__20250121171607">将上述文件放到一个目录：<ul class="- topic/ul ul" id="init-config-prsam__ul_ubs_n2r_gdc" data-ofbid="init-config-prsam__ul_ubs_n2r_gdc"><li class="- topic/li li" data-ofbid="d136393e81__20250121171607">
+                                <p class="- topic/p p" data-ofbid="d136393e83__20250121171607">app.bin</p>
+                            </li><li class="- topic/li li" data-ofbid="d136393e86__20250121171607">
+                                <p class="- topic/p p" data-ofbid="d136393e88__20250121171607">d13x.pbp</p>
+                            </li><li class="- topic/li li" data-ofbid="d136393e91__20250121171607">
+                                <p class="- topic/p p" data-ofbid="d136393e93__20250121171607">pbp_cfg.json</p>
+                            </li><li class="- topic/li li" data-ofbid="d136393e96__20250121171607">
+                                <p class="- topic/p p" data-ofbid="d136393e98__20250121171607">mk_image.py</p>
+                            </li><li class="- topic/li li" data-ofbid="d136393e101__20250121171607">
+                                <p class="- topic/p p" data-ofbid="d136393e103__20250121171607">mk_private_resource.py</p>
+                            </li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="init-config-prsam__codeblock_fnq_22r_gdc" data-ofbid="init-config-prsam__codeblock_fnq_22r_gdc">mk_private_resource.py -l pbp_cfg.json -o pbp_cfg.bin
+mk_image.py -p -c image_cfg.json -d .
+</pre></div>
+                    <p class="- topic/p p" data-ofbid="d136393e109__20250121171607">此时生成的 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span> 即包含了 PSRAM 初始化代码，并且在 <span class="+ topic/ph sw-d/filepath ph filepath">app.aic</span>
+                        运行之前已经执行。</p>
+                </li></ol></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

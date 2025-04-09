@@ -1,0 +1,229 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="“image” 对象描述要生成的镜像文件的基本信息，以及要打包的数据。包含几个部分： “info” “updater” “target” &#34;image&#34; : { &#34;info&#34; : { ... } &#34;updater&#34; : { ... } &#34;target&#34; : { ... } } Info 数据描述 “info” 对象用于描述该烧录镜像的基本信息，这些信息用于生成 Image Header。以 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="image"/><meta name="DC.language" content="zh-CN"/><title>Image 文件描述</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/image-file-intro.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/image-file-intro_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="image" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/image-file-intro.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Image 文件描述</h1><div class="date inPage">25 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d53495e22__20250121171519">“image” 对象描述要生成的镜像文件的基本信息，以及要打包的数据。包含几个部分：</p><ul class="- topic/ul ul" id="image__ul_ahx_3vg_bzb" data-ofbid="image__ul_ahx_3vg_bzb"><li class="- topic/li li" data-ofbid="d53495e25__20250121171519">
+                <p class="- topic/p p" data-ofbid="d53495e27__20250121171519"><span class="+ topic/keyword pr-d/parmname keyword parmname">“info”</span></p>
+            </li><li class="- topic/li li" data-ofbid="d53495e31__20250121171519">
+                <p class="- topic/p p" data-ofbid="d53495e33__20250121171519"><span class="+ topic/keyword pr-d/parmname keyword parmname">“updater”</span></p>
+            </li><li class="- topic/li li" data-ofbid="d53495e37__20250121171519">
+                <p class="- topic/p p" data-ofbid="d53495e39__20250121171519"><span class="+ topic/keyword pr-d/parmname keyword parmname">“target”</span></p>
+            </li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="image__codeblock_bs3_ds2_f1c" data-ofbid="image__codeblock_bs3_ds2_f1c"><span class="hl-string">"image"</span>: {
+    <span class="hl-string">"info"</span>: {
+        ...
+    }
+    <span class="hl-string">"updater"</span>: {
+        ...
+    }
+    <span class="hl-string">"target"</span>: {
+        ...
+    }
+}</pre><section class="- topic/section section" id="image__section_chx_3vg_bzb" data-ofbid="image__section_chx_3vg_bzb"><h2 class="- topic/title title sectiontitle">Info 数据描述</h2>
+            
+            <div class="- topic/p p" data-ofbid="d53495e50__20250121171519">“info” 对象用于描述该烧录镜像的基本信息，这些信息用于生成 Image Header。以 <span class="+ topic/ph sw-d/filepath ph filepath">demo128_nand</span>
+                为例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="image__codeblock_spinand_page_size" data-ofbid="image__codeblock_spinand_page_size"><span class="hl-string">"info"</span>: { <em class="hl-comment">// Header information about image</em>
+    <span class="hl-string">"platform"</span>: <span class="hl-string">"d211"</span>,
+    <span class="hl-string">"product"</span>: <span class="hl-string">"demo128_nand"</span>,
+    <span class="hl-string">"version"</span>: <span class="hl-string">"1.0.0"</span>,
+    <span class="hl-string">"media"</span>: {
+        <span class="hl-string">"type"</span>: <span class="hl-string">"spi-nand"</span>,
+        <span class="hl-string">"device_id"</span>: <span class="hl-number">0</span>,
+        <span class="hl-string">"array_organization"</span>: [
+        <em class="hl-comment">//      { "page": "4k", "block": "256k" },</em>
+                { <span class="hl-string">"page"</span>: <span class="hl-string">"2k"</span>, <span class="hl-string">"block"</span>: <span class="hl-string">"128k"</span> },
+        ],
+    }
+},</pre></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="image__table_ehx_3vg_bzb" data-ofbid="image__table_ehx_3vg_bzb" data-cols="2"><caption></caption><colgroup><col style="width:22.522522522522525%"/><col style="width:77.47747747747749%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_ehx_3vg_bzb__entry__1">info 属性</th><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_ehx_3vg_bzb__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ehx_3vg_bzb__entry__1">“platform”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ehx_3vg_bzb__entry__2">字符串，当前项目所使用的 SoC 的名字</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ehx_3vg_bzb__entry__1">“product”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ehx_3vg_bzb__entry__2">字符串，产品名字、产品型号</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ehx_3vg_bzb__entry__1">“version”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ehx_3vg_bzb__entry__2">字符串，按照 “x.y.z” 格式提供的版本号，其中 x,y,z 都是数字</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ehx_3vg_bzb__entry__1">“media”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ehx_3vg_bzb__entry__2">对象，描述存储设备</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="image__table_fhx_3vg_bzb" data-ofbid="image__table_fhx_3vg_bzb" data-cols="2"><caption></caption><colgroup><col style="width:23.52941176470588%"/><col style="width:76.47058823529412%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_fhx_3vg_bzb__entry__1">media 属性</th><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_fhx_3vg_bzb__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_fhx_3vg_bzb__entry__1">“type”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_fhx_3vg_bzb__entry__2">字符串，取值可参考<a class="- topic/xref xref" href="../linux/burn-image-partition-table.html">分区表描述</a></td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_fhx_3vg_bzb__entry__1">“device_id”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_fhx_3vg_bzb__entry__2">整数，要烧录的存储设备在 U-Boot 中的索引。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_fhx_3vg_bzb__entry__1">“array_organization”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_fhx_3vg_bzb__entry__2">对象，当存储设备为 “spi-nand” 时使用，描述存储单元的排列结构</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="image__table_ghx_3vg_bzb" data-ofbid="image__table_ghx_3vg_bzb" data-cols="2"><caption></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_ghx_3vg_bzb__entry__1">array_organization 属性</th><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_ghx_3vg_bzb__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ghx_3vg_bzb__entry__1">“page”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ghx_3vg_bzb__entry__2">当前 SPI NAND 的 Page 大小，取值 “2K”, “4K”,</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ghx_3vg_bzb__entry__1">“block”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ghx_3vg_bzb__entry__2">当前 SPI NAND 的 Block 大小, 取值 “128K”, “256K”</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="image__section_hhx_3vg_bzb" data-ofbid="image__section_hhx_3vg_bzb"><h2 class="- topic/title title sectiontitle">Updater 数据描述</h2>
+            
+            <p class="- topic/p p" data-ofbid="d53495e147__20250121171519">Updater 是指进行 USB 刷机或者进行 SD 卡刷机时需要运行的刷机程序，该程序通常由 SPL/U-Boot 实现， 可能与正常启动时所运行的
+                SPL/U-Boot 相同，也可能不同，因此需要单独列出。</p>
+            <p class="- topic/p p" data-ofbid="d53495e150__20250121171519">“updater” 对象描述在刷机过程中需要使用到的组件数据，其包含多个子对象，每个子对象即为一个组件 。 其中下列的组件是已知且必要的。</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="image__table_ihx_3vg_bzb" data-ofbid="image__table_ihx_3vg_bzb" data-cols="2"><caption></caption><colgroup><col style="width:23.52941176470588%"/><col style="width:76.47058823529412%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_ihx_3vg_bzb__entry__1">组件名称</th><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_ihx_3vg_bzb__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ihx_3vg_bzb__entry__1">“spl”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ihx_3vg_bzb__entry__2">第一级引导程序</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ihx_3vg_bzb__entry__1">“”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_ihx_3vg_bzb__entry__2">第二级引导程序，同时也是刷机程序</td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d53495e175__20250121171519">上述的组件名字并非固定，可根据项目的需要修改、增加或者删除。</p>
+            <p class="- topic/p p" data-ofbid="d53495e179__20250121171519">Updater 中的组件对象都有以下的配置字段：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="image__table_jhx_3vg_bzb" data-ofbid="image__table_jhx_3vg_bzb" data-cols="2"><caption></caption><colgroup><col style="width:21.69197396963124%"/><col style="width:78.30802603036877%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_jhx_3vg_bzb__entry__1">Updater 组件属性</th><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_jhx_3vg_bzb__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_jhx_3vg_bzb__entry__1">“file”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_jhx_3vg_bzb__entry__2">指定该组件的数据来源文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_jhx_3vg_bzb__entry__1">“ram”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_jhx_3vg_bzb__entry__2">USB 刷机时，指定该文件下载的内存地址</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_jhx_3vg_bzb__entry__1">“attr”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_jhx_3vg_bzb__entry__2">该数据对象的属性，可选的内容有:<ul class="- topic/ul ul" id="image__ul_yqj_dkr_xbc" data-ofbid="image__ul_yqj_dkr_xbc"><li class="- topic/li li" data-ofbid="d53495e209__20250121171519">- “required” : 该数据是必需的，如果指定文件不存在，则生成镜像文件出错。</li><li class="- topic/li li" data-ofbid="d53495e211__20250121171519">- “run” : 该数据是可执行文件，USB 升级时，该数据下载完成之后会被执行。</li></ul></td></tr></tbody></table></div>
+            <div class="- topic/note note important note_important" id="image__note_xy2_qvg_bzb" data-ofbid="image__note_xy2_qvg_bzb"><span class="note__title">重要：</span> “updater” 中组件对象的顺序很重要。<p class="- topic/p p" data-ofbid="d53495e216__20250121171519">在 USB 升级的过程中，组件数据传输和执行的顺序即为 “updater” 中组件数据出现的顺序，
+                    因此如果组件数据之间有顺序依赖关系，需要按照正确的顺序排布。</p></div>
+        </section><section class="- topic/section section" id="image__section_khx_3vg_bzb" data-ofbid="image__section_khx_3vg_bzb"><h2 class="- topic/title title sectiontitle">Target 数据描述</h2>
+            
+            <p class="- topic/p p" data-ofbid="d53495e224__20250121171519">“target” 描述要烧录到设备存储介质上的组件 。与 “updater” 中的组件一样，”target”
+                中出现的组件根据实际需要进行添加，组件的名字也可自行定义。</p>
+            <p class="- topic/p p" data-ofbid="d53495e227__20250121171519">“target” 中的组件，都有下面的配置字段：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="image__table_lhx_3vg_bzb" data-ofbid="image__table_lhx_3vg_bzb" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">Target 组件属性</span></caption><colgroup><col style="width:17.064846416382252%"/><col style="width:82.93515358361775%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_lhx_3vg_bzb__entry__1">属性名</th><th class="- topic/entry entry colsep-0 rowsep-0" id="image__table_lhx_3vg_bzb__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_lhx_3vg_bzb__entry__1">“file”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_lhx_3vg_bzb__entry__2">指定该组件的数据来源文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_lhx_3vg_bzb__entry__1">“part”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_lhx_3vg_bzb__entry__2">指定该组件被烧录的分区，分区名字通过字符串数组的形式提供。</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_lhx_3vg_bzb__entry__1">“attr”</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="image__table_lhx_3vg_bzb__entry__2">该数据对象的属性，可选的内容有:<ul class="- topic/ul ul" id="image__ul_kvv_dtm_q1c" data-ofbid="image__ul_kvv_dtm_q1c"><li class="- topic/li li" data-ofbid="d53495e259__20250121171519">“required” : 该组件数据是必需的，如果指定文件不存在，则生成镜像文件出错。</li><li class="- topic/li li" data-ofbid="d53495e261__20250121171519">“optional” : 该组件数据不是必需的，如果指定文件不存在，则在生成镜像文件时忽略该数据对象。</li><li class="- topic/li li" data-ofbid="d53495e263__20250121171519">“burn” : 该组件数据是需要烧录到指定分区当中。</li><li class="- topic/li li" data-ofbid="d53495e265__20250121171519">“mtd” : 表示该组件要烧录的设备是 MTD 设备。</li><li class="- topic/li li" data-ofbid="d53495e267__20250121171519">“ubi” : 表示该组件要烧录的设备是 UBI 设备。</li><li class="- topic/li li" data-ofbid="d53495e269__20250121171519">“block” : 表示该组件要烧录的设备是块设备。</li></ul></td></tr></tbody></table></div>
+            <div class="- topic/note note important note_important" id="image__note_w3b_pvg_bzb" data-ofbid="image__note_w3b_pvg_bzb"><span class="note__title">重要：</span> “target” 中组件对象的顺序<p class="- topic/p p" data-ofbid="d53495e274__20250121171519">在 USB
+                    升级的过程中，组件数据传输和烧录的顺序即为 “target” 中组件数据出现的顺序。</p></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#image__section_chx_3vg_bzb" data-tocid="image__section_chx_3vg_bzb">Info 数据描述</a></div></li><li class="section-item"><div class="section-title"><a href="#image__section_hhx_3vg_bzb" data-tocid="image__section_hhx_3vg_bzb">Updater 数据描述</a></div></li><li class="section-item"><div class="section-title"><a href="#image__section_khx_3vg_bzb" data-tocid="image__section_khx_3vg_bzb">Target 数据描述</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

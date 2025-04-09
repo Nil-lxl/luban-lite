@@ -1,0 +1,814 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节描述了 GT911 触摸屏驱动的初始化和配置示例，包括 I2C 通信、GPIO 引脚配置以及触摸事件的处理。 主要功能模块简介 I2C 通信初始化： gt911_client.bus 获取 I2C 总线设备。 打开 I2C 总线设备，并设置从机地址。 GPIO 引脚配置： 使用 drv_pin_get 函数获取复位引脚和中断引脚。 配置复位引脚和中断引脚为输入模式，并设置中断模式： ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ctp-drive-migrate-demo"/><title>驱动文件移植解析</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="ctp-drive-migrate-demo-d5856e2172"/><meta name="wh-source-relpath" content="topics/sdk/peripheral/ctp-drive-migrate-demo.dita"/><meta name="wh-out-relpath" content="topics/sdk/peripheral/ctp-drive-migrate-demo.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="ctp-drive-migrate-demo" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/peripheral/touch.html">CTP 移植指南</a></div></div></li><li class="active"><div class="topicref" data-id="ctp-drive-migrate-demo"><div class="title"><a href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html">驱动文件移植解析</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html" title="新建 CTP 驱动" aria-label="上一主题: 新建 CTP 驱动" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html" title="修改已有 CTP 驱动" aria-label="下一主题: 修改已有 CTP 驱动" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e2136" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/keyadc.html" id="id-d5856e2136-link">按键矩阵</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2148" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2148-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch.html" id="id-d5856e2148-link">CTP 移植指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="touch-migrate-ctp-process-d5856e2160" class="topicref" data-id="touch-migrate-ctp-process" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html" id="touch-migrate-ctp-process-d5856e2160-link">新建 CTP 驱动</a></div></div></li><li role="treeitem" class="active"><div data-tocid="ctp-drive-migrate-demo-d5856e2172" class="topicref" data-id="ctp-drive-migrate-demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html" id="ctp-drive-migrate-demo-d5856e2172-link">驱动文件移植解析</a></div></div></li><li role="treeitem"><div data-tocid="touch_revise_existing_gt911_drive-d5856e2184" class="topicref" data-id="touch_revise_existing_gt911_drive" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html" id="touch_revise_existing_gt911_drive-d5856e2184-link">修改已有 CTP 驱动</a></div></div></li><li role="treeitem"><div data-tocid="touch_obtain_key_info-d5856e2196" class="topicref" data-id="touch_obtain_key_info" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-obtain-key-info.html" id="touch_obtain_key_info-d5856e2196-link">获取和配置 IC 关键信息</a></div></div></li><li role="treeitem"><div data-tocid="touch-configure-d5856e2208" class="topicref" data-id="touch-configure" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-configure.html" id="touch-configure-d5856e2208-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="touch_faq-d5856e2220" class="topicref" data-id="touch_faq" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-faq.html" id="touch_faq-d5856e2220-link">常见问题</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e2232" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/wifi.html" id="id-d5856e2232-link">无线网络</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/peripheral/ctp-drive-migrate-demo.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">驱动文件移植解析</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 19 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d93399e26__20250121171531">本节描述了 GT911 触摸屏驱动的初始化和配置示例，包括 I2C 通信、GPIO 引脚配置以及触摸事件的处理。</p><div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">主要功能模块简介</strong><ol class="- topic/ol ol" id="ctp-drive-migrate-demo__ol_fts_gq3_ndc" data-ofbid="ctp-drive-migrate-demo__ol_fts_gq3_ndc"><li class="- topic/li li" data-ofbid="d93399e32__20250121171531">
+                    <p class="- topic/p p" data-ofbid="d93399e34__20250121171531">I2C 通信初始化：</p>
+                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_gfd_sw1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_gfd_sw1_b2c"><li class="- topic/li li" data-ofbid="d93399e38__20250121171531"><code class="+ topic/ph pr-d/codeph ph codeph">gt911_client.bus</code> 获取 I2C 总线设备。</li><li class="- topic/li li" data-ofbid="d93399e42__20250121171531">打开 I2C 总线设备，并设置从机地址。</li></ul>
+                </li><li class="- topic/li li" data-ofbid="d93399e45__20250121171531">
+                    <p class="- topic/p p" data-ofbid="d93399e47__20250121171531">GPIO 引脚配置：</p>
+                    <div class="- topic/p p" data-ofbid="d93399e50__20250121171531">
+                        <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_nfm_tw1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_nfm_tw1_b2c"><li class="- topic/li li" data-ofbid="d93399e53__20250121171531">使用 <code class="+ topic/ph pr-d/codeph ph codeph">drv_pin_get</code> 函数获取复位引脚和中断引脚。</li><li class="- topic/li li" data-ofbid="d93399e58__20250121171531">
+                                <div class="- topic/p p" data-ofbid="d93399e60__20250121171531">配置复位引脚和中断引脚为输入模式，并设置中断模式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_l35_kq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_l35_kq3_ndc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_gt911_gpio_cfg() {
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> g, p;
+    <strong class="hl-keyword">long</strong> pin;
+
+    pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
+    g = GPIO_GROUP(pin);
+    p = GPIO_GROUP_PIN(pin);
+    hal_gpio_direction_input(g, p);
+
+    pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
+    g = GPIO_GROUP(pin);
+    p = GPIO_GROUP_PIN(pin);
+    hal_gpio_direction_input(g, p);
+    hal_gpio_set_irq_mode(g, p, <span class="hl-number">0</span>);
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}</pre></div>
+                            </li></ul>
+                    </div>
+                </li><li class="- topic/li li" data-ofbid="d93399e67__20250121171531">
+                    <p class="- topic/p p" data-ofbid="d93399e69__20250121171531">触摸事件处理：</p>
+                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_jts_gq3_ndc" data-ofbid="ctp-drive-migrate-demo__ul_jts_gq3_ndc"><li class="- topic/li li" data-ofbid="d93399e73__20250121171531"><span class="+ topic/keyword pr-d/apiname keyword apiname">gt911_read_point()</span>
+                            读取触摸点信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_fpq_nq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_fpq_nq3_ndc"><strong class="hl-keyword">static</strong> rt_err_t gt911_read_point(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">void</strong> *buf, rt_size_t read_num)</pre></li><li class="- topic/li li" data-ofbid="d93399e79__20250121171531"><span class="+ topic/keyword pr-d/apiname keyword apiname">gt911_control()</span> 控制 TP 设备，如获取
+                            ID、校准等：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_ecp_qq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_ecp_qq3_ndc"><strong class="hl-keyword">static</strong> rt_err_t gt911_control(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">int</strong> cmd, <strong class="hl-keyword">void</strong> *arg)</pre></li><li class="- topic/li li" data-ofbid="d93399e85__20250121171531">注册了 <code class="+ topic/ph pr-d/codeph ph codeph">gt911_touch_ops</code> 结构体，将上述两个函数指针赋值给相应的操作函数。</li></ul>
+                </li><li class="- topic/li li" data-ofbid="d93399e91__20250121171531">
+                    <p class="- topic/p p" data-ofbid="d93399e93__20250121171531">注册触摸设备：</p>
+                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_wxl_3x1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_wxl_3x1_b2c"><li class="- topic/li li" data-ofbid="d93399e97__20250121171531">
+                            <p class="- topic/p p" data-ofbid="d93399e99__20250121171531">在 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_init</code> 函数中，创建并初始化
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">rt_touch_device</code> 结构体。</p>
+                            <div class="- topic/p p" data-ofbid="d93399e108__20250121171531">分配内存并初始化触摸设备结构体，然后注册该设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_dwl_mq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_dwl_mq3_ndc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_hw_gt911_init(<strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *name, <strong class="hl-keyword">struct</strong> rt_touch_config *cfg) {
+    touch_device = (<strong class="hl-keyword">struct</strong> rt_touch_device *)rt_malloc(<strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
+    <strong class="hl-keyword">if</strong> (touch_device == RT_NULL) {
+        LOG_E(<span class="hl-string">"touch device malloc fail"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+    rt_memset((<strong class="hl-keyword">void</strong> *)touch_device, <span class="hl-number">0</span>, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
+    touch_device-&gt;info.type = RT_TOUCH_TYPE_CAPACITANCE;
+    touch_device-&gt;info.vendor = RT_TOUCH_VENDOR_GT;
+    rt_memcpy(&amp;touch_device-&gt;config, cfg, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_config));
+    touch_device-&gt;ops = &amp;gt911_touch_ops;
+    <strong class="hl-keyword">if</strong> (RT_EOK != rt_hw_touch_register(touch_device, name, RT_DEVICE_FLAG_INT_RX, RT_NULL)) {
+        LOG_E(<span class="hl-string">"touch device gt911 init failed !!!"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+    LOG_I(<span class="hl-string">"touch device gt911 init success"</span>);
+    <strong class="hl-keyword">return</strong> RT_EOK;
+}</pre></div>
+                        </li><li class="- topic/li li" data-ofbid="d93399e113__20250121171531">调用 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_touch_register</code> 函数注册触摸设备。</li></ul>
+                </li><li class="- topic/li li" data-ofbid="d93399e119__20250121171531">
+                    <p class="- topic/p p" data-ofbid="d93399e121__20250121171531">硬件初始化：</p>
+                    <p class="- topic/p p" data-ofbid="d93399e124__20250121171531">在 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_port</code> 函数中，调用 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_init</code>
+                        完成设备的初始化和注册。</p>
+                </li></ol></div><div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">完整代码示例</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_zkq_vq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_zkq_vq3_ndc">#include &lt;rtthread.h&gt;
+#include &lt;rtdevice.h&gt;
+
+#include &lt;string.h&gt;
+
+#<span class="hl-directive">define</span> DBG_TAG <span class="hl-string">"gt911"</span>
+#<span class="hl-directive">define</span> DBG_LVL DBG_INFO
+#include &lt;rtdbg.h&gt;
+
+#include <span class="hl-string">"gt911.h"</span>
+
+<em class="hl-comment">//dev 结构体定义，其他 TP 也需要定义这个变量</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_i2c_client gt911_client;
+
+<em class="hl-comment">//这个是 gt911 特有的数组用于更改固件的，没这需求的可以不定义</em>
+<strong class="hl-keyword">static</strong> rt_uint8_t GT911_CFG_TBL[] = {
+    <span class="hl-number">0x6b</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x04</span>, <span class="hl-number">0x58</span>, <span class="hl-number">0x02</span>, <span class="hl-number">0x05</span>, <span class="hl-number">0x0d</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x01</span>, <span class="hl-number">0x0f</span>, <span class="hl-number">0x28</span>, <span class="hl-number">0x0f</span>,
+    <span class="hl-number">0x50</span>, <span class="hl-number">0x32</span>, <span class="hl-number">0x03</span>, <span class="hl-number">0x05</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x8a</span>, <span class="hl-number">0x2a</span>, <span class="hl-number">0x0c</span>, <span class="hl-number">0x45</span>, <span class="hl-number">0x47</span>, <span class="hl-number">0x0c</span>, <span class="hl-number">0x08</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x40</span>, <span class="hl-number">0x03</span>, <span class="hl-number">0x2c</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x01</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x03</span>, <span class="hl-number">0x64</span>, <span class="hl-number">0x32</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x28</span>, <span class="hl-number">0x64</span>, <span class="hl-number">0x94</span>, <span class="hl-number">0xd5</span>, <span class="hl-number">0x02</span>, <span class="hl-number">0x07</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x04</span>,
+    <span class="hl-number">0x95</span>, <span class="hl-number">0x2c</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x8b</span>, <span class="hl-number">0x34</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x82</span>, <span class="hl-number">0x3f</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x7d</span>, <span class="hl-number">0x4c</span>, <span class="hl-number">0x00</span>,
+    <span class="hl-number">0x7a</span>, <span class="hl-number">0x5b</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x7a</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x18</span>, <span class="hl-number">0x16</span>, <span class="hl-number">0x14</span>, <span class="hl-number">0x12</span>, <span class="hl-number">0x10</span>, <span class="hl-number">0x0e</span>, <span class="hl-number">0x0c</span>, <span class="hl-number">0x0a</span>,
+    <span class="hl-number">0x08</span>, <span class="hl-number">0x06</span>, <span class="hl-number">0x04</span>, <span class="hl-number">0x02</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x16</span>, <span class="hl-number">0x18</span>,
+    <span class="hl-number">0x1c</span>, <span class="hl-number">0x1d</span>, <span class="hl-number">0x1e</span>, <span class="hl-number">0x1f</span>, <span class="hl-number">0x20</span>, <span class="hl-number">0x21</span>, <span class="hl-number">0x22</span>, <span class="hl-number">0x24</span>, <span class="hl-number">0x13</span>, <span class="hl-number">0x12</span>, <span class="hl-number">0x10</span>, <span class="hl-number">0x0f</span>,
+    <span class="hl-number">0x0a</span>, <span class="hl-number">0x08</span>, <span class="hl-number">0x06</span>, <span class="hl-number">0x04</span>, <span class="hl-number">0x02</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0xff</span>, <span class="hl-number">0xff</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>,
+    <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x00</span>, <span class="hl-number">0x79</span>, <span class="hl-number">0x01</span>,
+};
+
+<em class="hl-comment">/*
+ * I2C 写函数，主要传参有三个：dev,要写入的数据，写入数据的长度
+ * 这个函数适用于所有的 TP，编写的时候只需要更换函数名字，跟 TP 对应上即可
+ */</em>
+<strong class="hl-keyword">static</strong> rt_err_t gt911_write_reg(<strong class="hl-keyword">struct</strong> rt_i2c_client *dev, rt_uint8_t *data,
+                                rt_uint8_t len)
+{
+    <strong class="hl-keyword">struct</strong> rt_i2c_msg msgs;
+    <em class="hl-comment">//从机的设备地址，在初始化的时候会进行赋值</em>
+    msgs.addr = dev-&gt;client_addr;
+    <em class="hl-comment">//I2C 读写标志，这里是写标志</em>
+    msgs.flags = RT_I2C_WR;
+    <em class="hl-comment">//要发送的数据</em>
+    msgs.buf = data;
+    <em class="hl-comment">//数据长度</em>
+    msgs.len = len;
+
+    <strong class="hl-keyword">if</strong> (rt_i2c_transfer(dev-&gt;bus, &amp;msgs, <span class="hl-number">1</span>) == <span class="hl-number">1</span>) {
+        <strong class="hl-keyword">return</strong> RT_EOK;
+    } <strong class="hl-keyword">else</strong> {
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+}
+
+<em class="hl-comment">/*
+ * I2C 读函数，主要传参有四个：dev,要读取的寄存器地址，接受数据的 buf，读取的长度
+ * 这个函数适用于所有的 TP，编写的时候只需要更换函数名字，跟 TP 对应上即可
+ */</em>
+<strong class="hl-keyword">static</strong> rt_err_t gt911_read_regs(<strong class="hl-keyword">struct</strong> rt_i2c_client *dev, rt_uint8_t *reg,
+                                rt_uint8_t *data, rt_uint8_t len)
+{
+    <strong class="hl-keyword">struct</strong> rt_i2c_msg msgs[<span class="hl-number">2</span>];
+
+    msgs[<span class="hl-number">0</span>].addr = dev-&gt;client_addr;
+    msgs[<span class="hl-number">0</span>].flags = RT_I2C_WR;
+    <em class="hl-comment">/*
+     * 要读取得寄存器地址,目前市面上有两种常见得 TP，一种是 16 位寄存器地址的，一种是 8 位的
+     * 16 位的寄存器地址需要先发送高 8 位，再发送低 8 位，分成两个 buf
+     * 8 位的直接发送即可
+     */</em>
+    msgs[<span class="hl-number">0</span>].buf = reg;
+    <em class="hl-comment">// 这里的长度对应上面的 16 位或者 8 位，16 位长度为 2，8 位长度为 1</em>
+    msgs[<span class="hl-number">0</span>].len = GT911_REGITER_LEN;
+
+    msgs[<span class="hl-number">1</span>].addr = dev-&gt;client_addr;
+    msgs[<span class="hl-number">1</span>].flags = RT_I2C_RD;
+    msgs[<span class="hl-number">1</span>].buf = data;
+    msgs[<span class="hl-number">1</span>].len = len;
+
+    <strong class="hl-keyword">if</strong> (rt_i2c_transfer(dev-&gt;bus, msgs, <span class="hl-number">2</span>) == <span class="hl-number">2</span>) {
+        <strong class="hl-keyword">return</strong> RT_EOK;
+    } <strong class="hl-keyword">else</strong> {
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+}
+
+<em class="hl-comment">/*
+ * 这个函数主要用于获取 TP 的 ID，有些 TP 并没有具体获取 ID 的寄存器公开，可以不添加
+ */</em>
+<strong class="hl-keyword">static</strong> rt_err_t gt911_get_product_id(<strong class="hl-keyword">struct</strong> rt_i2c_client *dev,
+                                     rt_uint8_t *data, rt_uint8_t len)
+{
+    rt_uint8_t reg[<span class="hl-number">2</span>];
+    <em class="hl-comment">// 这里就是将 16 位的寄存器地址拆开高 8 位低 8 位两个 buf 进行传输</em>
+    reg[<span class="hl-number">0</span>] = (rt_uint8_t)(GT911_PRODUCT_ID &gt;&gt; <span class="hl-number">8</span>);
+    reg[<span class="hl-number">1</span>] = (rt_uint8_t)(GT911_PRODUCT_ID &amp; <span class="hl-number">0xff</span>);
+
+    <strong class="hl-keyword">if</strong> (gt911_read_regs(dev, reg, data, len) != RT_EOK) {
+        LOG_E(<span class="hl-string">"read id failed"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+    <strong class="hl-keyword">return</strong> RT_EOK;
+}
+
+<em class="hl-comment">/*
+ * 这个函数主要用于获取 TP 的参数，包括：xy 的坐标范围最大值，触摸点的个数
+ */</em>
+<strong class="hl-keyword">static</strong> rt_err_t gt911_get_info(<strong class="hl-keyword">struct</strong> rt_i2c_client *dev,
+                               <strong class="hl-keyword">struct</strong> rt_touch_info *info)
+{
+    rt_uint8_t reg[<span class="hl-number">2</span>];
+    rt_uint8_t out_info[<span class="hl-number">7</span>];
+    rt_uint8_t out_len = <span class="hl-number">7</span>;
+
+    reg[<span class="hl-number">0</span>] = (rt_uint8_t)(GT911_CONFIG_REG &gt;&gt; <span class="hl-number">8</span>);
+    reg[<span class="hl-number">1</span>] = (rt_uint8_t)(GT911_CONFIG_REG &amp; <span class="hl-number">0xFF</span>);
+
+    <strong class="hl-keyword">if</strong> (gt911_read_regs(dev, reg, out_info, out_len) != RT_EOK) {
+        LOG_E(<span class="hl-string">"read info failed"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+    <em class="hl-comment">/*
+     * 这里是对获取到的数据进行组合得到参数信息
+     * 有些 TP 对这些寄存器并不开放，因此我们也可以通过直接赋值的方法设置参数
+     * 设置的参数要跟 TP 自带的固件对应上才能正常使用，具体操作如下
+     */</em>
+    info-&gt;range_x = (out_info[<span class="hl-number">2</span>] &lt;&lt; <span class="hl-number">8</span>) | out_info[<span class="hl-number">1</span>];
+    <em class="hl-comment">//info-&gt;range_x = AIC_TOUCH_X_COORDINATE_RANGE;</em>
+    <em class="hl-comment">//这里的 AIC_TOUCH_X_COORDINATE_RANGE 就是公用参数那里可以配置的，所以不同 TP 都可通用</em>
+    info-&gt;range_y = (out_info[<span class="hl-number">4</span>] &lt;&lt; <span class="hl-number">8</span>) | out_info[<span class="hl-number">3</span>];
+    <em class="hl-comment">//info-&gt;range_y = AIC_TOUCH_Y_COORDINATE_RANGE;</em>
+    <em class="hl-comment">//这里的 AIC_TOUCH_Y_COORDINATE_RANGE 也是公用参数那里可以配置的，所以不同 TP 都可通用</em>
+    info-&gt;point_num = out_info[<span class="hl-number">5</span>] &amp; <span class="hl-number">0x0f</span>;
+    <em class="hl-comment">//info-&gt;point_num = 5;</em>
+    <strong class="hl-keyword">if</strong> (info-&gt;point_num &gt; GT911_MAX_TOUCH) {
+        info-&gt;point_num = GT911_MAX_TOUCH;
+        rt_kprintf(<span class="hl-string">"Warning,tp support more than 5 points, limited to 5 points\n"</span>);
+    }
+
+    <strong class="hl-keyword">return</strong> RT_EOK;
+}
+
+<em class="hl-comment">/*
+ * 这里的静态变量主要是为了存储坐标点的数据，然后作逻辑判断
+ * GT911_MAX_TOUCH 是最大的触摸点个数也就是上面 info-&gt;point_num 定义的 5，所以数组赋值了 5 个-1 作为初始值
+ * 不同的触摸个数这个数组大小不一样
+ */</em>
+<strong class="hl-keyword">static</strong> int16_t pre_x[GT911_MAX_TOUCH] = { -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span> };
+<strong class="hl-keyword">static</strong> int16_t pre_y[GT911_MAX_TOUCH] = { -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span> };
+<em class="hl-comment">//这个 pre_w 是触摸面积的定义,有些 TP 并没有相关描述，所以不是必须的，但 xy 是必须要有</em>
+<strong class="hl-keyword">static</strong> int16_t pre_w[GT911_MAX_TOUCH] = { -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span>, -<span class="hl-number">1</span> };
+<strong class="hl-keyword">static</strong> rt_uint8_t s_tp_dowm[GT911_MAX_TOUCH] = {<span class="hl-number">0</span>};
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_touch_data *read_data = RT_NULL;
+
+<em class="hl-comment">/*
+ * 这个是抬起事件上报函数，修改函数名即可使用
+ * 如果定义上面的静态数组的时候没有定义 pre_w 则下面代码关于 pre_w 的要删除
+ */</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> gt911_touch_up(<strong class="hl-keyword">void</strong> *buf, int8_t id)
+{
+    read_data = (<strong class="hl-keyword">struct</strong> rt_touch_data *)buf;
+
+    <strong class="hl-keyword">if</strong> (s_tp_dowm[id] == <span class="hl-number">1</span>) {
+        s_tp_dowm[id] = <span class="hl-number">0</span>;
+        read_data[id].event = RT_TOUCH_EVENT_UP;
+    } <strong class="hl-keyword">else</strong> {
+        read_data[id].event = RT_TOUCH_EVENT_NONE;
+    }
+
+    read_data[id].timestamp = rt_touch_get_ts();
+    <em class="hl-comment">//下面的这行可以删除</em>
+    read_data[id].width = pre_w[id];
+    read_data[id].x_coordinate = pre_x[id];
+    read_data[id].y_coordinate = pre_y[id];
+    read_data[id].track_id = id;
+
+    pre_x[id] = -<span class="hl-number">1</span>; <em class="hl-comment">/* last point is none */</em>
+    pre_y[id] = -<span class="hl-number">1</span>;
+    <em class="hl-comment">//下面的这行可以删除</em>
+    pre_w[id] = -<span class="hl-number">1</span>;
+}
+
+<em class="hl-comment">/*
+ * 这个是移动和按下事件函数，修改函数名即可使用
+ * 如果定义上面的静态数组的时候没有定义 pre_w 则下面代码关于 pre_w 的要删除
+ * 包括函数传参里面的 int16_t w 也要删除
+ */</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> gt911_touch_down(<strong class="hl-keyword">void</strong> *buf, int8_t id, int16_t x, int16_t y,
+                             int16_t w)
+{
+    read_data = (<strong class="hl-keyword">struct</strong> rt_touch_data *)buf;
+
+    <strong class="hl-keyword">if</strong> (s_tp_dowm[id] == <span class="hl-number">1</span>) {
+        read_data[id].event = RT_TOUCH_EVENT_MOVE;
+    } <strong class="hl-keyword">else</strong> {
+        read_data[id].event = RT_TOUCH_EVENT_DOWN;
+        s_tp_dowm[id] = <span class="hl-number">1</span>;
+    }
+
+    read_data[id].timestamp = rt_touch_get_ts();
+    <em class="hl-comment">//下面的这行可以删除</em>
+    read_data[id].width = w;
+    read_data[id].x_coordinate = x;
+    read_data[id].y_coordinate = y;
+    read_data[id].track_id = id;
+
+    pre_x[id] = x; <em class="hl-comment">/* save last point */</em>
+    pre_y[id] = y;
+    <em class="hl-comment">//下面的这行可以删除</em>
+    pre_w[id] = w;
+}
+
+<em class="hl-comment">/*
+ * 这个读取坐标点数据的函数，必须实现
+ */</em>
+<strong class="hl-keyword">static</strong> rt_size_t gt911_read_point(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">void</strong> *buf,
+                                  rt_size_t read_num)
+{
+    rt_uint8_t point_status = <span class="hl-number">0</span>;
+    rt_uint8_t touch_num = <span class="hl-number">0</span>;
+    rt_uint8_t write_buf[<span class="hl-number">3</span>];
+    rt_uint8_t cmd[<span class="hl-number">2</span>];
+    <em class="hl-comment">//要读取的数据的长度，一般是读取坐标数量*每一个坐标信息的 buf 长度+一些其他信息</em>
+    rt_uint8_t read_buf[<span class="hl-number">8</span> * GT911_MAX_TOUCH] = { <span class="hl-number">0</span> };
+    rt_uint8_t read_index;
+    int8_t read_id = <span class="hl-number">0</span>;
+    int16_t input_x = <span class="hl-number">0</span>;
+    int16_t input_y = <span class="hl-number">0</span>;
+    int16_t input_w = <span class="hl-number">0</span>;
+    <em class="hl-comment">//存储上一次触摸点个数</em>
+    <strong class="hl-keyword">static</strong> rt_uint8_t pre_touch = <span class="hl-number">0</span>;
+    <em class="hl-comment">//存储上一次坐标 ID 的数组</em>
+    <strong class="hl-keyword">static</strong> int8_t pre_id[GT911_MAX_TOUCH] = { <span class="hl-number">0</span> };
+    <em class="hl-comment">//这里是对传参过来的 buf 清零，避免 buf 里面已有数据对坐标读取产生影响</em>
+    rt_memset(buf, <span class="hl-number">0</span>, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_data) * read_num);
+
+    <em class="hl-comment">/* point status register */</em>
+    cmd[<span class="hl-number">0</span>] = (rt_uint8_t)((GT911_READ_STATUS &gt;&gt; <span class="hl-number">8</span>) &amp; <span class="hl-number">0xFF</span>);
+    cmd[<span class="hl-number">1</span>] = (rt_uint8_t)(GT911_READ_STATUS &amp; <span class="hl-number">0xFF</span>);
+
+    <strong class="hl-keyword">if</strong> (gt911_read_regs(&amp;gt911_client, cmd, &amp;point_status, <span class="hl-number">1</span>) != RT_EOK) {
+        LOG_D(<span class="hl-string">"read point failed\n"</span>);
+        read_num = <span class="hl-number">0</span>;
+        <strong class="hl-keyword">goto</strong> exit_;
+    }
+
+    <strong class="hl-keyword">if</strong> (point_status == <span class="hl-number">0</span>) <em class="hl-comment">/* no data */</em>
+    {
+        read_num = <span class="hl-number">0</span>;
+        <strong class="hl-keyword">goto</strong> exit_;
+    }
+
+    <strong class="hl-keyword">if</strong> ((point_status &amp; <span class="hl-number">0x80</span>) == <span class="hl-number">0</span>) <em class="hl-comment">/* data is not ready */</em>
+    {
+        read_num = <span class="hl-number">0</span>;
+        <strong class="hl-keyword">goto</strong> exit_;
+    }
+    <em class="hl-comment">//触摸点个数赋值</em>
+    touch_num = point_status &amp; <span class="hl-number">0x0f</span>; <em class="hl-comment">/* get point num */</em>
+
+    <strong class="hl-keyword">if</strong> (touch_num &gt; GT911_MAX_TOUCH) <em class="hl-comment">/* point num is not correct */</em>
+    {
+        read_num = <span class="hl-number">0</span>;
+        <strong class="hl-keyword">goto</strong> exit_;
+    }
+
+    cmd[<span class="hl-number">0</span>] = (rt_uint8_t)((GT911_POINT1_REG &gt;&gt; <span class="hl-number">8</span>) &amp; <span class="hl-number">0xFF</span>);
+    cmd[<span class="hl-number">1</span>] = (rt_uint8_t)(GT911_POINT1_REG &amp; <span class="hl-number">0xFF</span>);
+
+    <em class="hl-comment">//读取坐标数据</em>
+    <strong class="hl-keyword">if</strong> (gt911_read_regs(&amp;gt911_client, cmd, read_buf,
+                        read_num * GT911_POINT_INFO_NUM) != RT_EOK) {
+        LOG_D(<span class="hl-string">"read point failed\n"</span>);
+        read_num = <span class="hl-number">0</span>;
+        <strong class="hl-keyword">goto</strong> exit_;
+    }
+    <em class="hl-comment">/*
+     * 下面是对坐标事件的处理，一般可以直接照抄，更换一下信息即可
+     */</em>
+    <strong class="hl-keyword">if</strong> (pre_touch &gt; touch_num) <em class="hl-comment">/* point up */</em>
+    {
+        <strong class="hl-keyword">for</strong> (read_index = <span class="hl-number">0</span>; read_index &lt; pre_touch; read_index++) {
+            rt_uint8_t j;
+
+            <strong class="hl-keyword">for</strong> (j = <span class="hl-number">0</span>; j &lt; touch_num; j++) <em class="hl-comment">/* this time touch num */</em>
+            {
+                <em class="hl-comment">//坐标 ID 这里是需要更换的，要按照规格书来赋值</em>
+                read_id = read_buf[j * <span class="hl-number">8</span>] &amp; <span class="hl-number">0x0F</span>;
+
+                <strong class="hl-keyword">if</strong> (pre_id[read_index] == read_id) <em class="hl-comment">/* this id is not free */</em>
+                    <strong class="hl-keyword">break</strong>;
+
+                <strong class="hl-keyword">if</strong> (j &gt;= touch_num - <span class="hl-number">1</span>) {
+                    rt_uint8_t up_id;
+                    up_id = pre_id[read_index];
+                    gt911_touch_up(buf, up_id);
+                }
+            }
+        }
+    }
+
+    <strong class="hl-keyword">if</strong> (touch_num) <em class="hl-comment">/* point down */</em>
+    {
+        rt_uint8_t off_set;
+
+        <strong class="hl-keyword">for</strong> (read_index = <span class="hl-number">0</span>; read_index &lt; touch_num; read_index++) {
+            <em class="hl-comment">//这个 offset 是一个坐标信息的偏移，8 代表一个坐标要读取 8 个 byte，具体是多少按照规格书来</em>
+            off_set = read_index * <span class="hl-number">8</span>;
+            <em class="hl-comment">//坐标 ID 这里是需要更换的，要按照规格书来赋值</em>
+            read_id = read_buf[off_set] &amp; <span class="hl-number">0x0f</span>;
+            pre_id[read_index] = read_id;
+            <em class="hl-comment">//下面的 xyw 也是需要按照规格书重新组合 buf</em>
+            input_x =
+                read_buf[off_set + <span class="hl-number">1</span>] | (read_buf[off_set + <span class="hl-number">2</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* x */</em>
+            input_y =
+                read_buf[off_set + <span class="hl-number">3</span>] | (read_buf[off_set + <span class="hl-number">4</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* y */</em>
+            input_w =
+                read_buf[off_set + <span class="hl-number">5</span>] | (read_buf[off_set + <span class="hl-number">6</span>] &lt;&lt; <span class="hl-number">8</span>); <em class="hl-comment">/* size */</em>
+
+            gt911_touch_down(buf, read_id, input_x, input_y, input_w);
+        }
+    } <strong class="hl-keyword">else</strong> <strong class="hl-keyword">if</strong> (pre_touch) {
+        <strong class="hl-keyword">for</strong> (read_index = <span class="hl-number">0</span>; read_index &lt; pre_touch; read_index++) {
+            gt911_touch_up(buf, pre_id[read_index]);
+        }
+    }
+    <em class="hl-comment">//将当前的触摸点个数赋值给 pre_touch</em>
+    pre_touch = touch_num;
+
+exit_:
+    <em class="hl-comment">//这里是 gt911 特有的每次读取完数据要发送 0x00 完成同步，没有这个要求的不需要实现</em>
+    write_buf[<span class="hl-number">0</span>] = (rt_uint8_t)((GT911_READ_STATUS &gt;&gt; <span class="hl-number">8</span>) &amp; <span class="hl-number">0xFF</span>);
+    write_buf[<span class="hl-number">1</span>] = (rt_uint8_t)(GT911_READ_STATUS &amp; <span class="hl-number">0xFF</span>);
+    write_buf[<span class="hl-number">2</span>] = <span class="hl-number">0x00</span>;
+    gt911_write_reg(&amp;gt911_client, write_buf, <span class="hl-number">3</span>);
+    <em class="hl-comment">//返回触摸点个数</em>
+    <strong class="hl-keyword">return</strong> read_num;
+}
+
+<em class="hl-comment">/*
+ * TP 的控制函数，一般来说只需要实现 RT_TOUCH_CTRL_GET_INFO，其他的可以不管
+ */</em>
+<strong class="hl-keyword">static</strong> rt_err_t gt911_control(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">int</strong> cmd, <strong class="hl-keyword">void</strong> *arg)
+{
+    <strong class="hl-keyword">if</strong> (cmd == RT_TOUCH_CTRL_GET_ID) {
+        <strong class="hl-keyword">return</strong> gt911_get_product_id(&amp;gt911_client, arg, <span class="hl-number">6</span>);
+    }
+
+    <strong class="hl-keyword">if</strong> (cmd == RT_TOUCH_CTRL_GET_INFO) {
+        <strong class="hl-keyword">return</strong> gt911_get_info(&amp;gt911_client, arg);
+    }
+
+    rt_uint8_t buf[<span class="hl-number">4</span>];
+    rt_uint8_t i = <span class="hl-number">0</span>;
+    rt_uint8_t *config;
+
+    config =
+        (rt_uint8_t *)rt_calloc(<span class="hl-number">1</span>, <strong class="hl-keyword">sizeof</strong>(GT911_CFG_TBL) + GT911_REGITER_LEN);
+    <strong class="hl-keyword">if</strong> (config == RT_NULL) {
+        LOG_D(<span class="hl-string">"malloc config memory failed\n"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+
+    config[<span class="hl-number">0</span>] = (rt_uint8_t)((GT911_CONFIG_REG &gt;&gt; <span class="hl-number">8</span>) &amp; <span class="hl-number">0xFF</span>);
+    config[<span class="hl-number">1</span>] = (rt_uint8_t)(GT911_CONFIG_REG &amp; <span class="hl-number">0xFF</span>);
+
+    memcpy(&amp;config[<span class="hl-number">2</span>], GT911_CFG_TBL, <strong class="hl-keyword">sizeof</strong>(GT911_CFG_TBL));
+
+    <strong class="hl-keyword">switch</strong> (cmd) {
+        <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_SET_X_RANGE: {
+            rt_uint16_t x_range;
+
+            x_range = *(rt_uint16_t *)arg;
+            config[<span class="hl-number">4</span>] = (rt_uint8_t)(x_range &gt;&gt; <span class="hl-number">8</span>);
+            config[<span class="hl-number">3</span>] = (rt_uint8_t)(x_range &amp; <span class="hl-number">0xff</span>);
+
+            GT911_CFG_TBL[<span class="hl-number">2</span>] = config[<span class="hl-number">4</span>];
+            GT911_CFG_TBL[<span class="hl-number">1</span>] = config[<span class="hl-number">3</span>];
+            <strong class="hl-keyword">break</strong>;
+        }
+        <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_SET_Y_RANGE: {
+            rt_uint16_t y_range;
+
+            y_range = *(rt_uint16_t *)arg;
+            config[<span class="hl-number">6</span>] = (rt_uint8_t)(y_range &gt;&gt; <span class="hl-number">8</span>);
+            config[<span class="hl-number">5</span>] = (rt_uint8_t)(y_range &amp; <span class="hl-number">0xff</span>);
+
+            GT911_CFG_TBL[<span class="hl-number">4</span>] = config[<span class="hl-number">6</span>];
+            GT911_CFG_TBL[<span class="hl-number">3</span>] = config[<span class="hl-number">5</span>];
+            <strong class="hl-keyword">break</strong>;
+        }
+        <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_SET_X_TO_Y: {
+            config[<span class="hl-number">8</span>] ^= (<span class="hl-number">1</span> &lt;&lt; <span class="hl-number">3</span>);
+            <strong class="hl-keyword">break</strong>;
+        }
+        <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_SET_MODE: {
+            rt_uint16_t trig_type;
+            trig_type = *(rt_uint16_t *)arg;
+
+            <strong class="hl-keyword">switch</strong> (trig_type) {
+                <strong class="hl-keyword">case</strong> RT_DEVICE_FLAG_INT_RX:
+                    config[<span class="hl-number">8</span>] &amp;= <span class="hl-number">0xFC</span>;
+                    <strong class="hl-keyword">break</strong>;
+                <strong class="hl-keyword">case</strong> RT_DEVICE_FLAG_RDONLY:
+                    config[<span class="hl-number">8</span>] &amp;= <span class="hl-number">0xFC</span>;
+                    config[<span class="hl-number">8</span>] |= <span class="hl-number">0x02</span>;
+                    <strong class="hl-keyword">break</strong>;
+                <strong class="hl-keyword">default</strong>:
+                    <strong class="hl-keyword">break</strong>;
+            }
+            <strong class="hl-keyword">break</strong>;
+        }
+        <strong class="hl-keyword">default</strong>: {
+            <strong class="hl-keyword">break</strong>;
+        }
+    }
+
+    <strong class="hl-keyword">if</strong> (gt911_write_reg(&amp;gt911_client, config,
+                        <strong class="hl-keyword">sizeof</strong>(GT911_CFG_TBL) + GT911_ADDR_LEN) != RT_EOK) {
+        LOG_D(<span class="hl-string">"send config failed"</span>);
+        <strong class="hl-keyword">return</strong> -<span class="hl-number">1</span>;
+    }
+
+    buf[<span class="hl-number">0</span>] = (rt_uint8_t)((GT911_CHECK_SUM &gt;&gt; <span class="hl-number">8</span>) &amp; <span class="hl-number">0xFF</span>);
+    buf[<span class="hl-number">1</span>] = (rt_uint8_t)(GT911_CHECK_SUM &amp; <span class="hl-number">0xFF</span>);
+    buf[<span class="hl-number">2</span>] = <span class="hl-number">0</span>;
+
+    <strong class="hl-keyword">for</strong> (i = GT911_ADDR_LEN; i &lt; <strong class="hl-keyword">sizeof</strong>(GT911_CFG_TBL) + GT911_ADDR_LEN; i++) {
+        buf[GT911_ADDR_LEN] += config[i];
+    }
+
+    buf[<span class="hl-number">2</span>] = (~buf[<span class="hl-number">2</span>]) + <span class="hl-number">1</span>;
+    buf[<span class="hl-number">3</span>] = <span class="hl-number">1</span>;
+
+    gt911_write_reg(&amp;gt911_client, buf, <span class="hl-number">4</span>);
+    rt_free(config);
+
+    <strong class="hl-keyword">return</strong> RT_EOK;
+}
+
+<em class="hl-comment">/*
+ * rt_touch_ops，主要是完成对读坐标和控制 TP 的函数注册
+ */</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_touch_ops gt911_touch_ops = {
+    .touch_readpoint = gt911_read_point,
+    .touch_control = gt911_control,
+};
+
+<em class="hl-comment">/*
+ * 这个函数主要实现对 TP 的初始操作
+ */</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_hw_gt911_init(<strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *name, <strong class="hl-keyword">struct</strong> rt_touch_config *cfg)
+{
+    <strong class="hl-keyword">struct</strong> rt_touch_device *touch_device = RT_NULL;
+
+    touch_device =
+        (<strong class="hl-keyword">struct</strong> rt_touch_device *)rt_malloc(<strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
+    <strong class="hl-keyword">if</strong> (touch_device == RT_NULL) {
+        LOG_E(<span class="hl-string">"touch device malloc fail"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+    rt_memset((<strong class="hl-keyword">void</strong> *)touch_device, <span class="hl-number">0</span>, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
+    <em class="hl-comment">//这里是对 TP 一些上下电的操作，具体根据规格书来</em>
+    <em class="hl-comment">/* hw init*/</em>
+    <em class="hl-comment">// rst output 0</em>
+    rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);
+    rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_LOW);
+    rt_thread_delay(<span class="hl-number">10</span>);
+
+    <em class="hl-comment">// irq output 0</em>
+    rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg-&gt;irq_pin.pin, PIN_LOW);
+
+    rt_thread_delay(<span class="hl-number">2</span>);
+    <em class="hl-comment">// rst output 1</em>
+    rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);
+    rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_HIGH);
+
+    rt_thread_delay(<span class="hl-number">5</span>);
+    <em class="hl-comment">// rst input</em>
+    rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_INPUT);
+
+    <em class="hl-comment">//irq output 0</em>
+    rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg-&gt;irq_pin.pin, PIN_LOW);
+
+    rt_thread_delay(<span class="hl-number">50</span>);
+    <em class="hl-comment">//最后必须要对 IRQ 引脚设置回输入模式，不然会影响中断信号的获取</em>
+    rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_INPUT);
+
+    gt911_client.bus =
+        (<strong class="hl-keyword">struct</strong> rt_i2c_bus_device *)rt_device_find(cfg-&gt;dev_name);
+
+    <strong class="hl-keyword">if</strong> (gt911_client.bus == RT_NULL) {
+        LOG_E(<span class="hl-string">"Can't find %s device"</span>, cfg-&gt;dev_name);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+    <em class="hl-comment">//打开设备中断模式用 RT_DEVICE_FLAG_RDWR</em>
+    <strong class="hl-keyword">if</strong> (rt_device_open((rt_device_t)gt911_client.bus, RT_DEVICE_FLAG_RDWR) !=
+        RT_EOK) {
+        LOG_E(<span class="hl-string">"open %s device failed"</span>, cfg-&gt;dev_name);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+    <em class="hl-comment">//从机设备地址赋值</em>
+    gt911_client.client_addr = GT911_ADDRESS_HIGH;
+
+    <em class="hl-comment">/* register touch device */</em>
+    <em class="hl-comment">//赋值芯片的型号和类型</em>
+    touch_device-&gt;info.type = RT_TOUCH_TYPE_CAPACITANCE;
+    touch_device-&gt;info.vendor = RT_TOUCH_VENDOR_GT;
+    rt_memcpy(&amp;touch_device-&gt;config, cfg, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_config));
+    touch_device-&gt;ops = &amp;gt911_touch_ops;
+
+    <strong class="hl-keyword">if</strong> (RT_EOK != rt_hw_touch_register(touch_device, name, RT_DEVICE_FLAG_INT_RX, RT_NULL)) {
+        LOG_E(<span class="hl-string">"touch device gt911 init failed !!!"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+
+    LOG_I(<span class="hl-string">"touch device gt911 init success"</span>);
+    <strong class="hl-keyword">return</strong> RT_EOK;
+}
+
+<em class="hl-comment">/*
+ * 这个函数主要实现对 GPIO 的初始化，这个函数只需修改函数名即可复用
+ */</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_gt911_gpio_cfg()
+{
+    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> g, p;
+    <strong class="hl-keyword">long</strong> pin;
+
+    <em class="hl-comment">// AIC_TOUCH_PANEL_RST_PIN 是公用参数里面的复位引脚</em>
+    pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
+    g = GPIO_GROUP(pin);
+    p = GPIO_GROUP_PIN(pin);
+    hal_gpio_direction_input(g, p);
+
+    <em class="hl-comment">// AIC_TOUCH_PANEL_INT_PIN 是公用参数里面的中断引脚</em>
+    pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
+    g = GPIO_GROUP(pin);
+    p = GPIO_GROUP_PIN(pin);
+    hal_gpio_direction_input(g, p);
+    hal_gpio_set_irq_mode(g, p, <span class="hl-number">0</span>);
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}
+
+<em class="hl-comment">/*
+ * 这个函数主要注册整个设备，改个名字即可复用
+ */</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_hw_gt911_port(<strong class="hl-keyword">void</strong>)
+{
+    <strong class="hl-keyword">struct</strong> rt_touch_config cfg;
+    rt_uint8_t rst_pin;
+
+    rt_gt911_gpio_cfg();
+
+    rst_pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
+    cfg.dev_name = AIC_TOUCH_PANEL_I2C_CHAN;
+    cfg.irq_pin.pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
+    cfg.irq_pin.mode = PIN_MODE_INPUT;
+    cfg.user_data = &amp;rst_pin;
+#ifdef AIC_PM_DEMO
+    rt_pm_set_pin_wakeup_source(cfg.irq_pin.pin);
+#endif
+
+    <em class="hl-comment">// AIC_TOUCH_PANEL_NAME 这个是公用参数里面设备名字，也可以直接复用</em>
+    rt_hw_gt911_init(AIC_TOUCH_PANEL_NAME, &amp;cfg);
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}
+<em class="hl-comment">//通过宏 ``INIT_DEVICE_EXPORT``，驱动在系统启动时自动加载,即可轻松适配不同型号的触控芯片</em>
+INIT_DEVICE_EXPORT(rt_hw_gt911_port);</pre></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

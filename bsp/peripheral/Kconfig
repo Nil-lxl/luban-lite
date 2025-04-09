@@ -1,0 +1,53 @@
+
+source "bsp/peripheral/spinand/Kconfig"
+source "bsp/peripheral/spinor_sfud/Kconfig"
+source "bsp/peripheral/nftl/Kconfig"
+source "bsp/peripheral/bt/Kconfig"
+source "bsp/peripheral/camera/Kconfig"
+#--------------------------------------------
+# touch panel driver global option
+#--------------------------------------------
+
+menuconfig AIC_USING_TOUCH
+    bool "Touch Panel Support"
+
+if AIC_USING_TOUCH
+    choice
+        prompt "Select touch device"
+            default AIC_USING_CTP
+
+        config AIC_USING_CTP
+            bool "CTP"
+
+        config AIC_USING_RTP
+            bool "RTP"
+            select AIC_RTP_DRV
+    endchoice
+
+if AIC_USING_CTP
+    source "bsp/peripheral/touch/Kconfig"
+endif
+
+if AIC_USING_RTP
+    source "bsp/peripheral/touch/rtp/Kconfig"
+endif
+endif
+
+#--------------------------------------------
+# External RTC Driver Option
+#--------------------------------------------
+
+menuconfig AIC_USING_EXTERNAL_RTC
+    bool "External RTC Driver Option"
+
+if AIC_USING_EXTERNAL_RTC
+    source "bsp/peripheral/rtc/Kconfig"
+endif
+
+#--------------------------------------------
+# Audio Codec driver option
+#--------------------------------------------
+
+menu "External Audio Codec Support"
+source "bsp/peripheral/codec/Kconfig"
+endmenu

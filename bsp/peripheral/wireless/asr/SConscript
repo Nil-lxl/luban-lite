@@ -1,0 +1,55 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('rtconfig')
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob('*.c')
+CPPPATH = []
+
+CPPPATH.append(cwd + '/adapt_to_rtthread/os/include/kernel/os')
+CPPPATH.append(cwd + '/adapt_to_rtthread/os/include/net/')
+CPPPATH.append(cwd + '/adapt_to_rtthread/os/include/net/ethernetif')
+CPPPATH.append(cwd + '/adapt_to_rtthread/os/include/sys')
+CPPPATH.append(cwd + '/adapt_to_rtthread/util/at')
+CPPPATH.append(cwd + '/crypto/include/')
+CPPPATH.append(cwd + '/wifidrv/inc/edrv')
+CPPPATH.append(cwd + '/wifidrv/inc/common')
+CPPPATH.append(cwd + '/wifidrv/inc/wpa')
+CPPPATH.append(cwd + '/adapt_to_rtthread/driver')
+CPPPATH.append(cwd + '/adapt_to_rtthread/util/iperf')
+CPPPATH.append(cwd + '/crypto/mbedtls-2.28.5/include/')
+CPPPATH.append(cwd + '/crypto/mbedtls-2.28.5/include/mbedtls')
+CPPPATH.append(cwd + '/crypto/mbedtls-2.28.5/library/')
+CPPPATH.append(cwd + '/../../../../kernel/rt-thread/components/drivers/wlan')
+CPPPATH.append(cwd + '/../../../../kernel/rt-thread/components/net/netdev/include/')
+CPPPATH.append(cwd + '/../../../../kernel/rt-thread/components/drivers/include/drivers/')
+CPPPATH.append(cwd + '/../../../../kernel/rt-thread/components/net/lwip/lwip-2.0.3/src/include/lwip/')
+CPPPATH.append(cwd + '/../../../../kernel/rt-thread/components/net/lwip-dhcpd/')
+CPPPATH.append(cwd + '/firmware')
+
+src += Glob('adapt_to_rtthread/*.c')
+src += Glob('adapt_to_rtthread/driver/*.c')
+src += Glob('adapt_to_rtthread/os/*.c')
+src += Glob('adapt_to_rtthread/os/sys/*.c')
+src += Glob('adapt_to_rtthread/util/at/*.c')
+src += Glob('adapt_to_rtthread/util/iperf/*.c')
+src += Glob('crypto/src/*.c')
+src += Glob('crypto/mbedtls-2.28.5/library/*.c')
+src += Glob('wifidrv/src/edrv/*.c')
+src += Glob('certificate_test/sdio_loopback/*.c')
+
+LOCAL_CCFLAGS = ' -w'
+
+wifi_name = 'asr5505s'
+lib_name = 'wlan_' + wifi_name + '_'+ rtconfig.CPUNAME
+LIBS = [lib_name]
+LIBPATH = [cwd + "/wlan_lib/"]
+
+CPPDEFINES = ['CFG_ADD_API', 'CFG_SOFTAP_SUPPORT', 'CFG_STATION_SUPPORT', 'CFG_SNIFFER_SUPPORT', 'CFG_SAE', 'CFG_ENCRYPT_SUPPORT', 'CONFIG_IEEE80211W',
+'CONFIG_SME', 'WLAN_AMSDU_RX_LEN=3960', 'LWIP', 'WPA_TYPES_DEFINED', 'CONFIG_ASR5505', 'INCLUDE_WPA_WPA2_PSK',
+'CFG_TXDESC0=4', 'CFG_TXDESC1=4', 'CFG_TXDESC2=4', 'CFG_TXDESC3=4', 'CFG_TXDESC4=4','RX_TRIGGER_TIMER_ENABLE', 'CFG_DBG','SDIO_BLOCK_SIZE = 128','JXC_SDK']
+
+group = DefineGroup('asr', src, depend = ['AIC_WLAN_ASR'], CPPPATH=CPPPATH, CPPDEFINES=CPPDEFINES, LIBS=LIBS, LIBPATH=LIBPATH, LOCAL_CFLAGS=LOCAL_CCFLAGS)
+
+Return('group')

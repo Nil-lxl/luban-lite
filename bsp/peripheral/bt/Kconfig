@@ -1,0 +1,9 @@
+menuconfig AIC_BT_BT8858A
+    bool "Using BT8858A driver"
+    default n
+    select RT_USING_TIMER_SOFT
+
+    #if AIC_BT_BT8858A
+    #source "bsp/peripheral/bt/bt8858a/Kconfig"
+    #endif
+

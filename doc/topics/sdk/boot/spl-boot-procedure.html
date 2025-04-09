@@ -1,0 +1,321 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="理解 SPL 的启动流程，关键是设备树，设备驱动模型。关于设备树，请查看设备树相关章节，设备驱动模型的介绍如下： uboot 设备驱动框架模型 uclass &lt;–&gt; uclass_driver &lt;–&gt; udevice &lt;–&gt; driver &lt;–&gt; hardware uclass 表示管理某一个类别下的所有 device; uclass_driver 表示对应 uclass 的 ops 集合。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-07-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="_66"/><meta name="DC.language" content="zh-CN"/><title>启动流程</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/spl-boot-procedure.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/spl-boot-procedure.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="_66" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/spl-boot-procedure.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">启动流程</h1><div class="date inPage">15 Jul 2024</div><div style="color: gray;">
+                    Read time: 7 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d75145e22__20250121171523">理解 SPL 的启动流程，关键是设备树，设备驱动模型。关于设备树，请查看设备树相关章节，设备驱动模型的介绍如下：</p><section class="- topic/section section" id="_66__section_nbj_l1h_bzb" data-ofbid="_66__section_nbj_l1h_bzb"><h2 class="- topic/title title sectiontitle">uboot 设备驱动框架模型</h2>
+            
+            <p class="- topic/p p" data-ofbid="d75145e29__20250121171523">uclass &lt;–&gt; uclass_driver &lt;–&gt; udevice &lt;–&gt; driver &lt;–&gt; hardware</p>
+            <p class="- topic/p p" data-ofbid="d75145e32__20250121171523">uclass 表示管理某一个类别下的所有 device;</p>
+            <p class="- topic/p p" data-ofbid="d75145e35__20250121171523">uclass_driver 表示对应 uclass 的 ops 集合。</p>
+        </section><section class="- topic/section section" id="_66__section_lcv_n1h_bzb" data-ofbid="_66__section_lcv_n1h_bzb"><h2 class="- topic/title title sectiontitle">uboot 设备驱动框架搭建的过程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d75145e43__20250121171523">
+                <ol class="- topic/ol ol" id="_66__ol_qbj_l1h_bzb" data-ofbid="_66__ol_qbj_l1h_bzb"><li class="- topic/li li" data-ofbid="d75145e46__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75145e48__20250121171523">创建 udevice</p>
+                    </li><li class="- topic/li li" data-ofbid="d75145e51__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75145e53__20250121171523">应用 uclass 如果没有则匹配生成 uclass</p>
+                    </li><li class="- topic/li li" data-ofbid="d75145e56__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75145e58__20250121171523">udevice 和 uclass 绑定</p>
+                    </li><li class="- topic/li li" data-ofbid="d75145e61__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75145e63__20250121171523">uclass_driver 和 uclass 绑定</p>
+                    </li><li class="- topic/li li" data-ofbid="d75145e66__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75145e68__20250121171523">driver 和 udevice 绑定</p>
+                    </li><li class="- topic/li li" data-ofbid="d75145e71__20250121171523">
+                        <p class="- topic/p p" data-ofbid="d75145e73__20250121171523">device_probe 执行，会触发 driver 调用 driver 函数</p>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="_66__section_cmv_41h_bzb" data-ofbid="_66__section_cmv_41h_bzb"><h2 class="- topic/title title sectiontitle">SPL RISCV 的启动整体流程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d75145e83__20250121171523">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="_66__codeblock_lmt_hlr_c1c" data-ofbid="_66__codeblock_lmt_hlr_c1c">_start <em class="hl-comment">// arch/riscv/cpu/start.S</em>
+|-&gt; save_boot_params <em class="hl-comment">// arch/riscv/mach-artinchip/lowlevel_init.S</em>
+|   <em class="hl-comment">// BROM 跳转到 SPL 执行的时候，传递了一些参数，这里首先需要将这些参数保存起来</em>
+|
+|-&gt; csrw    MODE_PREFIX(ie), zero <em class="hl-comment">// Disable irq</em>
+|-&gt; li      t1, CONFIG_SPL_STACK <em class="hl-comment">// 设置 sp 寄存器</em>
+|-&gt; jal     board_init_f_alloc_reserve <em class="hl-comment">// common/init/board_init.c</em>
+|   <em class="hl-comment">// 预留初始 HEAP 的空间</em>
+|   <em class="hl-comment">// 预留 GD 全局变量的空间</em>
+|
+|-&gt; jal     board_init_f_init_reserve
+|   <em class="hl-comment">// common/init/board_init.c, init gd area</em>
+|   <em class="hl-comment">// 此时 gd 在 SPL STACK 中。</em>
+|
+|-&gt; jal     icache_enable <em class="hl-comment">// arch/riscv/cpu/c906/cache.c 使能指令高速缓存</em>
+|-&gt; jal     dcache_enable <em class="hl-comment">// 使能数据高速缓存</em>
+|
+|-&gt; jal     debug_uart_init <em class="hl-comment">// drivers/serial/ns16550.c</em>
+| <em class="hl-comment">// 初始化调试串口，如果使能</em>
+|
+|-&gt; board_init_f <em class="hl-comment">// arch/riscv/lib/spl.c</em>
+|   |-&gt; spl_early_init() <em class="hl-comment">// common/spl/spl.c</em>
+|       |-&gt; spl_common_init(setup_malloc = true) <em class="hl-comment">// common/spl/spl.c</em>
+|           |-&gt; fdtdec_setup();  <em class="hl-comment">// lib/fdtdec.c 获取 dtb 的地址，并验证合法性</em>
+|           | <em class="hl-comment">// 只对带有“u-boot,dm-pre-reloc”属性节点进行解析，初始化驱动模型的根节点，扫描设备树创建 udevice,uclass</em>
+|           |-&gt; dm_init_and_scan(!CONFIG_IS_ENABLED(OF_PLATDATA)); <em class="hl-comment">// drivers/core/root.c</em>
+|               |-&gt; dm_init(); <em class="hl-comment">// driver model, initiate virtual root driver</em>
+|               |   |-&gt; INIT_LIST_HEAD(DM_UCLASS_ROOT_NON_CONST); <em class="hl-comment">// 初始化 uclass 链表</em>
+|               |   |-&gt; device_bind_by_name()
+|               |   |   |   <em class="hl-comment">// drivers/core/device.c</em>
+|               |   |   |   <em class="hl-comment">// 加载"root_driver"name, gd-&gt;dm_root</em>
+|               |   |   |-&gt; lists_driver_lookup_name()
+|               |   |   |   |-&gt; ll_entry_start(<strong class="hl-keyword">struct</strong> driver, driver); <em class="hl-comment">// 获取 table 起始位置</em>
+|               |   |   |   |-&gt; ll_entry_count(<strong class="hl-keyword">struct</strong> driver, driver); <em class="hl-comment">// 获取 table 长度</em>
+|               |   |   |   <em class="hl-comment">// drivers/core/lists.c</em>
+|               |   |   |   <em class="hl-comment">// 采用 U_BOOT_DRIVER(name) 声明的 driver，从 table 中获取 struct driver 数据</em>
+|               |   |   |
+|               |   |   |   <em class="hl-comment">// 初始化 udevice  与对应的 uclass,driver 绑定</em>
+|               |   |   |-&gt; device_bind_common(); <em class="hl-comment">// drivers/core/device.c</em>
+|               |   |       |-&gt; uclass_get(&amp;uc)
+|               |   |       |   |-&gt; uclass_find(id); <em class="hl-comment">// 判断对应的 uclass 是否存在</em>
+|               |   |       |   |-&gt; uclass_add(id, ucp); <em class="hl-comment">// 如果不存在就创建</em>
+|               |   |       |       |-&gt; lists_uclass_lookup(id); <em class="hl-comment">// 获取 driver 结构体数据</em>
+|               |   |       |-&gt; uclass_bind_device(dev) <em class="hl-comment">// uclass 绑定 udevice drivers/core/uclass.c</em>
+|               |   |       |-&gt; drv-&gt;bind(dev)  <em class="hl-comment">// driver 绑定 udevice</em>
+|               |   |       |-&gt; parent-&gt;driver-&gt;child_post_bind(dev)
+|               |   |       |-&gt; uc-&gt;uc_drv-&gt;post_bind(dev)
+|               |   |
+|               |   |-&gt; device_probe(gd-&gt;dm_root) <em class="hl-comment">// drivers/core/device.c</em>
+|               |       |-&gt; uclass_resolve_seq(dev) <em class="hl-comment">// 通过 dtb 解析获得设备差异数据</em>
+|               |       |-&gt; uclass_pre_probe_device(dev); <em class="hl-comment">// probe 前操作</em>
+|               |       |-&gt; drv-&gt;probe(dev); <em class="hl-comment">// 执行 driver 的 probe 操作</em>
+|               |       |-&gt; uclass_post_probe_device(dev); <em class="hl-comment">// probe 后操作</em>
+|               |
+|               |-&gt; dm_scan(pre_reloc_only);
+|                   |   <em class="hl-comment">// 扫描和绑定由 U_BOOT_DEVICE 声明的驱动。</em>
+|                   |   <em class="hl-comment">// 一般用在 SPL OF_PLATDATA 的情况</em>
+|                   |-&gt; dm_scan_plat(pre_reloc_only);
+|                   |   |-&gt; lists_bind_drivers(DM_ROOT_NON_CONST, pre_reloc_only);
+|                   |       |-&gt; bind_drivers_pass(parent, pre_reloc_only);
+|                   |           |-&gt; device_bind_by_name();
+|                   |
+|                   |-&gt; dm_extended_scan(pre_reloc_only);
+|                   |   |-&gt; dm_scan_fdt(pre_reloc_only); <em class="hl-comment">// 扫描设备树并与设备驱动建立联系</em>
+|                   |   |   |-&gt; dm_scan_fdt_node(gd-&gt;dm_root, ofnode_root(), pre_reloc_only); <em class="hl-comment">//扫描设备树并绑定 root 节点下的设备</em>
+|                   |   |       |-&gt; ofnode_first_subnode(parent_node) <em class="hl-comment">// 获取设备树的第一个子节点</em>
+|                   |   |       |-&gt; ofnode_next_subnode(node) <em class="hl-comment">// 遍历所有的子节点</em>
+|                   |   |       |-&gt; ofnode_is_enabled(node) <em class="hl-comment">// 判断设备树的子节点是否使能</em>
+|                   |   |       |-&gt; lists_bind_fdt(parent, node, NULL, pre_reloc_only); <em class="hl-comment">// 绑定设备树节点，创建新的 udevicd drivers/core/lists.c</em>
+|                   |   |           |-&gt; ofnode_get_property(node, <span class="hl-string">"compatible"</span>, &amp;compat_length); <em class="hl-comment">// 获取 compatible</em>
+|                   |   |           |-&gt; driver_check_compatible() <em class="hl-comment">// 和 driver 比较 compatible 值</em>
+|                   |   |           |-&gt; device_bind_with_driver_data() <em class="hl-comment">// 创建一个设备并绑定到 driver drivers/core/device.c</em>
+|                   |   |               |-&gt; device_bind_common() <em class="hl-comment">// 创建初始化 udevice  与对应的 uclass,driver 绑定</em>
+|                   |   |
+|                   |   | <em class="hl-comment">// /chosen /clocks /firmware 一些节点本身不是设备，但包含一些设备，遍历其包含的设备</em>
+|                   |   |-&gt; dm_scan_fdt_ofnode_path(nodes[i], pre_reloc_only);
+|                   |       |-&gt; ofnode_path(path); <em class="hl-comment">// 找到节点下包含的设备</em>
+|                   |       |-&gt; dm_scan_fdt_node(gd-&gt;dm_root, node, pre_reloc_only);
+|                   |
+|                   |-&gt; dm_scan_other(pre_reloc_only);
+|                   |   <em class="hl-comment">// 扫描使用者自定义的节点 nothing</em>
+|
+|-&gt; spl_clear_bss <em class="hl-comment">// arch/riscv/cpu/start.S</em>
+|-&gt; spl_relocate_stack_gd   <em class="hl-comment">// 切换 stack  和 gd 到 dram 空间</em>
+|-&gt; board_init_r()    <em class="hl-comment">// common/spl/spl.c</em>
+    |-&gt; spl_set_bd()  <em class="hl-comment">// board data info</em>
+    |   <em class="hl-comment">// 设置完 bd 之后，才能 enable d-cache</em>
+    |-&gt; mem_malloc_init()
+    |   <em class="hl-comment">// init heap</em>
+    |   <em class="hl-comment">//  - CONFIG_SYS_SPL_MALLOC_START</em>
+    |   <em class="hl-comment">//  - CONFIG_SYS_SPL_MALLOC_SIZE&gt;</em>
+    |
+    |-&gt; spl_init
+    |   |-&gt; spl_common_init
+    |       <em class="hl-comment">// 由于前面已经调用了 spl_early_init,</em>
+    |       <em class="hl-comment">// 这里不再调用 spl_common_init</em>
+    |
+    |-&gt; timer_init(); <em class="hl-comment">// lib/time.c nothing</em>
+    |-&gt; spl_board_init(); <em class="hl-comment">// arch/riscv/mach-artinchip/spl.c nothing</em>
+    |
+    |-&gt; initr_watchdog  <em class="hl-comment">// enable watchdog，如果使能</em>
+    |-&gt; dram_init_banksize(); <em class="hl-comment">// 如果使能</em>
+    |-&gt; board_boot_order() <em class="hl-comment">// common/spl/spl.c</em>
+    |   |-&gt; spl_boot_device(); <em class="hl-comment">// arch/riscv/mach-artinchip/spl.c</em>
+    |       |-&gt; aic_get_boot_device(); <em class="hl-comment">// arch/riscv/mach-artinchip/boot_param.c</em>
+    |           <em class="hl-comment">// 从 boot param 中获取启动介质信息</em>
+    |
+    |-&gt; boot_from_devices(spl_boot_list)
+    |   |-&gt; spl_ll_find_loader()  <em class="hl-comment">// 根据 device 找到 spl_load_image 指针</em>
+    |   |       <em class="hl-comment">// 这里可能是各种介质的 load image 函数</em>
+    |   |       <em class="hl-comment">// SPL_LOAD_IMAGE_METHOD() 定义的 Loader</em>
+    |   |       <em class="hl-comment">// 可能是 MMC/SPI/BROM/...</em>
+    |   |
+    |   |-&gt; spl_load_image  <em class="hl-comment">// 以 emmc 启动为例</em>
+    |       |-&gt; spl_mmc_load_image  <em class="hl-comment">// common/spl/spl_mmc.c</em>
+    |           |-&gt; spl_mmc_load <em class="hl-comment">// 具体可看后面的流程</em>
+    |
+    |-&gt; spl_perform_fixups  <em class="hl-comment">// vendor hook，用于修改 tree 传递参数</em>
+    |-&gt; spl_board_prepare_for_boot  <em class="hl-comment">// vendor hook, 可不实现</em>
+    |-&gt; jump_to_image_no_args   <em class="hl-comment">// 跳转到 boot 执行</em></pre>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#_66__section_nbj_l1h_bzb" data-tocid="_66__section_nbj_l1h_bzb">uboot 设备驱动框架模型</a></div></li><li class="section-item"><div class="section-title"><a href="#_66__section_lcv_n1h_bzb" data-tocid="_66__section_lcv_n1h_bzb">uboot 设备驱动框架搭建的过程</a></div></li><li class="section-item"><div class="section-title"><a href="#_66__section_cmv_41h_bzb" data-tocid="_66__section_cmv_41h_bzb">SPL RISCV 的启动整体流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

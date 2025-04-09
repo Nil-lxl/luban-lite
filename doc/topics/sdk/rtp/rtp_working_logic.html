@@ -1,0 +1,229 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="硬件结构原理 图 1 . RTP 硬件结构侧视图 如图所示，RTP 硬件分为下列多层结构： 表面硬图层：手指触摸的表面是一个硬涂层，用以保护下面的 PET 层。 PET 层：很薄、有弹性，当表面被触摸时它会向下弯曲，并使得下面的两层 ITO 涂层能够相互接触并在该点连通电路。 ITO 陶瓷层：两个 ITO 层之间是约千分之一英寸厚的一些隔离支点使两层分开。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-24"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="rtp_working_logic"/><meta name="DC.language" content="zh-CN"/><title>工作原理</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/rtp/rtp_working_logic.dita"/><meta name="wh-out-relpath" content="topics/sdk/rtp/rtp_working_logic.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="rtp_working_logic" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/rtp/rtp_working_logic.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">工作原理</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="rtp_working_logic__section_dwc_lry_21c" data-ofbid="rtp_working_logic__section_dwc_lry_21c"><h2 class="- topic/title title sectiontitle">硬件结构原理</h2>
+            
+            <figure class="- topic/fig fig fignone" id="rtp_working_logic__fig_v5m_zry_21c" data-ofbid="rtp_working_logic__fig_v5m_zry_21c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_working_logic__image_ewc_lry_21c" src="../../../images/rtp/rtp_hw_structure.png" width="288" alt="hw_structure"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">RTP 硬件结构侧视图</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d52827e35__20250121171519">如图所示，RTP 硬件分为下列多层结构：</p>
+            <ul class="- topic/ul ul" id="rtp_working_logic__ul_fwc_lry_21c" data-ofbid="rtp_working_logic__ul_fwc_lry_21c"><li class="- topic/li li" data-ofbid="d52827e39__20250121171519">
+                    <p class="- topic/p p" data-ofbid="d52827e41__20250121171519">表面硬图层：手指触摸的表面是一个硬涂层，用以保护下面的 PET 层。</p>
+                </li><li class="- topic/li li" data-ofbid="d52827e44__20250121171519">
+                    <p class="- topic/p p" data-ofbid="d52827e46__20250121171519">PET 层：很薄、有弹性，当表面被触摸时它会向下弯曲，并使得下面的两层 ITO 涂层能够相互接触并在该点连通电路。</p>
+                </li><li class="- topic/li li" data-ofbid="d52827e49__20250121171519">
+                    <p class="- topic/p p" data-ofbid="d52827e51__20250121171519">ITO 陶瓷层：两个 ITO 层之间是约千分之一英寸厚的一些隔离支点使两层分开。</p>
+                </li><li class="- topic/li li" data-ofbid="d52827e54__20250121171519">
+                    <p class="- topic/p p" data-ofbid="d52827e56__20250121171519">玻璃底层：最下面是一个透明的硬底层用来支撑上面的结构，通常也可以用塑料。</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d52827e60__20250121171519">RTP 多层结构会导致较大的光损失，手持设备通常需要加大背光源来弥补透光性不好的问题，从而增加电池的消耗。</p>
+        </section><section class="- topic/section section" id="rtp_working_logic__section_gwc_lry_21c" data-ofbid="rtp_working_logic__section_gwc_lry_21c"><h2 class="- topic/title title sectiontitle">坐标计算</h2>
+            
+            <div class="- topic/p p" data-ofbid="d52827e68__20250121171519">ITO 陶瓷层分为上下两层，即 X 层和 Y 层，中间用隔离支点分开：<ul class="- topic/ul ul" id="rtp_working_logic__ul_iwc_lry_21c" data-ofbid="rtp_working_logic__ul_iwc_lry_21c"><li class="- topic/li li" data-ofbid="d52827e71__20250121171519">
+                        <p class="- topic/p p" data-ofbid="d52827e73__20250121171519">当有触摸按下时，触摸点的 X 层和 Y 层会导通。</p>
+                    </li><li class="- topic/li li" data-ofbid="d52827e76__20250121171519">
+                        <p class="- topic/p p" data-ofbid="d52827e78__20250121171519">当没有触摸按下时，X 层和 Y 层分离，无法测得电压。</p>
+                    </li></ul></div>
+            <p class="- topic/p p" data-ofbid="d52827e82__20250121171519">X 层上 X- 到 X+ 和 Y- 到 Y+的电阻是均匀分布的，其电路等效图如下：</p>
+            <figure class="- topic/fig fig fignone" id="rtp_working_logic__fig_n4b_yry_21c" data-ofbid="rtp_working_logic__fig_n4b_yry_21c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_working_logic__image_jwc_lry_21c" src="../../../images/rtp/xy_layer.png" alt="xy_layer1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">RTP 的 X 层、Y 层等效电路</span></figcaption></figure>
+            <ol class="- topic/ol ol" id="rtp_working_logic__ol_kwc_lry_21c" data-ofbid="rtp_working_logic__ol_kwc_lry_21c"><li class="- topic/li li" data-ofbid="d52827e93__20250121171519">
+                    <p class="- topic/p p" data-ofbid="d52827e95__20250121171519"><strong class="+ topic/ph hi-d/b ph b">计算 X 坐标</strong>：在 X+ 电极施加驱动电压 V， X- 电极接地，Y+ 做为引出端测量得到接触点的电压。</p>
+                    <figure class="- topic/fig fig fignone" id="rtp_working_logic__fig_qww_vry_21c" data-ofbid="rtp_working_logic__fig_qww_vry_21c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_working_logic__image_lwc_lry_21c" src="../../../images/rtp/x_coordinate.png" alt="x_coordinate1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">计算 X 坐标的关系图</span></figcaption></figure>
+                    <div class="- topic/p p" data-ofbid="d52827e107__20250121171519">由于 ITO 层均匀导电，触点电压与 Vdrive 电压之比等于触点 X 坐标与屏宽度之比。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_working_logic__pre_mwc_lry_21c" data-ofbid="rtp_working_logic__pre_mwc_lry_21c">x=(Vy/Vdrv)*width</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d52827e112__20250121171519"><strong class="+ topic/ph hi-d/b ph b">计算 Y 坐标</strong>：在 Y+ 电极施加驱动电压 V，Y- 接地，芯片通过 X+ 测量接触点的电压。<figure class="- topic/fig fig fignone" id="rtp_working_logic__fig_m13_vry_21c" data-ofbid="rtp_working_logic__fig_m13_vry_21c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_working_logic__image_owc_lry_21c" src="../../../images/rtp/y_coordinate.png" alt="y_coordinate1"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">计算 Y 坐标的关系图</span></figcaption></figure><div class="- topic/p p" data-ofbid="d52827e122__20250121171519">由于 ITO 层均匀导电，触点电压与 V 电压之比等于触点 Y
+                        坐标与屏高度之比。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_working_logic__pre_pwc_lry_21c" data-ofbid="rtp_working_logic__pre_pwc_lry_21c">y/height=Vx/Vdrvy=(Vx/Vdrv)*height</pre></div></li></ol>
+        </section><section class="- topic/section section" id="rtp_working_logic__section_qwc_lry_21c" data-ofbid="rtp_working_logic__section_qwc_lry_21c"><h2 class="- topic/title title sectiontitle">坐标采样</h2>
+            
+            <p class="- topic/p p" data-ofbid="d52827e132__20250121171519">基于以上原理，对 X+、X-、Y+、Y- 加不同的电信号，拉低、还是拉高，会得到多种组合，
+                常用的组合命名为：XN、XP、YN、YP、ZA、ZB、ZC、ZD，具体电信号定义见 spec。 可以简单理解为：X*、Y* 都是和位置有关的数据，Z*
+                是和压感有关的数据。</p>
+        </section><section class="- topic/section section" id="rtp_working_logic__section_rwc_lry_21c" data-ofbid="rtp_working_logic__section_rwc_lry_21c"><h2 class="- topic/title title sectiontitle">坐标校准</h2><div class="- topic/p p" data-ofbid="d52827e138__20250121171519">触摸屏和 LCD 屏需要结合在一起使用：<ul class="- topic/ul ul" id="rtp_working_logic__ul_mv3_vfs_sdc" data-ofbid="rtp_working_logic__ul_mv3_vfs_sdc"><li class="- topic/li li" data-ofbid="d52827e141__20250121171519">
+                        <p class="- topic/p p" data-ofbid="d52827e143__20250121171519">LCD 屏中运行的 GUI 需要获得一个转换后的坐标， 且坐标值必须在 LCD 屏分辨率的范围内。</p>
+                    </li><li class="- topic/li li" data-ofbid="d52827e146__20250121171519">
+                        <p class="- topic/p p" data-ofbid="d52827e148__20250121171519">从触摸屏坐标转换到 LCD 坐标的过程，会执行一次线性转换，通用公式如下：</p>
+                        <div class="- topic/p p" data-ofbid="d52827e151__20250121171519">
+                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_working_logic__image_swc_lry_21c" src="../../../images/rtp/coordinate_adjustment.png" alt="coordinate_adjustment1"/></div><br/>
+                        </div>
+                        <p class="- topic/p p" data-ofbid="d52827e158__20250121171519">在线性转换公式中，s 表示 RTP 的 ADC 分辨率，12bit 表示 4096，即 RTP 采样得到的数据范围是
+                            0~4095。校准过程如下：</p>
+                        <div class="- topic/p p" data-ofbid="d52827e161__20250121171519">
+                            <ul class="- topic/ul ul" id="rtp_working_logic__ul_py2_cgs_sdc" data-ofbid="rtp_working_logic__ul_py2_cgs_sdc"><li class="- topic/li li" data-ofbid="d52827e164__20250121171519">分别点击屏幕的四个角落，可测到 4 组 LCD 坐标值和触摸屏触摸屏坐标值。</li><li class="- topic/li li" data-ofbid="d52827e166__20250121171519">列出 8 个等式， 求解出 a、b、c、d、e、f 的值。<p class="- topic/p p" data-ofbid="d52827e168__20250121171519">开源 tslib 库附带的 ts_calibrate
+                                        工具，提供了 5 点校准的处理。</p></li></ul>
+                        </div>
+                    </li></ul></div></section><section class="- topic/section section" id="rtp_working_logic__section_uwc_lry_21c" data-ofbid="rtp_working_logic__section_uwc_lry_21c"><h2 class="- topic/title title sectiontitle">压感计算</h2><p class="- topic/p p" data-ofbid="d52827e175__20250121171519">当打开压感数据后，便于根据压力数据来过滤掉一些抖动的点。
+                尤其在触摸时抬起的瞬间会大概率产生压力很小的采样数据，这样的数据会存在较大误差，可以根据压力将其过滤掉。</p><p class="- topic/p p" data-ofbid="d52827e177__20250121171519">可以通过下列公式计算压力数据：</p><p class="- topic/p p" data-ofbid="d52827e179__20250121171519"><strong class="+ topic/ph hi-d/b ph b">公式 1：</strong></p><div class="- topic/p p" data-ofbid="d52827e182__20250121171519"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_working_logic__image_vwc_lry_21c" src="../../../images/rtp/pressure_formula1.png" width="192" alt="pressure_formula"/></div><br/></div><p class="- topic/p p" data-ofbid="d52827e186__20250121171519"><strong class="+ topic/ph hi-d/b ph b">公式 2：</strong></p><div class="- topic/p p" data-ofbid="d52827e189__20250121171519"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_working_logic__image_wwc_lry_21c" src="../../../images/rtp/pressure_formula2.png" width="384" alt="pressure_formula21"/></div><br/></div><div class="- topic/p p" data-ofbid="d52827e193__20250121171519">两个公式的计算结果误差在 10% 以内。其中：<ul class="- topic/ul ul" id="rtp_working_logic__ul_zjv_vgs_sdc" data-ofbid="rtp_working_logic__ul_zjv_vgs_sdc"><li class="- topic/li li" data-ofbid="d52827e196__20250121171519">
+                        <p class="- topic/p p" data-ofbid="d52827e198__20250121171519">公式 1 只需一个 plate 参数，公式 2 需要 x-plate 和 y-plate 参数。</p>
+                    </li><li class="- topic/li li" data-ofbid="d52827e201__20250121171519">
+                        <p class="- topic/p p" data-ofbid="d52827e203__20250121171519">公式 1  中的 Z1 和 Z2 对应坐标组合 ZA 和 ZB 的数据</p>
+                    </li><li class="- topic/li li" data-ofbid="d52827e206__20250121171519">
+                        <p class="- topic/p p" data-ofbid="d52827e208__20250121171519">根据屏幕实测的电阻值，配置 DTS 中的 x-plate 和 y-plate 参数。</p>
+                    </li></ul></div></section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#rtp_working_logic__section_dwc_lry_21c" data-tocid="rtp_working_logic__section_dwc_lry_21c">硬件结构原理</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_working_logic__section_gwc_lry_21c" data-tocid="rtp_working_logic__section_gwc_lry_21c">坐标计算</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_working_logic__section_qwc_lry_21c" data-tocid="rtp_working_logic__section_qwc_lry_21c">坐标采样</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_working_logic__section_rwc_lry_21c" data-tocid="rtp_working_logic__section_rwc_lry_21c">坐标校准</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_working_logic__section_uwc_lry_21c" data-tocid="rtp_working_logic__section_uwc_lry_21c">压感计算</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

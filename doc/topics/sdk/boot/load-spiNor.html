@@ -1,0 +1,205 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="common/spl/spl_spi.c 中通过宏注册了 SPI NOR 的程序加载器。 SPL_LOAD_IMAGE_METHOD( &#34;SPI&#34; , 1 ,BOOT_DEVICE_SPI,spl_spi_load_image); 在 SPL 初始化过程中，通过 boot_from_devices(spl_boot_list) 函数调用，检查当前项目所支持的 SPL ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_dhz_pj3_pzb"/><meta name="DC.language" content="zh-CN"/><title>SPI NOR 加载</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/load-spiNor.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/load-spiNor.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_dhz_pj3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/load-spiNor.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">SPI NOR 加载</h1><div class="date inPage">25 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d212341e22__20250121171640"><span class="+ topic/ph sw-d/filepath ph filepath">common/spl/spl_spi.c</span> 中通过宏注册了 SPI NOR 的程序加载器。</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_dhz_pj3_pzb__pre_mjf_v1h_bzb" data-ofbid="concept_dhz_pj3_pzb__pre_mjf_v1h_bzb">SPL_LOAD_IMAGE_METHOD(<span class="hl-string">"SPI"</span>,<span class="hl-number">1</span>,BOOT_DEVICE_SPI,spl_spi_load_image);</pre><ol class="- topic/ol ol" id="concept_dhz_pj3_pzb__ul_vw4_bcx_5dc" data-ofbid="concept_dhz_pj3_pzb__ul_vw4_bcx_5dc"><li class="- topic/li li" data-ofbid="d212341e29__20250121171640">
+                <div class="- topic/p p" data-ofbid="d212341e31__20250121171640">在 SPL 初始化过程中，通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">boot_from_devices(spl_boot_list)</span>
+                    函数调用，检查当前项目所支持的 SPL
+                    读取的存储介质类型，然后依次检查是否存在对应的程序加载器。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_dhz_pj3_pzb__codeblock_szf_jsy_c1c" data-ofbid="concept_dhz_pj3_pzb__codeblock_szf_jsy_c1c">board_init_r()    <em class="hl-comment">// common/spl/spl.c</em>
+|-&gt; boot_from_devices(spl_boot_list)
+    |-&gt; spl_ll_find_loader()  <em class="hl-comment">// 根据 device 找到 spl_load_image 指针</em>
+            <em class="hl-comment">// 这里可能是各种介质的 load image 函数</em>
+            <em class="hl-comment">// SPL_LOAD_IMAGE_METHOD() 定义的 Loader</em>
+            <em class="hl-comment">// 可能是 MMC/SPI/BROM/...</em></pre></div>
+            </li><li class="- topic/li li" data-ofbid="d212341e39__20250121171640">
+                <p class="- topic/p p" data-ofbid="d212341e41__20250121171640">找到 SPL SPI NOR Loader 之后，从项目配置的指定位置读取数据。</p>
+                <div class="- topic/p p" data-ofbid="d212341e44__20250121171640">SPI NOR 加载器需要编译时配置所用的 SPI 信息：<ul class="- topic/ul ul" id="concept_dhz_pj3_pzb__ul_ojf_v1h_bzb" data-ofbid="concept_dhz_pj3_pzb__ul_ojf_v1h_bzb"><li class="- topic/li li" data-ofbid="d212341e47__20250121171640">
+                            <p class="- topic/p p" data-ofbid="d212341e49__20250121171640">CONFIG_SF_DEFAULT_BUS</p>
+                        </li><li class="- topic/li li" data-ofbid="d212341e52__20250121171640">
+                            <p class="- topic/p p" data-ofbid="d212341e54__20250121171640">CONFIG_SF_DEFAULT_CS</p>
+                        </li><li class="- topic/li li" data-ofbid="d212341e57__20250121171640">
+                            <p class="- topic/p p" data-ofbid="d212341e59__20250121171640">CONFIG_SF_DEFAULT_SPEED</p>
+                        </li><li class="- topic/li li" data-ofbid="d212341e62__20250121171640">
+                            <p class="- topic/p p" data-ofbid="d212341e64__20250121171640">CONFIG_SF_DEFAULT_MODE</p>
+                        </li></ul></div>
+            </li><li class="- topic/li li" data-ofbid="d212341e68__20250121171640">
+                <p class="- topic/p p" data-ofbid="d212341e70__20250121171640">通过下面的配置指定读取数据的位置：</p>
+                <div class="- topic/p p" data-ofbid="d212341e73__20250121171640">CONFIG_SYS_SPI_U_BOOT_OFFS：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_dhz_pj3_pzb__codeblock_fzy_jsy_c1c" data-ofbid="concept_dhz_pj3_pzb__codeblock_fzy_jsy_c1c">boot_from_devices(spl_boot_list); <em class="hl-comment">// common/spl/spl.c</em>
+|-&gt; spl_ll_find_loader()  <em class="hl-comment">// 根据 device 找到 spl_load_image 指针</em>
+|   <em class="hl-comment">// 此处通过遍历固件的 .u_boot_list_2_spl_image_loader_* 段</em>
+|   <em class="hl-comment">// 找到当前支持的存储介质，然后逐个尝试</em>
+|
+|-&gt; spl_load_image(loader);
+    |-&gt; loader-&gt;load_image(spl_image, &amp;bootdev);
+        spl_spi_load_image();  <em class="hl-comment">// common/spl/spl_spi.c</em>
+        |-&gt; spi_flash_probe();
+        |-&gt; spl_get_load_buffer(-<strong class="hl-keyword">sizeof</strong>(*header), <strong class="hl-keyword">sizeof</strong>(*header));
+        |-&gt; spi_flash_read(header);
+        |-&gt; spl_parse_image_header();
+        |-&gt; spi_flash_read();
+            |-&gt; spi_flash_read_dm(flash-&gt;dev, offset, len, buf);
+                |-&gt; sf_get_ops(dev)-&gt;read(dev, offset, len, buf);
+                    spi_flash_std_read(dev, offset, len, buf);
+                    | <em class="hl-comment">// drivers/mtd/spi/sf_probe.c</em>
+                    |-&gt; mtd-&gt;_read(mtd, offset, len, &amp;retlen, buf);
+                            spi_flash_mtd_read(mtd, offset, len, &amp;retlen, buf);
+                            <em class="hl-comment">// drivers/mtd/spi/sf_mtd.c</em></pre></div>
+            </li></ol></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

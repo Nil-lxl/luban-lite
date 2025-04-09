@@ -1,0 +1,285 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍 RTC 调试流程。 打开调试开关 在 SDK 根目录下，执行下列命令，进入 kernel 的功能配置界面： make kernel-menuconfig 或使用简写命令 make km 在内核配置界面，按如下选择，打开调试开关： Linux Kernel hacking ArtInChip Debug [*] RTC driver debug 打开 DEBUG 选项后： 驱动以 -O0 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-16"/><meta name="DC.date.modified" content="2024-12-18"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="rtc_debug_guide"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/rtc/rtc-debug-guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/rtc/rtc-debug-guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="rtc_debug_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/rtc/rtc-debug-guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">18 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d340464e23__20250121171902">本节介绍 RTC 调试流程。</p><section class="- topic/section section" id="rtc_debug_guide__section_qnm_1d5_mdc" data-ofbid="rtc_debug_guide__section_qnm_1d5_mdc"><h2 class="- topic/title title sectiontitle">打开调试开关</h2>
+            
+            <ol class="- topic/ol ol" id="rtc_debug_guide__ol_pxc_yjz_sdc" data-ofbid="rtc_debug_guide__ol_pxc_yjz_sdc"><li class="- topic/li li" data-ofbid="d340464e31__20250121171902">
+                    <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d340464e35__20250121171902">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_wg1_3ml_sdc" data-ofbid="rtc_debug_guide__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d340464e40__20250121171902">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d340464e43__20250121171902">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_uss_hml_sdc" data-ofbid="rtc_debug_guide__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                </li><li class="- topic/li li" data-ofbid="d340464e50__20250121171902">
+                    <div class="- topic/p p" data-ofbid="d340464e52__20250121171902">在内核配置界面，按如下选择，打开调试开关：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_fzw_kqt_c1c" data-ofbid="rtc_debug_guide__codeblock_fzw_kqt_c1c">Linux
+    Kernel hacking
+        ArtInChip Debug
+            [*] RTC driver debug</pre></div>
+                    <div class="- topic/p p" data-ofbid="d340464e57__20250121171902">打开 DEBUG 选项后：<ul class="- topic/ul ul" id="rtc_debug_guide__ol_ucp_mss_c1c" data-ofbid="rtc_debug_guide__ol_ucp_mss_c1c"><li class="- topic/li li" data-ofbid="d340464e60__20250121171902">
+                        <p class="- topic/p p" data-ofbid="d340464e62__20250121171902">驱动以<code class="+ topic/ph pr-d/codeph ph codeph">-O0</code> 编译。</p>
+                    </li><li class="- topic/li li" data-ofbid="d340464e68__20250121171902">
+                        <p class="- topic/p p" data-ofbid="d340464e70__20250121171902"><span class="+ topic/keyword pr-d/parmname keyword parmname">pr_dbg()</span> 和 <span class="+ topic/keyword pr-d/parmname keyword parmname">dev_dbg()</span> 调试信息会被编译。</p>
+                        <div class="- topic/p p" id="rtc_debug_guide__p_wvf_n3w_mdc" data-ofbid="rtc_debug_guide__p_wvf_n3w_mdc">在系统运行时，如果要打印 <span class="+ topic/keyword pr-d/parmname keyword parmname">pr_dbg()</span> 和
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">dev_dbg()</span> 信息，还需要调整 <span class="+ topic/keyword pr-d/parmname keyword parmname">loglevel</span> 为
+                                8，可以通过以下两种方式实现：<ul class="- topic/ul ul" id="rtc_debug_guide__ol_vcp_mss_c1c" data-ofbid="rtc_debug_guide__ol_vcp_mss_c1c"><li class="- topic/li li" data-ofbid="d340464e90__20250121171902">
+                                    <p class="- topic/p p" data-ofbid="d340464e92__20250121171902">在 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中修改
+                                            <span class="+ topic/keyword pr-d/parmname keyword parmname">bootargs</span>，增加
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">“loglevel=8”</span></p>
+                                </li><li class="- topic/li li" data-ofbid="d340464e103__20250121171902">
+                                    <div class="- topic/p p" data-ofbid="d340464e105__20250121171902">在板子启动到 Linux Shell
+                                        后，执行下列命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__pre_wcp_mss_c1c" data-ofbid="rtc_debug_guide__pre_wcp_mss_c1c">echo8 &gt; /proc/sys/kernel/printk</pre></div>
+                                </li></ul></div>
+                    </li></ul></div>
+                </li></ol>
+        </section><section class="- topic/section section" id="rtc_debug_guide__section_sbx_xc5_mdc" data-ofbid="rtc_debug_guide__section_sbx_xc5_mdc"><h2 class="- topic/title title sectiontitle">Sysfs 节点</h2>
+            
+            <div class="- topic/p p" data-ofbid="d340464e118__20250121171902">Linux 内核原生提供一些 RTC 的 Sysfs 节点，可以用来获取（只读）时间、范围等信息。<ol class="- topic/ol ol" data-ofbid="d340464e120__20250121171902"><li class="- topic/li li" id="rtc_debug_guide__li_sysfs_status" data-ofbid="rtc_debug_guide__li_sysfs_status"><strong class="+ topic/ph hi-d/b ph b">状态信息</strong><div class="- topic/p p" data-ofbid="d340464e124__20250121171902">
+                            <ol class="- topic/ol ol" type="a" id="rtc_debug_guide__ol_vtv_3kz_sdc" data-ofbid="rtc_debug_guide__ol_vtv_3kz_sdc"><li class="- topic/li li" data-ofbid="d340464e127__20250121171902">在 <span class="+ topic/ph sw-d/filepath ph filepath">/sys/class/rtc/</span>  目录中查找系统中的 RTC
+                                        设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_m2y_wss_c1c" data-ofbid="rtc_debug_guide__codeblock_m2y_wss_c1c">ls /sys/class/rtc/rtc0/</pre><div class="- topic/p p" data-ofbid="d340464e134__20250121171902">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_prr_jkz_sdc" data-ofbid="rtc_debug_guide__codeblock_prr_jkz_sdc">date           hctosys        range          time
+dev            max_user_freq  since_epoch    uevent
+device         name           subsystem</pre></div></li><li class="- topic/li li" data-ofbid="d340464e138__20250121171902">
+                                    <div class="- topic/p p" data-ofbid="d340464e140__20250121171902">选择一个 RTC 设备并进入其目录：<ul class="- topic/ul ul" id="rtc_debug_guide__ul_gtf_pkz_sdc" data-ofbid="rtc_debug_guide__ul_gtf_pkz_sdc"><li class="- topic/li li" data-ofbid="d340464e143__20250121171902">示例 1：查看 <code class="+ topic/ph pr-d/codeph ph codeph">time</code>
+                                                  信息<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_vwb_kkz_sdc" data-ofbid="rtc_debug_guide__codeblock_vwb_kkz_sdc">cat /sys/class/rtc/rtc0/time</pre><div class="- topic/p p" data-ofbid="d340464e150__20250121171902">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_qv3_4kz_sdc" data-ofbid="rtc_debug_guide__codeblock_qv3_4kz_sdc"><span class="hl-number">00</span>:<span class="hl-number">00</span>:<span class="hl-number">00</span></pre></div></li><li class="- topic/li li" data-ofbid="d340464e154__20250121171902">示例 2：查看 <code class="+ topic/ph pr-d/codeph ph codeph">date</code>
+                                                  信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_sbs_4kz_sdc" data-ofbid="rtc_debug_guide__codeblock_sbs_4kz_sdc">cat /sys/class/rtc/rtc0/date</pre><div class="- topic/p p" data-ofbid="d340464e161__20250121171902">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_c3x_rkz_sdc" data-ofbid="rtc_debug_guide__codeblock_c3x_rkz_sdc"><span class="hl-number">1970</span>-<span class="hl-number">01</span>-<span class="hl-number">01</span></pre></div></li></ul></div>
+                                </li><li class="- topic/li li" data-ofbid="d340464e166__20250121171902">
+                                    <div class="- topic/p p" data-ofbid="d340464e168__20250121171902">在 RTC 驱动初始化成功后，会在 Sysfs 中注册生成一个 <code class="+ topic/ph pr-d/codeph ph codeph">status</code>
+                                        节点，其中打印了当前的 RTC 配置及状态信息。例如查看
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">/sys/devices/platform/soc/19030000.rtc</span>
+                                            目录中的状态信息：<ol class="- topic/ol ol" type="i" id="rtc_debug_guide__ol_lx1_clz_sdc" data-ofbid="rtc_debug_guide__ol_lx1_clz_sdc"><li class="- topic/li li" data-ofbid="d340464e177__20250121171902">
+                                                <div class="- topic/p p" data-ofbid="d340464e179__20250121171902">进入
+                                                  <span class="+ topic/ph sw-d/filepath ph filepath">/sys/devices/platform/soc/19030000.rtc/</span>
+                                                  目录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_tgr_dlz_sdc" data-ofbid="rtc_debug_guide__codeblock_tgr_dlz_sdc">cd /sys/devices/platform/soc/<span class="hl-number">19030000.</span>rtc/</pre></div>
+                                            </li><li class="- topic/li li" data-ofbid="d340464e188__20250121171902">
+                                                <div class="- topic/p p" data-ofbid="d340464e190__20250121171902">执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">cat status</span>
+                                                  命令查看状态信息，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_trp_h4y_c1c" data-ofbid="rtc_debug_guide__codeblock_trp_h4y_c1c">In RTC V1.<span class="hl-number">00</span>:
+Module Enable: <span class="hl-number">1</span>
+Alarm Enable: <span class="hl-number">0</span>, Output alarm IO: <span class="hl-number">2</span>/<span class="hl-number">1</span>, Output <span class="hl-number">32</span>K: <span class="hl-number">0</span>
+Clock rate: <span class="hl-number">32787</span>, Driver: <span class="hl-number">13</span>
+Calibration Slow, Value: -<span class="hl-number">608</span></pre></div>
+                                            </li></ol></div>
+                                </li></ol>
+                        </div></li><li class="- topic/li li" id="rtc_debug_guide__li_sysfs_drivecap_scan" data-ofbid="rtc_debug_guide__li_sysfs_drivecap_scan"><strong class="+ topic/ph hi-d/b ph b">驱动能力扫描</strong><p class="- topic/p p" data-ofbid="d340464e204__20250121171902">为了节省功耗，可以调低 RTC V1.0 的 32K
+                            时钟驱动能力，驱动力可调范围为 [0, 15]，值越大功耗越大。</p><div class="- topic/p p" data-ofbid="d340464e206__20250121171902">RTC 驱动提供了一个 Sysfs 节点
+                                <code class="+ topic/ph pr-d/codeph ph codeph">driver_capability</code>，方便用户扫描出最适合的驱动力值。在 RTC
+                                驱动初始化成功后：<ol class="- topic/ol ol" type="a" id="rtc_debug_guide__ol_o3d_llz_sdc" data-ofbid="rtc_debug_guide__ol_o3d_llz_sdc"><li class="- topic/li li" data-ofbid="d340464e212__20250121171902">进入设备 Sysfs 目录，例如
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">/sys/devices/platform/soc/19030000.rtc/</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_rfn_mlz_sdc" data-ofbid="rtc_debug_guide__codeblock_rfn_mlz_sdc">cd /sys/devices/platform/soc/<span class="hl-number">19030000.</span>rtc/</pre></li><li class="- topic/li li" data-ofbid="d340464e219__20250121171902">
+                                    <div class="- topic/p p" data-ofbid="d340464e221__20250121171902">执行下列命令，读取驱动力节点信息：<div class="- topic/note note note note_note" id="rtc_debug_guide__note_zd1_zss_c1c" data-ofbid="rtc_debug_guide__note_zd1_zss_c1c"><span class="note__title">注：</span> 
+                                            <p class="- topic/p p" data-ofbid="d340464e225__20250121171902">驱动力扫描的整个过程大约需要 16 秒。</p>
+                                        </div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_imc_plz_sdc" data-ofbid="rtc_debug_guide__codeblock_imc_plz_sdc">cat driver_capability</pre></div>
+                                    <div class="- topic/p p" data-ofbid="d340464e231__20250121171902">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__pre_bdp_mss_c1c" data-ofbid="rtc_debug_guide__pre_bdp_mss_c1c">[<span class="hl-number">95.755513</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">0</span> is OK
+[<span class="hl-number">97.835482</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">1</span> is OK
+[<span class="hl-number">99.915447</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">2</span> is OK
+[<span class="hl-number">101.995471</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">3</span> is OK
+[<span class="hl-number">104.075494</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">4</span> is OK
+[<span class="hl-number">106.155478</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">5</span> is OK
+[<span class="hl-number">108.235529</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">6</span> is OK
+[<span class="hl-number">110.315497</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">7</span> is OK
+[<span class="hl-number">112.395507</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">8</span> is OK
+[<span class="hl-number">114.475539</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">9</span> is OK
+[<span class="hl-number">116.555492</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">10</span> is OK
+[<span class="hl-number">118.635732</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">11</span> is OK
+[<span class="hl-number">120.715503</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">12</span> is OK
+[<span class="hl-number">122.795466</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">13</span> is OK
+[<span class="hl-number">124.875483</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">14</span> is OK
+[<span class="hl-number">126.955511</span>] <span class="hl-number">32</span>K-clk driver <span class="hl-number">15</span> is OK
+The status of RTC driver:
+Driver  <span class="hl-number">0123456789101112131415</span>
+Status OK OK OK OK OK OK OK OK OK OK OK OK OK OK OK OK</pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d340464e236__20250121171902">
+                                    <p class="- topic/p p" data-ofbid="d340464e238__20250121171902">从扫描结果中，选取一个标注 “OK” 的值，并将其配置到
+                                            <span class="+ topic/keyword pr-d/parmname keyword parmname">:ref:`ref_to_rtc_dts`</span>
+                                        。 </p>
+                                </li></ol></div></li></ol></div>
+        </section><section class="- topic/section section" id="rtc_debug_guide__section_cnr_4c5_mdc" data-ofbid="rtc_debug_guide__section_cnr_4c5_mdc"><h2 class="- topic/title title sectiontitle">hwclock 命令</h2>
+            
+            <div class="- topic/p p" data-ofbid="d340464e252__20250121171902">Busybox 源码自带一个 <code class="+ topic/ph pr-d/codeph ph codeph">hwclock</code> 工具，用来读取和设置 RTC 时间。用法如下：<ul class="- topic/ul ul" id="rtc_debug_guide__ul_jkd_dmz_sdc" data-ofbid="rtc_debug_guide__ul_jkd_dmz_sdc"><li class="- topic/li li" data-ofbid="d340464e258__20250121171902">
+                        <div class="- topic/p p" data-ofbid="d340464e260__20250121171902">读取当前 RTC
+                            时间（不加任何参数时就默认是读取）：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_fm2_2mz_sdc" data-ofbid="rtc_debug_guide__codeblock_fm2_2mz_sdc">hwclock -r</pre></div>
+                        <div class="- topic/p p" data-ofbid="d340464e265__20250121171902">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__pre_sxs_bts_c1c" data-ofbid="rtc_debug_guide__pre_sxs_bts_c1c">Thu Jan  <span class="hl-number">100</span>:<span class="hl-number">00</span>:<span class="hl-number">00</span> <span class="hl-number">19700.000000</span> seconds</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d340464e270__20250121171902">
+                        <div class="- topic/p p" data-ofbid="d340464e272__20250121171902">读取当前 RTC
+                            时间，并加上时区校准：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_cg1_gmz_sdc" data-ofbid="rtc_debug_guide__codeblock_cg1_gmz_sdc">hwclock -ru</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d340464e277__20250121171902">
+                        <div class="- topic/p p" data-ofbid="d340464e279__20250121171902">将当前的系统时间同步设置到
+                            RTC：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_rbw_gmz_sdc" data-ofbid="rtc_debug_guide__codeblock_rbw_gmz_sdc">hwclock -w</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d340464e284__20250121171902">
+                        <div class="- topic/p p" data-ofbid="d340464e286__20250121171902">将当前的系统时间减去时区值，并同步设置到
+                            RTC：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_xkz_3mz_sdc" data-ofbid="rtc_debug_guide__codeblock_xkz_3mz_sdc">hwclock -wu</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d340464e291__20250121171902">
+                        <div class="- topic/p p" data-ofbid="d340464e293__20250121171902">将 RTC
+                            时间同步到系统时间：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtc_debug_guide__codeblock_q3h_fmz_sdc" data-ofbid="rtc_debug_guide__codeblock_q3h_fmz_sdc">hwclock -s </pre></div>
+                    </li></ul></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#rtc_debug_guide__section_qnm_1d5_mdc" data-tocid="rtc_debug_guide__section_qnm_1d5_mdc">打开调试开关</a></div></li><li class="section-item"><div class="section-title"><a href="#rtc_debug_guide__section_sbx_xc5_mdc" data-tocid="rtc_debug_guide__section_sbx_xc5_mdc">Sysfs 节点</a></div></li><li class="section-item"><div class="section-title"><a href="#rtc_debug_guide__section_cnr_4c5_mdc" data-tocid="rtc_debug_guide__section_cnr_4c5_mdc">hwclock 命令</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

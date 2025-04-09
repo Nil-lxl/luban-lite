@@ -1,0 +1,359 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="AICFB 显示驱动接口分可为标准功能和扩展功能。 标准功能： 将物理显存映射到用户空间 获取显示屏的分辨率和获取 Framebuffer 的像素格式 支持单缓冲 Framebuffer 和双缓冲 Framebuffer 可配置 扩展功能： 获取图层个数 获取图层能力 获取图层配置数据 更新图层配置数据 支持同时更新多图层配置数据 支持图层 scaler 设置 支持 alpha blending ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-11-28"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="display_interface_design"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/display/display_interface.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_interface.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="display_interface_design" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_interface.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">接口设计</h1><div class="date inPage">28 Nov 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d316378e22__20250121171821">AICFB 显示驱动接口分可为标准功能和扩展功能。<ul class="- topic/ul ul" id="display_interface_design__ul_f31_jbg_d1c" data-ofbid="display_interface_design__ul_f31_jbg_d1c"><li class="- topic/li li" data-ofbid="d316378e25__20250121171821">
+                    <div class="- topic/p p" data-ofbid="d316378e27__20250121171821">标准功能：<ul class="- topic/ul ul" id="display_interface_design__ol_g31_jbg_d1c" data-ofbid="display_interface_design__ol_g31_jbg_d1c"><li class="- topic/li li" data-ofbid="d316378e30__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e32__20250121171821">将物理显存映射到用户空间</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e35__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e37__20250121171821">获取显示屏的分辨率和获取 Framebuffer 的像素格式</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e40__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e42__20250121171821">支持单缓冲 Framebuffer 和双缓冲 Framebuffer 可配置</p>
+                            </li></ul></div>
+                </li><li class="- topic/li li" data-ofbid="d316378e46__20250121171821">
+                    <div class="- topic/p p" data-ofbid="d316378e48__20250121171821">扩展功能：<ul class="- topic/ul ul" id="display_interface_design__ol_i31_jbg_d1c" data-ofbid="display_interface_design__ol_i31_jbg_d1c"><li class="- topic/li li" data-ofbid="d316378e51__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e53__20250121171821">获取图层个数</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e56__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e58__20250121171821">获取图层能力</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e61__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e63__20250121171821">获取图层配置数据</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e66__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e68__20250121171821">更新图层配置数据</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e71__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e73__20250121171821">支持同时更新多图层配置数据</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e76__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e78__20250121171821">支持图层 scaler 设置</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e81__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e83__20250121171821">支持 alpha blending 设置</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e86__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e88__20250121171821">支持 color key</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e91__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e93__20250121171821">获取显示屏大小</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e96__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e98__20250121171821">绑定 DMA-BUF</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e101__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e103__20250121171821">解绑 DMA-BUF</p>
+                            </li><li class="- topic/li li" data-ofbid="d316378e107__20250121171821">
+                                <p class="- topic/p p" data-ofbid="d316378e109__20250121171821">将 /dev/fb0 导出为 dmabuf fd</p>
+                            </li></ul></div>
+                </li></ul></div><section class="- topic/section section" id="display_interface_design__section_mkv_pbg_d1c" data-ofbid="display_interface_design__section_mkv_pbg_d1c"><h2 class="- topic/title title sectiontitle">Framebuffer 标准接口</h2>
+            
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_interface_design__codeblock_ecc_5bg_d1c" data-ofbid="display_interface_design__codeblock_ecc_5bg_d1c"><strong class="hl-keyword">int</strong> (<strong class="hl-keyword">int</strong> fd, <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong> cmd, CMD_DATA_TYPE *cmddata);</pre>
+            
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_j4m_mbg_d1c" data-ofbid="display_interface_design__table_j4m_mbg_d1c" data-cols="3"><caption></caption><colgroup><col style="width:16.891891891891888%"/><col style="width:64.3581081081081%"/><col style="width:18.75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_j4m_mbg_d1c__entry__1">参数</th><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_j4m_mbg_d1c__entry__2">描述</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_j4m_mbg_d1c__entry__3">输入/输出</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_j4m_mbg_d1c__entry__1">Fd</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_j4m_mbg_d1c__entry__2">打开 FB 设备后设备描述符</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_j4m_mbg_d1c__entry__3">输入</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_j4m_mbg_d1c__entry__1">cmd</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_j4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e147__20250121171821">主要的 cmd 命令如下：</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e150__20250121171821"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">FBIOGET_VSCREENINFO</span>：获取屏幕可变信息</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e155__20250121171821"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">FBIOPUT_VSCREENINFO</span>：设置屏幕可变信息</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e160__20250121171821"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">FBIOGET_FSCREENINFO</span>：获取屏幕固定信息</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e165__20250121171821"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">FBIOPAN_DISPLAY</span>：设置 PAN 显示</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e171__20250121171821"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">FBIO_WAITFORVSYNC</span>: 等待 vsync 信号</p>
+                                </td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_j4m_mbg_d1c__entry__3">输入</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_j4m_mbg_d1c__entry__1">cmddata</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_j4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e183__20250121171821">各 cmd  对应的数据类型分别是：</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e186__20250121171821">屏幕可变信息：struct fb_var_screeninfo *类型</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e189__20250121171821">屏幕固定信息：struct fb_fix_screeninfo *类型</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e192__20250121171821">PAN 显示：struct fb_var_screeninfo *类型</p>
+                                </td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_j4m_mbg_d1c__entry__3">输入/输出</td></tr></tbody></table></div>
+            
+        </section><section class="- topic/section section" id="display_interface_design__section_b4t_nbg_d1c" data-ofbid="display_interface_design__section_b4t_nbg_d1c"><h2 class="- topic/title title sectiontitle">扩展接口</h2>
+            
+            
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_k4m_mbg_d1c" data-ofbid="display_interface_design__table_k4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_WAIT_FOR_VSYNC</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_k4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_k4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, unsigned
+                                    int *pvalue);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_k4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_k4m_mbg_d1c__entry__2">等待 Vsync 信号</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_k4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_k4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e226__20250121171821">CMD: AICFB_WAIT_FOR_VSYNC</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e229__20250121171821">pvalue: 该值无意义，固定为 NULL</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_k4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_k4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e237__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e240__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_k4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_k4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_l4m_mbg_d1c" data-ofbid="display_interface_design__table_l4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_LAYER_NUM</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_l4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_l4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_layer_num *pvalue);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_l4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_l4m_mbg_d1c__entry__2">获取显示图层的个数, 包括 UI  图层个数和 Video 图层</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_l4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_l4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e272__20250121171821">CMD: AICFB_GET_LAYER_NUM</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e275__20250121171821">player_num: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_dvy_ccg_d1c">struct
+                                            aicfb_layer_num</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_l4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_l4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e287__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e290__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_l4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_l4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_m4m_mbg_d1c" data-ofbid="display_interface_design__table_m4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_LAYER_CAPABILITY</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_m4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_m4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_layer_capability *player_cap);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_m4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_m4m_mbg_d1c__entry__2">获取当前图层的能力</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_m4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_m4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e322__20250121171821">CMD: AICFB_GET_LAYER_CAPABILITY</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e325__20250121171821">player_cap: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_jcy_tdg_d1c">struct aicfb_layer_capability</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_m4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_m4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e337__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e340__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_m4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_m4m_mbg_d1c__entry__2">调用接口前要先填写结构体中的 layer_id</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_n4m_mbg_d1c" data-ofbid="display_interface_design__table_n4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_LAYER_CONFIG</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_n4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_n4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_layer_data *player_conf);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_n4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_n4m_mbg_d1c__entry__2">获取图层配置信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_n4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_n4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e372__20250121171821">CMD: <span class="+ topic/keyword sw-d/cmdname keyword cmdname">AICFB_GET_LAYER_CONFIG</span></p>
+                                    <p class="- topic/p p" data-ofbid="d316378e377__20250121171821">player_conf: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_struct_aicfb_layer_data">struct aicfb_layer_data</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_n4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_n4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e389__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e392__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_n4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_n4m_mbg_d1c__entry__2">调用接口前要先填写结构体中的 id，如果是多矩形窗口要同时填写 rect_win_id</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_o4m_mbg_d1c" data-ofbid="display_interface_design__table_o4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_LAYER_CONFIG</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_o4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_o4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_layer_data *player_conf)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_o4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_o4m_mbg_d1c__entry__2">更新图层配置信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_o4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_o4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e425__20250121171821">CMD: AICFB_UPDATE_LAYER_CONFIG</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e428__20250121171821">player_ocnf:参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_struct_aicfb_layer_data">struct aicfb_layer_data</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_o4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_o4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e440__20250121171821">0: 成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e443__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_o4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_o4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e451__20250121171821">如果是仅更新图层的部分 data  信息，</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e454__20250121171821">可以先调用接口 CONFIG，获取当前图层信息，</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e457__20250121171821">然后再修改要更新的图像信息，最后再调用此接口更新图层信息</p>
+                                </td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_p4m_mbg_d1c" data-ofbid="display_interface_design__table_p4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_LAYER_CONFIG_LISTS</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_p4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_p4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_config_lists *player_lists);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_p4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_p4m_mbg_d1c__entry__2">更新图层配置数据列表</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_p4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_p4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e484__20250121171821">CMD: AICFB_UPDATE_LAYER_CONFIG_LISTS aicfb_config_lists</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e487__20250121171821">player_lists: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_edn_pdg_d1c">struct aicfb_config_lists</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_p4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_p4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e499__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e502__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_p4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_p4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e510__20250121171821">通过此接口可以同时更新多个图层或者多个窗口的配置信息</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e513__20250121171821">通过此接口调用的好处是相关图层配置的更新可以同时生效</p>
+                                </td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_q4m_mbg_d1c" data-ofbid="display_interface_design__table_q4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_ALPHA_CONFIG</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_q4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_q4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_alpha_config *alpha);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_q4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_q4m_mbg_d1c__entry__2">获取当前图层的 Alpha 配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_q4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_q4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e540__20250121171821">CMD: AICFB_GET_ALPHA_CONFIG</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e543__20250121171821">alpha: 参结考构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_iks_ldg_d1c">struct aicfb_alpha_config </a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_q4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_q4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e555__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e558__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_q4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_q4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_r4m_mbg_d1c" data-ofbid="display_interface_design__table_r4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_ALPHA_CONFIG</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_r4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_r4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_alpha_config *alpha);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_r4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_r4m_mbg_d1c__entry__2">更新当前图层的 Alpha 配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_r4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_r4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e590__20250121171821">CMD: AICFB_UPDATE_ALPHA_CONFIG</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e593__20250121171821">alpha: 参结考构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_iks_ldg_d1c">struct aicfb_alpha_config </a>定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_r4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_r4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e605__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e608__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_r4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_r4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_s4m_mbg_d1c" data-ofbid="display_interface_design__table_s4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_CK_CONFIG</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_s4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_s4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_ck_config *player_ck);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_s4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_s4m_mbg_d1c__entry__2">获取当前图层的 CK 配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_s4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_s4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e640__20250121171821">CMD: AICFB_GET_CK_CONFIG</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e643__20250121171821">player_ck: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_bnc_jdg_d1c">struct aicfb_ck_config </a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_s4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_s4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e655__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e658__20250121171821">-1：当前图层不支持 color key</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_s4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_s4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_t4m_mbg_d1c" data-ofbid="display_interface_design__table_t4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_CK_CONFIG</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_t4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_t4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aicfb_ck_config *player_ck);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_t4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_t4m_mbg_d1c__entry__2">更新当前图层的 CK 配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_t4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_t4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e690__20250121171821">CMD: AICFB_SET_CK_CONFIG</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e693__20250121171821">player_ck: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_bnc_jdg_d1c">struct aicfb_ck_config </a>定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_t4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_t4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e705__20250121171821">0： 成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e708__20250121171821">-1：当前图层不支持 color key</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_t4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_t4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_u4m_mbg_d1c" data-ofbid="display_interface_design__table_u4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_SCREEN_SIZE</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_u4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_u4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct
+                                    aic_size *pscreen_size);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_u4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_u4m_mbg_d1c__entry__2">更新当前图层的 CK 配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_u4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_u4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e741__20250121171821">CMD: AICFB_GET_SCREEN_SIZE</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e744__20250121171821">pscreen_size: 结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_q42_gdg_d1c">struct aic_size</a> 定义了屏幕的宽，高信息</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_u4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_u4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e756__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e759__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_u4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_u4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_v4m_mbg_d1c" data-ofbid="display_interface_design__table_v4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_FB_LAYER_CONFIG</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_v4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_v4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct aicfb_layer_data
+                                    *player_conf);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_v4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_v4m_mbg_d1c__entry__2">获取标准 framebuffer 占用的图层信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_v4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_v4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e791__20250121171821">CMD: AICFB_GET_FB_LAYER_CONFIG</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e794__20250121171821">player_conf: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_struct_aicfb_layer_data">struct aicfb_layer_data</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_v4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_v4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e806__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e809__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_v4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_v4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_w4m_mbg_d1c" data-ofbid="display_interface_design__table_w4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 13</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_DMABUF</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_w4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_w4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct aicfb_dmabuf_fd
+                                    *fds);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_w4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_w4m_mbg_d1c__entry__2">通知 fb 驱动绑定 DMA-BUF</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_w4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_w4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e841__20250121171821">CMD: AICFB_GET_DMABUF</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e844__20250121171821">fds: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_oyp_ycg_d1c">struct aicfb_dmabuf_fd</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_w4m_mbg_d1c__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_w4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e856__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e859__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_w4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_w4m_mbg_d1c__entry__2">APP 在将 dmabuf 送给 DE 显示之前必须进行绑定，否则无法显示 buf 中的内容</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_x4m_mbg_d1c" data-ofbid="display_interface_design__table_x4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 14</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_PUT_DMABUF</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_x4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_x4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct aicfb_dmabuf_fd
+                                    *fds);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_x4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_x4m_mbg_d1c__entry__2">通知 fb 驱动解绑 DMA-BUF</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_x4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_x4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e891__20250121171821">CMD: AICFB_PUT_DMABUF</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e894__20250121171821">fds: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_oyp_ycg_d1c">struct aicfb_dmabuf_fd</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_x4m_mbg_d1c__entry__1">返回 值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_x4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e906__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e909__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_x4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_x4m_mbg_d1c__entry__2">无</td></tr></tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="display_interface_design__table_y4m_mbg_d1c" data-ofbid="display_interface_design__table_y4m_mbg_d1c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 15</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_TO_DMABUF_FD</span></caption><colgroup><col style="width:25%"/><col style="width:75%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="display_interface_design__table_y4m_mbg_d1c__entry__1">接口定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="display_interface_design__table_y4m_mbg_d1c__entry__2">int (int fd, unsigned long cmd, struct aicfb_dmabuf_fd
+                                    *fds);</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_y4m_mbg_d1c__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_y4m_mbg_d1c__entry__2">将 /dev/fb0 导出为一个 dmabuf fd</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_y4m_mbg_d1c__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_y4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e941__20250121171821">CMD: AICFB_TO_DMABUF_FD</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e944__20250121171821">fds: 参考结构体 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_data_structure.html#display_data_structure__li_oyp_ycg_d1c">struct aicfb_dmabuf_fd</a> 定义</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="display_interface_design__table_y4m_mbg_d1c__entry__1">返回 值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="display_interface_design__table_y4m_mbg_d1c__entry__2">
+                                    <p class="- topic/p p" data-ofbid="d316378e956__20250121171821">0：成功</p>
+                                    <p class="- topic/p p" data-ofbid="d316378e959__20250121171821">-1：失败</p>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="display_interface_design__table_y4m_mbg_d1c__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="display_interface_design__table_y4m_mbg_d1c__entry__2">导出的 dmabuf fd 不支持 mmap 操作，无法得到一个有效的虚拟地址</td></tr></tbody></table></div>
+            
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#display_interface_design__section_mkv_pbg_d1c" data-tocid="display_interface_design__section_mkv_pbg_d1c">Framebuffer 标准接口</a></div></li><li class="section-item"><div class="section-title"><a href="#display_interface_design__section_b4t_nbg_d1c" data-tocid="display_interface_design__section_b4t_nbg_d1c">扩展接口</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

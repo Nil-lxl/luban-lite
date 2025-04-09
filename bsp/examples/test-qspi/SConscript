@@ -1,0 +1,18 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('AIC_QSPI_DRV_TEST') and GetDepend('RT_USING_FINSH'):
+    src = Glob('test_qspidev.c')
+    src += Glob('test_spibit.c')
+    src += Glob('test_spi.c')
+    src += Glob('test_spi_async.c')
+    if GetDepend('AIC_QSPI_DRV_V11') and GetDepend('AIC_CHIP_D13X'):
+        src += Glob('test_spislave*.c')
+
+group = DefineGroup('test-qspi', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

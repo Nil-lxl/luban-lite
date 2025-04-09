@@ -1,0 +1,258 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="调试流程如下： 使用以下任意一种方式将 log 等级设置为最高 8： 在 target/aicxxx/common/env.txt 文件中，将 bootarg 设置 loglevel=8 在 SDK 根目录下执行 make kernel-menuconfig 或者 make km 命令打开内核配置，并设置对应的 log 等级： Kernel hacking printk and dmesg ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="uart_debug_guide"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/uart/uart_debug.dita"/><meta name="wh-out-relpath" content="topics/sdk/uart/uart_debug.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="uart_debug_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/uart/uart_debug.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d49787e22__20250121171518">调试流程如下：<ol class="- topic/ol ol" id="uart_debug_guide__ol_qb2_21z_21c" data-ofbid="uart_debug_guide__ol_qb2_21z_21c"><li class="- topic/li li" data-ofbid="d49787e25__20250121171518">
+                    <p class="- topic/p p" data-ofbid="d49787e27__20250121171518">使用以下任意一种方式将 log 等级设置为最高 8：</p>
+                    <ul class="- topic/ul ul" id="uart_debug_guide__ul_ypy_wzy_21c" data-ofbid="uart_debug_guide__ul_ypy_wzy_21c"><li class="- topic/li li" data-ofbid="d49787e31__20250121171518">在 <span class="+ topic/ph sw-d/filepath ph filepath">target/aicxxx/common/env.txt</span> 文件中，将 bootarg 设置
+                            loglevel=8</li><li class="- topic/li li" data-ofbid="d49787e36__20250121171518">
+                            <div class="- topic/p p" data-ofbid="d49787e38__20250121171518">在 SDK 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make kernel-menuconfig</span> 或者
+                                    <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make km</span> 命令打开内核配置，并设置对应的 log
+                                等级：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_zw4_f1z_21c" data-ofbid="uart_debug_guide__codeblock_zw4_f1z_21c">Kernel hacking
+    printk and dmesg options
+        (<span class="hl-number">8</span>) Default console loglevel (<span class="hl-number">1</span>-<span class="hl-number">15</span>)
+        (<span class="hl-number">7</span>) Default message log level (<span class="hl-number">1</span>-<span class="hl-number">7</span>)</pre></div>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d49787e50__20250121171518">
+                    <div class="- topic/p p" data-ofbid="d49787e52__20250121171518">在 SDK 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make kernel-menuconfig</span> 或者 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make
+                            km</span> 命令打开内核配置，按如下路径，打开 UART
+                        的调试开关：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_e2n_g1z_21c" data-ofbid="uart_debug_guide__codeblock_e2n_g1z_21c">Kernel hacking
+    [*] Kernel debuging
+        ArtInChip Debug
+        [*] UART Driver Debug</pre></div>
+                </li></ol></div><section class="- topic/section section" id="uart_debug_guide__section_eqy_wzy_21c" data-ofbid="uart_debug_guide__section_eqy_wzy_21c"><h2 class="- topic/title title sectiontitle">调试端口</h2>
+            
+            <p class="- topic/p p" data-ofbid="d49787e68__20250121171518">如果 UART 作为调试端口，其主要工作即为进行调试日志的输入输出，模块工作正常则可以正常进行日志的输入输出，调试端口是所有其他模块的调试的基础，以 uart0
+                作为调试端口为例</p>
+            <div class="- topic/p p" data-ofbid="d49787e71__20250121171518">调试端口在驱动中强制不使用 DMA。<ol class="- topic/ol ol" id="uart_debug_guide__ol_cnh_j1z_21c" data-ofbid="uart_debug_guide__ol_cnh_j1z_21c"><li class="- topic/li li" data-ofbid="d49787e74__20250121171518">端口配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_bht_j1z_21c" data-ofbid="uart_debug_guide__codeblock_bht_j1z_21c">target/d211/方案 x/board.dts
+&amp;uart0 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;uart0_pins_a&gt;;
+    status = <span class="hl-string">"okay"</span>;
+};</pre></li><li class="- topic/li li" data-ofbid="d49787e78__20250121171518">调试端口指定<p class="- topic/p p" data-ofbid="d49787e80__20250121171518">调试端口的配置只在 <span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span>
+                                中指定即可，<span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中 bootargs 中的 console 只是在 JTAG
+                            调试时使用</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_rpf_k1z_21c" data-ofbid="uart_debug_guide__codeblock_rpf_k1z_21c">target/d211/common/env.txt
+earlycon=smh
+console=ttyS0,<span class="hl-number">115200</span>n8
+loglevel=<span class="hl-number">8</span></pre></li></ol></div>
+        </section><section class="- topic/section section" id="uart_debug_guide__section_gqy_wzy_21c" data-ofbid="uart_debug_guide__section_gqy_wzy_21c"><h2 class="- topic/title title sectiontitle">功能验证</h2>
+            
+            <ol class="- topic/ol ol" id="uart_debug_guide__ol_cyt_l1z_21c" data-ofbid="uart_debug_guide__ol_cyt_l1z_21c"><li class="- topic/li li" data-ofbid="d49787e97__20250121171518">驱动加载<p class="- topic/p p" data-ofbid="d49787e99__20250121171518">uboot 和 kernel 不共享驱动，因此驱动加载是否成功也要分两个阶段验证。</p><div class="- topic/p p" data-ofbid="d49787e101__20250121171518">UART
+                        作为调试串口和非调试串口使用的驱动一致，因此系统有任何日志输出则说明驱动加载正常。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_szy_m1z_21c" data-ofbid="uart_debug_guide__codeblock_szy_m1z_21c">Serial: <span class="hl-number">8250</span>/<span class="hl-number">16550</span> driver, <span class="hl-number">8</span> ports, IRQ sharing disabled
+<span class="hl-number">18713000.</span>serial: ttyS3 at MMIO <span class="hl-number">0x18713000</span> (irq = <span class="hl-number">22</span>, base_baud = <span class="hl-number">75000000</span>) is a <span class="hl-number">16550</span>A
+aic8250_apply_quirks port:<span class="hl-number">0</span> rs485:<span class="hl-number">0</span>
+aic8250_probe port:<span class="hl-number">0</span> clk:<span class="hl-number">48000000</span> regshift:<span class="hl-number">2</span>
+aic8250_probe success.</pre></div></li><li class="- topic/li li" data-ofbid="d49787e105__20250121171518">设备信息<p class="- topic/p p" data-ofbid="d49787e107__20250121171518">系统默认会给每一个 UART 端口创建一个设备节点，即 ttyS#，而不管设备是否被打开。</p><div class="- topic/p p" data-ofbid="d49787e109__20250121171518">从
+                            <span class="+ topic/ph sw-d/filepath ph filepath">/sys/class/tty/ttyS#</span> 中查看该设备信息可以确认其是否被正常初始化：<ol class="- topic/ol ol" type="a" id="uart_debug_guide__ol_gq1_f2s_sdc" data-ofbid="uart_debug_guide__ol_gq1_f2s_sdc"><li class="- topic/li li" data-ofbid="d49787e115__20250121171518">
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__pre_lqy_wzy_21c" data-ofbid="uart_debug_guide__pre_lqy_wzy_21c">cd /sys/class/tty/ttyS1</pre>
+                            </li><li class="- topic/li li" data-ofbid="d49787e120__20250121171518">
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_fry_d2s_sdc" data-ofbid="uart_debug_guide__codeblock_fry_d2s_sdc">cat type</pre>
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_d1h_22s_sdc" data-ofbid="uart_debug_guide__codeblock_d1h_22s_sdc"><span class="hl-number">0</span>： 没有初始。<span class="hl-number">4</span>： 初始化为 <span class="hl-number">16550</span>A 设备</pre>
+                            </li><li class="- topic/li li" data-ofbid="d49787e128__20250121171518">
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_imm_22s_sdc" data-ofbid="uart_debug_guide__codeblock_imm_22s_sdc">cat console</pre>
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_gxt_22s_sdc" data-ofbid="uart_debug_guide__codeblock_gxt_22s_sdc">
+N：非调试串口。Y：调试串口
+</pre>
+                            </li></ol></div></li><li class="- topic/li li" data-ofbid="d49787e136__20250121171518">设备通信<div class="- topic/p p" data-ofbid="d49787e138__20250121171518">验证模块是否可以正常通信，最简单的办法是环路端口的 RX/TX，使用 AIC 提供的 UART 测试工具进行测试<ol class="- topic/ol ol" type="a" id="uart_debug_guide__ol_s3y_41z_21c" data-ofbid="uart_debug_guide__ol_s3y_41z_21c"><li class="- topic/li li" data-ofbid="d49787e141__20250121171518">编译测试工具<div class="- topic/p p" data-ofbid="d49787e143__20250121171518">在根目录下通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">make menuconfig</span> 可以选择编译 AIC 提供的
+                                    UART
+                                    测试工具到系统：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_jx4_p1z_21c" data-ofbid="uart_debug_guide__codeblock_jx4_p1z_21c">ArtInChip packages
+    Sample code
+        [*] test-uart</pre></div></li><li class="- topic/li li" data-ofbid="d49787e150__20250121171518">端口环路测试<div class="- topic/p p" data-ofbid="d49787e152__20250121171518">运行下列进行环路测试，但不使用其测试调试端口：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_z53_q1z_21c" data-ofbid="uart_debug_guide__codeblock_z53_q1z_21c">test_uart -C /dev/ttyS1  <span class="hl-number">9600</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_debug_guide__codeblock_qyh_g2s_sdc" data-ofbid="uart_debug_guide__codeblock_qyh_g2s_sdc">Test Mode: <span class="hl-number">3</span>:Circle
+Send Device     : /dev/ttyS1
+Receive Device  : /dev/ttyS1
+m_Baudrate      : <span class="hl-number">9600</span>
+send data is:    <span class="hl-number">1234567890</span>artinchip0987654321
+receive data is: <span class="hl-number">1234567890</span>artinchip0987654321</pre></div></li></ol></div></li></ol>
+        </section><section class="- topic/section section" id="uart_debug_guide__section_nbb_yzy_21c" data-ofbid="uart_debug_guide__section_nbb_yzy_21c"><h2 class="- topic/title title sectiontitle">问题排查流程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d49787e164__20250121171518">
+                <ol class="- topic/ol ol" id="uart_debug_guide__ul_rqy_wzy_21c" data-ofbid="uart_debug_guide__ul_rqy_wzy_21c"><li class="- topic/li li" data-ofbid="d49787e167__20250121171518">
+                        <p class="- topic/p p" data-ofbid="d49787e169__20250121171518">在 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中确认使用的 UART 端口 status = “okay”</p>
+                    </li><li class="- topic/li li" data-ofbid="d49787e175__20250121171518">
+                        <p class="- topic/p p" data-ofbid="d49787e177__20250121171518">确认该 UART 端口的 GPIO 端口配置正确， 具体查看相关 GPIO 端口的寄存器</p>
+                    </li><li class="- topic/li li" data-ofbid="d49787e180__20250121171518">
+                        <p class="- topic/p p" data-ofbid="d49787e182__20250121171518">确认该 UART 端口的 clk 设置正确</p>
+                        <ul class="- topic/ul ul" id="uart_debug_guide__ul_tqy_wzy_21c" data-ofbid="uart_debug_guide__ul_tqy_wzy_21c"><li class="- topic/li li" data-ofbid="d49787e186__20250121171518">
+                                <p class="- topic/p p" data-ofbid="d49787e188__20250121171518">确认 /dev/ttyS#/uartclk 值: 48000000</p>
+                            </li><li class="- topic/li li" data-ofbid="d49787e191__20250121171518">
+                                <p class="- topic/p p" data-ofbid="d49787e193__20250121171518">在 CMU 的寄存器中查看相关寄存器，如：0x0844 CLK_UART1</p>
+                            </li><li class="- topic/li li" data-ofbid="d49787e196__20250121171518">
+                                <p class="- topic/p p" data-ofbid="d49787e198__20250121171518">reg-dump -a 0x18020844： 0x18020844: 00003118</p>
+                            </li><li class="- topic/li li" data-ofbid="d49787e201__20250121171518">
+                                <p class="- topic/p p" data-ofbid="d49787e203__20250121171518">clk = 1200M / (0x18 + 1) = 48M</p>
+                            </li></ul>
+                    </li><li class="- topic/li li" data-ofbid="d49787e207__20250121171518">
+                        <p class="- topic/p p" data-ofbid="d49787e209__20250121171518">UART 寄存器是时分复用寄存器，直接读取的值无法明确意义，要跟踪寄存器设置，只能在代码中打印寄存器值</p>
+                    </li></ol>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#uart_debug_guide__section_eqy_wzy_21c" data-tocid="uart_debug_guide__section_eqy_wzy_21c">调试端口</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_debug_guide__section_gqy_wzy_21c" data-tocid="uart_debug_guide__section_gqy_wzy_21c">功能验证</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_debug_guide__section_nbb_yzy_21c" data-tocid="uart_debug_guide__section_nbb_yzy_21c">问题排查流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

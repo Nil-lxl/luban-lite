@@ -1,0 +1,254 @@
+
+config AIC_DISPLAY_DRV
+    bool
+    default y if AIC_DE_DRV
+
+config AIC_DISP_PQ_TOOL
+    bool "Ai PQ Tool Support"
+    default n
+    depends on AIC_DISPLAY_DRV
+    select AIC_FB_DRV_DEBUG
+
+config AIC_DISP_DE_DRV
+    bool
+    default y
+    depends on AIC_DISPLAY_DRV && AIC_DE_DRV
+
+config AIC_DISP_RGB_DRV
+    bool
+    default n
+    depends on AIC_DE_DRV
+
+config AIC_DISP_LVDS_DRV
+    bool
+    default n
+    depends on AIC_DE_DRV
+
+config AIC_DISP_MIPI_DSI_DRV
+    bool
+    default n
+    depends on AIC_DE_DRV
+
+choice
+    prompt "select Display interface"
+    default AIC_DISP_RGB
+    depends on AIC_DISPLAY_DRV
+
+config AIC_DISP_RGB
+    bool "Display RGB interface"
+    select AIC_DISP_RGB_DRV
+    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11 || AIC_DE_DRV_V12
+
+config AIC_DISP_LVDS
+    bool "Display LVDS interface"
+    select AIC_DISP_LVDS_DRV
+    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11
+
+config AIC_DISP_MIPI_DSI
+    bool "Display MIPI-DSI interface"
+    select AIC_DISP_MIPI_DSI_DRV
+    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11
+
+config AIC_DISP_MIPI_DBI
+    bool "Display MIPI-DBI interface"
+    select AIC_DISP_MIPI_DBI_DRV
+    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11 || AIC_DE_DRV_V12
+endchoice
+
+config AIC_DI_TYPE
+    int
+    default 1 if AIC_DISP_RGB
+    default 2 if AIC_DISP_LVDS
+    default 3 if AIC_DISP_MIPI_DSI
+    default 4 if AIC_DISP_MIPI_DBI
+
+if AIC_DISP_PQ_TOOL
+config AIC_DSI_SIMPLE_PANEL
+    bool
+    default y
+    depends on AIC_DISP_MIPI_DSI
+endif
+
+if AIC_DISP_LVDS && !AIC_DISP_PQ_TOOL
+source "bsp/artinchip/drv/display/Kconfig.lvds"
+endif
+
+if AIC_DISP_RGB && !AIC_DISP_PQ_TOOL
+source "bsp/artinchip/drv/display/Kconfig.rgb"
+endif
+
+choice
+    prompt "select framebuffer format"
+    default AICFB_ARGB8888
+    depends on AIC_DISPLAY_DRV
+
+config AICFB_ARGB8888
+    bool "argb8888"
+
+config AICFB_ABGR8888
+    bool "abgr8888"
+
+config AICFB_XRGB8888
+    bool "xrgb8888"
+
+config AICFB_RGB888
+    bool "rgb888"
+
+config AICFB_RGB565
+    bool "rgb565"
+
+config AICFB_ARGB1555
+    bool "argb1555"
+endchoice
+
+config AICFB_FORMAT
+    hex
+    default 0x00  if AICFB_ARGB8888
+    default 0x01  if AICFB_ABGR8888
+    default 0x04  if AICFB_XRGB8888
+    default 0x08  if AICFB_RGB888
+    default 0x0e  if AICFB_RGB565
+    default 0x0a  if AICFB_ARGB1555
+
+config AIC_PAN_DISPLAY
+    bool "Support double framebuffer"
+    default n
+    depends on AIC_DISPLAY_DRV
+
+config AIC_DISP_COLOR_BLOCK
+    bool "Display color block"
+    default y
+    depends on AIC_DISPLAY_DRV
+
+config AIC_DISPLAY_DITHER
+    bool
+    depends on (AIC_LVDS_JEIDA_18BIT  || AIC_PRGB_18BIT_LD || \
+                AIC_PRGB_18BIT_HD     || AIC_PRGB_16BIT_LD || \
+                AIC_PRGB_16BIT_HD     || AICFB_ARGB8888    || \
+                AICFB_ABGR8888        || AICFB_XRGB8888    || \
+                AICFB_RGB888)         && (!AICFB_RGB565    && !AICFB_ARGB1555)
+
+config AIC_DISABLE_DITHER
+    bool "Disable Display Dither"
+    default n
+    depends on AIC_DISPLAY_DITHER
+
+choice
+    prompt "framebuffer rotation degree"
+    default AICFB_ROTATE_0
+    depends on AIC_DISPLAY_DRV
+
+config AICFB_ROTATE_0
+    bool "0"
+
+config AICFB_ROTATE_90
+    bool "90"
+
+config AICFB_ROTATE_180
+    bool "180"
+
+config AICFB_ROTATE_270
+    bool "270"
+endchoice
+
+config AIC_FB_ROTATE_EN
+    bool
+    default y
+    depends on AICFB_ROTATE_90 || AICFB_ROTATE_180 || AICFB_ROTATE_270
+
+config AIC_FB_ROTATE_DEGREE
+    int
+    default 0 if AICFB_ROTATE_0
+    default 90 if AICFB_ROTATE_90
+    default 180 if AICFB_ROTATE_180
+    default 270 if AICFB_ROTATE_270
+
+choice
+    prompt "select Output depth"
+    default AIC_OUTPUT_DEPTH_16
+    depends on AIC_DISPLAY_DITHER
+
+config AIC_OUTPUT_DEPTH_16
+    bool "Dither rgb565 Output depth 16"
+
+config AIC_OUTPUT_DEPTH_18
+    bool "Dither rgb666 Output depth 18"
+endchoice
+
+config AIC_DISP_OUTPUT_DEPTH
+    int
+    default 1 if AIC_OUTPUT_DEPTH_16
+    default 2 if AIC_OUTPUT_DEPTH_18
+
+if AIC_DISPLAY_DRV
+source "bsp/artinchip/drv/display/panel/Kconfig"
+endif
+
+if !AIC_DISP_PQ_TOOL
+
+choice
+    prompt "panel backlight control"
+    default AIC_GPIO_BACKLIGHT
+    depends on AIC_DISPLAY_DRV
+
+    config AIC_PWM_BACKLIGHT
+    bool "pwm"
+    depends on AIC_PWM_DRV
+
+    config AIC_GPIO_BACKLIGHT
+    bool "gpio"
+endchoice
+
+if AIC_GPIO_BACKLIGHT
+    config AIC_PANEL_ENABLE_GPIO
+        string "panel backlight enable pin"
+        default "PE.19"
+
+    config AIC_PANEL_ENABLE_GPIO_LOW
+        bool "panel backlight enable pin low active"
+        default n
+endif
+
+if AIC_PWM_BACKLIGHT
+    config AIC_PWM_BACKLIGHT_CHANNEL
+        int "pwm backlight channel"
+        default 3
+
+    config AIC_PWM_BRIGHTNESS_LEVEL
+        int "default brightness level"
+        default 80
+        range 0 100
+
+    config AIC_PWM_BACKLIGHT_BYPASS
+        bool
+        default n
+endif
+endif
+
+config AIC_PANEL_SPI_EMULATION
+    bool
+    default n
+
+config AIC_SCREEN_CROP
+    bool "Enable screen crop"
+    default n
+    depends on AIC_DISPLAY_DRV
+    help
+        Some LCD screen need to be cropped, the effective area displayed is less
+        than the timing signal.
+        If unsure select "N".
+
+if AIC_SCREEN_CROP
+    config AIC_SCREEN_CROP_POS_X
+        int "screen crop x position of pixels"
+        default 0
+    config AIC_SCREEN_CROP_POS_Y
+        int "screen crop y position of pixels"
+        default 0
+    config AIC_SCREEN_CROP_WIDTH
+        int "screen crop width"
+        default 0
+    config AIC_SCREEN_CROP_HEIGHT
+        int "screen crop height"
+        default 0
+endif

@@ -1,0 +1,250 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Loopback Function 提供的功能更为简单，它分配了两个 bulk endpoint，所做的就是把 out_ep 接收到的数据 转发到 in_ep 。 主要流程如下： drivers\usb\gadget\function\f_loopback.c: loopback_bind()： static int loopback_bind( struct usb_configuration ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-31"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_loopback_function"/><meta name="DC.language" content="zh-CN"/><title>Loopback Function</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-loopback_function.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-loopback_function.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_loopback_function" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-loopback_function.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Loopback Function</h1><div class="date inPage">31 Jan 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d82164e22__20250121171526"><code class="+ topic/ph pr-d/codeph ph codeph">Loopback Function</code> 提供的功能更为简单，它分配了两个 bulk endpoint，所做的就是把
+                <code class="+ topic/ph pr-d/codeph ph codeph">out_ep</code> 接收到的数据 转发到 <code class="+ topic/ph pr-d/codeph ph codeph">in_ep</code>。</p><div class="- topic/p p" data-ofbid="d82164e32__20250121171526">主要流程如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_loopback_function__pre_lvf_bkz_21c" data-ofbid="usb_loopback_function__pre_lvf_bkz_21c">drivers\usb\gadget\function\f_loopback.c:
+
+loopback_bind()：
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> loopback_bind(<strong class="hl-keyword">struct</strong> usb_configuration *c, <strong class="hl-keyword">struct</strong> usb_function *f)
+{
+    <em class="hl-comment">/* (1) 从 gadget 中分配 2 个 bulk endpoint */</em>
+    <em class="hl-comment">/* allocate endpoints */</em>
+    loop-&gt;in_ep = usb_ep_autoconfig(cdev-&gt;gadget, &amp;fs_loop_source_desc);
+
+    loop-&gt;out_ep = usb_ep_autoconfig(cdev-&gt;gadget, &amp;fs_loop_sink_desc);
+}
+
+loopback_set_alt() → enable_loopback() → alloc_requests():
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> alloc_requests(<strong class="hl-keyword">struct</strong> usb_composite_dev *cdev,
+            <strong class="hl-keyword">struct</strong> f_loopback *loop)
+{
+
+    <strong class="hl-keyword">for</strong> (i = <span class="hl-number">0</span>; i &lt; loop-&gt;qlen &amp;&amp; result == <span class="hl-number">0</span>; i++) {
+        result = -ENOMEM;
+
+        in_req = usb_ep_alloc_request(loop-&gt;in_ep, GFP_ATOMIC);
+        <strong class="hl-keyword">if</strong> (!in_req)
+            <strong class="hl-keyword">goto</strong> fail;
+
+        out_req = lb_alloc_ep_req(loop-&gt;out_ep, loop-&gt;buflen);
+        <strong class="hl-keyword">if</strong> (!out_req)
+            <strong class="hl-keyword">goto</strong> fail_in;
+
+        in_req-&gt;complete = loopback_complete;
+        out_req-&gt;complete = loopback_complete;
+
+        in_req-&gt;buf = out_req-&gt;buf;
+        <em class="hl-comment">/* length will be set in complete routine */</em>
+        in_req-&gt;context = out_req;
+        out_req-&gt;context = in_req;
+
+        <em class="hl-comment">/* (2) 先启动 OUT endpoint */</em>
+        result = usb_ep_queue(loop-&gt;out_ep, out_req, GFP_ATOMIC);
+        <strong class="hl-keyword">if</strong> (result) {
+            ERROR(cdev, <span class="hl-string">"%s queue req --&gt; %d\n"</span>,
+                    loop-&gt;out_ep-&gt;name, result);
+            <strong class="hl-keyword">goto</strong> fail_out;
+        }
+    }
+
+}
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> loopback_complete(<strong class="hl-keyword">struct</strong> usb_ep *ep, <strong class="hl-keyword">struct</strong> usb_request *req)
+{
+    <strong class="hl-keyword">struct</strong> f_loopback       *loop = ep-&gt;driver_data;
+    <strong class="hl-keyword">struct</strong> usb_composite_dev *cdev = loop-&gt;function.config-&gt;cdev;
+    <strong class="hl-keyword">int</strong>                     status = req-&gt;status;
+
+    <strong class="hl-keyword">switch</strong> (status) {
+    <strong class="hl-keyword">case</strong> <span class="hl-number">0</span>:                         <em class="hl-comment">/* normal completion? */</em>
+        <strong class="hl-keyword">if</strong> (ep == loop-&gt;out_ep) {
+            <em class="hl-comment">/*
+            * We received some data from the host so let's
+            * queue it so host can read the from our in ep
+            */</em>
+            <strong class="hl-keyword">struct</strong> usb_request *in_req = req-&gt;context;
+
+            in_req-&gt;zero = (req-&gt;actual &lt; req-&gt;length);
+            in_req-&gt;length = req-&gt;actual;
+            ep = loop-&gt;in_ep;
+            req = in_req;
+        } <strong class="hl-keyword">else</strong> {
+            <em class="hl-comment">/*
+            * We have just looped back a bunch of data
+            * to host. Now let's wait for some more data.
+            */</em>
+            req = req-&gt;context;
+            ep = loop-&gt;out_ep;
+        }
+
+        <em class="hl-comment">/* (3) 环回的关键：
+                OUT endpoint 接收到的数据 转发到 IN endpoint
+                IN endpoint 数据发送完成后 req 重新挂载到 OUT endpoint
+        */</em>
+        <em class="hl-comment">/* queue the buffer back to host or for next bunch of data */</em>
+        status = usb_ep_queue(ep, req, GFP_ATOMIC);
+
+}
+</pre></div><div class="- topic/p p" data-ofbid="d82164e36__20250121171526">也支持一些参数调整：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_loopback_function__codeblock_hsw_hkz_21c" data-ofbid="usb_loopback_function__codeblock_hsw_hkz_21c"># ls functions/Loopback.<span class="hl-number">0</span>/
+bulk_buflen  qlen</pre></div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

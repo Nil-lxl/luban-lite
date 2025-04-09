@@ -1,0 +1,14 @@
+menuconfig AIC_USING_IPMANAGER
+    bool "ArtInChip IP manager for Ethernet"
+    default n
+    select LPKG_USING_LWIP
+    select LPKG_LWIP_DHCP
+    select LPKG_USING_CJSON
+
+    if AIC_USING_IPMANAGER
+
+        config AIC_IPMANAGER_SAVE_FILE
+            string "IP manager configure file"
+            default "/data/ipconfig.cfg"
+
+    endif

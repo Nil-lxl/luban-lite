@@ -1,0 +1,4 @@
+# Kconfig file for package Micropython
+menuconfig LPKG_USING_MICROPYTHON
+    bool "MCP: Micropython for RT-Thread"
+    default n

@@ -1,0 +1,299 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="操作函数集实现 在 S 的驱动设计中，snd_soc_dai_ops 是一个非常重要的结构体，它是 dai 的操作函数集，所有对 S 接口的设置都是通过此结构体完成。所以，I2S 驱动中一项非常重要的部分就是实现此结构体中的函数接口。snd_soc_dai_ops 函数集可以分为如下几个部分： cpu_dai 时钟配置函数，通常由 machine 驱动调用 set_sysclk：设置 dai ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="i2s_key_procedures"/><meta name="DC.language" content="zh-CN"/><title>关键流程设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/i2s/i2s_key_procedure.dita"/><meta name="wh-out-relpath" content="topics/sdk/i2s/i2s_key_procedure.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="i2s_key_procedures" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/i2s/i2s_key_procedure.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">关键流程设计</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="i2s_key_procedures__section_nh2_5g3_d1c" data-ofbid="i2s_key_procedures__section_nh2_5g3_d1c"><h2 class="- topic/title title sectiontitle">操作函数集实现</h2>
+            
+            <p class="- topic/p p" data-ofbid="d303369e27__20250121171808">在 S 的驱动设计中，snd_soc_dai_ops 是一个非常重要的结构体，它是 dai 的操作函数集，所有对 S 接口的设置都是通过此结构体完成。所以，I2S 驱动中一项非常重要的部分就是实现此结构体中的函数接口。snd_soc_dai_ops 函数集可以分为如下几个部分：</p>
+            <ol class="- topic/ol ol" id="i2s_key_procedures__ol_oh2_5g3_d1c" data-ofbid="i2s_key_procedures__ol_oh2_5g3_d1c"><li class="- topic/li li" data-ofbid="d303369e31__20250121171808">
+                    <p class="- topic/p p" data-ofbid="d303369e33__20250121171808">cpu_dai 时钟配置函数，通常由 machine 驱动调用</p>
+                    <ul class="- topic/ul ul" id="i2s_key_procedures__ul_ph2_5g3_d1c" data-ofbid="i2s_key_procedures__ul_ph2_5g3_d1c"><li class="- topic/li li" data-ofbid="d303369e37__20250121171808">
+                            <p class="- topic/p p" data-ofbid="d303369e39__20250121171808">set_sysclk：设置 dai 的主时钟 MCLK</p>
+                        </li><li class="- topic/li li" data-ofbid="d303369e42__20250121171808">
+                            <p class="- topic/p p" data-ofbid="d303369e44__20250121171808">set_clkdiv：设置分频系数，用于实现 BCLK 和 LRCK 的分频系数</p>
+                        </li><li class="- topic/li li" data-ofbid="d303369e47__20250121171808">
+                            <p class="- topic/p p" data-ofbid="d303369e49__20250121171808">set_bclk_ratio：设置 BCLK 和 LRCK 的比率</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d303369e53__20250121171808">
+                    <p class="- topic/p p" data-ofbid="d303369e55__20250121171808">cpu_dai 格式设置，通常由 machine 驱动调用</p>
+                    <ul class="- topic/ul ul" id="i2s_key_procedures__ul_qh2_5g3_d1c" data-ofbid="i2s_key_procedures__ul_qh2_5g3_d1c"><li class="- topic/li li" data-ofbid="d303369e59__20250121171808">
+                            <p class="- topic/p p" data-ofbid="d303369e61__20250121171808">set_fmt：设置主从模式(LRCK 和 BCLK 时钟由 SOC 提供还是由 codec 提供)，BCLK 和 LRCK 的极性，以及传输模式</p>
+                        </li><li class="- topic/li li" data-ofbid="d303369e64__20250121171808">
+                            <p class="- topic/p p" data-ofbid="d303369e66__20250121171808">set_tdm_slot：cpu_dai 支持时分复用时，用于设置时分复用的 slot</p>
+                        </li><li class="- topic/li li" data-ofbid="d303369e69__20250121171808">
+                            <p class="- topic/p p" data-ofbid="d303369e71__20250121171808">set_channel_map：声道时分复用时的映射关系设置</p>
+                        </li></ul>
+                </li><li class="- topic/li li" data-ofbid="d303369e75__20250121171808">
+                    <p class="- topic/p p" data-ofbid="d303369e77__20250121171808">ALSA PCM 音频操作，由 ALSA 的 soc-core 在执行音频操作时调用</p>
+                    <ul class="- topic/ul ul" id="i2s_key_procedures__ul_rh2_5g3_d1c" data-ofbid="i2s_key_procedures__ul_rh2_5g3_d1c"><li class="- topic/li li" data-ofbid="d303369e81__20250121171808">
+                            <p class="- topic/p p" data-ofbid="d303369e83__20250121171808">hw_params：硬件参数设置，一般用于采样精度，通道位宽的设置</p>
+                        </li><li class="- topic/li li" data-ofbid="d303369e86__20250121171808">
+                            <p class="- topic/p p" data-ofbid="d303369e88__20250121171808">trigger：命令触发函数，用于执行音频数据传输的开始、结束、暂停、恢复等</p>
+                        </li></ul>
+                </li></ol>
+            <div class="- topic/p p" data-ofbid="d303369e93__20250121171808">在 S 的驱动中，需要实现的接口有：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="i2s_key_procedures__codeblock_kzc_wg3_d1c" data-ofbid="i2s_key_procedures__codeblock_kzc_wg3_d1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> snd_soc_dai_ops aic_i2s_dai_ops = {
+        .set_sysclk = aic_i2s_set_sysclk,
+        .set_bclk_ratio = aic_i2s_set_bclk_ratio,
+        .set_fmt = aic_i2s_set_fmt,
+        .set_tdm_slot = aic_i2s_set_tdm_slot,
+        .hw_params = aic_i2s_hw_params,
+        .trigger = aic_i2s_trigger,
+};</pre></div>
+            <p class="- topic/p p" data-ofbid="d303369e98__20250121171808">在实现的几个接口函数中，除 params 和 trigger 外，其它函数是需要在 machine 驱动中根据 I2S 和 codec 双方所支持的格式、时钟等进行调用设置的，使 S 和 codec 两边的格式设置相同。</p>
+        </section><section class="- topic/section section" id="i2s_key_procedures__section_th2_5g3_d1c" data-ofbid="i2s_key_procedures__section_th2_5g3_d1c"><h2 class="- topic/title title sectiontitle">I2S 时钟设置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d303369e106__20250121171808">
+                <ol class="- topic/ol ol" id="i2s_key_procedures__ol_v4j_xg3_d1c" data-ofbid="i2s_key_procedures__ol_v4j_xg3_d1c"><li class="- topic/li li" data-ofbid="d303369e109__20250121171808"> MCLK
+                            主时钟设置。<p class="- topic/p p" data-ofbid="d303369e111__20250121171808">MCLK 是 S 的主时钟，主要作用是向外部的 codec 芯片提供工作时钟，由 S 模块的工作时钟分频得到。在驱动中由 sysclk 设置 MCLK 的频率，MCLK 一般采用 128fs，256fs，512fs 的表示方式，具体的设置需要参考实际使用的 codec 芯片规格书。Fs 是采样频率，常见的采样频率有 44.1khz，48khz，32khz 等，可以据此算出 MCLK 的频率值。一般会在 machine 驱动中调用设置 MCLK 的函数。</p></li><li class="- topic/li li" data-ofbid="d303369e113__20250121171808">LRCK 和 BCLK
+                            左右声道时钟设置。<p class="- topic/p p" data-ofbid="d303369e115__20250121171808">LRCK 是左右声道时钟。LRCK 的时钟频率等于 fs，在 D211 中，通过 PERIOD 位域设置 LRCK 的频率，LRCK_PERIOD 表示一个 LRCK 时钟周期内，有多少个 BCLK 周期。在 S 模式下，若为立体声（2 通道），32bit 采样深度，则 BCLK=64fs，则 PERIOD 应设置为(64/2-1)。若为 4 通道，24bit 采样深度，则 BCLK=96fs，则 PERIOD 应设置为（96/2-1）。由采样频率可以算出 BCLK 时钟的频率。并由 BCLK 的频率算出 LRCK，即采样率。</p></li><li class="- topic/li li" data-ofbid="d303369e117__20250121171808">period
+                            bytes 对齐<div class="- topic/p p" data-ofbid="d303369e119__20250121171808">在使用 DMA 传输音频数据时，DMA 要求每次传输的数据长度必须 128bytes/8bytes 对齐。在 ALSA 框架下，音频数据以 period 为周期调用 DMA 传输，每次传输的数据长度为 bytes。所以，必须满足 bytes 按照 128bytes/8bytes 对齐。ALSA 中提供了相应的 API 接口(snd_pcm_hw_constraint_step)来满足这一需求。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="i2s_key_procedures__codeblock_qd3_1h3_d1c" data-ofbid="i2s_key_procedures__codeblock_qd3_1h3_d1c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> aic_i2s_startup(<strong class="hl-keyword">struct</strong> snd_pcm_substream *substream,
+            <strong class="hl-keyword">struct</strong> snd_soc_dai *dai)
+{
+    <strong class="hl-keyword">int</strong> ret;
+
+    <em class="hl-comment">/* Make sure that the period bytes are 8/128 bytes aligned according to
+    * the DMA transfer requested.
+    */</em>
+    <strong class="hl-keyword">if</strong> (of_device_is_compatible(dai-&gt;dev-&gt;of_node,
+        <span class="hl-string">"artinchip,aic-i2s-v1.0"</span>)) {
+        ret = snd_pcm_hw_constraint_step(substream-&gt;runtime, <span class="hl-number">0</span>,
+                    SNDRV_PCM_HW_PARAM_PERIOD_BYTES, <span class="hl-number">8</span>);
+        <strong class="hl-keyword">if</strong> (ret &lt; <span class="hl-number">0</span>) {
+            dev_err(dai-&gt;dev,
+                <span class="hl-string">"Could not apply period step: %d\n"</span>, ret);
+            <strong class="hl-keyword">return</strong> ret;
+        }
+
+        ret = snd_pcm_hw_constraint_step(substream-&gt;runtime, <span class="hl-number">0</span>,
+                    SNDRV_PCM_HW_PARAM_BUFFER_BYTES, <span class="hl-number">8</span>);
+        <strong class="hl-keyword">if</strong> (ret &lt; <span class="hl-number">0</span>) {
+            dev_err(dai-&gt;dev,
+                <span class="hl-string">"Could not apply buffer step: %d\n"</span>, ret);
+            <strong class="hl-keyword">return</strong> ret;
+        }
+    } <strong class="hl-keyword">else</strong> {
+        ret = snd_pcm_hw_constraint_step(substream-&gt;runtime, <span class="hl-number">0</span>,
+                    SNDRV_PCM_HW_PARAM_PERIOD_BYTES, <span class="hl-number">128</span>);
+        <strong class="hl-keyword">if</strong> (ret &lt; <span class="hl-number">0</span>) {
+            dev_err(dai-&gt;dev,
+                <span class="hl-string">"Could not apply period step: %d\n"</span>, ret);
+            <strong class="hl-keyword">return</strong> ret;
+        }
+
+        ret = snd_pcm_hw_constraint_step(substream-&gt;runtime, <span class="hl-number">0</span>,
+                    SNDRV_PCM_HW_PARAM_BUFFER_BYTES, <span class="hl-number">128</span>);
+        <strong class="hl-keyword">if</strong> (ret &lt; <span class="hl-number">0</span>) {
+            dev_err(dai-&gt;dev,
+                <span class="hl-string">"Could not apply buffer step: %d\n"</span>, ret);
+            <strong class="hl-keyword">return</strong> ret;
+        }
+    }
+
+    <strong class="hl-keyword">return</strong> ret;
+}</pre></div></li></ol>
+            </div>
+        </section><section class="- topic/section section" id="i2s_key_procedures__section_bhv_2yl_4dc" data-ofbid="i2s_key_procedures__section_bhv_2yl_4dc"><h2 class="- topic/title title sectiontitle"><strong class="+ topic/ph hi-d/b ph b">Record 流程</strong></h2>
+            
+            <ul class="- topic/ul ul" id="i2s_key_procedures__ul_xt4_fnf_fdc" data-ofbid="i2s_key_procedures__ul_xt4_fnf_fdc"><li class="- topic/li li" data-ofbid="d303369e132__20250121171808">
+                    <div class="- topic/div div section" id="i2s_key_procedures__id8">
+                        <strong class="+ topic/ph hi-d/b ph b"><code class="+ topic/ph pr-d/codeph ph codeph">init</code> 流程</strong>
+                        <ol class="- topic/ol ol arabic simple" id="i2s_key_procedures__ol_fvg_kkf_fdc" data-ofbid="i2s_key_procedures__ol_fvg_kkf_fdc"><li class="- topic/li li" data-ofbid="d303369e142__20250121171808">
+                                <p class="- topic/p p" data-ofbid="d303369e144__20250121171808">初始化 DMA 传输的起始地址、<span class="+ topic/keyword pr-d/parmname keyword parmname">buf_len</span> 以及
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">period_len</span>。</p>
+                                <p class="- topic/p p" data-ofbid="d303369e153__20250121171808">I2S 模块使用 DMA 传输音频数据，DMA 采用环形链表形式，依次将音频数据传送到硬件。所以需要配置 DMA
+                                    传输时的起始地址（即 RX buffer 地址）以及
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">buf_len</span>，<span class="+ topic/keyword pr-d/parmname keyword parmname">period_len</span>。</p>
+                            </li><li class="- topic/li li" data-ofbid="d303369e162__20250121171808">
+                                <p class="- topic/p p" data-ofbid="d303369e164__20250121171808">注册 HAL 层的回调函数。</p>
+                                <p class="- topic/p p" data-ofbid="d303369e167__20250121171808">在 Driver 层驱动，将 <span class="+ topic/keyword pr-d/parmname keyword parmname">buf_len</span> 配置为
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">period_len</span> 的 2 倍，DMA 每传输
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">period_len</span> 长度的数据，触发一次 DMA 中断，通知 CPU 向
+                                    pipe 设备写入数据。</p>
+                            </li></ol></div>
+                </li><li class="- topic/li li" data-ofbid="d303369e180__20250121171808">
+                    <div class="- topic/div div section" id="i2s_key_procedures__id9">
+                        <strong class="+ topic/ph hi-d/b ph b"><code class="+ topic/ph pr-d/codeph ph codeph">start</code> 流程</strong>
+                        <p class="- topic/p p" data-ofbid="d303369e189__20250121171808">按照 RT-Thread audio 的框架，在执行 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_open</span> 时，就会调用
+                                <code class="+ topic/ph pr-d/codeph ph codeph">start</code> 流程，开始音频的录制，然后再通过
+                                <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_control</span>
+                            设置音频的格式（采样率，通道数等）。按照这个流程，最开始可能会录制一段不符合设置的音频格式的数据，这显然是不合理的。所以，在 Driver
+                                层的驱动实现中，<code class="+ topic/ph pr-d/codeph ph codeph">start</code>
+                        流程并未做任何处理，而是在设置完音频格式后才开始音频的录制。</p></div>
+                </li><li class="- topic/li li" data-ofbid="d303369e204__20250121171808">
+                    <div class="- topic/div div section" id="i2s_key_procedures__id10">
+                        <strong class="+ topic/ph hi-d/b ph b">DMA 中断流程</strong>
+                        <p class="- topic/p p" data-ofbid="d303369e211__20250121171808">DMA 每传输完 <span class="+ topic/keyword pr-d/parmname keyword parmname">period_len</span> 长度的数据后，触发一次 DMA 中断，然后通过 DMA
+                            回调函数的逐级调用，最终调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_audio_rx_done</span>，将 RX buffer 的数据写入到
+                            pipe 设备，每次写入 <span class="+ topic/keyword pr-d/parmname keyword parmname">period_len</span> 长度的音频数据。</p></div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#i2s_key_procedures__section_nh2_5g3_d1c" data-tocid="i2s_key_procedures__section_nh2_5g3_d1c">操作函数集实现</a></div></li><li class="section-item"><div class="section-title"><a href="#i2s_key_procedures__section_th2_5g3_d1c" data-tocid="i2s_key_procedures__section_th2_5g3_d1c">I2S 时钟设置</a></div></li><li class="section-item"><div class="section-title"><a href="#i2s_key_procedures__section_bhv_2yl_4dc" data-tocid="i2s_key_procedures__section_bhv_2yl_4dc"><strong class="+ topic/ph hi-d/b ph b">Record 流程</strong></a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

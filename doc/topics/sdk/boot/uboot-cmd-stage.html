@@ -1,0 +1,198 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="board_init_r 函数最后进入 run_main_loop 执行 Autoboot 命令或者进入控制台。 board_init_r(); // common/board_r.c |-&gt; run_main_loop(); // common/board_r.c |-&gt; main_loop(); // common/main.c |-&gt; cli_init(); // 初始化 command ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_xsr_1m3_pzb"/><meta name="DC.language" content="zh-CN"/><title>命令行阶段</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/uboot-cmd-stage.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/uboot-cmd-stage.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_xsr_1m3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/uboot-cmd-stage.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">命令行阶段</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d313056e22__20250121171818"><span class="+ topic/keyword pr-d/apiname keyword apiname">board_init_r</span> 函数最后进入 <span class="+ topic/keyword pr-d/apiname keyword apiname">run_main_loop</span> 执行 Autoboot
+            命令或者进入控制台。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_xsr_1m3_pzb__codeblock_tjn_pmr_c1c" data-ofbid="concept_xsr_1m3_pzb__codeblock_tjn_pmr_c1c">board_init_r(); <em class="hl-comment">// common/board_r.c</em>
+|-&gt; run_main_loop(); <em class="hl-comment">// common/board_r.c</em>
+    |-&gt; main_loop(); <em class="hl-comment">// common/main.c</em>
+        |-&gt; cli_init();    <em class="hl-comment">// 初始化 command line</em>
+        |   |--&gt;u_boot_hush_start();
+        |
+        |-&gt; bootdelay_process(); <em class="hl-comment">// common/autoboot.c</em>
+        |   | <em class="hl-comment">// 获取 delay 时间参数，从 env 中获取 bootcmd 参数</em>
+        |   |-&gt; s = env_get(<span class="hl-string">"bootcmd"</span>);
+        |           <em class="hl-comment">// 获取 bootcmd 的内容</em>
+        |-&gt; cli_process_fdt(); <em class="hl-comment">// common/cli.c</em>
+        |   <em class="hl-comment">// 尝试从 DTS 中获取 bootcmd 参数，DTS 的配置优先级高于 ENV</em>
+        |-&gt; autoboot_command(); <em class="hl-comment">// common/autoboot.c</em>
+            |-&gt; abortboot();
+            |   <em class="hl-comment">// 检查是否需要终止启动</em>
+            |
+            |-&gt; run_command_list(); <em class="hl-comment">// common/cli.c</em>
+                <em class="hl-comment">// 执行 bootcmd 的内容，一般是执行脚本</em></pre></div><ul class="- topic/ul ul" id="concept_xsr_1m3_pzb__ul_h32_1dc_pdc" data-ofbid="concept_xsr_1m3_pzb__ul_h32_1dc_pdc"><li class="- topic/li li" data-ofbid="d313056e32__20250121171818">
+                <p class="- topic/p p" data-ofbid="d313056e34__20250121171818"><strong class="+ topic/ph hi-d/b ph b">倒计时读秒</strong></p>
+                <p class="- topic/p p" data-ofbid="d313056e38__20250121171818">进入命令行的主循环之后，U-Boot 首先获取 <span class="+ topic/keyword pr-d/parmname keyword parmname">bootdelay</span> 的时间设置。Boot delay 的时间是指
+                    U-Boot 在执行启动命令之前的倒计时读秒的时间，该时间在 ArtInChip 平台上在环境变量 <span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span>
+                    中配置，例如配置 <span class="+ topic/keyword pr-d/parmname keyword parmname">bootdelay</span> 为 3，如果不需要倒计时读秒，可以将该设置改为 0 。</p>
+            </li><li class="- topic/li li" data-ofbid="d313056e50__20250121171818">
+                <p class="- topic/p p" data-ofbid="d313056e52__20250121171818"><strong class="+ topic/ph hi-d/b ph b">启动命令</strong></p>
+                <div class="- topic/p p" data-ofbid="d313056e56__20250121171818">U-Boot 检查并且默认执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">bootcmd</span> 所指定的启动命令。该启动命令可以在两个地方设置：<ul class="- topic/ul ul" id="concept_xsr_1m3_pzb__ul_hrw_wbh_bzb" data-ofbid="concept_xsr_1m3_pzb__ul_hrw_wbh_bzb"><li class="- topic/li li" data-ofbid="d313056e62__20250121171818">
+                            <p class="- topic/p p" data-ofbid="d313056e64__20250121171818">环境变量中设置</p>
+                        </li><li class="- topic/li li" data-ofbid="d313056e67__20250121171818">
+                            <p class="- topic/p p" data-ofbid="d313056e69__20250121171818">DTS 中设置</p>
+                        </li></ul></div>
+                <p class="- topic/p p" data-ofbid="d313056e73__20250121171818">ArtInChip 平台上通过环境变量 <span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span> 设置，同行是一段启动脚本。</p>
+            </li><li class="- topic/li li" data-ofbid="d313056e79__20250121171818">
+                <p class="- topic/p p" data-ofbid="d313056e81__20250121171818"><strong class="+ topic/ph hi-d/b ph b">按键中断</strong></p>
+                <p class="- topic/p p" data-ofbid="d313056e85__20250121171818">进入 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">autoboot_command</span> 在执行启动命令之前，U-Boot 还会检查用户是否有通过串口按键中断启动流程。无论
+                        <span class="+ topic/keyword pr-d/parmname keyword parmname">bootdelay</span> 时间是否为 0 都会进行按键中断检查。</p>
+            </li></ul></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

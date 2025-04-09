@@ -1,0 +1,53 @@
+/*接口API调用简介--2020-03-31*/
+目前提供的RTOS驱动版本支持station 和ap 模式共存，并且支持station 和ap 端的wps功能
+注意：目前sta模式接口名称为wlan0 
+	ap模式接口名称为p2p0
+启动/关闭station 模式接口使用如下：
+/*************************************/
+typedef enum __ATBM_WIFI_MODE
+{
+	ATBM_WIFI_STA_MODE,
+	ATBM_WIFI_AP_MODE,
+	ATBM_WIFI_ADHOC,
+	ATBM_WIFI_MONITOR,
+	ATBM_WIFI_P2P_CLIENT,
+	ATBM_WIFI_P2P_GO
+}ATBM_WIFI_MODE;
+/**************************************/
+1、atbm_wifi_on（ATBM_WIFI_STA_MODE）
+2、atbm_wifi_off（ATBM_WIFI_STA_MODE）
+station 扫描接口使用如下：
+/*************************************/
+3,atbm_wifi_scan_network（）；
+/************************************/
+4、连接AP 接口
+/**************************************************/
+Parameters 1:ssid
+Parameters 2:bssid 经常写为ATBM_NULL
+Parameters 3:加密方式：
+如果是open，并且认证方式为open：WLAN_WPA_AUTH_NONE
+如果是tkip加密，并且认证方式为open：WLAN_WPA_AUTH_PSK
+如果是aes加密，并且认证方式为open：WLAN_WPA2_AUTH_PSK
+如果是混合加密，并且认证方式为open：WLAN_MIX_AUTH_PSK
+Parameters 4:如果是wep加密设置；
+认证方式为open ：WLAN_ENCRYPT_WEP
+认证方式为shared：WLAN_ENCRYPT_WEP_SHARED
+Parameters 5：密钥
+如果是open 设置为ATBM_NULL
+如果是加密 设置为对应的密码
+/**************************************************/
+atbm_wifi_sta_join_ap(Parameters 1,Parameters 2,Parameters 3,Parameters 4,Parameters 5)
+/*************************************************************************************************
+5、连接/断开AP 接口
+/****************************************************/
+atbm_wifi_sta_disjoin_ap（）
+
+/***************************************************/
+
+启动/关闭ap模式
+
+/**********************************************/
+atbm_wifi_ap_create（）
+atbm_wifi_off（1）
+/**********************************************/
+

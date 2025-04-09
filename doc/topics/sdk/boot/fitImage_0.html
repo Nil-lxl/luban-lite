@@ -1,0 +1,211 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 ArtInChip 启动系统的开发过程中，使用过不同的 Kernel Image 格式： 注： Kernel Image 外网参考资源： http://www.wowotech.net/u-boot/fit_image_overview.html 。未来需要改用 FIT Image (ITB Image)。 uImage：U-Boot 定义的一种启动镜像格式，由 64 字节的 U-Boot ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-05-28"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="fitImage_0"/><meta name="DC.language" content="zh-CN"/><title>FIT Image 介绍</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/fitImage_0.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/fitImage_0.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="fitImage_0" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/fitImage_0.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">FIT Image 介绍</h1><div class="date inPage">28 May 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d275170e22__20250121171747">在 ArtInChip 启动系统的开发过程中，使用过不同的 Kernel Image 格式：<div class="- topic/note note note note_note" id="fitImage_0__note_ir2_m4y_nbc" data-ofbid="fitImage_0__note_ir2_m4y_nbc"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d275170e26__20250121171747">Kernel Image 外网参考资源：<a href="http://www.wowotech.net/u-boot/fit_image_overview.html" target="_blank" rel="external noopener"><span class="- topic/ph ph">http://www.wowotech.net/u-boot/fit_image_overview.html</span></a>。未来需要改用 FIT Image (ITB Image)。</p>
+            </div></div><ul class="- topic/ul ul" id="fitImage_0__ul_ibc_5dh_bzb" data-ofbid="fitImage_0__ul_ibc_5dh_bzb"><li class="- topic/li li" data-ofbid="d275170e34__20250121171747">
+                <p class="- topic/p p" data-ofbid="d275170e36__20250121171747">uImage：U-Boot 定义的一种启动镜像格式，由 64 字节的 U-Boot Image header 加上镜像内容构成。</p>
+                <p class="- topic/p p" data-ofbid="d275170e39__20250121171747">uImage 中的镜像内容，可以是未压缩的 Image，也可以是压缩的 Image，由 Linux kernel 编译时生成（依赖 uboot-tools 包中的
+                    mkimage 工具）。新版的 Linux kernel 不再生成 uImage 文件。</p>
+                <p class="- topic/p p" data-ofbid="d275170e42__20250121171747">uImage 文件的启动命令：</p>
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="fitImage_0__codeblock_ptd_drr_c1c" data-ofbid="fitImage_0__codeblock_ptd_drr_c1c">bootm  <var class="+ topic/keyword sw-d/varname keyword varname">kernel addr</var> - <var class="+ topic/keyword sw-d/varname keyword varname">dtb addr</var></pre>
+                <p class="- topic/p p" data-ofbid="d275170e53__20250121171747">其中 <var class="+ topic/keyword sw-d/varname keyword varname">kernel addr</var> 即 uImage 所在的内存地址。</p>
+            </li><li class="- topic/li li" data-ofbid="d275170e59__20250121171747">
+                <p class="- topic/p p" data-ofbid="d275170e61__20250121171747">zImage：Image 经过压缩和打包后，生成的文件。</p>
+                <p class="- topic/p p" data-ofbid="d275170e64__20250121171747">将压缩后的 Image 作为 Payload，与一段解压缩代码一起编译链接，生成 zImage，因此 zImage 是一个可直接启动的自解压镜像。</p>
+                <div class="- topic/p p" data-ofbid="d275170e67__20250121171747">启动命令为：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="fitImage_0__codeblock_hnx_y4y_nbc" data-ofbid="fitImage_0__codeblock_hnx_y4y_nbc">bootz <var class="+ topic/keyword sw-d/varname keyword varname">kernel addr</var> - <var class="+ topic/keyword sw-d/varname keyword varname">dtb addr</var></pre></div>
+                <p class="- topic/p p" data-ofbid="d275170e77__20250121171747">其中 <var class="+ topic/keyword sw-d/varname keyword varname">kernel addr</var> 即 zImage 所在的内存地址。</p>
+                <p class="- topic/p p" data-ofbid="d275170e83__20250121171747">ARM64，RISCV 架构的 Linux kernel 编译，不再生成 zImage 格式的文件。</p>
+            </li><li class="- topic/li li" data-ofbid="d275170e86__20250121171747">
+                <p class="- topic/p p" data-ofbid="d275170e88__20250121171747">Image.gz：Linux kernel 编译时生成的压缩文件，使用 gzip 算法直接对 Image 文件进行压缩生成。</p>
+                <p class="- topic/p p" data-ofbid="d275170e91__20250121171747">除了 Image.gz，使用其他压缩算法和压缩工具还可以生成下列标准压缩文件：</p>
+                <ul class="- topic/ul ul" id="fitImage_0__ul_hym_xdh_bzb" data-ofbid="fitImage_0__ul_hym_xdh_bzb"><li class="- topic/li li" data-ofbid="d275170e95__20250121171747">
+                        <p class="- topic/p p" data-ofbid="d275170e97__20250121171747">Image.lzo</p>
+                    </li><li class="- topic/li li" data-ofbid="d275170e100__20250121171747">
+                        <p class="- topic/p p" data-ofbid="d275170e102__20250121171747">Image.lz4</p>
+                    </li><li class="- topic/li li" data-ofbid="d275170e105__20250121171747">
+                        <p class="- topic/p p" data-ofbid="d275170e107__20250121171747">Image.bz2</p>
+                    </li><li class="- topic/li li" data-ofbid="d275170e110__20250121171747">
+                        <p class="- topic/p p" data-ofbid="d275170e112__20250121171747">Image.lzma</p>
+                    </li></ul>
+                <p class="- topic/p p" data-ofbid="d275170e116__20250121171747">U-Boot 的启动命令为：</p>
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="fitImage_0__codeblock_c3n_1py_nbc" data-ofbid="fitImage_0__codeblock_c3n_1py_nbc">booti  <var class="+ topic/keyword sw-d/varname keyword varname">kernel addr</var> - <var class="+ topic/keyword sw-d/varname keyword varname">dtb addr</var></pre>
+                <p class="- topic/p p" data-ofbid="d275170e128__20250121171747">其中 <var class="+ topic/keyword sw-d/varname keyword varname">kernel addr</var> 即 Kernel 压缩文件所在的内存地址。</p>
+            </li><li class="- topic/li li" data-ofbid="d275170e134__20250121171747">
+                <p class="- topic/p p" data-ofbid="d275170e136__20250121171747">Image：Linux kernel 编译时生成的未压缩 Image。</p>
+                <div class="- topic/p p" data-ofbid="d275170e139__20250121171747">U-Boot 可以通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">booti</span> 命令直接运行该 Image（ARMv7 是 ArtInChip
+                    自行添加的命令支持启动），启动命令格式为：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="fitImage_0__codeblock_g2l_1rr_c1c" data-ofbid="fitImage_0__codeblock_g2l_1rr_c1c">booti <var class="+ topic/keyword sw-d/varname keyword varname">kernel addr</var> - <var class="+ topic/keyword sw-d/varname keyword varname">dtb addr</var></pre></div>
+                <p class="- topic/p p" data-ofbid="d275170e152__20250121171747">其中<var class="+ topic/keyword sw-d/varname keyword varname">kernel addr</var> 是 Image 文件所在的内存地址。 </p>
+                <p class="- topic/p p" data-ofbid="d275170e158__20250121171747">Image 文件的格式，在不同芯片架构上是不一样的。对于 ARM64 和 RISCV64，会有一个格式头。但是对于 ARM32，则没有 头信息。</p>
+            </li><li class="- topic/li li" data-ofbid="d275170e161__20250121171747">
+                <p class="- topic/p p" data-ofbid="d275170e163__20250121171747">FIT Image (ITB Image)：Flattened Image Tree</p>
+                <div class="- topic/p p" data-ofbid="d275170e166__20250121171747">原始参考文档:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="fitImage_0__codeblock_ann_sqr_c1c" data-ofbid="fitImage_0__codeblock_ann_sqr_c1c">source/uboot-<span class="hl-number">2021.10</span>/doc/usage/fit.rst
+source/uboot-<span class="hl-number">2021.10</span>/doc/uImage.FIT/howto.txt
+source/uboot-<span class="hl-number">2021.10</span>/doc/uImage.FIT/source_file_format.txt
+source/uboot-<span class="hl-number">2021.10</span>/doc/uImage.FIT/command_syntax_extensions.txt</pre></div>
+                <p class="- topic/p p" data-ofbid="d275170e171__20250121171747">如 howto.txt 开篇所提，当前社区使用 FIT Image 的主要理由是：</p>
+                <ul class="- topic/ul ul" id="fitImage_0__ul_n2w_xdh_bzb" data-ofbid="fitImage_0__ul_n2w_xdh_bzb"><li class="- topic/li li" data-ofbid="d275170e175__20250121171747">
+                        <p class="- topic/p p" data-ofbid="d275170e177__20250121171747">更灵活的处理各种类型的 image 类型(压缩、非压缩、各种格式，各种配置组合)</p>
+                    </li><li class="- topic/li li" data-ofbid="d275170e180__20250121171747">
+                        <p class="- topic/p p" data-ofbid="d275170e182__20250121171747">可以处理安全启动过程中的安全校验（签名校验）</p>
+                    </li></ul>
+            </li></ul></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

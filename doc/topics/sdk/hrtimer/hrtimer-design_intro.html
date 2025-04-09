@@ -1,0 +1,424 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="HRTimer 源代码位于 bsp/artinchip/ ： bsp/artinchip/drv/hrtimer/drv_hrtimer.c ，HRTimer Driver 层实现 bsp/artinchip/include/drv/drv_hrtimer.h ，HRTimer Driver 层接口 bsp/artinchip/hal/pwmcs/hal_cap.c ，PWMCS CAP 模块的 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/hrtimer/hrtimer-user-guide.html"/><meta name="DC.relation" content="../../../topics/sdk/hrtimer/hrtimer-test_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/hrtimer/hrtimer-faq.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e2853"/><meta name="wh-source-relpath" content="topics/sdk/hrtimer/hrtimer-design_intro.dita"/><meta name="wh-out-relpath" content="topics/sdk/hrtimer/hrtimer-design_intro.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="chapter-system"><div class="title"><a href="../../../topics/chapter-title/chapter-system.html">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-user-guide.html">HRTimer 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-design_intro.html">设计说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/hrtimer/hrtimer-test_guide.html" title="测试指南" aria-label="上一主题: 测试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/hrtimer/hrtimer-faq.html" title="常见问题" aria-label="下一主题: 常见问题" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e2449" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e2449-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/memory-user-guide.html" id="chapter-memory-d5856e2449-link">Memory 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="system_interrupt_user_guide-d5856e2565" class="topicref" data-id="system_interrupt_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action system_interrupt_user_guide-d5856e2565-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/interrupt/interrupt-user-guide.html" id="system_interrupt_user_guide-d5856e2565-link">Interrupt 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cmu-d5856e2601" class="topicref" data-id="cmu" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cmu-d5856e2601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cmu/cmu-introduction_2.html" id="cmu-d5856e2601-link">CMU 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_or5_kn3_pzb-d5856e2697" class="topicref" data-id="concept_or5_kn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_or5_kn3_pzb-d5856e2697-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-user-guide_2.html" id="concept_or5_kn3_pzb-d5856e2697-link">DMA 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2805" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-user-guide.html" id="id-d5856e2805-link">HRTimer 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="hrtimer_configuration-d5856e2817" class="topicref" data-id="hrtimer_configuration" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-config.html" id="hrtimer_configuration-d5856e2817-link">HRTimer 配置</a></div></div></li><li role="treeitem"><div data-tocid="hrtimer_debug_guide-d5856e2829" class="topicref" data-id="hrtimer_debug_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-debug_guide.html" id="hrtimer_debug_guide-d5856e2829-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="hrtimer_test_guide-d5856e2841" class="topicref" data-id="hrtimer_test_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-test_guide.html" id="hrtimer_test_guide-d5856e2841-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e2853" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-design_intro.html" id="id-d5856e2853-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e2865" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-faq.html" id="id-d5856e2865-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2877" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2877-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_user_guide.html" id="id-d5856e2877-link">MTOP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_n2p_sn3_pzb-d5856e2937" class="topicref" data-id="concept_n2p_sn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_n2p_sn3_pzb-d5856e2937-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-user-guide_2.html" id="concept_n2p_sn3_pzb-d5856e2937-link">RTC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3057" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3057-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pm/pm_introduction.html" id="id-d5856e3057-link">Power Management 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="tsensor-d5856e3129" class="topicref" data-id="tsensor" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action tsensor-d5856e3129-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-user-guide_2.html" id="tsensor-d5856e3129-link">TSensor 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="watchdog-d5856e3249" class="topicref" data-id="watchdog" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action watchdog-d5856e3249-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/watchdog/watchdog-user-guide_2.html" id="watchdog-d5856e3249-link">Watchdog 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/hrtimer/hrtimer-design_intro.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 6 minute(s)
+                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d92176e19__20250121171531">HRTimer
+            源代码位于 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/</span>：</p><ul class="- topic/ul ul simple" id="id__ul_skt_s3d_bdc" data-ofbid="id__ul_skt_s3d_bdc"><li class="- topic/li li" data-ofbid="d92176e25__20250121171531">
+                <p class="- topic/p p" data-ofbid="d92176e27__20250121171531"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/hrtimer/drv_hrtimer.c</span>，HRTimer
+                    Driver 层实现</p>
+            </li><li class="- topic/li li" data-ofbid="d92176e32__20250121171531">
+                <p class="- topic/p p" data-ofbid="d92176e34__20250121171531"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/drv/drv_hrtimer.h</span>，HRTimer
+                    Driver 层接口</p>
+            </li><li class="- topic/li li" data-ofbid="d92176e39__20250121171531">
+                <p class="- topic/p p" data-ofbid="d92176e41__20250121171531"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/hal/pwmcs/hal_cap.c</span>，PWMCS CAP
+                    模块的 HAL 层实现</p>
+            </li><li class="- topic/li li" data-ofbid="d92176e46__20250121171531">
+                <p class="- topic/p p" data-ofbid="d92176e48__20250121171531"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_cap.h</span>，PWMCS CAP
+                    模块的 HAL 层接口头文件</p>
+            </li></ul><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">软件架构</h2>
+            
+            <p class="- topic/p p" data-ofbid="d92176e58__20250121171531">HRTimer 驱动 Driver 层采用 RT-Thread 的 hwtimer 设备驱动框架，如果只使用
+                HAL
+                层也可以支持 baremetal 方式的应用场景。</p>
+            <figure class="- topic/fig fig fignone" id="id__id7" data-ofbid="id__id7"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_tkt_s3d_bdc" src="../../../images/hrtimer/sw_system6.png" alt="sw_system6"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">HRTimer 驱动的软件架构图</span></figcaption></figure>
+        </section><section class="- topic/section section" data-ofbid="d92176e68__20250121171531"><h2 class="- topic/title title sectiontitle">关键流程设计</h2>
+        
+            <div class="- topic/div div section" id="id__id5">
+                <strong class="+ topic/ph hi-d/b ph b">初始化流程</strong>
+                <p class="- topic/p p" data-ofbid="d92176e78__20250121171531">HRTimer 驱动的初始化接口通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">INIT_DEVICE_EXPORT(drv_hwtimer_init)</span>
+                    完成，主要是通过调用 hwtimer 子系统的接口 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_hwtimer_register()</span> 注册一个
+                    hwtimer
+                    设备。</p><p class="- topic/p p" data-ofbid="d92176e87__20250121171531">CAP
+                    控制器的配置过程主要步骤如下：</p><ol class="- topic/ol ol arabic simple" id="id__ol_ukt_s3d_bdc" data-ofbid="id__ol_ukt_s3d_bdc"><li class="- topic/li li" data-ofbid="d92176e91__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d92176e93__20250121171531">初始化 PWMCS 模块的 clk，确保 PWMCS 模块的时钟已经正确配置并启用。</p>
+                    </li><li class="- topic/li li" data-ofbid="d92176e96__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d92176e98__20250121171531">使能 CAP 指定通道的 clk，并设置为 PWM 计数模式，以便能够进行脉冲宽度调制（PWM）信号的捕获和计数。。</p>
+                    </li><li class="- topic/li li" data-ofbid="d92176e101__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d92176e103__20250121171531">设置 CAP 的初始值 (cnt)。初始值决定了计数器从哪个数值开始计数。</p>
+                    </li><li class="- topic/li li" data-ofbid="d92176e106__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d92176e108__20250121171531">使能 CAP 的中断功能，以便在特定事件发生时触发中断处理程序。。</p>
+                    </li><li class="- topic/li li" data-ofbid="d92176e111__20250121171531">
+                        <p class="- topic/p p" data-ofbid="d92176e113__20250121171531">启动 CAP 计数，使其开始对输入信号进行计数。。</p>
+                    </li></ol></div></section><section class="- topic/section section" data-ofbid="d92176e116__20250121171531"><h2 class="- topic/title title sectiontitle">数据结构设计</h2>
+            <div class="- topic/div div section" id="id__struct-aic-cap-arg">
+                <strong class="+ topic/ph hi-d/b ph b">struct aic_cap_arg</strong>
+                <div class="- topic/p p" data-ofbid="d92176e125__20250121171531">属于 HAL 层接口，记录每一个
+                    CAP
+                    通道的配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_gbs_js5_cdc" data-ofbid="id__codeblock_gbs_js5_cdc"><strong class="hl-keyword">struct</strong> aic_cap_arg {
+    u16 available;
+    u16 id;
+    u32 freq;
+    u32 prd;
+    u32 irq_cnt;
+    };</pre></div></div><div class="- topic/div div section" id="id__struct-hrtimer-info">
+        <strong class="+ topic/ph hi-d/b ph b">struct hrtimer_info</strong>
+        <div class="- topic/p p" data-ofbid="d92176e134__20250121171531">属于 Driver
+            层接口，记录一个 HRTimer 设备的配置信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_u5k_ks5_cdc" data-ofbid="id__codeblock_u5k_ks5_cdc"><strong class="hl-keyword">struct</strong> hrtimer_info {
+                <strong class="hl-keyword">char</strong> name[<span class="hl-number">12</span>];
+                u32 id;
+                rt_hwtimer_t hrtimer;
+                };</pre></div>
+    </div></section><section class="- topic/section section" id="id__driver" data-ofbid="id__driver"><h2 class="- topic/title title sectiontitle">Driver 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d92176e144__20250121171531"><span class="+ topic/keyword pr-d/apiname keyword apiname">struct rt_hwtimer_ops</span> 接口是 hwtimer 设备驱动框架的标准接口，定义了一组操作函数，用于初始化、启动、停止、获取计数值和控制硬件定时器：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_rqw_ks5_cdc" data-ofbid="id__codeblock_rqw_ks5_cdc"><strong class="hl-keyword">struct</strong> rt_hwtimer_ops
+{
+    <strong class="hl-keyword">void</strong> (*init)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer, rt_uint32_t state);
+    rt_err_t (*start)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer, rt_uint32_t cnt, rt_hwtimer_mode_t mode);
+    <strong class="hl-keyword">void</strong> (*stop)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer);
+    rt_uint32_t (*count_get)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer);
+    rt_err_t (*control)(<strong class="hl-keyword">struct</strong> rt_hwtimer_device *timer, rt_uint32_t cmd, <strong class="hl-keyword">void</strong> *args);
+};</pre>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id__table_ykt_s3d_bdc" data-ofbid="id__table_ykt_s3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_hrtimer_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ykt_s3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_ykt_s3d_bdc__entry__2">void drv_hrtimer_init(rt_hwtimer_t *timer, rt_uint32_t
+                                    state)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ykt_s3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ykt_s3d_bdc__entry__2">初始化配置一路 Timer</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ykt_s3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ykt_s3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">timer - 指向 rt_hwtimer_t 设备的指针</div>
+                                        <div class="- topic/div div">state - 1，表示打开；0，表示关闭</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ykt_s3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ykt_s3d_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ykt_s3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_ykt_s3d_bdc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="id__table_zkt_s3d_bdc" data-ofbid="id__table_zkt_s3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_hrtimer_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zkt_s3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zkt_s3d_bdc__entry__2">rt_err_t drv_hrtimer_start(rt_hwtimer_t *timer, rt_uint32_t
+                                    cnt, rt_hwtimer_mode_t mode)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zkt_s3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zkt_s3d_bdc__entry__2">启动 Timer</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zkt_s3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zkt_s3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">timer - 指向 rt_hwtimer_t 设备的指针</div>
+                                        <div class="- topic/div div">cnt - Timer 的超时计数，单位是:1/Freq 秒</div>
+                                        <div class="- topic/div div">mode - Oneshot、或 Period 类型</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zkt_s3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zkt_s3d_bdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zkt_s3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_zkt_s3d_bdc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="id__table_alt_s3d_bdc" data-ofbid="id__table_alt_s3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_hrtimer_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_alt_s3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_alt_s3d_bdc__entry__2">void drv_hrtimer_stop(rt_hwtimer_t *timer)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_alt_s3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_alt_s3d_bdc__entry__2">停止 Timer</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_alt_s3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_alt_s3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">timer - 指向 rt_hwtimer_t 设备的指针</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_alt_s3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_alt_s3d_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_alt_s3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_alt_s3d_bdc__entry__2">-</td></tr></tbody></table></div><div class="table-container"><table class="- topic/table table frame-all" id="id__table_blt_s3d_bdc" data-ofbid="id__table_blt_s3d_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_hrtimer_ctrl</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_blt_s3d_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_blt_s3d_bdc__entry__2">rt_err_t drv_hrtimer_ctrl(rt_hwtimer_t *timer, rt_uint32_t
+                                    cmd, void *args)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_blt_s3d_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_blt_s3d_bdc__entry__2">HRTimer 驱动的 ioctl 接口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_blt_s3d_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_blt_s3d_bdc__entry__2">
+                                    <div class="- topic/div div">
+                                        <div class="- topic/div div">timer - 指向 rt_hwtimer_t 设备的指针</div>
+                                        <div class="- topic/div div">cmd - ioctl 命令码</div>
+                                        <div class="- topic/div div">args - ioctl 命令相应的参数</div>
+                                    </div>
+                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_blt_s3d_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_blt_s3d_bdc__entry__2">0，成功；&lt;0，失败</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_blt_s3d_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_blt_s3d_bdc__entry__2">目前仅支持设置 Timer 的 Freq 值</td></tr></tbody></table></div>
+            </div>
+        </section><section class="- topic/section section" id="id__hal" data-ofbid="id__hal"><h2 class="- topic/title title sectiontitle">HAL 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d92176e331__20250121171531">HAL 层的函数接口声明存放在 <span class="+ topic/ph sw-d/filepath ph filepath">hal_cap.h</span> 中。<span class="+ topic/ph sw-d/filepath ph filepath">hal_cap.h</span>
+                是一个头文件，其中声明了与硬件抽象层 (HAL) 相关的函数接口。这些接口主要用于初始化、配置和控制捕获/比较单元
+                (CAP)，如下所示：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_gnn_ls5_cdc" data-ofbid="id__codeblock_gnn_ls5_cdc"><strong class="hl-keyword">void</strong> hal_cap_ch_init(u32 ch);
+<strong class="hl-keyword">void</strong> hal_cap_ch_deinit(u32 ch);
+
+<strong class="hl-keyword">void</strong> hal_cap_int_enable(u32 ch, <strong class="hl-keyword">int</strong> enable);
+u32 hal_cap_is_pending(u32 ch);
+<strong class="hl-keyword">int</strong> hal_cap_set_freq(u32 ch, u32 freq);
+<strong class="hl-keyword">int</strong> hal_cap_set_cnt(u32 ch, u32 cnt);
+<strong class="hl-keyword">int</strong> hal_cap_get(u32 ch);
+<strong class="hl-keyword">int</strong> hal_cap_enable(u32 ch);
+<strong class="hl-keyword">int</strong> hal_cap_disable(u32 ch);
+<strong class="hl-keyword">void</strong> hal_cap_cnt_start(u32 ch);
+<strong class="hl-keyword">void</strong> hal_cap_cnt_stop(u32 ch);
+
+<strong class="hl-keyword">int</strong> hal_cap_init(<strong class="hl-keyword">void</strong>);
+<strong class="hl-keyword">int</strong> hal_cap_deinit(<strong class="hl-keyword">void</strong>);
+
+<strong class="hl-keyword">void</strong> hal_cap_status_show(<strong class="hl-keyword">void</strong>);</pre></div>
+        </section><section class="- topic/section section" id="id__demo" data-ofbid="id__demo"><h2 class="- topic/title title sectiontitle">Demo</h2>
+            
+            
+            <div class="- topic/p p" data-ofbid="d92176e351__20250121171531">以下代码示例展示了一个用于测试高精度定时器 (HRTIMER) 的 Demo，包括了定时器的回调函数和命令行接口，用于配置和启动定时器。本 Demo 仅截取
+                    <code class="+ topic/ph pr-d/codeph ph codeph">test_hrtimer</code> 的部分源码，完整源码位于
+                    <span class="+ topic/ph sw-d/filepath ph filepath">bsp/examples/test-hrtimer/test_hrtimer.c</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_lvv_ls5_cdc" data-ofbid="id__codeblock_lvv_ls5_cdc"><em class="hl-comment">/* Timer timeout callback function */</em>
+<strong class="hl-keyword">static</strong> rt_err_t hrtimer_cb(rt_device_t dev, rt_size_t size)
+{
+    <strong class="hl-keyword">struct</strong> hrtimer_info *info = (<strong class="hl-keyword">struct</strong> hrtimer_info *)dev-&gt;user_data;
+
+    <strong class="hl-keyword">if</strong> (g_debug)
+        printf(<span class="hl-string">"%d/%d hrtimer%d timeout callback! Elapsed %ld us\n"</span>,
+               g_loop_cnt, g_loop_max,
+               info-&gt;id, aic_timer_get_us() - g_start_us);
+
+    g_start_us = aic_timer_get_us();
+    g_loop_cnt++;
+    <strong class="hl-keyword">if</strong> ((g_loop_max &gt; <span class="hl-number">1</span>) &amp;&amp; (g_loop_cnt &gt; g_loop_max))
+        rt_device_control(g_hrtimer_dev[info-&gt;id], HWTIMER_CTRL_STOP, NULL);
+
+    <strong class="hl-keyword">return</strong> RT_EOK;
+}
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> cmd_test_hrtimer(<strong class="hl-keyword">int</strong> argc, <strong class="hl-keyword">char</strong> *argv[])
+{
+    rt_err_t ret = RT_EOK;
+    u32 c, ch = <span class="hl-number">0</span>;
+    rt_hwtimerval_t tm = {<span class="hl-number">0</span>};
+    rt_hwtimer_mode_t mode = HWTIMER_MODE_ONESHOT;
+
+    optind = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">while</strong> ((c = getopt_long(argc, argv, sopts, lopts, NULL)) != -<span class="hl-number">1</span>) {
+        <strong class="hl-keyword">switch</strong> (c) {
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'m'</span>:
+            <strong class="hl-keyword">if</strong> (strncasecmp(<span class="hl-string">"period"</span>, optarg, strlen(optarg)) == <span class="hl-number">0</span>)
+                mode = HWTIMER_MODE_PERIOD;
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'c'</span>:
+            ch = atoi(optarg);
+            <strong class="hl-keyword">if</strong> (ch &gt; AIC_HRTIMER_CH_NUM) {
+                pr_err(<span class="hl-string">"Channel number %s is invalid\n"</span>, optarg);
+                <strong class="hl-keyword">return</strong>;
+            }
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'s'</span>:
+            tm.sec = atoi(optarg);
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'u'</span>:
+            tm.usec = atoi(optarg);
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'d'</span>:
+            g_debug = <span class="hl-number">1</span>;
+            <strong class="hl-keyword">continue</strong>;
+
+        <strong class="hl-keyword">case</strong> <span class="hl-string">'h'</span>:
+            usage(argv[<span class="hl-number">0</span>]);
+            <strong class="hl-keyword">return</strong>;
+
+        <strong class="hl-keyword">default</strong>:
+            pr_err(<span class="hl-string">"Invalid argument\n"</span>);
+            usage(argv[<span class="hl-number">0</span>]);
+            <strong class="hl-keyword">return</strong>;
+        }
+    }
+
+    <strong class="hl-keyword">if</strong> ((tm.sec == <span class="hl-number">0</span>) &amp;&amp; (tm.usec == <span class="hl-number">0</span>)) {
+        pr_err(<span class="hl-string">"Invalid argument\n"</span>);
+        usage(argv[<span class="hl-number">0</span>]);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    <strong class="hl-keyword">if</strong> (!g_hrtimer_dev[ch]) {
+        <strong class="hl-keyword">char</strong> name[<span class="hl-number">10</span>] = <span class="hl-string">""</span>;
+
+        snprintf(name, <span class="hl-number">10</span>, <span class="hl-string">"hrtimer%d"</span>, ch);
+        <em class="hl-comment">/* find timer device */</em>
+        g_hrtimer_dev[ch] = rt_device_find(name);
+        <strong class="hl-keyword">if</strong> (g_hrtimer_dev[ch] == RT_NULL) {
+            pr_err(<span class="hl-string">"Can't find %s device!\n"</span>, name);
+            <strong class="hl-keyword">return</strong>;
+        }
+
+        <em class="hl-comment">/* Open the device in read-write mode */</em>
+        ret = rt_device_open(g_hrtimer_dev[ch], RT_DEVICE_OFLAG_RDWR);
+        <strong class="hl-keyword">if</strong> (ret != RT_EOK) {
+            pr_err(<span class="hl-string">"Failed to open %s device!\n"</span>, name);
+            <strong class="hl-keyword">return</strong>;
+        }
+    }
+
+    <em class="hl-comment">/* set timeout callback function */</em>
+    rt_device_set_rx_indicate(g_hrtimer_dev[ch], hrtimer_cb);
+
+    ret = rt_device_control(g_hrtimer_dev[ch], HWTIMER_CTRL_MODE_SET, &amp;mode);
+    <strong class="hl-keyword">if</strong> (ret != RT_EOK) {
+        pr_err(<span class="hl-string">"Failed to set mode! ret is %d\n"</span>, ret);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    printf(<span class="hl-string">"hrtimer%d: Create a timer of %d.%06d sec, %s mode\n"</span>,
+           ch, tm.sec, tm.usec,
+           mode == HWTIMER_MODE_ONESHOT ? <span class="hl-string">"Oneshot"</span> : <span class="hl-string">"Period"</span>);
+    <strong class="hl-keyword">if</strong> (mode != HWTIMER_MODE_ONESHOT) {
+        g_loop_max = HRTIMER_MAX_ELAPSE / (tm.sec * USEC_PER_SEC + tm.usec);
+        printf(<span class="hl-string">"\tWill loop %d times\n"</span>, g_loop_max);
+    }
+    g_loop_cnt = <span class="hl-number">0</span>;
+    g_start_us = aic_timer_get_us();
+    <strong class="hl-keyword">if</strong> (!rt_device_write(g_hrtimer_dev[ch], <span class="hl-number">0</span>, &amp;tm, <strong class="hl-keyword">sizeof</strong>(tm))) {
+        pr_err(<span class="hl-string">"set timeout value failed\n"</span>);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+}
+MSH_CMD_EXPORT_ALIAS(cmd_test_hrtimer, test_hrtimer, test hrtimer);</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">软件架构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__driver" data-tocid="id__driver">Driver 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__hal" data-tocid="id__hal">HAL 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__demo" data-tocid="id__demo">Demo</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

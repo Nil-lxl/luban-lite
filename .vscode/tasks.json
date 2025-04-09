@@ -1,0 +1,89 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Luban-Lite make",
+			"type": "shell",
+			"command": "scons",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false,
+			}
+		},
+		{
+			"label": "Luban-Lite menuconfig",
+			"type": "shell",
+			"command": "menuconfig",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false,
+			}
+		},
+		{
+			"label": "Luban-Lite clean",
+			"type": "shell",
+			"command": "scons --clean",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false,
+			}
+		},
+		{
+			"label": "Luban-Lite list",
+			"type": "shell",
+			"command": "scons --list-def",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false,
+			}
+		},
+		{
+			"label": "Luban-Lite info",
+			"type": "shell",
+			"command": "scons --info",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false,
+			}
+		},
+		{
+			"label": "Luban-Lite aicupg",
+			"type": "shell",
+			"command": "scons --aicupg",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false,
+			}
+		},
+	]
+}

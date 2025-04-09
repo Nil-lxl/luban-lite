@@ -1,0 +1,72 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob('*.c')
+CPPPATH = []
+
+if GetDepend('AIC_USING_CTP'):
+    CPPPATH.append(cwd)
+    CPPPATH.append(cwd + '/common')
+    src += Glob('common/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_GT911'):
+    CPPPATH.append(cwd + '/gt911/inc')
+    src += Glob('gt911/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_FT7411'):
+    CPPPATH.append(cwd + '/ft7411/inc')
+    src += Glob('ft7411/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_GSL1680'):
+    CPPPATH.append(cwd + '/gsl1680/inc')
+    src += Glob('gsl1680/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_ST16XX'):
+    CPPPATH.append(cwd + '/st16xx/inc')
+    src += Glob('st16xx/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_AXS15260'):
+    CPPPATH.append(cwd + '/axs15260/inc')
+    src += Glob('axs15260/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_CST3240'):
+    CPPPATH.append(cwd + '/cst3240/inc')
+    src += Glob('cst3240/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_TW31XX'):
+    CPPPATH.append(cwd + '/tw31xx/inc')
+    src += Glob('tw31xx/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_CST826'):
+    CPPPATH.append(cwd + '/cst826/inc')
+    src += Glob('cst826/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_GSL3676'):
+    CPPPATH.append(cwd + '/gsl3676/inc')
+    src += Glob('gsl3676/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_ST77922'):
+    CPPPATH.append(cwd + '/st77922/inc')
+    src += Glob('st77922/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_C145HAX01'):
+    CPPPATH.append(cwd + '/c145hax01/inc')
+    src += Glob('c145hax01/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_ILI2511'):
+    CPPPATH.append(cwd + '/ili2511/inc')
+    src += Glob('ili2511/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_FT6336'):
+    CPPPATH.append(cwd + '/ft6336/inc')
+    src += Glob('ft6336/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_C123HAX022'):
+    CPPPATH.append(cwd + '/c123hax022/inc')
+    src += Glob('c123hax022/src/*.c')
+
+group = DefineGroup('touch', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

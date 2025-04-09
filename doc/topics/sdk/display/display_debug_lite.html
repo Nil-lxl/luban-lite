@@ -1,0 +1,273 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="注： DE colorbar 优先级最高，进行其他测试前需要禁用 DE colorbar。 打开调试开关 在 Luban-Lite 根目录下执行 scons --menuconfig ，进入 menuconfig 的功能配置界面，按如下选择，启用显示驱动的调试信息输出 pr_debug() ，并编译显示驱动测试用例： Drivers options ---&gt; Drivers debug ---&gt; ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/display/display_user_guide_2.html"/><meta name="DC.relation" content="../../../topics/sdk/display/disp_conf_h.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_test_guide_lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e3762"/><meta name="wh-source-relpath" content="topics/sdk/display/display_debug_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_debug_lite.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html">Display 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/display/display_debug_lite.html">调试指南</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/display/disp_conf_h.html" title="disp_conf 头文件配置" aria-label="上一主题: disp_conf 头文件配置" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/display/display_test_guide_lite.html" title="测试指南" aria-label="下一主题: 测试指南" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3726" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3726-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_config_lite.html" id="id-d5856e3726-link">Display 配置</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e3762" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_debug_lite.html" id="id-d5856e3762-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3774" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_test_guide_lite.html" id="id-d5856e3774-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="display_design_intro-d5856e3786" class="topicref" data-id="display_design_intro" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action display_design_intro-d5856e3786-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display-design_intro_2.html" id="display_design_intro-d5856e3786-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3858" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_panel_port_lite.html" id="id-d5856e3858-link">屏适配指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3870" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3870-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_fb_rotation_lite.html" id="id-d5856e3870-link">屏幕旋转</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3894" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_color_property_lite.html" id="id-d5856e3894-link">色彩调整</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3906" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_burn_process.html" id="id-d5856e3906-link">烧录进度条</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3918" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_blending.html" id="id-d5856e3918-link">Blending</a></div></div></li><li role="treeitem"><div data-tocid="startup-ui-d5856e3930" class="topicref" data-id="startup-ui" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_startup_ui.html" id="startup-ui-d5856e3930-link">开机动画</a></div></div></li><li role="treeitem"><div data-tocid="concept_smb_cl3_pzb-d5856e3943" class="topicref" data-id="concept_smb_cl3_pzb" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_faq_screen_2.html" id="concept_smb_cl3_pzb-d5856e3943-link">调屏常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_debug_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><div class="- topic/p p" data-ofbid="d76997e19__20250121171524">
+            <div class="- topic/note note note note_note" id="id__note_ftt_jjx_ddc" data-ofbid="id__note_ftt_jjx_ddc"><span class="note__title">注：</span> DE colorbar 优先级最高，进行其他测试前需要禁用 DE colorbar。</div>
+        </div><section class="- topic/section section" id="id__section_zvf_lfx_ddc" data-ofbid="id__section_zvf_lfx_ddc"><h2 class="- topic/title title sectiontitle">打开调试开关</h2>
+            
+            <div class="- topic/div div section" id="id__id2">
+                <div class="- topic/p p" data-ofbid="d76997e31__20250121171524">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入
+                    menuconfig 的功能配置界面，按如下选择，启用显示驱动的调试信息输出 <span class="+ topic/keyword pr-d/apiname keyword apiname">pr_debug()</span>
+                    ，并编译显示驱动测试用例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_d44_kfx_ddc" data-ofbid="id__codeblock_d44_kfx_ddc">Drivers options  ---&gt;
+    Drivers debug  ---&gt;
+        [*] Enable Display driver debug</pre></div>
+                
+            </div>
+        </section><section class="- topic/section section" id="id__section_awf_lfx_ddc" data-ofbid="id__section_awf_lfx_ddc"><h2 class="- topic/title title sectiontitle">启动显示纯色矩形</h2>
+            
+            <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d76997e53__20250121171524">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入 menuconfig
+                    的功能配置界面，按如下选择：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_gvd_mfx_ddc" data-ofbid="id__codeblock_gvd_mfx_ddc">Board options  ---&gt;
+   Graphics Support  ---&gt;
+       [*] Display color block</pre></div>
+                <p class="- topic/p p" data-ofbid="d76997e64__20250121171524">系统启动时，CPU 在 framebuffer 上绘制红，绿，蓝，黑和白五种纯色矩形，矩形大小为 100x100。</p>
+                <div class="- topic/div div figure align-default">
+                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_utt_3fx_ddc" src="../../../images/display/lite_color_block.jpg" width="576" alt="/lite_color_block"/></div><br/>
+                </div>
+            </div>
+        </section><section class="- topic/section section" id="id__section_pp5_mfx_ddc" data-ofbid="id__section_pp5_mfx_ddc"><h2 class="- topic/title title sectiontitle">调试 DE Color Bar 模式</h2>
+            
+            <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d76997e82__20250121171524">显示引擎 Color Bar 模式，忽略 framebuffer 数据，直接向显示接口传输 Color Bar 数据。Color Bar
+                        模式仅供调试使用。<div class="- topic/note note note note_note" id="id__note_ezn_qn3_ddc" data-ofbid="id__note_ezn_qn3_ddc"><span class="note__title">注：</span> 
+                        <p class="- topic/p p" data-ofbid="d76997e86__20250121171524">DE Color Bar 优先级最高，进行其他测试前需要禁用 DE Color Bar。</p>
+                    </div></div>
+                
+                <ul class="- topic/ul ul" id="id__ul_dwv_fjx_ddc" data-ofbid="id__ul_dwv_fjx_ddc"><li class="- topic/li li" data-ofbid="d76997e91__20250121171524">
+                        <div class="- topic/p p" data-ofbid="d76997e93__20250121171524">使能 Color Bar
+                            模式命令:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_alw_xgx_ddc" data-ofbid="id__codeblock_alw_xgx_ddc">m <span class="hl-number">0x18a00004</span> <span class="hl-number">1</span>
+m <span class="hl-number">0x18a00008</span> <span class="hl-number">1</span></pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d76997e98__20250121171524">
+                        <div class="- topic/p p" data-ofbid="d76997e100__20250121171524">禁用 Color Bar
+                            模式命令:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_fkt_ygx_ddc" data-ofbid="id__codeblock_fkt_ygx_ddc">m <span class="hl-number">0x18a00004</span> <span class="hl-number">0</span>
+m <span class="hl-number">0x18a00008</span> <span class="hl-number">1</span></pre></div>
+                    </li></ul>
+                
+                
+                
+                <div class="- topic/div div figure align-default">
+                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_vtt_3fx_ddc" src="../../../images/display/lite_color_bar.jpg" width="576" alt="/lite_color_bar"/></div><br/>
+                </div>
+                
+            </div>
+        </section><section class="- topic/section section" id="id__section_p5w_4fx_ddc" data-ofbid="id__section_p5w_4fx_ddc"><h2 class="- topic/title title sectiontitle">测试背景色输出</h2>
+            
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d76997e121__20250121171524">显示引擎忽略 framebuffer 数据，输出特定背景色 。背景色测试可用于检测 RGB pin 的输出状态是否正确。</p>
+                <div class="- topic/p p" data-ofbid="d76997e124__20250121171524">
+                    <ul class="- topic/ul ul" id="id__ul_ltc_pjx_ddc" data-ofbid="id__ul_ltc_pjx_ddc"><li class="- topic/li li" data-ofbid="d76997e127__20250121171524">
+                            <div class="- topic/p p" data-ofbid="d76997e129__20250121171524">设置背景色命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_tk2_zgx_ddc" data-ofbid="id__codeblock_tk2_zgx_ddc">bg_color -m <span class="hl-number">1</span> -r <span class="hl-number">128</span> -g <span class="hl-number">0</span> -b <span class="hl-number">0</span></pre></div>
+                            <p class="- topic/p p" data-ofbid="d76997e134__20250121171524">上述命令生效后，仅 R7 引脚为高电平，其余数据 pin 为低电平。</p>
+                        </li><li class="- topic/li li" data-ofbid="d76997e137__20250121171524">禁用背景色命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_jrp_zgx_ddc" data-ofbid="id__codeblock_jrp_zgx_ddc">bg_color -m <span class="hl-number">0</span></pre></li></ul>
+                </div>
+                <div class="- topic/div div figure align-default">
+                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_wtt_3fx_ddc" src="../../../images/display/lite_bg_red_128.jpg" width="576" alt="/lite_bg_red_128"/></div><br/>
+                </div>
+            </div>
+        </section><section class="- topic/section section" id="id__section_s3t_pfx_ddc" data-ofbid="id__section_s3t_pfx_ddc"><h2 class="- topic/title title sectiontitle">获取 framebuffer 渐变色块</h2>
+            
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d76997e158__20250121171524">CPU 在 framebuffer 上绘制红，绿，蓝，白四种矩形渐变色块。色块高度自适应屏幕，宽度固定 256，颜色从 0-255
+                    进行渐变，并在对角处附带标定信息。</p>
+                <div class="- topic/p p" data-ofbid="d76997e161__20250121171524">framebuffer
+                    绘制渐变色块命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_qs1_1hx_ddc" data-ofbid="id__codeblock_qs1_1hx_ddc">test_fb -b</pre></div>
+                <div class="- topic/div div figure align-default">
+                    <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_xtt_3fx_ddc" src="../../../images/display/lite_testfb_color_block.jpg" width="576" alt="/lite_testfb_color_block"/></div><br/>
+                </div>
+                <ul class="- topic/ul ul simple" id="id__ul_ytt_3fx_ddc" data-ofbid="id__ul_ytt_3fx_ddc"><li class="- topic/li li" data-ofbid="d76997e174__20250121171524">
+                        <p class="- topic/p p" data-ofbid="d76997e176__20250121171524"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_fb-b</span> 命令直接修改 framebuffer 内容，显示效果不可逆。</p>
+                    </li><li class="- topic/li li" data-ofbid="d76997e181__20250121171524">
+                        <p class="- topic/p p" data-ofbid="d76997e183__20250121171524">支持 ARGB8888 和 RGB565 格式 framebuffer。</p>
+                    </li><li class="- topic/li li" data-ofbid="d76997e186__20250121171524">
+                        <p class="- topic/p p" data-ofbid="d76997e188__20250121171524">RGB565 格式，色块从 0-255 进行渐变，RGB 只有 32/64 色，每 4/8 个像素点共用一个颜色，会存在色阶现象。</p>
+                    </li></ul>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_zvf_lfx_ddc" data-tocid="id__section_zvf_lfx_ddc">打开调试开关</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_awf_lfx_ddc" data-tocid="id__section_awf_lfx_ddc">启动显示纯色矩形</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_pp5_mfx_ddc" data-tocid="id__section_pp5_mfx_ddc">调试 DE Color Bar 模式</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_p5w_4fx_ddc" data-tocid="id__section_p5w_4fx_ddc">测试背景色输出</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_s3t_pfx_ddc" data-tocid="id__section_s3t_pfx_ddc">获取 framebuffer 渐变色块</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

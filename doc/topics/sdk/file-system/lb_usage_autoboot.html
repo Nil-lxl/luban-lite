@@ -1,0 +1,275 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 Luban SDK 中，通过以下多种方式可以为项目安装开机初始化脚本： init.d 脚本 ：如果初始化脚本与组件包相关。 RootFS Overlay ：如果初始化脚本与具体的组件包没有直接关系。 initscripts ：不建议将过多的脚本存放在 initscripts 包中进行安装。 提示： 登录之前 linuxrc 会执行开机脚本，执行的内容和顺序可详细参考 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-10-31"/><meta name="DC.date.modified" content="2024-12-19"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>开机启动</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/file-system/lb_usage_autoboot.dita"/><meta name="wh-out-relpath" content="topics/sdk/file-system/lb_usage_autoboot.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/file-system/lb_usage_autoboot.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">开机启动</h1><div class="date inPage">19 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body body"><div class="- topic/p p" data-ofbid="d143734e18__20250121171609">在 Luban SDK 中，通过以下多种方式可以为项目安装开机初始化脚本：<ul class="- topic/ul ul" id="id__ul_frr_smp_fdc" data-ofbid="id__ul_frr_smp_fdc"><li class="- topic/li li" data-ofbid="d143734e21__20250121171609"><a class="- topic/xref xref" href="lb_usage_autoboot.html#id__init-d">init.d 脚本</a>：如果初始化脚本与组件包相关。</li><li class="- topic/li li" data-ofbid="d143734e26__20250121171609"><a class="- topic/xref xref" href="lb_usage_autoboot.html#id__rootfs-overlay">RootFS Overlay</a>：如果初始化脚本与具体的组件包没有直接关系。</li><li class="- topic/li li" data-ofbid="d143734e31__20250121171609"><a class="- topic/xref xref" href="lb_usage_autoboot.html#id__initscripts">initscripts</a>：不建议将过多的脚本存放在
+                        <span class="+ topic/ph sw-d/filepath ph filepath">initscripts</span> 包中进行安装。</li></ul><div class="- topic/note note tip note_tip" id="id__note_pfm_plp_fdc" data-ofbid="id__note_pfm_plp_fdc"><span class="note__title">提示：</span> 登录之前 <span class="+ topic/ph sw-d/filepath ph filepath">linuxrc</span>
+                会执行开机脚本，执行的内容和顺序可详细参考
+                <span class="+ topic/ph sw-d/filepath ph filepath">package/third-party/busybox/inittab</span>。</div></div><div class="- topic/note note note note_note" id="id__note_oxk_vjp_fdc" data-ofbid="id__note_oxk_vjp_fdc"><span class="note__title">注：</span> 大部分初始化脚本都有与之相关的组件包，建议采用 <a class="- topic/xref xref" href="lb_usage_autoboot.html#id__init-d">init.d 脚本</a> 和 <a class="- topic/xref xref" href="lb_usage_autoboot.html#id__rootfs-overlay">RootFS Overlay</a> 方式进行安装。</div><section class="- topic/section section" id="id__init-d" data-ofbid="id__init-d"><h2 class="- topic/title title sectiontitle">init.d 脚本</h2>
+            
+            <p class="- topic/p p" data-ofbid="d143734e64__20250121171609">如果初始化脚本与某组件包相关，可以编写一个 <span class="+ topic/ph sw-d/filepath ph filepath">init.d</span> 脚本，在该组件包安装文件时，将对应的脚本安装到
+                    <span class="+ topic/ph sw-d/filepath ph filepath">/etc/init.d/</span> 目录。Linux 对 <span class="+ topic/ph sw-d/filepath ph filepath">init.d</span>
+                脚本有统一的要求。</p>
+            <div class="- topic/p p" data-ofbid="d143734e76__20250121171609">以 <code class="+ topic/ph pr-d/codeph ph codeph">lvgl-ui</code> 应用为例，编写一个 <span class="+ topic/ph sw-d/filepath ph filepath">init.d</span>
+                    脚本来管理其启动和停止的详细流程如下所示：<ol class="- topic/ol ol" id="id__ol_sfc_j3r_gdc" data-ofbid="id__ol_sfc_j3r_gdc"><li class="- topic/li li" data-ofbid="d143734e85__20250121171609">
+                        <div class="- topic/div div section" id="id__id2">
+                            <strong class="+ topic/ph hi-d/b ph b">编写脚本</strong>
+                            <p class="- topic/p p" data-ofbid="d143734e92__20250121171609">编写一个 <span class="+ topic/ph sw-d/filepath ph filepath">package/artinchip/lvgl-ui/S00lvgl</span> 脚本，S00
+                                为优先级，00
+                            说明优先级最高。</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_rqv_sjp_fdc" data-ofbid="id__pre_rqv_sjp_fdc">#!/bin/sh
+#
+# Start test_lvgl....
+#
+
+
+DAEMON=<span class="hl-string">"/usr/local/bin/test_lvgl"</span>
+PIDFILE=/var/run/test_lvgl.pid
+TSCALIB=/etc/pointercal
+
+start() {
+    printf <span class="hl-string">"Starting test_lvgl: "</span>
+
+    <strong class="hl-keyword">if</strong> [ ! -f $TSCALIB ]; then
+        /usr/bin/ts_calibrate
+    fi
+    sync
+    PID=`$DAEMON &gt; /dev/null <span class="hl-number">2</span>&gt;&amp;<span class="hl-number">1</span> &amp; echo $!`
+    <strong class="hl-keyword">if</strong> [ -z $PID ]; then
+        printf <span class="hl-string">"Fail \n"</span>
+    <strong class="hl-keyword">else</strong>
+        echo $PID &gt;$PIDFILE
+        printf <span class="hl-string">"OK \n"</span>
+    fi
+}
+
+stop() {
+    printf <span class="hl-string">"Stopping test_lvgl: "</span>
+    PID=`cat $PIDFILE`
+    <strong class="hl-keyword">if</strong> [ -f $PIDFILE ]; then
+        kill -HUP $PID
+        printf <span class="hl-string">"OK \n"</span>
+        rm -f $PIDFILE
+    <strong class="hl-keyword">else</strong>
+        printf <span class="hl-string">"pidfile not found \n"</span>
+    fi
+}
+
+<strong class="hl-keyword">case</strong> <span class="hl-string">"$1"</span> in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|reload)
+        stop
+        start
+        ;;
+    *)
+    echo <span class="hl-string">"Usage: $0 {start|stop|restart}"</span>
+    exit <span class="hl-number">1</span>
+esac
+
+exit $?</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d143734e100__20250121171609">
+                        <div class="- topic/div div section" id="id__id3">
+                            <strong class="+ topic/ph hi-d/b ph b">安装脚本</strong>
+                            <p class="- topic/p p" data-ofbid="d143734e107__20250121171609">将 <span class="+ topic/ph sw-d/filepath ph filepath">S00lvgl</span> 脚本安装到
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">/etc/init.d/</span> 目录中，可以在
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">mk</span> 文件中完成。例如对于 <code class="+ topic/ph pr-d/codeph ph codeph">lvgl-ui</code>
+                                应用，可以修改 <span class="+ topic/ph sw-d/filepath ph filepath">package/artinchip/lvgl-ui/lvgl-ui.mk</span>
+                                文件：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_sqv_sjp_fdc" data-ofbid="id__pre_sqv_sjp_fdc"><span class="hl-directive">define</span> LVGL_UI_POST_TARGET_INSTALL
+    @$(call MESSAGE,<span class="hl-string">"post target install"</span>)
+    $(INSTALL) -m <span class="hl-number">0755</span> -D package/artinchip/lvgl-ui/S00lvgl \
+        $(TARGET_DIR)/etc/init.d/S00lvgl
+endef</pre></div>
+                    </li></ol></div></section><section class="- topic/section section" id="id__rootfs-overlay" data-ofbid="id__rootfs-overlay"><h2 class="- topic/title title sectiontitle">RootFS Overlay</h2>
+            
+            <div class="- topic/p p" data-ofbid="d143734e132__20250121171609">如果初始化脚本与具体的组件包没有直接关系，但与项目相关性较大，或者不方便放到具体的组件包中，则可以使用 RootFS Overlay 方式，具体步骤如下：<ol class="- topic/ol ol" id="id__ol_z4l_r3r_ldc" data-ofbid="id__ol_z4l_r3r_ldc"><li class="- topic/li li" data-ofbid="d143734e135__20250121171609">
+                        <div class="- topic/p p" id="id__p_smy_tz2_tdc" data-ofbid="id__p_smy_tz2_tdc">在
+                                    <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">chip</var>/<var class="+ topic/keyword sw-d/varname keyword varname">board</var>/rootfs_overlay/</span>
+                            目录下创建一个新目录存放脚本文件，例如
+                            <span class="+ topic/ph sw-d/filepath ph filepath">/etc/init.d/</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_fg3_t3r_ldc" data-ofbid="id__codeblock_fg3_t3r_ldc">mkdir -p target/chip/board/rootfs_overlay/etc/init.d</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d143734e153__20250121171609">
+                        <div class="- topic/p p" id="id__p_dl4_yz2_tdc" data-ofbid="id__p_dl4_yz2_tdc">将脚本放入新建目录中：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_b4f_dcl_sdc" data-ofbid="id__codeblock_b4f_dcl_sdc">cp package/artinchip/lvgl-ui/S00lvgl target/chip/board/rootfs_overlay/etc/init.d/S00lvgl</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d143734e160__20250121171609">
+                        <div class="- topic/p p" id="id__p_fwk_zz2_tdc" data-ofbid="id__p_fwk_zz2_tdc">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">chmod +x</span>
+                            命令将脚本设置为可执行文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_tll_jcl_sdc" data-ofbid="id__codeblock_tll_jcl_sdc">chmod +x target/chip/board/rootfs_overlay/etc/init.d/S00lvgl</pre></div>
+                        <p class="- topic/p p" data-ofbid="d143734e170__20250121171609">确保在生成 RootFS 镜像时，Overlay 被正确应用。通常在构建系统的配置文件中进行设置。具体可参考 <span class="- topic/xref xref"></span>。</p>
+                    </li></ol></div></section><section class="- topic/section section" id="id__initscripts" data-ofbid="id__initscripts"><h2 class="- topic/title title sectiontitle">initscripts</h2>
+            
+            <p class="- topic/p p" data-ofbid="d143734e181__20250121171609"><span class="+ topic/ph sw-d/filepath ph filepath">/etc/init.d/</span> 目录是由
+                    <span class="+ topic/ph sw-d/filepath ph filepath">package/third-party/initscripts/</span> 包进行安装创建的，
+                也可以将相关初始化脚本放在该包中进行安装。需要修改
+                    <span class="+ topic/ph sw-d/filepath ph filepath">package/third-party/initscripts/initscripts.mk</span> 中的
+                    <span class="+ topic/ph sw-d/filepath ph filepath">INITSCRIPTS_INSTALL_TARGET_CMDS</span> 。</p></section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__init-d" data-tocid="id__init-d">init.d 脚本</a></div></li><li class="section-item"><div class="section-title"><a href="#id__rootfs-overlay" data-tocid="id__rootfs-overlay">RootFS Overlay</a></div></li><li class="section-item"><div class="section-title"><a href="#id__initscripts" data-tocid="id__initscripts">initscripts</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

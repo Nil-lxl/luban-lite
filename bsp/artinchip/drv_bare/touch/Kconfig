@@ -1,0 +1,5 @@
+
+menu "Touch Panel Support"
+    depends on AIC_USING_BARE_TOUCH
+    source "bsp/artinchip/drv_bare/touch/gt911/Kconfig"
+endmenu

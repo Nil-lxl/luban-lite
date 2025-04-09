@@ -1,0 +1,310 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本章节介绍 LCD 外设在 Luban-Lite 上的适配方法。用户可选择以下任意方式配置屏参数： 将以下屏参数写入 panel 驱动源码中： 注： 对于屏时序参数，只有当 board.dts 文件的 panel 结点没有设置 display-timings 子节点时，此方式才会生效。 时序参数 屏接口参数 屏配置方式 方式一：将屏参数写入到 board.dts 文件中。关于 panel_lvds ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-04"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="display_screen_configuration"/><meta name="DC.language" content="zh-CN"/><title>屏适配指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/display/display_panel_port.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_panel_port.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="display_screen_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_panel_port.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">屏适配指南</h1><div class="date inPage">4 Dec 2024</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d126418e22__20250121171601">本章节介绍 LCD 外设在 <span class="- topic/ph ph">Luban-Lite</span> 上的适配方法。用户可选择以下任意方式配置屏参数：</p><div class="- topic/p p" data-ofbid="d126418e27__20250121171601">
+            <ul class="- topic/ul ul" id="display_screen_configuration__ul_zzy_l2g_d1c" data-ofbid="display_screen_configuration__ul_zzy_l2g_d1c"><li class="- topic/li li" data-ofbid="d126418e30__20250121171601">将以下屏参数写入 panel 驱动源码中：<div class="- topic/note note note note_note" id="display_screen_configuration__note_yzz_q2g_d1c" data-ofbid="display_screen_configuration__note_yzz_q2g_d1c"><span class="note__title">注：</span> 
+                        <p class="- topic/p p" data-ofbid="d126418e34__20250121171601">对于屏时序参数，只有当 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 文件的 panel 结点没有设置
+                            display-timings 子节点时，此方式才会生效。</p>
+                    </div><ul class="- topic/ul ul" id="display_screen_configuration__ul_jqw_f2g_d1c" data-ofbid="display_screen_configuration__ul_jqw_f2g_d1c"><li class="- topic/li li" data-ofbid="d126418e41__20250121171601">时序参数</li><li class="- topic/li li" data-ofbid="d126418e43__20250121171601">屏接口参数</li></ul></li></ul>
+        </div><section class="- topic/section section" id="display_screen_configuration__section_rjf_4gk_ndc" data-ofbid="display_screen_configuration__section_rjf_4gk_ndc"><h2 class="- topic/title title sectiontitle">屏配置方式</h2>
+            
+            <div class="- topic/p p" data-ofbid="d126418e51__20250121171601">
+                <div class="- topic/div div" id="display_screen_configuration__div_qrj_xhs_2dc">
+                    <p class="- topic/p p" data-ofbid="d126418e55__20250121171601">方式一：将屏参数写入到 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 文件中。关于 <span class="+ topic/keyword pr-d/parmname keyword parmname">panel_lvds</span>
+                        参数，可查看 <a class="- topic/xref xref" href="display_parameter_panel_lvds.html">Panel_LVDS</a>。</p>
+                </div>
+                <div class="- topic/div div" id="display_screen_configuration__div_qmp_xhs_2dc">
+                    <p class="- topic/p p" data-ofbid="d126418e71__20250121171601">方式二：将屏参数写入 panel 驱动源码中。</p>
+                    <div class="- topic/note note tip note_tip" id="display_screen_configuration__note_xf4_qn3_ddc" data-ofbid="display_screen_configuration__note_xf4_qn3_ddc"><span class="note__title">提示：</span> 
+                        <p class="- topic/p p" data-ofbid="d126418e76__20250121171601">仅在 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 文件的 panel 结点不存在
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">display-timings</span> 子节点，方式二才会生效。</p>
+                    </div>
+                    <ul class="- topic/ul ul simple" id="display_screen_configuration__ul_s1f_4gs_2dc" data-ofbid="display_screen_configuration__ul_s1f_4gs_2dc"><li class="- topic/li li" data-ofbid="d126418e87__20250121171601">
+                            <p class="- topic/p p" data-ofbid="d126418e89__20250121171601">时序参数</p>
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_screen_configuration__codeblock_gcb_rgs_2dc" data-ofbid="display_screen_configuration__codeblock_gcb_rgs_2dc"><em class="hl-comment">/* Init the videomode parameter, dts will override the initial value. */</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> videomode panel_vm = {
+    .pixelclock = <span class="hl-number">130000000</span>,
+    .hactive = <span class="hl-number">1080</span>,
+    .hfront_porch = <span class="hl-number">160</span>,
+    .hback_porch = <span class="hl-number">160</span>,
+    .hsync_len = <span class="hl-number">40</span>,
+    .vactive = <span class="hl-number">1920</span>,
+    .vfront_porch = <span class="hl-number">10</span>,
+    .vback_porch = <span class="hl-number">20</span>,
+    .vsync_len = <span class="hl-number">8</span>,
+    .flags = DISPLAY_FLAGS_HSYNC_LOW | DISPLAY_FLAGS_VSYNC_LOW |
+        DISPLAY_FLAGS_DE_HIGH | DISPLAY_FLAGS_PIXDATA_POSEDGE
+};</pre>
+                        </li><li class="- topic/li li" data-ofbid="d126418e95__20250121171601">
+                            <p class="- topic/p p" data-ofbid="d126418e97__20250121171601">屏接口参数</p>
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_screen_configuration__codeblock_o1k_rgs_2dc" data-ofbid="display_screen_configuration__codeblock_o1k_rgs_2dc"><strong class="hl-keyword">struct</strong> panel_dsi dsi = {
+    .mode = DSI_MOD_VID_BURST,
+    .format = DSI_FMT_RGB888,
+    .lane_num = <span class="hl-number">4</span>,
+};</pre>
+                        </li></ul>
+                </div>
+            </div>
+        </section><section class="- topic/section section" id="display_screen_configuration__section_iqw_f2g_d1c" data-ofbid="display_screen_configuration__section_iqw_f2g_d1c"><h2 class="- topic/title title sectiontitle">屏配置步骤</h2>
+            
+            <p class="- topic/p p" data-ofbid="d126418e111__20250121171601">屏配置需要以下操作：</p>
+            <ol class="- topic/ol ol" id="display_screen_configuration__ol_oqw_f2g_d1c" data-ofbid="display_screen_configuration__ol_oqw_f2g_d1c"><li class="- topic/li li" data-ofbid="d126418e115__20250121171601">为 LCD 适配一款 panel 驱动。</li><li class="- topic/li li" data-ofbid="d126418e117__20250121171601">确保一条正确的数据通路。</li></ol>
+            <div class="- topic/p p" data-ofbid="d126418e120__20250121171601">具体配置步骤如下：<ol class="- topic/ol ol" id="display_screen_configuration__ol_mwz_v2g_d1c" data-ofbid="display_screen_configuration__ol_mwz_v2g_d1c"><li class="- topic/li li" data-ofbid="d126418e123__20250121171601">配置 panel 驱动：<ul class="- topic/ul ul" id="display_screen_configuration__ul_osf_csj_ndc" data-ofbid="display_screen_configuration__ul_osf_csj_ndc"><li class="- topic/li li" data-ofbid="d126418e126__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126418e128__20250121171601">使能 Luban SDK 提供的 RGB/ LVDS panel 驱动，详见 <a class="- topic/xref xref" href="display_menuconfig.html#display_menuconfig_configuration__li_enable_panel_drivers">Panel
+                                        配置</a>。</p>
+                            </li><li class="- topic/li li" data-ofbid="d126418e135__20250121171601">
+                                <p class="- topic/p p" data-ofbid="d126418e137__20250121171601">编写一个 panel 驱动，详情可查看<a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="display_driver-intro.html">屏驱动支持</a>。</p>
+                            </li></ul></li><li class="- topic/li li" data-ofbid="d126418e144__20250121171601">数据通路<div class="- topic/p p" data-ofbid="d126418e146__20250121171601">LCD
+                            正常显示时，显示模块会形成一条完整的数据通道。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_screen_configuration__codeblock_ahl_hsh_mbc" data-ofbid="display_screen_configuration__codeblock_ahl_hsh_mbc">fb0 --&gt; display engine  --&gt; display interface  --&gt; panel</pre></div><div class="- topic/p p" data-ofbid="d126418e150__20250121171601">数据通道的关系在
+                                <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中体现，以 LVDS
+                            屏幕为例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_screen_configuration__codeblock_y3n_lfg_d1c" data-ofbid="display_screen_configuration__codeblock_y3n_lfg_d1c">&amp;fb0 {
+    port {
+        fb0_out: endpoint {
+            remote-endpoint = &lt;&amp;de0_in&gt;;
+        };
+    };
+};
+
+&amp;de0 {
+    status = <span class="hl-string">"okay"</span>;
+    port@<span class="hl-number">0</span> {
+        reg = &lt;<span class="hl-number">0</span>&gt;;
+        de0_in: endpoint {
+            remote-endpoint = &lt;&amp;fb0_out&gt;;
+        };
+    };
+
+    port@<span class="hl-number">1</span> {
+        reg = &lt;<span class="hl-number">1</span>&gt;;
+        de0_out: endpoint {
+            remote-endpoint = &lt;&amp;lvds0_in&gt;;
+        };
+    };
+};
+
+&amp;rgb0 {
+    status = <span class="hl-string">"disabled"</span>;
+    port@<span class="hl-number">0</span> {
+        reg = &lt;<span class="hl-number">0</span>&gt;;
+        rgb0_in: endpoint {
+            remote-endpoint = &lt;&amp;rgb0_in&gt;;
+        };
+    };
+
+    port@<span class="hl-number">1</span> {
+        reg = &lt;<span class="hl-number">1</span>&gt;;
+        rgb0_out: endpoint {
+            remote-endpoint = &lt;&amp;panel_rgb_in&gt;;
+        };
+    };
+};
+
+&amp;lvds0 {
+    status = <span class="hl-string">"okay"</span>;
+    port@<span class="hl-number">0</span> {
+        reg = &lt;<span class="hl-number">0</span>&gt;;
+        lvds0_in: endpoint {
+            remote-endpoint = &lt;&amp;de0_out&gt;;
+        };
+    };
+
+    port@<span class="hl-number">1</span> {
+        reg = &lt;<span class="hl-number">1</span>&gt;;
+        lvds0_out: endpoint {
+            remote-endpoint = &lt;&amp;panel_lvds_in&gt;;
+        };
+    };
+};
+
+&amp;dsi0 {
+    status = <span class="hl-string">"disabled"</span>;
+    port@<span class="hl-number">0</span> {
+        reg = &lt;<span class="hl-number">0</span>&gt;;
+        dsi0_in: endpoint {
+            remote-endpoint = &lt;&amp;dsi0_in&gt;;
+        };
+    };
+
+    port@<span class="hl-number">1</span> {
+        reg = &lt;<span class="hl-number">1</span>&gt;;
+        dsi0_out: endpoint {
+            remote-endpoint = &lt;&amp;panel_dsi_in&gt;;
+        };
+    };
+};</pre></div><div class="- topic/p p" data-ofbid="d126418e157__20250121171601">在上述例子中，<span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 通过 port 和
+                            status
+                            结点，配置了一条数据通道。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_screen_configuration__codeblock_hmw_lsh_mbc" data-ofbid="display_screen_configuration__codeblock_hmw_lsh_mbc">fb       |      de    |     |     lvds    |     panel
+port  --&gt; port0   port1 --&gt;  port0   port1 --&gt;  port</pre></div><p class="- topic/p p" data-ofbid="d126418e164__20250121171601">如果
+                                <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中没有正确配置一条数据通道，显示驱动无法完成初始化。</p></li></ol></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#display_screen_configuration__section_rjf_4gk_ndc" data-tocid="display_screen_configuration__section_rjf_4gk_ndc">屏配置方式</a></div></li><li class="section-item"><div class="section-title"><a href="#display_screen_configuration__section_iqw_f2g_d1c" data-tocid="display_screen_configuration__section_iqw_f2g_d1c">屏配置步骤</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

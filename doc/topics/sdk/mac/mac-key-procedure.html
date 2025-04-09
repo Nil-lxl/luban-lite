@@ -1,0 +1,293 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="description" content="初始化流程 |--&gt;aicmac_platform_get_resources |--&gt;kzalloc aicma_resources |--&gt;platform_get_irq_byname |--&gt;devm_platform_ioremap_resource |--&gt;aicmac_platform_get_config |--&gt;aicmac_platform_init_data ..."/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-07-08"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mac_key_procedure"/><meta name="DC.language" content="zh-CN"/>        
+      <title>关键流程设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mac/mac-key-procedure.dita"/><meta name="wh-out-relpath" content="topics/sdk/mac/mac-key-procedure.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="mac_key_procedure" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mac/mac-key-procedure.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">关键流程设计</h1><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/shortdesc shortdesc"></p><div class="- topic/p p" data-ofbid="d169255e23__20250121171620">
+            <ul class="- topic/ul ul" id="mac_key_procedure__ul_uq1_2cs_21c" data-ofbid="mac_key_procedure__ul_uq1_2cs_21c"><li class="- topic/li li" data-ofbid="d169255e26__20250121171620">初始化流程<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_key_procedure__codeblock_mqg_2cs_21c" data-ofbid="mac_key_procedure__codeblock_mqg_2cs_21c">|--&gt;aicmac_platform_get_resources
+    |--&gt;kzalloc aicma_resources
+    |--&gt;platform_get_irq_byname
+    |--&gt;devm_platform_ioremap_resource
+|--&gt;aicmac_platform_get_config
+    |--&gt;aicmac_platform_init_data
+        |--&gt;aicmac_phy_init_data
+        |--&gt;aicmac_mac_init_data
+        |--&gt;aicmac_mdio_init_data
+        |--&gt;aicmac_mda_init_data
+        |--&gt;aicmac_napi_init_data
+        |--&gt;aicmac_<span class="hl-number">1588</span>_init_data
+    |--&gt;aicmac_platform_get_mac_addr
+    |--&gt;aicmac_platform_init_ioirq
+    |--&gt;handle clk: mac clk, pclk
+    |--&gt;aicmac_<span class="hl-number">1588</span>_init_clk
+    |--&gt;devm_reset_control_get
+|--&gt;aicmac_core_init
+    |--&gt;devm_alloc_etherdev_mqs
+    |--&gt;netdev_priv(ndev)
+    |--&gt;create_singlethread_workqueue
+    |--&gt;aicmac_service_task
+    |--&gt;reset_control_assert
+    |--&gt;aicmac_mac_init
+        |--&gt;aicmac_mac_ip_init
+        |--&gt;aicmac_mac_reg_core_init
+    |--&gt;aicmac_dma_init
+        |--&gt;dma_set_mask_and_coherent
+    |--&gt;aicmac_napi_init
+        |--&gt;netif_set_real_num_rx_queues
+        |--&gt;netif_set_real_num_tx_queues
+    |--&gt;aicmac_core_setup_napiop
+        |--&gt;netif_napi_add(rx)
+        |--&gt;netif_napi_add(tx)
+    |--&gt;mutex_init
+    |--&gt;aicmac_mdio_register
+        |--&gt;mdiobus_alloc
+        |--&gt;of_mdiobus_register
+        |--&gt;mdiobus_get_phy
+    |--&gt;aicmac_phy_init
+        |--&gt;phylink_create
+    |--&gt;aicmac_<span class="hl-number">1588</span>_init
+        |--&gt;ptp_clock_register
+    |--&gt;register_netdev</pre></li><li class="- topic/li li" data-ofbid="d169255e30__20250121171620">设备打开流程<div class="- topic/p p" data-ofbid="d169255e32__20250121171620">如果在终端执行 “ifconfig eth0 up”，则进行设备打开流程，函数 aicmac_open 被调用 ..
+                        code-block:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_key_procedure__codeblock_opl_fcs_21c" data-ofbid="mac_key_procedure__codeblock_opl_fcs_21c">aicmac_open
+|--&gt;aicmac_mac_reg_core_init
+    |--&gt;aicmac_mac_reg_init_basic_config(mac, dev);
+    |--&gt;aicmac_mac_reg_init_tx_func(mac, dev);
+    |--&gt;aicmac_mac_reg_init_rx_func(mac, dev);
+|--&gt;aicmac_phy_connect
+    |--&gt;phylink_of_phy_connect
+    |--&gt;mdiobus_get_phy
+    |--&gt;phylink_connect_phy
+|--&gt;aicmac_dma_ring_set_<span class="hl-number">16</span>kib_bfsize
+|--&gt;aicmac_dma_ring_set_bfsize
+|--&gt;aicmac_dma_alloc_dma_desc_resources
+    |--&gt;aicmac_dma_alloc_dma_rx_desc_resources
+    |--&gt;aicmac_dma_alloc_dma_rx_desc_resources
+|--&gt;aicmac_dma_init_desc_rings
+    |--&gt;aicmac_dma_init_rx_desc_rings
+    |--&gt;aicmac_dma_init_tx_desc_rings
+    |--&gt;aicmac_dma_clear_rx_descriptors
+    |--&gt;aicmac_dma_clear_tx_descriptors
+|--&gt;aicmac_hw_setup
+    |--&gt;aicmac_dma_init_engine
+    |--&gt;aicmac_mac_reg_reset
+    |--&gt;aicmac_mac_reg_set_umac_addr
+    |--&gt;aicmac_mac_reg_core_init
+    |--&gt;aicmac_mac_reg_rx_ipc_enable
+    |--&gt;aicmac_mac_reg_enable_mac
+    |--&gt;aicmac_dma_operation_mode
+        |--&gt;aicmac_dma_reg_operation_mode_rx
+        |--&gt;aicmac_dma_reg_operation_mode_tx
+    |--&gt;aicmac_dma_start_all_dma
+        |--&gt;aicmac_dma_reg_start_rx
+        |--&gt;aicmac_dma_reg_start_tx
+|--&gt;aicmac_init_coalesce
+    |--&gt;aicmac_tx_timer
+|--&gt;phylink_start
+|--&gt;request_irq-&gt;aicmac_interrupt
+|--&gt;aicmac_enable_all_queues
+|--&gt;netif_tx_start_all_queues</pre></div><div class="- topic/p p" data-ofbid="d169255e36__20250121171620"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mac_key_procedure__image_bcn_gbs_21c" src="../../../images/mac/mac-open.jpg" alt="mac-open"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d169255e40__20250121171620">数据发送流程<div class="- topic/p p" data-ofbid="d169255e42__20250121171620">执行任何的发送操作(如 ping 命令)，aicmac_xmit 将被调用 ..
+                        code-block:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_key_procedure__codeblock_o55_gcs_21c" data-ofbid="mac_key_procedure__codeblock_o55_gcs_21c">aicmac_xmit
+|--&gt;aicmac_tx_avail
+|--&gt;aicmac_vlan_insert
+|--&gt;aicmac_dma_ring_is_jumbo_frm
+|--&gt;aicmac_dma_ring_jumbo_frm
+|--&gt;aicmac_dma_desc_set_addr
+|--&gt;aicmac_dma_desc_prepare_tx_desc
+|--&gt;skb_tx_timestamp
+|--&gt;netdev_tx_sent_queue
+|--&gt;aicmac_dma_reg_enable_transmission
+|--&gt;aicmac_tx_timer_arm</pre></div><div class="- topic/p p" data-ofbid="d169255e46__20250121171620"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mac_key_procedure__image_ecn_gbs_21c" src="../../../images/mac/mac-xmit.jpg" alt="mac-xmit"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d169255e50__20250121171620">数据接收流程<div class="- topic/p p" data-ofbid="d169255e52__20250121171620">有任何数据到达，MAC 将产生中断，则函数 aicmac_interrupt
+                        被执行<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_key_procedure__codeblock_ihl_3cs_21c" data-ofbid="mac_key_procedure__codeblock_ihl_3cs_21c">aicmac_interrupt
+|--&gt;aicmac_napi_check
+    |--&gt;invoke aicmac_napi_poll_rx
+    |--&gt;aicmac_rx
+        |--&gt;netif_msg_rx_status
+        |--&gt;aicmac_dma_desc_get_rx_status
+        |--&gt;dma_sync_single_for_cpu
+        |--&gt;skb_copy_to_linear_data
+        |--&gt;skb_put
+        |--&gt;page_pool_recycle_direct
+        |--&gt;skb_add_rx_frag
+        |--&gt;page_pool_release_page
+        |--&gt;aicmac_<span class="hl-number">1588</span>_get_rx_hwtstamp
+        |--&gt;skb_set_hash
+        |--&gt;skb_record_rx_queue
+        |--&gt;napi_gro_receive
+        |--&gt;aicmac_rx_refill
+    |--&gt;aicmac_dma_reg_enable_irq
+|--&gt;aicmac_dma_set_operation_mode</pre></div><div class="- topic/p p" data-ofbid="d169255e56__20250121171620"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mac_key_procedure__image_hcn_gbs_21c" src="../../../images/mac/mac-receive.jpg" alt="mac-receive"/></div><br/></div></li><li class="- topic/li li" data-ofbid="d169255e60__20250121171620">DMA 初始化流程<div class="- topic/p p" data-ofbid="d169255e62__20250121171620">DMA 模块将在设备 Open 的时候初始化 ..
+                        code-block:<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mac_key_procedure__codeblock_s4f_jcs_21c" data-ofbid="mac_key_procedure__codeblock_s4f_jcs_21c">aicmac_dma_init_desc_rings
+|--&gt;aicmac_dma_init_rx_desc_rings
+    |--&gt;aicmac_dma_clear_rx_descriptors
+        |--&gt;aicmac_dma_desc_init_rx_desc
+    |--&gt;aicmac_dma_init_rx_buffers
+    |--&gt;aicmac_dma_chain_init(RX,TX)
+|--&gt;aicmac_dmac_init_tx_desc_rings
+    |--&gt;aicmac_dma_desc_clear
+    |--&gt;netdev_tx_reset_queue
+|--&gt;aicmac_dma_clear_descriptors
+    |--&gt;aicmac_dma_clear_rx_descriptors
+        |--&gt;aicmac_dma_desc_init_rx_desc
+    |--&gt;aicmac_dma_clear_tx_descriptors
+        |--&gt;aicmac_dma_desc_init_tx_desc
+|--&gt;aicmac_dma_display_rings</pre></div><div class="- topic/p p" data-ofbid="d169255e66__20250121171620"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mac_key_procedure__image_kcn_gbs_21c" src="../../../images/mac/mac-dma.jpg" alt="mac-dma"/></div><br/></div>
+                </li></ul>
+        </div></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

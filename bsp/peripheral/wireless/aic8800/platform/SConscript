@@ -1,0 +1,40 @@
+Import('rtconfig')
+from building import *
+
+cwd = GetCurrentDir()
+list = os.listdir(cwd)
+
+include_path =[]
+src = []
+
+include_path +=[cwd + '/../host/driver/layer_abstract/inc']
+include_path +=[cwd + '/../host/driver/drv_fhost']
+include_path +=[cwd + '/../host/driver/drv_macif']
+include_path +=[cwd + '/../host/driver/drv_wlan']
+include_path +=[cwd + '/netif']
+include_path +=[cwd + '/rtos']
+include_path +=[cwd + '/wifi']
+include_path +=[cwd + '/fmac']
+include_path +=[cwd + '/hal']
+include_path +=[cwd + '/inc']
+include_path +=[cwd + '/utils/inc']
+include_path +=[cwd + '/inc']
+include_path +=[cwd + '/../build']
+
+src += Glob('netif/*.c')
+src += Glob('rtos/*.c')
+src += Glob('wifi/*.c')
+src += Glob('fmac/*.c')
+src += Glob('hal/*.c')
+src += Glob('utils/src/*.c')
+
+wifi_name = 'aic8800'
+lib_name = 'wlan_' + wifi_name + '_'+ rtconfig.CPUNAME
+LIBS = [lib_name]
+LIBPATH = [cwd + "/../host/"]
+
+myccflags = (' -w')
+
+group = DefineGroup('aic8800', src, depend = ['AIC_WLAN_AIC8800D40L'], CPPPATH = include_path, LIBS=LIBS, LIBPATH=LIBPATH, LOCAL_CFLAGS=myccflags)
+
+Return('group')

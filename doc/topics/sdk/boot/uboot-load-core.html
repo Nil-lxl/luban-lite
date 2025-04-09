@@ -1,0 +1,304 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍 ArtInChip 平台从存储介质中加载内核和启动的流程。 U-Boot 中启动所需的数据，以及启动内核通过命令行来实现，一系列的命令组成启动脚本。在 ArtInChip 的方案中，相关的启动脚本在 env.txt 环境变量中提供，并且最终由变量 autoboot= 串在一起。 U-Boot 在执行自动启动时，首先读取和执行环境变量 bootcmd 的内容， bootcmd 被设置为 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2023-10-10"/><meta name="DC.date.modified" content="2024-12-25"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_tmb_wl3_pzb"/><meta name="DC.language" content="zh-CN"/><title>加载内核</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/uboot-load-core.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/uboot-load-core.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_tmb_wl3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/uboot-load-core.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">加载内核</h1><div class="date inPage">25 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d296298e23__20250121171801">本节介绍 ArtInChip 平台从存储介质中加载内核和启动的流程。</p><p class="- topic/p p" data-ofbid="d296298e25__20250121171801">U-Boot 中启动所需的数据，以及启动内核通过命令行来实现，一系列的命令组成启动脚本。在 ArtInChip 的方案中，相关的启动脚本在
+                <span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span> 环境变量中提供，并且最终由变量 <span class="+ topic/keyword pr-d/parmname keyword parmname">autoboot=</span>
+            串在一起。</p><p class="- topic/p p" data-ofbid="d296298e33__20250121171801">U-Boot 在执行自动启动时，首先读取和执行环境变量 <span class="+ topic/keyword pr-d/parmname keyword parmname">bootcmd</span> 的内容，<span class="+ topic/keyword pr-d/parmname keyword parmname">bootcmd</span> 被设置为
+            <span class="+ topic/keyword pr-d/parmname keyword parmname">run autoboot</span> 。</p><section class="- topic/section section" id="concept_tmb_wl3_pzb__section_upg_2dh_bzb" data-ofbid="concept_tmb_wl3_pzb__section_upg_2dh_bzb"><h2 class="- topic/title title sectiontitle">autoboot</h2>
+            
+            <div class="- topic/p p" data-ofbid="d296298e49__20250121171801">autoboot
+                变量的内容被设置为一个启动命令脚本。该脚本通过检测当前的启动存储介质类型来执行不同的内核加载和启动命令。例如：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_tmb_wl3_pzb__codeblock_ljc_fpr_c1c" data-ofbid="concept_tmb_wl3_pzb__codeblock_ljc_fpr_c1c">autoboot=<strong class="hl-keyword">if</strong> test ${boot_device} = nand; then \
+                run nand_boot; \
+        elif test ${boot_device} = nor; then \
+                run nor_boot; \
+        elif test ${boot_device} = mmc; then \
+                <strong class="hl-keyword">if</strong> test $? -eq <span class="hl-number">1</span>; then \
+                        echo <span class="hl-string">"Run sd card upgrade program"</span>; \
+                        aicupg mmc <span class="hl-number">1</span>; \
+                fi; \
+                <strong class="hl-keyword">if</strong> test $? -eq <span class="hl-number">1</span>; then \
+                        echo <span class="hl-string">"Run sd card fat32 upgrade program"</span>; \
+                        aicupg fat mmc <span class="hl-number">1</span>; \
+                fi; \
+                run mmc_boot; \
+        elif test ${boot_device} = usb; then \
+                echo <span class="hl-string">"Run USB upgrade program"</span>; \
+                aicupg usb <span class="hl-number">0</span>; \
+        fi; \
+    <strong class="hl-keyword">if</strong> test $? -eq <span class="hl-number">1</span>; then \
+                echo <span class="hl-string">"Try NFS boot ..."</span>; \
+            run nfs_boot; \
+    fi
+bootcmd=run autoboot;</pre></div>
+        </section><section class="- topic/section section" id="concept_tmb_wl3_pzb__section_wpg_2dh_bzb" data-ofbid="concept_tmb_wl3_pzb__section_wpg_2dh_bzb"><h2 class="- topic/title title sectiontitle">MMC 启动脚本</h2>
+            
+            <p class="- topic/p p" data-ofbid="d296298e59__20250121171801">无论是 SD 卡还是 eMMC，ArtInChip 平台上都采用 GPT 的方式对存储空间进行分区。 </p>
+            <div class="- topic/p p" data-ofbid="d296298e62__20250121171801">Kernel 以及 DTB 都存放在单独的分区中，U-Boot 通过分区名字读取指定分区的内容。例如，在下列启动脚本中，通过 U-Boot 已有的命令对 MMC
+                设备进行数据读取，加载内核和 DTB
+                数据。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_tmb_wl3_pzb__codeblock_fm5_fpr_c1c" data-ofbid="concept_tmb_wl3_pzb__codeblock_fm5_fpr_c1c">mmc_boot=echo <span class="hl-string">"Try to boot from MMC..."</span>; \
+         run set_mmc_args; \
+         mmc dev ${boot_devnum}; \
+         run mmc_loaddtb; \
+         run mmc_loadknl; \
+         booti ${knl_addr} - ${dtb_addr};</pre></div>
+            <ul class="- topic/ul ul" id="concept_tmb_wl3_pzb__ul_v3c_tdx_5dc" data-ofbid="concept_tmb_wl3_pzb__ul_v3c_tdx_5dc"><li class="- topic/li li" data-ofbid="d296298e68__20250121171801">
+                    <p class="- topic/p p" data-ofbid="d296298e70__20250121171801">通过 BROM/SPL 传递的参数信息可获取 MMC 的设备 ID <span class="+ topic/keyword pr-d/parmname keyword parmname">boot_devnum</span> ，并在
+                            <span class="+ topic/keyword pr-d/apiname keyword apiname">board_late_init()</span> 被调用时修改到环境变量
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">boot_devnum</span> 中。</p>
+                </li><li class="- topic/li li" data-ofbid="d296298e82__20250121171801">
+                    <p class="- topic/p p" data-ofbid="d296298e84__20250121171801">Kernel 和 DTB 相关的加载地址 <span class="+ topic/keyword pr-d/parmname keyword parmname">knl_addr</span>,
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">dtb_addr</span> 在 <span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span>
+                        中根据项目实际情况进行设置。</p>
+                </li><li class="- topic/li li" data-ofbid="d296298e96__20250121171801">
+                    <div class="- topic/p p" data-ofbid="d296298e98__20250121171801">其他使用到的命令可参考源码：<ul class="- topic/ul ul" id="concept_tmb_wl3_pzb__ul_ypg_2dh_bzb" data-ofbid="concept_tmb_wl3_pzb__ul_ypg_2dh_bzb"><li class="- topic/li li" data-ofbid="d296298e101__20250121171801">
+                                <p class="- topic/p p" data-ofbid="d296298e103__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/mmc.c</span></p>
+                            </li><li class="- topic/li li" data-ofbid="d296298e107__20250121171801">
+                                <p class="- topic/p p" data-ofbid="d296298e109__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/bootm.c</span></p>
+                            </li><li class="- topic/li li" data-ofbid="d296298e113__20250121171801">
+                                <p class="- topic/p p" data-ofbid="d296298e115__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/booti.c</span></p>
+                            </li><li class="- topic/li li" data-ofbid="d296298e119__20250121171801">
+                                <p class="- topic/p p" data-ofbid="d296298e121__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/booti32.c</span></p>
+                            </li></ul></div>
+                </li></ul>
+        </section><section class="- topic/section section" id="concept_tmb_wl3_pzb__section_zpg_2dh_bzb" data-ofbid="concept_tmb_wl3_pzb__section_zpg_2dh_bzb"><h2 class="- topic/title title sectiontitle">SPI NAND 启动脚本</h2>
+            
+            <p class="- topic/p p" data-ofbid="d296298e132__20250121171801">对于使用 NAND 的项目，Kernel 和 DTB 保存的方式可能是 MTD 分区，或者 UBI Volume， 具体项目根据需要进行选择。</p>
+            <ul class="- topic/ul ul" id="concept_tmb_wl3_pzb__ul_icy_vdx_5dc" data-ofbid="concept_tmb_wl3_pzb__ul_icy_vdx_5dc"><li class="- topic/li li" data-ofbid="d296298e136__20250121171801">
+                    <p class="- topic/p p" data-ofbid="d296298e138__20250121171801"><strong class="+ topic/ph hi-d/b ph b">Kernel 保存在 MTD 分区</strong></p>
+                    <div class="- topic/p p" data-ofbid="d296298e142__20250121171801">对于使用 MTD 分区保存 Kernel 和 DTB 的项目，在启动脚本中，使用 MTD
+                        命令加载对应的分区内容。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_tmb_wl3_pzb__codeblock_tfr_gpr_c1c" data-ofbid="concept_tmb_wl3_pzb__codeblock_tfr_gpr_c1c">nand_boot=echo <span class="hl-string">"Try to boot from nand flash..."</span>; \
+          run set_nand_args; \
+          setenv nand_boot_mtdparts_cnt <span class="hl-number">7</span>; \
+          mtd read kernel ${knl_addr} <span class="hl-number">0</span> <span class="hl-number">0x590000</span>; \
+          mtd read dtb ${dtb_addr} <span class="hl-number">0</span> <span class="hl-number">0x6000</span>; \
+          booti ${knl_addr} - ${dtb_addr};</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d296298e147__20250121171801">
+                    <p class="- topic/p p" data-ofbid="d296298e149__20250121171801"><strong class="+ topic/ph hi-d/b ph b">Kernel 保存在 UBI</strong></p>
+                    <div class="- topic/p p" data-ofbid="d296298e153__20250121171801">对于使用 UBI Volume 保存 Kernel 和 DTB 的项目，在启动脚本中，使用 UBI
+                        命令加载对应的分区内容。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_tmb_wl3_pzb__codeblock_h5d_hpr_c1c" data-ofbid="concept_tmb_wl3_pzb__codeblock_h5d_hpr_c1c">nand_boot=echo <span class="hl-string">"Try to boot from nand flash..."</span>; \
+          run set_nand_args; \
+          setenv nand_boot_mtdparts_cnt <span class="hl-number">5</span>; \
+          ubi part ubiboot; \
+          ubi read ${knl_addr} kernel &amp;&amp; ubi read ${dtb_addr} dtb; \
+          booti ${knl_addr} - ${dtb_addr};</pre></div>
+                    <ul class="- topic/ul ul" id="concept_tmb_wl3_pzb__ul_cqf_ydx_5dc" data-ofbid="concept_tmb_wl3_pzb__ul_cqf_ydx_5dc"><li class="- topic/li li" data-ofbid="d296298e159__20250121171801">
+                            <p class="- topic/p p" data-ofbid="d296298e161__20250121171801">MTD 分区 <span class="+ topic/keyword pr-d/parmname keyword parmname">ubiboot</span> 做成 UBI 设备，然后在该 UBI 设备中划分
+                                    <span class="+ topic/keyword pr-d/parmname keyword parmname">kernel</span> 和 <span class="+ topic/keyword pr-d/parmname keyword parmname">dtb</span> 两个
+                                Volume。</p>
+                            <p class="- topic/p p" data-ofbid="d296298e173__20250121171801">在操作 UBI Volume 前，必须先使用 <code class="+ topic/ph pr-d/codeph ph codeph">ubi part</code> Attach 对应的 MTD
+                                分区。</p>
+                        </li><li class="- topic/li li" data-ofbid="d296298e179__20250121171801">
+                            <p class="- topic/p p" data-ofbid="d296298e181__20250121171801">在 <span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span> 中根据实际项目情况设置 Kernel 和 DTB 相关的加载地址
+                                    <span class="+ topic/keyword pr-d/parmname keyword parmname">knl_addr</span> 和
+                                <span class="+ topic/keyword pr-d/parmname keyword parmname">dtb_addr</span>。</p>
+                        </li><li class="- topic/li li" data-ofbid="d296298e193__20250121171801">
+                            <div class="- topic/p p" data-ofbid="d296298e195__20250121171801">其他使用到的命令可参考源码：<ul class="- topic/ul ul" id="concept_tmb_wl3_pzb__ul_cqg_2dh_bzb" data-ofbid="concept_tmb_wl3_pzb__ul_cqg_2dh_bzb"><li class="- topic/li li" data-ofbid="d296298e198__20250121171801">
+                                        <p class="- topic/p p" data-ofbid="d296298e200__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/mtd.c</span></p>
+                                    </li><li class="- topic/li li" data-ofbid="d296298e204__20250121171801">
+                                        <p class="- topic/p p" data-ofbid="d296298e206__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/ubi.c</span></p>
+                                    </li><li class="- topic/li li" data-ofbid="d296298e210__20250121171801">
+                                        <p class="- topic/p p" data-ofbid="d296298e212__20250121171801"><span class="+ topic/keyword pr-d/parmname keyword parmname">cmd/bootm.c</span></p>
+                                    </li><li class="- topic/li li" data-ofbid="d296298e216__20250121171801">
+                                        <p class="- topic/p p" data-ofbid="d296298e218__20250121171801"><span class="+ topic/keyword pr-d/parmname keyword parmname">cmd/booti.c</span></p>
+                                    </li><li class="- topic/li li" data-ofbid="d296298e222__20250121171801">
+                                        <p class="- topic/p p" data-ofbid="d296298e224__20250121171801"><span class="+ topic/keyword pr-d/parmname keyword parmname">cmd/booti32.c</span></p>
+                                    </li></ul></div>
+                        </li></ul>
+                </li></ul>
+        </section><section class="- topic/section section" id="concept_tmb_wl3_pzb__section_dqg_2dh_bzb" data-ofbid="concept_tmb_wl3_pzb__section_dqg_2dh_bzb"><h2 class="- topic/title title sectiontitle">SPI NOR 启动脚本</h2>
+            
+            <div class="- topic/p p" data-ofbid="d296298e236__20250121171801">对于使用 SPI NOR 的项目，使用 MTD 分区的方式保存 Kernel 和 DTB，执行 NOR 启动时首先初始化相关的 NOR 分区，然后使用 MTD
+                命令读取分区的内容。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_tmb_wl3_pzb__codeblock_u5w_hpr_c1c" data-ofbid="concept_tmb_wl3_pzb__codeblock_u5w_hpr_c1c">nor_boot=echo <span class="hl-string">"Try to boot from nor flash..."</span>; \
+         sf probe; \
+         run set_nor_args; \
+         mtd read kernel ${knl_addr} <span class="hl-number">0</span> <span class="hl-number">0x500000</span> &amp;&amp; mtd read dtb ${dtb_addr} <span class="hl-number">0</span> <span class="hl-number">0x20000</span>; \
+         booti ${knl_addr} - ${dtb_addr};</pre></div>
+            <ul class="- topic/ul ul" id="concept_tmb_wl3_pzb__ul_p2z_b2x_5dc" data-ofbid="concept_tmb_wl3_pzb__ul_p2z_b2x_5dc"><li class="- topic/li li" data-ofbid="d296298e242__20250121171801">
+                    <p class="- topic/p p" data-ofbid="d296298e244__20250121171801">读取的分区内容大小可根据项目的具体需要进行设定。</p>
+                </li><li class="- topic/li li" data-ofbid="d296298e247__20250121171801">
+                    <p class="- topic/p p" data-ofbid="d296298e249__20250121171801">Kernel 和 DTB 相关的加载地址 <span class="+ topic/keyword pr-d/parmname keyword parmname">knl_addr</span>,
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">dtb_addr</span> 在 <span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span>
+                        中根据项目实际情况进行设置。</p>
+                </li><li class="- topic/li li" data-ofbid="d296298e261__20250121171801">
+                    <div class="- topic/p p" data-ofbid="d296298e263__20250121171801">其他使用到的命令可参考源码：<ul class="- topic/ul ul" id="concept_tmb_wl3_pzb__ul_fqg_2dh_bzb" data-ofbid="concept_tmb_wl3_pzb__ul_fqg_2dh_bzb"><li class="- topic/li li" data-ofbid="d296298e266__20250121171801">
+                                <p class="- topic/p p" data-ofbid="d296298e268__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/mtd.c</span></p>
+                            </li><li class="- topic/li li" data-ofbid="d296298e272__20250121171801">
+                                <p class="- topic/p p" data-ofbid="d296298e274__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/bootm.c</span></p>
+                            </li><li class="- topic/li li" data-ofbid="d296298e278__20250121171801">
+                                <p class="- topic/p p" data-ofbid="d296298e280__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/booti.c</span></p>
+                            </li><li class="- topic/li li" data-ofbid="d296298e284__20250121171801">
+                                <p class="- topic/p p" data-ofbid="d296298e286__20250121171801"><span class="+ topic/ph sw-d/filepath ph filepath">cmd/booti32.c</span></p>
+                            </li></ul></div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_tmb_wl3_pzb__section_upg_2dh_bzb" data-tocid="concept_tmb_wl3_pzb__section_upg_2dh_bzb">autoboot</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_tmb_wl3_pzb__section_wpg_2dh_bzb" data-tocid="concept_tmb_wl3_pzb__section_wpg_2dh_bzb">MMC 启动脚本</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_tmb_wl3_pzb__section_zpg_2dh_bzb" data-tocid="concept_tmb_wl3_pzb__section_zpg_2dh_bzb">SPI NAND 启动脚本</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_tmb_wl3_pzb__section_dqg_2dh_bzb" data-tocid="concept_tmb_wl3_pzb__section_dqg_2dh_bzb">SPI NOR 启动脚本</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

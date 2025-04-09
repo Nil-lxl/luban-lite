@@ -1,0 +1,54 @@
+menuconfig LPKG_USING_USERID
+    bool "aic-userid"
+    default n
+
+if LPKG_USING_USERID
+choice
+	prompt "Location of UserID"
+config USERID_IN_SPINAND
+	bool "UserID in SPINAND"
+	help
+	  Define this if you have a NAND device which you want to use for the
+	  ArtInChip UserID.
+
+	  - CONFIG_USERID_OFFSET:
+	  - CONFIG_USERID_SIZE:
+
+	  These two #defines specify the offset and size of the userid
+	  area within the first NAND device.  CONFIG_USERID_OFFSET must be
+	  aligned to an erase block boundary.
+
+config USERID_IN_SPINOR
+	bool "UserID in SPINOR"
+	help
+	  Define this if you have a SPINOR device which you want to use for the
+	  ArtInChip UserID.
+
+	  - CONFIG_USERID_OFFSET:
+	  - CONFIG_USERID_SIZE:
+
+	  These two #defines specify the offset and size of the userid
+	  area within the first SPINOR device.  CONFIG_USERID_OFFSET must be
+	  aligned to an erase block boundary.
+
+config USERID_IN_MMC
+	bool "UserID in MMC"
+	help
+	  Define this if you have a MMC device which you want to use for the
+	  ArtInChip UserID.
+
+	  - CONFIG_USERID_OFFSET:
+	  - CONFIG_USERID_SIZE:
+
+	  These two #defines specify the offset and size of the userid
+	  area within the first MMC device.  CONFIG_USERID_OFFSET must be
+	  aligned to an block boundary.
+endchoice
+
+config USERID_PARTITION_NAME
+	string "UserID partition name"
+	default "userid"
+	help
+	   partition name which used to save userid
+
+endif

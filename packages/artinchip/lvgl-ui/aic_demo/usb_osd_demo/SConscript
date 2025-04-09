@@ -1,0 +1,44 @@
+from building import *
+import os
+
+def compare_tail(str1, str2, n):
+    return str1[-n:] == str2[-n:]
+
+cwd = GetCurrentDir()
+group = []
+CPPPATH = [cwd]
+src = []
+
+src += Glob('./usb_osd_ui.c')
+src += Glob('./usb_osd_pictures.c')
+src += Glob('./usb_osd_settings.c')
+src += Glob('./usb_osd_config_parse.c')
+
+if GetDepend(['LV_USB_OSD_PLAY_VIDEO']):
+    src += Glob('./usb_osd_video.c')
+    src += Glob('./media_list.c')
+
+list = os.listdir(cwd)
+for d in list:
+    path = os.path.join(cwd, d)
+    if os.path.isfile(os.path.join(path, 'SConscript')):
+        group = group + SConscript(os.path.join(d, 'SConscript'))
+
+prj_board = GetDepend('PRJ_BOARD').strip('"')
+
+if GetDepend(['LVGL_STORAGE_PATH']):
+    ins_dst = GetDepend('LVGL_STORAGE_PATH').strip('"/')
+else:
+    ins_dst='rodata/lvgl_data'
+
+if compare_tail(prj_board, 'nand', 4):
+    ins_src = 'lvgl_src/lvgl_data/'
+else:
+    ins_src = 'lvgl_src_nor/lvgl_data/'
+
+install = [(ins_src, ins_dst)]
+
+group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_USB_OSD_DEMO'], CPPPATH = CPPPATH,
+        INSTALL = install)
+
+Return('group')

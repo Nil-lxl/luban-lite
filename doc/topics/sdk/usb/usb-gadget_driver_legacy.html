@@ -1,0 +1,232 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="对于 Legacy Gadget Driver 驱动来说，相当于 Configfs Gadget Driver 的一个简化版。 Gadget Driver Legacy 风格的 gadget driver 的定义： ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-31"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="usb_gadget_driver_legacy"/><meta name="DC.language" content="zh-CN"/><title>Gadget Driver Legacy</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/usb/usb-gadget_driver_legacy.dita"/><meta name="wh-out-relpath" content="topics/sdk/usb/usb-gadget_driver_legacy.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="usb_gadget_driver_legacy" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/usb/usb-gadget_driver_legacy.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Gadget Driver Legacy</h1><div class="date inPage">31 Jan 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d307101e22__20250121171813">对于 Legacy Gadget Driver 驱动来说，相当于 Configfs Gadget Driver 的一个简化版。</p><section class="- topic/section section" id="usb_gadget_driver_legacy__section_a3y_jrz_21c" data-ofbid="usb_gadget_driver_legacy__section_a3y_jrz_21c"><h2 class="- topic/title title sectiontitle">Gadget Driver</h2>
+            
+            <p class="- topic/p p" data-ofbid="d307101e29__20250121171813">Legacy 风格的 gadget driver 的定义：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_driver_legacy__pre_b3y_jrz_21c" data-ofbid="usb_gadget_driver_legacy__pre_b3y_jrz_21c">drivers\usb\gadget\composite.c:staticconststructusb_gadget_drivercomposite_driver_template={.bind=composite_bind,.unbind=composite_unbind,.setup=composite_setup,.reset=composite_disconnect,.disconnect=composite_disconnect,.suspend=composite_suspend,.resume=composite_resume,.driver={.owner=THIS_MODULE,},};</pre>
+            <p class="- topic/p p" data-ofbid="d307101e35__20250121171813">驱动提供了一个注册函数 usb_composite_probe()，以供 <code class="+ topic/ph pr-d/codeph ph codeph">composite device</code> 来进行调用：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_driver_legacy__pre_c3y_jrz_21c" data-ofbid="usb_gadget_driver_legacy__pre_c3y_jrz_21c"><strong class="hl-keyword">int</strong> usb_composite_probe(<strong class="hl-keyword">struct</strong> usb_composite_driver *driver)
+{
+    <strong class="hl-keyword">struct</strong> usb_gadget_driver *gadget_driver;
+
+    <strong class="hl-keyword">if</strong> (!driver || !driver-&gt;dev || !driver-&gt;bind)
+        <strong class="hl-keyword">return</strong> -EINVAL;
+
+    <strong class="hl-keyword">if</strong> (!driver-&gt;name)
+        driver-&gt;name = <span class="hl-string">"composite"</span>;
+
+    <em class="hl-comment">/* (1) 把传递过来的 `usb_composite_driver` 包装成 `usb_gadget_driver` */</em>
+    driver-&gt;gadget_driver = composite_driver_template;
+    gadget_driver = &amp;driver-&gt;gadget_driver;
+
+    gadget_driver-&gt;function =  (<strong class="hl-keyword">char</strong> *) driver-&gt;name;
+    gadget_driver-&gt;driver.name = driver-&gt;name;
+    gadget_driver-&gt;max_speed = driver-&gt;max_speed;
+
+    <em class="hl-comment">/* (2) 注册 gadget driver，让其和 gadget device 适配 */</em>
+    <strong class="hl-keyword">return</strong> usb_gadget_probe_driver(gadget_driver);
+}
+EXPORT_SYMBOL_GPL(usb_composite_probe);
+</pre>
+        </section><section class="- topic/section section" id="usb_gadget_driver_legacy__section_d3y_jrz_21c" data-ofbid="usb_gadget_driver_legacy__section_d3y_jrz_21c"><h2 class="- topic/title title sectiontitle">Composite Device</h2>
+            
+            <div class="- topic/p p" data-ofbid="d307101e49__20250121171813">没有了 configfs 由用户来创建 <code class="+ topic/ph pr-d/codeph ph codeph">composite device</code> ，只能使用一个文件来创建 <code class="+ topic/ph pr-d/codeph ph codeph">composite
+                    device</code> 定义其使用哪些 <code class="+ topic/ph pr-d/codeph ph codeph">function</code>
+                和一系列配置。例如：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_driver_legacy__codeblock_zb5_krz_21c" data-ofbid="usb_gadget_driver_legacy__codeblock_zb5_krz_21c">drivers\usb\gadget\legacy\acm_ms.c
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> usb_composite_driver acm_ms_driver = {
+    .name           = <span class="hl-string">"g_acm_ms"</span>,
+    .dev            = &amp;device_desc,
+    .max_speed      = USB_SPEED_SUPER,
+    .strings        = dev_strings,
+    .bind           = acm_ms_bind,
+    .unbind         = acm_ms_unbind,
+};
+
+<em class="hl-comment">/* (1) 驱动一开始就调用 usb_composite_probe() 来注册 acm_ms_driver
+        因为 acm_ms_driver 没有指定 udc_name 所以只能适配第一个 udc
+*/</em>
+module_usb_composite_driver(acm_ms_driver);
+
+#<span class="hl-directive">define</span> module_usb_composite_driver(__usb_composite_driver) \
+    module_driver(__usb_composite_driver, usb_composite_probe, \
+            usb_composite_unregister)</pre></div>
+            <div class="- topic/p p" data-ofbid="d307101e63__20250121171813">在 gadget driver 驱动适配后，调用 bind()
+                函数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="usb_gadget_driver_legacy__codeblock_hfd_lrz_21c" data-ofbid="usb_gadget_driver_legacy__codeblock_hfd_lrz_21c">usb_gadget_probe_driver() → udc_bind_to_driver() → composite_bind() → acm_ms_bind()</pre></div>
+            <p class="- topic/p p" data-ofbid="d307101e68__20250121171813">在 acm_ms_bind() 函数中创建 <code class="+ topic/ph pr-d/codeph ph codeph">composite device</code> 的
+                    <code class="+ topic/ph pr-d/codeph ph codeph">Configuration</code> 和 <code class="+ topic/ph pr-d/codeph ph codeph">Function/Interface</code> ，并且和 Gadget
+                Device / UDC 进行绑定。</p>
+            <p class="- topic/p p" data-ofbid="d307101e80__20250121171813">其他操作和 Configfs Gadget Driver 类似。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#usb_gadget_driver_legacy__section_a3y_jrz_21c" data-tocid="usb_gadget_driver_legacy__section_a3y_jrz_21c">Gadget Driver</a></div></li><li class="section-item"><div class="section-title"><a href="#usb_gadget_driver_legacy__section_d3y_jrz_21c" data-tocid="usb_gadget_driver_legacy__section_d3y_jrz_21c">Composite Device</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

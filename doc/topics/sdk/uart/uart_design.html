@@ -1,0 +1,477 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="串口芯片 在驱动代码说明开始前先介绍几种通用的串口芯片。 8250：IBM PC 及兼容机使用的第一种串口芯片。这是一种相对来说很慢的芯片，有时候装载到它的寄存器速度太快，它来不及处理，就会出现数据丢失现象。8250 有 7 个寄存器，支持的最大波特率为 56kb。 16450：8250A 的快速版。加快了处理器存取它的速度，但最大速度还是 56kb。有些人实际用得比这高也可以。 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-03"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="uart_design_intro"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/uart/uart_design.dita"/><meta name="wh-out-relpath" content="topics/sdk/uart/uart_design.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="uart_design_intro" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/uart/uart_design.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">3 Dec 2024</div><div style="color: gray;">
+                    Read time: 10 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="uart_design_intro__section_t3p_lbz_21c" data-ofbid="uart_design_intro__section_t3p_lbz_21c"><h2 class="- topic/title title sectiontitle">串口芯片</h2>
+            
+            <div class="- topic/p p" data-ofbid="d140185e27__20250121171608">在驱动代码说明开始前先介绍几种通用的串口芯片。<ul class="- topic/ul ul" id="uart_design_intro__ul_jwj_nbz_21c" data-ofbid="uart_design_intro__ul_jwj_nbz_21c"><li class="- topic/li li" data-ofbid="d140185e30__20250121171608">8250：IBM PC
+                        及兼容机使用的第一种串口芯片。这是一种相对来说很慢的芯片，有时候装载到它的寄存器速度太快，它来不及处理，就会出现数据丢失现象。8250 有 7 个寄存器，支持的最大波特率为 56kb。</li><li class="- topic/li li" data-ofbid="d140185e32__20250121171608">16450：8250A 的快速版。加快了处理器存取它的速度，但最大速度还是 56kb。有些人实际用得比这高也可以。</li><li class="- topic/li li" data-ofbid="d140185e34__20250121171608">16550/16550A：第一种带先进先出（FIFO）功能的 8250 系列串口芯片。<p class="- topic/p p" data-ofbid="d140185e36__20250121171608">AIC UART 模块是一 16550A
+                            UART，属于标准的 8250 系，而 Linux 对 8250 系串口有通用的驱动，我们采取在该驱动上添加 AIC
+                            私有的代码的方式实现我们的驱动。</p></li></ul></div>
+        </section><section class="- topic/section section" id="uart_design_intro__section_x3p_lbz_21c" data-ofbid="uart_design_intro__section_x3p_lbz_21c"><h2 class="- topic/title title sectiontitle">驱动配置宏</h2>
+            
+            <p class="- topic/p p" data-ofbid="d140185e44__20250121171608">因为 8250 驱动兼容很多后续开发的串口芯片，因此有非常多的编译功能配置项。</p>
+            <p class="- topic/p p" data-ofbid="d140185e47__20250121171608">menuconfig 中位置：<span class="+ topic/ph sw-d/filepath ph filepath">device drivers/Character devices/8250 16550 and compatible
+                    serial support</span>。关键配置项说明如下：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="uart_design_intro__table_a2s_sbz_21c" data-ofbid="uart_design_intro__table_a2s_sbz_21c" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">关键配置项</span></caption><colgroup><col style="width:67.42671009771986%"/><col style="width:32.57328990228013%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="uart_design_intro__table_a2s_sbz_21c__entry__1">配置项</th><th class="- topic/entry entry colsep-0 rowsep-0" id="uart_design_intro__table_a2s_sbz_21c__entry__2">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_DEPRECATED_OPTIONS: Support 8250_core.* kernel
+                                options (DEPRECATED)</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">3.7 版本的错误，不应该打开</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_PNP: 8250/16550 PNP device support</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">不打开</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_16550A_VARIANTS: 16550A serial port</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">打开</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_FINTEK: Fintek F81216A LPC to 4 UART RS485
+                                API</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">不打开</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_CONSOLE: 8250/16550 and compatible serial
+                                port</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">打开</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_DMA: DMA support for 16550 compatible UART
+                                controllers</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">打开</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_NR_UARTS: Maximum number of 8250/16550 serial
+                                ports</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">设置为 8</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_RUNTIME_UARTS: Number of 8250/16550 serial ports to
+                                register at runtime</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">设置为 8</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_EXTENDED: Extended 8250/16550 serial driver
+                                options</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">没有使用，无关系</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_MANY_PORTS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">没有使用，无关系</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_SHARE_IRQ: Support for sharing serial
+                                interrupts</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">不打开</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_RSA: Support RSA serial ports</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">不打开，没有使用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_8250_DW: Support for Synopsys DesignWare 8250
+                                quirks</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">不打开，不需要兼容</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__1">SERIAL_OF_PLATFORM: Device tree based probing for 8250
+                                ports</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="uart_design_intro__table_a2s_sbz_21c__entry__2">不打开，使用 AIC 定义的 OF</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="uart_design_intro__section_ojp_lbz_21c" data-ofbid="uart_design_intro__section_ojp_lbz_21c"><h2 class="- topic/title title sectiontitle">寄存器</h2>
+            
+            <div class="- topic/p p" data-ofbid="d140185e143__20250121171608">8250 驱动使用索引来定义寄存器，地址的计算方式为索引 * 位宽。 AIC UART 的寄存器大致可分为两种：<ul class="- topic/ul ul" id="uart_design_intro__ul_d4k_bcz_21c" data-ofbid="uart_design_intro__ul_d4k_bcz_21c"><li class="- topic/li li" data-ofbid="d140185e146__20250121171608">标准寄存器：0x7C 之前，为 8250 标准寄存器，在 include/uapi/linux/serial_reg.h 中定义，AIC
+                        对如下 3 个寄存器值有修改<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_gc1_dcz_21c" data-ofbid="uart_design_intro__codeblock_gc1_dcz_21c">#<span class="hl-directive">define</span> UART_IER   <span class="hl-number">1</span>    <em class="hl-comment">/*Interrupt Enable: Shifter_Reg_Empty_EN*/</em>
+#<span class="hl-directive">define</span> UART_IIR   <span class="hl-number">2</span>    <em class="hl-comment">/*Interrupt Identity：Shifter_Reg_Empty_INT*/</em>
+#<span class="hl-directive">define</span> UART_MCR   <span class="hl-number">4</span>    <em class="hl-comment">/*Modem Control：UART_FUNCTION*/</em></pre></li><li class="- topic/li li" data-ofbid="d140185e150__20250121171608">扩展寄存器：0x7C 之后，为 AIC 新扩展，需要额外的逻辑代码，譬如 RS485，在 8250_artinchip.h
+                        中定义<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_pnf_dcz_21c" data-ofbid="uart_design_intro__codeblock_pnf_dcz_21c">#<span class="hl-directive">define</span> AIC_REG_UART_USR   <span class="hl-number">0x1f</span>        <em class="hl-comment">/* UART Status Register */</em>
+#<span class="hl-directive">define</span> AIC_REG_UART_TFL   <span class="hl-number">0x20</span>        <em class="hl-comment">/* transmit FIFO level */</em>
+#<span class="hl-directive">define</span> AIC_REG_UART_RFL   <span class="hl-number">0x21</span>        <em class="hl-comment">/* Receive FIFO Level */</em>
+#<span class="hl-directive">define</span> AIC_REG_UART_HSK   <span class="hl-number">0x22</span>        <em class="hl-comment">/* DMA Handshake Configuration */</em>
+#<span class="hl-directive">define</span> AIC_REG_UART_HALT  <span class="hl-number">0x29</span>        <em class="hl-comment">/* Halt tx register */</em>
+#<span class="hl-directive">define</span> AIC_REG_UART_DLL   <span class="hl-number">0x2C</span>        <em class="hl-comment">/* DBG DLL */</em>
+#<span class="hl-directive">define</span> AIC_REG_UART_DLH   <span class="hl-number">0x2D</span>        <em class="hl-comment">/* DBG DLH */</em>
+#<span class="hl-directive">define</span> AIC_REG_UART_RS485 <span class="hl-number">0x30</span>        <em class="hl-comment">/* RS485 control status register */</em></pre></li></ul></div>
+        </section><section class="- topic/section section" id="uart_design_intro__section_tjp_lbz_21c" data-ofbid="uart_design_intro__section_tjp_lbz_21c"><h2 class="- topic/title title sectiontitle">程序入口</h2>
+            
+            <div class="- topic/p p" data-ofbid="d140185e160__20250121171608">
+                <ul class="- topic/ul ul" id="uart_design_intro__ul_jgx_2cz_21c" data-ofbid="uart_design_intro__ul_jgx_2cz_21c"><li class="- topic/li li" data-ofbid="d140185e163__20250121171608">8250_core：8250 标准寄存器/逻辑的初始化入口，三方驱动大都借助 8250_core
+                        完成其工作，文件：8250_core.c。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_ic5_fcz_21c" data-ofbid="uart_design_intro__codeblock_ic5_fcz_21c">module_init(serial8250_init);
+module_exit(serial8250_exit);</pre></li><li class="- topic/li li" data-ofbid="d140185e167__20250121171608">aic-uart：aic8250 是 artinchip 的 uart
+                        驱动的入口，声明驱动和初始化私有寄存器/逻辑，文件：8250_artinchip.c<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_fsc_hcz_21c" data-ofbid="uart_design_intro__codeblock_fsc_hcz_21c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> of_device_id aic8250_of_match[] = {
+   { .compatible = <span class="hl-string">"artinchip,aic-uart-v1.0"</span> },
+   { <em class="hl-comment">/* Sentinel */</em> }
+};
+MODULE_DEVICE_TABLE(of, aic8250_of_match);
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> platform_driver aic8250_platform_driver = {
+   .driver = {
+      .name          = AICUART_DRIVER_NAME,
+      .pm            = &amp;aic8250_pm_ops,
+      .of_match_table        = aic8250_of_match,
+   },
+   .probe                    = aic8250_probe,
+   .remove           = aic8250_remove,
+};
+module_platform_driver(aic8250_platform_driver);</pre></li></ul>
+            </div>
+        </section><section class="- topic/section section" id="uart_design_intro__section_xjp_lbz_21c" data-ofbid="uart_design_intro__section_xjp_lbz_21c"><h2 class="- topic/title title sectiontitle">数据结构</h2>
+            
+            <div class="- topic/p p" data-ofbid="d140185e178__20250121171608">
+                <ul class="- topic/ul ul" id="uart_design_intro__ul_er4_3cz_21c" data-ofbid="uart_design_intro__ul_er4_3cz_21c"><li class="- topic/li li" data-ofbid="d140185e181__20250121171608">uart_8250_port<div class="- topic/p p" data-ofbid="d140185e183__20250121171608">声明在 include/linux/serial_8250.h 中，驱动中以变量名：up 变量存在，artinchip
+                            驱动中未进行任何设置，只 overlay 了 AIC 平台的 rs485 设置函数， 其他完全使用 8250_core.c
+                            中参数。uart_8250_port 的初始化在
+                            8250_core.c：serial8250_register_8250_port 中完成。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__pre_yjp_lbz_21c" data-ofbid="uart_design_intro__pre_yjp_lbz_21c"><strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_port {
+   <strong class="hl-keyword">struct</strong> uart_port          port;
+   …
+   <strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_dma      *dma;
+   <strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_ops        *ops;
+   <em class="hl-comment">/* 8250 specific callbacks */</em>
+   <strong class="hl-keyword">int</strong>                       (*dl_read)(<strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_port *);
+   <strong class="hl-keyword">void</strong>                      (*dl_write)(<strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_port *, <strong class="hl-keyword">int</strong>);
+   <strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_em485 *em485;
+   <strong class="hl-keyword">void</strong>                      (*rs485_start_tx)(<strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_port *);
+   <strong class="hl-keyword">void</strong>                      (*rs485_stop_tx)(<strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_port *);
+
+   .dl_read          = default_serial_dl_read
+   .dl_write         = default_serial_dl_write
+   .rs485_config = aic8250_rs485_config;
+   .rs485            = NULL;
+   .rs485_start_tx = NULL;
+   .rs485_stop_tx = NULL;
+</pre></div></li><li class="- topic/li li" data-ofbid="d140185e187__20250121171608">uart_port：UART 驱动的关键数据结构，驱动中以变量名：p 存在，声明
+                        include/linux/serial_core.h，包含变量和关键操作函数的 overlay 入口。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_ugk_kcz_21c" data-ofbid="uart_design_intro__codeblock_ugk_kcz_21c"><strong class="hl-keyword">struct</strong> uart_port {
+   spinlock_t     lock;                      <em class="hl-comment">/* port lock */</em>
+   <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">long</strong>  iobase;            <em class="hl-comment">/* in/out */</em>
+   <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> __iomem     *membase;               <em class="hl-comment">/* read/write */</em>
+   <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>   (*serial_in)(<strong class="hl-keyword">struct</strong> uart_port *, <strong class="hl-keyword">int</strong>);
+   <strong class="hl-keyword">void</strong>           (*serial_out)(<strong class="hl-keyword">struct</strong> uart_port *, <strong class="hl-keyword">int</strong>, <strong class="hl-keyword">int</strong>);
+   ... ...</pre></li><li class="- topic/li li" data-ofbid="d140185e191__20250121171608">aic8250_data<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_pg4_lcz_21c" data-ofbid="uart_design_intro__codeblock_pg4_lcz_21c"><strong class="hl-keyword">struct</strong> aic8250_data {
+        <strong class="hl-keyword">struct</strong> aic8250_port_data     data;
+
+        <strong class="hl-keyword">int</strong>                  msr_mask_on;
+        <strong class="hl-keyword">int</strong>                  msr_mask_off;
+        <strong class="hl-keyword">struct</strong> clk           *clk;
+        <strong class="hl-keyword">struct</strong> reset_control *rst;
+
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>         uart_<span class="hl-number">16550</span>_compatible:<span class="hl-number">1</span>;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>         tx_empty;
+        <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>         rs485simple;      <em class="hl-comment">//compact-io mode</em>
+};</pre></li><li class="- topic/li li" data-ofbid="d140185e195__20250121171608">Operations：uart_port 各操作接口设置和操作的寄存器。<p class="- topic/p p" data-ofbid="d140185e197__20250121171608">蓝色接口为可以在用户的驱动中定制，否则使用 core 中标准接口。</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__pre_dkp_lbz_21c" data-ofbid="uart_design_intro__pre_dkp_lbz_21c">.handle_irq  = aic8250_handle_irq;
+.pm          = aic8250_do_pm;
+.serial_in   = aic8250_serial_in32;
+.serial_out  = aic8250_serial_out32;
+.set_ldisc   = aic8250_set_ldisc;
+.set_termios = aic8250_set_termios;
+.set_mctrl   = serial8250_set_mctrl, <em class="hl-comment">//set modem control, 包括 termios  和 modem 的转换，Modem Control Reg： MCR</em>
+.get_mctrl   = serial8250_get_mctrl, <em class="hl-comment">//get modem control</em>
+.startup     = serial8250_startup,   <em class="hl-comment">//寄存器初始化</em>
+.shutdown    = serial8250_shutdown,  <em class="hl-comment">//</em>
+.get_divisor   = serial8250_do_get_divisor
+.set_divisor    = serial8250_do_set_divisor
+.handle_break =
+.tx_empty       = serial8250_tx_empty    <em class="hl-comment">//Line Status: Transmitter Empty &amp; TX Holding Register Empty</em>
+.stop_tx     = serial8250_stop_tx,   <em class="hl-comment">//serial8250_clear_THRI，Interrupt Enable Reg，Enable Transmitter：10，Enable Receive：01</em>
+.start_tx    = serial8250_start_tx,  <em class="hl-comment">//serial8250_set_THRI，Interrupt Enable Reg，Enable Transmitter：10，Enable Receive：01</em>
+.throttle    = serial8250_throttle,  <em class="hl-comment">//synclink_gt.c，</em>
+.unthrottle  = serial8250_unthrottle,
+.stop_rx     = serial8250_stop_rx,   <em class="hl-comment">//Interrupt Enable Reg，Enable Receive：01，Enable receiver line status interrupt： 04</em>
+.enable_ms   = serial8250_enable_ms, <em class="hl-comment">//Interrupt Enable Reg，Enable Modem status interrupt：08</em>
+.break_ctl   = serial8250_break_ctl, <em class="hl-comment">//Line Control Reg，Break Control Bit：</em>
+.type                = serial8250_type,              <em class="hl-comment">//8250 or 16550 or TI16750</em>
+.release_port        = serial8250_release_port,      <em class="hl-comment">//release_mem_region</em>
+.request_port= serial8250_request_port,<em class="hl-comment">//request_mem_region</em>
+.config_port = serial8250_config_port,       <em class="hl-comment">//</em>
+.verify_port = serial8250_verify_port,
+</pre></li></ul>
+            </div>
+        </section><section class="- topic/section section" id="uart_design_intro__section_ngq_ncz_21c" data-ofbid="uart_design_intro__section_ngq_ncz_21c"><h2 class="- topic/title title sectiontitle">关键流程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d140185e208__20250121171608">
+                <ul class="- topic/ul ul" id="uart_design_intro__ul_ywy_ncz_21c" data-ofbid="uart_design_intro__ul_ywy_ncz_21c"><li class="- topic/li li" data-ofbid="d140185e211__20250121171608">serial8250_init<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__pre_ekp_lbz_21c" data-ofbid="uart_design_intro__pre_ekp_lbz_21c">serial8250_init
+   |--&gt;serial8250_isa_init_ports
+     |--&gt;UART_NR                        <em class="hl-comment">//8 个</em>
+     |--&gt;serial8250_init_port
+         |--&gt;port-&gt;ops = &amp;serial8250_pops;    <em class="hl-comment">//标准 ops</em>
+     |--&gt;serial8250_set_defaults     <em class="hl-comment">//io，dma，fifosize，标准 DMA 接口</em>
+     |--&gt;serial8250_isa_config
+   |--&gt;uart_register_driver
+   |--&gt;serial8250_pnp_init
+   |--&gt;platform_device_add
+   |--&gt;serial8250_register_ports
+   |--&gt;platform_driver_register
+</pre></li><li class="- topic/li li" data-ofbid="d140185e215__20250121171608">aic8250_probe<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__pre_fkp_lbz_21c" data-ofbid="uart_design_intro__pre_fkp_lbz_21c">aic8250_probe
+   |--&gt;regs = platform_get_resource
+   |--&gt;platform_get_irq
+   |--&gt;p-&gt;handle_irq = aic8250_handle_irq;
+   |--&gt;p-&gt;pm         = aic8250_do_pm;
+   |--&gt;p-&gt;type               = PORT_<span class="hl-number">16550</span>
+   |--&gt;p-&gt;serial_in  = aic8250_serial_in32;
+   |--&gt;p-&gt;serial_out         = aic8250_serial_out32;
+   |--&gt;p-&gt;set_ldisc            = aic8250_set_ldisc;
+   |--&gt;p-&gt;set_termios        = aic8250_set_termios;
+   |--&gt;p-&gt;regshift            = dts:reg-shift, reg <span class="hl-number">32</span>bit
+   |--&gt;Prepare clk
+   |--&gt;prepare reset
+   |--&gt;aic8250_apply_quirks  : 处理 aic  私有逻辑，dcd-override，dsr-override，cts-override，ri-override
+      |--&gt;aic8250_init_special_reg
+   |--&gt;data-&gt;data.line = serial8250_register_<span class="hl-number">8250</span>_port： <strong class="hl-keyword">return</strong> port number
+   |--&gt;platform_set_drvdata
+</pre></li><li class="- topic/li li" data-ofbid="d140185e219__20250121171608">serial8250_register_8250_port<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__pre_gkp_lbz_21c" data-ofbid="uart_design_intro__pre_gkp_lbz_21c">serial8250_register_<span class="hl-number">8250</span>_port
+   |--&gt;<strong class="hl-keyword">return</strong> port number
+   |--&gt;serial8250_find_match_or_unused
+   |--&gt;copy aic uart_<span class="hl-number">8250</span>_port to local uart_<span class="hl-number">8250</span>_port
+   |--&gt;uart_get_rs485_mode：
+     |--&gt;rs485-rts-delay，rs485-rx-during-tx，linux,rs485-enabled-at-boot-time，rs485-rts-active-low，rs485-term
+   |--&gt;mctrl_gpio_init:    <em class="hl-comment">//null</em>
+   |--&gt;serial8250_set_defaults <em class="hl-comment">//io,dma,fifosize setting</em>
+   |--&gt;serial8250_apply_quirks
+     |--&gt;uart_add_one_port
+</pre></li></ul>
+            </div>
+        </section><section class="- topic/section section" id="uart_design_intro__section_hkp_lbz_21c" data-ofbid="uart_design_intro__section_hkp_lbz_21c"><h2 class="- topic/title title sectiontitle">RS485</h2>
+            
+            <p class="- topic/p p" data-ofbid="d140185e230__20250121171608">ArtInChip 的 RS485 有两种工作模式：</p>
+            <ul class="- topic/ul ul" id="uart_design_intro__ul_ikp_lbz_21c" data-ofbid="uart_design_intro__ul_ikp_lbz_21c"><li class="- topic/li li" data-ofbid="d140185e234__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e236__20250121171608">标准模式：标准 RS485 接口，有 B+/B-两根数据线和发送使能，共三线</p>
+                    <div class="- topic/p p" data-ofbid="d140185e239__20250121171608">通过在 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中添加
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">linux,rs485-enabled-at-boot-time</span> 配置为 RS485
+                        模式，代码流为：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_lcq_qcz_21c" data-ofbid="uart_design_intro__codeblock_lcq_qcz_21c"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> aic8250_apply_quirks(<strong class="hl-keyword">struct</strong> device *dev, <strong class="hl-keyword">struct</strong> uart_port *p,
+      <strong class="hl-keyword">struct</strong> aic8250_data *data)
+{
+        <strong class="hl-keyword">struct</strong> device_node *np = p-&gt;dev-&gt;of_node;
+        <strong class="hl-keyword">int</strong> id;
+
+        uart_get_rs485_mode(p);
+}
+
+drivers/tty/serial/serial_core.c
+
+<strong class="hl-keyword">int</strong> uart_get_rs485_mode(<strong class="hl-keyword">struct</strong> uart_port *port)
+{
+   <strong class="hl-keyword">if</strong> (device_property_read_bool(dev, <span class="hl-string">"linux,rs485-enabled-at-boot-time"</span>))
+      rs485conf-&gt;flags |= SER_RS485_ENABLED;
+}</pre></div>
+                </li><li class="- topic/li li" data-ofbid="d140185e250__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e252__20250121171608">精简模式：为 ArtInChip 定制版，使用单数据线进行数据传输，加发送使能共二线</p>
+                    <div class="- topic/p p" data-ofbid="d140185e255__20250121171608">精简模式 RS485 首先是 RS485，因此需要在开启 RS485 的基础上进行额外的配置，通过在
+                            <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中添加
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">aic,rs485-compact-io-mode</span>
+                        完成配置，代码流为：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_evr_rcz_21c" data-ofbid="uart_design_intro__codeblock_evr_rcz_21c">drivers/tty/serial/serial_artinchip.c
+aic8250_apply_quirks:
+<strong class="hl-keyword">if</strong> (device_property_read_bool(dev, <span class="hl-string">"aic,rs485-compact-io-mode"</span>))
+   data-&gt;rs485simple = <span class="hl-number">1</span>;
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> aic8250_rs485_config(<strong class="hl-keyword">struct</strong> uart_port *p,
+      <strong class="hl-keyword">struct</strong> serial_rs485 *prs485)
+{
+   <strong class="hl-keyword">struct</strong> aic8250_data *d = to_aic8250_data(p-&gt;private_data);
+     <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> mcr = p-&gt;serial_in(p, UART_MCR);
+     <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> rs485 = p-&gt;serial_in(p, AIC_REG_UART_RS485);
+
+     mcr &amp;= AIC_UART_MCR_FUNC_MASK;
+     <strong class="hl-keyword">if</strong> (prs485-&gt;flags &amp; SER_RS485_ENABLED) {
+             <strong class="hl-keyword">if</strong> (d-&gt;rs485simple)
+                     mcr |= AIC_UART_MCR_RS485S;
+             <strong class="hl-keyword">else</strong>
+                     mcr |= AIC_UART_MCR_RS485;
+
+             rs485 |= AIC_UART_RS485_RXBFA;
+             rs485 &amp;= ~AIC_UART_RS485_CTL_MODE;
+     } <strong class="hl-keyword">else</strong> {
+             mcr = AIC_UART_MCR_UART;
+             rs485 &amp;= ~AIC_UART_RS485_RXBFA;
+     }
+
+     p-&gt;serial_out(p, UART_MCR, mcr);
+     p-&gt;serial_out(p, AIC_REG_UART_RS485, rs485);
+
+     <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}</pre></div>
+                </li></ul>
+        </section><section class="- topic/section section" id="uart_design_intro__section_nkp_lbz_21c" data-ofbid="uart_design_intro__section_nkp_lbz_21c"><h2 class="- topic/title title sectiontitle">DMA</h2>
+            
+            <p class="- topic/p p" data-ofbid="d140185e272__20250121171608">AIC 的 DMA 和标准的 DMA 有 一点使用不同，限制了我们只能使用自己私有的 DMA 接口，主要差别点在于我们必须设置 UART FIFO 中 的数据长度进行 DMA
+                搬运才不会出错，测试的逻辑为：</p>
+            <ul class="- topic/ul ul" id="uart_design_intro__ul_okp_lbz_21c" data-ofbid="uart_design_intro__ul_okp_lbz_21c"><li class="- topic/li li" data-ofbid="d140185e276__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e278__20250121171608">如果设置了 FIFO 的中断触发为 1/2，则在 FIFO 中数据达到 128byte 后会收到 data ready 中断</p>
+                </li><li class="- topic/li li" data-ofbid="d140185e281__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e283__20250121171608">如果这个时候 UAR T 在继续接收，则 FIFO 中的数据会按 4bytes/次 的速度增加</p>
+                </li><li class="- topic/li li" data-ofbid="d140185e286__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e288__20250121171608">如果设置了 DMA 接收长度为 64，则 128-64 = 64 会丢失</p>
+                </li><li class="- topic/li li" data-ofbid="d140185e291__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e293__20250121171608">如果设置了 DM A 接收长度为 1024，则因为 fifo 中的数据最多为 256，则永远收不满</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d140185e297__20250121171608">因此 AIC 的 DMA 处理逻辑为：</p>
+            <ul class="- topic/ul ul" id="uart_design_intro__ul_pkp_lbz_21c" data-ofbid="uart_design_intro__ul_pkp_lbz_21c"><li class="- topic/li li" data-ofbid="d140185e301__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e303__20250121171608">收到 data ready 中断后，先停掉 UART 的接收，防止 FIFO 中数据增加</p>
+                </li><li class="- topic/li li" data-ofbid="d140185e306__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e308__20250121171608">读取当时 FIFO 中数据的长度，作为 DMA 的参数进行数据搬移</p>
+                </li><li class="- topic/li li" data-ofbid="d140185e311__20250121171608">
+                    <p class="- topic/p p" data-ofbid="d140185e313__20250121171608">DMA 搬移成功后重启 UART 数据接收</p>
+                </li></ul>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__pre_qkp_lbz_21c" data-ofbid="uart_design_intro__pre_qkp_lbz_21c"><strong class="hl-keyword">int</strong> aic8250_dma_rx(<strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_port *p)
+{
+   <strong class="hl-keyword">struct</strong> uart_<span class="hl-number">8250</span>_dma              *dma = p-&gt;dma;
+   <strong class="hl-keyword">struct</strong> dma_async_tx_descriptor    *desc;
+
+   <strong class="hl-keyword">if</strong> (dma-&gt;rx_running)
+      <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+
+   aic8250_set_ier(p, false);
+   dma-&gt;rx_size = p-&gt;port.serial_in(&amp;p-&gt;port, AIC_REG_UART_RFL);
+
+   desc = dmaengine_prep_slave_single(dma-&gt;rxchan, dma-&gt;rx_addr,
+                  dma-&gt;rx_size, DMA_DEV_TO_MEM,
+                  DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+   <strong class="hl-keyword">if</strong> (!desc)
+      <strong class="hl-keyword">return</strong> -EBUSY;
+
+   dma-&gt;rx_running = <span class="hl-number">1</span>;
+   desc-&gt;callback = aic8250_dma_rx_complete;
+   desc-&gt;callback_param = p;
+
+   dma-&gt;rx_cookie = dmaengine_submit(desc);
+
+   dma_async_issue_pending(dma-&gt;rxchan);
+
+   <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}
+</pre>
+            <p class="- topic/p p" data-ofbid="d140185e321__20250121171608"><strong class="+ topic/ph hi-d/b ph b">DMA 寄存器</strong></p>
+            <div class="- topic/p p" data-ofbid="d140185e325__20250121171608">DMA 的所有寄存器不建议进行参数调整，使用默认值即可，但 DMA 需要工作在 HSK
+                模式。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_design_intro__codeblock_oly_tcz_21c" data-ofbid="uart_design_intro__codeblock_oly_tcz_21c">p-&gt;serial_out(p, AIC_REG_UART_HSK, AIC_HSK_HAND_SHAKE);</pre></div>
+        </section><section class="- topic/section section" id="uart_design_intro__section_tkp_lbz_21c" data-ofbid="uart_design_intro__section_tkp_lbz_21c"><h2 class="- topic/title title sectiontitle">修改总结</h2>
+            
+            <div class="- topic/p p" data-ofbid="d140185e335__20250121171608">AIC 的 UART 驱动附着于 8250 标准驱动，但又有不一样的地方，总结一下修改列表<ul class="- topic/ul ul" id="uart_design_intro__ul_iyr_5cz_21c" data-ofbid="uart_design_intro__ul_iyr_5cz_21c"><li class="- topic/li li" data-ofbid="d140185e338__20250121171608">驱动接口<ul class="- topic/ul ul" id="uart_design_intro__ul_ukp_lbz_21c" data-ofbid="uart_design_intro__ul_ukp_lbz_21c"><li class="- topic/li li" data-ofbid="d140185e341__20250121171608">
+                                <p class="- topic/p p" data-ofbid="d140185e343__20250121171608">添加 AIC 私有接口，8250_artinchip.c,8250_artinchip.h</p>
+                            </li><li class="- topic/li li" data-ofbid="d140185e346__20250121171608">
+                                <p class="- topic/p p" data-ofbid="d140185e348__20250121171608">从 board.dst 中读取并配置 uartclk</p>
+                            </li><li class="- topic/li li" data-ofbid="d140185e351__20250121171608">
+                                <p class="- topic/p p" data-ofbid="d140185e353__20250121171608">配合 SOC 功能简化代码</p>
+                            </li><li class="- topic/li li" data-ofbid="d140185e356__20250121171608">
+                                <p class="- topic/p p" data-ofbid="d140185e358__20250121171608">移除 autoconfig 功能，因为有些 try 会导致输出乱码</p>
+                            </li><li class="- topic/li li" data-ofbid="d140185e361__20250121171608">
+                                <p class="- topic/p p" data-ofbid="d140185e363__20250121171608">DMA 策略添加和私有逻辑接口</p>
+                            </li></ul></li></ul></div>
+        </section><section class="- topic/section section" id="uart_design_intro__section_vkp_lbz_21c" data-ofbid="uart_design_intro__section_vkp_lbz_21c"><h2 class="- topic/title title sectiontitle">RS485 支持</h2>
+            
+            <p class="- topic/p p" data-ofbid="d140185e372__20250121171608">RS485 的支持需要设置 Modem_Control 和 RS485 Control and Status 两个寄存器，添加了 aic8250_rs485_config
+                处理接口</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_t3p_lbz_21c" data-tocid="uart_design_intro__section_t3p_lbz_21c">串口芯片</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_x3p_lbz_21c" data-tocid="uart_design_intro__section_x3p_lbz_21c">驱动配置宏</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_ojp_lbz_21c" data-tocid="uart_design_intro__section_ojp_lbz_21c">寄存器</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_tjp_lbz_21c" data-tocid="uart_design_intro__section_tjp_lbz_21c">程序入口</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_xjp_lbz_21c" data-tocid="uart_design_intro__section_xjp_lbz_21c">数据结构</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_ngq_ncz_21c" data-tocid="uart_design_intro__section_ngq_ncz_21c">关键流程</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_hkp_lbz_21c" data-tocid="uart_design_intro__section_hkp_lbz_21c">RS485</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_nkp_lbz_21c" data-tocid="uart_design_intro__section_nkp_lbz_21c">DMA</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_tkp_lbz_21c" data-tocid="uart_design_intro__section_tkp_lbz_21c">修改总结</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_design_intro__section_vkp_lbz_21c" data-tocid="uart_design_intro__section_vkp_lbz_21c">RS485 支持</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

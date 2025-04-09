@@ -1,0 +1,258 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 Luban-Lite 根目录下执行 ，进入 的功能配置，使能显示模块驱动： Linux Device Drivers Graphics support ArtInChip Graphics ---&gt; &lt;*&gt; ArtInChip Framebuffer support 将显示接口编译进内核。 可以编译所有显示接口，但只有 panel 驱动对应的显示接口能生效。 Device Drivers ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-18"/><meta name="DC.date.modified" content="2024-12-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="display_menuconfig_configuration"/><meta name="DC.language" content="zh-CN"/><title>menuconfig 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/display/display_menuconfig.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_menuconfig.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="display_menuconfig_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-12" id="wh_topic_body">
+                        
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_menuconfig.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1"><code class="+ topic/ph pr-d/codeph ph codeph">menuconfig</code> 配置</h1><div class="date inPage">16 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><ol class="- topic/ol ol" id="display_menuconfig_configuration__ol_jvh_fqj_ndc" data-ofbid="display_menuconfig_configuration__ol_jvh_fqj_ndc"><li class="- topic/li li" data-ofbid="d197242e26__20250121171633">
+                <div class="- topic/p p" data-ofbid="d197242e28__20250121171633">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 ，进入 
+                    的功能配置，使能显示模块驱动：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__codeblock_nyc_jvf_d1c" data-ofbid="display_menuconfig_configuration__codeblock_nyc_jvf_d1c">Linux
+    Device Drivers
+        Graphics support
+            ArtInChip Graphics  ---&gt;
+                &lt;*&gt; ArtInChip Framebuffer support</pre></div>
+            </li><li class="- topic/li li" data-ofbid="d197242e36__20250121171633">
+                <p class="- topic/p p" data-ofbid="d197242e38__20250121171633">将显示接口编译进内核。</p>
+                <p class="- topic/p p" data-ofbid="d197242e41__20250121171633">可以编译所有显示接口，但只有 panel 驱动对应的显示接口能生效。</p>
+                <div class="- topic/p p" data-ofbid="d197242e44__20250121171633">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__codeblock_rcr_kvf_d1c" data-ofbid="display_menuconfig_configuration__codeblock_rcr_kvf_d1c">Device Drivers
+    Graphics support
+        ArtInChip Graphics  ---&gt;
+        &lt;*&gt; ArtInChip Framebuffer support
+            [*]   ArtInChip display rgb support
+            [*]   ArtInChip display lvds support
+            [*]   ArtInChip display mipi-dsi support
+            [*]   ArtInChip display mipi-dbi support</pre>
+                </div>
+            </li><li class="- topic/li li" id="display_menuconfig_configuration__li_enable_panel_drivers" data-ofbid="display_menuconfig_configuration__li_enable_panel_drivers">
+                <div class="- topic/p p" data-ofbid="d197242e52__20250121171633">Panel
+                    依赖显示接口功能，需使能相关依赖：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__codeblock_drb_nvf_d1c" data-ofbid="display_menuconfig_configuration__codeblock_drb_nvf_d1c">Device Drivers
+    Graphics support
+        ArtInChip Graphics  ---&gt;
+        &lt;*&gt; ArtInChip Framebuffer support
+            &lt;*&gt;   ArtInChip Panel Drivers (ArtInChip general RGB panel)  ---&gt;</pre></div>
+                <p class="- topic/p p" data-ofbid="d197242e57__20250121171633"><span class="- topic/ph ph">Luban-Lite</span> SDK 不仅为 RGB/ LVDS 等显示接口提供了通用的 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">ArtInChip simple
+                        panel</span> 驱动，也为部分屏驱 IC 提供专用 panel 驱动。</p>
+            </li><li class="- topic/li li" data-ofbid="d197242e65__20250121171633">
+                <p class="- topic/p p" data-ofbid="d197242e67__20250121171633">Panel 依赖 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">pwm-backlight</span> 功能，需分别使能 PWM 支持和背光。</p>
+                <div class="- topic/p p" data-ofbid="d197242e73__20250121171633">
+                    <ul class="- topic/ul ul" id="display_menuconfig_configuration__ul_ixz_knn_f1c" data-ofbid="display_menuconfig_configuration__ul_ixz_knn_f1c"><li class="- topic/li li" data-ofbid="d197242e76__20250121171633">
+                            <div class="- topic/p p" data-ofbid="d197242e78__20250121171633">使能
+                                PWM<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__pre_dt2_4vf_d1c" data-ofbid="display_menuconfig_configuration__pre_dt2_4vf_d1c">Device Drivers
+    [*] Pulse-Width Modulation (PWM) Support  ---&gt;
+         &lt;*&gt;   ArtInChip PWM support
+</pre></div>
+                        </li><li class="- topic/li li" data-ofbid="d197242e83__20250121171633">
+                            <div class="- topic/p p" data-ofbid="d197242e85__20250121171633">显示模块驱动使用 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">pwm-backlight</span>
+                                框架进行背光控制：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__pre_et2_4vf_d1c" data-ofbid="display_menuconfig_configuration__pre_et2_4vf_d1c">Device Drivers
+    Graphics support
+        Backlight &amp; LCD device support
+            &lt;*&gt; Lowlevel Backlight controls
+                &lt;*&gt; Generic PWM based Backlight Driver</pre></div>
+                        </li></ul>
+                </div>
+            </li><li class="- topic/li li" data-ofbid="d197242e95__20250121171633">
+                <div class="- topic/p p" data-ofbid="d197242e97__20250121171633">显示模块驱动依赖 CMA 和 DMA-BUF 功能。<ol class="- topic/ol ol" type="a" id="display_menuconfig_configuration__ol_i2q_pvf_d1c" data-ofbid="display_menuconfig_configuration__ol_i2q_pvf_d1c"><li class="- topic/li li" data-ofbid="d197242e100__20250121171633"><strong class="+ topic/ph hi-d/b ph b">配置 CMA</strong><ol class="- topic/ol ol" type="i" id="display_menuconfig_configuration__ol_etj_yqj_ndc" data-ofbid="display_menuconfig_configuration__ol_etj_yqj_ndc"><li class="- topic/li li" data-ofbid="d197242e104__20250121171633">
+                                    <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d197242e108__20250121171633">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__codeblock_wg1_3ml_sdc" data-ofbid="display_menuconfig_configuration__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d197242e113__20250121171633">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d197242e116__20250121171633">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__codeblock_uss_hml_sdc" data-ofbid="display_menuconfig_configuration__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                                </li><li class="- topic/li li" data-ofbid="d197242e123__20250121171633">
+                                    <div class="- topic/p p" data-ofbid="d197242e125__20250121171633">在内核配置界面，按如下选择使能
+                                        CMA：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__pre_tdm_qvf_d1c" data-ofbid="display_menuconfig_configuration__pre_tdm_qvf_d1c">Linux
+    Memory Management options
+        [*] Contiguous Memory Allocator
+</pre></div>
+                                </li><li class="- topic/li li" data-ofbid="d197242e130__20250121171633">
+                                    <div class="- topic/p p" data-ofbid="d197242e132__20250121171633">配置 CMA 内存区域的大小，在内核配置的另一个地方，以下配置为 12
+                                        MB：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__pre_udm_qvf_d1c" data-ofbid="display_menuconfig_configuration__pre_udm_qvf_d1c">Linux
+    Library routines
+    [*] DMA Contiguous Memory Allocator
+    (<span class="hl-number">12</span>)  Size in Mega Bytes
+</pre></div>
+                                    <p class="- topic/p p" data-ofbid="d197242e137__20250121171633">CMA 内存区域无法随意设置大小，Size 需要 4 MB 对齐。</p>
+                                    <p class="- topic/p p" data-ofbid="d197242e140__20250121171633">Linux 启动时会对 CMA size 进行 4 MB 对齐，对齐操作与
+                                            <span class="+ topic/keyword pr-d/parmname keyword parmname">CONFIG_FORCE_MAX_ZONEORDER</span> 设置相关。在
+                                        ArtInChip 平台上，该配置为 11，意思为一次最大分配内存为 2<sup class="+ topic/ph hi-d/sup ph sup">10</sup> pages，即
+                                        4M。</p>
+                                </li></ol></li><li class="- topic/li li" data-ofbid="d197242e149__20250121171633"><strong class="+ topic/ph hi-d/b ph b">使能 DMA-BUF</strong><ol class="- topic/ol ol" type="i" id="display_menuconfig_configuration__ol_fhl_byl_sdc" data-ofbid="display_menuconfig_configuration__ol_fhl_byl_sdc"><li class="- topic/li li" data-ofbid="d197242e153__20250121171633">
+                                    <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d197242e157__20250121171633">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__d790e27" data-ofbid="display_menuconfig_configuration__d790e27">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d197242e162__20250121171633">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d197242e165__20250121171633">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__d790e35" data-ofbid="display_menuconfig_configuration__d790e35">make km</pre>
+                </div>
+            </div>
+                                </li><li class="- topic/li li" data-ofbid="d197242e172__20250121171633">
+                                    <div class="- topic/p p" data-ofbid="d197242e174__20250121171633">在内核配置配置，按如下选择，使能  DMA-BUF
+                                        功能：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="display_menuconfig_configuration__pre_wdm_qvf_d1c" data-ofbid="display_menuconfig_configuration__pre_wdm_qvf_d1c">Linux
+    Device Drivers
+        DMABUF options
+            [*] Explicit Synchronization Framework
+            [*]   Sync File Validation Framework
+            [*] userspace dmabuf misc driver
+            [*] DMA-BUF Userland Memory Heaps
+                [*]   DMA-BUF CMA Heap</pre></div>
+                                </li></ol></li></ol></div>
+            </li></ol></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

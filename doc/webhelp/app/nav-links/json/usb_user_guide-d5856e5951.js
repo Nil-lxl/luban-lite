@@ -1,0 +1,1 @@
+oxy_webhelp_navlinks = {"usb_user_guide-d5856e5951":{"topics":[{"title":"USB 配置","href":"topics\/sdk\/usb\/usb_config_2.html","attributes":{"data-id":"usb_configuration"},"menu":{"hasChildren":false},"tocID":"usb_configuration-d5856e5963","next":"usb_configuration-d5856e5963"}]}};

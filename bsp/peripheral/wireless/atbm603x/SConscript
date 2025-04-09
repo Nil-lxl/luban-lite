@@ -1,0 +1,35 @@
+#Import('AIC_ROOT')
+#Import('PRJ_KERNEL')
+Import('rtconfig')
+from building import *
+
+cwd = GetCurrentDir()
+
+include_path =[cwd + '/api']
+include_path +=[cwd + '/include']
+include_path +=[cwd + '/hal/include']
+include_path +=[cwd + '/hal/sdio']
+include_path +=[cwd + '/net/include']
+include_path +=[cwd + '/net/include/proto']
+include_path +=[cwd + '/net/wpa/wps/include']
+include_path +=[cwd + '/net/wpa/crypto/include']
+include_path +=[cwd + '/os/include']
+include_path +=[cwd + '/os/rt_thread/include']
+
+src = Glob('hal/*.c')
+src += Glob('hal/sdio/*.c')
+src += Glob('api/*.c')
+src += Glob('net/*.c')
+src += Glob('net/wpa/*.c')
+src += Glob('net/wpa/wps/*.c')
+src += Glob('net/wpa/crypto/*.c')
+src += Glob('os/rt_thread/*.c')
+src += Glob('os/test/*.c')
+src += Glob('os/rt_thread/sdio/*.c')
+src += Glob('os/rt_thread/user/*.c')
+
+myccflags = (' -w')
+
+group = DefineGroup('atbm6031', src, depend = ['WIFI_USING_SDIOWIFI_ATBM'], CPPPATH = include_path, LOCAL_CFLAGS=myccflags)
+            
+Return('group')

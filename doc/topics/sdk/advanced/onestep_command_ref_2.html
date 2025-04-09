@@ -1,0 +1,315 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="description" content="OneStep 是 ArtInChip 对 SCons 工具二次封装的总称，在基础命令上开发了一组更高效和方便的快捷命令， 以实现任意目录、一步即达的目的。根据操作系统的不同，可能需要不同的设置： Windows 系统设置 在 Windows 系统中，OneStep 自动集成到 win_cmd.bat 和 win_env.bat 批处理脚本中。 在 CMD 或者 ENV 窗口启动后，OneStep ..."/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-10-31"/><meta name="DC.date.modified" content="2024-12-24"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="lb-onestep-command-ref-guide"/><meta name="DC.language" content="zh-CN"/>        
+      <title>OneStep 命令参考指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/advanced/onestep_command_ref.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/onestep_command_ref_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="lb-onestep-command-ref-guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/onestep_command_ref.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">OneStep 命令参考指南</h1><div class="date inPage">24 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/shortdesc shortdesc"></p><div class="- topic/p p" data-ofbid="d167505e19__20250121171618">OneStep 是 ArtInChip 对 SCons 工具二次封装的总称，在基础命令上开发了一组更高效和方便的快捷命令，
+                以实现任意目录、一步即达的目的。根据操作系统的不同，可能需要不同的设置：<ul class="- topic/ul ul" id="lb-onestep-command-ref-guide__ul_iyq_3fp_fdc" data-ofbid="lb-onestep-command-ref-guide__ul_iyq_3fp_fdc"><li class="- topic/li li" data-ofbid="d167505e22__20250121171618"><strong class="+ topic/ph hi-d/b ph b">Windows</strong>系统设置<p class="- topic/p p" data-ofbid="d167505e26__20250121171618">在 Windows 系统中，OneStep 自动集成到
+                            <span class="+ topic/ph sw-d/filepath ph filepath">win_cmd.bat</span> 和 <span class="+ topic/ph sw-d/filepath ph filepath">win_env.bat</span>
+                        批处理脚本中。</p><p class="- topic/p p" data-ofbid="d167505e34__20250121171618">在 CMD 或者 ENV 窗口启动后，OneStep 命令已经生效，在其中可以从任意目录执行 OneStep
+                    命令。</p></li><li class="- topic/li li" data-ofbid="d167505e36__20250121171618"><strong class="+ topic/ph hi-d/b ph b">Linux</strong> 系统设置<div class="- topic/p p" data-ofbid="d167505e40__20250121171618">在 Linux 系统中，需要将 OneStep
+                        脚本添加到当前路径中，如执行以下命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__pre_a2n_1vp_wcc" data-ofbid="lb-onestep-command-ref-guide__pre_a2n_1vp_wcc">source tools/onestep.sh</pre></div><p class="- topic/p p" data-ofbid="d167505e44__20250121171618">在
+                        Ubuntu 终端中，进入 SDK 根目录后，使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">source tools/onestep.sh</span>
+                        命令即可查看所有常见命令。</p></li></ul></div><div class="- topic/p p" data-ofbid="d167505e49__20250121171618">为了方便使用并加快开发效率，ArtInChip 开发了一系列的 OneStep
+                子命令，如<span class="+ topic/keyword sw-d/cmdname keyword cmdname">h|help</span>显示帮助信息以及<span class="+ topic/keyword sw-d/cmdname keyword cmdname">lunch</span>选择和启动指定的项目配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__pre_b2n_1vp_wcc" data-ofbid="lb-onestep-command-ref-guide__pre_b2n_1vp_wcc">h</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_bbc_klp_5dc" data-ofbid="lb-onestep-command-ref-guide__codeblock_bbc_klp_5dc"><span class="- topic/ph ph">Luban-Lite</span> SDK OneStep commands:
+    hmm|h                     : Get this help.
+    lunch          [keyword]  : Start with selected defconfig.e.g. lunch mmc
+    menuconfig|me             : Config application with menuconfig
+    bm                        : Config bootloader with menuconfig
+    km                        : Config application with menuconfig
+    m|mb                      : Build bootloader &amp; application and generate final image
+    ma                        : Build application only
+    mu|ms                     : Build bootloader only
+    c                         : Clean bootloader and application
+    mc                        : Clean &amp; Rebuild all and generate final image
+    croot|cr                  : cd to SDK root directory.
+    cout|co                   : cd to build output directory.
+    cbuild|cb                 : cd to build root directory.
+    ctarget|ct                : cd to target board directory.
+    godir|gd       [keyword]  : Go/jump to selected directory.
+    list                      : List all SDK defconfig.
+    list_module               : List all enabled modules.
+    i                         : Get current project<span class="hl-string">'s information.
+</span>    buildall                  : Build all the *defconfig in target/configs
+    rebuildall                : Clean and build all the *defconfig in target/configs
+    addboard|ab               : Add new board *defconfig in target/configs
+    aicupg                    : Burn image file to target board
+ </pre></div><section class="- topic/section section" id="lb-onestep-command-ref-guide__id9" data-ofbid="lb-onestep-command-ref-guide__id9"><h2 class="- topic/title title sectiontitle">list</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e68__20250121171618">查看所有项目文件。</p>
+            <div class="- topic/note note note note_note" id="lb-onestep-command-ref-guide__note_km4_xxq_3dc" data-ofbid="lb-onestep-command-ref-guide__note_km4_xxq_3dc"><span class="note__title">注：</span> <span class="+ topic/keyword sw-d/cmdname keyword cmdname">list</span> 命令进行了显示项目精简，隐藏了
+                    <span class="+ topic/ph sw-d/filepath ph filepath">bootloader</span> 的项目文件。</div>
+            <div class="- topic/p p" data-ofbid="d167505e79__20250121171618"><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_gzp_q2p_fdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_gzp_q2p_fdc">list</pre>输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_sqq_qx1_rdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_sqq_qx1_rdc">scons: Reading SConscript files ...
+Built-in configs:
+d12x_demo68-nand_rt-thread_helloworld_defconfig
+<span class="hl-number">0.</span> d12x_demo68-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">1.</span> d12x_hmi-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">2.</span> d13x_demo68-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">3.</span> d13x_demo88-nand_rt-thread_helloworld_defconfig
+<span class="hl-number">4.</span> d13x_demo88-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">5.</span> d13x_kunlunpi88-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">6.</span> d21x_d215-demo88-nand_rt-thread_helloworld_defconfig
+<span class="hl-number">7.</span> d21x_d215-demo88-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">8.</span> d21x_demo100-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">9.</span> d21x_demo128-nand_rt-thread_helloworld_defconfig
+<span class="hl-number">10.</span>g73x_demo100-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">11.</span>g73x_demo68-nor_rt-thread_helloworld_defconfig
+<span class="hl-number">12.</span>g73x_scan_rt-thread_helloworld_defconfig</pre></div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_n12_sn3_rdc" data-ofbid="lb-onestep-command-ref-guide__section_n12_sn3_rdc"><h2 class="- topic/title title sectiontitle">lunch</h2>
+            
+            <div class="- topic/p p" data-ofbid="d167505e91__20250121171618">选择、加载或应用具体配置方案。<ul class="- topic/ul ul" id="lb-onestep-command-ref-guide__ul_xmy_wn3_rdc" data-ofbid="lb-onestep-command-ref-guide__ul_xmy_wn3_rdc"><li class="- topic/li li" data-ofbid="d167505e94__20250121171618">
+                        <div class="- topic/p p" data-ofbid="d167505e96__20250121171618">示例 1：进入 Recovery 系统 SDK
+                            生产环境<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_qsy_tn3_rdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_qsy_tn3_rdc">lunch ota_emmc</pre></div>
+                    </li><li class="- topic/li li" data-ofbid="d167505e101__20250121171618">
+                        <div class="- topic/p p" data-ofbid="d167505e103__20250121171618">示例 2：加载
+                                <span class="+ topic/ph sw-d/filepath ph filepath">d13x_demo88-nor-xip_rt-thread_helloworld_defconfig</span>
+                            配置文件<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_yyy_h43_rdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_yyy_h43_rdc">lunch d13x_demo88-nor-xip_rt-thread_helloworld_defconfig</pre></div>
+                    </li></ul></div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__rt-thread" data-ofbid="lb-onestep-command-ref-guide__rt-thread"><h2 class="- topic/title title sectiontitle">menuconfig|me</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e117__20250121171618">打开 menuconfig 工具界面，修改 RT-Thread 配置</p>
+            <div class="- topic/p p" data-ofbid="d167505e120__20250121171618"><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_rxf_lmr_5dc" data-ofbid="lb-onestep-command-ref-guide__codeblock_rxf_lmr_5dc">menuconfig</pre>或<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_e2l_r2p_fdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_e2l_r2p_fdc">me</pre></div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__bootloader" data-ofbid="lb-onestep-command-ref-guide__bootloader"><h2 class="- topic/title title sectiontitle">bm</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e132__20250121171618">打开 menuconfig 工具界面，修改 BootLoader 配置</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_b3n_r2p_fdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_b3n_r2p_fdc">bm</pre>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_hrs_mmr_5dc" data-ofbid="lb-onestep-command-ref-guide__section_hrs_mmr_5dc"><h2 class="- topic/title title sectiontitle">km</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e143__20250121171618">打开 menuconfig 工具界面，修改应用配置</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_irs_mmr_5dc" data-ofbid="lb-onestep-command-ref-guide__codeblock_irs_mmr_5dc">bm</pre>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_h4r_m43_rdc" data-ofbid="lb-onestep-command-ref-guide__section_h4r_m43_rdc"><h2 class="- topic/title title sectiontitle">m</h2>
+            
+            <div class="- topic/p p" data-ofbid="d167505e154__20250121171618">编译 SDK
+                固件，并生成镜像文件。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_jmc_rp3_rdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_jmc_rp3_rdc">m</pre></div>
+            <div class="- topic/note note note note_note" id="lb-onestep-command-ref-guide__note_ay1_tmr_5dc" data-ofbid="lb-onestep-command-ref-guide__note_ay1_tmr_5dc"><span class="note__title">注：</span> 与 <a class="- topic/xref xref" href="onestep_command_ref.html#lb-onestep-command-ref-guide__section_vg1_5p3_rdc">mb</a>
+                命令含义相同。</div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_vg1_5p3_rdc" data-ofbid="lb-onestep-command-ref-guide__section_vg1_5p3_rdc"><h2 class="- topic/title title sectiontitle">mb</h2>
+            
+            <div class="- topic/p p" data-ofbid="d167505e171__20250121171618">编译 bootloader
+                和应用，并生成最终镜像文件。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_ofg_wp3_rdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_ofg_wp3_rdc">mb</pre></div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_mx4_rmr_5dc" data-ofbid="lb-onestep-command-ref-guide__section_mx4_rmr_5dc"><h2 class="- topic/title title sectiontitle">ma</h2>
+            
+            <div class="- topic/p p" data-ofbid="d167505e181__20250121171618">仅编译应用，并生成最终镜像文件。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_nx4_rmr_5dc" data-ofbid="lb-onestep-command-ref-guide__codeblock_nx4_rmr_5dc">ma</pre></div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_nb5_5mr_5dc" data-ofbid="lb-onestep-command-ref-guide__section_nb5_5mr_5dc"><h2 class="- topic/title title sectiontitle">mu|ms</h2>
+            
+            <div class="- topic/p p" data-ofbid="d167505e191__20250121171618">仅编译
+                bootloader，并生成最终镜像文件。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_ob5_5mr_5dc" data-ofbid="lb-onestep-command-ref-guide__codeblock_ob5_5mr_5dc">mu|ms</pre></div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_jgv_wmr_5dc" data-ofbid="lb-onestep-command-ref-guide__section_jgv_wmr_5dc"><h2 class="- topic/title title sectiontitle">c</h2>
+            
+            <div class="- topic/p p" data-ofbid="d167505e202__20250121171618">清除 bootloader
+                和应用配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_kgv_wmr_5dc" data-ofbid="lb-onestep-command-ref-guide__codeblock_kgv_wmr_5dc">c</pre></div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_mlf_zmr_5dc" data-ofbid="lb-onestep-command-ref-guide__section_mlf_zmr_5dc"><h2 class="- topic/title title sectiontitle">mc</h2>
+            
+            <div class="- topic/p p" data-ofbid="d167505e212__20250121171618">清除并重新编译，重新生产所有最终镜像文件。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_nlf_zmr_5dc" data-ofbid="lb-onestep-command-ref-guide__codeblock_nlf_zmr_5dc">mc</pre></div>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_u2c_s43_rdc" data-ofbid="lb-onestep-command-ref-guide__section_u2c_s43_rdc"><h2 class="- topic/title title sectiontitle">croot|cr</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e222__20250121171618">进入 SDK 根目录。</p>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_lkr_yp3_rdc" data-ofbid="lb-onestep-command-ref-guide__section_lkr_yp3_rdc"><h2 class="- topic/title title sectiontitle">cout|co</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e230__20250121171618">进入编译输出目录</p>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_pcb_y43_rdc" data-ofbid="lb-onestep-command-ref-guide__section_pcb_y43_rdc"><h2 class="- topic/title title sectiontitle">ctarget|ct</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e238__20250121171618">回到方案或目标开发板目录。</p>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_wdb_z43_rdc" data-ofbid="lb-onestep-command-ref-guide__section_wdb_z43_rdc"><h2 class="- topic/title title sectiontitle">godir|gd</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e246__20250121171618">跳转到指定目录。</p>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__id11" data-ofbid="lb-onestep-command-ref-guide__id11"><h2 class="- topic/title title sectiontitle">i</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e254__20250121171618">查看当前项目的配置信息。</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_ls3_r2p_fdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_ls3_r2p_fdc">i</pre>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="lb-onestep-command-ref-guide__codeblock_bjv_vhb_rdc" data-ofbid="lb-onestep-command-ref-guide__codeblock_bjv_vhb_rdc">scons: Reading SConscript files ...
+Target app: application/rt-thread/helloworld
+Target chip: d12x
+Target arch: riscv32
+Target board: target/d12x/demo68-nor
+Target kernel: kernel/rt-thread
+Defconfig file: target/configs/d12x_demo68-nor_rt-thread_helloworld_defconfig
+Root directory: xxxxxxxxxxxxxx
+Out directory: output/d12x_demo68-nor_rt-thread_helloworld
+    Toolchain: toolchain/bin\riscv64-unknown-elf-</pre>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_mzf_2q3_rdc" data-ofbid="lb-onestep-command-ref-guide__section_mzf_2q3_rdc"><h2 class="- topic/title title sectiontitle">buildall</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e268__20250121171618">编译目标配置文件 <span class="+ topic/ph sw-d/filepath ph filepath">target/configs</span> 中的所有 <span class="+ topic/ph sw-d/filepath ph filepath">*defconfig</span>
+                文件。</p>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_k3v_hq3_rdc" data-ofbid="lb-onestep-command-ref-guide__section_k3v_hq3_rdc"><h2 class="- topic/title title sectiontitle">rebuildall</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e282__20250121171618">清除前一次配置信息，并重新编译目标配置文件 <span class="+ topic/ph sw-d/filepath ph filepath">target/configs</span> 中的所有
+                    <span class="+ topic/ph sw-d/filepath ph filepath">*defconfig</span> 文件。</p>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_grq_kq3_rdc" data-ofbid="lb-onestep-command-ref-guide__section_grq_kq3_rdc"><h2 class="- topic/title title sectiontitle">addboard|ab</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e296__20250121171618">在 <span class="+ topic/ph sw-d/filepath ph filepath">target/configs</span> 中添加新开发板的 <span class="+ topic/ph sw-d/filepath ph filepath">*defconfig</span>
+                文件。</p>
+        </section><section class="- topic/section section" id="lb-onestep-command-ref-guide__section_utx_mq3_rdc" data-ofbid="lb-onestep-command-ref-guide__section_utx_mq3_rdc"><h2 class="- topic/title title sectiontitle">aicupg</h2>
+            
+            <p class="- topic/p p" data-ofbid="d167505e310__20250121171618">将镜像文件烧录到目标开发板中。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__id9" data-tocid="lb-onestep-command-ref-guide__id9">list</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_n12_sn3_rdc" data-tocid="lb-onestep-command-ref-guide__section_n12_sn3_rdc">lunch</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__rt-thread" data-tocid="lb-onestep-command-ref-guide__rt-thread">menuconfig|me</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__bootloader" data-tocid="lb-onestep-command-ref-guide__bootloader">bm</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_hrs_mmr_5dc" data-tocid="lb-onestep-command-ref-guide__section_hrs_mmr_5dc">km</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_h4r_m43_rdc" data-tocid="lb-onestep-command-ref-guide__section_h4r_m43_rdc">m</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_vg1_5p3_rdc" data-tocid="lb-onestep-command-ref-guide__section_vg1_5p3_rdc">mb</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_mx4_rmr_5dc" data-tocid="lb-onestep-command-ref-guide__section_mx4_rmr_5dc">ma</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_nb5_5mr_5dc" data-tocid="lb-onestep-command-ref-guide__section_nb5_5mr_5dc">mu|ms</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_jgv_wmr_5dc" data-tocid="lb-onestep-command-ref-guide__section_jgv_wmr_5dc">c</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_mlf_zmr_5dc" data-tocid="lb-onestep-command-ref-guide__section_mlf_zmr_5dc">mc</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_u2c_s43_rdc" data-tocid="lb-onestep-command-ref-guide__section_u2c_s43_rdc">croot|cr</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_lkr_yp3_rdc" data-tocid="lb-onestep-command-ref-guide__section_lkr_yp3_rdc">cout|co</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_pcb_y43_rdc" data-tocid="lb-onestep-command-ref-guide__section_pcb_y43_rdc">ctarget|ct</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_wdb_z43_rdc" data-tocid="lb-onestep-command-ref-guide__section_wdb_z43_rdc">godir|gd</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__id11" data-tocid="lb-onestep-command-ref-guide__id11">i</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_mzf_2q3_rdc" data-tocid="lb-onestep-command-ref-guide__section_mzf_2q3_rdc">buildall</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_k3v_hq3_rdc" data-tocid="lb-onestep-command-ref-guide__section_k3v_hq3_rdc">rebuildall</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_grq_kq3_rdc" data-tocid="lb-onestep-command-ref-guide__section_grq_kq3_rdc">addboard|ab</a></div></li><li class="section-item"><div class="section-title"><a href="#lb-onestep-command-ref-guide__section_utx_mq3_rdc" data-tocid="lb-onestep-command-ref-guide__section_utx_mq3_rdc">aicupg</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

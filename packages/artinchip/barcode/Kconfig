@@ -1,0 +1,3 @@
+menuconfig AIC_USING_BARCODE_DEMO
+    bool "ArtInChip Barcode Demo"
+    default n

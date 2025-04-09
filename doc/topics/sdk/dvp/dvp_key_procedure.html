@@ -1,0 +1,299 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="初始化流程 DVP 驱动的初始化过程总体分为两大部分： 阶段一：由 probe() 接口完成资源申请、注册 subdev、注册 buf、注册 notifier 等操作。 阶段二：由 notifier 的 complete() 接口完成，需要等 Sensor 执行完初始化（其 probe() 接口）后才能执行，完成的操作有：注册 device、注册 device、配置 link 等。 Probe ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="dvp_key_procedures"/><meta name="DC.language" content="zh-CN"/><title>关键流程设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/dvp/dvp_key_procedure.dita"/><meta name="wh-out-relpath" content="topics/sdk/dvp/dvp_key_procedure.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="dvp_key_procedures" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/dvp/dvp_key_procedure.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">关键流程设计</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="dvp_key_procedures__section_gfg_kch_d1c" data-ofbid="dvp_key_procedures__section_gfg_kch_d1c"><h2 class="- topic/title title sectiontitle">初始化流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d164034e27__20250121171617">DVP 驱动的初始化过程总体分为两大部分：</p>
+            <ol class="- topic/ol ol" id="dvp_key_procedures__ol_hfg_kch_d1c" data-ofbid="dvp_key_procedures__ol_hfg_kch_d1c"><li class="- topic/li li" data-ofbid="d164034e31__20250121171617">阶段一：由 <span class="+ topic/keyword pr-d/apiname keyword apiname">probe()</span> 接口完成资源申请、注册 subdev、注册 buf、注册 notifier 等操作。</li><li class="- topic/li li" data-ofbid="d164034e36__20250121171617">阶段二：由 notifier 的 <span class="+ topic/keyword pr-d/apiname keyword apiname">complete()</span> 接口完成，需要等 Sensor 执行完初始化（其
+                        <span class="+ topic/keyword pr-d/apiname keyword apiname">probe()</span>接口）后才能执行，完成的操作有：注册 device、注册 device、配置 link
+                    等。</li></ol>
+        </section><section class="- topic/section section" id="dvp_key_procedures__section_ifg_kch_d1c" data-ofbid="dvp_key_procedures__section_ifg_kch_d1c"><h2 class="- topic/title title sectiontitle">Probe 过程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d164034e50__20250121171617">
+                <figure class="- topic/fig fig fignone" id="dvp_key_procedures__fig_lrn_vch_d1c" data-ofbid="dvp_key_procedures__fig_lrn_vch_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="dvp_key_procedures__image_jfg_kch_d1c" src="../../../images/dvp/dvp_probe_flow.png" alt="dvp_probe_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">DVP 驱动的注册过程</span></figcaption></figure>
+            </div>
+            <ul class="- topic/ul ul" id="dvp_key_procedures__ul_kfg_kch_d1c" data-ofbid="dvp_key_procedures__ul_kfg_kch_d1c"><li class="- topic/li li" data-ofbid="d164034e61__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e63__20250121171617">初始化 media device。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e66__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e68__20250121171617">注册 subdev，提供 subdev_ops（其中定义了 pad_ops）。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e71__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e73__20250121171617">注册 pad，包括为 subdev 注册两个 pad：source + sink。为 device 注册一个 pad。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e76__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e78__20250121171617">注册 buf，初始化 vb2_queue，需要提供 vb2_ops（驱动相关）和 vb2_mem_ops（内存分配的回调）</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e81__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e83__20250121171617">注册 V4L2 device，主要是将 DVP 的 dev 关联到 v4l2_device-&gt;dev</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e86__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e88__20250121171617">注册 notifier，为了解决 Sensor 和 DVP 控制器之间的初始化顺序依赖问题，需要 DTS 中定义好 endpoint，并提供
+                        notifier_ops。</p>
+                </li></ul>
+            <p class="- topic/p p" data-ofbid="d164034e92__20250121171617">初始化 notifier 时，会去调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">v4l2_fwnode_endpoint_parse ()</span>解析 DTS 中关于
+                endpoint 中的配置，包括 bus-type（BT656 等）、极性等，将这些信息保存在 vep-&gt;bus 中（在 aic_dvp-&gt;bus
+                需要有备份）。</p>
+        </section><section class="- topic/section section" id="dvp_key_procedures__section_lfg_kch_d1c" data-ofbid="dvp_key_procedures__section_lfg_kch_d1c"><h2 class="- topic/title title sectiontitle">notifier 初始化过程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d164034e103__20250121171617">在 Sensor 的 probe() 过程中也会调用 Notifier 注册，因为 DTS 中两个设备用 remote-endpoint 已经有关联，DVP 驱动注册过的
+                notifier_ops-&gt;bound() 接口首先会被触发，对方（Sensor）会传过来一个 pad 编号，DVP 将其记录下来方便后续使用（调用 Sensor 的
+                subdev 接口完成 stream 启动、停止操作）。</p>
+            <div class="- topic/p p" data-ofbid="d164034e106__20250121171617">
+                <figure class="- topic/fig fig fignone" id="dvp_key_procedures__fig_ky1_5ch_d1c" data-ofbid="dvp_key_procedures__fig_ky1_5ch_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="dvp_key_procedures__image_mfg_kch_d1c" src="../../../images/dvp/v4l2_notify_call.png" alt="v4l2_notify_call"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">V4L2 中 notify 的调用过程</span></figcaption></figure>
+            </div>
+            <p class="- topic/p p" data-ofbid="d164034e116__20250121171617">随后，DVP 的 notifier_ops-&gt;complete() 接口也会被触发调用，DVP 驱动中完成后续的初始化，包括：</p>
+            <div class="- topic/p p" data-ofbid="d164034e119__20250121171617">
+                <figure class="- topic/fig fig fignone" id="dvp_key_procedures__fig_ewh_tch_d1c" data-ofbid="dvp_key_procedures__fig_ewh_tch_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="dvp_key_procedures__image_nfg_kch_d1c" src="../../../images/dvp/v4l2_notify_complete.png" alt="v4l2_notify_complete"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">V4L2 中 notify 的 complete 处理流程</span></figcaption></figure>
+            </div>
+            <ul class="- topic/ul ul" id="dvp_key_procedures__ul_ofg_kch_d1c" data-ofbid="dvp_key_procedures__ul_ofg_kch_d1c"><li class="- topic/li li" data-ofbid="d164034e131__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e133__20250121171617">关联 v4l2_device 和 subdev</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e136__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e138__20250121171617">注册 video device，</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e141__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e143__20250121171617">注册 media device</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e146__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e148__20250121171617">创建 pad 之间的 link，会用到 media_link 结构</p>
+                </li></ul>
+            <div class="- topic/note note note note_note" id="dvp_key_procedures__note_my5_sch_d1c" data-ofbid="dvp_key_procedures__note_my5_sch_d1c"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d164034e154__20250121171617">media device 出现了两次，是为了在所有 media graph 完全初始化之前就可以提供 media device 给用户态空间。所以一开始先用一部分
+                    entity 初始化 media device。</p>
+            </div>
+            <p class="- topic/p p" data-ofbid="d164034e158__20250121171617">其中：</p>
+            <ul class="- topic/ul ul" id="dvp_key_procedures__ul_pfg_kch_d1c" data-ofbid="dvp_key_procedures__ul_pfg_kch_d1c"><li class="- topic/li li" data-ofbid="d164034e162__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e164__20250121171617">Master 设备执行 probe 函数的时候，先使用 component_match_add() 接口声明一个 match 队列。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e167__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e169__20250121171617">然后，使用 component_master_add_with_match 函数将自己作为 master 注册到 component 框架。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e172__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e174__20250121171617">各 component slave 设备执行 probe 函数的时候，仅使用 component_add()完成 slave 注册。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e177__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e179__20250121171617">以上各模块的 probe()函数调用先后顺序并不影响。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e182__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e184__20250121171617">各个 component 都要实现自己的 bind()和 unbind()接口（struct component_ops），component
+                        框架在判断所有 match 队列中的模块都完成了 probe，就会按 <strong class="+ topic/ph hi-d/b ph b">先 slave、后 master</strong> 的去调用他们的 bind()
+                        接口。而各模块真正的初始化动作都是在各自的 bind() 中去实现。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e190__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e192__20250121171617">在执行各 bind() 接口时，各 slave 间的先后顺序和 match 队列一致。Component 保证 master 最后执行。</p>
+                </li><li class="- topic/li li" data-ofbid="d164034e195__20250121171617">
+                    <p class="- topic/p p" data-ofbid="d164034e197__20250121171617">aicfb-&gt;bind() 中，主要完成 Framebuffer 申请、fb 设备注册、使能 UI 图层、使能 panel 等动作。</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="dvp_key_procedures__section_qfg_kch_d1c" data-ofbid="dvp_key_procedures__section_qfg_kch_d1c"><h2 class="- topic/title title sectiontitle">Buf 管理</h2><p class="- topic/p p" data-ofbid="d164034e204__20250121171617">DVP 的 Buf 管理需要用到 V4L2 框架提供的 Video
+                queue 机制外，还需要用到 dma-buf 和 CMA（详见 DE 设计文档中的描述）。</p> 对于每一帧图像数据来说，DVP 的输出有两个 plane：Y 和
+            UV。针对 DVP 的两种输出格式：YUV422_COMBINED_NV16 和 YUV420_COMBINED_NV12，两个 plane 的空间大小如下表：<div class="table-container"><table class="- topic/table table frame-all" id="dvp_key_procedures__table_rfg_kch_d1c" data-ofbid="dvp_key_procedures__table_rfg_kch_d1c" data-cols="3"><caption></caption><colgroup><col style="width:25%"/><col style="width:37.5%"/><col style="width:37.5%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="dvp_key_procedures__table_rfg_kch_d1c__entry__1">-</th><th class="- topic/entry entry colsep-1 rowsep-1" id="dvp_key_procedures__table_rfg_kch_d1c__entry__2">YUV422_COMBINED_NV16</th><th class="- topic/entry entry colsep-0 rowsep-1" id="dvp_key_procedures__table_rfg_kch_d1c__entry__3">YUV420_COMBINED_NV12</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="dvp_key_procedures__table_rfg_kch_d1c__entry__1">Plane Y</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="dvp_key_procedures__table_rfg_kch_d1c__entry__2">Width * height</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="dvp_key_procedures__table_rfg_kch_d1c__entry__3">Width * height</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="dvp_key_procedures__table_rfg_kch_d1c__entry__1">Plane UV</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="dvp_key_procedures__table_rfg_kch_d1c__entry__2">Width * height</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="dvp_key_procedures__table_rfg_kch_d1c__entry__3">Width * height / 2</td></tr></tbody></table></div><p class="- topic/p p" data-ofbid="d164034e235__20250121171617">根据前面对“Buf 队列管理”的分析可知：我们要分配的内存空间至少要有 3 个 Buf，每个 Buf 有两个 Plane。 </p><p class="- topic/p p" data-ofbid="d164034e237__20250121171617">对应到 Buf
+                的 ioctl 接口，我们要用到 _MPLANE 结尾的接口。</p><p class="- topic/p p" data-ofbid="d164034e239__20250121171617">注册 video queue 时提需要提供 vb2_ops，其中需要 DVP
+                驱动实现的有五个接口：</p><ul class="- topic/ul ul" id="dvp_key_procedures__ul_sfg_kch_d1c" data-ofbid="dvp_key_procedures__ul_sfg_kch_d1c"><li class="- topic/li li" data-ofbid="d164034e242__20250121171617">queue_setup<p class="- topic/p p" data-ofbid="d164034e244__20250121171617">在 APP 发起申请 buf 时调用，这里面主要设置 plane 个数、各 plane 的大小。</p></li><li class="- topic/li li" data-ofbid="d164034e246__20250121171617">buf_prepare 和 buf_queue<p class="- topic/p p" data-ofbid="d164034e248__20250121171617">在 APP 每次调用 QBuf 时会调用，分别完成获取 Buf 物理地址、同步 Qbuf list
+                        的处理。</p></li><li class="- topic/li li" data-ofbid="d164034e250__20250121171617">Stream start 和 stream stop<p class="- topic/p p" data-ofbid="d164034e252__20250121171617">启动和停止媒体数据（处理流程详见下节描述）。</p></li></ul>
+        </section><section class="- topic/section section" id="dvp_key_procedures__section_wfg_kch_d1c" data-ofbid="dvp_key_procedures__section_wfg_kch_d1c"><h2 class="- topic/title title sectiontitle">Stream 启动流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d164034e260__20250121171617">Stream 的启动是由 APP 发起的，APP 通过 ioctl 接口传入命令 VIDIOC_STREAMON（相应的，停止的命令是
+                VIDIOC_STREAMOFF）。</p>
+            <div class="- topic/p p" data-ofbid="d164034e263__20250121171617">
+                <figure class="- topic/fig fig fignone" id="dvp_key_procedures__fig_q4x_pch_d1c" data-ofbid="dvp_key_procedures__fig_q4x_pch_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="dvp_key_procedures__image_xfg_kch_d1c" src="../../../images/dvp/dvp_stream_on.png" alt="dvp_stream_on"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">DVP 驱动中 Stream 启动过程</span></figcaption></figure>
+            </div>
+            <p class="- topic/p p" data-ofbid="d164034e273__20250121171617">Stream 的停止流程相对简单很多，会调用到 Sensor 的停止传输接口：</p>
+            <div class="- topic/p p" data-ofbid="d164034e276__20250121171617">
+                <figure class="- topic/fig fig fignone" id="dvp_key_procedures__fig_btx_4ch_d1c" data-ofbid="dvp_key_procedures__fig_btx_4ch_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="dvp_key_procedures__image_yfg_kch_d1c" src="../../../images/dvp/dvp_stream_off.png" alt="dvp_stream_off"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 5</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">DVP 驱动中 Stream 停止过程</span></figcaption></figure>
+            </div>
+        </section><section class="- topic/section section" id="dvp_key_procedures__section_vst_xym_4dc" data-ofbid="dvp_key_procedures__section_vst_xym_4dc"><h2 class="- topic/title title sectiontitle">中断处理流程</h2>
+            
+            <div class="- topic/div div section" id="dvp_key_procedures__id6">
+                <div class="- topic/p p" data-ofbid="d164034e293__20250121171617">DVP 的中断处理函数中主要处理 Buf 的队列切换操作。 DVP 硬件提供的中断可以反映出多个状态（包括出错状态），其中包括以下关键状态：<div class="- topic/note note note note_note" id="dvp_key_procedures__note_hhd_w4t_2dc" data-ofbid="dvp_key_procedures__note_hhd_w4t_2dc"><span class="note__title">注：</span> <span class="+ topic/ph ui-d/uicontrol ph uicontrol">HNUM Interrupt</span> 会先于
+                            <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Frame done</span> 发生。</div></div>
+                <ul class="- topic/ul ul arabic simple" id="dvp_key_procedures__ol_wxt_1kt_2dc" data-ofbid="dvp_key_procedures__ol_wxt_1kt_2dc"><li class="- topic/li li" data-ofbid="d164034e304__20250121171617">
+                        <p class="- topic/p p" data-ofbid="d164034e306__20250121171617"><span class="+ topic/ph ui-d/uicontrol ph uicontrol">HNUM Interrupt</span></p>
+                        <p class="- topic/p p" data-ofbid="d164034e310__20250121171617">用于判断当前 Register 是否可以修改。出现 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">HNUM
+                            Interrupt</span>，表示当前图像帧已经完成 1/4 帧（驱动中默认配置）数据的刷新，意味着此时的 Buf 相关
+                            Register （影子寄存器）可以被修改，软件可以传入下一个 Buf 的参数了。</p>
+                    </li><li class="- topic/li li" data-ofbid="d164034e316__20250121171617">
+                        <p class="- topic/p p" data-ofbid="d164034e318__20250121171617"><span class="+ topic/ph ui-d/uicontrol ph uicontrol">Frame done</span></p>
+                        <p class="- topic/p p" data-ofbid="d164034e322__20250121171617">用于判断当前 buf 是否完成（done 状态）。出现 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Frame
+                            done</span>，表示当前帧的数据传输完成，此时该 buf 可以从 QBuf list 切换到 DQbuf list。</p>
+                    </li></ul>
+                <p class="- topic/p p" data-ofbid="d164034e329__20250121171617">按照 DVP 硬件设计的逻辑，<span class="+ topic/ph ui-d/uicontrol ph uicontrol">HNUM Interrupt</span> 和 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">Frame
+                        done</span> 会间隔着产生，如下所示：</p>
+                <p class="- topic/p p" data-ofbid="d164034e338__20250121171617">
+                    <span class="+ topic/keyword pr-d/parmname keyword parmname">HNUM Interrupt -&gt; Framedone -&gt; HNUM Interrupt -&gt; Frame done
+                        -&gt; HNUM Interrupt -&gt; Frame done...</span>
+                </p>
+                <figure class="- topic/fig fig fignone" id="dvp_key_procedures__id9" data-ofbid="dvp_key_procedures__id9"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="dvp_key_procedures__image_zxt_1kt_2dc" src="../../../reusables/reused-topics/../../images/dvp/dvp_irq_flow.png" alt="dvp_irq_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 6</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">DVP 驱动中 IRQ 处理流程</span></figcaption></figure>
+                <div class="- topic/p p" data-ofbid="d164034e352__20250121171617">以下分别介绍了关键状态的详细处理流程：<ul class="- topic/ul ul" id="dvp_key_procedures__ul_q5w_nqt_2dc" data-ofbid="dvp_key_procedures__ul_q5w_nqt_2dc"><li class="- topic/li li" data-ofbid="d164034e355__20250121171617">“处理 Frame done 事件” 的子流程如下：<figure class="- topic/fig fig fignone" id="dvp_key_procedures__id10" data-ofbid="dvp_key_procedures__id10"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="dvp_key_procedures__image_ayt_1kt_2dc" src="../../../reusables/reused-topics/../../images/dvp/dvp_frame_done_flow.png" alt="dvp_frame_done_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 7</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">DVP 驱动中 Frame done 处理流程</span></figcaption></figure></li><li class="- topic/li li" data-ofbid="d164034e363__20250121171617">
+                            <div class="- topic/p p" data-ofbid="d164034e365__20250121171617">“处理 HNUM Interrupt 事件” 的子流程如下：<figure class="- topic/fig fig fignone" id="dvp_key_procedures__id11" data-ofbid="dvp_key_procedures__id11"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="dvp_key_procedures__image_byt_1kt_2dc" src="../../../reusables/reused-topics/../../images/dvp/dvp_hnum_int_flow.png" alt="dvp_hnum_int_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 8</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">DVP 驱动中 HNUM Interrupt 处理流程</span></figcaption></figure></div>
+                            <ul class="- topic/ul ul simple" id="dvp_key_procedures__ul_cyt_1kt_2dc" data-ofbid="dvp_key_procedures__ul_cyt_1kt_2dc"><li class="- topic/li li" data-ofbid="d164034e375__20250121171617">
+                                    <dl class="- topic/dl dl simple" id="dvp_key_procedures__dl_dyt_1kt_2dc" data-ofbid="dvp_key_procedures__dl_dyt_1kt_2dc"><dt class="- topic/dt dt dlterm" data-ofbid="d164034e379__20250121171617">“异常！DVP 同时使用了两个 Buf”</dt><dd class="- topic/dd dd">
+                                                <p class="- topic/p p" data-ofbid="d164034e383__20250121171617">理论上不应该发生，可认为是一种异常，但因为 DVP 此时正在向 Buf 写数据，所以先不执行
+                                                  stop，软件上报错。</p>
+                                            </dd></dl>
+                                </li><li class="- topic/li li" data-ofbid="d164034e387__20250121171617">
+                                    <dl class="- topic/dl dl simple" id="dvp_key_procedures__dl_eyt_1kt_2dc" data-ofbid="dvp_key_procedures__dl_eyt_1kt_2dc"><dt class="- topic/dt dt dlterm" data-ofbid="d164034e391__20250121171617">“DVP 在使用”</dt><dd class="- topic/dd dd">
+                                                <p class="- topic/p p" data-ofbid="d164034e395__20250121171617">表示 “DVP 控制器硬件正在使用”。</p>
+                                            </dd></dl>
+                                </li></ul>
+                        </li></ul></div>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#dvp_key_procedures__section_gfg_kch_d1c" data-tocid="dvp_key_procedures__section_gfg_kch_d1c">初始化流程</a></div></li><li class="section-item"><div class="section-title"><a href="#dvp_key_procedures__section_ifg_kch_d1c" data-tocid="dvp_key_procedures__section_ifg_kch_d1c">Probe 过程</a></div></li><li class="section-item"><div class="section-title"><a href="#dvp_key_procedures__section_lfg_kch_d1c" data-tocid="dvp_key_procedures__section_lfg_kch_d1c">notifier 初始化过程</a></div></li><li class="section-item"><div class="section-title"><a href="#dvp_key_procedures__section_qfg_kch_d1c" data-tocid="dvp_key_procedures__section_qfg_kch_d1c">Buf 管理</a></div></li><li class="section-item"><div class="section-title"><a href="#dvp_key_procedures__section_wfg_kch_d1c" data-tocid="dvp_key_procedures__section_wfg_kch_d1c">Stream 启动流程</a></div></li><li class="section-item"><div class="section-title"><a href="#dvp_key_procedures__section_vst_xym_4dc" data-tocid="dvp_key_procedures__section_vst_xym_4dc">中断处理流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

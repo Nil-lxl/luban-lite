@@ -1,0 +1,384 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="DM-APP 可以被编译成两种类型：可执行文件 ( .mo ) 和库文件 ( .so )。本质上两者都是 ET_DYN 类型的 ELF 文件，唯一的不同是可执行文件指定了 main 函数作为执行入口，而库文件指定了 0 作为执行入口。 编译和运行可执行文件 .mo 执行本节步骤前，确认打开正确的命令行运行环境： 在 Windows 系统上：双击 win_env.bat 打开命令行运行环境。 在 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/app/dm.html"/><meta name="DC.relation" content="../../../topics/sdk/app/dm_app_dev.html"/><meta name="DC.relation" content="../../../topics/sdk/app/dm_app_gdb_debug.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="dm_app_run_compile"/><title>编译和运行</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="dm_app_run_compile-d5856e1782"/><meta name="wh-source-relpath" content="topics/sdk/app/dm_app_run_compile.dita"/><meta name="wh-out-relpath" content="topics/sdk/app/dm_app_run_compile.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="dm_app_run_compile" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/app/dm.html">动态加载 (DM-APP)</a></div></div></li><li class="active"><div class="topicref" data-id="dm_app_run_compile"><div class="title"><a href="../../../topics/sdk/app/dm_app_run_compile.html">编译和运行</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/app/dm_app_dev.html" title="DM-APP 开发" aria-label="上一主题: DM-APP 开发" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/app/dm_app_gdb_debug.html" title="GDB 调试" aria-label="下一主题: GDB 调试" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="kernel_config-d5856e1758" class="topicref" data-id="kernel_config" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm_kernel_config.html" id="kernel_config-d5856e1758-link">Kernel 配置</a></div></div></li><li role="treeitem"><div data-tocid="dm_app_dev-d5856e1770" class="topicref" data-id="dm_app_dev" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm_app_dev.html" id="dm_app_dev-d5856e1770-link">DM-APP 开发</a></div></div></li><li role="treeitem" class="active"><div data-tocid="dm_app_run_compile-d5856e1782" class="topicref" data-id="dm_app_run_compile" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm_app_run_compile.html" id="dm_app_run_compile-d5856e1782-link">编译和运行</a></div></div></li><li role="treeitem"><div data-tocid="dm_app_gdb_debug-d5856e1794" class="topicref" data-id="dm_app_gdb_debug" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm_app_gdb_debug.html" id="dm_app_gdb_debug-d5856e1794-link">GDB 调试</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/app/dm_app_run_compile.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">编译和运行</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d143151e26__20250121171609">DM-APP 可以被编译成两种类型：可执行文件 (<span class="+ topic/ph sw-d/filepath ph filepath">.mo</span>) 和库文件
+            (<span class="+ topic/ph sw-d/filepath ph filepath">.so</span>)。本质上两者都是 <span class="+ topic/ph sw-d/filepath ph filepath">ET_DYN</span> 类型的 ELF 文件，唯一的不同是可执行文件指定了
+                <span class="+ topic/keyword pr-d/parmname keyword parmname">main</span> 函数作为执行入口，而库文件指定了 <span class="+ topic/keyword pr-d/parmname keyword parmname">0</span> 作为执行入口。</p><section class="- topic/section section" id="dm_app_run_compile__section_xj1_mvm_tdc" data-ofbid="dm_app_run_compile__section_xj1_mvm_tdc"><h2 class="- topic/title title sectiontitle">编译和运行可执行文件<span class="+ topic/ph sw-d/filepath ph filepath">.mo</span></h2>
+            
+            <div class="- topic/p p" data-ofbid="d143151e50__20250121171609">执行本节步骤前，确认打开正确的命令行运行环境：<ul class="- topic/ul ul" id="dm_app_run_compile__ul_zt5_4vm_tdc" data-ofbid="dm_app_run_compile__ul_zt5_4vm_tdc"><li class="- topic/li li" data-ofbid="d143151e53__20250121171609">
+                        <p class="- topic/p p" data-ofbid="d143151e55__20250121171609">在 Windows 系统上：双击 <span class="+ topic/ph sw-d/filepath ph filepath">win_env.bat</span> 打开命令行运行环境。</p>
+                    </li><li class="- topic/li li" data-ofbid="d143151e61__20250121171609">
+                        <p class="- topic/p p" data-ofbid="d143151e63__20250121171609">在 Linux 系统上：直接使用 Shell 命令行即可。</p>
+                    </li></ul><ol class="- topic/ol ol" id="dm_app_run_compile__ul_nf4_2m5_fdc" data-ofbid="dm_app_run_compile__ul_nf4_2m5_fdc"><li class="- topic/li li" data-ofbid="d143151e67__20250121171609">进入 dm-app
+                        根目录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_l5b_zl5_fdc" data-ofbid="dm_app_run_compile__codeblock_l5b_zl5_fdc">cd luban-lite/packages/artinchip/aic-dm-apps</pre></li><li class="- topic/li li" data-ofbid="d143151e71__20250121171609">执行下列命令编译 dm-app
+                        为可执行文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_yhy_b1n_tdc" data-ofbid="dm_app_run_compile__codeblock_yhy_b1n_tdc">scons --app=hello</pre></li><li class="- topic/li li" data-ofbid="d143151e75__20250121171609">查看目标文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_dn2_c1n_tdc" data-ofbid="dm_app_run_compile__codeblock_dn2_c1n_tdc">ls hello/hello.mo</pre></li><li class="- topic/li li" data-ofbid="d143151e79__20250121171609">如有需要，执行下列命令可清理目标文件，否则可跳过此步：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_sgm_c1n_tdc" data-ofbid="dm_app_run_compile__codeblock_sgm_c1n_tdc">scons --app=hello -c</pre></li><li class="- topic/li li" data-ofbid="d143151e83__20250121171609">将生成的 <span class="+ topic/ph sw-d/filepath ph filepath">hello.mo</span> 文件拷贝到单板存储介质的文件系统中：</li><li class="- topic/li li" data-ofbid="d143151e88__20250121171609">在 Shell
+                            下直接运行：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_m5b_zl5_fdc" data-ofbid="dm_app_run_compile__codeblock_m5b_zl5_fdc">/sdcard/hello.mo</pre><div class="- topic/p p" data-ofbid="d143151e92__20250121171609">系统输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_ivy_z1n_tdc" data-ofbid="dm_app_run_compile__codeblock_ivy_z1n_tdc">[AIC-DM-APP] init!              <em class="hl-comment">// DM 初始化函数 module_init()</em>
+[AIC-DM-APP] Hello, world!      <em class="hl-comment">// DM 主函数 main()</em>
+index =&gt; <span class="hl-number">0</span>                      <em class="hl-comment">// my_thread_init() 调用 rt-thread API 创建的线程</em>
+index =&gt; <span class="hl-number">1</span>
+index =&gt; <span class="hl-number">2</span>
+index =&gt; <span class="hl-number">3</span></pre></div></li></ol></div>
+        </section><section class="- topic/section section" id="dm_app_run_compile__section_lbt_kvm_tdc" data-ofbid="dm_app_run_compile__section_lbt_kvm_tdc"><h2 class="- topic/title title sectiontitle">编译和运行库文件 <span class="+ topic/ph sw-d/filepath ph filepath">.so</span></h2>
+            
+            <div class="- topic/p p" data-ofbid="d143151e104__20250121171609">
+                <ol class="- topic/ol ol" id="dm_app_run_compile__ol_b3c_hbn_tdc" data-ofbid="dm_app_run_compile__ol_b3c_hbn_tdc"><li class="- topic/li li" data-ofbid="d143151e107__20250121171609">进入 dm-app
+                        根目录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_c4x_gbn_tdc" data-ofbid="dm_app_run_compile__codeblock_c4x_gbn_tdc">cd luban-lite/packages/artinchip/aic-dm-apps</pre></li><li class="- topic/li li" data-ofbid="d143151e111__20250121171609">执行下列命令编译 dm-app
+                        为可执行文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_d4x_gbn_tdc" data-ofbid="dm_app_run_compile__codeblock_d4x_gbn_tdc">scons --app=hello</pre></li><li class="- topic/li li" data-ofbid="d143151e115__20250121171609">查看目标文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_e4x_gbn_tdc" data-ofbid="dm_app_run_compile__codeblock_e4x_gbn_tdc">ls hello/hello.so</pre></li><li class="- topic/li li" data-ofbid="d143151e119__20250121171609">如有需要，执行下列命令可清理目标文件，否则可跳过此步：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_f4x_gbn_tdc" data-ofbid="dm_app_run_compile__codeblock_f4x_gbn_tdc">scons --app=hello -c</pre></li><li class="- topic/li li" data-ofbid="d143151e123__20250121171609">在 Kernel 中使能 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">test_dm_lib</span>
+                        测试命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_xmn_d45_fdc" data-ofbid="dm_app_run_compile__codeblock_xmn_d45_fdc">Drivers options  ---&gt;
+    Drivers examples  ---&gt;
+        [*] Enable DM Lib test command</pre></li><li class="- topic/li li" data-ofbid="d143151e130__20250121171609">
+                        <p class="- topic/p p" data-ofbid="d143151e132__20250121171609">将生成的 <span class="+ topic/ph sw-d/filepath ph filepath">hello.so</span> 拷贝到单板存储介质的文件系统中。</p>
+                    </li><li class="- topic/li li" data-ofbid="d143151e138__20250121171609">
+                        <p class="- topic/p p" data-ofbid="d143151e140__20250121171609">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_dm_lib</span> 命令来动态加载：</p>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_o5b_zl5_fdc" data-ofbid="dm_app_run_compile__codeblock_o5b_zl5_fdc">test_dm_lib              <em class="hl-comment">// dlopen() 动态加载 /sdcard/hello.so</em></pre>
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_wtr_2pm_tdc" data-ofbid="dm_app_run_compile__codeblock_wtr_2pm_tdc">[AIC-DM-APP] init!              <em class="hl-comment">// DM 初始化函数 module_init()</em>
+index =&gt; <span class="hl-number">0</span>                      <em class="hl-comment">// my_thread_init() 调用 rt-thread API 创建的线程</em>
+index =&gt; <span class="hl-number">1</span>
+index =&gt; <span class="hl-number">2</span></pre>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="dm_app_run_compile__section_s2t_m5m_tdc" data-ofbid="dm_app_run_compile__section_s2t_m5m_tdc"><h2 class="- topic/title title sectiontitle">实例代码注意事项</h2>
+            
+            <p class="- topic/p p" data-ofbid="d143151e159__20250121171609">本节根据实例代码分析，详细书面了使用可执行文件 <span class="+ topic/ph sw-d/filepath ph filepath">hello.mo</span> 和库文件
+                    <span class="+ topic/ph sw-d/filepath ph filepath">hello.so</span> 的源码时需要注意的特殊事项：</p>
+            <ul class="- topic/ul ul" id="dm_app_run_compile__ul_bzg_3fb_pdc" data-ofbid="dm_app_run_compile__ul_bzg_3fb_pdc"><li class="- topic/li li" data-ofbid="d143151e169__20250121171609">
+                    <div class="- topic/div div section" id="dm_app_run_compile__id11"><strong class="+ topic/ph hi-d/b ph b">可执行文件 <span class="+ topic/ph sw-d/filepath ph filepath">.mo</span> 注意事项</strong>
+                        <ol class="- topic/ol ol" id="dm_app_run_compile__ol_img_bn5_fdc" data-ofbid="dm_app_run_compile__ol_img_bn5_fdc"><li class="- topic/li li" data-ofbid="d143151e179__20250121171609">
+                                <div class="- topic/div div section" id="dm_app_run_compile__rt-thread-api"><strong class="+ topic/ph hi-d/b ph b">RT-Thread API
+                                        的调用</strong>
+                                    <div class="- topic/p p" data-ofbid="d143151e185__20250121171609">在 <span class="+ topic/ph sw-d/filepath ph filepath">hello.mo</span> 中，可以调用如
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_thread_create</span>、
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_thread_startup</span> 等 RT-Thread API。这些
+                                        API 默认已经使用 <span class="+ topic/keyword pr-d/apiname keyword apiname">RTM_EXPORT()</span> 声明，可以直接调用
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">luban-lite/packages/artinchip/aic-dm-apps/hello/rtt_api_test.c</span>。例如：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_x1w_245_fdc" data-ofbid="dm_app_run_compile__codeblock_x1w_245_fdc">#include &lt;rtthread.h&gt;
+
+<strong class="hl-keyword">void</strong> my_thread_entry(<strong class="hl-keyword">void</strong>* parameter)
+{
+    <strong class="hl-keyword">int</strong> index = <span class="hl-number">0</span>;
+
+    <strong class="hl-keyword">while</strong> (<span class="hl-number">1</span>)
+    {
+        rt_kprintf(<span class="hl-string">"index =&gt; %d\n"</span>, index ++);
+        rt_thread_delay(RT_TICK_PER_SECOND);
+    }
+}
+
+<strong class="hl-keyword">int</strong> my_thread_init(<strong class="hl-keyword">void</strong>)
+{
+    rt_thread_t tid;
+
+    tid = rt_thread_create(<span class="hl-string">"tMyTask"</span>, my_thread_entry, RT_NULL,
+        <span class="hl-number">2048</span>, <span class="hl-number">20</span>, <span class="hl-number">20</span>);
+
+    <strong class="hl-keyword">if</strong> (tid != RT_NULL)
+        rt_thread_startup(tid);
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}</pre></div></div>
+                            </li><li class="- topic/li li" data-ofbid="d143151e206__20250121171609">
+                                <div class="- topic/div div section" id="dm_app_run_compile__id12"><strong class="+ topic/ph hi-d/b ph b">模块初始化和退出函数</strong>
+                                    <div class="- topic/p p" data-ofbid="d143151e212__20250121171609">如果 dm-app 定义了 <span class="+ topic/keyword pr-d/apiname keyword apiname">module_init()</span> 和
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">module_cleanup()</span>
+                                        函数，它们会在模块初始化和退出时被自动调用
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">luban-lite/packages/artinchip/aic-dm-apps/hello/main.c</span>。例如：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_zjc_g45_fdc" data-ofbid="dm_app_run_compile__codeblock_zjc_g45_fdc"><strong class="hl-keyword">void</strong> module_init(<strong class="hl-keyword">struct</strong> rt_dlmodule *module)
+{
+    printf(<span class="hl-string">"[AIC-DM-APP] init!\n"</span>);
+}
+
+<strong class="hl-keyword">void</strong> module_cleanup(<strong class="hl-keyword">struct</strong> rt_dlmodule *module)
+{
+    printf(<span class="hl-string">"[AIC-DM-APP] exit!\n"</span>);
+}</pre>
+                                    </div><p class="- topic/p p" data-ofbid="d143151e226__20250121171609">用户可以利用该机制来做一些初始化和清理的工作。如果不需要，则无需实现这两个函数。</p></div>
+                            </li><li class="- topic/li li" data-ofbid="d143151e229__20250121171609">
+                                <div class="- topic/div div section" id="dm_app_run_compile__hello-mo">
+                                    <strong class="+ topic/ph hi-d/b ph b">查看 <span class="+ topic/ph sw-d/filepath ph filepath">hello.mo</span> 创建的子线程</strong>
+                                    <p class="- topic/p p" data-ofbid="d143151e239__20250121171609">从代码可知，运行 <span class="+ topic/ph sw-d/filepath ph filepath">hello.mo</span> 后会创建
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">tMyTask</code> 线程，但使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">ps</span> 或者
+                                            <span class="+ topic/keyword sw-d/cmdname keyword cmdname">list_thread</span>
+                                        命令无法看到该线程。这是因为该方式下启动的线程会被链接到模块本身的进程链表
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">module-&gt;object_list</code> ，而上述命令只能查看全局链表
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">information-&gt;object_list</code>
+                                        中的线程。</p><p class="- topic/p p" data-ofbid="d143151e260__20250121171609">目前模块本身的进程链表
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">module-&gt;object_list</code>
+                                        不支持命令查看，在模块退出时会停止掉 <code class="+ topic/ph pr-d/codeph ph codeph">module-&gt;object_list</code>
+                                        中模块启动的所有子进程。</p>
+                                </div>
+                            </li><li class="- topic/li li" data-ofbid="d143151e270__20250121171609">
+                                <div class="- topic/div div section" id="dm_app_run_compile__id13">
+                                    <strong class="+ topic/ph hi-d/b ph b">后台进程保活</strong>
+                                    <div class="- topic/p p" data-ofbid="d143151e277__20250121171609">当 <span class="+ topic/ph sw-d/filepath ph filepath">hello.mo</span> 的 <span class="+ topic/keyword pr-d/apiname keyword apiname">main()</span>
+                                            函数返回后，系统马上会执行模块退出动作，<span class="+ topic/keyword pr-d/apiname keyword apiname">main()</span>
+                                        函数创建的所有子进程也会被全部清理。为了让模块的子进程作为后台进程继续运行，可以为
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">hello.mo</span> 的
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">main()</span> 函数定义一个特殊返回值
+                                            <span class="+ topic/keyword pr-d/parmname keyword parmname">RT_DLMODULE_DEAMON</span>。如果返回该值，则
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">main()</span> 函数返回后系统不会执行模块退出动作。例如
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">luban-lite/packages/artinchip/aic-dm-apps/hello/main.c</span>：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_d23_h45_fdc" data-ofbid="dm_app_run_compile__codeblock_d23_h45_fdc">#<span class="hl-directive">define</span> RT_API_TEST
+
+<strong class="hl-keyword">int</strong> main(<strong class="hl-keyword">int</strong> argc, <strong class="hl-keyword">char</strong> *argv[])
+{
+    printf(<span class="hl-string">"[AIC-DM-APP] Hello, world!\n"</span>);
+
+#ifdef RT_API_TEST
+    my_thread_init();
+    <strong class="hl-keyword">return</strong> RT_DLMODULE_DEAMON;
+#endif
+
+    <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
+}</pre></div></div>
+                            </li></ol></div>
+                </li><li class="- topic/li li" data-ofbid="d143151e308__20250121171609">
+                    <div class="- topic/div div section" id="dm_app_run_compile__id14">
+                        <strong class="+ topic/ph hi-d/b ph b">库文件 <span class="+ topic/ph sw-d/filepath ph filepath">.so</span></strong>
+                        <ol class="- topic/ol ol" id="dm_app_run_compile__ol_mjz_bn5_fdc" data-ofbid="dm_app_run_compile__ol_mjz_bn5_fdc"><li class="- topic/li li" data-ofbid="d143151e318__20250121171609">
+                                <div class="- topic/div div section" id="dm_app_run_compile__dlopen-dlsym">
+                                    <strong class="+ topic/ph hi-d/b ph b"><span class="+ topic/keyword pr-d/apiname keyword apiname">dlopen()</span>、<span class="+ topic/keyword pr-d/apiname keyword apiname">dlsym()</span> 实例</strong>
+                                    <div class="- topic/p p" data-ofbid="d143151e330__20250121171609"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_dm_lib</span> 命令的基本原理是使用
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">dlopen()</span> 函数动态加载
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">hello.so</span> 到系统内存，再使用
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">dlsym()</span> 函数查找到
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">hello.so</span> 中的
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">my_thread_init()</span> 函数并调用
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">luban-lite/bsp/examples/test-dm-lib/test_dm_lib.c</span>。例如：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="dm_app_run_compile__codeblock_dtn_j45_fdc" data-ofbid="dm_app_run_compile__codeblock_dtn_j45_fdc">#<span class="hl-directive">define</span> DM_LIB_PATH <span class="hl-string">"/sdcard/hello.so"</span>
+#<span class="hl-directive">define</span> DM_LIB_FUNC <span class="hl-string">"my_thread_init"</span>
+#<span class="hl-directive">define</span> DEAMON_THREAD
+
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> cmd_test_dm_lib(<strong class="hl-keyword">int</strong> argc, <strong class="hl-keyword">char</strong> **argv)
+{
+    <strong class="hl-keyword">struct</strong> rt_dlmodule *module = NULL;
+    <strong class="hl-keyword">int</strong> (*func)(<strong class="hl-keyword">void</strong>) = NULL;
+
+    module = dlopen(DM_LIB_PATH, <span class="hl-number">0</span>);
+    <strong class="hl-keyword">if</strong> (!module) {
+        printf(<span class="hl-string">"dlopen %s fail!\n"</span>, DM_LIB_PATH);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    func = dlsym(module, DM_LIB_FUNC);
+    <strong class="hl-keyword">if</strong> (!func) {
+        printf(<span class="hl-string">"dlsym %s fail!\n"</span>, DM_LIB_FUNC);
+        <strong class="hl-keyword">return</strong>;
+    }
+
+    func();
+
+#ifndef DEAMON_THREAD
+    dlclose(module);
+#endif
+}</pre></div></div>
+                            </li><li class="- topic/li li" data-ofbid="d143151e356__20250121171609">
+                                <div class="- topic/div div section" id="dm_app_run_compile__hello-so">
+                                    <strong class="+ topic/ph hi-d/b ph b">查看 <span class="+ topic/ph sw-d/filepath ph filepath">hello.so</span> 创建的子线程</strong>
+                                    <p class="- topic/p p" data-ofbid="d143151e366__20250121171609">通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">test_dm_lib</span> 命令动态加载
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">hello.so</span> 并调用
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">my_thread_init()</span> 函数，同样会会创建
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">tMyTask</code> 线程。上述示例中，使用
+                                            <span class="+ topic/keyword sw-d/cmdname keyword cmdname">ps</span> 或者 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">list_thread</span>
+                                        命令可以看到该线程，是因为系统通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">dlmodule_self()</span>
+                                        判断当前进程非模块执行进程，对应的进程链表就加入到了全局链表
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">information-&gt;object_list</code>
+                                    中。</p></div>
+                            </li><li class="- topic/li li" data-ofbid="d143151e394__20250121171609">
+                                <div class="- topic/div div section" id="dm_app_run_compile__id15"><strong class="+ topic/ph hi-d/b ph b">后台进程保活</strong>
+                                    <p class="- topic/p p" data-ofbid="d143151e400__20250121171609">当调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">my_thread_init()</span> 函数返回后，常规情况是执行
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">dlclose(module)</span> 来清理动态加载的模块。如果
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">my_thread_init()</span>
+                                        函数创建的所有子进程希望作为后台进程运行，则不能调用
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">dlclose(module)</span> 来卸载动态库。因为一旦调用
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">dlclose(module)</span>，动态库就会被卸载，而此时后台进程可能仍在运行并需要访问动态库中的数据。一旦有新的内存分配就会覆盖原动态模块的数据，触发
+                                        CPU 异常。 </p><p class="- topic/p p" data-ofbid="d143151e417__20250121171609">为了避免这种情况，可以在不调用
+                                            <span class="+ topic/keyword pr-d/apiname keyword apiname">dlclose(module)</span>
+                                        的情况下让程序持续运行，或者在程序结束时手动清理动态库占用的资源。</p></div>
+                            </li></ol>
+                    </div>
+                </li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#dm_app_run_compile__section_xj1_mvm_tdc" data-tocid="dm_app_run_compile__section_xj1_mvm_tdc">编译和运行可执行文件<span class="+ topic/ph sw-d/filepath ph filepath">.mo</span></a></div></li><li class="section-item"><div class="section-title"><a href="#dm_app_run_compile__section_lbt_kvm_tdc" data-tocid="dm_app_run_compile__section_lbt_kvm_tdc">编译和运行库文件 <span class="+ topic/ph sw-d/filepath ph filepath">.so</span></a></div></li><li class="section-item"><div class="section-title"><a href="#dm_app_run_compile__section_s2t_m5m_tdc" data-tocid="dm_app_run_compile__section_s2t_m5m_tdc">实例代码注意事项</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

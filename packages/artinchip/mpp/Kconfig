@@ -1,0 +1,94 @@
+menuconfig LPKG_MPP
+    bool "aic-mpp"
+    default y
+
+config AIC_MPP_PLAYER_INTERFACE
+    bool "Enable player interface and demo"
+    default n
+    depends on LPKG_MPP
+    select LPKG_USING_MINIMP3
+    select AIC_AUDIO_DRV
+    select RT_USING_PTHREADS
+
+config AIC_MPP_PLAYER_VE_USE_FILL_FB
+    bool "Enable player ve use fill fb"
+    default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+
+config AIC_MPP_PLAYER_AUDIO_RENDER_SHARE_TEST
+    bool "Enable player audio render share test"
+    default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+
+config AIC_MPP_AVI_DEMUX
+    bool "Enable avi demux"
+    default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+
+config AIC_MPP_MKV_DEMUX
+	bool "Enable mkv demuxer"
+	default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+
+config AIC_MPP_TS_DEMUX
+	bool "Enable ts demuxer"
+	default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+
+config AIC_MPP_FLV_DEMUX
+	bool "Enable flv demuxer"
+	default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+
+config AIC_MPP_FLAC_DEMUX
+    bool "Enable flac demux"
+    default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE && LPKG_USING_LIBFLAC
+
+config AIC_MPP_WMA_DEMUX
+    bool "Enable wma demux"
+    default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE && LPKG_USING_FFMPEG
+
+config AIC_MPP_RECORDER_INTERFACE
+    bool "Enable recorder interface and demo"
+    default n
+    depends on LPKG_MPP
+    select LPKG_USING_MAD
+    select AIC_AUDIO_DRV
+    select RT_USING_PTHREADS
+
+config AIC_MPP_VIN
+    bool "Enable Video Input interface"
+    default n
+    depends on LPKG_MPP
+
+config AIC_MPP_VIN_DEV
+    bool "Enable Video Input interface of DevMode"
+    default n
+    depends on LPKG_MPP && !AIC_MPP_VIN && AIC_USING_DE
+
+config AIC_MPP_VIN_BUF_SIZE
+    int "Size of Video Input buffer"
+    default 1843264
+    depends on LPKG_MPP && (AIC_MPP_VIN || AIC_MPP_VIN_DEV)
+
+config AIC_MPP_FB_TEST
+    bool "Install MPP FB test programs"
+    default n
+    depends on LPKG_MPP
+
+config AIC_STARTUP_UI_SHOW
+    bool "Show Startup Ui"
+    default n
+    depends on LPKG_MPP
+
+config AIC_MPP_AICP_DEC_ENABLE
+    bool "enable aic picture decoder"
+    default n
+    depends on LPKG_MPP
+
+config AIC_MPP_H264_DEC_ENABLE
+    bool "enable H.264 decoder"
+    default y
+    depends on LPKG_MPP && AIC_VE_DRV_V10

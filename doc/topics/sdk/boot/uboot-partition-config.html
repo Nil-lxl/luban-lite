@@ -1,0 +1,310 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节描述不同存储介质的默认分区方案，仅涉及启动相关的分区。应用相关的分区不同的方案会有不同的选择，此节未做描述。 在 ArtInChip 的方案中： env.txt 可以配置分区表信息，包括各分区在存储介质中的位置和大小。 env.txt 通常位于 target/&lt;ic&gt;/common/ 。 各项目对应的 image_cfg.json 中设置分区要烧录的内容。 MMC 分区配置 MMC 包括 SD ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-05"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_l2d_xk3_pzb"/><meta name="DC.language" content="zh-CN"/><title>配置启动分区</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/boot/uboot-partition-config.dita"/><meta name="wh-out-relpath" content="topics/sdk/boot/uboot-partition-config.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="concept_l2d_xk3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/boot/uboot-partition-config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">配置启动分区</h1><div class="date inPage">5 Dec 2024</div><div style="color: gray;">
+                    Read time: 5 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d254450e22__20250121171707">本节描述不同存储介质的默认分区方案，仅涉及启动相关的分区。应用相关的分区不同的方案会有不同的选择，此节未做描述。</p><div class="- topic/p p" data-ofbid="d254450e24__20250121171707">在 ArtInChip 的方案中：<ul class="- topic/ul ul" id="concept_l2d_xk3_pzb__ul_mjk_4t5_4dc" data-ofbid="concept_l2d_xk3_pzb__ul_mjk_4t5_4dc"><li class="- topic/li li" data-ofbid="d254450e27__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e29__20250121171707"><span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span> 可以配置分区表信息，包括各分区在存储介质中的位置和大小。</p>
+                    <p class="- topic/p p" data-ofbid="d254450e34__20250121171707"><span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span> 通常位于
+                        <span class="+ topic/ph sw-d/filepath ph filepath">target/&lt;ic&gt;/common/</span>。</p>
+                </li><li class="- topic/li li" data-ofbid="d254450e42__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e44__20250121171707">各项目对应的 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 中设置分区要烧录的内容。</p>
+                </li></ul></div><section class="- topic/section section" id="concept_l2d_xk3_pzb__section_h3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__section_h3d_pch_bzb"><h2 class="- topic/title title sectiontitle">MMC 分区配置</h2>
+            
+            <p class="- topic/p p" data-ofbid="d254450e55__20250121171707">MMC 包括 SD Card 和 eMMC。对于 eMMC，ArtInChip 方案中不支持从 Boot Partition 启动， 只支持从 UDA (User
+                Data Area) 启动，因此具体的分区方式与 SD Card 一致，统一采用 GPT 分区。</p>
+            <ul class="- topic/ul ul" id="concept_l2d_xk3_pzb__ul_ygn_b55_4dc" data-ofbid="concept_l2d_xk3_pzb__ul_ygn_b55_4dc"><li class="- topic/li li" data-ofbid="d254450e59__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e61__20250121171707"><strong class="+ topic/ph hi-d/b ph b">目标平台上的 GPT 分区</strong></p>
+                    <div class="- topic/p p" data-ofbid="d254450e65__20250121171707">在项目的<span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 中配置具体分区。使用
+                            <span class="+ topic/ph sw-d/filepath ph filepath">mk_image.py</span> 生成镜像过程中，相关分区信息会被添加到
+                            <span class="+ topic/ph sw-d/filepath ph filepath">env.bin</span> 中，以 <span class="+ topic/keyword pr-d/parmname keyword parmname">GPT=</span>
+                        格式存储在环境变量中，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_i3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_i3d_pch_bzb">GPT=size1@offset1(partition name1),size2@offset2(partition name2),-(last partition)</pre></div>
+                    <div class="- topic/p p" data-ofbid="d254450e82__20250121171707">其中<ul class="- topic/ul ul" id="concept_l2d_xk3_pzb__ul_y51_f55_4dc" data-ofbid="concept_l2d_xk3_pzb__ul_y51_f55_4dc"><li class="- topic/li li" data-ofbid="d254450e85__20250121171707">size 是分区的大小。</li><li class="- topic/li li" data-ofbid="d254450e87__20250121171707">
+                                <p class="- topic/p p" data-ofbid="d254450e89__20250121171707">offset 是分区的开始位置，相对 UDA 的开始位置，单位为字节。</p>
+                                <p class="- topic/p p" data-ofbid="d254450e92__20250121171707">如果是最后一个分区，可以不设置 <span class="+ topic/keyword pr-d/parmname keyword parmname">size@offset</span>，使用
+                                    <span class="+ topic/keyword pr-d/parmname keyword parmname">-</span> 代替，表示剩余的所有空间都分配给该分区。</p>
+                            </li></ul></div>
+                    <div class="- topic/p p" data-ofbid="d254450e102__20250121171707">例如 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+                        中的分区配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_j3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_j3d_pch_bzb"><span class="hl-string">"mmc"</span>: { <em class="hl-comment">// Media type</em>
+    <span class="hl-string">"size"</span>: <span class="hl-string">"8G"</span>, <em class="hl-comment">// Size of SD/eMMC</em>
+    <span class="hl-string">"partitions"</span>: { <em class="hl-comment">// Partition table apply to device</em>
+            <span class="hl-string">"spl_1"</span>:  { <span class="hl-string">"offset"</span>: <span class="hl-string">"0x4400"</span>, <span class="hl-string">"size"</span>: <span class="hl-string">"128k"</span> },
+            <span class="hl-string">"spl_2"</span>:  { <span class="hl-string">"size"</span>: <span class="hl-string">"367k"</span> },
+            <span class="hl-string">"uboot"</span>:  { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+            <span class="hl-string">"env"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"512k"</span> },
+            <span class="hl-string">"kernel"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"16m"</span> },
+            <span class="hl-string">"rootfs"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"64m"</span> },
+            <span class="hl-string">"user"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span> },
+    },
+},</pre></div>
+                    <div class="- topic/p p" data-ofbid="d254450e110__20250121171707">环境变量中保存的格式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_k3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_k3d_pch_bzb">GPT=<span class="hl-number">128</span>k@<span class="hl-number">0x4400</span>(spl_<span class="hl-number">1</span>),<span class="hl-number">367</span>k(spl_<span class="hl-number">2</span>),<span class="hl-number">1</span>m(uboot),<span class="hl-number">512</span>k(env),<span class="hl-number">16</span>m(kernel),<span class="hl-number">64</span>m(rootfs),-(user)</pre></div>
+                    <div class="- topic/p p" data-ofbid="d254450e116__20250121171707">不设置
+                        offset，表示各分区相连，程序自动计算该分区的开始位置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_l3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_l3d_pch_bzb">GPT=<span class="hl-number">128</span>k(spl_<span class="hl-number">1</span>),<span class="hl-number">367</span>k(spl_<span class="hl-number">2</span>),<span class="hl-number">1</span>m(uboot),<span class="hl-number">512</span>k(env),<span class="hl-number">512</span>k(bootui),<span class="hl-number">512</span>k(dtb),
+    <span class="hl-number">16</span>m(kernel),<span class="hl-number">64</span>m(rootfs),-(user)</pre></div>
+                    <div class="- topic/note note note note_note" id="concept_l2d_xk3_pzb__note_fwq_44r_c1c" data-ofbid="concept_l2d_xk3_pzb__note_fwq_44r_c1c"><span class="note__title">注：</span> 
+                        <p class="- topic/p p" data-ofbid="d254450e123__20250121171707">UDA 的前面 34 个 block 被用作 GPT Header，无论第一个分区是否设置 offset，程序在做分区时都会预留 34 个
+                            block 给 GPT Header。即：128k@0x4400(spl_1) 和 128k(spl_1) 是一样的。</p>
+                    </div>
+                    <div class="table-container"><table class="- topic/table table frame-all" id="concept_l2d_xk3_pzb__table_m3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__table_m3d_pch_bzb" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">基本分区</span></caption><colgroup><col style="width:18.679549114331724%"/><col style="width:18.357487922705314%"/><col style="width:16.10305958132045%"/><col style="width:46.85990338164252%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">分区</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">大小</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">-</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">spl_1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">128KB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">分区开始位置固定，从 0x4400 开始，大小固定</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">spl_2</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">≥ 128KB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">分区开始位置固定，镜像备份，可不要</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">uboot</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">大小根据实际项目需要配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">env</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">≥16KB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">保存环境变量</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">dtb</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">保存 kernel dtb，大小根据实际情况分配</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">kernel</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">大小根据实际项目需要配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">rootfs</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">Ext4</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">大小根据实际项目需要配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__1">user</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__3">Ext4</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_m3d_pch_bzb__entry__4">大小根据实际项目需要配置</td></tr></tbody></table></div>
+                    <p class="- topic/p p" data-ofbid="d254450e219__20250121171707">如果 Kernel 使用 FIT Image 格式，上述分区中的 dtb 可以省略。 user 分区以及是否有更多的应用分区，由具体项目决定。</p>
+                </li><li class="- topic/li li" data-ofbid="d254450e222__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e224__20250121171707"><strong class="+ topic/ph hi-d/b ph b">SD 量产卡的 GPT 分区</strong></p>
+                    <div class="- topic/p p" data-ofbid="d254450e228__20250121171707">量产卡用在工厂生产过程中，通过运行量产卡中的升级程序，对目标平台进行量产升级。 具体的分区设置在 <span class="+ topic/ph sw-d/filepath ph filepath">env.txt</span> 中的
+                        <span class="+ topic/keyword pr-d/parmname keyword parmname">burn_mmc=</span>
+                        配置。例如：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_n3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_n3d_pch_bzb">burn_mmc=<span class="hl-number">128</span>k@<span class="hl-number">0x4400</span>(spl_<span class="hl-number">1</span>),<span class="hl-number">367</span>k(spl_<span class="hl-number">2</span>),<span class="hl-number">1</span>m(uboot),<span class="hl-number">512</span>k(env),<span class="hl-number">512</span>k(bootui),-(image)</pre></div>
+                    <div class="table-container"><table class="- topic/table table frame-all" id="concept_l2d_xk3_pzb__table_o3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__table_o3d_pch_bzb" data-cols="4"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:18.679549114331724%"/><col style="width:18.357487922705314%"/><col style="width:16.10305958132045%"/><col style="width:46.85990338164252%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__1">分区</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__2">大小</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__3">-</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__4">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__1">spl_1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__2">128KB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__4">用于升级的 SPL</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__1">spl_2</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__2">≥ 128KB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__4">用于升级的 SPL 备份</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__1">uboot</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__4">用于升级的 U-Boot</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__1">env</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__2">≥ 16KB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__4">保存环境变量</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__1">data</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_o3d_pch_bzb__entry__4">保存用于烧录固件镜像文件</td></tr></tbody></table></div>
+                    <p class="- topic/p p" data-ofbid="d254450e303__20250121171707">目标平台在启动到 U-Boot 时，进入量产模式。U-Boot 量产程序从 <code class="+ topic/ph pr-d/codeph ph codeph">data</code>
+                        分区读取固件数据，并且烧录到目标存储介质。</p>
+                </li><li class="- topic/li li" data-ofbid="d254450e309__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e311__20250121171707"><strong class="+ topic/ph hi-d/b ph b">SPL 分区的特别说明</strong></p>
+                    <div class="- topic/p p" data-ofbid="d254450e315__20250121171707">MMC GPT 分区时，BROM 启动过程中，固定从两个地方读取 SPL 程序的备份。 首先尝试读取 SPL 备份 1，如果验证失败，再尝试读取 SPL
+                        备份 2。其中备份 2 是可选的。<div class="table-container"><table class="- topic/table table frame-all" id="concept_l2d_xk3_pzb__table_p3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__table_p3d_pch_bzb" data-cols="3"><caption></caption><colgroup><col style="width:33.33333333333333%"/><col style="width:33.33333333333333%"/><col style="width:33.33333333333333%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__1">分区</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__2">大小/位置</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__3">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__1">GPT HEADER</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__2">17KB(LBA0~LBA33)</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__3">预留给 GPT Header</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__1">备份 1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__2">128KB(LBA34~LBA289)</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__3">必须</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__1">备份 2</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__2">128KB(LBA290~LBA545)</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_p3d_pch_bzb__entry__3">可选</td></tr></tbody></table></div></div>
+                </li></ul>
+        </section><section class="- topic/section section" id="concept_l2d_xk3_pzb__section_q3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__section_q3d_pch_bzb"><h2 class="- topic/title title sectiontitle">SPI NAND 分区配置</h2>
+            
+            <p class="- topic/p p" data-ofbid="d254450e359__20250121171707">具体的分区在项目的 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 中配置，<span class="+ topic/ph sw-d/filepath ph filepath">mk_image.py</span>
+                生成镜像过程中，相关分区信息会被添加到 <span class="+ topic/ph sw-d/filepath ph filepath">env.bin</span>， 以 <span class="+ topic/keyword pr-d/parmname keyword parmname">MTD=</span> 和
+                <span class="+ topic/keyword pr-d/parmname keyword parmname">UBI=</span> 格式存储在环境变量中：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_r3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_r3d_pch_bzb">MTD=size1@offset1(partition name1),size2@offset2(partition name2),-(last partition)</pre>
+            <p class="- topic/p p" data-ofbid="d254450e380__20250121171707">其中 size 是分区的大小，offset 是分区的开始位置（相对 UDA 的开始位置，单位为字节）。 如果是最后一个分区，可以不设置
+                <span class="+ topic/keyword pr-d/parmname keyword parmname">size@offset</span>，使用 <span class="+ topic/keyword pr-d/parmname keyword parmname">-</span> 代替，表示剩余的所有空间都分配给该分区。</p>
+            <p class="- topic/p p" data-ofbid="d254450e389__20250121171707">例如: <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 中的分区配置：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_s3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_s3d_pch_bzb"><span class="hl-string">"spi-nand"</span>: { <em class="hl-comment">// Device, The name should be the same with string in image:info:media:type</em>
+    <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
+    <span class="hl-string">"partitions"</span>: {
+            <span class="hl-string">"spl"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+            <span class="hl-string">"uboot"</span>:  { <span class="hl-string">"size"</span>: <span class="hl-string">"1m"</span> },
+            <span class="hl-string">"env"</span>:    { <span class="hl-string">"size"</span>: <span class="hl-string">"256k"</span> },
+            <span class="hl-string">"kernel"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"12m"</span> },
+            <span class="hl-string">"ubiroot"</span>: {
+                    <span class="hl-string">"size"</span>: <span class="hl-string">"32m"</span>,
+                    <span class="hl-string">"ubi"</span>: { <em class="hl-comment">// Volume in UBI device</em>
+                            <span class="hl-string">"rootfs"</span>: { <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span> },
+                    },
+            },
+            <span class="hl-string">"ubisystem"</span>: {
+                    <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span>,
+                    <span class="hl-string">"ubi"</span>: { <em class="hl-comment">// Volume in UBI device</em>
+                            <span class="hl-string">"user"</span>:   { <span class="hl-string">"size"</span>: <span class="hl-string">"-"</span> },
+                    },
+            },
+    }
+},</pre>
+            <p class="- topic/p p" data-ofbid="d254450e399__20250121171707">生成的环境变量内容：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_t3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_t3d_pch_bzb">MTD=spi1.<span class="hl-number">0</span>:<span class="hl-number">1</span>m(spl),<span class="hl-number">1</span>m(uboot),<span class="hl-number">256</span>k(env),<span class="hl-number">12</span>m(kernel),<span class="hl-number">32</span>m(ubiroot),-(ubisystem)
+UBI=ubiroot:-(rootfs);ubisystem:-(user)</pre>
+            <p class="- topic/p p" data-ofbid="d254450e405__20250121171707">前面 <span class="+ topic/keyword pr-d/parmname keyword parmname">MTD=</span> 描述 MTD 分区的配置，后面 <span class="+ topic/keyword pr-d/parmname keyword parmname">UBI=</span> 描述被用作 UBI 的 MTD 分区的
+                UBI 卷分配。</p>
+            <div class="- topic/note note note note_note" id="concept_l2d_xk3_pzb__note_lk4_yd3_p1c" data-ofbid="concept_l2d_xk3_pzb__note_lk4_yd3_p1c"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d254450e416__20250121171707">mtdids 与使用的 spi 接口有关系。当使用 spi0 接口时，为 spi0.0。当使用 spi1 接口时，为 spi1.0</p>
+            </div>
+            <p class="- topic/p p" data-ofbid="d254450e420__20250121171707">Boot 阶段相关的几个分区有两种备选方案。</p>
+            <p class="- topic/p p" data-ofbid="d254450e424__20250121171707"><strong class="+ topic/ph hi-d/b ph b">方案一：</strong> MTD 分区</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="concept_l2d_xk3_pzb__table_u3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__table_u3d_pch_bzb" data-cols="4"><caption></caption><colgroup><col style="width:18.726591760299627%"/><col style="width:19.101123595505616%"/><col style="width:19.288389513108616%"/><col style="width:42.88389513108614%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">分区</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">大小</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">-</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">spl</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">1MB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">保存 SPL 备份的区域</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">uboot</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">2MB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">保存 U-Boot，需要预留空闲备用块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">env</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">1 Block</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">保存环境变量</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">envbak</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">1 Block</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">保存环境变量备份，可不用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">dtb</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">1 Block</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">保存 kernel dtb</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">kernel</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">保存 kernel，需要预留空闲备用块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">rootfs</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">UBIFS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__1">user</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__3">UBIFS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_u3d_pch_bzb__entry__4">-</td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d254450e519__20250121171707"><strong class="+ topic/ph hi-d/b ph b">方案二：</strong> UBI 分区</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="concept_l2d_xk3_pzb__table_ytp_tch_bzb" data-ofbid="concept_l2d_xk3_pzb__table_ytp_tch_bzb" data-cols="4"><caption></caption><colgroup><col style="width:18.726591760299627%"/><col style="width:19.101123595505616%"/><col style="width:19.288389513108616%"/><col style="width:42.88389513108614%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">分区</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">大小</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">-</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">spl</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">1MB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">保存 SPL 备份的区域</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">uboot</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">2MB</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">保存 U-Boot，需要预留空闲备用块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">env</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">1 Block</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">保存环境变量</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">envbak</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">1 Block</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">RAW</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">保存环境变量备份，可不用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">dtb</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">1 Block</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">UBI</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">保存 kernel dtb</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">kernel</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">UBI</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">保存 kernel</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">rootfs</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">UBIFS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__1">user</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__2">.</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__3">UBIFS</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__table_ytp_tch_bzb__entry__4">-</td></tr></tbody></table></div>
+            <p class="- topic/p p" data-ofbid="d254450e614__20250121171707">上述两个方案中，差别在于 dtb/kernel 部分是否使用 UBI 分区。由于使用 UBI 分区在启动速度上比使用 MTD 分区稍微慢一点，因此后续如果没有其他原因，
+                优先使用方案一的分区方式，即启动阶段读取的数据统一使用 MTD 分区保存。</p>
+            <p class="- topic/p p" data-ofbid="d254450e617__20250121171707"><strong class="+ topic/ph hi-d/b ph b">SPL 分区的特别说明</strong></p>
+            <p class="- topic/p p" data-ofbid="d254450e622__20250121171707">由于 NAND 可能会有坏块，为了尽可能的支持有坏块的 NAND 器件，ArtInChip 平台对 SPL 备份的存储方案做了一些特殊处理。</p>
+            <ul class="- topic/ul ul" id="concept_l2d_xk3_pzb__ul_w3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__ul_w3d_pch_bzb"><li class="- topic/li li" data-ofbid="d254450e626__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e628__20250121171707">首先在 NAND 存储设备中，烧录时 SPL 会保存 4 个备份，每个备份占用一个物理擦除块(PEB)。 因此在 NAND 中，共有 4 个 PEB 用来保存
+                        SPL。</p>
+                </li><li class="- topic/li li" data-ofbid="d254450e631__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e633__20250121171707">保存 SPL 的 PEB 是从一个固定的候选 PEB 列表中选取的，具体可参考表 3.20 。 因此可能分布在 NAND 器件的不同位置。 由于 NAND
+                        厂商保证前面几个块在出厂时不是坏块，因此大概率前面几个块会被选作 SPL 存储块。 因此 ArtInChip 默认将前面 1MB 分为 SPL
+                        分区。</p>
+                </li><li class="- topic/li li" data-ofbid="d254450e636__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e638__20250121171707">PEB 中保存的 SPL 格式，不是原始的 SPL 数据。在烧录时，SPL 数据被分切为固定 2KB 大小的数据切片，
+                        按照页(Page)进行保存，并且使用 Page Table 对这些数据切片进行管理。</p>
+                </li><li class="- topic/li li" data-ofbid="d254450e641__20250121171707">
+                    <p class="- topic/p p" data-ofbid="d254450e643__20250121171707">被选中用于保存 SPL 的 PEB，会被标记为保留块（坏块）。因此在烧录 SPL 之后， NAND 上会出现几个被标记了的坏块，这是正常现象。</p>
+                </li></ul>
+            <div class="table-container"><table class="- topic/table table frame-all" id="concept_l2d_xk3_pzb__id2" data-ofbid="concept_l2d_xk3_pzb__id2" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">候选启动块列表</span></caption><colgroup><col style="width:16.773162939297126%"/><col style="width:15.974440894568689%"/><col style="width:67.25239616613419%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__id2__entry__1">优先顺序</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__id2__entry__2">Block ID</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__id2__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">0</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">启动分区内，优先使用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">2</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">启动分区内，优先使用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">3</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">2</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">启动分区内，优先使用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">4</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">3</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">启动分区内，优先使用</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">5</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">202</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">6</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">32</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">7</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">312</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">8</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">296</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">9</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">142</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">10</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">136</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">11</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">392</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">12</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">526</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">13</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">452</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">14</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">708</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">15</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">810</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">16</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">552</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">17</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">906</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__1">18</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__2">674</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id2__entry__3">如果是好块，则作为启动块。写入启动镜像后标记为坏块</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="concept_l2d_xk3_pzb__section_x3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__section_x3d_pch_bzb"><h2 class="- topic/title title sectiontitle">SPI NOR 分区配置</h2>
+            
+            <p class="- topic/p p" data-ofbid="d254450e796__20250121171707">具体的分区在项目的 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 中配置，mk_image.py 生成镜像过程中，相关分区信息会被添加到
+                env.bin， 以 <span class="+ topic/keyword pr-d/parmname keyword parmname">MTD=</span> 格式存储在环境变量中：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_y3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_y3d_pch_bzb">MTD=size1@offset1(partition name1),size2@offset2(partition name2),-(last partition)</pre>
+            <p class="- topic/p p" data-ofbid="d254450e808__20250121171707">其中 size 是分区的大小，offset 是分区的开始位置（相对 UDA 的开始位置，单位为字节）。 如果是最后一个分区，可以不设置
+                <span class="+ topic/keyword pr-d/parmname keyword parmname">size@offset</span>，使用 <span class="+ topic/keyword pr-d/parmname keyword parmname">-</span> 代替，表示剩余的所有空间都分配给该分区。</p>
+            <p class="- topic/p p" data-ofbid="d254450e817__20250121171707">例如:</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="concept_l2d_xk3_pzb__codeblock_z3d_pch_bzb" data-ofbid="concept_l2d_xk3_pzb__codeblock_z3d_pch_bzb">MTD=spi0.<span class="hl-number">0</span>:<span class="hl-number">128</span>k(spl),<span class="hl-number">512</span>k(uboot),<span class="hl-number">64</span>k(env),<span class="hl-number">64</span>k(envbak),<span class="hl-number">128</span>k(bootui),<span class="hl-number">128</span>k(dtb),
+    <span class="hl-number">5</span>m(kernel),<span class="hl-number">8</span>m(rootfs),-(user)</pre>
+            <div class="- topic/note note note note_note" id="concept_l2d_xk3_pzb__note_nzf_y4r_c1c" data-ofbid="concept_l2d_xk3_pzb__note_nzf_y4r_c1c"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d254450e826__20250121171707">mtdids 与使用的 spi 接口有关系。当使用 spi0 接口时，为 spi0.0。当使用 spi1 接口时，为 spi1.0</p>
+            </div>
+            <p class="- topic/p p" data-ofbid="d254450e830__20250121171707"><strong class="+ topic/ph hi-d/b ph b">SPL 分区的特别说明</strong></p>
+            <p class="- topic/p p" data-ofbid="d254450e834__20250121171707">NOR 分区时，BROM 启动过程中，固定从两个地方读取 SPL 程序的备份。 首先尝试读取 SPL 备份 1，如果验证失败，再尝试读取 SPL
+                备份 2。其中备份 2 是可选的。</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="concept_l2d_xk3_pzb__id3" data-ofbid="concept_l2d_xk3_pzb__id3" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">普通 NOR 的启动分区</span></caption><colgroup><col style="width:33.33333333333333%"/><col style="width:33.33333333333333%"/><col style="width:33.33333333333333%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__id3__entry__1">分区</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__id3__entry__2">大小/位置</th><th class="- topic/entry entry colsep-0 rowsep-0" id="concept_l2d_xk3_pzb__id3__entry__3">备注</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id3__entry__1">备份 1</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id3__entry__2">128KB(0~128KB)</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id3__entry__3">必须</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id3__entry__1">备份 2</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id3__entry__2">128KB(128KB~256KB)</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="concept_l2d_xk3_pzb__id3__entry__3">可选</td></tr></tbody></table></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_l2d_xk3_pzb__section_h3d_pch_bzb" data-tocid="concept_l2d_xk3_pzb__section_h3d_pch_bzb">MMC 分区配置</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_l2d_xk3_pzb__section_q3d_pch_bzb" data-tocid="concept_l2d_xk3_pzb__section_q3d_pch_bzb">SPI NAND 分区配置</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_l2d_xk3_pzb__section_x3d_pch_bzb" data-tocid="concept_l2d_xk3_pzb__section_x3d_pch_bzb">SPI NOR 分区配置</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 bsp/artinchip/drv/spienc/drv_spienc.c，SPIENC Driver 层实现 bsp/artinchip/hal/spienc/hal_spienc.c，SPIENC HAL 层实现 bsp/artinchip/include/hal/hal_spienc.h，SPIENC HAL 层接口头文件 模块架构 SPIENC 驱动 Driver 层采用直接调用 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/spienc/enc_introduction.html"/><meta name="DC.relation" content="../../../topics/sdk/spienc/enc_test_guide.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e6230"/><meta name="wh-source-relpath" content="topics/sdk/spienc/enc_design_introduction.dita"/><meta name="wh-out-relpath" content="topics/sdk/spienc/enc_design_introduction.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="chapter-safety"><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/spienc/enc_introduction.html">SPI ENC 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/spienc/enc_design_introduction.html">设计说明</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/spienc/enc_test_guide.html" title="测试指南" aria-label="上一主题: 测试指南" rel="prev"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="ce_user_guide-d5856e6098" class="topicref" data-id="ce_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ce_user_guide-d5856e6098-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ce/ce_user_guide_2.html" id="ce_user_guide-d5856e6098-link">CE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="efuse_user_guide-d5856e6146" class="topicref" data-id="efuse_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action efuse_user_guide-d5856e6146-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/efuse/efuse_user_guide_2.html" id="efuse_user_guide-d5856e6146-link">eFuse 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e6194" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e6194-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spienc/enc_introduction.html" id="id-d5856e6194-link">SPI ENC 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e6206" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spienc/enc_config_guide.html" id="id-d5856e6206-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e6218" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spienc/enc_test_guide.html" id="id-d5856e6218-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e6230" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spienc/enc_design_introduction.html" id="id-d5856e6230-link">设计说明</a></div></div></li></ul></li></ul></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/spienc/enc_design_introduction.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                    Read time: 4 minute(s)
+                </div><div class="- topic/body body"><section class="- topic/section section" id="id__id2" data-ofbid="id__id2"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+            
+            <ul class="- topic/ul ul simple" id="id__ul_lmt_rc3_bdc" data-ofbid="id__ul_lmt_rc3_bdc"><li class="- topic/li li" data-ofbid="d104117e25__20250121171539">
+                    <p class="- topic/p p" data-ofbid="d104117e27__20250121171539">bsp/artinchip/drv/spienc/drv_spienc.c，SPIENC Driver 层实现</p>
+                </li><li class="- topic/li li" data-ofbid="d104117e30__20250121171539">
+                    <p class="- topic/p p" data-ofbid="d104117e32__20250121171539">bsp/artinchip/hal/spienc/hal_spienc.c，SPIENC HAL 层实现</p>
+                </li><li class="- topic/li li" data-ofbid="d104117e35__20250121171539">
+                    <p class="- topic/p p" data-ofbid="d104117e37__20250121171539">bsp/artinchip/include/hal/hal_spienc.h，SPIENC HAL 层接口头文件</p>
+                </li></ul>
+        </section><section class="- topic/section section" id="id__id3" data-ofbid="id__id3"><h2 class="- topic/title title sectiontitle">模块架构</h2>
+            
+            <p class="- topic/p p" data-ofbid="d104117e46__20250121171539">SPIENC 驱动 Driver 层采用直接调用 HAL 层的接口，如果只使用 HAL 层也可以支持 baremetal 方式的应用场景。</p>
+            <figure class="- topic/fig fig fignone" id="id__id7" data-ofbid="id__id7"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_mmt_rc3_bdc" src="../../../images/memory/sw_system9.png" alt="sw_system9"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">SPIENC 驱动的软件架构图</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d104117e56__20250121171539">文件系统或者应用程序通过 MTD 层访问 SPI NOR / SPI NAND 设备的数据，SPI NOR / SPI NAND 驱动通过 SPI 总线传输数据。</p>
+            <p class="- topic/p p" data-ofbid="d104117e59__20250121171539">在 SPI NOR / SPI NAND 驱动通过 SPI 总线访问相关数据时，其实需要发送一系列的命令来进行数据的读写。 这个过程中，命令通信的数据，包括一些读写
+                SPI NOR / SPI NAND 的寄存器数据都不能加密， 仅存储数据部分需要进行加密处理。因此，虽然 SPI_ENC 是在硬件总线上对数据进行加密，
+                但是软件使用时需要在 SPI NOR / SPI NAND 驱动 根据需要，提供必要的加解密信息（数据地址和长度）， 并且启动相应的数据传输加解密。</p>
+            <p class="- topic/p p" data-ofbid="d104117e63__20250121171539">因此在软件层次上，SPI NOR / SPI NAND 驱动依赖 SPI 驱动以及 SPI_ENC 驱动，而 SPI 驱动与 SPI_ENC 驱动是并列关系。</p>
+        </section><section class="- topic/section section" id="id__id4" data-ofbid="id__id4"><h2 class="- topic/title title sectiontitle">设计要点</h2>
+            
+            <p class="- topic/p p" data-ofbid="d104117e71__20250121171539">在设计实现 SPI_ENC 的驱动时，主要考虑了 SPI_ENC 的本身特点，以及与 SPI NOR / SPI NAND 驱动的结合。</p>
+            <div class="- topic/note note note note_note" id="id__note_czr_qn3_ddc" data-ofbid="id__note_czr_qn3_ddc"><span class="note__title">注：</span> 
+                <div class="- topic/div div">
+                    <div class="- topic/div div">由于 SPI_ENC 内部使用 eFuse 所提供的密钥，因此不需要通过外部设置密钥函数来设置密钥。</div>
+                </div>
+            </div>
+            <div class="- topic/div div section" id="id__id5">
+                <strong class="+ topic/ph hi-d/b ph b">数据读写时启用</strong>
+                <p class="- topic/p p" data-ofbid="d104117e88__20250121171539">SPI NAND / SPI NOR 驱动通过发送命令的方式与 SPI NAND / SPI NOR 器件进行交互，从而实现数据的读写。 在使能 SPI_ENC
+                    之后，SPI NAND / SPI NOR 驱动需要进行区分：</p><ul class="- topic/ul ul simple" id="id__ul_omt_rc3_bdc" data-ofbid="id__ul_omt_rc3_bdc"><li class="- topic/li li" data-ofbid="d104117e91__20250121171539">
+                        <p class="- topic/p p" data-ofbid="d104117e93__20250121171539">非存储数据的 SPI 传输，不启动 SPI_ENC，按照原有驱动的流程执行</p>
+                    </li><li class="- topic/li li" data-ofbid="d104117e96__20250121171539">
+                        <p class="- topic/p p" data-ofbid="d104117e98__20250121171539">存储数据的 SPI 传输，启动 SPI_ENC 进行加密或者解密</p>
+                    </li></ul><p class="- topic/p p" data-ofbid="d104117e101__20250121171539">因此 SPI NAND / SPI NOR 驱动需要做一些改动，在对存储数据进行读写时，启动 SPI_ENC。</p><div class="- topic/p p" data-ofbid="d104117e103__20250121171539">以 SPI NAND 为例：
+                    初始化 spinand
+                    时，同时进行加密相关的初始化。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_art_xg4_fdc" data-ofbid="id__codeblock_art_xg4_fdc">spinand_flash_init();
+|-&gt; drv_spienc_init()</pre></div><div class="- topic/p p" data-ofbid="d104117e107__20250121171539">读操作流程：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_qtc_yg4_fdc" data-ofbid="id__codeblock_qtc_yg4_fdc">spinand_read_page();
+|-&gt; SPINAND_FLASH_OPS-&gt;read_dataload();
+|-&gt; cpos = <span class="hl-number">1</span> + <span class="hl-number">2</span> + (SPINAND_FLASH_DUMMYBYTE * <span class="hl-number">8</span>); <em class="hl-comment">/* cpos = cmd.nbyte + addr.nbyte + dummy.nbyte */</em>
+|-&gt; drv_spienc_set_cfg(<span class="hl-number">0</span>, page * SPINAND_FLASH_PAGE_SIZE, cpos, data_len); <em class="hl-comment">/* 配置本次加密数据信息 */</em>
+|-&gt; drv_spienc_start(); <em class="hl-comment">/* 启动 SPI_ENC */</em>
+|-&gt; SPINAND_FLASH_OPS-&gt;read_quadoutput(qspi, <span class="hl-number">0</span>, buf, data_len); <em class="hl-comment">/* 调用标准 SPI API 进行数据传输 */</em>
+|-&gt; drv_spienc_stop(); <em class="hl-comment">/* 停止 SPI_ENC */</em>
+|-&gt; drv_spienc_check_empty() <em class="hl-comment">/* 检查是否为空 page */</em></pre></div><div class="- topic/p p" data-ofbid="d104117e111__20250121171539">写操作流程：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_gqk_yg4_fdc" data-ofbid="id__codeblock_gqk_yg4_fdc">spinand_write_page();
+|-&gt; SPINAND_FLASH_OPS-&gt;program_dataload();
+|-&gt; cpos = <span class="hl-number">1</span> + <span class="hl-number">2</span> + (SPINAND_FLASH_DUMMYBYTE * <span class="hl-number">8</span>); <em class="hl-comment">/* cpos = cmd.nbyte + addr.nbyte + dummy.nbyte */</em>
+|-&gt; drv_spienc_set_cfg(<span class="hl-number">0</span>, page * SPINAND_FLASH_PAGE_SIZE, cpos, data_len); <em class="hl-comment">/* 配置本次加密数据信息 */</em>
+|-&gt; drv_spienc_start(); <em class="hl-comment">/* 启动 SPI_ENC */</em>
+|-&gt; SPINAND_FLASH_OPS-&gt;program_dataload(); <em class="hl-comment">/* 调用标准 SPI API 进行数据传输 */</em>
+|-&gt; drv_spienc_stop(); <em class="hl-comment">/* 停止 SPI_ENC */</em>
+|-&gt; SPINAND_FLASH_OPS-&gt;program_execute();</pre></div>
+            </div>
+            <div class="- topic/div div section" id="id__id6">
+                <strong class="+ topic/ph hi-d/b ph b">空数据块的检测</strong>
+                <p class="- topic/p p" data-ofbid="d104117e122__20250121171539">SPI NAND / SPI NOR 在执行了擦除之后，存储单元上的数据被认为是空的，值都是 0xFF 。
+                    但是在使用过程中，读取程序并不一定知道所读取的区域是否是被擦除过，因此在使能了 SPI_ENC 之后， 通过 SPI 读取回来该区域的数据都是被 SPI_ENC
+                    解密后的数据。原本是被擦除后的 0xFF ，
+                    读回来的却是其他数据。</p><p class="- topic/p p" data-ofbid="d104117e124__20250121171539">带来的问题：有些程序，如文件系统，会判断读回来的数据是否都为 0xFF
+                    ，如果是，则认为是未使用的块，做特殊处理。 现在读回来的数据却被改变了，会导致原来的处理逻辑全部失效。 </p><p class="- topic/p p" data-ofbid="d104117e126__20250121171539">为了解决上述问题，SPI_ENC
+                    提供了一个空块检测功能。如下图所示：</p><ul class="- topic/ul ul simple" id="id__ul_umt_rc3_bdc" data-ofbid="id__ul_umt_rc3_bdc"><li class="- topic/li li" data-ofbid="d104117e129__20250121171539">
+                        <p class="- topic/p p" data-ofbid="d104117e131__20250121171539">首先按照正常的流程读取一块数据</p>
+                    </li><li class="- topic/li li" data-ofbid="d104117e134__20250121171539">
+                        <p class="- topic/p p" data-ofbid="d104117e136__20250121171539">传输完成之后，检查 SPI_ENC 的状态，如果提示解密前的所有数据都是 0xFF ，则软件将读取的结果全部置为
+                                0xFF</p>
+                    </li></ul><figure class="- topic/fig fig fignone" id="id__id8" data-ofbid="id__id8"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_vmt_rc3_bdc" src="../../../images/memory/spienc_empty_detect.png" alt="spienc_empty_detect"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">空块检测</span></figcaption></figure>
+                <p class="- topic/p p" data-ofbid="d104117e146__20250121171539">相关的软件操作，在 <span class="+ topic/keyword pr-d/apiname keyword apiname">spinand_read_page()</span> 中读取完数据时进行。</p></div>
+        </section><section class="- topic/section section" id="id__driver" data-ofbid="id__driver"><h2 class="- topic/title title sectiontitle">Driver 层接口设计</h2>
+            
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_wmt_rc3_bdc" data-ofbid="id__table_wmt_rc3_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_spienc_set_cfg</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_wmt_rc3_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_wmt_rc3_bdc__entry__2">void drv_spienc_set_cfg(u32 spi_bus, u32 addr, u32 cpos, u32
+                                clen)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wmt_rc3_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wmt_rc3_bdc__entry__2">配置加密数据信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wmt_rc3_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wmt_rc3_bdc__entry__2">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">spi_bus - 选择需要配置的 QSPI 设备</div>
+                                    <div class="- topic/div div">addr - 本次传输数据的起始地址</div>
+                                    <div class="- topic/div div">cpos - 本次传输密文数据的开始位置</div>
+                                    <div class="- topic/div div">clen - 本次传输密文的数据长度</div>
+                                </div>
+                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_wmt_rc3_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_wmt_rc3_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_wmt_rc3_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_wmt_rc3_bdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_xmt_rc3_bdc" data-ofbid="id__table_xmt_rc3_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_spienc_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_xmt_rc3_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_xmt_rc3_bdc__entry__2">void drv_spienc_start(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xmt_rc3_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xmt_rc3_bdc__entry__2">启动 SPI_ENC</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xmt_rc3_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xmt_rc3_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xmt_rc3_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xmt_rc3_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_xmt_rc3_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_xmt_rc3_bdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_ymt_rc3_bdc" data-ofbid="id__table_ymt_rc3_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_spienc_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ymt_rc3_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_ymt_rc3_bdc__entry__2">void drv_spienc_stop(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ymt_rc3_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ymt_rc3_bdc__entry__2">停止 SPI_ENC</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ymt_rc3_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ymt_rc3_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ymt_rc3_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ymt_rc3_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ymt_rc3_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_ymt_rc3_bdc__entry__2">-</td></tr></tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__table_zmt_rc3_bdc" data-ofbid="id__table_zmt_rc3_bdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_spienc_check_empty</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zmt_rc3_bdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zmt_rc3_bdc__entry__2">int drv_spienc_check_empty(void)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zmt_rc3_bdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zmt_rc3_bdc__entry__2">检查本次读取数据是否全为空</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zmt_rc3_bdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zmt_rc3_bdc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zmt_rc3_bdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zmt_rc3_bdc__entry__2">0，本次传输数据不全为空；1，本次传输数据全为空</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zmt_rc3_bdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_zmt_rc3_bdc__entry__2">-</td></tr></tbody></table></div>
+        </section><section class="- topic/section section" id="id__hal" data-ofbid="id__hal"><h2 class="- topic/title title sectiontitle">HAL 层接口设计</h2>
+            
+            <div class="- topic/p p" data-ofbid="d104117e313__20250121171539">HAL 层的函数接口声明存放在 hal_spienc.h
+                中，主要接口有：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ocx_lh4_fdc" data-ofbid="id__codeblock_ocx_lh4_fdc"><strong class="hl-keyword">int</strong> hal_spienc_init(<strong class="hl-keyword">void</strong>);
+<strong class="hl-keyword">void</strong> hal_spienc_set_cfg(u32 spi_bus, u32 addr, u32 cpos, u32 clen);
+<strong class="hl-keyword">void</strong> hal_spienc_start(<strong class="hl-keyword">void</strong>);
+<strong class="hl-keyword">void</strong> hal_spienc_stop(<strong class="hl-keyword">void</strong>);
+<strong class="hl-keyword">int</strong> hal_spienc_check_empty(<strong class="hl-keyword">void</strong>);</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__id2" data-tocid="id__id2">源码说明</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id3" data-tocid="id__id3">模块架构</a></div></li><li class="section-item"><div class="section-title"><a href="#id__id4" data-tocid="id__id4">设计要点</a></div></li><li class="section-item"><div class="section-title"><a href="#id__driver" data-tocid="id__driver">Driver 层接口设计</a></div></li><li class="section-item"><div class="section-title"><a href="#id__hal" data-tocid="id__hal">HAL 层接口设计</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

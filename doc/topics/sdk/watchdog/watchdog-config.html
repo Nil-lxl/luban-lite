@@ -1,0 +1,216 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍 Watchdog 的配置内容。 内核配置 在 SDK 根目录下，执行下列命令，进入 kernel 的功能配置界面： make kernel-menuconfig 或使用简写命令 make km 在内核配置界面，按如下选择： Linux Device Drivers [*] Watchdog Timer Support &lt;*&gt; ArtInChip SoC watchdog support ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-16"/><meta name="DC.date.modified" content="2024-12-17"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="watchdog_configuration"/><meta name="DC.language" content="zh-CN"/><title>Watchdog 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/watchdog/watchdog-config.dita"/><meta name="wh-out-relpath" content="topics/sdk/watchdog/watchdog-config.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="watchdog_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/watchdog/watchdog-config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Watchdog 配置</h1><div class="date inPage">17 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d182516e23__20250121171625">本节介绍 Watchdog 的配置内容。</p><section class="- topic/section section" id="watchdog_configuration__section_l35_znv_mdc" data-ofbid="watchdog_configuration__section_l35_znv_mdc"><h2 class="- topic/title title sectiontitle">内核配置</h2>
+            
+            <ol class="- topic/ol ol" id="watchdog_configuration__ol_m1x_32s_sdc" data-ofbid="watchdog_configuration__ol_m1x_32s_sdc"><li class="- topic/li li" data-ofbid="d182516e31__20250121171625">
+                    <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d182516e35__20250121171625">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="watchdog_configuration__codeblock_wg1_3ml_sdc" data-ofbid="watchdog_configuration__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d182516e40__20250121171625">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d182516e43__20250121171625">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="watchdog_configuration__codeblock_uss_hml_sdc" data-ofbid="watchdog_configuration__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                </li><li class="- topic/li li" data-ofbid="d182516e50__20250121171625">
+                    <p class="- topic/p p" data-ofbid="d182516e52__20250121171625">在内核配置界面，按如下选择：</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="watchdog_configuration__pre_cqp_xzs_c1c" data-ofbid="watchdog_configuration__pre_cqp_xzs_c1c">Linux
+    Device Drivers
+        [*] Watchdog Timer Support
+            &lt;*&gt;   ArtInChip SoC watchdog support</pre>
+                </li></ol>
+        </section><section class="- topic/section section" id="watchdog_configuration__section_m2y_snv_mdc" data-ofbid="watchdog_configuration__section_m2y_snv_mdc"><h2 class="- topic/title title sectiontitle">DTS 参数配置</h2>
+            
+            <ul class="- topic/ul ul" id="watchdog_configuration__ul_iqn_wnv_mdc" data-ofbid="watchdog_configuration__ul_iqn_wnv_mdc"><li class="- topic/li li" data-ofbid="d182516e65__20250121171625">
+                    <p class="- topic/p p" data-ofbid="d182516e67__20250121171625"><strong class="+ topic/ph hi-d/b ph b">Watchdog 自定义参数</strong></p>
+                    <div class="- topic/p p" data-ofbid="d182516e71__20250121171625">Watchdog 驱动支持从 DTS 中配置的自定义参数，如下表：<div class="table-container"><table class="- topic/table table frame-all" id="watchdog_configuration__table_h13_2dt_c1c" data-ofbid="watchdog_configuration__table_h13_2dt_c1c" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">Watchdog 自定义参数</span></caption><colgroup><col style="width:13.896987366375122%"/><col style="width:10.689990281827018%"/><col style="width:9.718172983479107%"/><col style="width:16.034985422740526%"/><col style="width:49.65986394557824%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="watchdog_configuration__table_h13_2dt_c1c__entry__1">参数名称</th><th class="- topic/entry entry colsep-1 rowsep-1" id="watchdog_configuration__table_h13_2dt_c1c__entry__2">适用版本</th><th class="- topic/entry entry colsep-1 rowsep-1" id="watchdog_configuration__table_h13_2dt_c1c__entry__3">类型</th><th class="- topic/entry entry colsep-1 rowsep-1" id="watchdog_configuration__table_h13_2dt_c1c__entry__4">取值范围</th><th class="- topic/entry entry colsep-0 rowsep-1" id="watchdog_configuration__table_h13_2dt_c1c__entry__5">功能说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="watchdog_configuration__table_h13_2dt_c1c__entry__1">dbg_continue</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="watchdog_configuration__table_h13_2dt_c1c__entry__2">V1.0</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="watchdog_configuration__table_h13_2dt_c1c__entry__3">boolean</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="watchdog_configuration__table_h13_2dt_c1c__entry__4">有 - 1，无 - 0</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="watchdog_configuration__table_h13_2dt_c1c__entry__5">用 JTAG 进入 debug 状态时，计数是否继续默认值是 0，停止计数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="watchdog_configuration__table_h13_2dt_c1c__entry__1">clr_thd</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="watchdog_configuration__table_h13_2dt_c1c__entry__2">V1.0</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="watchdog_configuration__table_h13_2dt_c1c__entry__3">正整数</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="watchdog_configuration__table_h13_2dt_c1c__entry__4">&gt; 0 ，单位：秒</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="watchdog_configuration__table_h13_2dt_c1c__entry__5">允许清除 WDT 的最小秒数</td></tr></tbody></table></div><ul class="- topic/ul ul" id="watchdog_configuration__ol_ft1_3dt_c1c" data-ofbid="watchdog_configuration__ol_ft1_3dt_c1c"><li class="- topic/li li" data-ofbid="d182516e118__20250121171625">关于清除 WDT 的逻辑关系，请参考 
+                                的相关说明。</li><li class="- topic/li li" data-ofbid="d182516e120__20250121171625">在 FPGA 环境，清零窗口的功能无效，需要屏蔽 thd 的判断逻辑。</li></ul></div>
+                </li><li class="- topic/li li" data-ofbid="d182516e123__20250121171625">
+                    <p class="- topic/p p" data-ofbid="d182516e125__20250121171625"><strong class="+ topic/ph hi-d/b ph b">Common 配置</strong></p>
+                    <div class="- topic/p p" data-ofbid="d182516e129__20250121171625"><span class="+ topic/ph sw-d/filepath ph filepath">common/d211.dtsi</span>
+                            中的参数配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="watchdog_configuration__codeblock_hq5_kdt_c1c" data-ofbid="watchdog_configuration__codeblock_hq5_kdt_c1c">wdt0: watchdog@<span class="hl-number">19000000</span> {
+    compatible = <span class="hl-string">"artinchip,aic-wdt-v1.0"</span>;
+    reg = &lt;<span class="hl-number">0x0</span> <span class="hl-number">0x19000000</span> <span class="hl-number">0x0</span> <span class="hl-number">0x1000</span>&gt;;
+    interrupts-extended = &lt;&amp;plic0 <span class="hl-number">64</span> IRQ_TYPE_LEVEL_HIGH&gt;;
+    clocks = &lt;&amp;cmu CLK_WDOG&gt;;
+    resets = &lt;&amp;rst RESET_WDOG&gt;;
+    dbg_continue;  <em class="hl-comment">// 使用 Jtag 进入 debug 状态时，计数是否继续。默认是暂停计数</em>
+    clr_thd = &lt;<span class="hl-number">3</span>&gt;;  <em class="hl-comment">// 用于设置 thd，单位：秒</em>
+};</pre><div class="- topic/note note note note_note" id="watchdog_configuration__note_psr_ldt_c1c" data-ofbid="watchdog_configuration__note_psr_ldt_c1c"><span class="note__title">注：</span> 其中有两个扩展字段，如果没有配置将默认是
+                        0。</div></div>
+                </li><li class="- topic/li li" data-ofbid="d182516e138__20250121171625"><strong class="+ topic/ph hi-d/b ph b">Board 配置</strong><div class="- topic/p p" data-ofbid="d182516e141__20250121171625"><span class="+ topic/ph sw-d/filepath ph filepath">xxx/board.dts</span> 中的参数配置比较简单，只是说明是否要打开
+                        Watchdog：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="watchdog_configuration__codeblock_smm_4dt_c1c" data-ofbid="watchdog_configuration__codeblock_smm_4dt_c1c">&amp;wdt0 {
+    status = <span class="hl-string">"okay"</span>;
+};</pre></div></li></ul>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#watchdog_configuration__section_l35_znv_mdc" data-tocid="watchdog_configuration__section_l35_znv_mdc">内核配置</a></div></li><li class="section-item"><div class="section-title"><a href="#watchdog_configuration__section_m2y_snv_mdc" data-tocid="watchdog_configuration__section_m2y_snv_mdc">DTS 参数配置</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

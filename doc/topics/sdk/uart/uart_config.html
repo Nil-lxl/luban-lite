@@ -1,0 +1,248 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="内核配置 在 SDK 根目录下，执行下列命令，进入 kernel 的功能配置界面： make kernel-menuconfig 或使用简写命令 make km 按如下示例配置相应选项： Device Drivers Character devices Serial driver &lt;*&gt; 8250 / 16550 and compatible serial support &lt;*&gt; 8250 / ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="uart_configuration"/><meta name="DC.language" content="zh-CN"/><title>UART 配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/uart/uart_config.dita"/><meta name="wh-out-relpath" content="topics/sdk/uart/uart_config.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="uart_configuration" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/uart/uart_config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">UART 配置</h1><div class="date inPage">16 Dec 2024</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="uart_configuration__section_n5y_3zy_21c" data-ofbid="uart_configuration__section_n5y_3zy_21c"><h2 class="- topic/title title sectiontitle">内核配置</h2>
+            
+            <div class="- topic/p p" data-ofbid="d219677e27__20250121171646">
+                <ol class="- topic/ol ol" id="uart_configuration__ol_tyx_gml_sdc" data-ofbid="uart_configuration__ol_tyx_gml_sdc"><li class="- topic/li li" data-ofbid="d219677e30__20250121171646">
+                        <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d219677e34__20250121171646">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_configuration__codeblock_wg1_3ml_sdc" data-ofbid="uart_configuration__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d219677e39__20250121171646">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d219677e42__20250121171646">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_configuration__codeblock_uss_hml_sdc" data-ofbid="uart_configuration__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                    </li><li class="- topic/li li" data-ofbid="d219677e49__20250121171646">
+                        <div class="- topic/p p" data-ofbid="d219677e51__20250121171646">按如下示例配置相应选项：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_configuration__codeblock_ghy_tzy_21c" data-ofbid="uart_configuration__codeblock_ghy_tzy_21c">Device Drivers
+    Character devices
+        Serial driver
+            &lt;*&gt; <span class="hl-number">8250</span>/<span class="hl-number">16550</span> and compatible serial support
+            &lt;*&gt;   <span class="hl-number">8250</span>/<span class="hl-number">16550</span> support <strong class="hl-keyword">for</strong> ArtInChip serial ports
+            [*]   Support <span class="hl-number">8250</span>_core.* kernel options (DEPRECATED)
+            [*]   Support <strong class="hl-keyword">for</strong> variants of the <span class="hl-number">16550</span>A serial port
+            [ ]   Support <strong class="hl-keyword">for</strong> Fintek F81216A LPC to <span class="hl-number">4</span> UART RS485 API
+            [*]   Console on <span class="hl-number">8250</span>/<span class="hl-number">16550</span> and compatible serial port
+            (<span class="hl-number">8</span>)   Maximum number of <span class="hl-number">8250</span>/<span class="hl-number">16550</span> serial ports
+            (<span class="hl-number">8</span>)   Number of <span class="hl-number">8250</span>/<span class="hl-number">16550</span> serial ports to <strong class="hl-keyword">register</strong> at runtime
+            [ ]   Extended <span class="hl-number">8250</span>/<span class="hl-number">16550</span> serial driver options</pre></div>
+                    </li></ol>
+            </div>
+        </section><section class="- topic/section section" id="uart_configuration__section_p5y_3zy_21c" data-ofbid="uart_configuration__section_p5y_3zy_21c"><h2 class="- topic/title title sectiontitle">系统参数配置</h2>
+            
+            <p class="- topic/p p" data-ofbid="d219677e63__20250121171646">D211 提供最多 8 个 UART 端口。</p>
+            <div class="- topic/p p" data-ofbid="d219677e66__20250121171646">这些参数主要在文件 <span class="+ topic/ph sw-d/filepath ph filepath">target/d211/common/d211.dtsi</span> 中，模块系统参数随 SoC
+                的设定而定，一般不能进行更改，除非更换了新的
+                SoC，则需要在专业人士的指导下进行更改。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_configuration__codeblock_g3c_5zy_21c" data-ofbid="uart_configuration__codeblock_g3c_5zy_21c">uart1: serial@<span class="hl-number">18711000</span> {
+     compatible = <span class="hl-string">"artinchip,aic-uart-v1.0"</span>;
+     reg = &lt;<span class="hl-number">0x0</span> <span class="hl-number">0x18711000</span> <span class="hl-number">0x0</span> <span class="hl-number">0x400</span>&gt;;
+     interrupts-extended = &lt;&amp;plic0 <span class="hl-number">77</span> IRQ_TYPE_LEVEL_HIGH&gt;;
+     reg-shift = &lt;<span class="hl-number">2</span>&gt;;
+     reg-io-width = &lt;<span class="hl-number">4</span>&gt;;
+     clocks = &lt;&amp;cmu CLK_UART1&gt;;
+     clock-frequency = &lt;<span class="hl-number">48000000</span>&gt;;
+     resets = &lt;&amp;rst RESET_UART1&gt;;
+     dmas = &lt;&amp;dma DMA_UART1&gt;, &lt;&amp;dma DMA_UART1&gt;;
+     dma-names = <span class="hl-string">"rx"</span>, <span class="hl-string">"tx"</span>;
+ };</pre></div>
+            <ul class="- topic/ul ul" id="uart_configuration__ul_r5y_3zy_21c" data-ofbid="uart_configuration__ul_r5y_3zy_21c"><li class="- topic/li li" data-ofbid="d219677e75__20250121171646"><span class="+ topic/keyword pr-d/parmname keyword parmname">reg-shift</span><p class="- topic/p p" data-ofbid="d219677e78__20250121171646">UART 控制器兼容 8250 标准, 寄存器寻址使用索引而不是偏移描述，reg-shift
+                        用来进行索引和地址的转换计算，该值不能修改</p></li><li class="- topic/li li" data-ofbid="d219677e80__20250121171646"><span class="+ topic/keyword pr-d/parmname keyword parmname">reg-io-width</span><p class="- topic/p p" data-ofbid="d219677e83__20250121171646">为寄存器的位宽，<code class="+ topic/ph pr-d/codeph ph codeph">4</code> 表示采用 32
+                        位标准位宽，该值不能修改</p></li><li class="- topic/li li" data-ofbid="d219677e88__20250121171646"><span class="+ topic/keyword pr-d/parmname keyword parmname">clock-frequency</span><p class="- topic/p p" data-ofbid="d219677e91__20250121171646">D211 UART 模块的父时钟为 48M， UART
+                        模块时钟的频率通过对其父时钟的进行除频来设置，clock-frequency 即用于设置 UART 的模块时钟，
+                        不同的模块时钟时波特率的误差可能不同，因此可以根据目标波特率进行模块时钟的设置。关于详细设置，可查看 <a class="- topic/xref xref" href="../../reused/module-clock_reused.html#topic_y4l_wwh_ryb">模块时钟</a></p></li></ul>
+        </section><section class="- topic/section section" id="uart_configuration__section_v5y_3zy_21c" data-ofbid="uart_configuration__section_v5y_3zy_21c"><h2 class="- topic/title title sectiontitle">功能参数配置</h2>
+            
+            <p class="- topic/p p" data-ofbid="d219677e102__20250121171646">功能参数主要针对某一个使用方案而定，因此随着方案的不同，参数很可能不同，</p>
+            <div class="- topic/p p" data-ofbid="d219677e105__20250121171646">这些参数主要在文件 <span class="+ topic/ph sw-d/filepath ph filepath">target/d211/xxx/board.dts</span>
+                中，功能参数的设置必须和硬件原理图相匹配<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_configuration__codeblock_vs2_lzy_21c" data-ofbid="uart_configuration__codeblock_vs2_lzy_21c">&amp;uart1 {
+    pinctrl-names = <span class="hl-string">"default"</span>;
+    pinctrl-<span class="hl-number">0</span> = &lt;&amp;uart1_pins_a&gt;;
+    linux,rs485-enabled-at-boot-time;
+    aic,rs485-compact-io-mode;
+    status = <span class="hl-string">"okay"</span>;
+};</pre></div>
+            <ul class="- topic/ul ul" id="uart_configuration__ul_x5y_3zy_21c" data-ofbid="uart_configuration__ul_x5y_3zy_21c"><li class="- topic/li li" data-ofbid="d219677e114__20250121171646"><span class="+ topic/keyword pr-d/parmname keyword parmname">pinctrl-names</span><p class="- topic/p p" data-ofbid="d219677e117__20250121171646">SDK 一般会把要使用的某一功能的端口组预先定义，后期直接使用即可，定义一般放在
+                            <span class="+ topic/ph sw-d/filepath ph filepath">target/d211/common/aicxxx-pinctrl.dtsi</span> 文件中，目前
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">pinctrl-names</span> 均设置为 <span class="+ topic/ph ui-d/uicontrol ph uicontrol">default</span>
+                        即可。</p></li><li class="- topic/li li" data-ofbid="d219677e128__20250121171646"><span class="+ topic/keyword pr-d/parmname keyword parmname">pinctrl-0</span><p class="- topic/p p" data-ofbid="d219677e131__20250121171646">即指示 UART 预先定义的端口组，其中包括用于进行发送/接收选择的 GPIO
+                    端口</p></li><li class="- topic/li li" data-ofbid="d219677e133__20250121171646"><span class="+ topic/keyword pr-d/parmname keyword parmname">linux,rs485-enabled-at-boot-time</span><p class="- topic/p p" data-ofbid="d219677e136__20250121171646">该端口配置为 RS485</p></li><li class="- topic/li li" data-ofbid="d219677e138__20250121171646"><span class="+ topic/keyword pr-d/parmname keyword parmname">aic,rs485-compact-io-mode</span><p class="- topic/p p" data-ofbid="d219677e141__20250121171646">使用 AIC 独有的精简 IO 模式， 只使用 2
+                        个端口，一个用作发送接收，一个用作发送和接收控制</p></li></ul>
+            <p class="- topic/p p" data-ofbid="d219677e144__20250121171646">其中 rs485 功能还有其他一些可选配置项，如 time delay 等，目前 SoC 内部对此类参数做了很好的兼容，除非特殊的 rs485
+                模组，否则均不需要额外配置参数</p>
+        </section><section class="- topic/section section" id="uart_configuration__section_cvy_3zy_21c" data-ofbid="uart_configuration__section_cvy_3zy_21c"><h2 class="- topic/title title sectiontitle">调试端口</h2>
+            
+            <p class="- topic/p p" data-ofbid="d219677e152__20250121171646">调试端口的配置除了要使能相应的 UART 端口，还要在 <span class="+ topic/ph sw-d/filepath ph filepath">target/aicxxx/common/env.txt</span>
+                文件中配置波特率等相关参数：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="uart_configuration__pre_dvy_3zy_21c" data-ofbid="uart_configuration__pre_dvy_3zy_21c">earlycon=smhconsole=ttyS0,<span class="hl-number">115200</span>n8</pre>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#uart_configuration__section_n5y_3zy_21c" data-tocid="uart_configuration__section_n5y_3zy_21c">内核配置</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_configuration__section_p5y_3zy_21c" data-tocid="uart_configuration__section_p5y_3zy_21c">系统参数配置</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_configuration__section_v5y_3zy_21c" data-tocid="uart_configuration__section_v5y_3zy_21c">功能参数配置</a></div></li><li class="section-item"><div class="section-title"><a href="#uart_configuration__section_cvy_3zy_21c" data-tocid="uart_configuration__section_cvy_3zy_21c">调试端口</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

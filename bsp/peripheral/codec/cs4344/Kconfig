@@ -1,0 +1,11 @@
+menu "CS4344 codec options"
+
+config AIC_I2S_CODEC_MCLK_NFS
+    int "MCLK NFS"
+    default 256
+
+config AIC_I2S_CODEC_SCLK_NFS
+    int "SCLK NFS"
+    default 64
+
+endmenu

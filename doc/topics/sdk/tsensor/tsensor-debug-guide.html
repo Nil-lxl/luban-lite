@@ -1,0 +1,224 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍 TSensor 调试步骤。 打开调试开关 在 SDK 根目录下，执行下列命令，进入 kernel 的功能配置界面： make kernel-menuconfig 或使用简写命令 make km 在内核配置界面，按如下选择，打开调试开关： Linux Kernel hacking ArtInChip Debug [*] Thermal Sensor driver debug 打开 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-16"/><meta name="DC.date.modified" content="2024-12-18"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="tsensor_debug_guide"/><meta name="DC.language" content="zh-CN"/><title>调试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/tsensor/tsensor-debug-guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/tsensor/tsensor-debug-guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="tsensor_debug_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/tsensor/tsensor-debug-guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">调试指南</h1><div class="date inPage">18 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d130646e23__20250121171605">本节介绍 TSensor 调试步骤。</p><section class="- topic/section section" id="tsensor_debug_guide__section_ykz_jbv_mdc" data-ofbid="tsensor_debug_guide__section_ykz_jbv_mdc"><h2 class="- topic/title title sectiontitle">打开调试开关</h2>
+            
+            <ol class="- topic/ol ol" id="tsensor_debug_guide__ol_np3_1kz_sdc" data-ofbid="tsensor_debug_guide__ol_np3_1kz_sdc"><li class="- topic/li li" data-ofbid="d130646e31__20250121171605">
+                    <div class="- topic/div div">
+                <div class="- topic/p p" data-ofbid="d130646e35__20250121171605">在 SDK 根目录下，执行下列命令，进入 kernel
+                    的功能配置界面：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_wg1_3ml_sdc" data-ofbid="tsensor_debug_guide__codeblock_wg1_3ml_sdc">make kernel-menuconfig</pre></div>
+                <p class="- topic/p p" data-ofbid="d130646e40__20250121171605">或使用简写命令</p>
+                <div class="- topic/p p" data-ofbid="d130646e43__20250121171605">
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_uss_hml_sdc" data-ofbid="tsensor_debug_guide__codeblock_uss_hml_sdc">make km</pre>
+                </div>
+            </div>
+                </li><li class="- topic/li li" data-ofbid="d130646e50__20250121171605">在内核配置界面，按如下选择，打开调试开关：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_e5g_q1t_c1c" data-ofbid="tsensor_debug_guide__codeblock_e5g_q1t_c1c">Linux
+    Kernel hacking
+        ArtInChip Debug
+            [*] Thermal Sensor driver debug</pre><div class="- topic/p p" data-ofbid="d130646e54__20250121171605">打开 DEBUG 选项后：<ul class="- topic/ul ul" id="tsensor_debug_guide__ol_ucp_mss_c1c" data-ofbid="tsensor_debug_guide__ol_ucp_mss_c1c"><li class="- topic/li li" data-ofbid="d130646e57__20250121171605">
+                        <p class="- topic/p p" data-ofbid="d130646e59__20250121171605">驱动以<code class="+ topic/ph pr-d/codeph ph codeph">-O0</code> 编译。</p>
+                    </li><li class="- topic/li li" data-ofbid="d130646e65__20250121171605">
+                        <p class="- topic/p p" data-ofbid="d130646e67__20250121171605"><span class="+ topic/keyword pr-d/parmname keyword parmname">pr_dbg()</span> 和 <span class="+ topic/keyword pr-d/parmname keyword parmname">dev_dbg()</span> 调试信息会被编译。</p>
+                        <div class="- topic/p p" id="tsensor_debug_guide__p_wvf_n3w_mdc" data-ofbid="tsensor_debug_guide__p_wvf_n3w_mdc">在系统运行时，如果要打印 <span class="+ topic/keyword pr-d/parmname keyword parmname">pr_dbg()</span> 和
+                            <span class="+ topic/keyword pr-d/parmname keyword parmname">dev_dbg()</span> 信息，还需要调整 <span class="+ topic/keyword pr-d/parmname keyword parmname">loglevel</span> 为
+                                8，可以通过以下两种方式实现：<ul class="- topic/ul ul" id="tsensor_debug_guide__ol_vcp_mss_c1c" data-ofbid="tsensor_debug_guide__ol_vcp_mss_c1c"><li class="- topic/li li" data-ofbid="d130646e87__20250121171605">
+                                    <p class="- topic/p p" data-ofbid="d130646e89__20250121171605">在 <span class="+ topic/ph sw-d/filepath ph filepath">board.dts</span> 中修改
+                                            <span class="+ topic/keyword pr-d/parmname keyword parmname">bootargs</span>，增加
+                                        <span class="+ topic/keyword pr-d/parmname keyword parmname">“loglevel=8”</span></p>
+                                </li><li class="- topic/li li" data-ofbid="d130646e100__20250121171605">
+                                    <div class="- topic/p p" data-ofbid="d130646e102__20250121171605">在板子启动到 Linux Shell
+                                        后，执行下列命令：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__pre_wcp_mss_c1c" data-ofbid="tsensor_debug_guide__pre_wcp_mss_c1c">echo8 &gt; /proc/sys/kernel/printk</pre></div>
+                                </li></ul></div>
+                    </li></ul></div></li></ol>
+        </section><section class="- topic/section section" id="tsensor_debug_guide__section_cgx_pbv_mdc" data-ofbid="tsensor_debug_guide__section_cgx_pbv_mdc"><h2 class="- topic/title title sectiontitle">Sysfs 节点</h2>
+            
+            <div class="- topic/p p" data-ofbid="d130646e114__20250121171605">
+                <ol class="- topic/ol ol" id="tsensor_debug_guide__ol_ehk_p1t_c1c" data-ofbid="tsensor_debug_guide__ol_ehk_p1t_c1c"><li class="- topic/li li" id="tsensor_debug_guide__li_sysfs_status_tsensor" data-ofbid="tsensor_debug_guide__li_sysfs_status_tsensor"><strong class="+ topic/ph hi-d/b ph b">状态信息</strong><div class="- topic/p p" data-ofbid="d130646e120__20250121171605">在 TSensor 驱动初始化成功后，会在 Sysfs 中注册生成一个 <code class="+ topic/ph pr-d/codeph ph codeph">status</code> 节点，其中打印了当前的 TSensor
+                            配置及状态信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_m2y_wss_c1c" data-ofbid="tsensor_debug_guide__codeblock_m2y_wss_c1c">cat /sys/devices/platform/soc/<span class="hl-number">19253000.</span>tsen/status</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_dql_y3z_sdc" data-ofbid="tsensor_debug_guide__codeblock_dql_y3z_sdc">In Thermal Sensor V1.<span class="hl-number">00</span>:
+ ch0: aic-tsen-cpu, Enable: <span class="hl-number">1</span>, Value: <span class="hl-number">0</span>
+ ch1: aic-tsen-adc, Enable: <span class="hl-number">1</span>，Value: <span class="hl-number">0</span></pre></div></li><li class="- topic/li li" id="tsensor_debug_guide__li_sysfs_temperature_read" data-ofbid="tsensor_debug_guide__li_sysfs_temperature_read"><strong class="+ topic/ph hi-d/b ph b">读取温度</strong><p class="- topic/p p" data-ofbid="d130646e132__20250121171605">Linux Thermal 子系统提供一些 Sysfs
+                            节点，可以用来获取温度值以及其他参数信息。</p><div class="- topic/p p" data-ofbid="d130646e134__20250121171605">例如，<span class="+ topic/ph sw-d/filepath ph filepath">/sys/class/thermal/</span>
+                                目录提供了下列与温度相关的信息：<ul class="- topic/ul ul" id="tsensor_debug_guide__ul_qzd_1jz_sdc" data-ofbid="tsensor_debug_guide__ul_qzd_1jz_sdc"><li class="- topic/li li" data-ofbid="d130646e140__20250121171605">列出可用的 thermal
+                                        zone：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_mkx_v1t_c1c" data-ofbid="tsensor_debug_guide__codeblock_mkx_v1t_c1c">cd /sys/class/thermal/</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_y5t_y3z_sdc" data-ofbid="tsensor_debug_guide__codeblock_y5t_y3z_sdc">ls</pre><div class="- topic/p p" data-ofbid="d130646e146__20250121171605">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_kgn_1jz_sdc" data-ofbid="tsensor_debug_guide__codeblock_kgn_1jz_sdc">thermal_zone0  thermal_zone1</pre></div></li><li class="- topic/li li" data-ofbid="d130646e150__20250121171605">进入 <span class="+ topic/ph sw-d/filepath ph filepath">thermal_zone0</span> 目录，查看特定 thermal zone
+                                            的相关信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_il2_bjz_sdc" data-ofbid="tsensor_debug_guide__codeblock_il2_bjz_sdc">cd thermal_zone0/</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_h4k_cjz_sdc" data-ofbid="tsensor_debug_guide__codeblock_h4k_cjz_sdc">ls</pre><div class="- topic/p p" data-ofbid="d130646e159__20250121171605">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_ihw_cjz_sdc" data-ofbid="tsensor_debug_guide__codeblock_ihw_cjz_sdc">available_policies  k_po                policy              type
+hwmon0              k_pu                slope               uevent
+integral_cutoff     mode                subsystem
+k_d                 offset              sustainable_power
+k_i                 passive             temp</pre><ul class="- topic/ul ul" id="tsensor_debug_guide__ul_jvy_pjz_sdc" data-ofbid="tsensor_debug_guide__ul_jvy_pjz_sdc"><li class="- topic/li li" data-ofbid="d130646e164__20250121171605">读取温度值<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_xsd_djz_sdc" data-ofbid="tsensor_debug_guide__codeblock_xsd_djz_sdc">cat temp</pre><div class="- topic/p p" data-ofbid="d130646e168__20250121171605">输出示例如下，表示当前温度为
+                                                  0：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_xbx_djz_sdc" data-ofbid="tsensor_debug_guide__codeblock_xbx_djz_sdc"><span class="hl-number">0</span></pre></div></li><li class="- topic/li li" data-ofbid="d130646e172__20250121171605">
+                                                <div class="- topic/p p" data-ofbid="d130646e174__20250121171605">读取类型信息<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_yhh_2jz_sdc" data-ofbid="tsensor_debug_guide__codeblock_yhh_2jz_sdc">cat type</pre></div>
+                                                <div class="- topic/p p" data-ofbid="d130646e179__20250121171605">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="tsensor_debug_guide__codeblock_k1s_fjz_sdc" data-ofbid="tsensor_debug_guide__codeblock_k1s_fjz_sdc">aic-tsen-cpu</pre></div>
+                                            </li></ul></div></li></ul></div></li></ol>
+            </div>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#tsensor_debug_guide__section_ykz_jbv_mdc" data-tocid="tsensor_debug_guide__section_ykz_jbv_mdc">打开调试开关</a></div></li><li class="section-item"><div class="section-title"><a href="#tsensor_debug_guide__section_cgx_pbv_mdc" data-tocid="tsensor_debug_guide__section_cgx_pbv_mdc">Sysfs 节点</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

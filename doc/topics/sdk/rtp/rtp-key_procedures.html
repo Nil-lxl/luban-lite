@@ -1,0 +1,207 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="初始化流程 RTP 模块完全遵循 driver 的通用初始化流程，申请 regs 资源、clk、reset， 还需要注册一个 input 设备，使用 input 子系统提供的注册接口 input_register_device()： int __must_check input_register_device( struct input_dev *); 参数 dev 记录了该 input ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-03"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="rtp_key_procedures"/><meta name="DC.language" content="zh-CN"/><title>关键流程设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/rtp/rtp-key_procedures.dita"/><meta name="wh-out-relpath" content="topics/sdk/rtp/rtp-key_procedures.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="rtp_key_procedures" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/rtp/rtp-key_procedures.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">关键流程设计</h1><div class="date inPage">3 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="rtp_key_procedures__section_vyf_m5y_21c" data-ofbid="rtp_key_procedures__section_vyf_m5y_21c"><h2 class="- topic/title title sectiontitle">初始化流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d131506e27__20250121171605">RTP 模块完全遵循 driver 的通用初始化流程，申请 regs 资源、clk、reset，
+                还需要注册一个 input 设备，使用 input 子系统提供的注册接口 input_register_device()：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_key_procedures__pre_wyf_m5y_21c" data-ofbid="rtp_key_procedures__pre_wyf_m5y_21c"><strong class="hl-keyword">int</strong> __must_check input_register_device(<strong class="hl-keyword">struct</strong> input_dev *);</pre>
+            <div class="- topic/p p" data-ofbid="d131506e33__20250121171605">参数 dev 记录了该 input 设备的信息，其中关键信息有：设备名称、
+                open/close 接口、KEY 类型、坐标范围等。RTP 控制器的 input 信息注册如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="rtp_key_procedures__codeblock_wrs_45y_21c" data-ofbid="rtp_key_procedures__codeblock_wrs_45y_21c">rtp-&gt;idev = idev;
+idev-&gt;name = pdev-&gt;name;
+idev-&gt;phys = AIC_RTP_NAME <span class="hl-string">"/input0"</span>;
+idev-&gt;open = aic_rtp_open;
+idev-&gt;close = aic_rtp_close;
+idev-&gt;id.bustype = BUS_HOST;
+idev-&gt;evbit[<span class="hl-number">0</span>] =  BIT(EV_SYN) | BIT(EV_KEY) | BIT(EV_ABS);
+input_set_capability(idev, EV_KEY, BTN_TOUCH);
+input_set_abs_params(idev, ABS_X, <span class="hl-number">0</span>, AIC_RTP_MAX_VAL, rtp-&gt;fuzz, <span class="hl-number">0</span>);
+input_set_abs_params(idev, ABS_Y, <span class="hl-number">0</span>, AIC_RTP_MAX_VAL, rtp-&gt;fuzz, <span class="hl-number">0</span>);
+<strong class="hl-keyword">if</strong> (rtp-&gt;pressure_det)
+        input_set_abs_params(idev, ABS_PRESSURE, <span class="hl-number">0</span>, AIC_RTP_MAX_VAL,
+                             rtp-&gt;fuzz, <span class="hl-number">0</span>);</pre></div>
+        </section><section class="- topic/section section" id="rtp_key_procedures__section_yyf_m5y_21c" data-ofbid="rtp_key_procedures__section_yyf_m5y_21c"><h2 class="- topic/title title sectiontitle">中断处理流程</h2><p class="- topic/p p" data-ofbid="d131506e41__20250121171605">RTP 控制器采集的数据完全依赖中断来上报给用户态，包括触摸位置、按下、抬起信息。 流程如下图：</p><figure class="- topic/fig fig fignone" id="rtp_key_procedures__fig_of1_5fp_g1c" data-ofbid="rtp_key_procedures__fig_of1_5fp_g1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_key_procedures__image_zyf_m5y_21c" src="../../../images/rtp/rtp_irq_flow_lb.png" width="384" alt="irq_flow2"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title"><em class="+ topic/ph hi-d/i ph i">RTP 驱动的中断处理流程</em></span></figcaption></figure><p class="- topic/p p" data-ofbid="d131506e50__20250121171605">“启动 worker”和“启动 worker”分别是对应手动模式、非周期模式的采样流程，因为这两种情况下都会有一些延迟操作，所以使用 worker 方式来处理。实际运行期间 RTP 只可能工作在一种单一模式，所以运行中只会有一个 worker 在参与调度。</p><p class="- topic/p p" data-ofbid="d131506e52__20250121171605">其中，检查的异常事件类型及处理方式如下图：</p><div class="- topic/p p" data-ofbid="d131506e54__20250121171605"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_key_procedures__image_azf_m5y_21c" src="../../../images/rtp/abnormal_event_type.png" width="384" alt="abnormal_event_type"/></div><br/></div><p class="- topic/p p" data-ofbid="d131506e58__20250121171605">其中，“数据不完整”仅在自动模式才会出现，实际上有三种原因导致不完整：</p><ol class="- topic/ol ol" id="rtp_key_procedures__ol_bzf_m5y_21c" data-ofbid="rtp_key_procedures__ol_bzf_m5y_21c"><li class="- topic/li li" data-ofbid="d131506e61__20250121171605">
+                    <p class="- topic/p p" data-ofbid="d131506e63__20250121171605">采样循环不完整：Sample Cycle Incomplete，一组采样点还没有完成就发生了抬起事件。</p>
+                </li><li class="- topic/li li" data-ofbid="d131506e66__20250121171605">
+                    <p class="- topic/p p" data-ofbid="d131506e68__20250121171605">数据超限：Data Over Uncertain Range，数据超出了有效范围。</p>
+                </li><li class="- topic/li li" data-ofbid="d131506e71__20250121171605">
+                    <p class="- topic/p p" data-ofbid="d131506e73__20250121171605">FIFO 下溢：FIFO 上溢意味着数据有效、软件读慢了，所以还可以继续数据。如果是下溢，意味着 FIFO 中的数据分组排列已经乱了，所以直接丢弃。</p>
+                </li></ol></section><section class="- topic/section section" id="rtp_key_procedures__section_czf_m5y_21c" data-ofbid="rtp_key_procedures__section_czf_m5y_21c"><h2 class="- topic/title title sectiontitle">手动模式的采样流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d131506e81__20250121171605">手动模式，需要通过软件触发的方式告诉 RTP 控制器要采集什么样的数据，所以采集样本的电信号配置、采集间隔、是否打开按压检测等，都需要在驱动中来妥善安排。
+                因为每次中断来了后，手动模式需要做的处理较多，而且有一些延迟处理，所以在驱动中使用了一个 worker 专门处理手动模式的流程（接口 aic_rtp_manual_worker()）。
+                手动模式的处理流程较复杂，建议通常情况下采样自动模式。</p>
+            <figure class="- topic/fig fig fignone" id="rtp_key_procedures__fig_tr4_m5y_21c" data-ofbid="rtp_key_procedures__fig_tr4_m5y_21c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="rtp_key_procedures__image_dzf_m5y_21c" src="../../../images/rtp/manual_mode.png" alt="manual_mode"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">手动模式的状态切换流程</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d131506e91__20250121171605">上图中，在蓝色方框的后面都会有一个判断：如果当前是否抬起状态，如果是就打开按压检测。为了流程的主干更加清晰，所以图中未标注出来。</p>
+        </section></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#rtp_key_procedures__section_vyf_m5y_21c" data-tocid="rtp_key_procedures__section_vyf_m5y_21c">初始化流程</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_key_procedures__section_yyf_m5y_21c" data-tocid="rtp_key_procedures__section_yyf_m5y_21c">中断处理流程</a></div></li><li class="section-item"><div class="section-title"><a href="#rtp_key_procedures__section_czf_m5y_21c" data-tocid="rtp_key_procedures__section_czf_m5y_21c">手动模式的采样流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

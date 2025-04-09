@@ -1,0 +1,212 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 Linux 系统中，MSH（Micro Shell）是一种轻量级的 shell 环境。MSH 命令提供了一套供用户在命令行调用的操作接口，主要用于调试或查看系统信息。以下是 ArtInChip SDK 编译过程中常见的 MSH 终端命令及其说明。 pin 在 MSH 终端使用 pin 命令，设置引脚相关功能，用于调试功能。 语法 pin options 参数 num 从硬件中获取 GPIO ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../gpio/gpio_debug.html"/><meta name="DC.relation" content="app.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-12-11"/><meta name="DC.date.modified" content="2024-12-19"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="pin_cmd_ref_guide"/><title>MSH 命令行工具参考指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/advanced/msh_cmd_ref_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/msh_cmd_ref_guide.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+
+    <body id="pin_cmd_ref_guide" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                    
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
+                        
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/advanced/msh_cmd_ref_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">MSH</span> 命令行工具参考指南</h1><div class="date inPage">19 Dec 2024</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div><div class="- topic/body concept/conbody body conbody"><p class="- topic/p p" data-ofbid="d203040e27__20250121171636">在 Linux 系统中，MSH（Micro Shell）是一种轻量级的 shell 环境。MSH 命令提供了一套供用户在命令行调用的操作接口，主要用于调试或查看系统信息。以下是
+            ArtInChip SDK 编译过程中常见的 MSH 终端命令及其说明。</p><section class="- topic/section section" id="pin_cmd_ref_guide__section_h2d_13s_sdc" data-ofbid="pin_cmd_ref_guide__section_h2d_13s_sdc"><h2 class="- topic/title title sectiontitle">pin</h2>
+            
+            <p class="- topic/p p" data-ofbid="d203040e34__20250121171636">在 MSH 终端使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">pin</span> 命令，设置引脚相关功能，用于调试功能。</p>
+            <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">语法</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_mfs_4bf_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_mfs_4bf_tdc">pin <var class="+ topic/keyword sw-d/varname keyword varname">options</var></pre></div>
+            <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">参数</strong><dl class="- topic/dl dl" id="pin_cmd_ref_guide__dl_w35_rbf_tdc" data-ofbid="pin_cmd_ref_guide__dl_w35_rbf_tdc"><dt class="- topic/dt dt dlterm" data-ofbid="d203040e53__20250121171636"><var class="+ topic/keyword sw-d/varname keyword varname">num</var></dt><dd class="- topic/dd dd">从硬件中获取 GPIO ID 编号。</dd><dd class="- topic/dd dd ddexpand">可选编号包括 PE02, PE2, PE.02, PE.2, pe02, pe2, pe.02,
+                            pe.2。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_w3p_dcf_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_w3p_dcf_tdc">pin num PA.<span class="hl-number">16</span></pre></dd><dt class="- topic/dt dt dlterm" data-ofbid="d203040e63__20250121171636"><var class="+ topic/keyword sw-d/varname keyword varname">mode</var></dt><dd class="- topic/dd dd">设置 GPIO 工作模式。</dd><dd class="- topic/dd dd ddexpand">可选模式包括 output/ input/ input_pullup/ input_pulldown/
+                            output_od<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_tfn_kcf_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_tfn_kcf_tdc">pin mode PA.<span class="hl-number">16</span> output</pre></dd><dt class="- topic/dt dt dlterm" data-ofbid="d203040e73__20250121171636"><var class="+ topic/keyword sw-d/varname keyword varname">read</var></dt><dd class="- topic/dd dd">读取 GPIO
+                            引脚电平状态<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_ets_ncf_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_ets_ncf_tdc">pin read PA.<span class="hl-number">16</span></pre></dd><dt class="- topic/dt dt dlterm" data-ofbid="d203040e81__20250121171636"><var class="+ topic/keyword sw-d/varname keyword varname">write</var></dt><dd class="- topic/dd dd">写入 GPIO 引脚电平状态</dd><dd class="- topic/dd dd ddexpand">可配置为 high/ low 或 on/
+                            off<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_fx5_scf_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_fx5_scf_tdc">pin write PA.<span class="hl-number">16</span> high</pre></dd><dt class="- topic/dt dt dlterm" data-ofbid="d203040e91__20250121171636"><var class="+ topic/keyword sw-d/varname keyword varname">help</var></dt><dd class="- topic/dd dd">获取命令帮助列表</dd></dl></div>
+        </section><section class="- topic/section section" id="pin_cmd_ref_guide__section_pyx_4j1_tdc" data-ofbid="pin_cmd_ref_guide__section_pyx_4j1_tdc"><h2 class="- topic/title title sectiontitle">控制 GPIO</h2>
+            
+            <ul class="- topic/ul ul" id="pin_cmd_ref_guide__ul_rng_v2h_tdc" data-ofbid="pin_cmd_ref_guide__ul_rng_v2h_tdc"><li class="- topic/li li" data-ofbid="d203040e103__20250121171636">读寄存器。<p class="- topic/p p" data-ofbid="d203040e105__20250121171636"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">p</span> 调试命令，用于打印 (print)
+                        某个变量、寄存器或内存地址的值。对于没有封装专有调试命令的功能，可使用 MSH 命令行下的 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">p</span>
+                        命令读写寄存器。</p><div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">语法</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_hy2_rj1_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_hy2_rj1_tdc">p <var class="+ topic/keyword sw-d/varname keyword varname">parameter_name</var></pre><div class="- topic/p p" data-ofbid="d203040e119__20250121171636"><strong class="+ topic/ph hi-d/b ph b">示例</strong>：读取
+                            0x18700000
+                            内存地址的值<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_kyl_c1h_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_kyl_c1h_tdc">p <span class="hl-number">0x18700000</span></pre></div><div class="- topic/p p" data-ofbid="d203040e125__20250121171636">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_m4q_h1h_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_m4q_h1h_tdc"><span class="hl-number">18700000</span>: <span class="hl-number">00000100</span> <span class="hl-number">00000100</span> <span class="hl-number">00000200</span> <span class="hl-number">00000101</span>
+<span class="hl-number">18700010</span>: <span class="hl-number">00000000</span> <span class="hl-number">00000000</span> <span class="hl-number">00000000</span> <span class="hl-number">00000000</span>
+<span class="hl-number">18700020</span>: <span class="hl-number">00000000</span> <span class="hl-number">00000000</span> <span class="hl-number">00000000</span> <span class="hl-number">00000000</span>
+<span class="hl-number">18700030</span>: <span class="hl-number">00000000</span> <span class="hl-number">00000000</span> <span class="hl-number">00000000</span> <span class="hl-number">00000000</span>
+</pre></div></div></li><li class="- topic/li li" data-ofbid="d203040e129__20250121171636">
+                    <p class="- topic/p p" data-ofbid="d203040e131__20250121171636">写寄存器。</p>
+                    <p class="- topic/p p" data-ofbid="d203040e134__20250121171636"><span class="+ topic/keyword sw-d/cmdname keyword cmdname">m</span> 调试命令，用于修改或写入内存中的某个地址的值。对于没有封装专有调试命令的功能，可使用 MSH 命令行下的
+                            <span class="+ topic/keyword sw-d/cmdname keyword cmdname">m</span> 命令读写寄存器。</p>
+                    <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">语法</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_dzy_qj1_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_dzy_qj1_tdc">m <var class="+ topic/keyword sw-d/varname keyword varname">parameter_name</var> <var class="+ topic/keyword sw-d/varname keyword varname">new_value</var></pre><div class="- topic/p p" data-ofbid="d203040e152__20250121171636"><strong class="+ topic/ph hi-d/b ph b">示例</strong>：将地址
+                                <code class="+ topic/ph pr-d/codeph ph codeph">0x18700004</code> 处的值设置为
+                            <code class="+ topic/ph pr-d/codeph ph codeph">0x101</code><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_qwm_31h_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_qwm_31h_tdc">m <span class="hl-number">0x18700000</span> <span class="hl-number">0x101</span></pre></div><div class="- topic/p p" data-ofbid="d203040e163__20250121171636">输出示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_rwm_31h_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_rwm_31h_tdc">value on <span class="hl-number">18700004</span> change from <span class="hl-number">0x100</span> to <span class="hl-number">0x101</span>.</pre></div></div>
+                </li></ul>
+        </section><section class="- topic/section section" id="pin_cmd_ref_guide__section_dsh_q2h_tdc" data-ofbid="pin_cmd_ref_guide__section_dsh_q2h_tdc"><h2 class="- topic/title title sectiontitle">自定义命令</h2>
+            
+            <div class="- topic/p p" data-ofbid="d203040e174__20250121171636">用户可以自定义 MSH 命令，通过宏接口 <span class="+ topic/keyword pr-d/apiname keyword apiname">MSH_CMD_EXPORT(name, desc)</span> 导出函数作为命令在 MSH
+                模式下执行。例如，可以定义一个打印 “Hello RT-Thread!” 的命令
+                <span class="+ topic/keyword sw-d/cmdname keyword cmdname">hello</span>，并通过以下方式导出：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="pin_cmd_ref_guide__codeblock_qnk_s2h_tdc" data-ofbid="pin_cmd_ref_guide__codeblock_qnk_s2h_tdc"><strong class="hl-keyword">void</strong> hello(<strong class="hl-keyword">void</strong>) {
+    rt_kprintf(<span class="hl-string">"Hello RT-Thread!"</span>);
+}
+MSH_CMD_EXPORT(hello, say hello to RT-Thread);
+```</pre></div>
+        </section></div></article></main></div>
+                        
+                        
+                        <div class=" wh_related_links d-print-none "><nav aria-label="Related Links" role="navigation" class="- topic/related-links related-links"><div class="- topic/linklist linklist relinfo"><strong>相关信息</strong><ul class="linklist related_link"><li class="linklist"><a class="- topic/link link navheader_parent_path" href="../gpio/gpio_debug.html" title="GPIO 调试指南">GPIO 调试指南</a></li><li class="linklist"><a class="- topic/link link navheader_parent_path" href="app.html" title="添加应用">添加应用</a></li></ul></div></nav></div>
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#pin_cmd_ref_guide__section_h2d_13s_sdc" data-tocid="pin_cmd_ref_guide__section_h2d_13s_sdc">pin</a></div></li><li class="section-item"><div class="section-title"><a href="#pin_cmd_ref_guide__section_pyx_4j1_tdc" data-tocid="pin_cmd_ref_guide__section_pyx_4j1_tdc">控制 GPIO</a></div></li><li class="section-item"><div class="section-title"><a href="#pin_cmd_ref_guide__section_dsh_q2h_tdc" data-tocid="pin_cmd_ref_guide__section_dsh_q2h_tdc">自定义命令</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style><!--
+
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    
+--></style>
+  
+
+  
+    
+  
+  
+    
+            
+   
+  
+
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div><div>
+    <div class="generation_time">
+      Update Time: 2025-01-21
+    </div>        
+  </div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>
