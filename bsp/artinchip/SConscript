@@ -301,6 +301,12 @@ if GetDepend('AIC_PANEL_DBI_ST7789V'):
 if GetDepend('AIC_PANEL_RGB_ST7701S'):
     src += Glob('drv/display/panel/panel_rgb_st7701s.c')
 
+if GetDepend('AIC_PANEL_RGB_NV3052'):
+    src += Glob('drv/display/panel/panel_rgb_nv3052.c')
+
+if GetDepend('AIC_PANEL_RGB_ST7703'):
+    src += Glob('drv/display/panel/panel_rgb_st7703.c')    
+
 if GetDepend('AIC_PANEL_RGB_GC9A01A'):
     src += Glob('drv/display/panel/panel_rgb_gc9a01a.c')
 

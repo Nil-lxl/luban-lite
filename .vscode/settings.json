@@ -17,5 +17,10 @@
 			"source": "Git Bash",
 			"args": ["-c \"source ${workspaceFolder}/tools/onestep.sh\""],
 		},
+	},
+	"files.associations": {
+		"aic_utils.h": "c",
+		"board.h": "c",
+		"panel_com.h": "c"
 	}
 }
