@@ -52,7 +52,7 @@ static int panel_enable(struct aic_panel *panel)
     panel_spi_wr_reg(0x2A,0xCF);
     panel_spi_wr_reg(0x38,0x9C);
     panel_spi_wr_reg(0x39,0xA7);
-    panel_spi_wr_reg(0x3A,0x55);//VCOM
+    panel_spi_wr_reg(0x3A,0x33);//VCOM
     panel_spi_wr_reg(0x91,0x77);
     panel_spi_wr_reg(0x92,0x77);
     panel_spi_wr_reg(0x99,0x52);
@@ -244,7 +244,7 @@ static struct display_timing nv3052_timing = {
 static struct panel_rgb rgb = {
     .mode = PRGB,
     .format = PRGB_16BIT_HD,
-    .clock_phase = DEGREE_0,
+    .clock_phase = DEGREE_90,
     .data_order = RGB,
     .data_mirror = 0,
 };

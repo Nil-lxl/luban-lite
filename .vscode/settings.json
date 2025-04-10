@@ -21,6 +21,7 @@
 	"files.associations": {
 		"aic_utils.h": "c",
 		"board.h": "c",
-		"panel_com.h": "c"
+		"panel_com.h": "c",
+		"*.inc": "c"
 	}
 }
