@@ -186,7 +186,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_UP, 3, "PC.4"},
     {2, PIN_PULL_UP, 3, "PC.5"},
     // {2, PIN_PULL_UP, 3, "PC.6"},
-    {5, PIN_PULL_UP, 3, "PE.11"},
+    // {5, PIN_PULL_UP, 3, "PE.11"},
 #endif
 #ifdef AIC_USING_CAP0
     {3, PIN_PULL_UP, 3, "PC.6"},
