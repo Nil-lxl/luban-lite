@@ -12,7 +12,7 @@
 #include <aic_utils.h>
 
 struct aic_pinmux aic_pinmux_config[] = {
-#ifdef AIC_PRGB_16BIT_LD
+#ifdef AIC_PRGB_16BIT_HD
     {2, PIN_PULL_DIS, 3, "PD.0"},//R
     {2, PIN_PULL_DIS, 3, "PD.1"},
     {2, PIN_PULL_DIS, 3, "PD.2"},

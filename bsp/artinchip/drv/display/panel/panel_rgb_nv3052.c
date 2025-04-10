@@ -230,7 +230,7 @@ static struct aic_panel_funcs nv3052_funcs = {
 };
 
 static struct display_timing nv3052_timing = {
-    .pixelclock = 37000000,
+    .pixelclock = 37*1000*1000,
     .hactive = 720,
     .hfront_porch = 46,
     .hback_porch = 44,
@@ -245,7 +245,7 @@ static struct panel_rgb rgb = {
     .mode = PRGB,
     .format = PRGB_16BIT_HD,
     .clock_phase = DEGREE_0,
-    .data_order = BGR,
+    .data_order = RGB,
     .data_mirror = 0,
 };
 
