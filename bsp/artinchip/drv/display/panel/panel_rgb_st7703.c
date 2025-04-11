@@ -264,7 +264,7 @@ static struct display_timing st7703_timing = {
 static struct panel_rgb rgb = {
     .mode = PRGB,
     .format = PRGB_16BIT_HD,
-    .clock_phase = DEGREE_0,
+    .clock_phase = DEGREE_90,
     .data_order = BGR,
     .data_mirror = 0,
 };

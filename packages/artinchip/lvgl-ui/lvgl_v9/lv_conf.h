@@ -43,8 +43,8 @@
 #define LV_COLOR_DEPTH          32
 #endif
 
-#define LV_USE_MEM_MONITOR 0
-#define LV_USE_PERF_MONITOR 0
+#define LV_USE_MEM_MONITOR 1
+#define LV_USE_PERF_MONITOR 1
 #define LV_USE_SYSMON   1
 #define LV_INDEV_DEF_READ_PERIOD 10
 

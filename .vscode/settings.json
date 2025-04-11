@@ -22,6 +22,8 @@
 		"aic_utils.h": "c",
 		"board.h": "c",
 		"panel_com.h": "c",
-		"*.inc": "c"
+		"*.inc": "c",
+		"app_entrance.h": "c",
+		"demo_hub.h": "c"
 	}
 }

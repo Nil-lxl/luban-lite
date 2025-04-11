@@ -146,6 +146,35 @@ static icon_app_list icon_list_480_272[] = {
     {LVGL_PATH(navigator/charging_station.png), LVGL_PATH(navigator/charging_station_selected.png), NULL},
 };
 
+static icon_app_list icon_list_720_720[] = {
+    {LVGL_PATH(navigator/dashboard.png), LVGL_PATH(navigator/dashboard_selected.png), dashboard_ui_cb},
+    {LVGL_PATH(navigator/elevator.png), LVGL_PATH(navigator/elevator_selected.png), elevator_ui_cb},
+    {LVGL_PATH(navigator/video.png), LVGL_PATH(navigator/video_selected.png), aic_video_ui_cb},
+    {LVGL_PATH(navigator/music.png), LVGL_PATH(navigator/music_selected.png), aic_audio_ui_cb},
+    {LVGL_PATH(navigator/coffee.png), LVGL_PATH(navigator/coffee_selected.png), coffee_ui_cb},
+    {LVGL_PATH(navigator/camera.png), LVGL_PATH(navigator/camera_selected.png), camera_ui_cb},
+    {LVGL_PATH(navigator/stream.png), LVGL_PATH(navigator/stream_selected.png), steam_box_ui_cb},
+    {LVGL_PATH(navigator/a86_box.png), LVGL_PATH(navigator/a86_box_selected.png), a_86box_ui_cb},
+
+    {LVGL_PATH(navigator/photo_frame.png), LVGL_PATH(navigator/photo_frame_selected.png), photo_frame_ui_cb},
+    {LVGL_PATH(navigator/widgets.png), LVGL_PATH(navigator/widgets_selected.png), widgets_example_cb},
+    {LVGL_PATH(navigator/stress.png), LVGL_PATH(navigator/stress_selected.png), NULL},
+    {LVGL_PATH(navigator/benchmark.png), LVGL_PATH(navigator/benchmark_selected.png), NULL},
+    {LVGL_PATH(navigator/keypad_encoder.png), LVGL_PATH(navigator/keypad_encoder_selected.png), input_test_ui_cb},
+    {LVGL_PATH(navigator/list.png), LVGL_PATH(navigator/list_selected.png), layout_list_ui_cb},
+    {LVGL_PATH(navigator/table.png), LVGL_PATH(navigator/table_selected.png), layout_table_ui_cb},
+    {LVGL_PATH(navigator/printer.png), LVGL_PATH(navigator/printer_selected.png), NULL},
+
+    {LVGL_PATH(navigator/weather.png), LVGL_PATH(navigator/weather_selected.png), NULL},
+    {LVGL_PATH(navigator/alarm_clock.png), LVGL_PATH(navigator/alarm_clock_selected.png), NULL},
+    {LVGL_PATH(navigator/calculator.png), LVGL_PATH(navigator/calculator_selected.png), NULL},
+    {LVGL_PATH(navigator/screen_casting.png), LVGL_PATH(navigator/screen_casting_selected.png), NULL},
+    {LVGL_PATH(navigator/monitor.png), LVGL_PATH(navigator/monitor_selected.png), NULL},
+    {LVGL_PATH(navigator/ebike.png), LVGL_PATH(navigator/ebike_selected.png), NULL},
+    {LVGL_PATH(navigator/gateway.png), LVGL_PATH(navigator/gateway_selected.png), NULL},
+    {LVGL_PATH(navigator/charging_station.png), LVGL_PATH(navigator/charging_station_selected.png), NULL},
+};
+
 static icon_app_list icon_list_1024_600[] = {
     {LVGL_PATH(navigator/dashboard.png), LVGL_PATH(navigator/dashboard_selected.png), dashboard_ui_cb},
     {LVGL_PATH(navigator/elevator.png), LVGL_PATH(navigator/elevator_selected.png), elevator_ui_cb},
@@ -253,6 +282,9 @@ void navigator_ui_init_impl(lv_obj_t *parent)
     if (disp_size == DISP_SMALL) {
         icon_list = icon_list_480_272;
         icon_num = (sizeof(icon_list_480_272) / sizeof(icon_list_480_272[0]));
+    } else if (disp_size == DISP_MEDIUM) {
+        icon_list = icon_list_720_720;
+        icon_num = (sizeof(icon_list_720_720) / sizeof(icon_list_720_720[0]));
     } else {
         icon_list = icon_list_1024_600;
         icon_num = (sizeof(icon_list_1024_600) / sizeof(icon_list_1024_600[0]));
