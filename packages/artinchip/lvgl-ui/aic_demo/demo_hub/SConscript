@@ -15,19 +15,15 @@ for d in list:
 if GetDepend(['PANEL_HACTIVE']):
     hactice = GetDepend('PANEL_HACTIVE')
 else:
-    hactice = 480
+    hactice = 720
 
 if hactice == 1024:
     install=[
             ('assets/1024x600/', 'rodata/'),
             ]
-if hactice == 720:
-    install=[
-            ('assets/720x720/', 'rodata/'),
-            ]
 else:
     install=[
-            ('assets/480x272/', 'rodata/'),
+            ('assets/720x720/', 'rodata/'),
             ]
 
 group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_DEMO_HUB_DEMO'], CPPPATH = CPPPATH,

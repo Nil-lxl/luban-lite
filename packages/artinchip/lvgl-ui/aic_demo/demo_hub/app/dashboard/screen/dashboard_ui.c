@@ -209,7 +209,7 @@ lv_obj_t *dashboard_ui_init(void)
     img_bg = lv_img_create(dashboard_ui);
     if (disp_size == DISP_SMALL) {
         lv_img_set_src(img_bg, LVGL_PATH(dashboard/bg/normal.png));
-    } else if (disp_size == DISP_LARGE) {
+    } else if (disp_size == DISP_LARGE||DISP_MEDIUM) {
         lv_img_set_src(img_bg, LVGL_PATH(dashboard/bg/normal.jpg));
     }
     lv_obj_set_align(img_bg, LV_ALIGN_CENTER);
