@@ -107,6 +107,7 @@ static void aic_elevator_player_impl(lv_obj_t *parent)
     lv_obj_t *ffmpeg = lv_ffmpeg_player_create(parent);
     lv_obj_set_size(ffmpeg, adaptive_width(715), adaptive_height(485));
     lv_obj_set_pos(ffmpeg, adaptive_width(300), adaptive_height(62));
+    // lv_ffmpeg_player_set_src(ffmpeg, LVGL_PATH_ORI(common/tft_video.mp4));
     lv_ffmpeg_player_set_src(ffmpeg, LVGL_PATH_ORI(common/elevator_mjpg.mp4));
     lv_ffmpeg_player_set_auto_restart(ffmpeg, true);
     lv_ffmpeg_player_set_cmd(ffmpeg, LV_FFMPEG_PLAYER_CMD_START);
