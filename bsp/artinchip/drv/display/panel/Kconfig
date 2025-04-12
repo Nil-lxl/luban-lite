@@ -30,6 +30,10 @@ if !AIC_DISP_PQ_TOOL
         bool "ArtInChip MIPI DSI ST7703 panel"
         depends on AIC_DISP_MIPI_DSI
 
+     config AIC_PANEL_DSI_ST77922
+        bool "ArtInChip MIPI DSI ST77922 panel"
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_ILI9881C
         bool "ArtInChip MIPI DSI ILI9881C panel"
         depends on AIC_DISP_MIPI_DSI

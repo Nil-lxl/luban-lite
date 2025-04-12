@@ -25,7 +25,7 @@ config AIC_RGB_MODE
 
 choice
     prompt "interface format"
-    default AIC_PRGB_16BIT_LD
+    default AIC_PRGB_16BIT_HD
     default AIC_PRGB_16BIT_LD if AIC_DISP_RGB_DRV_V10
     default AIC_PRGB_24BIT if AIC_DISP_RGB_DRV_V11
     default AIC_PRGB_16BIT_LD if AIC_DISP_RGB_DRV_V12

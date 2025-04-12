@@ -25,6 +25,7 @@
 		"*.inc": "c",
 		"app_entrance.h": "c",
 		"demo_hub.h": "c",
-		"ranges": "c"
+		"ranges": "c",
+		"panel_dsi.h": "c"
 	}
 }

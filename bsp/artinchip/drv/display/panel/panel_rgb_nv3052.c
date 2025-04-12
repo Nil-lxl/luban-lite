@@ -22,10 +22,10 @@ static void panel_gpio_init(void)
     panel_get_gpio(&reset_gpio, RESET_PIN);
     // panel_get_gpio(&sleep_gpio, SLEEP_PIN);
 
-    // panel_gpio_set_value(&sleep_gpio, 1);
+    panel_gpio_set_value(&reset_gpio, 1);
     aic_delay_ms(1);
     panel_gpio_set_value(&reset_gpio, 0);
-    aic_delay_ms(20);
+    aic_delay_ms(10);
     panel_gpio_set_value(&reset_gpio, 1);
     aic_delay_ms(120);
 }
@@ -230,7 +230,7 @@ static struct aic_panel_funcs nv3052_funcs = {
 };
 
 static struct display_timing nv3052_timing = {
-    .pixelclock = 37*1000*1000,
+    .pixelclock = 35*1000*1000,
     .hactive = 720,
     .hfront_porch = 46,
     .hback_porch = 44,
@@ -244,7 +244,7 @@ static struct display_timing nv3052_timing = {
 static struct panel_rgb rgb = {
     .mode = PRGB,
     .format = PRGB_16BIT_HD,
-    .clock_phase = DEGREE_90,
+    .clock_phase = DEGREE_180,
     .data_order = RGB,
     .data_mirror = 0,
 };

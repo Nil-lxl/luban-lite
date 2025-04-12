@@ -255,6 +255,9 @@ if GetDepend('AIC_PANEL_DSI_ST7797'):
 if GetDepend('AIC_PANEL_DSI_ST7703'):
     src += Glob('drv/display/panel/panel_dsi_st7703.c')
 
+if GetDepend('AIC_PANEL_DSI_ST77922'):
+    src += Glob('drv/display/panel/panel_dsi_st77922.c')
+
 if GetDepend('AIC_PANEL_DSI_ILI9881C'):
     src += Glob('drv/display/panel/panel_dsi_ili9881c.c')
 
