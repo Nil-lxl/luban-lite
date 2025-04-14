@@ -49,6 +49,10 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DSI_AXS15231B
         bool "ArtInChip MIPI DSI AXS15231B panel"
         depends on AIC_DISP_MIPI_DSI
+        
+    config AIC_PANEL_DSI_H078B06
+        bool "Hotlcd MIPI DSI H078B06 panel"
+        depends on AIC_DISP_MIPI_DSI    
 #
 # MIPI-DBI Type B I8080 Panel
 #

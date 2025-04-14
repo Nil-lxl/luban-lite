@@ -269,6 +269,9 @@ if GetDepend('AIC_PANEL_DSI_JD9365'):
 
 if GetDepend('AIC_PANEL_DSI_AXS15231B'):
     src += Glob('drv/display/panel/panel_dsi_axs15231b.c')
+
+if GetDepend('AIC_PANEL_DSI_H078B06'):
+    src += Glob('drv/display/panel/panel_dsi_h078b06.c')
 #
 # MIPI-DBI Type B I8080 Panel Driver
 #
