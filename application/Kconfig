@@ -209,6 +209,9 @@ config AIC_LVGL_BASE_DEMO
 config AIC_LVGL_METER_DEMO
     bool "LVGL demo of meter"
 
+config AIC_LVGL_TEST_DEMO
+    bool "LVGL demo of test"
+
 config AIC_LVGL_DEMO_HUB_DEMO
     bool "LVGL demo hub"
     help
