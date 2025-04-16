@@ -13,39 +13,31 @@
 #include "lvgl.h"
 #include "test_ui.h"
 
-static int end_flag = 0;
+static lv_obj_t* scr;
 
-static void gif_event(lv_event_t * e)
-{
-    lv_event_code_t code = lv_event_get_code(e);
-
-    if (code == LV_EVENT_READY) {
-        end_flag = 1;
+static void touch_cb(lv_event_t* e){
+    lv_event_code_t code=lv_event_get_code(e);
+    if(code==LV_EVENT_GESTURE){
+        lv_dir_t direction=lv_indev_get_gesture_dir(lv_indev_get_act());
+        if(direction=LV_DIR_TOP){
+            lv_obj_set_style_bg_color(scr,lv_palette_lighten(LV_PALETTE_ORANGE,3),0);
+        }
     }
 }
 
-int gif_check_finish()
+void test_ui_init()
 {
-    return end_flag;
-}
+    scr=lv_scr_act();
+    lv_obj_set_style_bg_color(scr,lv_palette_lighten(LV_PALETTE_BLUE,3),0);
 
-void gif_ui_init()
-{
-    lv_obj_t * img;
-    img = lv_gif_create(lv_scr_act());
+    lv_obj_t* sli=lv_slider_create(scr);
+    lv_obj_center(sli);
+    lv_obj_set_width(sli,1000);
 
-    lv_gif_set_src(img, LVGL_PATH(gif/bulb.gif));
-
-    printf("path:%s\n", LVGL_PATH(gif/bulb.gif));
-    // must call after lv_gif_set_src
-    lv_gif_set_loop_count(img, 1);
-    lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
-
-    lv_obj_add_event_cb(img, gif_event, LV_EVENT_ALL, NULL);
-    printf("gif_ini_ok\n");
+    lv_obj_add_event_cb(scr,touch_cb,LV_EVENT_ALL,NULL);
 }
 
 void ui_init(void)
 {
-    gif_ui_init();
+    test_ui_init();
 }

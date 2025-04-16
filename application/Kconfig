@@ -203,14 +203,17 @@ config AIC_LVGL_UI_BUILDER
     select LPKG_USING_FREETYPE
     bool "LVGL Support AiUIBuider"
 
+config AIC_LVGL_APP_UI_DEMO
+    bool "LVGL demo of app ui"
+    
+config AIC_LVGL_TEST_DEMO
+    bool "LVGL demo of test"
+    
 config AIC_LVGL_BASE_DEMO
     bool "LVGL demo with basic function"
 
 config AIC_LVGL_METER_DEMO
     bool "LVGL demo of meter"
-
-config AIC_LVGL_TEST_DEMO
-    bool "LVGL demo of test"
 
 config AIC_LVGL_DEMO_HUB_DEMO
     bool "LVGL demo hub"

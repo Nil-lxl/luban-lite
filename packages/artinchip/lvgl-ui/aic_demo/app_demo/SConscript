@@ -1,0 +1,24 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+src = Glob('*.c')
+# 增加源码路径
+src += Glob('./ui/*.c')
+src += Glob('./thread/*.c')
+
+CPPPATH = [cwd]
+# 增加头文件路径
+CPPPATH.append(cwd + './ui')
+CPPPATH.append(cwd + './thread')
+
+list = os.listdir(cwd)
+for d in list:
+    path = os.path.join(cwd, d)
+    if os.path.isfile(os.path.join(path, 'SConscript')):
+        group = group + SConscript(os.path.join(d, 'SConscript'))
+
+group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_APP_UI_DEMO'], CPPPATH = CPPPATH)
+
+Return('group')

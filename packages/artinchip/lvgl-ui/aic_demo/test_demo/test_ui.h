@@ -16,9 +16,7 @@ extern "C" {
 #include "lvgl.h"
 #include "aic_ui.h"
 
-void gif_ui_init(void);
-
-int gif_check_finish(void);
+void test_ui_init(void);
 
 #ifdef __cplusplus
 } /*extern "C"*/
