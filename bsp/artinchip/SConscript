@@ -322,6 +322,9 @@ if GetDepend('AIC_PANEL_RGB_NT35560'):
 if GetDepend('AIC_PANEL_RGB_ST77922'):
     src += Glob('drv/display/panel/panel_rgb_st77922.c')
 
+if GetDepend('AIC_PANEL_RGB_H028A19'):
+    src += Glob('drv/display/panel/panel_rgb_h028a19.c')    
+
 #
 # RGB Panel Driver IIC Init
 #

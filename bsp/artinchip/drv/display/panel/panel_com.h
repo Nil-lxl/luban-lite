@@ -60,6 +60,7 @@ extern struct aic_panel rgb_st7703;
 extern struct aic_panel rgb_gc9a01a;
 extern struct aic_panel rgb_nt35560;
 extern struct aic_panel rgb_st77922;
+extern struct aic_panel rgb_h028a19;
 
 /*
  * SRGB Panel

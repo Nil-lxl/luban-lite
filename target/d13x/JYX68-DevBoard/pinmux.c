@@ -12,6 +12,7 @@
 #include <aic_utils.h>
 
 struct aic_pinmux aic_pinmux_config[] = {
+    {1, PIN_PULL_DIS, 3, "PA.4"},  //wifi power on gpio
 #ifdef AIC_PRGB_16BIT_HD
     {2, PIN_PULL_DIS, 4, "PD.0"},//R
     {2, PIN_PULL_DIS, 4, "PD.1"},
