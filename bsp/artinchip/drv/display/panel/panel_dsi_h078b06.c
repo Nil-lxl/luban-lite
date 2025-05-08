@@ -8,7 +8,7 @@
 #include "panel_dsi.h"
 #include <aic_hal.h>
 
-#define H078B06_RESET_PIN    "PD.5"
+#define H078B06_RESET_PIN    "PD.17"
 
 static struct gpio_desc reset_gpio;
 static struct gpio_desc sleep_gpio;
