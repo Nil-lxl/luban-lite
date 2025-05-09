@@ -17,6 +17,7 @@ extern "C" {
 #include "aic_ui.h"
 
 void test_ui_init(void);
+void gray_lvl(void);
 
 #ifdef __cplusplus
 } /*extern "C"*/
