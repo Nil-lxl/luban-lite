@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -282,4 +282,36 @@ int camera_set_colorbar(struct rt_device *dev, bool enable)
         return -1;
 
     return DEV_IOCTL(dev, CAMERA_CMD_SET_COLORBAR, &enable);
+}
+
+int camera_start(struct rt_device *dev)
+{
+    if (!dev || !DEV_IOCTL)
+        return -1;
+
+    return DEV_IOCTL(dev, CAMERA_CMD_START, NULL);
+}
+
+int camera_stop(struct rt_device *dev)
+{
+    if (!dev || !DEV_IOCTL)
+        return -1;
+
+    return DEV_IOCTL(dev, CAMERA_CMD_STOP, NULL);
+}
+
+int camera_pause(struct rt_device *dev)
+{
+    if (!dev || !DEV_IOCTL)
+        return -1;
+
+    return DEV_IOCTL(dev, CAMERA_CMD_PAUSE, NULL);
+}
+
+int camera_resume(struct rt_device *dev)
+{
+    if (!dev || !DEV_IOCTL)
+        return -1;
+
+    return DEV_IOCTL(dev, CAMERA_CMD_RESUME, NULL);
 }

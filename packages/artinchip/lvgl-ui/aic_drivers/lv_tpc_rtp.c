@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -56,7 +56,7 @@ static calibration g_cal = {
 void lv_rtp_calibrate(rt_device_t rtp_dev, int fb_width, int fb_height);
 void lv_convert_adc_to_coord(rt_device_t rtp_dev, struct rt_touch_data *data);
 
-static void rtp_check_event_type(int event_type, int pressure)
+void rtp_check_event_type(int event_type, int pressure)
 {
     static int up_flag = 0;
 
@@ -359,6 +359,19 @@ void lv_rtp_calibrate(rt_device_t rtp_dev, int fb_width, int fb_height)
     rt_device_control(rtp_dev, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
 }
 
+static void lv_rtp_edge_area_protect(int *x, int *y)
+{
+    if (*x < 0)
+        *x = 0;
+    if (*y < 0)
+        *y = 0;
+    if (*x >= g_fb_width)
+        *x = g_fb_width - 1;
+    if (*y >= g_fb_height)
+        *y = g_fb_height - 1;
+}
+
+
 void lv_convert_adc_to_coord(rt_device_t rtp_dev, struct rt_touch_data *data)
 {
     int panel_x = 0;
@@ -378,6 +391,7 @@ void lv_convert_adc_to_coord(rt_device_t rtp_dev, struct rt_touch_data *data)
         panel_y = (panel_x * a[4] + panel_y * a[5] + a[3]) / a[6];
     }
 
+    lv_rtp_edge_area_protect(&panel_x, &panel_y);
     data->x_coordinate = panel_x;
     data->y_coordinate = panel_y;
 }

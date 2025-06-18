@@ -108,7 +108,7 @@ SECTIONS
   KEEP(*(VSymTab))
   __vsymtab_end = .;
   . = ALIGN(8);
-  
+
   /* section information for initial. */
   . = ALIGN(8);
   __rt_init_start = .;
@@ -150,7 +150,7 @@ SECTIONS
   *(.rodata.*)
   *(.srodata*)
   *(.rodata.str1.4)
-  . = ALIGN(0x4) ;
+  . = ALIGN(0x8) ;
     PROVIDE(__ctors_start__ = .);
   KEEP (*(SORT(.init_array.*)))
   KEEP (*(.init_array))

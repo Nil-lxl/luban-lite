@@ -76,8 +76,7 @@ struct rt_mtd_nand_driver_ops {
                                 rt_off_t page, rt_uint8_t *data,
                                 rt_uint32_t size);
     rt_err_t (*set_block_status)(struct rt_mtd_nand_device *device,
-                                rt_uint32_t block, rt_uint32_t block_pos,
-                                rt_uint32_t status);
+                                rt_uint32_t block, rt_uint32_t status);
     rt_uint32_t (*get_block_status)(struct rt_mtd_nand_device *device,
                                 rt_uint32_t block);
     rt_err_t (*map_user)(struct rt_mtd_nand_device *device, rt_uint8_t *oobbuf, rt_uint8_t *buf, rt_base_t start, rt_base_t nbytes);

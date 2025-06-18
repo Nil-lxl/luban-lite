@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,6 +15,8 @@ extern "C" {
 
 #include "lvgl.h"
 #include "aic_ui.h"
+#include "mpp_fb.h"
+#include "settings/usb_osd_settings.h"
 
 enum screen_lock_delay {
     SECONDS_15_LOCK,
@@ -51,30 +53,78 @@ enum screen_lock_mode {
 #define USB_OSD_WAKEUP_KEY    LV_USB_OSD_SETTINGS_WAKEUP_KEY
 
 #ifdef LV_USB_OSD_LOGO_IMAGE
-#define USB_OSD_UI_LOGO_IMAGE LV_USB_OSD_LOGO_IMAGE
+#define USB_OSD_UI_LOGO_IMAGE "logo/"LV_USB_OSD_LOGO_IMAGE
+#define USB_OSD_UI_LOGO_ROTATE_IMAGE "logo_rotate/"LV_USB_OSD_LOGO_IMAGE
 #endif
 
 #ifdef LV_USB_OSD_LOGO_VIDEO
 #define USB_OSD_UI_LOGO_VIDEO_PATH  "/data/lvgl_data/"
 #define USB_OSD_UI_LOGO_VIDEO       LV_USB_OSD_LOGO_VIDEO
-#if (AIC_FB_ROTATE_DEGREE == 0)
-#define USB_OSD_UI_LOGO_VIDEO_ROTATE    0
-#else
-#define USB_OSD_UI_LOGO_VIDEO_ROTATE    AIC_FB_ROTATE_DEGREE
+
+#define USB_OSD_UI_LOGO_IMAGE        "logo/logo.png"
+#define USB_OSD_UI_LOGO_ROTATE_IMAGE "logo_rotate/logo.png"
 #endif
-#endif /* LV_USB_OSD_LOGO_VIDEO */
 
-void usb_osd_ui_init(void);
-bool is_usb_disp_suspend(void);
-void usb_osd_modify_blank_status(bool enable);
-void back_video_screen(void);
-void back_settings_screen(void);
-
-void lv_load_video_screen(void);
+bool lv_is_usb_disp_suspend(void);
 
 #if !defined(LV_USB_OSD_PLAY_VIDEO)
 #define DISPLAY_VIDEO       (-1)
 #endif
+
+typedef enum {
+    STATE_USB_SUSPEND = (0x1 << 0),
+    STATE_USB_RESUME  = (0x1 << 1),
+    STATE_LOGO        = (0x1 << 2),
+    STATE_PICTURES    = (0x1 << 3),
+    STATE_VIDEO       = (0x1 << 4),
+    STATE_SETTINGS    = (0x1 << 5),
+    STATE_BLANK       = (0x1 << 6),
+
+    STATE_NUM,
+
+} osd_state_t;
+
+
+typedef struct osd_manager lv_osd_manager_t;
+typedef void (*state_handler)(lv_osd_manager_t*);
+
+struct state_info {
+    osd_state_t osd_state;
+    void (*handler)(lv_osd_manager_t* mgr);
+};
+
+#define VIDEO_SCREEN 0
+#define SETTINGS_SCREEN 1
+
+#define SCREEN_NUM  2
+
+struct osd_manager {
+    osd_state_t current_state;
+    osd_state_t new_state;
+
+    state_handler handlers[STATE_NUM];
+    lv_obj_t * screens[SCREEN_NUM];
+
+    struct mpp_fb *fb;
+    rt_sem_t osd_sem;
+
+    unsigned int current_alpha_mode;
+    unsigned int current_alpha_value;
+
+    unsigned int adjusted_alpha_mode;
+    unsigned int adjusted_alpha_value;
+
+    bool usb_suspend;
+    bool screen_blank;
+
+    unsigned int flags;
+};
+
+bool lv_get_ui_settings_state(void);
+
+void lv_update_ui_settings_state(void);
+
+void lv_blank_screen_enable(bool enable);
 
 #ifdef __cplusplus
 } /* extern "C" */

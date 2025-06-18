@@ -9,6 +9,15 @@
 
 #include "wifi_def.h"
 #include "aic_plat_types.h"
+#include "sys_al.h"
+
+#ifdef CHIP_SELECT_AIC8800D40L
+#define CONFIG_CHIPID_SELECT   PRODUCT_ID_AIC8800D80
+#elif defined(CHIP_SELECT_AIC8800DW)
+#define CONFIG_CHIPID_SELECT   PRODUCT_ID_AIC8800DW
+#else
+#define CONFIG_CHIPID_SELECT   PRODUCT_ID_AIC8800D80
+#endif
 
 #ifndef os_strcmp
 #define os_strcmp(s1, s2) strcmp((s1), (s2))

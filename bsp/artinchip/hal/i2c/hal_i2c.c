@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -321,9 +321,12 @@ int32_t hal_i2c_master_send_msg(aic_i2c_ctrl *i2c_dev,
             & (I2C_INTR_STOP_DET | I2C_INTR_START_DET))) {
         stop_time++;
         if (stop_time > I2C_TIMEOUT_DEF_VAL) {
+            hal_i2c_module_disable(i2c_dev);
             return I2C_TIMEOUT;
         }
     }
+
+    hal_i2c_module_disable(i2c_dev);
 
     return send_count;
 }
@@ -380,10 +383,13 @@ int32_t hal_i2c_master_receive_msg(aic_i2c_ctrl *i2c_dev,
     while (!(hal_i2c_get_raw_interrupt_state(i2c_dev)
             & (I2C_INTR_STOP_DET | I2C_INTR_START_DET))) {
         if (aic_get_time_ms() >= timecount) {
+            hal_i2c_module_disable(i2c_dev);
             return I2C_TIMEOUT;
-            break;
         }
     }
+
+    hal_i2c_module_disable(i2c_dev);
+
     return read_count;
 }
 

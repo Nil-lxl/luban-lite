@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -217,6 +217,7 @@ struct ov2659_dev {
     struct ov2659_pll_ctrl pll;
 
     bool streaming;
+    bool poweron;
 };
 
 static struct ov2659_dev g_ov2659_dev = {0};
@@ -974,14 +975,28 @@ out:
     return ret;
 }
 
+static bool ov2659_is_open(struct ov2659_dev *sensor)
+{
+    return sensor->poweron;
+}
+
 static int ov2659_power_off(struct ov2659_dev *sensor)
 {
+    if (!sensor->poweron)
+        return 0;
+
     camera_pin_set_high(sensor->pwdn_pin);
+
+    LOG_I("Power off");
+    sensor->poweron = false;
     return 0;
 }
 
 static int ov2659_power_on(struct ov2659_dev *sensor)
 {
+    if (sensor->poweron)
+        return 0;
+
     camera_pin_set_low(sensor->pwdn_pin);
 
     if (sensor->rst_pin) {
@@ -991,7 +1006,17 @@ static int ov2659_power_on(struct ov2659_dev *sensor)
         rt_thread_mdelay(3);
     }
 
+    LOG_I("Power on");
+    sensor->poweron = true;
     return 0;
+}
+
+static void ov2659_set_sleep(struct ov2659_dev *sensor, int enable)
+{
+    if (enable)
+        camera_pin_set_high(sensor->pwdn_pin);
+    else
+        camera_pin_set_low(sensor->pwdn_pin);
 }
 
 static int ov2659_detect(struct ov2659_dev *sensor)
@@ -1029,7 +1054,6 @@ static int ov2659_detect(struct ov2659_dev *sensor)
 
 static rt_err_t ov2659_init(rt_device_t dev)
 {
-    int ret = 0;
     struct ov2659_dev *sensor = &g_ov2659_dev;
 
     sensor->i2c = camera_i2c_get();
@@ -1051,27 +1075,26 @@ static rt_err_t ov2659_init(rt_device_t dev)
     sensor->frame_size = &ov2659_framesizes[OV2659_DFT_FRAMESIZE];
     sensor->format_ctrl_regs = ov2659_formats[OV2659_DFT_CODE].format_ctrl_regs;
     sensor->link_freq = OV2659_DFT_LINK_FREQ;
-
-    ov2659_power_on(sensor);
-    ret = ov2659_detect(sensor);
-    if (ret < 0)
-        goto error;
-
-    /* Calculate the PLL register value needed */
-    ov2659_pll_calc_params(sensor);
-
-    LOG_I("OV2659 inited");
-error:
-    ov2659_power_off(sensor);
-    return RT_EOK;
+    return 0;
 }
 
 static rt_err_t ov2659_open(rt_device_t dev, rt_uint16_t oflag)
 {
     struct ov2659_dev *sensor = (struct ov2659_dev *)dev;
 
+    if (ov2659_is_open(sensor))
+        return RT_EOK;
+
     ov2659_power_on(sensor);
-    LOG_I("OV2659 Open");
+    if (ov2659_detect(sensor)) {
+        ov2659_power_off(sensor);
+        return -RT_ERROR;
+    }
+
+    /* Calculate the PLL register value needed */
+    ov2659_pll_calc_params(sensor);
+
+    LOG_I("OV2659 inited");
     return RT_EOK;
 }
 
@@ -1079,8 +1102,11 @@ static rt_err_t ov2659_close(rt_device_t dev)
 {
     struct ov2659_dev *sensor = (struct ov2659_dev *)dev;
 
+    if (!ov2659_is_open(sensor))
+        return -RT_ERROR;
+
     ov2659_power_off(sensor);
-    LOG_I("OV2659 Close");
+    LOG_D("OV2659 Close");
     return RT_EOK;
 }
 
@@ -1106,6 +1132,22 @@ static int ov2659_stop(rt_device_t dev)
     return ov2659_s_stream((struct ov2659_dev *)dev, 0);
 }
 
+static int ov2659_pause(rt_device_t dev)
+{
+    struct ov2659_dev *sensor = (struct ov2659_dev *)dev;
+
+    ov2659_set_sleep(sensor, 1);
+    return 0;
+}
+
+static int ov2659_resume(rt_device_t dev)
+{
+    struct ov2659_dev *sensor = (struct ov2659_dev *)dev;
+
+    ov2659_set_sleep(sensor, 0);
+    return 0;
+}
+
 static rt_err_t ov2659_control(rt_device_t dev, int cmd, void *args)
 {
     switch (cmd) {
@@ -1113,6 +1155,10 @@ static rt_err_t ov2659_control(rt_device_t dev, int cmd, void *args)
         return ov2659_start(dev);
     case CAMERA_CMD_STOP:
         return ov2659_stop(dev);
+    case CAMERA_CMD_PAUSE:
+        return ov2659_pause(dev);
+    case CAMERA_CMD_RESUME:
+        return ov2659_resume(dev);
     case CAMERA_CMD_GET_FMT:
         return ov2659_get_fmt(dev, (struct mpp_video_fmt *)args);
     default:

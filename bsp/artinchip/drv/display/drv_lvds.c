@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -13,9 +13,11 @@
 struct aic_lvds_comp
 {
     void *regs;
+    u32 pixclk;
     u64 sclk_rate;
     u64 pll_disp_rate;
     struct aic_panel *panel;
+    struct panel_lvds *lvds;
 };
 static struct aic_lvds_comp *g_aic_lvds_comp;
 
@@ -67,7 +69,7 @@ static void lvds_phy_1_init(struct aic_lvds_comp *comp, u32 value)
 static int aic_lvds_clk_enable(void)
 {
     struct aic_lvds_comp *comp = aic_lvds_request_drvdata();
-    u32 pixclk = comp->panel->timings->pixelclock;
+    u32 pixclk = comp->pixclk;
 
     hal_clk_set_freq(CLK_PLL_FRA2, comp->pll_disp_rate);
     hal_clk_set_rate(CLK_SCLK, comp->sclk_rate, comp->pll_disp_rate);
@@ -122,7 +124,7 @@ lvds_set_option_config(struct aic_lvds_comp *comp, struct panel_lvds *lvds)
 static int aic_lvds_enable(void)
 {
     struct aic_lvds_comp *comp = aic_lvds_request_drvdata();
-    struct panel_lvds *lvds = comp->panel->lvds;
+    struct panel_lvds *lvds = comp->lvds;
 
     lvds_set_mode(comp, lvds);
     lvds_set_option_config(comp, lvds);
@@ -142,15 +144,24 @@ static int aic_lvds_disable(void)
     return 0;
 }
 
-static int aic_lvds_attach_panel(struct aic_panel *panel)
+static int aic_lvds_attach_panel(struct aic_panel *panel, struct panel_desc *desc)
 {
     struct aic_lvds_comp *comp = aic_lvds_request_drvdata();
-    u32 pixclk = panel->timings->pixelclock;
-    struct panel_lvds *lvds = panel->lvds;
     u64 pll_disp_rate = 0;
     int i = 0;
+    struct panel_lvds *lvds;
+    u32 pixclk;
 
+    if (desc) {
+        pixclk = desc->timings->pixelclock;
+        lvds = desc->lvds;
+    } else {
+        pixclk = panel->timings->pixelclock;
+        lvds = panel->lvds;
+    }
+    comp->lvds = lvds;
     comp->panel = panel;
+    comp->pixclk = pixclk;
 
     if (lvds->link_mode != DUAL_LINK)
         comp->sclk_rate = pixclk * 7;
@@ -174,12 +185,36 @@ static int aic_lvds_attach_panel(struct aic_panel *panel)
     return 0;
 }
 
+static int aic_lvds_get_output_bpp(void)
+{
+    struct aic_lvds_comp *comp = aic_lvds_request_drvdata();
+    struct panel_lvds *lvds = comp->lvds;
+    int bpp;
+
+    switch (lvds->mode) {
+    case NS:
+    case JEIDA_24BIT:
+        bpp = 24;
+        break;
+    case JEIDA_18BIT:
+        bpp = 18;
+        break;
+    default:
+        bpp = 24;
+        break;
+    }
+
+    aic_lvds_release_drvdata();
+    return bpp;
+}
+
 struct di_funcs aic_lvds_func = {
     .clk_enable = aic_lvds_clk_enable,
     .clk_disable = aic_lvds_clk_disable,
     .enable = aic_lvds_enable,
     .disable = aic_lvds_disable,
     .attach_panel = aic_lvds_attach_panel,
+    .get_output_bpp = aic_lvds_get_output_bpp,
 };
 
 static int aic_lvds_probe(void)

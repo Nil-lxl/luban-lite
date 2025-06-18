@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -408,6 +408,7 @@ int mjpeg_decode_sof(struct mjpeg_dec_ctx *s)
 
 static void set_frame_info(struct mjpeg_dec_ctx *s)
 {
+    s->curr_frame->mpp_frame.flags &= ~FRAME_FLAG_EOS;
     if(s->curr_packet->flag & PACKET_FLAG_EOS)
         s->curr_frame->mpp_frame.flags |= FRAME_FLAG_EOS;
     s->curr_frame->mpp_frame.buf.flags |= MPP_COLOR_SPACE_BT601_FULL_RANGE;
@@ -417,6 +418,11 @@ static void set_frame_info(struct mjpeg_dec_ctx *s)
     s->curr_frame->mpp_frame.buf.crop.width = s->rm_h_real_size[0];
     s->curr_frame->mpp_frame.buf.crop.height = s->rm_v_real_size[0];
     s->curr_frame->mpp_frame.pts = s->curr_packet->pts;
+    if (!s->decoder.allocator) {
+        for (int i = 0; i < 3; i++) {
+            s->curr_frame->mpp_frame.buf.stride[i] = s->rm_h_stride[i];
+        }
+    }
 }
 
 int mjpeg_decode_sos(struct mjpeg_dec_ctx *s,
@@ -478,8 +484,19 @@ int mjpeg_decode_sos(struct mjpeg_dec_ctx *s,
         cfg.frame_count = 1 + s->extra_frame_num;
         cfg.height = s->scale_height;
         cfg.width = s->scale_width;
+#ifdef LV_DISPLAY_ROTATE_EN
+        if (ALIGN_64B(s->rm_v_stride[0]) * s->rm_h_stride[0] >
+            ALIGN_64B(s->rm_h_stride[0]) * s->rm_v_stride[0] ) {
+            cfg.height_align = ALIGN_64B(s->rm_v_stride[0]);
+            cfg.stride = s->rm_h_stride[0];
+        } else {
+            cfg.height_align = s->rm_v_stride[0];
+            cfg.stride = ALIGN_64B(s->rm_h_stride[0]);
+        }
+#else
         cfg.height_align = s->rm_v_stride[0];
         cfg.stride = s->rm_h_stride[0];
+#endif
         cfg.pixel_format = s->pix_fmt;
         cfg.allocator = s->decoder.allocator;
         s->decoder.fm = fm_create(&cfg);
@@ -500,13 +517,13 @@ int mjpeg_decode_sos(struct mjpeg_dec_ctx *s,
 
     int offset = (s->raw_scan_buffer - s->curr_packet->data) + sos_size;
     logw("offste: %d", offset);
+    set_frame_info(s);
     if(ve_decode_jpeg(s, offset)) {
         s->error = JPEG_DECODER_ERROR_HARDWARE;
          printf("[%s:%d]\n",__FUNCTION__,__LINE__);
         return -1;
     }
 
-    set_frame_info(s);
 
     fm_decoder_frame_to_render(s->decoder.fm, s->curr_frame, 1);
     fm_decoder_put_frame(s->decoder.fm, s->curr_frame);

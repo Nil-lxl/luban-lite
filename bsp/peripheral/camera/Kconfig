@@ -8,17 +8,20 @@ choice
     default AIC_USING_CAMERA_OV5640
     depends on AIC_USING_CAMERA
 
-    config AIC_USING_CAMERA_OV7670
-        bool "Using camera OV7670"
-
-    config AIC_USING_CAMERA_OV5640
-        bool "Using camera OV5640"
+    config AIC_USING_CAMERA_OV2640
+        bool "Using camera OV2640"
 
     config AIC_USING_CAMERA_OV2659
         bool "Using camera OV2659"
 
-    config AIC_USING_CAMERA_OV2640
-        bool "Using camera OV2640"
+    config AIC_USING_CAMERA_OV5640
+        bool "Using camera OV5640"
+
+    config AIC_USING_CAMERA_OV7670
+        bool "Using camera OV7670"
+
+    config AIC_USING_CAMERA_OV9281
+        bool "Using camera OV9281"
 
     config AIC_USING_CAMERA_GC0308
         bool "Using camera GC0308"
@@ -32,6 +35,9 @@ choice
     config AIC_USING_CAMERA_SC030IOT
         bool "Using camera SC030IOT"
 
+    config AIC_USING_CAMERA_SC031IOT
+        bool "Using camera SC031IOT"
+
     config AIC_USING_CAMERA_SC031GS
         bool "Using camera SC031GS"
 
@@ -40,6 +46,9 @@ choice
 
     config AIC_USING_CAMERA_TP2825
         bool "Using camera TP2825"
+
+    config AIC_USING_CAMERA_TP9950
+        bool "Using camera TP9950"
 endchoice
 
 config AIC_CAMERA_I2C_CHAN

@@ -29,5 +29,6 @@ var properties =
   "webhelp.show.related.links" : "yes",
   "webhelp.show.top.menu" : "no",
   "webhelp.sitemap.priority" : "1.0",
+  "webhelp.top.menu.activated.on.click" : "no",
   "webhelp.top.menu.depth" : "3",
   "webhelp.topic.collapsible.elements.initial.state" : "expanded" };

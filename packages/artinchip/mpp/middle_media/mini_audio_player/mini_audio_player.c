@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -51,12 +51,13 @@ enum PLAYER_FILE_TYPE {
 };
 
 #define MINI_AUDIO_PLAYER_WAVE_BUFF_SIZE (4*1024)
-
+#define MAX_URI_LEN 128
 struct mini_audio_player {
-    char uri[128];
+    char uri[MAX_URI_LEN];
     int type;
     int fd;
     int state;
+    int force_stop;
     int volume;
     char *wav_buff;
     int wav_buff_size;
@@ -71,6 +72,8 @@ struct mini_audio_player {
     aicos_mutex_t lock;
     aicos_sem_t sem_thread_exit;
     aicos_sem_t sem_ack;
+    aicos_sem_t stop_ack;
+    int loop;
 };
 
 struct mini_audio_player_msg {
@@ -88,21 +91,45 @@ static int mini_audio_player_msg_send(struct mini_audio_player *player, int type
     return aicos_queue_send(player->mq, &msg);
 }
 
-int mini_audio_player_play(struct mini_audio_player *player,char *uri)
+static int play_start(struct mini_audio_player *player, char *uri)
 {
     int result = 0;
+    int len = strlen(uri)+1;
+    if (len > MAX_URI_LEN)
+        len = MAX_URI_LEN;
 
     aicos_mutex_take(player->lock, AICOS_WAIT_FOREVER);
-    if (player->state != MINI_AUDIO_PLAYER_STATE_STOPED) {
+    if (player->state != MINI_AUDIO_PLAYER_STATE_STOPED && player->state != MINI_AUDIO_PLAYER_STATE_INIT) {
         mini_audio_player_stop(player);
     }
-    strcpy(player->uri,uri);
+    player->force_stop = 0;
+    strncpy(player->uri, uri, len);
     result = mini_audio_player_msg_send(player, MINI_AUDIO_PLAYER_MSG_START, NULL);
     if (result != 1) {
         result = -1;
     }
-    aicos_sem_take(player->sem_ack,AICOS_WAIT_FOREVER);
+    aicos_sem_take(player->sem_ack, AICOS_WAIT_FOREVER);
     aicos_mutex_give(player->lock);
+    return result;
+}
+
+int mini_audio_player_play(struct mini_audio_player *player, char *uri)
+{
+    int result = 0;
+
+    player->loop = 0;
+    result = play_start(player, uri);
+
+    return result;
+}
+
+int mini_audio_player_play_loop(struct mini_audio_player *player, char *uri)
+{
+    int result = 0;
+
+    player->loop = 1;
+    result = play_start(player, uri);
+
     return result;
 }
 
@@ -111,12 +138,13 @@ int mini_audio_player_stop(struct mini_audio_player *player)
     int result = 0;
 
     aicos_mutex_take(player->lock, AICOS_WAIT_FOREVER);
-    if (player->state != MINI_AUDIO_PLAYER_STATE_STOPED) {
+    if (player->state != MINI_AUDIO_PLAYER_STATE_STOPED && player->state != MINI_AUDIO_PLAYER_STATE_INIT) {
         result = mini_audio_player_msg_send(player, MINI_AUDIO_PLAYER_MSG_STOP, NULL);
         if (result != 1) {
             result = -1;
         }
-        aicos_sem_take(player->sem_ack,AICOS_WAIT_FOREVER);
+        player->force_stop = 1;
+        aicos_sem_take(player->stop_ack, AICOS_WAIT_FOREVER);
     }
     aicos_mutex_give(player->lock);
 
@@ -133,7 +161,7 @@ int mini_audio_player_pause(struct mini_audio_player *player)
         if (result != 1) {
             result = -1;
         }
-        aicos_sem_take(player->sem_ack,AICOS_WAIT_FOREVER);
+        aicos_sem_take(player->sem_ack, AICOS_WAIT_FOREVER);
     }
     aicos_mutex_give(player->lock);
 
@@ -158,7 +186,7 @@ int mini_audio_player_resume(struct mini_audio_player *player)
     return result;
 }
 
-int mini_audio_player_get_media_info(struct mini_audio_player *player,struct mini_player_audio_info *audio_info)
+int mini_audio_player_get_media_info(struct mini_audio_player *player, struct mini_player_audio_info *audio_info)
 {
     if (player == NULL || audio_info == NULL) {
         return -1;
@@ -166,7 +194,8 @@ int mini_audio_player_get_media_info(struct mini_audio_player *player,struct min
     memcpy(audio_info,&player->audio_info,sizeof(struct mini_player_audio_info));
     return 0;
 }
-int mini_audio_player_set_volume(struct mini_audio_player *player,int vol)
+
+int mini_audio_player_set_volume(struct mini_audio_player *player, int vol)
 {
     int volume;
 
@@ -183,6 +212,7 @@ int mini_audio_player_set_volume(struct mini_audio_player *player,int vol)
     }
     return 0;
 }
+
 int mini_audio_player_get_volume(struct mini_audio_player *player,int *vol)
 {
     if (vol == NULL) {
@@ -191,6 +221,7 @@ int mini_audio_player_get_volume(struct mini_audio_player *player,int *vol)
     *vol = player->volume;
     return 0;
 }
+
 int mini_audio_player_get_state(struct mini_audio_player *player)
 {
     return player->state;
@@ -210,6 +241,10 @@ static int mini_audio_player_open(struct mini_audio_player *player)
         goto _exit;
     }
     ptr = strrchr(player->uri, '.');
+    if (ptr == NULL) {
+        MINI_AUDIO_PLAYER_ERROR("Invalid file uri\n");
+        goto _exit;
+    }
     if (!strncmp(ptr+1, "mp3", 3)) {
         player->type = PLAYER_FILE_MP3;
     } else if (!strncmp(ptr+1, "wav", 3)) {
@@ -231,7 +266,7 @@ static int mini_audio_player_open(struct mini_audio_player *player)
         goto _exit;
     }
 
-    aic_parser_create((unsigned char *)player->uri,&player->parser);
+    aic_parser_create((unsigned char *)player->uri, &player->parser);
     if (player->parser == NULL) {
         MINI_AUDIO_PLAYER_ERROR("aic_parser_create fail\n");
         goto _exit;
@@ -240,7 +275,7 @@ static int mini_audio_player_open(struct mini_audio_player *player)
         MINI_AUDIO_PLAYER_ERROR("aic_parser_init fail\n");
         goto _exit;
     }
-    if (aic_parser_get_media_info(player->parser,&media_info)) {
+    if (aic_parser_get_media_info(player->parser, &media_info)) {
         MINI_AUDIO_PLAYER_ERROR("aic_parser_get_media_info fail\n");
         goto _exit;
     }
@@ -249,7 +284,6 @@ static int mini_audio_player_open(struct mini_audio_player *player)
     player->audio_info.sample_rate = media_info.audio_stream.sample_rate;
     player->audio_info.nb_channel = media_info.audio_stream.nb_channel;
     player->audio_info.bits_per_sample = media_info.audio_stream.bits_per_sample;
-
 
     if (player->type == PLAYER_FILE_MP3 ||
         player->type == PLAYER_FILE_FLAC ||
@@ -360,7 +394,7 @@ static int mini_audio_playe_event_handler(struct mini_audio_player *player, int 
     int last_state;
 #endif
     //1-ok,other-fail
-    result = aicos_queue_receive(player->mq, &msg,timeout);
+    result = aicos_queue_receive(player->mq, &msg, timeout);
     if (result != 1) {
         event = MINI_AUDIO_PLAYER_MSG_NONE;
         return event;
@@ -375,7 +409,7 @@ static int mini_audio_playe_event_handler(struct mini_audio_player *player, int 
         break;
     case MINI_AUDIO_PLAYER_MSG_STOP:
         event = MINI_AUDIO_PLAYER_EVENT_STOP;
-        player->state = MINI_AUDIO_PLAYER_STATE_STOPED;
+        player->force_stop = 1;
         break;
 
     case MINI_AUDIO_PLAYER_MSG_PAUSE:
@@ -390,7 +424,6 @@ static int mini_audio_playe_event_handler(struct mini_audio_player *player, int 
 
     case MINI_AUDIO_PLAYER_MSG_DESTROY:
         event = MINI_AUDIO_PLAYER_EVENT_DESTROY;
-        //player->state = MINI_AUDIO_PLAYER_STATE_PLAYING;
         break;
 
     default:
@@ -404,18 +437,76 @@ static int mini_audio_playe_event_handler(struct mini_audio_player *player, int 
     return event;
 }
 
+// return val: 0 - break; 1 - continue
+static int audio_decode(struct mini_audio_player *player)
+{
+    int eos = 0;
+    int need_peek = 1;
+    int parser_ret = 0;
+    int decoder_ret = 0;
+    struct aic_parser_packet parser_pkt;
+    struct mpp_packet decoder_pkt;
+    struct aic_audio_frame audio_frame = {0};
+
+    if (!eos) {
+        if (need_peek) {
+            parser_ret = aic_parser_peek(player->parser, &parser_pkt);
+        }
+        if (parser_ret != PARSER_EOS) {
+            decoder_pkt.size =  parser_pkt.size;
+            decoder_ret = aic_audio_decoder_get_packet(player->decoder,&decoder_pkt,decoder_pkt.size);
+            if (decoder_ret == DEC_OK) {
+                parser_pkt.data = decoder_pkt.data;
+                parser_pkt.flag = 0;
+                aic_parser_read(player->parser,&parser_pkt);
+                decoder_pkt.flag = parser_pkt.flag;
+                aic_audio_decoder_put_packet(player->decoder, &decoder_pkt);
+                need_peek = 1;
+            } else {
+                need_peek = 0;
+            }
+        } else {
+            if (player->loop && (aic_parser_seek(player->parser, 0) >= 0)) {
+                need_peek = 1;
+                return 1;
+            }
+            eos = 1;
+        }
+    }
+    if (player->force_stop)
+        return 0;
+    decoder_ret = aic_audio_decoder_decode(player->decoder);
+    if (decoder_ret == DEC_NO_EMPTY_PACKET) {
+        /*Decoder in multi-thread conditions, the decoder internal
+            *packet buf may be fulled and returned no empty packet,
+            *so should sleep a minute */
+        usleep(5000);
+    }
+    decoder_ret = aic_audio_decoder_get_frame(player->decoder, &audio_frame);
+    if (decoder_ret == DEC_OK) {
+        aic_audio_render_rend(player->render, audio_frame.data, audio_frame.size);
+        aic_audio_decoder_put_frame(player->decoder, &audio_frame);
+        if (audio_frame.flag & PARSER_EOS) {
+            if (player->loop)
+                return 1;
+            return 0;
+        }
+    } else if (eos && DEC_NO_RENDER_FRAME == decoder_ret &&
+        !player->force_stop ) {
+        /*Decoder in multithread conditions, should sleep until all data
+            *decoding to complete*/
+        usleep(5000);
+    }
+    return 1;
+}
+
 static void mini_audio_player_entry(void *parameter)
 {
     int result;
     int event;
     struct aic_parser_packet parser_pkt;
-    struct mpp_packet decoder_pkt;
-    struct aic_audio_frame audio_frame;
     struct mini_audio_player *player = (struct mini_audio_player *)parameter;
-    int eos;
-    int need_peek = 1;
     int parser_ret = 0;
-    int decoder_ret = 0;
 
     while(1) {
         event = mini_audio_playe_event_handler(player, AICOS_WAIT_FOREVER);
@@ -425,6 +516,7 @@ static void mini_audio_player_entry(void *parameter)
         if (event != MINI_AUDIO_PLAYER_EVENT_PLAY) {
             continue;
         }
+
         /* open mp3 player */
         result = mini_audio_player_open(player);
         if (result != 0) {
@@ -432,83 +524,50 @@ static void mini_audio_player_entry(void *parameter)
             MINI_AUDIO_PLAYER_ERROR("mini_audio_player_open failed\n");
             continue;
         }
-        eos =0;
-        need_peek = 1;
+
+        player->state = MINI_AUDIO_PLAYER_STATE_PLAYING;
         while(1) {
             event = mini_audio_playe_event_handler(player, 0);
-            switch (event) {
-            case MINI_AUDIO_PLAYER_EVENT_NONE: {
+            if (event == MINI_AUDIO_PLAYER_EVENT_NONE) {
                 if (player->type != PLAYER_FILE_WAV) {
-                    if (!eos) {
-                        if (need_peek) {
-                            parser_ret = aic_parser_peek(player->parser,&parser_pkt);
-                        }
-                        if (parser_ret != PARSER_EOS) {
-                            decoder_pkt.size =  parser_pkt.size;
-                            decoder_ret = aic_audio_decoder_get_packet(player->decoder,&decoder_pkt,decoder_pkt.size);
-                            if (decoder_ret == DEC_OK) {
-                                parser_pkt.data = decoder_pkt.data;
-                                parser_pkt.flag = 0;
-                                aic_parser_read(player->parser,&parser_pkt);
-                                decoder_pkt.flag = parser_pkt.flag;
-                                aic_audio_decoder_put_packet(player->decoder,&decoder_pkt);
-                                need_peek = 1;
-                            } else {
-                                need_peek = 0;
-                            }
-                        } else {
-                            eos = 1;
-                        }
-                    }
-                    decoder_ret = aic_audio_decoder_decode(player->decoder);
-                    if (decoder_ret == DEC_NO_EMPTY_PACKET) {
-                        /*Decoder in multi-thread conditions, the decoder internal
-                         *packet buf may be fulled and returned no empty packet,
-                         *so should sleep a minute */
-                        usleep(5000);
-                    }
-                    decoder_ret = aic_audio_decoder_get_frame(player->decoder,&audio_frame);
-                    if (decoder_ret == DEC_OK) {
-                        aic_audio_render_rend(player->render,audio_frame.data,audio_frame.size);
-                        aic_audio_decoder_put_frame(player->decoder,&audio_frame);
-                        if (audio_frame.flag & PARSER_EOS) {
-                            player->state = MINI_AUDIO_PLAYER_STATE_STOPED;
-                        }
-                    } else if (eos && DEC_NO_RENDER_FRAME == decoder_ret &&
-                        player->state != MINI_AUDIO_PLAYER_STATE_STOPED) {
-                        /*Decoder in multithread conditions, should sleep until all data
-                         *decoding to complete*/
-                        usleep(5000);
-                    }
+                    result = audio_decode(player);
+                    if (result == 0)
+                        break;
+                    else
+                        continue;
                 } else {// wav
-                    parser_ret = aic_parser_peek(player->parser,&parser_pkt);
+                    parser_ret = aic_parser_peek(player->parser, &parser_pkt);
                     if (parser_ret == PARSER_EOS) {
-                        player->state = MINI_AUDIO_PLAYER_STATE_STOPED;
+                        if (player->loop && (aic_parser_seek(player->parser, 0) >= 0)) {
+                            continue;
+                        }
                         break;
                     }
                     if (parser_pkt.size > player->wav_buff_size) {
                         MINI_AUDIO_PLAYER_ERROR("pkt size[%d] larger than wav_buf_size[%d]\n",parser_pkt.size,player->wav_buff_size);
-                        player->state = MINI_AUDIO_PLAYER_STATE_STOPED;
                         break;
                     }
+                    if (player->force_stop)
+                        break;
                     parser_pkt.data = player->wav_buff;
-                    aic_parser_read(player->parser,&parser_pkt);
-                    aic_audio_render_rend(player->render,parser_pkt.data,parser_pkt.size);
+                    aic_parser_read(player->parser, &parser_pkt);
+                    if (player->force_stop)
+                        break;
+                    aic_audio_render_rend(player->render, parser_pkt.data, parser_pkt.size);
                 }
-                break;
-            }
-            case MINI_AUDIO_PLAYER_EVENT_PAUSE: {
+            } else if (event == MINI_AUDIO_PLAYER_EVENT_PAUSE) {
                 event = mini_audio_playe_event_handler(player, AICOS_WAIT_FOREVER);
-                break;
-            }
-            default:
-                break;
-            }
-            if (player->state == MINI_AUDIO_PLAYER_STATE_STOPED) {
-                break;
+                if (player->force_stop)
+                        break;
             }
         }
+
         mini_audio_player_close(player);
+
+        player->state = MINI_AUDIO_PLAYER_STATE_STOPED;
+        if (player->force_stop) {
+            aicos_sem_give(player->stop_ack);
+        }
     }
 _exit:
     aicos_sem_give(player->sem_thread_exit);
@@ -526,6 +585,7 @@ struct mini_audio_player* mini_audio_player_create(void)
     }
 
     memset(player,0x00,sizeof(struct mini_audio_player));
+    player->state = MINI_AUDIO_PLAYER_STATE_INIT;
 
     player->mq = aicos_queue_create(sizeof(struct mini_audio_player_msg), 10);
 
@@ -552,7 +612,13 @@ struct mini_audio_player* mini_audio_player_create(void)
         goto _exit;
     }
 
-    player->tid = aicos_thread_create("mini_audio_player", 32 * 1024, 18,
+    player->stop_ack = aicos_sem_create(0);
+    if (player->stop_ack == NULL) {
+        MINI_AUDIO_PLAYER_ERROR("stop_ack error\n");
+        goto _exit;
+    }
+
+    player->tid = aicos_thread_create("mini_audio_player", 32 * 1024, 20,
                                       mini_audio_player_entry, player);
     if (player->tid == NULL) {
         MINI_AUDIO_PLAYER_ERROR("aicos_thread_create error\n");
@@ -581,6 +647,11 @@ _exit:
             player->sem_ack = NULL;
         }
 
+        if (player->stop_ack) {
+            aicos_sem_delete(player->stop_ack);
+            player->stop_ack = NULL;
+        }
+
         aicos_free(MEM_DEFAULT, player);
     }
     return NULL;
@@ -589,8 +660,8 @@ _exit:
 int mini_audio_player_destroy(struct mini_audio_player *player)
 {
     aicos_mutex_take(player->lock, AICOS_WAIT_FOREVER);
-    if (player->state != MINI_AUDIO_PLAYER_STATE_STOPED) {
-        MINI_AUDIO_PLAYER_DEBUG(" ");
+    if (player->state != MINI_AUDIO_PLAYER_STATE_STOPED && player->state != MINI_AUDIO_PLAYER_STATE_INIT) {
+        MINI_AUDIO_PLAYER_DEBUG("player->state: %d ", player->state);
         mini_audio_player_stop(player);
     }
     aicos_mutex_give(player->lock);
@@ -598,44 +669,48 @@ int mini_audio_player_destroy(struct mini_audio_player *player)
     if (player->tid) {
         mini_audio_player_msg_send(player, MINI_AUDIO_PLAYER_MSG_DESTROY, NULL);
         MINI_AUDIO_PLAYER_DEBUG(" ");
-        aicos_sem_take(player->sem_thread_exit,AICOS_WAIT_FOREVER);
+        aicos_sem_take(player->sem_thread_exit, AICOS_WAIT_FOREVER);
     }
     MINI_AUDIO_PLAYER_DEBUG(" ");
 
-    if (player) {
-        if (player->mq) {
-            aicos_queue_delete(player->mq);
-            player->mq = NULL;
-        }
-
-        if (player->lock) {
-            rt_mutex_delete(player->lock);
-            player->lock = NULL;
-        }
-
-        if (player->sem_thread_exit) {
-            aicos_sem_delete(player->sem_thread_exit);
-            player->sem_thread_exit = NULL;
-        }
-
-        if (player->sem_ack) {
-            aicos_sem_delete(player->sem_ack);
-            player->sem_ack = NULL;
-        }
-
-        if (player->wav_buff) {
-            aicos_free(MEM_DEFAULT, player->wav_buff);
-            player->wav_buff = NULL;
-            player->wav_buff_size = 0;
-        }
-
-        if (player->tid) {
-            aicos_thread_delete(player->tid);
-            player->tid = NULL;
-        }
-
-        aicos_free(MEM_DEFAULT, player);
+    if (player->mq) {
+        aicos_queue_delete(player->mq);
+        player->mq = NULL;
     }
+
+    if (player->lock) {
+        rt_mutex_delete(player->lock);
+        player->lock = NULL;
+    }
+
+    if (player->sem_thread_exit) {
+        aicos_sem_delete(player->sem_thread_exit);
+        player->sem_thread_exit = NULL;
+    }
+
+    if (player->sem_ack) {
+        aicos_sem_delete(player->sem_ack);
+        player->sem_ack = NULL;
+    }
+
+    if (player->stop_ack) {
+        aicos_sem_delete(player->stop_ack);
+        player->stop_ack = NULL;
+    }
+
+    if (player->wav_buff) {
+        aicos_free(MEM_DEFAULT, player->wav_buff);
+        player->wav_buff = NULL;
+        player->wav_buff_size = 0;
+    }
+
+    if (player->tid) {
+        aicos_thread_delete(player->tid);
+        player->tid = NULL;
+    }
+
+    aicos_free(MEM_DEFAULT, player);
+
     return 0;
 }
 

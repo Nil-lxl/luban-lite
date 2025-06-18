@@ -1,15 +1,15 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 源代码位于： bsp/artinchip/drv/audio/drv_audio.c : Playback 的 driver 层驱动 bsp/artinchip/drv/audio/drv_dmic.c : DMIC 的 driver 层驱动 bsp/artinchip/drv/audio/drv_amic.c : AMIC 的 driver 层驱动 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/audio/audio_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/audio/audio_test_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/audio/audio_faq.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e3690"/><meta name="wh-source-relpath" content="topics/sdk/audio/audio_design_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/audio/audio_design_guide.html"/>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="源码说明 源代码位于： bsp/artinchip/drv/audio/drv_audio.c : Playback 的 driver 层驱动 bsp/artinchip/drv/audio/drv_dmic.c : DMIC 的 driver 层驱动 bsp/artinchip/drv/audio/drv_amic.c : AMIC 的 driver 层驱动 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/audio/audio_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/audio/audio_test_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/audio/audio_faq.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>设计说明</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3703e4039"/><meta name="wh-source-relpath" content="topics/sdk/audio/audio_design_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/audio/audio_design_guide.html"/>
 
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
-    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
-    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
-    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
-<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
 
     <body id="id" class="wh_topic_page frmBody">
         <a href="#wh_topic_body" class="sr-only sr-only-focusable">
@@ -21,12 +21,12 @@
         
         <header class="navbar navbar-default wh_header">
     <div class="container-fluid">
-        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
             <div class="wh_logo_and_publication_title_container">
                 <div class="wh_logo_and_publication_title">
                     
-                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
-                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
                     
                 </div>
                 
@@ -39,13 +39,6 @@
                 
                 
             </div>
-        </div>
-    </div>
-</header>
-        
-        
-         
-        
         <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
             
             
@@ -54,7 +47,14 @@
             
             
             
-        </div>
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
         
         <div class="container-fluid" id="wh_topic_container">
             <div class="row">
@@ -94,7 +94,7 @@
                         <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
                             <div id="wh_publication_toc_content">
 		                        
-                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d5856e2360" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d5856e2360-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d5856e2360-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d5856e2435" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d5856e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d5856e2435-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d5856e3357" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d5856e3357-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d5856e3357-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、SPI NAND、SPI NOR<span class="ph"> 以及文件系统</span> 等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d5856e3639" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d5856e3639-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d5856e3639-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e3654" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e3654-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d5856e3654-link">Audio 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e3666" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_configure.html" id="id-d5856e3666-link">Audio 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3678" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_test_guide.html" id="id-d5856e3678-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e3690" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_design_guide.html" id="id-d5856e3690-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e3702" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_faq.html" id="id-d5856e3702-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e3714" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e3714-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide_2.html" id="id-d5856e3714-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d5856e3955" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d5856e3955-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide_2.html" id="concept_h4d_fwt_tzb-d5856e3955-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d5856e4075" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d5856e4075-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide_2.html" id="ge-d5856e4075-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d5856e4195" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d5856e4195-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide_2.html" id="i2s-d5856e4195-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d5856e4303" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d5856e4303-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide_2.html" id="ve-d5856e4303-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d5856e4363" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d5856e4363-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide_2.html" id="mpp-d5856e4363-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d5856e4495" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d5856e4495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide_2.html" id="mpp_0-d5856e4495-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4579" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4579-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d5856e4579-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4651" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4651-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d5856e4651-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e4724" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e4724-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d5856e4724-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d5856e4868" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d5856e4868-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d5856e4868-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d5856e6083" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d5856e6083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d5856e6083-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3703e2372" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3703e2372-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3703e2372-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3703e2556" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3703e2556-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3703e2556-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3703e3646" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3703e3646-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3703e3646-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d3703e3980" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d3703e3980-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3703e3980-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e3997" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e3997-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d3703e3997-link">Audio 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e4011" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_configure.html" id="id-d3703e4011-link">Audio 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4025" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_test_guide.html" id="id-d3703e4025-link">测试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d3703e4039" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_design_guide.html" id="id-d3703e4039-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4053" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_faq.html" id="id-d3703e4053-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e4067" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e4067-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide.html" id="id-d3703e4067-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d3703e4350" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d3703e4350-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide.html" id="concept_h4d_fwt_tzb-d3703e4350-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d3703e4492" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d3703e4492-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide.html" id="ge-d3703e4492-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d3703e4634" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d3703e4634-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide.html" id="i2s-d3703e4634-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d3703e4760" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d3703e4760-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide.html" id="ve-d3703e4760-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d3703e4832" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d3703e4832-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html" id="mpp-d3703e4832-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d3703e4986" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d3703e4986-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide.html" id="mpp_0-d3703e4986-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5084" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5084-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d3703e5084-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5168" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5168-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d3703e5168-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5253" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5253-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d3703e5253-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d3703e5421" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d3703e5421-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3703e5421-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3703e6676" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3703e6676-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3703e6676-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
 		                        
                             </div>
                         </nav>
@@ -112,126 +112,213 @@
                             </span>
                         </button>
                         
-                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/audio/audio_design_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
-                    Read time: 6 minute(s)
-                </div><div class="- topic/body body"><section class="- topic/section section" id="id__section_j4p_djv_ddc" data-ofbid="id__section_j4p_djv_ddc"><h2 class="- topic/title title sectiontitle">源码说明</h2>
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/audio/audio_design_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">设计说明</h1>
+    
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+                    Read time: 7 minute(s)
+                </div>
+    
+    <div class="- topic/body body">
+        <section class="- topic/section section" id="id__section_j4p_djv_ddc" data-ofbid="id__section_j4p_djv_ddc"><h2 class="- topic/title title sectiontitle">源码说明</h2>
             
-            <p class="- topic/p p" data-ofbid="d133095e24__20250121171606">源代码位于：</p>
-            <ul class="- topic/ul ul simple" id="id__ul_ygz_bjv_ddc" data-ofbid="id__ul_ygz_bjv_ddc"><li class="- topic/li li" data-ofbid="d133095e28__20250121171606">
-                    <p class="- topic/p p" data-ofbid="d133095e30__20250121171606"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/audio/drv_audio.c</span>:
+            <p class="- topic/p p" data-ofbid="d151129e33__20250409171048">源代码位于：</p>
+            <ul class="- topic/ul ul simple" id="id__ul_ygz_bjv_ddc" data-ofbid="id__ul_ygz_bjv_ddc">
+                <li class="- topic/li li" data-ofbid="d151129e38__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d151129e40__20250409171048"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/audio/drv_audio.c</span>:
                         Playback 的 driver 层驱动</p>
-                </li><li class="- topic/li li" data-ofbid="d133095e35__20250121171606">
-                    <p class="- topic/p p" data-ofbid="d133095e37__20250121171606"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/audio/drv_dmic.c</span>:
+                </li>
+                <li class="- topic/li li" data-ofbid="d151129e46__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d151129e48__20250409171048"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/audio/drv_dmic.c</span>:
                         DMIC 的 driver 层驱动</p>
-                </li><li class="- topic/li li" data-ofbid="d133095e42__20250121171606">
-                    <p class="- topic/p p" data-ofbid="d133095e44__20250121171606"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/audio/drv_amic.c</span>:
+                </li>
+                <li class="- topic/li li" data-ofbid="d151129e54__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d151129e56__20250409171048"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/drv/audio/drv_amic.c</span>:
                         AMIC 的 driver 层驱动</p>
-                </li><li class="- topic/li li" data-ofbid="d133095e49__20250121171606">
-                    <p class="- topic/p p" data-ofbid="d133095e51__20250121171606"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/hal/audio/hal_audio.c</span>:
+                </li>
+                <li class="- topic/li li" data-ofbid="d151129e62__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d151129e64__20250409171048"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/hal/audio/hal_audio.c</span>:
                         audio 模块的 hal 层驱动</p>
-                </li><li class="- topic/li li" data-ofbid="d133095e56__20250121171606">
-                    <p class="- topic/p p" data-ofbid="d133095e58__20250121171606"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_audio.h</span>:
+                </li>
+                <li class="- topic/li li" data-ofbid="d151129e70__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d151129e72__20250409171048"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_audio.h</span>:
                         audio 模块的 hal 层头文件</p>
-                </li><li class="- topic/li li" data-ofbid="d133095e63__20250121171606">
-                    <p class="- topic/p p" data-ofbid="d133095e65__20250121171606"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_audio_reg.h</span>:
+                </li>
+                <li class="- topic/li li" data-ofbid="d151129e79__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d151129e81__20250409171048"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/artinchip/include/hal/hal_audio_reg.h</span>:
                         audio 模块的 hal 层头文件，用于寄存器定义</p>
-                </li></ul>
-        </section><section class="- topic/section section" id="id__section_cvz_gjv_ddc" data-ofbid="id__section_cvz_gjv_ddc"><h2 class="- topic/title title sectiontitle">RT-Thread
+                </li>
+            </ul>
+        </section>
+        <section class="- topic/section section" id="id__section_cvz_gjv_ddc" data-ofbid="id__section_cvz_gjv_ddc"><h2 class="- topic/title title sectiontitle">RT-Thread
                 Audio 框架</h2>
             
-            <p class="- topic/p p" data-ofbid="d133095e76__20250121171606"> RT-Thread 定义了一套音频框架，driver
+            <p class="- topic/p p" data-ofbid="d151129e94__20250409171048"> RT-Thread 定义了一套音频框架，driver
                 层的驱动就是为了对接音频框架。音频框架在录音端和播放端采用了两种不同的机制，详细说明如下所示：</p>
             
-            <ul class="- topic/ul ul" id="id__ul_zhz_vlv_ddc" data-ofbid="id__ul_zhz_vlv_ddc"><li class="- topic/li li" data-ofbid="d133095e80__20250121171606"><strong class="+ topic/ph hi-d/b ph b">播放端框架</strong>
-                            工作流程如下：<div class="- topic/p p" data-ofbid="d133095e84__20250121171606">应用层：<ol class="- topic/ol ol" id="id__ol_i1q_ylv_ddc" data-ofbid="id__ol_i1q_ylv_ddc"><li class="- topic/li li" data-ofbid="d133095e87__20250121171606">应用层从存储设备（如 SD 卡、文件系统等）中读取音频数据。</li><li class="- topic/li li" data-ofbid="d133095e89__20250121171606">读取到的音频数据被写入到内存池的 block 中。<p class="- topic/p p" data-ofbid="d133095e91__20250121171606">使用数据队列来管理这些内存池的
-                                block，确保数据的有序传输。</p></li><li class="- topic/li li" data-ofbid="d133095e93__20250121171606">从数据队列中依次取出音频数据。</li><li class="- topic/li li" data-ofbid="d133095e95__20250121171606">将取出的音频数据写入到 audio buffer 中，audio buffer 是一个环形缓冲区。</li><li class="- topic/li li" data-ofbid="d133095e97__20250121171606">通过 DMA 将 audio buffer 中的音频数据写入到硬件的 TXFIFO 中进行播放。</li></ol></div><div class="- topic/p p" data-ofbid="d133095e99__20250121171606">驱动层：<ul class="- topic/ul ul" id="id__ul_j2r_dmv_ddc" data-ofbid="id__ul_j2r_dmv_ddc"><li class="- topic/li li" data-ofbid="d133095e102__20250121171606">确保音频数据的及时写入。</li><li class="- topic/li li" data-ofbid="d133095e104__20250121171606">利用 DMA 技术将音频数据高效地搬运到硬件的 TXFIFO 中。</li></ul></div><figure class="- topic/fig fig fignone" id="id__fig_t4g_bjv_ddc" data-ofbid="id__fig_t4g_bjv_ddc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_u4g_bjv_ddc" src="../../../images/media/playback_arch1.png" alt="playback_arch1"/></div><br/></figure>
+            <ul class="- topic/ul ul" id="id__ul_zhz_vlv_ddc" data-ofbid="id__ul_zhz_vlv_ddc">
+                <li class="- topic/li li" data-ofbid="d151129e99__20250409171048"><strong class="+ topic/ph hi-d/b ph b">播放端框架</strong>
+                            工作流程如下：<div class="- topic/p p" data-ofbid="d151129e103__20250409171048">应用层：<ol class="- topic/ol ol" id="id__ol_i1q_ylv_ddc" data-ofbid="id__ol_i1q_ylv_ddc">
+                            <li class="- topic/li li" data-ofbid="d151129e107__20250409171048">应用层从存储设备（如 SD 卡、文件系统等）中读取音频数据。</li>
+                            <li class="- topic/li li" data-ofbid="d151129e110__20250409171048">读取到的音频数据被写入到内存池的 block 中。<p class="- topic/p p" data-ofbid="d151129e112__20250409171048">使用数据队列来管理这些内存池的
+                                block，确保数据的有序传输。</p></li>
+                            <li class="- topic/li li" data-ofbid="d151129e115__20250409171048">从数据队列中依次取出音频数据。</li>
+                            <li class="- topic/li li" data-ofbid="d151129e118__20250409171048">将取出的音频数据写入到 audio buffer 中，audio buffer 是一个环形缓冲区。</li>
+                            <li class="- topic/li li" data-ofbid="d151129e121__20250409171048">通过 DMA 将 audio buffer 中的音频数据写入到硬件的 TXFIFO 中进行播放。</li>
+                        </ol></div><div class="- topic/p p" data-ofbid="d151129e124__20250409171048">驱动层：<ul class="- topic/ul ul" id="id__ul_j2r_dmv_ddc" data-ofbid="id__ul_j2r_dmv_ddc">
+                            <li class="- topic/li li" data-ofbid="d151129e128__20250409171048">确保音频数据的及时写入。</li>
+                            <li class="- topic/li li" data-ofbid="d151129e131__20250409171048">利用 DMA 技术将音频数据高效地搬运到硬件的 TXFIFO 中。</li>
+                        </ul></div><figure class="- topic/fig fig fignone" id="id__fig_t4g_bjv_ddc" data-ofbid="id__fig_t4g_bjv_ddc">
+                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_u4g_bjv_ddc" src="../../../images/media/playback_arch1.png" alt="playback_arch1"/></div><br/>
+                    </figure>
                     
                     
-                </li><li class="- topic/li li" data-ofbid="d133095e111__20250121171606">
-                    <div class="- topic/div div section" id="id__id5"><strong class="+ topic/ph hi-d/b ph b">录音端框架</strong>工作流程如下：<div class="- topic/p p" data-ofbid="d133095e117__20250121171606">应用层：<ol class="- topic/ol ol" id="id__ol_skx_fmv_ddc" data-ofbid="id__ol_skx_fmv_ddc"><li class="- topic/li li" data-ofbid="d133095e120__20250121171606">在录音端框架中，虚拟了一个 pipe 设备，这个设备实际上是一个 ringbuffer。<p class="- topic/p p" data-ofbid="d133095e122__20250121171606">driver 层驱动负责管理一个
-                                        RX buffer，RX buffer 也是一个环形缓冲区。</p></li><li class="- topic/li li" data-ofbid="d133095e124__20250121171606">DMA 负责将麦克风（MIC）接收到的数据搬运到 RX buffer 中。</li><li class="- topic/li li" data-ofbid="d133095e126__20250121171606">DMA 再通过写 pipe 设备将音频数据写入到 pipe 的 ringbuffer 中。</li><li class="- topic/li li" data-ofbid="d133095e128__20250121171606">应用层代码通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_read</span> 每次从 pipe 设备中读取音频数据。</li><li class="- topic/li li" data-ofbid="d133095e133__20250121171606">读取到的音频数据可以进一步处理并写入到 WAV 文件中。</li></ol></div><div class="- topic/p p" data-ofbid="d133095e135__20250121171606">驱动层：<ul class="- topic/ul ul" id="id__ul_gdb_kmv_ddc" data-ofbid="id__ul_gdb_kmv_ddc"><li class="- topic/li li" data-ofbid="d133095e138__20250121171606">管理 RX buffer，确保从麦克风接收到的数据能够及时存入环形缓冲区。</li><li class="- topic/li li" data-ofbid="d133095e140__20250121171606">利用 DMA 技术高效地将音频数据从硬件搬运到软件层面进行处理。</li></ul></div><figure class="- topic/fig fig fignone" id="id__fig_ol4_bjv_ddc" data-ofbid="id__fig_ol4_bjv_ddc"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_pl4_bjv_ddc" src="../../../images/media/record_arch1.png" alt="record_arch1"/></div><br/></figure></div>
-                </li></ul>
+                </li>
+                
+                <li class="- topic/li li" data-ofbid="d151129e144__20250409171048">
+                    <div class="- topic/div div section" id="id__id5"><strong class="+ topic/ph hi-d/b ph b">录音端框架</strong>工作流程如下：<div class="- topic/p p" data-ofbid="d151129e150__20250409171048">应用层：<ol class="- topic/ol ol" id="id__ol_skx_fmv_ddc" data-ofbid="id__ol_skx_fmv_ddc">
+                                <li class="- topic/li li" data-ofbid="d151129e154__20250409171048">在录音端框架中，虚拟了一个 pipe 设备，这个设备实际上是一个 ringbuffer。<p class="- topic/p p" data-ofbid="d151129e156__20250409171048">driver 层驱动负责管理一个
+                                        RX buffer，RX buffer 也是一个环形缓冲区。</p></li>
+                                <li class="- topic/li li" data-ofbid="d151129e159__20250409171048">DMA 负责将麦克风（MIC）接收到的数据搬运到 RX buffer 中。</li>
+                                <li class="- topic/li li" data-ofbid="d151129e162__20250409171048">DMA 再通过写 pipe 设备将音频数据写入到 pipe 的 ringbuffer 中。</li>
+                                <li class="- topic/li li" data-ofbid="d151129e165__20250409171048">应用层代码通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_read</span> 每次从 pipe 设备中读取音频数据。</li>
+                                <li class="- topic/li li" data-ofbid="d151129e171__20250409171048">读取到的音频数据可以进一步处理并写入到 WAV 文件中。</li>
+                            </ol></div><div class="- topic/p p" data-ofbid="d151129e174__20250409171048">驱动层：<ul class="- topic/ul ul" id="id__ul_gdb_kmv_ddc" data-ofbid="id__ul_gdb_kmv_ddc">
+                                <li class="- topic/li li" data-ofbid="d151129e178__20250409171048">管理 RX buffer，确保从麦克风接收到的数据能够及时存入环形缓冲区。</li>
+                                <li class="- topic/li li" data-ofbid="d151129e181__20250409171048">利用 DMA 技术高效地将音频数据从硬件搬运到软件层面进行处理。</li>
+                            </ul></div><figure class="- topic/fig fig fignone" id="id__fig_ol4_bjv_ddc" data-ofbid="id__fig_ol4_bjv_ddc">
+                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_pl4_bjv_ddc" src="../../../images/media/record_arch1.png" alt="record_arch1"/></div><br/>
+                        </figure></div>
+                </li>
+                
+            </ul>
             
-        </section></div><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title2" xml:lang="zh-CN" lang="zh-CN" id="topic_rkk_kjv_ddc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/audio/audio_design_guide.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title2">关键流程设计</h2><div class="- topic/body body"><section class="- topic/section section" id="topic_rkk_kjv_ddc__id6" data-ofbid="topic_rkk_kjv_ddc__id6"><h3 class="- topic/title title sectiontitle">Audio
+        </section></div>
+        <article class="- topic/topic topic nested1" aria-labelledby="ariaid-title2" xml:lang="zh-CN" lang="zh-CN" id="topic_rkk_kjv_ddc">
+            <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/audio/audio_design_guide.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title2">关键流程设计</h2>
+            <div class="- topic/body body">
+            <section class="- topic/section section" id="topic_rkk_kjv_ddc__id6" data-ofbid="topic_rkk_kjv_ddc__id6"><h3 class="- topic/title title sectiontitle">Audio
                     初始化流程</h3>
                 
-                <ol class="- topic/ol ol arabic simple" id="topic_rkk_kjv_ddc__ol_cqb_cjv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_cqb_cjv_ddc"><li class="- topic/li li" data-ofbid="d133095e175__20250121171606">
-                        <p class="- topic/p p" data-ofbid="d133095e177__20250121171606">初始化 audio 模块时钟频率</p>
-                    </li><li class="- topic/li li" data-ofbid="d133095e180__20250121171606">
-                        <p class="- topic/p p" data-ofbid="d133095e182__20250121171606">释放 reset 和 clock 信号</p>
-                    </li><li class="- topic/li li" data-ofbid="d133095e185__20250121171606">
-                        <p class="- topic/p p" data-ofbid="d133095e187__20250121171606">注册音频设备，playback 端注册为 <span class="+ topic/keyword pr-d/parmname keyword parmname">sound0</span> 设备，DMIC 注册为
+                <ol class="- topic/ol ol arabic simple" id="topic_rkk_kjv_ddc__ol_cqb_cjv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_cqb_cjv_ddc">
+                    <li class="- topic/li li" data-ofbid="d151129e227__20250409171048">
+                        <p class="- topic/p p" data-ofbid="d151129e229__20250409171048">初始化 audio 模块时钟频率</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d151129e233__20250409171048">
+                        <p class="- topic/p p" data-ofbid="d151129e235__20250409171048">释放 reset 和 clock 信号</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d151129e239__20250409171048">
+                        <p class="- topic/p p" data-ofbid="d151129e241__20250409171048">注册音频设备，playback 端注册为 <span class="+ topic/keyword pr-d/parmname keyword parmname">sound0</span> 设备，DMIC 注册为
                             <span class="+ topic/keyword pr-d/parmname keyword parmname">dmic0</span> 设备，AMIC 注册为 <span class="+ topic/keyword pr-d/parmname keyword parmname">amic0</span> 设备</p>
-                    </li></ol>
-            </section><section class="- topic/section section" id="topic_rkk_kjv_ddc__section_fhx_vnv_ddc" data-ofbid="topic_rkk_kjv_ddc__section_fhx_vnv_ddc"><h3 class="- topic/title title sectiontitle">Playback 流程</h3>
+                    </li>
+                </ol>
+            </section>
+            <section class="- topic/section section" id="topic_rkk_kjv_ddc__section_fhx_vnv_ddc" data-ofbid="topic_rkk_kjv_ddc__section_fhx_vnv_ddc"><h3 class="- topic/title title sectiontitle">Playback 流程</h3>
                 
                 <div class="- topic/div div">
                     
-                    <p class="- topic/p p" data-ofbid="d133095e207__20250121171606">在 Playback 端，DMA 通知 CPU 向 TX buffer 中填充新的音频数据，以确保 DMA 传输的连续性。具体流程如下所示：</p>
+                    <p class="- topic/p p" data-ofbid="d151129e263__20250409171048">在 Playback 端，DMA 通知 CPU 向 TX buffer 中填充新的音频数据，以确保 DMA 传输的连续性。具体流程如下所示：</p>
                     
                     
                     
-                    <ol class="- topic/ol ol" id="topic_rkk_kjv_ddc__ul_fhx_vnv_ddc" data-ofbid="topic_rkk_kjv_ddc__ul_fhx_vnv_ddc"><li class="- topic/li li" data-ofbid="d133095e211__20250121171606"><strong class="+ topic/ph hi-d/b ph b">初始化 DMA 传输参数</strong><ol class="- topic/ol ol arabic simple" type="a" id="topic_rkk_kjv_ddc__ol_dqb_cjv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_dqb_cjv_ddc"><li class="- topic/li li" data-ofbid="d133095e215__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e217__20250121171606">配置 DMA 传输的起始地址，buf_len 以及 period_len</p>
-                                    <p class="- topic/p p" data-ofbid="d133095e220__20250121171606"> audio 模块使用 DMA 传输音频数据，DMA 采用环形链表形式，依次将音频数据传送到硬件。所以需要配置 DMA
+                    <ol class="- topic/ol ol" id="topic_rkk_kjv_ddc__ul_fhx_vnv_ddc" data-ofbid="topic_rkk_kjv_ddc__ul_fhx_vnv_ddc">
+                        <li class="- topic/li li" data-ofbid="d151129e268__20250409171048"><strong class="+ topic/ph hi-d/b ph b">初始化 DMA 传输参数</strong><ol class="- topic/ol ol arabic simple" type="a" id="topic_rkk_kjv_ddc__ol_dqb_cjv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_dqb_cjv_ddc">
+                                <li class="- topic/li li" data-ofbid="d151129e273__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e275__20250409171048">配置 DMA 传输的起始地址，buf_len 以及 period_len</p>
+                                    <p class="- topic/p p" data-ofbid="d151129e278__20250409171048"> audio 模块使用 DMA 传输音频数据，DMA 采用环形链表形式，依次将音频数据传送到硬件。所以需要配置 DMA
                                         传输时的起始地址（即 TX buffer 地址）以及 buf_len，period_len。</p>
-                                    <p class="- topic/p p" data-ofbid="d133095e223__20250121171606">在 driver 层驱动，将 buf_len 配置为 period_len 的 4 倍，DMA 每传输
+                                    <p class="- topic/p p" data-ofbid="d151129e281__20250409171048">在 driver 层驱动，将 buf_len 配置为 period_len 的 4 倍，DMA 每传输
                                         period_len 长度的数据，触发一次 DMA 中断，通知 CPU 向 TX buffer 中写入数据。</p>
-                                </li><li class="- topic/li li" data-ofbid="d133095e226__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e228__20250121171606">注册 hal 层的回调函数</p>
-                                </li></ol></li><li class="- topic/li li" data-ofbid="d133095e231__20250121171606"><strong class="+ topic/ph hi-d/b ph b">开始播放</strong><ol class="- topic/ol ol arabic simple" type="a" id="topic_rkk_kjv_ddc__ol_eqb_cjv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_eqb_cjv_ddc"><li class="- topic/li li" data-ofbid="d133095e235__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e237__20250121171606">根据 menuconfig 配置音频通路</p>
-                                </li><li class="- topic/li li" data-ofbid="d133095e240__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e242__20250121171606">填充 TX buffer</p>
-                                    <p class="- topic/p p" data-ofbid="d133095e245__20250121171606">为保证 DMA 传输音频数据的连续性，需要在 DMA 开始传输前，先向 TX buffer 中填充数据。在
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d151129e285__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e287__20250409171048">注册 hal 层的回调函数</p>
+                                </li>
+                            </ol></li>
+                        <li class="- topic/li li" data-ofbid="d151129e292__20250409171048"><strong class="+ topic/ph hi-d/b ph b">开始播放</strong><ol class="- topic/ol ol arabic simple" type="a" id="topic_rkk_kjv_ddc__ol_eqb_cjv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_eqb_cjv_ddc">
+                                <li class="- topic/li li" data-ofbid="d151129e297__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e299__20250409171048">根据 menuconfig 配置音频通路</p>
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d151129e303__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e305__20250409171048">填充 TX buffer</p>
+                                    <p class="- topic/p p" data-ofbid="d151129e308__20250409171048">为保证 DMA 传输音频数据的连续性，需要在 DMA 开始传输前，先向 TX buffer 中填充数据。在
                                         playback 的 driver 层驱动，是将 TX buffer 填充满后，才开始 DMA 的传输。</p>
-                                </li><li class="- topic/li li" data-ofbid="d133095e248__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e250__20250121171606">设置 DMA 传输的参数，调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">hal_audio_playback_start</span>
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d151129e312__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e314__20250409171048">设置 DMA 传输的参数，调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">hal_audio_playback_start</span>
                                         开始音频数据传输</p>
-                                </li><li class="- topic/li li" data-ofbid="d133095e256__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e258__20250121171606">使能 Power Amplifier (PA)</p>
-                                </li></ol></li><li class="- topic/li li" data-ofbid="d133095e261__20250121171606"><strong class="+ topic/ph hi-d/b ph b">DMA 中断触发</strong><ol class="- topic/ol ol" type="a" id="topic_rkk_kjv_ddc__ol_zjx_rpv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_zjx_rpv_ddc"><li class="- topic/li li" data-ofbid="d133095e265__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e267__20250121171606">DMA 每传输完 period_len 长度的数据后，触发一次 DMA 中断。</p>
-                                </li><li class="- topic/li li" data-ofbid="d133095e270__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e272__20250121171606">通过 DMA 回调函数的逐级调用，最终调用
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d151129e321__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e323__20250409171048">使能 Power Amplifier (PA)</p>
+                                </li>
+                            </ol></li>
+                        <li class="- topic/li li" data-ofbid="d151129e328__20250409171048"><strong class="+ topic/ph hi-d/b ph b">DMA 中断触发</strong><ol class="- topic/ol ol" type="a" id="topic_rkk_kjv_ddc__ol_zjx_rpv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_zjx_rpv_ddc">
+                                <li class="- topic/li li" data-ofbid="d151129e333__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e335__20250409171048">DMA 每传输完 period_len 长度的数据后，触发一次 DMA 中断。</p>
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d151129e339__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e341__20250409171048">通过 DMA 回调函数的逐级调用，最终调用
                                         <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_audio_tx_complete</span>。</p>
-                                </li><li class="- topic/li li" data-ofbid="d133095e278__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e280__20250121171606"><span class="+ topic/keyword pr-d/apiname keyword apiname">rt_audio_tx_complete</span> 回调函数对 TX buffer
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d151129e348__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e350__20250409171048"><span class="+ topic/keyword pr-d/apiname keyword apiname">rt_audio_tx_complete</span> 回调函数对 TX buffer
                                         进行填充，每次填充 period_len 长度的音频数据。</p>
-                                </li></ol></li></ol>
+                                </li>
+                            </ol></li>
+                    </ol>
                     
                     
                 </div>
                 
                 
-            </section><section class="- topic/section section" id="topic_rkk_kjv_ddc__section_gzv_g4v_ddc" data-ofbid="topic_rkk_kjv_ddc__section_gzv_g4v_ddc"><h3 class="- topic/title title sectiontitle">Record 流程</h3>
+            </section>
+            
+            <section class="- topic/section section" id="topic_rkk_kjv_ddc__section_gzv_g4v_ddc" data-ofbid="topic_rkk_kjv_ddc__section_gzv_g4v_ddc"><h3 class="- topic/title title sectiontitle">Record 流程</h3>
                 
                 
                 
                 
                 <div class="- topic/div div section" id="topic_rkk_kjv_ddc__record">
                     
-                    <p class="- topic/p p" data-ofbid="d133095e294__20250121171606">在 Record 端，DMA 中断用于通知 CPU 将 RX buffer 的数据写入到 pipe 设备，以实现音频数据的连续录制。</p>
+                    <p class="- topic/p p" data-ofbid="d151129e367__20250409171048">在 Record 端，DMA 中断用于通知 CPU 将 RX buffer 的数据写入到 pipe 设备，以实现音频数据的连续录制。</p>
                     
                     
                     
-                    <ol class="- topic/ol ol" id="topic_rkk_kjv_ddc__ul_zbt_j4v_ddc" data-ofbid="topic_rkk_kjv_ddc__ul_zbt_j4v_ddc"><li class="- topic/li li" data-ofbid="d133095e298__20250121171606"><strong class="+ topic/ph hi-d/b ph b">初始化 DMA 传输参数</strong><ol class="- topic/ol ol arabic simple" type="a" id="topic_rkk_kjv_ddc__ol_fqb_cjv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_fqb_cjv_ddc"><li class="- topic/li li" data-ofbid="d133095e302__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e304__20250121171606">初始化 DMA 传输的起始地址，buf_len 以及 period_len</p>
-                                    <p class="- topic/p p" data-ofbid="d133095e307__20250121171606"> audio 模块使用 DMA 传输音频数据，DMA 采用环形链表形式，依次将音频数据传送到硬件。所以需要配置 DMA
+                    <ol class="- topic/ol ol" id="topic_rkk_kjv_ddc__ul_zbt_j4v_ddc" data-ofbid="topic_rkk_kjv_ddc__ul_zbt_j4v_ddc">
+                        <li class="- topic/li li" data-ofbid="d151129e372__20250409171048"><strong class="+ topic/ph hi-d/b ph b">初始化 DMA 传输参数</strong><ol class="- topic/ol ol arabic simple" type="a" id="topic_rkk_kjv_ddc__ol_fqb_cjv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_fqb_cjv_ddc">
+                                <li class="- topic/li li" data-ofbid="d151129e377__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e379__20250409171048">初始化 DMA 传输的起始地址，buf_len 以及 period_len</p>
+                                    <p class="- topic/p p" data-ofbid="d151129e382__20250409171048"> audio 模块使用 DMA 传输音频数据，DMA 采用环形链表形式，依次将音频数据传送到硬件。所以需要配置 DMA
                                         传输时的起始地址（即 RX buffer 地址）以及 buf_len，period_len。在 driver 层驱动，将
                                         buf_len 配置为 period_len 的 2 倍，DMA 每传输 period_len 长度的数据，触发一次
                                         DMA 中断，通知 CPU 向 pipe 设备写入数据。</p>
-                                </li><li class="- topic/li li" data-ofbid="d133095e310__20250121171606">
-                                    <p class="- topic/p p" data-ofbid="d133095e312__20250121171606">注册 hal 层的回调函数</p>
-                                </li></ol></li><li class="- topic/li li" data-ofbid="d133095e315__20250121171606"><strong class="+ topic/ph hi-d/b ph b">开始录音</strong><ol class="- topic/ol ol" type="a" id="topic_rkk_kjv_ddc__ol_qdf_xpv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_qdf_xpv_ddc"><li class="- topic/li li" data-ofbid="d133095e319__20250121171606">执行 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_open</span> 时，会调用 start 流程，开始音频的录制。</li><li class="- topic/li li" data-ofbid="d133095e324__20250121171606">通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_control</span>
-                                        设置音频的格式（采样率，通道数等）。<p class="- topic/p p" data-ofbid="d133095e329__20250121171606">最开始可能会录制一段不符合设置的音频格式的数据，为了避免出现这种情况，在
-                                        driver 层的驱动实现中，start 流程并未做任何处理，而是在设置完音频格式后才开始音频的录制。</p></li></ol></li><li class="- topic/li li" data-ofbid="d133095e331__20250121171606"><strong class="+ topic/ph hi-d/b ph b">DMA 中断流程</strong><ol class="- topic/ol ol" type="a" id="topic_rkk_kjv_ddc__ol_a3d_dqv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_a3d_dqv_ddc"><li class="- topic/li li" data-ofbid="d133095e335__20250121171606">DMA 每传输完 period_len 长度的数据后，触发一次 DMA 中断。</li><li class="- topic/li li" data-ofbid="d133095e337__20250121171606">通过 DMA 回调函数的逐级调用，最终调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_audio_rx_done</span>。</li><li class="- topic/li li" data-ofbid="d133095e342__20250121171606"><span class="+ topic/keyword pr-d/apiname keyword apiname">rt_audio_rx_done</span> 将 RX buffer 的数据写入到 pipe
-                                    设备，每次写入 period_len 长度的音频数据。</li></ol></li></ol>
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d151129e386__20250409171048">
+                                    <p class="- topic/p p" data-ofbid="d151129e388__20250409171048">注册 hal 层的回调函数</p>
+                                </li>
+                            </ol></li>
+                        <li class="- topic/li li" data-ofbid="d151129e393__20250409171048"><strong class="+ topic/ph hi-d/b ph b">开始录音</strong><ol class="- topic/ol ol" type="a" id="topic_rkk_kjv_ddc__ol_qdf_xpv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_qdf_xpv_ddc">
+                            <li class="- topic/li li" data-ofbid="d151129e398__20250409171048">执行 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_open</span> 时，会调用 start 流程，开始音频的录制。</li>
+                            <li class="- topic/li li" data-ofbid="d151129e404__20250409171048">通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_device_control</span>
+                                        设置音频的格式（采样率，通道数等）。<p class="- topic/p p" data-ofbid="d151129e409__20250409171048">最开始可能会录制一段不符合设置的音频格式的数据，为了避免出现这种情况，在
+                                        driver 层的驱动实现中，start 流程并未做任何处理，而是在设置完音频格式后才开始音频的录制。</p></li>
+                            </ol></li>
+                        <li class="- topic/li li" data-ofbid="d151129e413__20250409171048"><strong class="+ topic/ph hi-d/b ph b">DMA 中断流程</strong><ol class="- topic/ol ol" type="a" id="topic_rkk_kjv_ddc__ol_a3d_dqv_ddc" data-ofbid="topic_rkk_kjv_ddc__ol_a3d_dqv_ddc">
+                                <li class="- topic/li li" data-ofbid="d151129e418__20250409171048">DMA 每传输完 period_len 长度的数据后，触发一次 DMA 中断。</li>
+                            <li class="- topic/li li" data-ofbid="d151129e421__20250409171048">通过 DMA 回调函数的逐级调用，最终调用 <span class="+ topic/keyword pr-d/apiname keyword apiname">rt_audio_rx_done</span>。</li>
+                            <li class="- topic/li li" data-ofbid="d151129e427__20250409171048"><span class="+ topic/keyword pr-d/apiname keyword apiname">rt_audio_rx_done</span> 将 RX buffer 的数据写入到 pipe
+                                    设备，每次写入 period_len 长度的音频数据。</li>
+                            </ol></li>
+                    </ol>
                     
                     
                 </div>
                 
-            </section></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title3" xml:lang="zh-CN" lang="zh-CN" id="topic_nqz_rmv_ddc"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/audio/audio_design_guide.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title3">数据结构设计</h2><div class="- topic/body body"><section class="- topic/section section" id="topic_nqz_rmv_ddc__hal" data-ofbid="topic_nqz_rmv_ddc__hal"><h3 class="- topic/title title sectiontitle">hal
+            </section>
+        </div></article>
+            <article class="- topic/topic topic nested1" aria-labelledby="ariaid-title3" xml:lang="zh-CN" lang="zh-CN" id="topic_nqz_rmv_ddc">
+                <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/audio/audio_design_guide.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title3">数据结构设计</h2>
+           <div class="- topic/body body">
+            <section class="- topic/section section" id="topic_nqz_rmv_ddc__hal" data-ofbid="topic_nqz_rmv_ddc__hal"><h3 class="- topic/title title sectiontitle">hal
                     层数据结构</h3>
                 
                 <div class="- topic/div div section" id="topic_nqz_rmv_ddc__driver"><strong class="+ topic/ph hi-d/b ph b">
@@ -261,9 +348,13 @@
     <strong class="hl-keyword">void</strong> *arg;
     <strong class="hl-keyword">struct</strong> aic_audio_config config;
 };</pre></div>
-            </section><section class="- topic/section section" id="topic_nqz_rmv_ddc__section_tnz_vmv_ddc" data-ofbid="topic_nqz_rmv_ddc__section_tnz_vmv_ddc"><h3 class="- topic/title title sectiontitle">driver 层数据结构</h3>
+            </section>
+            
+            <section class="- topic/section section" id="topic_nqz_rmv_ddc__section_tnz_vmv_ddc" data-ofbid="topic_nqz_rmv_ddc__section_tnz_vmv_ddc"><h3 class="- topic/title title sectiontitle">driver 层数据结构</h3>
                 
-            </section><div class="- topic/div div section" id="topic_nqz_rmv_ddc__id12"><strong class="+ topic/ph hi-d/b ph b"></strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_nqz_rmv_ddc__codeblock_udk_zkv_ddc" data-ofbid="topic_nqz_rmv_ddc__codeblock_udk_zkv_ddc"><strong class="hl-keyword">struct</strong> aic_audio
+            </section>
+            
+            <div class="- topic/div div section" id="topic_nqz_rmv_ddc__id12"><strong class="+ topic/ph hi-d/b ph b"></strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="topic_nqz_rmv_ddc__codeblock_udk_zkv_ddc" data-ofbid="topic_nqz_rmv_ddc__codeblock_udk_zkv_ddc"><strong class="hl-keyword">struct</strong> aic_audio
 {
     <strong class="hl-keyword">struct</strong> rt_audio_device audio;
     aic_audio_ctrl codec;
@@ -278,127 +369,442 @@
     aic_audio_ctrl codec;
     rt_uint8_t volume;
     uint8_t index;
-};</pre></div></div></article><article class="- topic/topic topic nested1 section" aria-labelledby="ariaid-title4" xml:lang="zh-CN" lang="zh-CN" id="id13"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/audio/audio_design_guide.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title4">接口设计</h2><div class="- topic/body body"><section class="- topic/section section" id="id13__section_hlv_n4v_ddc" data-ofbid="id13__section_hlv_n4v_ddc"><h3 class="- topic/title title sectiontitle"><strong class="+ topic/ph hi-d/b ph b">Driver
+};</pre></div></div></article>
+                <article class="- topic/topic topic nested1 section" aria-labelledby="ariaid-title4" xml:lang="zh-CN" lang="zh-CN" id="id13">
+                <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/audio/audio_design_guide.dita">Edit online</a></span><h2 class="- topic/title title topictitle2" id="ariaid-title4">接口设计</h2>
+                <div class="- topic/body body">
+            <section class="- topic/section section" id="id13__section_hlv_n4v_ddc" data-ofbid="id13__section_hlv_n4v_ddc"><h3 class="- topic/title title sectiontitle"><strong class="+ topic/ph hi-d/b ph b">Driver
                         层接口设计</strong></h3>
                 
                 
-                <p class="- topic/p p" data-ofbid="d133095e382__20250121171606">Driver
+                <p class="- topic/p p" data-ofbid="d151129e481__20250409171048">Driver
                     层将 audio 定义为 <span class="+ topic/keyword pr-d/parmname keyword parmname">sound0</span> ， <span class="+ topic/keyword pr-d/parmname keyword parmname">dmic0</span> ,
                     <span class="+ topic/keyword pr-d/parmname keyword parmname">amic0</span> 三个设备，三个设备在 Driver 层的接口基本相同，下面以 playback 端的接口进行说明。</p>
-                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_gqb_cjv_ddc" data-ofbid="id13__table_gqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_gqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_gqb_cjv_ddc__entry__2">rt_err_t drv_audio_init(struct rt_audio_device
-                                    *audio)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__2">playback 端的初始化函数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__2">audio：指向 playback 设备的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__2">RT_EOK：执行成功</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_gqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_gqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_hqb_cjv_ddc" data-ofbid="id13__table_hqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_buffer_info</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_hqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_hqb_cjv_ddc__entry__2">void drv_audio_buffer_info(struct rt_audio_device *audio,
-                                    struct rt_audio_buf_info *info)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__2">获取 playback 端的 TX buffer 参数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__2">
+                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_gqb_cjv_ddc" data-ofbid="id13__table_gqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_init</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                            <tr class="- topic/row">
+                                <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_gqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e509__20250409171048">函数原型</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_gqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e513__20250409171048">rt_err_t drv_audio_init(struct rt_audio_device
+                                    *audio)</p></th>
+                            </tr>
+                        </thead><tbody class="- topic/tbody tbody">
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e523__20250409171048">功能说明</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e527__20250409171048">playback 端的初始化函数</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e534__20250409171048">参数定义</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e538__20250409171048">audio：指向 playback 设备的指针</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e545__20250409171048">返回值</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_gqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e549__20250409171048">RT_EOK：执行成功</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_gqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e556__20250409171048">注意事项</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_gqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e560__20250409171048">-</p></td>
+                            </tr>
+                        </tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_hqb_cjv_ddc" data-ofbid="id13__table_hqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_buffer_info</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                            <tr class="- topic/row">
+                                <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_hqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e583__20250409171048">函数原型</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_hqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e587__20250409171048">void drv_audio_buffer_info(struct rt_audio_device *audio,
+                                    struct rt_audio_buf_info *info)</p></th>
+                            </tr>
+                        </thead><tbody class="- topic/tbody tbody">
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e597__20250409171048">功能说明</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e601__20250409171048">获取 playback 端的 TX buffer 参数</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e608__20250409171048">参数定义</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e612__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div"> audio：指向 playback 设备的指针</div>
                                         <div class="- topic/div div">info：用于获取 TX buffer 参数的指针</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_hqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_hqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_iqb_cjv_ddc" data-ofbid="id13__table_iqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_iqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_iqb_cjv_ddc__entry__2">rt_err_t drv_audio_start(struct rt_audio_device *audio, int
-                                    stream)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__2">开始 playback 端播放</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e628__20250409171048">返回值</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_hqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e632__20250409171048">无</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_hqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e639__20250409171048">注意事项</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_hqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e643__20250409171048">-</p></td>
+                            </tr>
+                        </tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_iqb_cjv_ddc" data-ofbid="id13__table_iqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                            <tr class="- topic/row">
+                                <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_iqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e666__20250409171048">函数原型</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_iqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e670__20250409171048">rt_err_t drv_audio_start(struct rt_audio_device *audio, int
+                                    stream)</p></th>
+                            </tr>
+                        </thead><tbody class="- topic/tbody tbody">
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e680__20250409171048">功能说明</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e684__20250409171048">开始 playback 端播放</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e691__20250409171048">参数定义</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e695__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div"> audio：指向 playback 设备的指针</div>
                                         <div class="- topic/div div"> stream：音频数据流方向</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e711__20250409171048">返回值</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_iqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e715__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div"> RT_EOK：执行成功</div>
                                         <div class="- topic/div div"> -RT_EINVAL：参数非法</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_iqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_iqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_jqb_cjv_ddc" data-ofbid="id13__table_jqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_jqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_jqb_cjv_ddc__entry__2">rt_err_t drv_audio_stop(struct rt_audio_device *audio, int
-                                    stream)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__2">结束 playback 端播放</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_iqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e731__20250409171048">注意事项</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_iqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e735__20250409171048">-</p></td>
+                            </tr>
+                        </tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_jqb_cjv_ddc" data-ofbid="id13__table_jqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                            <tr class="- topic/row">
+                                <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_jqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e759__20250409171048">函数原型</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_jqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e763__20250409171048">rt_err_t drv_audio_stop(struct rt_audio_device *audio, int
+                                    stream)</p></th>
+                            </tr>
+                        </thead><tbody class="- topic/tbody tbody">
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e773__20250409171048">功能说明</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e777__20250409171048">结束 playback 端播放</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e784__20250409171048">参数定义</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e788__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div"> audio：指向 playback 设备的指针</div>
                                         <div class="- topic/div div"> stream：音频数据流方向</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e804__20250409171048">返回值</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_jqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e808__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div"> RT_EOK：执行成功</div>
                                         <div class="- topic/div div"> -RT_EINVAL：参数非法</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_jqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_jqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_kqb_cjv_ddc" data-ofbid="id13__table_kqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_pause</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_kqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_kqb_cjv_ddc__entry__2">rt_err_t drv_audio_pause(struct rt_audio_device *audio, int
-                                    enable)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__2">暂停/恢复 playback 端播放</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_jqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e824__20250409171048">注意事项</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_jqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e828__20250409171048">-</p></td>
+                            </tr>
+                        </tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_kqb_cjv_ddc" data-ofbid="id13__table_kqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_pause</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                            <tr class="- topic/row">
+                                <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_kqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e851__20250409171048">函数原型</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_kqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e855__20250409171048">rt_err_t drv_audio_pause(struct rt_audio_device *audio, int
+                                    enable)</p></th>
+                            </tr>
+                        </thead><tbody class="- topic/tbody tbody">
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e865__20250409171048">功能说明</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e869__20250409171048">暂停/恢复 playback 端播放</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e876__20250409171048">参数定义</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e880__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div"> audio：指向 playback 设备的指针</div>
                                         <div class="- topic/div div"> enable：playback 端暂停和恢复播放使能位(0 为恢复，非 0 为暂停)</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e896__20250409171048">返回值</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_kqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e900__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div"> RT_EOK：执行成功</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_kqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_kqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_lqb_cjv_ddc" data-ofbid="id13__table_lqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_configure</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_lqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_lqb_cjv_ddc__entry__2">rt_err_t drv_audio_configure(struct rt_audio_device *audio,
-                                    struct rt_audio_caps *caps)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__1">功能原型</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__2">音频设备配置接口，用于配置采样格式，采样率，通道数等接口</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_kqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e913__20250409171048">注意事项</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_kqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e917__20250409171048">-</p></td>
+                            </tr>
+                        </tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_lqb_cjv_ddc" data-ofbid="id13__table_lqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_configure</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                            <tr class="- topic/row">
+                                <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_lqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e940__20250409171048">函数原型</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_lqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e944__20250409171048">rt_err_t drv_audio_configure(struct rt_audio_device *audio,
+                                    struct rt_audio_caps *caps)</p></th>
+                            </tr>
+                        </thead><tbody class="- topic/tbody tbody">
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e954__20250409171048">功能原型</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e958__20250409171048">音频设备配置接口，用于配置采样格式，采样率，通道数等接口</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e965__20250409171048">参数定义</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e969__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div">audio：指向 playback 设备的指针</div>
                                         <div class="- topic/div div"> caps：指向配置参数的指针</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e985__20250409171048">返回值</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_lqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e989__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div">RT_EOK：执行成功</div>
                                         <div class="- topic/div div"> -RT_ERROR：参数不支持</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_lqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_lqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_mqb_cjv_ddc" data-ofbid="id13__table_mqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_getcaps</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_mqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_mqb_cjv_ddc__entry__2">rt_err_t drv_audio_getcaps(struct rt_audio_device *audio,
-                                    struct rt_audio_caps *caps)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__2">获取音频设备的参数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_lqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1005__20250409171048">注意事项</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_lqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1009__20250409171048">-</p></td>
+                            </tr>
+                        </tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_mqb_cjv_ddc" data-ofbid="id13__table_mqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_getcaps</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                            <tr class="- topic/row">
+                                <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_mqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1032__20250409171048">函数原型</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_mqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1036__20250409171048">rt_err_t drv_audio_getcaps(struct rt_audio_device *audio,
+                                    struct rt_audio_caps *caps)</p></th>
+                            </tr>
+                        </thead><tbody class="- topic/tbody tbody">
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1046__20250409171048">功能说明</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1050__20250409171048">获取音频设备的参数</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1057__20250409171048">参数定义</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1061__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div">audio：指向 playback 设备的指针</div>
                                         <div class="- topic/div div">caps：指向配置参数的指针</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1077__20250409171048">返回值</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_mqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1081__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div">RT_EOK：执行成功</div>
                                         <div class="- topic/div div">-RT_ERROR：参数不支持</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_mqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_mqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_nqb_cjv_ddc" data-ofbid="id13__table_nqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_get_playback_avail</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_nqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_nqb_cjv_ddc__entry__2">rt_size_t drv_audio_get_playback_avail(struct rt_audio_device
-                                    *audio)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__2">获取 playback 端缓存的数据大小</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_mqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1097__20250409171048">注意事项</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_mqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1101__20250409171048">-</p></td>
+                            </tr>
+                        </tbody></table></div>
+                <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_nqb_cjv_ddc" data-ofbid="id13__table_nqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">drv_audio_get_playback_avail</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                            <tr class="- topic/row">
+                                <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_nqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1124__20250409171048">函数原型</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_nqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1128__20250409171048">rt_size_t drv_audio_get_playback_avail(struct rt_audio_device
+                                    *audio)</p></th>
+                            </tr>
+                        </thead><tbody class="- topic/tbody tbody">
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1138__20250409171048">功能说明</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1142__20250409171048">获取 playback 端缓存的数据大小</p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1149__20250409171048">参数定义</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1153__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div">audio：指向 playback 设备的指针</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__2">
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1166__20250409171048">返回值</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_nqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1170__20250409171048">
                                     <div class="- topic/div div">
                                         <div class="- topic/div div">缓存数据的大小</div>
                                     </div>
-                                </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_nqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_nqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-            </section><section class="- topic/section section" id="id13__section_hqn_p4v_ddc" data-ofbid="id13__section_hqn_p4v_ddc"><h3 class="- topic/title title sectiontitle">HAL 层接口设计</h3>
+                                </p></td>
+                            </tr>
+                            <tr class="- topic/row">
+                                <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_nqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1183__20250409171048">注意事项</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_nqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1187__20250409171048">-</p></td>
+                            </tr>
+                        </tbody></table></div>
+            </section>
+            <section class="- topic/section section" id="id13__section_hqn_p4v_ddc" data-ofbid="id13__section_hqn_p4v_ddc"><h3 class="- topic/title title sectiontitle">HAL 层接口设计</h3>
                 
-                <div class="- topic/p p" data-ofbid="d133095e780__20250121171606">
+                <div class="- topic/p p" data-ofbid="d151129e1200__20250409171048">
                     <div class="- topic/div div section" id="id13__id14">
-                        <p class="- topic/p p" data-ofbid="d133095e784__20250121171606">HAL 层接口也是分 playback、DMIC、AMIC 三部分进行设计，下面以 playback 端的接口进行说明。</p>
+                        <p class="- topic/p p" data-ofbid="d151129e1204__20250409171048">HAL 层接口也是分 playback、DMIC、AMIC 三部分进行设计，下面以 playback 端的接口进行说明。</p>
                     </div>
-                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_oqb_cjv_ddc" data-ofbid="id13__table_oqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_set_samplerate</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_oqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_oqb_cjv_ddc__entry__2">void hal_audio_set_samplerate(aic_audio_ctrl *codec,
-                                        uint32_t samplerate)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__2">设置采样率</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__2">
+                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_oqb_cjv_ddc" data-ofbid="id13__table_oqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_set_samplerate</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                                <tr class="- topic/row">
+                                    <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_oqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1224__20250409171048">函数原型</p></th>
+                                    <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_oqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1228__20250409171048">void hal_audio_set_samplerate(aic_audio_ctrl *codec,
+                                        uint32_t samplerate)</p></th>
+                                </tr>
+                            </thead><tbody class="- topic/tbody tbody">
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1238__20250409171048">功能说明</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1242__20250409171048">设置采样率</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1249__20250409171048">参数定义</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1253__20250409171048">
                                         <div class="- topic/div div">
                                             <div class="- topic/div div">codec：指向 aic_audio_ctrl 的指针</div>
                                             <div class="- topic/div div">samplerate：采样率</div>
                                         </div>
-                                    </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_oqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_oqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_pqb_cjv_ddc" data-ofbid="id13__table_pqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_set_playback_channel</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_pqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_pqb_cjv_ddc__entry__2">void hal_audio_set_playback_channel(aic_audio_ctrl
-                                        *codec, uint32_t ch)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__2">设置 playback 端的通道数</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__2">
+                                    </p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1269__20250409171048">返回值</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_oqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1273__20250409171048">无</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_oqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1280__20250409171048">注意事项</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_oqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1284__20250409171048">-</p></td>
+                                </tr>
+                            </tbody></table></div>
+                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_pqb_cjv_ddc" data-ofbid="id13__table_pqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_set_playback_channel</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                                <tr class="- topic/row">
+                                    <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_pqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1307__20250409171048">函数原型</p></th>
+                                    <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_pqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1311__20250409171048">void hal_audio_set_playback_channel(aic_audio_ctrl
+                                        *codec, uint32_t ch)</p></th>
+                                </tr>
+                            </thead><tbody class="- topic/tbody tbody">
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1321__20250409171048">功能说明</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1325__20250409171048">设置 playback 端的通道数</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1332__20250409171048">参数定义</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1336__20250409171048">
                                         <div class="- topic/div div">codec：指向 aic_audio_ctrl 的指针</div>
                                         <div class="- topic/div div">ch：通道数</div>
-                                    </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_pqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_pqb_cjv_ddc__entry__2">- </td></tr></tbody></table></div>
-                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_qqb_cjv_ddc" data-ofbid="id13__table_qqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_set_playback_by_spk0</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_qqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_qqb_cjv_ddc__entry__2">void hal_audio_set_playback_by_spk0(aic_audio_ctrl
-                                        *codec)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__2">配置 SPK0 音频通路</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__2">
+                                    </p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1349__20250409171048">返回值</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_pqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1353__20250409171048">无</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_pqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1360__20250409171048">注意事项</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_pqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1364__20250409171048">- </p></td>
+                                </tr>
+                            </tbody></table></div>
+                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_qqb_cjv_ddc" data-ofbid="id13__table_qqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_set_playback_by_spk0</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                                <tr class="- topic/row">
+                                    <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_qqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1387__20250409171048">函数原型</p></th>
+                                    <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_qqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1391__20250409171048">void hal_audio_set_playback_by_spk0(aic_audio_ctrl
+                                        *codec)</p></th>
+                                </tr>
+                            </thead><tbody class="- topic/tbody tbody">
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1401__20250409171048">功能说明</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1405__20250409171048">配置 SPK0 音频通路</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1412__20250409171048">参数定义</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1416__20250409171048">
                                         <div class="- topic/div div">codec：指向 aic_audio_ctrl 的指针</div>
-                                    </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_qqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_qqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_rqb_cjv_ddc" data-ofbid="id13__table_rqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_set_playback_by_spk1</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_rqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_rqb_cjv_ddc__entry__2">void hal_audio_set_playback_by_spk1(aic_audio_ctrl
-                                        *codec)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__2">配置 SPK1 音频通路</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__2">codec：指向 aic_audio_ctrl 的指针</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_rqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_rqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_sqb_cjv_ddc" data-ofbid="id13__table_sqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 13</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_playback_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_sqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_sqb_cjv_ddc__entry__2">void hal_audio_playback_start(aic_audio_ctrl
-                                        *codec)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__2">开始播放</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__2">
+                                    </p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1426__20250409171048">返回值</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_qqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1430__20250409171048">无</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_qqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1437__20250409171048">注意事项</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_qqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1441__20250409171048">-</p></td>
+                                </tr>
+                            </tbody></table></div>
+                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_rqb_cjv_ddc" data-ofbid="id13__table_rqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_set_playback_by_spk1</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                                <tr class="- topic/row">
+                                    <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_rqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1464__20250409171048">函数原型</p></th>
+                                    <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_rqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1468__20250409171048">void hal_audio_set_playback_by_spk1(aic_audio_ctrl
+                                        *codec)</p></th>
+                                </tr>
+                            </thead><tbody class="- topic/tbody tbody">
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1478__20250409171048">功能说明</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1482__20250409171048">配置 SPK1 音频通路</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1489__20250409171048">参数定义</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1493__20250409171048">codec：指向 aic_audio_ctrl 的指针</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1500__20250409171048">返回值</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_rqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1504__20250409171048">无</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_rqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1511__20250409171048">注意事项</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_rqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1515__20250409171048">-</p></td>
+                                </tr>
+                            </tbody></table></div>
+                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_sqb_cjv_ddc" data-ofbid="id13__table_sqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 13</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_playback_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                                <tr class="- topic/row">
+                                    <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_sqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1539__20250409171048">函数原型</p></th>
+                                    <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_sqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1543__20250409171048">void hal_audio_playback_start(aic_audio_ctrl
+                                        *codec)</p></th>
+                                </tr>
+                            </thead><tbody class="- topic/tbody tbody">
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1553__20250409171048">功能说明</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1557__20250409171048">开始播放</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1564__20250409171048">参数定义</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1568__20250409171048">
                                         <div class="- topic/div div">codec：指向 aic_audio_ctrl 的指针</div>
-                                    </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_sqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_sqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
-                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_tqb_cjv_ddc" data-ofbid="id13__table_tqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 14</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_playback_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_tqb_cjv_ddc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_tqb_cjv_ddc__entry__2">void hal_audio_playback_stop(aic_audio_ctrl
-                                        *codec)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__2">结束播放</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__2">
+                                    </p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1578__20250409171048">返回值</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_sqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1582__20250409171048">无</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_sqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1589__20250409171048">注意事项</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_sqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1593__20250409171048">-</p></td>
+                                </tr>
+                            </tbody></table></div>
+                    <div class="table-container"><table class="- topic/table table frame-all" id="id13__table_tqb_cjv_ddc" data-ofbid="id13__table_tqb_cjv_ddc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 14</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">hal_audio_playback_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                                <tr class="- topic/row">
+                                    <th class="- topic/entry entry colsep-1 rowsep-1" id="id13__table_tqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1616__20250409171048">函数原型</p></th>
+                                    <th class="- topic/entry entry colsep-0 rowsep-1" id="id13__table_tqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1620__20250409171048">void hal_audio_playback_stop(aic_audio_ctrl
+                                        *codec)</p></th>
+                                </tr>
+                            </thead><tbody class="- topic/tbody tbody">
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1630__20250409171048">功能说明</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1634__20250409171048">结束播放</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1641__20250409171048">参数定义</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1645__20250409171048">
                                         <div class="- topic/div div">
                                             <div class="- topic/div div"> codec：指向 aic_audio_ctrl 的指针</div>
                                         </div>
-                                    </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_tqb_cjv_ddc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_tqb_cjv_ddc__entry__2">-</td></tr></tbody></table></div>
+                                    </p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1658__20250409171048">返回值</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-1" headers="id13__table_tqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1662__20250409171048">无</p></td>
+                                </tr>
+                                <tr class="- topic/row">
+                                    <td class="- topic/entry entry colsep-1 rowsep-0" headers="id13__table_tqb_cjv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d151129e1669__20250409171048">注意事项</p></td>
+                                    <td class="- topic/entry entry colsep-0 rowsep-0" headers="id13__table_tqb_cjv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d151129e1673__20250409171048">-</p></td>
+                                </tr>
+                            </tbody></table></div>
                 </div>
-            </section></div></article></article></main></div>
+            </section></div>
+            </article>
+</article></main></div>
                         
                         
                         
@@ -428,8 +834,7 @@
         <footer class="navbar navbar-default wh_footer">
   <div class=" footer-container mx-auto ">
     <title>footer def</title>
-    <style><!--
-
+    <style>
 .p1 {
   font-family: FangZhengShuSong, Times, serif;
 }
@@ -439,26 +844,16 @@
 .p3 {
   font-family: "Lucida Console", "Courier New", monospace;
 }
-    
---></style>
-  
-
-  
-    
-  
-  
-    
-            
-   
-  
-
+    </style>
   <div class="webhelp.fragment.footer">
-    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
-  </div><div>
-    <div class="generation_time">
-      Update Time: 2025-01-21
-    </div>        
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
   </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
   </div>
 </footer>
         

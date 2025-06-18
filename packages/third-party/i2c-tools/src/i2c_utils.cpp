@@ -18,7 +18,7 @@ long strtonum(const char* str)
     long data;
     if (strcmp(str, "0x"))
     {
-        data = (rt_uint8_t)strtol(str, NULL, 0);
+        data = (rt_uint16_t)strtol(str, NULL, 0);
     }
     else
     {
@@ -37,9 +37,11 @@ void i2c_help()
     rt_kprintf("i2c read  pin_sda pin_scl address  register  [len=1]\n");
     rt_kprintf("i2c write pin_sda pin_scl address [register] data_0 data_1 ...\n\n");
 #else
-    rt_kprintf("i2c scan  bus_name [start addr] [stop addr]\n");
-    rt_kprintf("i2c read  bus_name address  register  [len=1]\n");
-    rt_kprintf("i2c write bus_name address [register] data_0 data_1 ...\n\n");
+    rt_kprintf("i2c scan bus_name [start addr] [stop addr]\n");
+    rt_kprintf("i2c read   bus_name address  register  [len=1]\n");
+    rt_kprintf("i2c read16 bus_name address  register  [len=1]\n");
+    rt_kprintf("i2c write   bus_name address [register] data_0 data_1 ...\n");
+    rt_kprintf("i2c write16 bus_name address [register] data_0 data_1 ...\n\n");
 #endif
 }
 
@@ -125,6 +127,11 @@ rt_bool_t i2c_write(char addr, rt_uint8_t* data, int len)
     #endif
 }
 
+rt_bool_t i2c_write16(char addr, rt_uint8_t* data, int len)
+{
+    return i2c_write(addr, data, len);
+}
+
 rt_uint8_t i2c_read(rt_uint8_t addr, rt_uint8_t reg, rt_uint8_t* buffer, rt_uint8_t len)
 {
     #ifdef I2C_TOOLS_USE_SW_I2C
@@ -157,6 +164,15 @@ rt_uint8_t i2c_read(rt_uint8_t addr, rt_uint8_t reg, rt_uint8_t* buffer, rt_uint
             return 0;
         }
     #endif
+}
+
+rt_uint8_t i2c_read16(rt_uint8_t addr, rt_uint16_t reg, rt_uint8_t *buffer, rt_uint8_t len)
+{
+    if (rt_i2c_read_reg16(i2c_bus, addr, reg, buffer, len) != len) {
+        printf("Failed to read I2C dev 0x%02x - reg 0x%04x\n", addr, reg);
+        return 0;
+    }
+    return len;
 }
 
 void i2c_scan(rt_uint8_t start_addr, rt_uint8_t stop_addr)

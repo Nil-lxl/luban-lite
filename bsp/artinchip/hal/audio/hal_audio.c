@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -174,10 +174,11 @@ void hal_audio_set_playback_by_spk0(aic_audio_ctrl *codec)
     reg_val &= ~TX_DVC3_MASK;
     reg_val |= TX_DVC3_EN;
     writel(reg_val, codec->reg_base + TX_DVC_3_4_CTRL_REG);
-    /* Enable IF0 */
+    /* Enable IF */
     reg_val = readl(codec->reg_base + TX_PLAYBACK_CTRL_REG);
     reg_val &= ~TX_IF_CH0_MASK;
-    reg_val |= TX_PLAYBACK_IF_EN | TX_IF_CH0_EN;
+    reg_val &= ~TX_IF_CH1_MASK;
+    reg_val |= TX_PLAYBACK_IF_EN | TX_IF_CH0_EN | TX_IF_CH1_EN;
     writel(reg_val, codec->reg_base + TX_PLAYBACK_CTRL_REG);
     /* Enable SDM0 */
     reg_val = readl(codec->reg_base + TX_SDM_CTRL_REG);
@@ -187,7 +188,7 @@ void hal_audio_set_playback_by_spk0(aic_audio_ctrl *codec)
     /* Configure MIXER audio path */
     reg_val = readl(codec->reg_base + TX_MIXER_CTRL_REG);
     reg_val &= ~TX_MIXER0_PATH_MASK;
-    reg_val |= TX_MIXER0_AUDOUTL_SEL | TX_MIXER0_AUDOUTR_SEL;
+    reg_val |= TX_MIXER0_AUDOUTL_SEL | TX_MIXER1_AUDOUTR_SEL;
     writel(reg_val, codec->reg_base + TX_MIXER_CTRL_REG);
     /* Configure PWM0 single output */
     reg_val = readl(codec->reg_base + TX_PWM_CTRL_REG);
@@ -197,6 +198,7 @@ void hal_audio_set_playback_by_spk0(aic_audio_ctrl *codec)
 #else
     reg_val |= TX_PWM0_EN;
 #endif
+    reg_val |= TX_PWM0_FADE_EN | TX_PWM1_FADE_EN;
     writel(reg_val, codec->reg_base + TX_PWM_CTRL_REG);
 }
 
@@ -209,10 +211,11 @@ void hal_audio_set_playback_by_spk1(aic_audio_ctrl *codec)
     reg_val &= ~TX_DVC4_MASK;
     reg_val |= TX_DVC4_EN;
     writel(reg_val, codec->reg_base + TX_DVC_3_4_CTRL_REG);
-    /* Enable IF1 */
+    /* Enable IF */
     reg_val = readl(codec->reg_base + TX_PLAYBACK_CTRL_REG);
+    reg_val &= ~TX_IF_CH0_MASK;
     reg_val &= ~TX_IF_CH1_MASK;
-    reg_val |= TX_PLAYBACK_IF_EN | TX_IF_CH1_EN;
+    reg_val |= TX_PLAYBACK_IF_EN | TX_IF_CH0_EN | TX_IF_CH1_EN;
     writel(reg_val, codec->reg_base + TX_PLAYBACK_CTRL_REG);
     /* Enable SDM1 */
     reg_val = readl(codec->reg_base + TX_SDM_CTRL_REG);
@@ -222,7 +225,7 @@ void hal_audio_set_playback_by_spk1(aic_audio_ctrl *codec)
     /* Configure MIXER audio path */
     reg_val = readl(codec->reg_base + TX_MIXER_CTRL_REG);
     reg_val &= ~TX_MIXER1_PATH_MASK;
-    reg_val |= TX_MIXER1_AUDOUTL_SEL | TX_MIXER1_AUDOUTR_SEL;
+    reg_val |= TX_MIXER1_AUDOUTL_SEL | TX_MIXER0_AUDOUTR_SEL;
     writel(reg_val, codec->reg_base + TX_MIXER_CTRL_REG);
     /* Configure PWM1 single output */
     reg_val = readl(codec->reg_base + TX_PWM_CTRL_REG);
@@ -232,6 +235,7 @@ void hal_audio_set_playback_by_spk1(aic_audio_ctrl *codec)
 #else
     reg_val |= TX_PWM1_EN;
 #endif
+    reg_val |= TX_PWM0_FADE_EN | TX_PWM1_FADE_EN;
     writel(reg_val, codec->reg_base + TX_PWM_CTRL_REG);
 }
 
@@ -383,7 +387,6 @@ void hal_audio_playback_start(aic_audio_ctrl *codec)
                              info->buf_info.buf_len, info->buf_info.period_len,
                              DMA_MEM_TO_DEV);
     hal_dma_chan_start(info->dma_chan);
-    hal_audio_disable_fade(codec);
     /* flush TXFIFO */
     hal_audio_flush_tx_fifo(codec);
     /* Enable TX global */
@@ -439,7 +442,6 @@ void hal_audio_playback_start_single(aic_audio_ctrl *codec)
     hal_dma_chan_start(info->dma_chan);
 
     if (codec->start_flag == 0) {
-        hal_audio_disable_fade(codec);
         /* flush TXFIFO */
         hal_audio_flush_tx_fifo(codec);
         /* Enable TX global */
@@ -550,7 +552,6 @@ void hal_audio_playback_stop(aic_audio_ctrl *codec)
     info = &codec->tx_info;
 
     hal_audio_tx_disable_drq(codec);
-    hal_audio_disable_tx_global(codec);
     hal_dma_chan_stop(info->dma_chan);
     hal_release_dma_chan(info->dma_chan);
     codec->start_flag = 0;

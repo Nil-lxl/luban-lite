@@ -65,11 +65,15 @@ static void i2c(int argc,char *argv[])
             return;
         }
 
-        if(!strcmp(argv[1], "read"))
+        if(!strncmp(argv[ARG_CMD_POS], "read", 4))
         {
-            rt_uint8_t buffer[I2C_TOOLS_BUFFER_SIZE];
-            rt_uint8_t reg = strtonum(argv[ARG_DATA_POS]);
-            rt_uint8_t len = 1;
+            rt_uint8_t buffer[I2C_TOOLS_BUFFER_SIZE] = {0};
+            rt_uint16_t reg = strtonum(argv[ARG_DATA_POS]);
+            rt_uint8_t len = 1, ret = 0;
+            rt_bool_t  bit16_mode = false;
+
+            if (!strncmp(argv[ARG_CMD_POS], "read16", 6))
+                bit16_mode = true;
 
             if (argc == ARG_READ_MAX)
             {
@@ -81,7 +85,12 @@ static void i2c(int argc,char *argv[])
                            len, I2C_TOOLS_BUFFER_SIZE);
                 len = I2C_TOOLS_BUFFER_SIZE;
             }
-            if (i2c_read(strtonum(argv[ARG_ADDR_POS]), reg, buffer, len) == len)
+
+            if (bit16_mode)
+                ret = i2c_read16(strtonum(argv[ARG_ADDR_POS]), reg, buffer, len);
+            else
+                ret = i2c_read(strtonum(argv[ARG_ADDR_POS]), reg, buffer, len);
+            if (ret == len)
             {
                 for (rt_uint8_t i = 0; i < len; i++, reg++)
                 {
@@ -106,14 +115,34 @@ static void i2c(int argc,char *argv[])
             }
         }
 
-        else if(!strcmp(argv[1], "write"))
+        else if(!strncmp(argv[ARG_CMD_POS], "write", 5))
         {
-            unsigned char buffer[I2C_TOOLS_BUFFER_SIZE];
-            for(int i=0; i<(argc-ARG_DATA_POS); i++)
-            {
-                buffer[i] = strtonum(argv[i+ARG_DATA_POS]);
+            unsigned char buffer[I2C_TOOLS_BUFFER_SIZE] = {0};
+            rt_bool_t bit16_mode = false, ret = false;
+            int data_start = 0;
+
+            if (!strncmp(argv[ARG_CMD_POS], "write16", 7))
+                bit16_mode = true;
+
+            if (bit16_mode) {
+                rt_uint16_t reg = strtonum(argv[ARG_DATA_POS]);
+                buffer[0] = reg >> 8;
+                buffer[1] = reg & 0xFF;
+                data_start = 1;
+            } else {
+                buffer[0] = strtonum(argv[ARG_DATA_POS]);
             }
-            if(!i2c_write(strtonum(argv[ARG_DATA_POS-1]), buffer, argc-ARG_DATA_POS))
+
+            for(int i=1; i<(argc-ARG_DATA_POS); i++)
+            {
+                buffer[data_start + i] = strtonum(argv[i+ARG_DATA_POS]);
+            }
+
+            if (bit16_mode)
+                ret = i2c_write16(strtonum(argv[ARG_DATA_POS-1]), buffer, argc - ARG_DATA_POS + 1);
+            else
+                ret = i2c_write(strtonum(argv[ARG_DATA_POS-1]), buffer, argc - ARG_DATA_POS);
+            if (!ret)
             {
                 #ifdef I2C_TOOLS_USE_SW_I2C
                     rt_kprintf("[i2c] write to bus failed with sda=%s scl=%s\n", argv[ARG_SDA_POS], argv[ARG_SCL_POS]);

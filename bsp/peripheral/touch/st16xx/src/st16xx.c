@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -9,6 +9,7 @@
  */
 #include <rtthread.h>
 #include <rtdevice.h>
+#include <rtdbg.h>
 #include "st16xx.h"
 #include "touch_common.h"
 
@@ -124,11 +125,10 @@ static rt_err_t st16xx_soft_reset(struct rt_i2c_client *dev)
     rt_uint8_t buf[2];
 
     buf[0] = (rt_uint8_t)(ST16XX_RESET_REG);
-    /* reset ic and disable multi-touch*/
-    buf[1] = 0x41;
+    buf[1] = 0x1;
 
     if (st16xx_write_regs(dev, 2, buf) != RT_EOK) {
-        LOG_D("soft reset st1633i failed\n");
+        LOG_E("soft reset st1633i failed\n");
         return -RT_ERROR;
     }
 
@@ -150,69 +150,65 @@ static rt_err_t st16xx_control(struct rt_touch_device *device, int cmd, void *da
 
 static int16_t pre_x[ST16XX_MAX_TOUCH] = {-1, -1, -1, -1, -1};
 static int16_t pre_y[ST16XX_MAX_TOUCH] = {-1, -1, -1, -1, -1};
-static int16_t pre_w[ST16XX_MAX_TOUCH] = {-1, -1, -1, -1, -1};
-static rt_uint8_t s_tp_dowm[ST16XX_MAX_TOUCH];
-static struct rt_touch_data *read_data;
+static rt_uint8_t s_tp_dowm[ST16XX_MAX_TOUCH] = {0};
+static struct rt_touch_data *g_read_data = RT_NULL;
 
 static void st16xx_touch_up(void *buf, int8_t id)
 {
-    read_data = (struct rt_touch_data *)buf;
+    g_read_data = (struct rt_touch_data *)buf;
 
     if(s_tp_dowm[id] == 1) {
         s_tp_dowm[id] = 0;
-        read_data[id].event = RT_TOUCH_EVENT_UP;
+        g_read_data[id].event = RT_TOUCH_EVENT_UP;
     } else {
-        read_data[id].event = RT_TOUCH_EVENT_NONE;
+        g_read_data[id].event = RT_TOUCH_EVENT_NONE;
     }
 
-    read_data[id].timestamp = rt_touch_get_ts();
-    read_data[id].width = pre_w[id];
-    read_data[id].x_coordinate = pre_x[id];
-    read_data[id].y_coordinate = pre_y[id];
-    read_data[id].track_id = id;
+    g_read_data[id].timestamp = rt_touch_get_ts();
+    g_read_data[id].x_coordinate = pre_x[id];
+    g_read_data[id].y_coordinate = pre_y[id];
+    g_read_data[id].track_id = id;
 
     pre_x[id] = -1;  /* last point is none */
     pre_y[id] = -1;
-    pre_w[id] = -1;
 }
 
-static void st16xx_touch_down(void *buf, int8_t id, int16_t x, int16_t y, int16_t w)
+static void st16xx_touch_down(void *buf, int8_t id, int16_t x, int16_t y)
 {
-    read_data = (struct rt_touch_data *)buf;
+    g_read_data = (struct rt_touch_data *)buf;
 
     if (s_tp_dowm[id] == 1) {
-        read_data[id].event = RT_TOUCH_EVENT_MOVE;
+        g_read_data[id].event = RT_TOUCH_EVENT_MOVE;
 
     } else {
-        read_data[id].event = RT_TOUCH_EVENT_DOWN;
+        g_read_data[id].event = RT_TOUCH_EVENT_DOWN;
         s_tp_dowm[id] = 1;
     }
 
-    read_data[id].timestamp = rt_touch_get_ts();
-    read_data[id].width = w;
-    read_data[id].x_coordinate = x;
-    read_data[id].y_coordinate = y;
-    read_data[id].track_id = id;
+    g_read_data[id].timestamp = rt_touch_get_ts();
+    g_read_data[id].x_coordinate = x;
+    g_read_data[id].y_coordinate = y;
+    g_read_data[id].track_id = id;
 
     pre_x[id] = x; /* save last point */
     pre_y[id] = y;
-    pre_w[id] = w;
 }
 
 static rt_size_t st16xx_read_points(struct rt_touch_device *touch, void *buf, rt_size_t read_num)
 {
     rt_uint8_t point_status = 0;
     rt_uint8_t touch_num = 0;
-    rt_uint8_t cmd[2];
+    rt_uint8_t cmd[2], i, num_valid;
     rt_uint8_t read_buf[(ST16XX_POINT_INFO_NUM * ST16XX_MAX_TOUCH) + 2] = {0};
     rt_uint8_t read_index;
     int8_t read_id = 0;
     int16_t input_x = 0;
     int16_t input_y = 0;
-    int16_t input_w = 0;
-
+    rt_uint8_t id[5] = {0};
     static rt_uint8_t pre_touch = 0;
     static int8_t pre_id[ST16XX_MAX_TOUCH] = {0};
+
+    rt_memset(buf, 0, sizeof(struct rt_touch_data) * read_num);
     /* point status register */
     cmd[0] = (ST16XX_STATUS_REG);
     if (st16xx_read_regs(st16xx_client, cmd, 1, 1, &point_status) != RT_EOK) {
@@ -227,51 +223,76 @@ static rt_size_t st16xx_read_points(struct rt_touch_device *touch, void *buf, rt
         goto exit_;
     }
 
-    cmd[0] = ST16XX_CONTACTS_NUM_REG;
-    st16xx_read_regs(st16xx_client, cmd, 1, 1, &touch_num);
-    if (touch_num > ST16XX_MAX_TOUCH) { /* point num is not correct */
-        read_num = 0;
-        LOG_I("Set contact num: %d,Get contact num: %d\n",ST16XX_MAX_TOUCH,point_status);
-        goto exit_;
-    }
-
-    cmd[0] = (ST16XX_KEY_REG);
+    cmd[0] = (ST16XX_TOUCH_INFO);
     /* read point num is read_num */
-    if (st16xx_read_regs(st16xx_client, cmd, 1,
-            read_num * ST16XX_POINT_INFO_NUM, read_buf) != RT_EOK) {
+    if (st16xx_read_regs(st16xx_client, cmd, 1, sizeof(read_buf), read_buf) != RT_EOK) {
         LOG_I("read point failed\n");
         read_num = 0;
         goto exit_;
     }
 
-    if(touch_num) {                                                 /* point down */
-        rt_uint8_t off_set;
-        for (read_index = 0; read_index < 1; read_index++) {
-            off_set = read_index * 4;
-            read_id = read_buf[off_set];
-            pre_id[read_index] = read_id;
-            if (read_buf[off_set + 1] & 0x80) {             //touch data valid detect
-                input_x = (read_buf[off_set + 1] & 0x70) << 4 | read_buf[off_set + 2];	/* x */
-                input_y = (read_buf[off_set + 1] & 0x07) << 8 | read_buf[off_set + 3];	/* y */
-                if (input_y)
-                    input_w = 4;	/* size */
+    for (i = 0; i < ST16XX_MAX_TOUCH; i++) {
+        num_valid = ((read_buf[4 * i + 2] & 0x80) != 0) ? 1 : 0;
+        touch_num += num_valid;
+    }
 
-                aic_touch_flip(&input_x, &input_y);
-                aic_touch_rotate(&input_x, &input_y);
-                aic_touch_scale(&input_x, &input_y);
-                if (!aic_touch_crop(&input_x, &input_y))
-                    continue;
+    if (touch_num > ST16XX_MAX_TOUCH) {
+        touch_num = 0;
+        goto exit_;
+    }
 
-                st16xx_touch_down(buf, read_id, input_x, input_y, input_w);
+    for (int8_t i = 0; i < touch_num; i++) {
+        id[i] = i;
+    }
+
+    if (pre_touch > touch_num) /* point up */
+    {
+        for (read_index = 0; read_index < pre_touch; read_index++) {
+            rt_uint8_t j;
+
+            for (j = 0; j < touch_num; j++) {
+                read_id = id[read_index];
+
+                if (pre_id[read_index] == read_id) /* this id is not free */
+                    break;
+
+                if (j >= touch_num - 1) {
+                    rt_uint8_t up_id;
+                    up_id = pre_id[read_index];
+                    st16xx_touch_up(buf, up_id);
+                }
             }
         }
     }
-    pre_touch = (read_buf[1] & 0x80);
-    for (read_index = 0; read_index < 1; read_index++) {
-        if (!pre_touch) {
+
+    if (touch_num) /* point down */
+    {
+        rt_uint8_t off_set;
+
+        for (read_index = 0; read_index < touch_num; read_index++) {
+            off_set = read_index * 4;
+
+            read_id = id[read_index];
+            pre_id[read_index] = read_id;
+
+            input_x = (read_buf[off_set + 2] & 0x70) << 4 | read_buf[off_set + 3];
+            input_y = (read_buf[off_set + 2] & 0x07) << 8 | read_buf[off_set + 4];
+
+            aic_touch_flip(&input_x, &input_y);
+            aic_touch_rotate(&input_x, &input_y);
+            aic_touch_scale(&input_x, &input_y);
+            if (!aic_touch_crop(&input_x, &input_y))
+                continue;
+
+            st16xx_touch_down(buf, read_id, input_x, input_y);
+        }
+    } else if (pre_touch) {
+        for (read_index = 0; read_index < pre_touch; read_index++) {
             st16xx_touch_up(buf, pre_id[read_index]);
         }
     }
+
+    pre_touch = touch_num;
 
 exit_:
     return read_num;
@@ -377,7 +398,7 @@ static int rt_hw_st16xx_port(void)
     cfg.irq_pin.mode = PIN_MODE_INPUT;
     cfg.user_data = &rst_pin;
 
-    rt_hw_st16xx_init("st16xx", &cfg);
+    rt_hw_st16xx_init(AIC_TOUCH_PANEL_NAME, &cfg);
 
     return 0;
 }

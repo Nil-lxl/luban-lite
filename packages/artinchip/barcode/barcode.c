@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -33,11 +33,14 @@
 #define VID_SCALE_OFFSET        0
 #define DATA_PREPARE_EVENT    1
 
-#define ENABLE_DISPLAY
-#define DVP_DISPLAY_ROTATION
+#ifdef AIC_BARCODE_DEMO_LED
+u32 led_pin = 0;
+#endif
 
+#define ENABLE_DISPLAY
 #ifdef ENABLE_DISPLAY
 #include "include/video_font_data.h"
+#define DVP_DISPLAY_ROTATION
 #ifdef DVP_DISPLAY_ROTATION
 static struct mpp_ge *g_ge_dev = NULL;
 int g_rotation = MPP_ROTATION_270;
@@ -48,7 +51,6 @@ static struct aicfb_screeninfo g_fb_info = {0};
 #endif
 
 #define ALIGN_DOWM(x, align)    ((x) & ~(align - 1))
-#define BEEP_PIN_NAME           "PA.4"
 
 struct aic_dvp_data {
     int w;
@@ -64,6 +66,7 @@ struct aic_dvp_data {
 #define MAX_BUF_LEN 256
 struct aic_decode_data {
     bool dready;
+    u32 frame_timestamp;
     int w;
     int h;
     unsigned char *in_buffer;
@@ -195,6 +198,11 @@ static int dvp_dequeue_buf(int *index)
     }
 
     return 0;
+}
+
+static u32 dvp_get_timestamp(int index)
+{
+    return mpp_dvp_ioctl(DVP_GET_TIMESTAMP, (void *)(ptr_t)index);
 }
 
 static int dvp_start(void)
@@ -462,10 +470,24 @@ static void barcode_copy_buffer(struct aic_dvp_data *vdata, int index)
     unsigned long buf = binfo->planes[index * VID_BUF_PLANE_NUM].buf;
     int len = binfo->planes[index * VID_BUF_PLANE_NUM].len;
 
+    aicos_dcache_invalid_range((void*)buf, len);
     aicos_memcpy(g_ddata.in_buffer, (void *)buf, len);
 }
 
-static void barcode_decode_thread()
+static void show_frame_delay(void)
+{
+    u32 cur = rt_tick_get_millisecond();
+    u32 delay = 0;
+
+    if (cur > g_ddata.frame_timestamp)
+        delay = cur - g_ddata.frame_timestamp;
+    else
+        delay = (u32)0xFFFFFFFF - g_ddata.frame_timestamp + cur;
+
+    printf("Frame delay: %d.%03d sec\n", delay / 1000, delay % 1000);
+}
+
+static void barcode_decode_thread(void *arg)
 {
     int ret;
     int len = 0;
@@ -490,12 +512,12 @@ static void barcode_decode_thread()
             gettimespec(&end);
             show_timespec_diff("decode", NULL, &begin, &end);
 
-
             pr_info("GetDecoderResult %d [%s] \n", len, g_ddata.out_buffer);
 #ifdef LPKG_CHERRYUSB_DEVICE_HID_KEYBOARD_TEMPLATE
             usbd_keyboard_putnchar((char *)g_ddata.out_buffer, sizeof(g_ddata.out_buffer));
             usbd_keyboard_putnchar("\r\n", sizeof("\r\n"));
 #endif
+            show_frame_delay();
 
 #ifdef ENABLE_DISPLAY
             if (show_barcode_tolcd(len) == BARCODE_DEMO_SUCCESS) {
@@ -522,7 +544,7 @@ static void barcode_decode_thread()
     pr_info("exit with ret = %d \n", ret);
 }
 
-static void barcode_shotting_thread()
+static void barcode_shotting_thread(void *arg)
 {
     int index = 0;
     int i;
@@ -549,6 +571,7 @@ static void barcode_shotting_thread()
             aicos_mutex_take(g_ddata.lock, AICOS_WAIT_FOREVER);
             g_ddata.dready = true;
             aicos_mutex_give(g_ddata.lock);
+            g_ddata.frame_timestamp = dvp_get_timestamp(index);
 
             aicos_event_send(g_ddata.data_ready_event, DATA_PREPARE_EVENT);
         }
@@ -613,12 +636,42 @@ error_out:
 
     return -1;
 }
+#ifdef AIC_BARCODE_DEMO_LED
+static int led_init()
+{
+    led_pin = rt_pin_get(BARCODE_DEMO_LED_GPIO);
+    if (led_pin == 0) {
+        rt_kprintf("led pin init failed! led_pin[%d]\n", led_pin);
+        return -1;
+    }
 
+    rt_pin_mode(led_pin, PIN_MODE_OUTPUT);
+    return 0;
+}
+
+static void led_on()
+{
+    rt_pin_write(led_pin, PIN_HIGH);
+    return;
+}
+MSH_CMD_EXPORT_ALIAS(led_on, barcode_led_on, barcode led on);
+
+static void led_off()
+{
+    rt_pin_write(led_pin, PIN_LOW);
+    return;
+}
+MSH_CMD_EXPORT_ALIAS(led_off, barcode_led_off, barcode led off);
+#endif
 static void cmd_barcode_demo(int argc, char **argv)
 {
     int ret;
     aicos_thread_t thid = NULL;
-
+#ifdef AIC_BARCODE_DEMO_LED
+    if (led_init() == 0) {
+        led_off();
+    }
+#endif
     // control beep with pwm
     pwm_dev = (struct rt_device_pwm *)rt_device_find("pwm");
     if (pwm_dev == NULL) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -795,7 +795,7 @@ lv_res_t lv_draw_aic_draw_img(lv_draw_ctx_t * draw_ctx, const lv_draw_img_dsc_t 
 
     if (lv_img_src_get_type(src) == LV_IMG_SRC_FILE) {
         ptr = strrchr(src, '.');
-        if (!strcmp(ptr, ".fake"))
+        if (ptr && !strcmp(ptr, ".fake"))
             fake_image = true;
         else
             return LV_RES_INV;

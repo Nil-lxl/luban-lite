@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-#define TASK_MAX_NUM            24
+#define TASK_MAX_NUM            36
 
 #define DELAY_DEF_VAL           0x40
 

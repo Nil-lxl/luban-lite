@@ -25,7 +25,7 @@
 
 extern "C" {
 #ifndef LFS_NAME_MAX
-#define LFS_NAME_MAX 32
+#define LFS_NAME_MAX 255
 #endif
 #include "littlefs/lfs.h"
 }
@@ -336,6 +336,8 @@ int addFiles(const char* dirname, const char* subPath) {
                     if (addFiles(dirname, newSubPath.c_str()) != 0)
                     {
                         std::cerr << "Error for adding content from " << ent->d_name << "!" << std::endl;
+                        error = true;
+                        break;
                     }
 
                     continue;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -65,3 +65,25 @@ rt_int8_t aic_touch_crop(int16_t *x_coordinate, int16_t *y_coordinate)
     return RT_TRUE;
 }
 
+void aic_touch_dynamic_rotate(struct rt_touch_device *touch, int16_t *x_coordinate, int16_t *y_coordinate)
+{
+    uint16_t angle = 0;
+    rt_uint16_t temp = 0;
+
+    rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE, &angle);
+
+    if (angle == 90) {
+        temp = *x_coordinate;
+        *x_coordinate = *y_coordinate;
+        *y_coordinate = (rt_int16_t)AIC_TOUCH_X_COORDINATE_RANGE - temp;
+    } else if (angle == 180) {
+        *x_coordinate = (rt_int16_t)AIC_TOUCH_X_COORDINATE_RANGE - *x_coordinate;
+        *y_coordinate = (rt_int16_t)AIC_TOUCH_Y_COORDINATE_RANGE - *y_coordinate;
+    } else if (angle == 270) {
+        temp = *x_coordinate;
+        *x_coordinate = (rt_int16_t)AIC_TOUCH_Y_COORDINATE_RANGE - *y_coordinate;
+        *y_coordinate = temp;
+    } else {
+        return;
+    }
+}

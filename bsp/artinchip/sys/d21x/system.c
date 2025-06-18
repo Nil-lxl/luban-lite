@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -57,9 +57,11 @@ static void _system_init_for_kernel(void)
     aic_clk_lowpower();
     aic_gtc_enable();
 #endif
+#ifndef KERNEL_BAREMETAL
     csi_plic_set_prio(PLIC_BASE, CORET_IRQn, 31U);
     csi_clint_config(CORET_BASE, (drv_get_sys_freq() / CONFIG_SYSTICK_HZ), CORET_IRQn);
     drv_irq_enable(CORET_IRQn);
+#endif
 }
 
 static void interrupt_init(void)

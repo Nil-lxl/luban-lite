@@ -345,6 +345,12 @@ if LPKG_USING_CHERRYUSB
                     int "USBDEV_MSC_MAX_BUFSIZE"
                     default 204800
             endmenu
+            choice
+                prompt "Select msc ejected object"
+                default USBDEV_MSC_OBJECT_EJECTED
+                config USBDEV_MSC_MEDIUM_EJECTED
+                    bool "Medium"
+            endchoice
             config CONFIG_USBDEV_MSC_MANUFACTURER_STRING
                 string "CONFIG_USBDEV_MSC_MANUFACTURER_STRING"
                 default ""
@@ -613,6 +619,55 @@ if LPKG_USING_CHERRYUSB
                     bool "USBDEV_VENDER_COMPOSITE"
                     default n
             endmenu
+
+            config LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+                    bool
+                    prompt "Use Multiple Composite Device Func Tables"
+                    default n
+
+                menu "Composite Device func table1"
+                    depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+                    config LPKG_USING_COMP_MSC_TABLE1
+                        bool "Using MSC composite"
+                        default n
+                    config LPKG_USING_COMP_ADBD_TABLE1
+                        bool "Using ADB composite"
+                        default n
+                    config LPKG_USING_COMP_DISP_TABLE1
+                        bool "Using DISP composite"
+                        default n
+                    config LPKG_USING_COMP_UAC_TABLE1
+                        bool "Using UAC composite"
+                        default n
+                    config LPKG_USING_COMP_TOUCH_TABLE1
+                        bool "Using TOUCH composite"
+                        default n
+                    config LPKG_USING_COMP_VENDER_TABLE1
+                        bool "Using VENDER composite"
+                        default n
+                endmenu
+
+                menu "Composite Device func table2"
+                    depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+                    config LPKG_USING_COMP_MSC_TABLE2
+                        bool "Using MSC composite"
+                        default n
+                    config LPKG_USING_COMP_ADBD_TABLE2
+                        bool "Using ADB composite"
+                        default n
+                    config LPKG_USING_COMP_DISP_TABLE2
+                        bool "Using DISP composite"
+                        default n
+                    config LPKG_USING_COMP_UAC_TABLE2
+                        bool "Using UAC composite"
+                        default n
+                    config LPKG_USING_COMP_TOUCH_TABLE2
+                        bool "Using TOUCH composite"
+                        default n
+                    config LPKG_USING_COMP_VENDER_TABLE2
+                        bool "Using VENDER composite"
+                        default n
+                endmenu
         endif
     endif
 
@@ -709,9 +764,47 @@ if LPKG_USING_CHERRYUSB
             prompt "Enable usb rndis driver"
             default n
 
+        menuconfig LPKG_CHERRYUSB_HOST_UVC
+            bool
+            prompt "Enable usb uvc driver"
+            default n
+
+        if LPKG_CHERRYUSB_HOST_UVC
+            config LPKG_CHERRYUSB_HOST_UVC_TEMPLATE
+                bool
+                prompt "Use uvc template"
+                default n
+        endif
+
+        menuconfig LPKG_CHERRYUSB_HOST_UAC
+            bool
+            prompt "Enable usb uac driver"
+            default n
+
+        if LPKG_CHERRYUSB_HOST_UAC
+            config LPKG_CHERRYUSB_HOST_UAC_TEMPLATE
+                bool
+                prompt "Use uac template"
+                default n
+        endif
+
         config LPKG_CHERRYUSB_HOST_TEMPLATE
             bool
             prompt "Use usb host template"
             default n
+
+        menuconfig LPKG_CHERRYUSB_THIRD_PARTY
+            bool
+            prompt "Enable third party"
+            default n
+
+        if LPKG_CHERRYUSB_THIRD_PARTY
+            config LPKG_CHERRYUSB_MEMORY_POOL
+                bool "using chry memory pool"
+                default n
+            config LPKG_CHERRYUSB_RINGBUFFER
+                bool "using chry ring buffer"
+                default n
+        endif
     endif
 endif

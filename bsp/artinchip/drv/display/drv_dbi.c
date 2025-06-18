@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -31,14 +31,43 @@ struct aic_dbi_comp
 {
     void *regs;
 
-    struct aic_panel *panel;
+    u32 pixclk;
     u64 sclk_rate;
     u64 pll_disp_rate;
+
+    struct aic_panel *panel;
+    struct panel_dbi *dbi;
 };
 static struct aic_dbi_comp *g_aic_dbi_comp;
 
 static int i8080_clk[] = {20, 30, 20, 15, 20, 10, 10, 10};
 static int spi_clk[] = {72, 108, 108, 64, 96, 96, 16, 24, 24};
+
+struct aic_dbi_info {
+    u32 type;
+    u32 format;
+    u32 bpp;
+};
+
+static const struct aic_dbi_info dbi_info[] = {
+    { .type = I8080, .format = I8080_RGB565_8BIT,         .bpp = 16, },
+    { .type = I8080, .format = I8080_RGB666_8BIT,         .bpp = 18, },
+    { .type = I8080, .format = I8080_RGB666_9BIT,         .bpp = 18, },
+    { .type = I8080, .format = I8080_RGB666_16BIT_3CYCLE, .bpp = 16, },
+    { .type = I8080, .format = I8080_RGB666_16BIT_2CYCLE, .bpp = 16, },
+    { .type = I8080, .format = I8080_RGB565_16BIT,        .bpp = 16, },
+    { .type = I8080, .format = I8080_RGB666_18BIT,        .bpp = 18, },
+    { .type = I8080, .format = I8080_RGB888_24BIT,        .bpp = 24, },
+    { .type = SPI,   .format = SPI_3LINE_RGB565,          .bpp = 16, },
+    { .type = SPI,   .format = SPI_3LINE_RGB666,          .bpp = 18, },
+    { .type = SPI,   .format = SPI_3LINE_RGB888,          .bpp = 24, },
+    { .type = SPI,   .format = SPI_4LINE_RGB565,          .bpp = 16, },
+    { .type = SPI,   .format = SPI_4LINE_RGB666,          .bpp = 18, },
+    { .type = SPI,   .format = SPI_4LINE_RGB888,          .bpp = 24, },
+    { .type = SPI,   .format = SPI_4SDA_RGB565,           .bpp = 16, },
+    { .type = SPI,   .format = SPI_4SDA_RGB666,           .bpp = 18, },
+    { .type = SPI,   .format = SPI_4SDA_RGB888,           .bpp = 24, },
+};
 
 static struct aic_dbi_comp *aic_dbi_request_drvdata(void)
 {
@@ -53,7 +82,7 @@ static void aic_dbi_release_drvdata(void)
 static int aic_dbi_clk_enable(void)
 {
     struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
-    u32 pixclk = comp->panel->timings->pixelclock;
+    u32 pixclk = comp->pixclk;
 
     hal_clk_set_freq(CLK_PLL_FRA2, comp->pll_disp_rate);
     hal_clk_set_rate(CLK_SCLK, comp->sclk_rate, comp->pll_disp_rate);
@@ -82,7 +111,7 @@ static int aic_dbi_clk_disable(void)
 static void aic_dbi_i8080_cfg(void)
 {
     struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
-    struct panel_dbi *dbi = comp->panel->dbi;
+    struct panel_dbi *dbi = comp->dbi;
 
     if (dbi->first_line || dbi->other_line)
         i8080_cmd_ctl(comp->regs, dbi->first_line, dbi->other_line);
@@ -91,7 +120,7 @@ static void aic_dbi_i8080_cfg(void)
 static void aic_dbi_spi_cfg(void)
 {
     struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
-    struct panel_dbi *dbi = comp->panel->dbi;
+    struct panel_dbi *dbi = comp->dbi;
     struct spi_cfg *spi = dbi->spi;
 
     if (dbi->first_line || dbi->other_line)
@@ -109,7 +138,7 @@ static void aic_dbi_spi_cfg(void)
 static int aic_dbi_enable(void)
 {
     struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
-    struct panel_dbi *dbi = comp->panel->dbi;
+    struct panel_dbi *dbi = comp->dbi;
 
     reg_set_bits(comp->regs + DBI_CTL,
             DBI_CTL_TYPE_MASK,
@@ -151,15 +180,24 @@ static int aic_dbi_disable(void)
     return 0;
 }
 
-static int aic_dbi_attach_panel(struct aic_panel *panel)
+static int aic_dbi_attach_panel(struct aic_panel *panel, struct panel_desc *desc)
 {
     struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
-    u32 pixclk = panel->timings->pixelclock;
-    struct panel_dbi *dbi = panel->dbi;
     u64 pll_disp_rate = 0;
     int i = 0;
+    struct panel_dbi *dbi;
+    u32 pixclk;
 
+    if (desc) {
+        pixclk = desc->timings->pixelclock;
+        dbi = desc->dbi;
+    } else {
+        pixclk = panel->timings->pixelclock;
+        dbi = panel->dbi;
+    }
+    comp->dbi = dbi;
     comp->panel = panel;
+    comp->pixclk = pixclk;
 
     if (dbi->type == I8080)
         comp->sclk_rate = pixclk * i8080_clk[dbi->format];
@@ -181,7 +219,7 @@ static int aic_dbi_attach_panel(struct aic_panel *panel)
 int aic_dbi_send_cmd(u32 dt, u32 vc, const u8 *data, u32 len)
 {
     struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
-    struct panel_dbi *dbi = comp->panel->dbi;
+    struct panel_dbi *dbi = comp->dbi;
 
     if (dbi->type == I8080)
         i8080_cmd_wr(comp->regs, dt, len, data);
@@ -192,6 +230,23 @@ int aic_dbi_send_cmd(u32 dt, u32 vc, const u8 *data, u32 len)
     return 0;
 }
 
+static int aic_dbi_get_output_bpp(void)
+{
+    struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
+    struct panel_dbi *dbi = comp->dbi;
+    int i, bpp = 24;
+
+    for (i = 0; i < ARRAY_SIZE(dbi_info); i++) {
+        if (dbi->type == dbi_info[i].type && dbi->format == dbi_info[i].format) {
+            bpp = dbi_info[i].bpp;
+            break;
+        }
+    }
+
+    aic_dbi_release_drvdata();
+    return bpp;
+}
+
 struct di_funcs aic_dbi_func = {
     .clk_enable = aic_dbi_clk_enable,
     .clk_disable = aic_dbi_clk_disable,
@@ -199,6 +254,7 @@ struct di_funcs aic_dbi_func = {
     .disable = aic_dbi_disable,
     .send_cmd = aic_dbi_send_cmd,
     .attach_panel = aic_dbi_attach_panel,
+    .get_output_bpp = aic_dbi_get_output_bpp,
 };
 
 static int aic_dbi_probe(void)

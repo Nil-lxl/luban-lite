@@ -99,7 +99,6 @@ endif
 menuconfig AIC_SPINAND_BLOCK_CACHE
     bool "spinand block device cache"
     depends on LPKG_USING_SPINAND
-    select AIC_SPINAND_DRV
     default y
 
 if AIC_SPINAND_BLOCK_CACHE

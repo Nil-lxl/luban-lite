@@ -1,10 +1,10 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- *  Author: <jun.ma@artinchip.com>
- *  Desc: middle media demuxer component
+ * Author: <jun.ma@artinchip.com>
+ * Desc: middle media demuxer component
  */
 
 
@@ -74,6 +74,7 @@ typedef struct mm_demuxer_data {
     s32 seek_flag;
     s32 need_peek;
     s32 skip_track;
+    s32 need_check_uri;
 } mm_demuxer_data;
 
 static void *mm_demuxer_component_thread(void *p_thread_data);
@@ -954,11 +955,10 @@ CMD_EXIT:
 static int
 mm_demuxer_component_process_eos_pkt(mm_demuxer_data *p_demuxer_data)
 {
-    /*Get video decoder handle*/
-    mm_component *h_vdec_comp =
-        p_demuxer_data->out_port_bind[DEMUX_PORT_VIDEO_INDEX].p_bind_comp;
     mm_component *h_adec_comp =
         p_demuxer_data->out_port_bind[DEMUX_PORT_AUDIO_INDEX].p_bind_comp;
+    mm_component *h_vdec_comp =
+        p_demuxer_data->out_port_bind[DEMUX_PORT_VIDEO_INDEX].p_bind_comp;
 
     /*when the final video or audio packet can't get PACKET_EOS flag,
      *then parser send a empty packet to demuxer , and demuxer need
@@ -984,7 +984,8 @@ static int mm_demuxer_component_uri_is_exist(mm_demuxer_data *p_demuxer_data)
     if (!p_demuxer_data->p_contenturi || !p_demuxer_data->p_contenturi->content_uri)
         is_exist = false;
 
-    if (is_exist == true) {
+    if (is_exist == true && p_demuxer_data->need_check_uri) {
+        p_demuxer_data->need_check_uri = MM_FALSE;
         if(access((char *)p_demuxer_data->p_contenturi->content_uri, 0) == -1) {
             loge("uri:%s is not exist, then notify player exit\n",
                 p_demuxer_data->p_contenturi->content_uri);
@@ -1096,6 +1097,8 @@ mm_demuxer_component_process_video_pkt(mm_demuxer_data *p_demuxer_data,
     } else { // now  nothing to do ,becase no other return val
         loge("read video data fail ret %d\n", ret);
         p_demuxer_data->need_peek = MM_FALSE;
+        if (ret == PARSER_NODATA)
+            p_demuxer_data->need_check_uri = MM_TRUE;
         return MM_ERROR_READ_FAILED;
     }
 
@@ -1210,6 +1213,8 @@ mm_demuxer_component_process_audio_pkt(mm_demuxer_data *p_demuxer_data,
     } else { // now  nothing to do ,becase no other return val
         loge("read audio data fail\n");
         p_demuxer_data->need_peek = MM_FALSE;
+        if (ret == PARSER_NODATA)
+            p_demuxer_data->need_check_uri = MM_TRUE;
         return MM_ERROR_READ_FAILED;
     }
 
@@ -1307,6 +1312,8 @@ static void *mm_demuxer_component_thread(void *p_thread_data)
                 goto _AIC_MSG_GET_;
             } else { // now  nothing to do ,becase no other return val
                 loge("peek fail\n");
+                if (ret != PARSER_OK)
+                    p_demuxer_data->need_check_uri = MM_TRUE;
                 goto _AIC_MSG_GET_;
             }
         }

@@ -54,15 +54,7 @@
 
 #define NX_VIRT_DEV_MAX 4
 
-#if defined(CONFIG_AIC8801)
 #define NX_REMOTE_STA_MAX 32
-#elif defined(CONFIG_AIC8800DC) || defined(CONFIG_AIC8800DW)
-#define NX_REMOTE_STA_MAX 32     //U01: 8   U02: 32
-#elif defined(CONFIG_AIC8800D80)
-#define NX_REMOTE_STA_MAX 32
-#else
-#define NX_REMOTE_STA_MAX 32
-#endif
 
 /// uPattern for TX header descriptor.
 #define TX_HEADER_DESC_PATTERN 0xCAFEBABE

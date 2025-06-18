@@ -1,0 +1,441 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="description" content="使用 SPIENC 加密功能，需要将一个 128 位的 AES 密钥 和一个 64 位的 Nonce 值 烧录到芯片 eFuse 中。制作加密镜像时也需要使用上述值。因此，使用过程中，确保上述值保持不变且已妥善管理，以免泄露。 本节描述了生成 eFuse 烧录程序的详细流程。在示例方案中，提供了设置 AES / NONCE 密钥的输入 txt 文件和一个用于生成及更新密钥的脚本： 开发板示例： ..."/><meta name="DC.relation" content="../../../topics/sdk/secure/spienc_function_v1.html"/><meta name="DC.relation" content="../../../topics/sdk/secure/spienc_function_v1.html"/><meta name="DC.relation" content="../../../topics/sdk/secure/spienc-generate-production-firmware-1.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="spienc-generate-efuse"/>        
+      <title>烧录 eFuse</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="spienc-generate-efuse-d3703e1509"/><meta name="wh-source-relpath" content="topics/sdk/secure/spienc-generate-efuse_v1.dita"/><meta name="wh-out-relpath" content="topics/sdk/secure/spienc-generate-efuse_v1-1.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
+
+    <body id="spienc-generate-efuse" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html">安全方案</a></div></div></li><li><div class="topicref" data-id="spi-flash-enc-function"><div class="title"><a href="../../../topics/sdk/secure/spi_flash_enc_function.html">SPI Flash 防抄板方案</a></div></div></li><li><div class="topicref" data-id="spienc_function"><div class="title"><a href="../../../topics/sdk/secure/spienc_function_v1.html">方案 V1</a></div></div></li><li class="active"><div class="topicref" data-id="spienc-generate-efuse"><div class="title"><a href="../../../topics/sdk/secure/spienc-generate-efuse_v1-1.html">烧录 eFuse</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/secure/spienc_function_v1.html" title="方案 V1" aria-label="上一主题: 方案 V1" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/secure/spienc-generate-production-firmware-1.html" title="生成量产固件" aria-label="下一主题: 生成量产固件" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e1018" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d3703e1018-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e1032" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d3703e1032-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1046" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1046-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d3703e1046-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1160" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1160-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d3703e1160-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1280" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1280-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d3703e1280-link">XIP 方案 </a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1369" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1369-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d3703e1369-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e1439" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e1439-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d3703e1439-link">安全方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e1453" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/firmware_encryption_with_spienc.html" id="id-d3703e1453-link">固件加密-SPIENC</a></div></div></li><li role="treeitem"><div data-tocid="hw_authentication-d3703e1467" class="topicref" data-id="hw_authentication" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/hw_authorization.html" id="hw_authentication-d3703e1467-link">硬件授权认证 </a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="spi-flash-enc-function-d3703e1481" class="topicref" data-id="spi-flash-enc-function" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action spi-flash-enc-function-d3703e1481-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spi_flash_enc_function.html" id="spi-flash-enc-function-d3703e1481-link">SPI Flash 防抄板方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="spienc_function-d3703e1495" class="topicref" data-id="spienc_function" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action spienc_function-d3703e1495-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spienc_function_v1.html" id="spienc_function-d3703e1495-link">方案 V1</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="spienc-generate-efuse-d3703e1509" class="topicref" data-id="spienc-generate-efuse" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spienc-generate-efuse_v1-1.html" id="spienc-generate-efuse-d3703e1509-link">烧录 eFuse</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="spienc-generate-production-firmware-d3703e1525" class="topicref" data-id="spienc-generate-production-firmware" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spienc-generate-production-firmware-1.html" id="spienc-generate-production-firmware-d3703e1525-link">生成量产固件</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="spinenc-efuse-and-firmware-combined-d3703e1541" class="topicref" data-id="spinenc-efuse-and-firmware-combined" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spinenc-efuse-and-firmware-combined-1.html" id="spinenc-efuse-and-firmware-combined-d3703e1541-link">eFuse 与固件合并烧录</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1562" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1562-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spienc_function_v2.html" id="id-d3703e1562-link">方案 V2</a></div></div></li></ul></li></ul></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d3703e1629" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d3703e1629-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1643" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1643-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d3703e1643-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d3703e1699" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d3703e1699-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d3703e1699-link">USB Display 方案</a></div></div></li><li role="treeitem"><div data-tocid="backtrace-d3703e1826" class="topicref" data-id="backtrace" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/backtrace.html" id="backtrace-d3703e1826-link">Backtrace 栈回溯</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/secure/spienc-generate-efuse_v1.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">烧录 eFuse</h1>
+    
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div>
+    <div class="- topic/body concept/conbody body conbody"><p class="- topic/shortdesc shortdesc"></p>
+        <div class="- topic/div div">
+            <p class="- topic/p p" data-ofbid="d189513e32__20250409171053">使用 SPIENC 加密功能，需要将一个 128 位的 AES 密钥<span class="- topic/ph ph">和一个 64 位的 Nonce
+                值</span>烧录到芯片 eFuse 中。制作加密镜像时也需要使用上述值。因此，使用过程中，确保上述值保持不变且已妥善管理，以免泄露。</p>
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d189513e40__20250409171053">本节描述了生成 eFuse 烧录程序的详细流程。在示例方案中，提供了设置 AES<span class="- topic/ph ph">/ NONCE</span>
+                    密钥的输入 <span class="+ topic/ph sw-d/filepath ph filepath">txt</span> 文件和一个用于生成及更新密钥的脚本：</p>
+                <div class="- topic/p p" data-ofbid="d189513e49__20250409171053">开发板示例：<ul class="- topic/ul ul" id="spienc-generate-efuse__ul_lpg_152_jdc" data-ofbid="spienc-generate-efuse__ul_lpg_152_jdc">
+                        <li class="- topic/li li" data-ofbid="d189513e53__20250409171053">
+                            <p class="- topic/p p" data-ofbid="d189513e55__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">SDK/target/d21x/demo88-nand/pack/keys/set_aes_key.txt</span>：设置加密密钥</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d189513e61__20250409171053">
+                            <p class="- topic/p p" data-ofbid="d189513e63__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">SDK/target/d21x/demo88-nand/pack/keys/set_nonce.txt</span>：设置加密的
+                                NONCE 参数</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d189513e69__20250409171053">
+                            <p class="- topic/p p" data-ofbid="d189513e71__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">SDK/target/d21x/demo88-nand/pack/keys/gen_spienc_key.bat</span>：Windows
+                                上执行编译时，使用该脚本</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d189513e77__20250409171053">
+                            <p class="- topic/p p" data-ofbid="d189513e79__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">SDK/target/d21x/demo88-nand/pack/keys/gen_spienc_key.sh</span>：
+                                Linux 上执行编译时，使用该脚本</p>
+                        </li>
+                    </ul></div>
+            </div>
+        </div>
+        <section class="- topic/section section" id="spienc-generate-efuse__section_in3_5rx_52c" data-ofbid="spienc-generate-efuse__section_in3_5rx_52c"><h2 class="- topic/title title sectiontitle">生成密钥</h2>
+            
+            <div class="- topic/p p" data-ofbid="d189513e93__20250409171053">根据运行环境执行对应命令，运行生成密钥的脚本：<ul class="- topic/ul ul" id="spienc-generate-efuse__ul_pwh_3vd_jdc" data-ofbid="spienc-generate-efuse__ul_pwh_3vd_jdc">
+                    <li class="- topic/li li" data-ofbid="d189513e97__20250409171053">在 <strong class="+ topic/ph hi-d/b ph b">Linux 环境</strong>下：<ol class="- topic/ol ol" id="spienc-generate-efuse__ol_mp2_s42_jdc" data-ofbid="spienc-generate-efuse__ol_mp2_s42_jdc">
+                            <li class="- topic/li li" data-ofbid="d189513e104__20250409171053">
+                                <p class="- topic/p p" data-ofbid="d189513e106__20250409171053">确保已经安装 OpenSSL。如未安装，可执行以下命令进行安装：</p>
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_x1g_s42_jdc" data-ofbid="spienc-generate-efuse__pre_x1g_s42_jdc">sudo apt-get install openssl</pre>
+                            </li>
+                            <li class="- topic/li li" id="spienc-generate-efuse__li_ivh_w3x_52c" data-ofbid="spienc-generate-efuse__li_ivh_w3x_52c">
+                                <p class="- topic/p p" data-ofbid="d189513e115__20250409171053">准备初始密钥文件 <span class="+ topic/ph sw-d/filepath ph filepath">set_aes_key.txt</span><span class="- topic/ph ph"> 和
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">set_nonce.txt</span></span>。</p>
+                                <p class="- topic/p p" data-ofbid="d189513e125__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">set_aes_key.txt</span>
+                                    <span class="- topic/ph ph">和
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">set_nonce.txt</span>
+                                    文件</span>中有一个初始密钥，需要手动修改其中的 <code class="+ topic/ph pr-d/codeph ph codeph">HEX</code> 密钥内容。</p>
+                            </li>
+                            <li class="- topic/li li" id="spienc-generate-efuse__li_qlh_vfz_52c" data-ofbid="spienc-generate-efuse__li_qlh_vfz_52c">进入开发板根目录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__codeblock_on1_lfz_52c" data-ofbid="spienc-generate-efuse__codeblock_on1_lfz_52c">cd SDK/target/&lt;soc&gt;/&lt;board&gt;/pack/keys/</pre><p class="- topic/p p" data-ofbid="d189513e144__20250409171053">例如：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__codeblock_ifx_lr2_jdc" data-ofbid="spienc-generate-efuse__codeblock_ifx_lr2_jdc">cd SDK/target/d21x/demo88-nand/pack/keys/</pre></li>
+                            <li class="- topic/li li" data-ofbid="d189513e149__20250409171053">
+                                <div class="- topic/p p" data-ofbid="d189513e151__20250409171053">使用下列命令运行脚本生成所需的密钥文件和头文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__codeblock_it5_g1z_52c" data-ofbid="spienc-generate-efuse__codeblock_it5_g1z_52c">./gen_spienc_key.sh</pre></div>
+                                <div class="- topic/p p" id="spienc-generate-efuse__p_lkf_1jx_52c" data-ofbid="spienc-generate-efuse__p_lkf_1jx_52c">生成的文件如下所示：<ul class="- topic/ul ul" id="spienc-generate-efuse__ul_ovx_n52_jdc" data-ofbid="spienc-generate-efuse__ul_ovx_n52_jdc">
+                                        <li class="- topic/li li" data-ofbid="d189513e160__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e162__20250409171053">AES 密钥 <span class="+ topic/ph sw-d/filepath ph filepath">spi_aes.key</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e168__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e170__20250409171053">AES 对应的 C 语言头文件
+                                                <span class="+ topic/ph sw-d/filepath ph filepath">spi_aes_key.h</span></p>
+                                        </li>
+                                    </ul><ul class="- topic/ul ul" data-ofbid="d189513e176__20250409171053">
+                                        <li class="- topic/li li" data-ofbid="d189513e178__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e180__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">spi_nonce.key</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e185__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e187__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rotpk.bin</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e192__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e194__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rsa_private_key.der</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e199__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e201__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rsa_private_key.pem</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e206__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e208__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rsa_public_key.der</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e214__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e216__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rsa_public_key.pem</span></p>
+                                        </li>
+                                    </ul></div>
+                            </li>
+                            <li class="- topic/li li" id="spienc-generate-efuse__li_cbr_jjx_52c" data-ofbid="spienc-generate-efuse__li_cbr_jjx_52c">
+                                <p class="- topic/p p" data-ofbid="d189513e225__20250409171053">将 <span class="+ topic/ph sw-d/filepath ph filepath">spi_aes_key.h</span> 文件复制粘贴至
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">lite/bsp/examples_bare/test-efuse/</span>
+                                    目录中，供编译烧录 eFuse 的程序时使用。</p>
+                                <p class="- topic/p p" data-ofbid="d189513e234__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">spi_aes.key</span> 和其它文件则保留在
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">SDK/target/&lt;SoC&gt;/&lt;board&gt;/pack/keys/</span>，在使用
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">mk_image.py</span> 生成加密固件时使用，例如<span class="+ topic/ph sw-d/filepath ph filepath">SDK/target/d21x/demo88-nand/pack/keys/</span></p>
+                                <div class="- topic/note note important note_important" id="spienc-generate-efuse__note_y45_1p2_jdc" data-ofbid="spienc-generate-efuse__note_y45_1p2_jdc"><span class="note__title">重要：</span> 
+                                    生成的密钥务必妥善保管，以免丢失或者泄露。</div>
+                            </li>
+                        </ol></li>
+                    <li class="- topic/li li" data-ofbid="d189513e252__20250409171053">
+                        <p class="- topic/p p" data-ofbid="d189513e254__20250409171053">在 <strong class="+ topic/ph hi-d/b ph b">Windows 环境</strong> 下：</p>
+                        <div class="- topic/p p" data-ofbid="d189513e260__20250409171053">
+                            <ol class="- topic/ol ol arabic simple" id="spienc-generate-efuse__ol_in4_dp4_fdc" data-ofbid="spienc-generate-efuse__ol_in4_dp4_fdc">
+                                <li class="- topic/li li" data-ofbid="d189513e264__20250409171053">
+                                <p class="- topic/p p" data-ofbid="d189513e266__20250409171053">准备初始密钥文件 <span class="+ topic/ph sw-d/filepath ph filepath">set_aes_key.txt</span><span class="- topic/ph ph"> 和
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">set_nonce.txt</span></span>。</p>
+                                <p class="- topic/p p" data-ofbid="d189513e276__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">set_aes_key.txt</span>
+                                    <span class="- topic/ph ph">和
+                                            <span class="+ topic/ph sw-d/filepath ph filepath">set_nonce.txt</span>
+                                    文件</span>中有一个初始密钥，需要手动修改其中的 <code class="+ topic/ph pr-d/codeph ph codeph">HEX</code> 密钥内容。</p>
+                            </li>
+                                <li class="- topic/li li" data-ofbid="d189513e291__20250409171053">进入开发板根目录：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__d510e142" data-ofbid="spienc-generate-efuse__d510e142">cd SDK/target/&lt;soc&gt;/&lt;board&gt;/pack/keys/</pre><p class="- topic/p p" data-ofbid="d189513e295__20250409171053">例如：</p><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__d510e146" data-ofbid="spienc-generate-efuse__d510e146">cd SDK/target/d21x/demo88-nand/pack/keys/</pre></li>
+                                <li class="- topic/li li" data-ofbid="d189513e300__20250409171053">
+                                    <div class="- topic/p p" data-ofbid="d189513e302__20250409171053">使用下列命令运行脚本生成所需的密钥文件和头文件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__codeblock_jdw_l1z_52c" data-ofbid="spienc-generate-efuse__codeblock_jdw_l1z_52c">./gen_spienc_key.bat</pre></div>
+                                    <div class="- topic/p p" data-ofbid="d189513e307__20250409171053">生成的文件如下所示：<ul class="- topic/ul ul" id="spienc-generate-efuse__d510e158" data-ofbid="spienc-generate-efuse__d510e158">
+                                        <li class="- topic/li li" data-ofbid="d189513e311__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e313__20250409171053">AES 密钥 <span class="+ topic/ph sw-d/filepath ph filepath">spi_aes.key</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e319__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e321__20250409171053">AES 对应的 C 语言头文件
+                                                <span class="+ topic/ph sw-d/filepath ph filepath">spi_aes_key.h</span></p>
+                                        </li>
+                                    </ul><ul class="- topic/ul ul" data-ofbid="d189513e327__20250409171053">
+                                        <li class="- topic/li li" data-ofbid="d189513e329__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e331__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">spi_nonce.key</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e336__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e338__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rotpk.bin</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e343__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e345__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rsa_private_key.der</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e350__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e352__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rsa_private_key.pem</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e357__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e359__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rsa_public_key.der</span></p>
+                                        </li>
+                                        <li class="- topic/li li" data-ofbid="d189513e365__20250409171053">
+                                            <p class="- topic/p p" data-ofbid="d189513e367__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">rsa_public_key.pem</span></p>
+                                        </li>
+                                    </ul></div>
+                                    <div class="- topic/note note important note_important" id="spienc-generate-efuse__note_wb5_jp2_jdc" data-ofbid="spienc-generate-efuse__note_wb5_jp2_jdc"><span class="note__title">重要：</span> 
+                                        生成的密钥请妥善保管，以免丢失或者泄露。</div>
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d189513e377__20250409171053">
+                                <p class="- topic/p p" data-ofbid="d189513e379__20250409171053">将 <span class="+ topic/ph sw-d/filepath ph filepath">spi_aes_key.h</span> 文件复制粘贴至
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">lite/bsp/examples_bare/test-efuse/</span>
+                                    目录中，供编译烧录 eFuse 的程序时使用。</p>
+                                <p class="- topic/p p" data-ofbid="d189513e388__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">spi_aes.key</span> 和其它文件则保留在
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">SDK/target/&lt;SoC&gt;/&lt;board&gt;/pack/keys/</span>，在使用
+                                        <span class="+ topic/ph sw-d/filepath ph filepath">mk_image.py</span> 生成加密固件时使用，例如<span class="+ topic/ph sw-d/filepath ph filepath">SDK/target/d21x/demo88-nand/pack/keys/</span></p>
+                                <div class="- topic/note note important note_important" id="spienc-generate-efuse__d510e247" data-ofbid="spienc-generate-efuse__d510e247"><span class="note__title">重要：</span> 
+                                    生成的密钥务必妥善保管，以免丢失或者泄露。</div>
+                            </li>
+                            </ol>
+                        </div>
+                    </li>
+                </ul></div>
+        </section>
+        <section class="- topic/section section" id="spienc-generate-efuse__section_ctb_1sx_52c" data-ofbid="spienc-generate-efuse__section_ctb_1sx_52c"><h2 class="- topic/title title sectiontitle">编译程序</h2>
+            
+            <div class="- topic/p p" data-ofbid="d189513e415__20250409171053">
+                <div class="- topic/div div section" id="spienc-generate-efuse__id5">
+                    <p class="- topic/p p" data-ofbid="d189513e419__20250409171053">按照以下步骤配置和编译 BootLoader，并生成烧录固件。</p>
+                    <ol class="- topic/ol ol" id="spienc-generate-efuse__ol_b3x_nv2_jdc" data-ofbid="spienc-generate-efuse__ol_b3x_nv2_jdc">
+                        <li class="- topic/li li" data-ofbid="d189513e424__20250409171053">
+                            <div class="- topic/p p" data-ofbid="d189513e426__20250409171053">进入 SDK 根目录，并应用 BootLoader
+                                的配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__codeblock_dmr_bbz_52c" data-ofbid="spienc-generate-efuse__codeblock_dmr_bbz_52c">cd &lt;SDK_ROOT&gt;</pre></div>
+                            <p class="- topic/p p" data-ofbid="d189513e431__20250409171053">例如，应用下列 BootLoader 配置：</p>
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_jn4_dp4_fdc" data-ofbid="spienc-generate-efuse__pre_jn4_dp4_fdc">scons --apply-def=d21x_demo88-nand_baremetal_bootloader_defconfig</pre>
+                            
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d189513e438__20250409171053">
+                            <div class="- topic/p p" data-ofbid="d189513e440__20250409171053">打开 BootLoader 的 menuconfig
+                                菜单：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_kn4_dp4_fdc" data-ofbid="spienc-generate-efuse__pre_kn4_dp4_fdc">scons --menuconfig</pre></div>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d189513e446__20250409171053">
+                            <div class="- topic/p p" data-ofbid="d189513e448__20250409171053">分别勾选或者确认已勾选下列参数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_ln4_dp4_fdc" data-ofbid="spienc-generate-efuse__pre_ln4_dp4_fdc">AIC_USING_SID
+EFUSE_WRITE_SUPPORT
+AIC_SID_BURN_SPIENC_KEY_TEST
+
+AIC_USING_SPIENC
+AICUPG_FIRMWARE_SECURITY</pre></div>
+                            <p class="- topic/p p" data-ofbid="d189513e453__20250409171053">参数对应的界面配置具体如下：</p>
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_mn4_dp4_fdc" data-ofbid="spienc-generate-efuse__pre_mn4_dp4_fdc">Board options  ---&gt;
+    [*] Using Spienc
+    [*]   Enc qspi0
+    (<span class="hl-number">0</span>)     set qspi0 tweak
+    [*] Using Efuse/SID
+        SID Parameter  ---&gt;
+            [*] support efuse write
+            (<span class="hl-number">64</span>) set efuse max word
+
+Bootloader options  ---&gt;
+    [*] Upgrading  ---&gt;
+        [*]   Secure transfer firmware and burn</pre>
+                            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_nn4_dp4_fdc" data-ofbid="spienc-generate-efuse__pre_nn4_dp4_fdc">Drivers options  ---&gt;
+    Drivers examples  ---&gt;
+        [*] Enable SID burn spienc key command</pre>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d189513e463__20250409171053">
+                            <p class="- topic/p p" data-ofbid="d189513e465__20250409171053">修改代码调用命令烧写 eFuse：</p>
+                            <ul class="- topic/ul ul" id="spienc-generate-efuse__ul_zcv_1w2_jdc" data-ofbid="spienc-generate-efuse__ul_zcv_1w2_jdc">
+                                <li class="- topic/li li" data-ofbid="d189513e470__20250409171053">
+                                    <p class="- topic/p p" data-ofbid="d189513e472__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">application/baremetal/bootloader/main.c</span>:</p>
+                                    <div class="- topic/p p" data-ofbid="d189513e477__20250409171053">在 <code class="+ topic/ph pr-d/codeph ph codeph">console_set_usrname</code> 之后，添加上一个命令执行代码
+                                            <code class="+ topic/ph pr-d/codeph ph codeph">console_run_cmd(“efuse_spienc”);</code>，如下所示。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__codeblock_uts_cw2_jdc" data-ofbid="spienc-generate-efuse__codeblock_uts_cw2_jdc"><strong class="hl-keyword">int</strong> main(<strong class="hl-keyword">void</strong>)
+{
+    console_init();
+    console_set_usrname(<span class="hl-string">"aic"</span>);
+    console_run_cmd(<span class="hl-string">"efuse_spienc"</span>);  <em class="hl-comment">// 加上此句</em>
+    ...
+}</pre></div>
+                                </li>
+                                <li class="- topic/li li" data-ofbid="d189513e489__20250409171053">
+                                    <p class="- topic/p p" data-ofbid="d189513e491__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">bsp/examples_bare/test-efuse/efuse_burn_spienc_key_cmd.c:</span></p>
+                                    <p class="- topic/p p" data-ofbid="d189513e495__20250409171053">如果不需要关闭 JTAG，可以将 <span class="+ topic/keyword pr-d/apiname keyword apiname">burn_jtag_lock_bit()</span>
+                                        相关的调用注释掉。</p>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d189513e504__20250409171053">
+                            <div class="- topic/p p" data-ofbid="d189513e506__20250409171053">编译程序
+                                BootLoader：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_rn4_dp4_fdc" data-ofbid="spienc-generate-efuse__pre_rn4_dp4_fdc">scons       # build BootLoader</pre></div>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d189513e513__20250409171053">
+                            <div class="- topic/p p" data-ofbid="d189513e515__20250409171053">编译程序 APP
+                                并且生成烧录固件：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_sn4_dp4_fdc" data-ofbid="spienc-generate-efuse__pre_sn4_dp4_fdc">scons --apply-def=d21x_demo88-nand_rt-thread_helloworld_defconfig</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__codeblock_wfh_p2z_52c" data-ofbid="spienc-generate-efuse__codeblock_wfh_p2z_52c">scons</pre></div>
+                            <p class="- topic/p p" data-ofbid="d189513e522__20250409171053"> 编译结果会保存至 <span class="+ topic/ph sw-d/filepath ph filepath">SDK/output/&lt;SoC name&gt;_&lt;board
+                                    name_rt-thread_helloworld/images</span> 目录。例如，<span class="+ topic/ph sw-d/filepath ph filepath">SDK/output/d12x_demo68-nor_rt-thread_helloworld/images</span></p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+        <section class="- topic/section section" id="spienc-generate-efuse__section_fdt_yrx_52c" data-ofbid="spienc-generate-efuse__section_fdt_yrx_52c"><h2 class="- topic/title title sectiontitle">AiBurn 烧录</h2>
+            
+            <p class="- topic/p p" data-ofbid="d189513e540__20250409171053">使用 AiBurn 烧录生成的镜像。 </p>
+        </section>
+        <section class="- topic/section section" id="spienc-generate-efuse__section_xbz_wrx_52c" data-ofbid="spienc-generate-efuse__section_xbz_wrx_52c"><h2 class="- topic/title title sectiontitle">SD 卡烧录</h2>
+            
+            <p class="- topic/p p" data-ofbid="d189513e549__20250409171053">准备一张 SD 卡，确保该卡只有一个分区，并且格式化为 FAT32/ exFAT 文件系统。</p>
+            <p class="- topic/p p" data-ofbid="d189513e552__20250409171053"> 将编译输出目录下的文件复制到 SD 卡的根目录：</p>
+            <ul class="- topic/ul ul simple" id="spienc-generate-efuse__ul_vn4_dp4_fdc" data-ofbid="spienc-generate-efuse__ul_vn4_dp4_fdc">
+                <li class="- topic/li li" data-ofbid="d189513e557__20250409171053">
+                    <p class="- topic/p p" data-ofbid="d189513e559__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">bootcfg.txt</span></p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d189513e564__20250409171053">
+                    <p class="- topic/p p" data-ofbid="d189513e566__20250409171053"><span class="+ topic/ph sw-d/filepath ph filepath">bootloader.aic</span></p>
+                </li>
+            </ul>
+            <p class="- topic/p p" data-ofbid="d189513e572__20250409171053">并且将 <span class="+ topic/ph sw-d/filepath ph filepath">bootcfg.txt</span> 中的内容修改为：</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__pre_wn4_dp4_fdc" data-ofbid="spienc-generate-efuse__pre_wn4_dp4_fdc">boot0=bootloader.aic</pre>
+            <p class="- topic/p p" data-ofbid="d189513e582__20250409171053">将该卡插到板卡中，上电运行，即可完成相关 eFuse 的烧录。</p>
+        </section>
+        <section class="- topic/section section" id="spienc-generate-efuse__section_pnc_wrx_52c" data-ofbid="spienc-generate-efuse__section_pnc_wrx_52c"><h2 class="- topic/title title sectiontitle">烧录日志</h2>
+            
+            <div class="- topic/p p" data-ofbid="d189513e592__20250409171053">
+                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="spienc-generate-efuse__codeblock_dps_rkx_52c" data-ofbid="spienc-generate-efuse__codeblock_dps_rkx_52c">tinySPL [Built on Feb <span class="hl-number">27</span> <span class="hl-number">2025</span> <span class="hl-number">11</span>:<span class="hl-number">21</span>:<span class="hl-number">57</span>]
+BROM SPIENC is ENABLED
+JTAG LOCK   is ENABLED
+SPI ENC KEY:
+<span class="hl-number">0x406efde8</span> : <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span> <span class="hl-number">00</span>   <em class="hl-comment">//烧录后的 key 对 CPU 不可见，所以无法读出</em>
+SPI ENC Key is read DISABLED
+SPI ENC Key is write DISABLED</pre>
+            </div>
+        </section>
+    </div>
+</article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#spienc-generate-efuse__section_in3_5rx_52c" data-tocid="spienc-generate-efuse__section_in3_5rx_52c">生成密钥</a></div></li><li class="section-item"><div class="section-title"><a href="#spienc-generate-efuse__section_ctb_1sx_52c" data-tocid="spienc-generate-efuse__section_ctb_1sx_52c">编译程序</a></div></li><li class="section-item"><div class="section-title"><a href="#spienc-generate-efuse__section_fdt_yrx_52c" data-tocid="spienc-generate-efuse__section_fdt_yrx_52c">AiBurn 烧录</a></div></li><li class="section-item"><div class="section-title"><a href="#spienc-generate-efuse__section_xbz_wrx_52c" data-tocid="spienc-generate-efuse__section_xbz_wrx_52c">SD 卡烧录</a></div></li><li class="section-item"><div class="section-title"><a href="#spienc-generate-efuse__section_pnc_wrx_52c" data-tocid="spienc-generate-efuse__section_pnc_wrx_52c">烧录日志</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style>
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    </style>
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -76,6 +76,7 @@ sfud_err set_write_enabled(const sfud_flash *flash, bool enabled);
 static sfud_err set_4_byte_address_mode(sfud_flash *flash, bool enabled);
 static int make_adress_byte_array(const sfud_flash *flash, uint32_t addr, uint8_t *array);
 static sfud_err check_wp_mode(sfud_flash *flash);
+static sfud_err auto_set_rx_delay_mode(sfud_flash *flash);
 
 /**
  * SFUD initialize by flash device
@@ -108,7 +109,7 @@ sfud_err sfud_device_init(sfud_flash *flash) {
     result = flash->spi.get_bus_id(&flash->spi, &bus_id);
     if (result)
         return result;
-    pr_info("init %ld spienc...\n", bus_id);
+    pr_info("init %d spienc...\n", (unsigned int)bus_id);
     if (spienc_init() != 0) {
         pr_err("spienc init failed.\n");
         return -1;
@@ -420,13 +421,17 @@ static sfud_err hardware_init(sfud_flash *flash) {
     /* After SFDP is read, switch to the working frequency */
     if (flash->spi.set_speed)
         flash->spi.set_speed(&flash->spi, flash->bus_hz);
+    auto_set_rx_delay_mode(flash);
 #endif
+
+    /* Check whether the flash is in write protect state. If it is, exit the state. */
+    check_wp_mode(flash);
+
 #ifdef SFUD_USING_QSPI
     quad_enable_func qe = flash->quad_enable;
     qe(flash);
 #endif /* SFUD_USING_QSPI */
-    /* Check whether the flash is in write protect state. If it is, exit the state. */
-    check_wp_mode(flash);
+
     return result;
 }
 
@@ -1335,7 +1340,7 @@ static sfud_err check_wp_mode(sfud_flash *flash) {
     result = sfud_read_reg(flash, reg, &val);
     if (result == SFUD_SUCCESS) {
         if (val & SFUD_WRITE_PROTECTION_MASK)
-            SFUD_INFO("Flash is in write protection state: 0x%x.\n", val);
+            SFUD_WP_INFO("Flash is in write protection state: 0x%x.\n", val);
     } else {
         pr_warn("Read status register0  failed.\n");
         return result;
@@ -1354,6 +1359,42 @@ static sfud_err check_wp_mode(sfud_flash *flash) {
     }
 
     return result;
+}
+
+/**
+ * makesure the spi work in the suitable delay mode
+ *
+ * @note
+ *
+ * @param flash flash device
+ *
+ * @return result
+ */
+static sfud_err auto_set_rx_delay_mode(sfud_flash *flash) {
+
+    sfud_err result = SFUD_SUCCESS;
+    uint8_t id[3] = {0};
+    uint32_t mode = 0;
+
+    SFUD_ASSERT(flash);
+
+    id[0] = flash->chip.mf_id;
+    id[1] = flash->chip.type_id;
+    id[2] = flash->chip.capacity_id;
+
+    for (mode = 3; mode > 0; mode--) {
+        result = read_jedec_id(flash);
+        if (result != SFUD_SUCCESS)
+            return result;
+
+        if ((id[0] == flash->chip.mf_id) && (id[1] == flash->chip.type_id) && (id[2] == flash->chip.capacity_id))
+            return SFUD_SUCCESS;
+
+        if (flash->spi.set_rx_delay)
+            flash->spi.set_rx_delay(&flash->spi, mode);
+    }
+
+    return -SFUD_ERR_NOT_FOUND;
 }
 
 #ifdef SFUD_USING_SECURITY_REGISTER

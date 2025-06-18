@@ -157,11 +157,6 @@ config AIC_SPINOR_SFUD_DEBUG
     default n
     depends on LPKG_USING_SFUD
 
-config AIC_SPINOR_SFUD_WP_DEBUG
-    bool "Enable SPINOR write protection debug"
-    default y
-    depends on LPKG_USING_SFUD
-
 config AIC_FB_DRV_DEBUG
     bool "Enable Display driver debug"
     default n
@@ -268,7 +263,7 @@ config AIC_MMC_BARE_TEST
 config AIC_MTD_BARE_TEST
     bool "Enable MTD driver test command"
     default n
-    depends on AIC_MTD_BARE_DRV
+    select AIC_MTD_BARE_DRV
 
 config AIC_FILE_CRC32_TEST
     bool "Enable file CRC32 test command"
@@ -505,11 +500,17 @@ menu "Power Management examples"
 
         config AIC_PM_POWER_KEY_GPIO
             string "Select sleep/wakeup pin"
-            default "PD.6"
+            default "PD.6" if AIC_CHIP_D21X
+            default "PD.15" if AIC_CHIP_D13X
+            default "PA.1" if AIC_CHIP_D12X
+
+        config AIC_PM_DEMO_TOUCH_WAKEUP
+            bool "Enable touch wakeup system"
+            default n
 
         config AIC_PM_POWER_TOUCH_TIME_SLEEP
             int "Seconds to enter sleep without touching screen"
-            default 120
+            default 300
     endmenu
 
     config AIC_PM_TEST

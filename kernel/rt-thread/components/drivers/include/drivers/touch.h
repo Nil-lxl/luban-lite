@@ -52,6 +52,11 @@ extern "C" {
 #define  RT_TOUCH_CTRL_PDEB_VALID_CHECK  (RT_DEVICE_CTRL_BASE(Touch) + 11)  /* Determine if the pdeb value is valid*/
 #define  RT_TOUCH_CTRL_GET_ADC           (RT_DEVICE_CTRL_BASE(Touch) + 12)  /* Get ADC value*/
 #endif
+#define  RT_TOUCH_CTRL_SET_DYNAMIC_ROTATE (RT_DEVICE_CTRL_BASE(Touch) + 13)  /* Set Touch Dynamic Rotation */
+#define  RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE (RT_DEVICE_CTRL_BASE(Touch) + 14)  /* Get Touch Dynamic Rotation */
+#define  RT_TOUCH_CTRL_GET_DYNAMIC_FLAG   (RT_DEVICE_CTRL_BASE(Touch) + 15)  /* Get Touch Dynamic Rotation Enable Flag */
+#define  RT_TOUCH_CTRL_SET_OSD_FLAG       (RT_DEVICE_CTRL_BASE(Touch) + 16)  /* Set Touch OSD Flag */
+#define  RT_TOUCH_CTRL_GET_OSD_FLAG       (RT_DEVICE_CTRL_BASE(Touch) + 17)  /* Get Touch OSD Flag */
 
 /* Touch event */
 #define RT_TOUCH_EVENT_NONE              (0)   /* Touch none */

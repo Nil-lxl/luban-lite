@@ -1134,6 +1134,34 @@ int hal_qspi_master_get_status(qspi_master_handle *h)
     return (qspi->status) & (~HAL_QSPI_STATUS_INTERNAL_MSK);
 }
 
+static int hal_qspi_transfer_rxdelay_mode(qspi_master_handle *h, u32 delay_mode)
+{
+    struct qspi_master_state *qspi;
+
+    CHECK_PARAM(h, -EINVAL);
+
+    qspi = (struct qspi_master_state *)h;
+
+    if (delay_mode == RX_SAMP_DLY_AUTO)
+        return qspi_hw_freq_to_delay_mode(qspi->bus_hz);
+
+    return delay_mode;
+}
+
+void hal_qspi_master_set_rxdelay_mode(qspi_master_handle *h, u32 delay_mode)
+{
+    struct qspi_master_state *qspi;
+    u32 base, mode;
+
+    CHECK_PARAM_RET(h);
+
+    qspi = (struct qspi_master_state *)h;
+    base = qspi_hw_index_to_base(qspi->idx);
+    mode = hal_qspi_transfer_rxdelay_mode(h, delay_mode);
+
+    qspi_hw_set_rx_delay_mode(base, mode);
+}
+
 #ifdef AIC_QSPI_DRV_V11
 int hal_qspi_master_set_qio_mode(qspi_master_handle *h)
 {

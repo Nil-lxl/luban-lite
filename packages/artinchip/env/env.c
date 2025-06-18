@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -222,13 +222,13 @@ int fw_env_write(char *name, char *value)
     overwriting = (oldval && (value && strlen(value)));
 
     if (deleting) {
-        printf("Env: delting\n");
+        pr_info("Env: delting\n");
     } else if (overwriting) {
-        pr_debug("Env: overwriting\n");
+        pr_info("Env: overwriting\n");
     } else if (creating) {
-        printf("Env: creating\n");
+        pr_info("Env: creating\n");
     } else {
-        printf("Env: nothing\n");
+        pr_info("Env: nothing\n");
         return 0;
     }
 
@@ -285,10 +285,17 @@ int fw_env_write(char *name, char *value)
 
 int fw_env_flush(void)
 {
+    uint32_t crc32;
+
     /*
 	 * Update CRC
 	 */
-    *environment.crc = env_crc32(0, (uint8_t *)environment.data, usable_envsize);
+
+    crc32 = env_crc32(0, (uint8_t *)environment.data, usable_envsize);
+
+    if (crc32 == *environment.crc)
+        return 0;
+    *environment.crc = crc32;
 
     /* write environment back to flash */
     if (flash_io(O_RDWR)) {
@@ -641,6 +648,7 @@ static int bar_spinand_save_env_simple(void *buf, size_t size)
 #endif
 #endif
 
+#ifdef AIC_SDMC_DRV
 #ifndef KERNEL_BAREMETAL
 static int rtt_mmc_load_env_simple(void *buf, size_t size)
 {
@@ -795,6 +803,7 @@ static int bar_mmc_save_env_simple(void *buf, size_t size)
     return 0;
 }
 #endif
+#endif
 
 static int flash_env_read(void *buf, size_t size)
 {
@@ -819,6 +828,7 @@ static int flash_env_read(void *buf, size_t size)
 #endif
             break;
 #endif
+#ifdef AIC_SDMC_DRV
         case BD_SDMC0:
 #ifndef KERNEL_BAREMETAL
             ret = rtt_mmc_load_env_simple(buf, size);
@@ -826,6 +836,7 @@ static int flash_env_read(void *buf, size_t size)
             ret = bar_mmc_load_env_simple(buf, size);
 #endif
             break;
+#endif
 
         default:
             break;
@@ -890,6 +901,7 @@ static int flash_env_write(void *buf, size_t size)
 #endif
             break;
 #endif
+#ifdef AIC_SDMC_DRV
         case BD_SDMC0:
 #ifndef KERNEL_BAREMETAL
             ret = rtt_mmc_save_env_simple(buf, size);
@@ -897,6 +909,7 @@ static int flash_env_write(void *buf, size_t size)
             ret = bar_mmc_save_env_simple(buf, size);
 #endif
             break;
+#endif
 
         default:
             break;

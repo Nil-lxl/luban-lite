@@ -91,9 +91,10 @@ class Win32Spawn:
         if cmd == 'del':
             for f in args[1:]:
                 try:
-                    os.remove(f)
+                    if os.path.exists(f):
+                        os.remove(f)
                 except Exception as e:
-                    print('Error removing file: ' + e)
+                    print('Error removing file: ' + str(e))
                     return -1
             return 0
 
@@ -318,11 +319,12 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components=[])
             aic_root = env['AIC_ROOT']
             # call menuconfig
             from menuconfig import menuconfig
-            menuconfig(Rtt_Root)
-            # auto save defconfig file
-            sys.path.append(os.path.join(aic_root, './tools/scripts'))
-            from aic_build import save_defconfig
-            save_defconfig(aic_root)
+            changed = menuconfig(Rtt_Root)
+            if changed:
+                # auto save defconfig file
+                sys.path.append(os.path.join(aic_root, './tools/scripts'))
+                from aic_build import save_defconfig
+                save_defconfig(aic_root)
             # If 'output/xxxx/project_eclipse' folder exists need update eclipse project
             if not os.path.exists(os.path.join(os.environ["AIC_ROOT"], os.environ["PRJ_OUT_DIR"]
                                                + "../project_eclipse")):

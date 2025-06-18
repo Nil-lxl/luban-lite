@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -24,7 +24,7 @@ static void createBigImage()
     lv_obj_set_pos(bigImg, pos_width_conversion(321), pos_height_conversion(80));
 
     static lv_style_t style_def;
-    if (style_def.prop_cnt > 1) {
+    if (style_def.prop_cnt >= 1) {
         lv_style_reset(&style_def);
     } else {
         lv_style_init(&style_def);
@@ -40,7 +40,7 @@ static void createBigImage()
 static void createBar()
 {
     static lv_style_t style_bg;
-    if (style_bg.prop_cnt > 1) {
+    if (style_bg.prop_cnt >= 1) {
         lv_style_reset(&style_bg);
     } else {
         lv_style_init(&style_bg);
@@ -53,7 +53,7 @@ static void createBar()
     lv_style_set_anim_time(&style_bg, 1000);
 
     static lv_style_t style_indic;
-    if (style_indic.prop_cnt > 1) {
+    if (style_indic.prop_cnt >= 1) {
         lv_style_reset(&style_indic);
     } else {
         lv_style_init(&style_indic);
@@ -74,7 +74,7 @@ static void createBar()
     lv_bar_set_range(bar, 0, 100);
 
     static lv_style_t style_def;
-    if (style_def.prop_cnt > 1) {
+    if (style_def.prop_cnt >= 1) {
         lv_style_reset(&style_def);
     } else {
         lv_style_init(&style_def);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -26,6 +26,8 @@
 #define GLB_CLK_CTL                 (GLB_BASE_Q + 0x28)
 #define GLB_CLK_CTL_QEP_EN(n)       BIT(n)
 #endif
+
+#define GLB_QEP_INT_STS             (GLB_BASE_Q +  0x10)
 
 #define QEP_POS_CNT_V(n)            (QEP_BASE(n) + 0x00)
 #define QEP_POS_CNT_SP(n)           (QEP_BASE(n) + 0x04)
@@ -82,9 +84,19 @@ static void qep_reg_enable(int addr, int bit, int enable)
     writel(tmp, (ulong)addr);
 }
 
+void hal_qep_clear_cnt(u32 ch)
+{
+    writel(0, QEP_POS_CNT_V(ch));
+}
+
 u32 hal_qep_get_cnt(u32 ch)
 {
     return readl(QEP_POS_CNT_V(ch));
+}
+
+u32 hal_qep_global_stat()
+{
+    return readl(GLB_QEP_INT_STS);
 }
 
 u32 hal_qep_int_stat(u32 ch)
@@ -114,7 +126,6 @@ void hal_qep_config(u32 ch)
     /* qep configuration */
     writel_bits((u32)INCREMENTAL_COUNT, QEP_CNT_MODE_MASK, QEP_CNT_MODE_SHIFT, QEP_DEC_CONF(ch));
     writel_bits(1, QEP_A_INV_EN_MASK, QEP_A_INV_EN_SHIFT, QEP_DEC_CONF(ch));
-    writel_bits(1, QEP_POS_CMP_EN_MASK, QEP_POS_CMP_EN_SHIFT, QEP_POS_CNTCMP_CONF(ch));
     writel_bits(1, QEP_IN_FLT_EN_MASK, QEP_IN_FLT_EN_SHIFT, QEP_IN_CTL(ch));
 }
 
@@ -125,6 +136,7 @@ void hal_qep_int_enable(u32 ch, u32 enable)
 
 void hal_qep_enable(u32 ch, u32 enable)
 {
+    writel_bits(enable, QEP_POS_CMP_EN_MASK, QEP_POS_CMP_EN_SHIFT, QEP_POS_CNTCMP_CONF(ch));
     writel_bits(enable, QEP_POS_CNT_EN_MASK, QEP_POS_CNT_EN_SHIFT, QEP_POS_CNT_CONF(ch));
 }
 

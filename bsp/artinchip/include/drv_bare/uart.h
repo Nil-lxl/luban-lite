@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -12,6 +12,7 @@ extern "C" {
 #endif
 
 #include <rtconfig.h>
+#include <aic_core.h>
 
 #ifndef AIC_CLK_UART0_FREQ
 #define AIC_CLK_UART0_FREQ 48000000 /* default 48M*/
@@ -92,12 +93,40 @@ extern "C" {
 #define AIC_DEV_UART7_RX_BUFSZ 64
 #endif
 
+#ifndef AIC_DEV_UART0_TX_BUFSZ
+#define AIC_DEV_UART0_TX_BUFSZ 64
+#endif
+#ifndef AIC_DEV_UART1_TX_BUFSZ
+#define AIC_DEV_UART1_TX_BUFSZ 64
+#endif
+#ifndef AIC_DEV_UART2_TX_BUFSZ
+#define AIC_DEV_UART2_TX_BUFSZ 64
+#endif
+#ifndef AIC_DEV_UART3_TX_BUFSZ
+#define AIC_DEV_UART3_TX_BUFSZ 64
+#endif
+#ifndef AIC_DEV_UART4_TX_BUFSZ
+#define AIC_DEV_UART4_TX_BUFSZ 64
+#endif
+#ifndef AIC_DEV_UART5_TX_BUFSZ
+#define AIC_DEV_UART5_TX_BUFSZ 64
+#endif
+#ifndef AIC_DEV_UART6_TX_BUFSZ
+#define AIC_DEV_UART6_TX_BUFSZ 64
+#endif
+#ifndef AIC_DEV_UART7_TX_BUFSZ
+#define AIC_DEV_UART7_TX_BUFSZ 64
+#endif
+
 int uart_init(int id);
 int uart_config_update(int id, int baudrate);
 int uart_deinit(int id);
 int uart_getchar(int id);
 int uart_putchar(int id, int c);
+int uart_gets(int id, u8 *buf, int len);
+int uart_puts(int id, u8 *buf, int len);
 int uart_get_cur_baudrate(int id);
+void uart_reset(int id);
 
 #ifdef __cplusplus
 }

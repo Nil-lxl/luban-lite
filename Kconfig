@@ -10,22 +10,19 @@ comment "-- Important: If following options have been changed, you need save & r
 config PRJ_CHIP
     string "Chip name"
     #option env="PRJ_CHIP"
-    default "d21x"
+    # Don't set default value to make defconfig contain CONFIG_PRJ_CHIP option
 
 config PRJ_BOARD
     string "Board name"
     #option env="PRJ_BOARD"
-    default "fpga"
 
 config PRJ_KERNEL
     string "Kernel name"
     #option env="PRJ_KERNEL"
-    default "rt-thread"
 
 config PRJ_APP
     string "Application name"
     #option env="PRJ_APP"
-    default "helloworld"
 
 endmenu
 
@@ -35,14 +32,14 @@ config PLATFORM_LUBANLITE
 
 config PKGS_DIR
     string
-    option env="PKGS_ROOT"
-    default "packages"
+    default "tools/env/packages"
+	help
+        packages directory for RT-Thread online packages
+
 
 if ! AIC_BOOTLOADER
 source "application/Kconfig"
 endif
-#source "kernel/$PRJ_KERNEL/Kconfig"
-#source "$PKGS_DIR/Kconfig"
 source ".Kconfig.prj"
 source "packages/Kconfig"
 source "bsp/Kconfig"

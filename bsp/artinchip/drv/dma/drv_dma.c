@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -46,8 +46,12 @@ int drv_dma_init(void)
     }
 
     hal_dma_init();
-    aicos_request_irq(DMA_IRQn, hal_dma_irq, 0, NULL, NULL);
 
+#if defined(AIC_DMA_DRV_V21)
+    aicos_request_irq(R_DMA_IRQn, hal_dma_irq, 0, NULL, NULL);
+#else
+    aicos_request_irq(DMA_IRQn, hal_dma_irq, 0, NULL, NULL);
+#endif
     pr_info("ArtInChip DMA loaded\n");
     return 0;
 }

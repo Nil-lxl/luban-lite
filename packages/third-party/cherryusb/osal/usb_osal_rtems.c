@@ -136,9 +136,30 @@ int usb_osal_mq_recv(usb_osal_mq_t mq, uintptr_t *addr, uint32_t timeout)
     return (sc == RTEMS_SUCCESSFUL) ? 0 : -USB_ERR_TIMEOUT;
 }
 
+usb_osal_event_t usb_osal_event_creat(const char *name)
+{
+    return 0;
+}
+
+void usb_osal_event_delete(usb_osal_event_t event)
+{
+    return;
+}
+
+int usb_osal_event_send(usb_osal_event_t event, uint32_t set)
+{
+    return 0;
+}
+
+int usb_osal_event_recv(usb_osal_event_t event, uint32_t  set, uint8_t option,
+                        int32_t timeout, uint32_t *recved)
+{
+    return 0;
+}
+
 uint32_t usb_osal_enter_critical_section(void)
 {
-    rtems_interrupt_level pval;
+    rtems_interrupt_level pval = 0;
 
 #if RTEMS_SMP
     rtems_recursive_mutex_lock(&sys_arch_lock);

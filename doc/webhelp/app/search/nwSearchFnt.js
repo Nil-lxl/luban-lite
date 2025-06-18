@@ -1054,7 +1054,20 @@ function nwSearchFnt(index, options, stemmer, util) {
 
         var indexerLanguage = options.getIndexerLanguage();
         // set the tokenizing method
-        useCJKTokenizing = !!(typeof indexerLanguage != "undefined" && (indexerLanguage == "zh" || indexerLanguage == "ko"));
+        useCJKTokenizing = false;
+        if(typeof indexerLanguage != "undefined"){
+            indexerLanguage = indexerLanguage.toLowerCase();
+            //WH-3248 More flexible match for languages
+            const langs = ['zh', 'ko'];
+            for (var langIndex in langs) {
+                if(indexerLanguage === langs[langIndex] 
+                    || (indexerLanguage.lastIndexOf(langs[langIndex] + "-") === 0)
+                    || (indexerLanguage.lastIndexOf(langs[langIndex] + "_") === 0)){
+                    useCJKTokenizing = true;
+                    break;
+                }
+            }
+        }
         //If Lucene CJKTokenizer was used as the indexer, then useCJKTokenizing will be true. Else, do normal tokenizing.
         // 2-gram tokenizing happens in CJKTokenizing,
         // If doStem then make tokenize with Stemmer

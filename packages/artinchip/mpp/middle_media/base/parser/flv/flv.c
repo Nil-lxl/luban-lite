@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -922,9 +922,14 @@ out:
 int flv_read_packet(struct aic_flv_parser *s, struct aic_parser_packet *pkt)
 {
     flv_context *flv = s->priv_data;
+    int ret = PARSER_OK;
+
     int pre_tag_size = -1;
     aic_stream_seek(s->stream, flv->cur_pos, SEEK_SET);
-    aic_stream_read(s->stream, pkt->data, pkt->size);
+    ret = aic_stream_read(s->stream, pkt->data, pkt->size);
+
+    if (ret < 0)
+        return PARSER_NODATA;
 
     pre_tag_size = aic_stream_rb32(s->stream);
 

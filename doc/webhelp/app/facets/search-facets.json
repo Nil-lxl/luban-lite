@@ -94,7 +94,30 @@
      { "key" : "p1609",
       "navtitle" : "",
       "categories" : 
-      [  ] },
+      [ 
+       { "key" : "1609",
+        "navtitle" : "",
+        "categories" : 
+        [  ] },
+       
+       { "key" : "M7x",
+        "navtitle" : "",
+        "categories" : 
+        [ 
+         { "key" : "M7xP00",
+          "navtitle" : "",
+          "categories" : 
+          [  ] },
+         
+         { "key" : "M7xE00",
+          "navtitle" : "",
+          "categories" : 
+          [  ] },
+         
+         { "key" : "M7x00",
+          "navtitle" : "",
+          "categories" : 
+          [  ] } ] } ] },
      
      { "key" : "p1610",
       "navtitle" : "",
@@ -248,6 +271,11 @@
       "categories" : 
       [  ] },
      
+     { "key" : "CE(1.2)",
+      "navtitle" : "",
+      "categories" : 
+      [  ] },
+     
      { "key" : "CE(2.0)",
       "navtitle" : "",
       "categories" : 
@@ -294,6 +322,11 @@
       [  ] },
      
      { "key" : "DCE(1.1)",
+      "navtitle" : "",
+      "categories" : 
+      [  ] },
+     
+     { "key" : "DCE(1.2)",
       "navtitle" : "",
       "categories" : 
       [  ] },
@@ -728,12 +761,22 @@
       "categories" : 
       [  ] },
      
-     { "key" : "CAN(V1.0)",
+     { "key" : "CAN(1.0)",
+      "navtitle" : "",
+      "categories" : 
+      [  ] },
+     
+     { "key" : "CAN(1.1)",
       "navtitle" : "",
       "categories" : 
       [  ] },
      
      { "key" : "CANFD(1.0)",
+      "navtitle" : "",
+      "categories" : 
+      [  ] },
+     
+     { "key" : "CANFD(1.1)",
       "navtitle" : "",
       "categories" : 
       [  ] },
@@ -759,6 +802,11 @@
       [  ] },
      
      { "key" : "PBUS(1.2)",
+      "navtitle" : "",
+      "categories" : 
+      [  ] },
+     
+     { "key" : "PBUS(1.3)",
       "navtitle" : "",
       "categories" : 
       [  ] },
@@ -959,6 +1007,11 @@
       [  ] },
      
      { "key" : "deliverable(G730BDU)",
+      "navtitle" : "",
+      "categories" : 
+      [  ] },
+     
+     { "key" : "deliverable(M7000)",
       "navtitle" : "",
       "categories" : 
       [  ] },

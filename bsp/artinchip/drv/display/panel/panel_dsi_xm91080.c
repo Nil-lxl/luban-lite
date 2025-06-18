@@ -1,7 +1,9 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * Authors: Huahui Mai <huahui.mai@artinchip.com>
  */
 
 #include "panel_com.h"
@@ -191,10 +193,10 @@ static struct aic_panel_funcs panel_funcs = {
 };
 
 static struct display_timing xm91080_timing = {
-    .pixelclock = 130000000,
+    .pixelclock = 173000000,
     .hactive = 1080,
-    .hfront_porch = 160,
-    .hback_porch = 160,
+    .hfront_porch = 170,
+    .hback_porch = 170,
     .hsync_len = 40,
     .vactive = 1920,
     .vfront_porch = 10,
@@ -203,7 +205,7 @@ static struct display_timing xm91080_timing = {
 };
 
 struct panel_dsi dsi = {
-    .mode = DSI_MOD_VID_PULSE,
+    .mode = DSI_MOD_VID_BURST,
     .format = DSI_FMT_RGB888,
     .lane_num = 4,
 };

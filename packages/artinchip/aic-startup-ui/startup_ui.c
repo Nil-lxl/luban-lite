@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2020-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -42,6 +42,7 @@
 #define FB_OPEN_FAILED  -2
 #define MPP_OPS_FAILED  -3
 #define GET_SCREEN_ERR  -4
+#define SOURCE_DATA_ERR -5
 
 #ifdef LPKG_CHERRYUSB_DEVICE_DISPLAY_TEMPLATE
 #define AIC_STARTUP_UI_SHOW_LVGL_LOGO
@@ -391,11 +392,12 @@ int startup_ui_show(void)
     int width_scale = 0;
     int height_scale = 0;
     struct startup_ui_fb *startup_ui = malloc(sizeof(struct startup_ui_fb));
-
     if (!startup_ui) {
         LOG_E("malloc failed\n");
         return MALLOC_FAILED;
     }
+
+    struct aicfb_screeninfo *info = &startup_ui->startup_fb_data;
 
     startup_ui->startup_fb = mpp_fb_open();
 
@@ -412,24 +414,31 @@ int startup_ui_show(void)
         return MPP_OPS_FAILED;
     }
 
-    fb_clean(startup_ui->startup_fb_data.framebuffer, 0, startup_ui->startup_fb_data.height * startup_ui->startup_fb_data.stride);
+    if (image_count == 0) {
+        mpp_fb_ioctl(startup_ui->startup_fb, AICFB_POWERON, 0);
+        fb_clean(info->framebuffer, 0, info->height * info->stride);
+        pr_err("Image resource error!\n");
+        return SOURCE_DATA_ERR;
+    }
+
+    fb_clean(info->framebuffer, 0, info->height * info->stride);
 
 #ifdef AIC_PAN_DISPLAY
-    fb_clean(startup_ui->startup_fb_data.framebuffer + startup_ui->startup_fb_data.smem_len, 0, \
-    startup_ui->startup_fb_data.height * startup_ui->startup_fb_data.stride);
+    fb_clean(info->framebuffer + info->smem_len, 0, \
+            info->height * info->stride);
 #endif
 
-    if ((!startup_ui->startup_fb_data.width) || (!startup_ui->startup_fb_data.height)) {
+    if ((!info->width) || (!info->height)) {
         LOG_E("Get scrren error\n");
         free(startup_ui);
         return GET_SCREEN_ERR;
     }
 
-    width_scale = WIDTH_SCALE(startup_ui->startup_fb_data.width);
-    height_scale = HEIGHT_SCALE(startup_ui->startup_fb_data.height);
+    width_scale = WIDTH_SCALE(info->width);
+    height_scale = HEIGHT_SCALE(info->height);
 
-    screen_pos_x = (startup_ui->startup_fb_data.width - width_scale) / 2;
-    screen_pos_y = (startup_ui->startup_fb_data.height - height_scale) / 2;
+    screen_pos_x = (info->width - width_scale) / 2;
+    screen_pos_y = (info->height - height_scale) / 2;
 
     for(i = 0; i < image_count; i++) {
         construct_imagepath(image_path, i);
@@ -442,6 +451,7 @@ int startup_ui_show(void)
             decode_pic_from_path(image_path, screen_pos_x, screen_pos_y, 0, 0, AICFB_LAYER_TYPE_UI, false);
         }
     }
+
 #ifdef AIC_PAN_DISPLAY
     if ((image_count % 2) == 0) {
         /* frame buffer copy */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -25,7 +25,9 @@
 
 #define MAX_VOLUME_0DB                      160
 #define AIC_AMIC_DEF_VAL                    200
-
+#define FADE_MAX_VOLUME                     100
+#define FADE_MAX_CONTROL                    0x7fff
+#define FADE_STEP_VOL                       320
 struct aic_audio_config
 {
     uint32_t samplerate;
@@ -243,9 +245,47 @@ static inline void hal_audio_set_pwm1_differential(aic_audio_ctrl *codec)
     writel(reg_val, codec->reg_base + TX_PWM_CTRL_REG);
 }
 
+static inline void hal_audio_enable_fade(aic_audio_ctrl *codec)
+{
+    writel(0x00804007, codec->reg_base + FADE_CTRL0_REG);
+}
+
 static inline void hal_audio_disable_fade(aic_audio_ctrl *codec)
 {
     writel(0, codec->reg_base + FADE_CTRL0_REG);
+}
+
+static inline void hal_audio_disable_fade_ch0(aic_audio_ctrl *codec)
+{
+    uint32_t reg_val;
+
+    reg_val = readl(codec->reg_base + FADE_CTRL0_REG);
+    reg_val &= ~FADE_CTRL0_CH0_EN;
+    writel(reg_val, codec->reg_base + FADE_CTRL0_REG);
+}
+
+static inline void hal_audio_disable_fade_ch1(aic_audio_ctrl *codec)
+{
+    uint32_t reg_val;
+
+    reg_val = readl(codec->reg_base + FADE_CTRL0_REG);
+    reg_val &= ~FADE_CTRL0_CH1_EN;
+    writel(reg_val, codec->reg_base + FADE_CTRL0_REG);
+}
+
+static inline int hal_audio_get_fade_vol(aic_audio_ctrl *codec)
+{
+    return (readl(codec->reg_base + FADE_CTRL1_REG) & FADE_MAX_CONTROL);
+}
+
+static inline void hal_audio_set_fade_volume(aic_audio_ctrl *codec, uint32_t volume)
+{
+    uint32_t reg_val;
+
+    reg_val = readl(codec->reg_base + FADE_CTRL1_REG);
+    reg_val &= ~(FADE_CTRL1_TARGET_VOL_MASK);
+    reg_val |= FADE_CTRL1_TARGET_VOL(volume);
+    writel(reg_val, codec->reg_base + FADE_CTRL1_REG);
 }
 
 static inline void hal_audio_enable_dmic_adout_shift(aic_audio_ctrl *codec)

@@ -7,6 +7,10 @@ if LPKG_USING_FREETYPE
         bool "Compile using FREETYPE static link library"
         default n
 
+    config TT_SUPPORT_OTF
+        bool "Support otf format"
+        default n
+
     config TT_DISABLE_LOAD_HDMX
         bool "Disable loading hdmx table"
         default n

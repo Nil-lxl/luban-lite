@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -79,9 +79,9 @@ DRESULT sdmc_disk_ioctl(void *hdisk, uint8_t command, void *buf)
 
         break;
 
-    case GET_BLOCK_SIZE:
+    case GET_BLOCK_SIZE: /* Get erase block size in unit of sectors (DWORD) */
         if (buf) {
-            *(uint32_t *)buf = dev->blk_size;
+            *(uint32_t *)buf = dev->blk_size / dev->blk_size;
         } else {
             result = RES_PARERR;
         }

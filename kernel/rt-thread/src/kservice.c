@@ -638,6 +638,10 @@ char *rt_strdup(const char *s)
 RTM_EXPORT(rt_strdup);
 #endif /* RT_USING_HEAP */
 
+__WEAK void show_board_version(void)
+{
+}
+
 /**
  * This function will show the version of rt-thread rtos
  */
@@ -665,6 +669,7 @@ void rt_show_version(void)
     if (isdigit((int)boot_arg.image_version[0]))
         rt_kprintf("Image version: %s\n", boot_arg.image_version);
     rt_kprintf("Built on %s %s\n", __DATE__, __TIME__);
+    show_board_version();
 }
 RTM_EXPORT(rt_show_version);
 

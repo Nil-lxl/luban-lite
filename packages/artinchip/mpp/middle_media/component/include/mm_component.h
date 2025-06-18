@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,6 +21,7 @@ extern "C" {
 #define MM_CLOCK_PORT0 0x00000001
 #define MM_CLOCK_PORT1 0x00000002
 #define MM_CLOCK_PORT2 0x00000004
+#define MM_VIDEO_SYNC_DIFF_TIME (10 * 1000)
 
 typedef void *mm_handle;
 
@@ -97,6 +98,13 @@ typedef enum MM_VIDEO_IN_SOURCE_TYPE {
     MM_VIDEO_IN_SOURCE_USB,
     MM_VIDEO_IN_SOURCE_MAX = 0x7FFFFFFF
 } MM_VIDEO_IN_SOURCE_TYPE;
+
+typedef enum MM_VIDEO_SYNC_TYPE {
+    MM_VIDEO_SYNC_INVAILD = -1,
+    MM_VIDEO_SYNC_DROP = 0,
+    MM_VIDEO_SYNC_DELAY,
+    MM_VIDEO_SYNC_SHOW,
+} MM_VIDEO_SYNC_TYPE;
 
 typedef enum MM_TIME_CLOCK_STATE {
     MM_TIME_CLOCK_STATE_RUNNING, /* Clock running. */

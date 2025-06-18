@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -376,6 +376,8 @@ static lv_res_t aic_decoder_info(lv_img_decoder_t *decoder, const void *src, lv_
 
     if (lv_img_src_get_type(src) == LV_IMG_SRC_FILE) {
         ptr = strrchr(src, '.');
+        if (!ptr)
+            return LV_RES_INV;
         if (!strcmp(ptr, ".png")) {
             return png_decoder_info(decoder, src, header);
         } else if ((!strcmp(ptr, ".jpg")) || (!strcmp(ptr, ".jpeg"))) {
@@ -577,6 +579,7 @@ static void set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_
             frame->buf.stride[0] =  ALIGN_16B(width) * 2;
 
         buf_size[0] = frame->buf.stride[0] * height_align;
+        break;
     case MPP_FMT_RGB_888:
         if (size_shift > 0)
             frame->buf.stride[0] =  ALIGN_16B(ALIGN_16B(width) >> size_shift) * 3;
@@ -629,7 +632,7 @@ static lv_res_t aic_decoder_open(lv_img_decoder_t *decoder, lv_img_decoder_dsc_t
 
     if (lv_img_src_get_type(dsc->src) == LV_IMG_SRC_FILE) {
         ptr = strrchr(dsc->src, '.');
-        if ((!strcmp(ptr, ".jpg")) || (!strcmp(ptr, ".jpeg")))
+        if (ptr && ((!strcmp(ptr, ".jpg")) || (!strcmp(ptr, ".jpeg"))))
             type = MPP_CODEC_VIDEO_DECODER_MJPEG;
 
         if (type == MPP_CODEC_VIDEO_DECODER_PNG) {

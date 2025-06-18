@@ -5,6 +5,7 @@ menuconfig LPKG_USING_USERID
 if LPKG_USING_USERID
 choice
 	prompt "Location of UserID"
+	default USERID_IN_SPINAND
 config USERID_IN_SPINAND
 	bool "UserID in SPINAND"
 	help

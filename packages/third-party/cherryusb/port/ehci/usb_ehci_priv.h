@@ -30,7 +30,7 @@
 
 #define CONFIG_USB_EHCI_QH_NUM  CONFIG_USBHOST_PIPE_NUM
 #define CONFIG_USB_EHCI_QTD_NUM (CONFIG_USBHOST_PIPE_NUM + 3)
-#define CONFIG_USB_EHCI_ITD_NUM 20
+#define CONFIG_USB_EHCI_ITD_NUM 4
 
 extern uint8_t usbh_get_port_speed(struct usbh_bus *bus, const uint8_t port);
 
@@ -62,8 +62,18 @@ struct ehci_itd_hw {
     uint8_t mf_unmask;
     uint8_t mf_valid;
     uint32_t pkt_idx[8];
-    usb_slist_t list;
+    /* aic */
+    uintptr_t bufaddr;
+    uint32_t length;
+    /* */
+    bool dir_in;
 } __attribute__((aligned(32)));
+
+struct ehci_iso_hw
+{
+    struct ehci_itd_hw itd_pool[CONFIG_USB_EHCI_ITD_NUM];
+    uint32_t itd_num;
+};
 
 struct ehci_hcd {
     bool ehci_qh_used[CONFIG_USB_EHCI_QH_NUM];
@@ -83,5 +93,5 @@ extern uint32_t g_framelist[CONFIG_USBHOST_MAX_BUS][CONFIG_USB_EHCI_FRAME_LIST_S
 int ehci_iso_urb_init(struct usbh_bus *bus, struct usbh_urb *urb);
 void ehci_remove_itd_urb(struct usbh_bus *bus, struct usbh_urb *urb);
 void ehci_scan_isochronous_list(struct usbh_bus *bus);
-
+void ehci_kill_iso_urb(struct usbh_bus *bus, struct usbh_urb *urb);
 #endif

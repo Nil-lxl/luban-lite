@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -76,6 +76,7 @@ extern "C" {
 #define AIC_UART_MCR_FUNC_MASK  0x3F
 #define AIC_UART_MCR_FLOW_CTRL  0x22    /* Auto Flow Control Enable */
 #define AIC_UART_MCR_RTS_CTRL   0x02    /* RTS Control */
+#define AIC_UART_MCR_LOOPBACK   0x10
 
 #define AIC_UART_EXREG          0xB8    /* RS485 DE Time */
 #define AIC_UART_RS485_CTL_MODE 0x80;
@@ -617,6 +618,8 @@ int32_t hal_usart_control_break(usart_handle_t handle, uint32_t enable);
   \param[in]   compactio    compactio
   \return      error code
 */
+int32_t hal_uart_reset_fifo(usart_handle_t handle);
+int32_t hal_usart_set_loopback(usart_handle_t handle, uint8_t enable);
 int32_t hal_usart_config_rs485(usart_handle_t handle, bool rs485, bool compactio);
 int32_t hal_usart_rts_ctl_soft_mode_set(usart_handle_t handle);
 int32_t hal_usart_rts_ctl_soft_mode_clr(usart_handle_t handle);
@@ -625,7 +628,7 @@ uint32_t hal_usart_get_cur_baudrate(usart_handle_t handle);
 void hal_usart_intr_recv_line(int32_t idx, aic_usart_priv_t *usart_priv);
 void hal_usart_clear_rxfifo(usart_handle_t handle);
 
-#if defined (RT_SERIAL_USING_DMA)
+#if defined(RT_SERIAL_USING_DMA) || defined(AIC_SERIAL_USING_DMA)
 int32_t hal_uart_set_fifo(usart_handle_t handle);
 int32_t hal_usart_tx_enable_drq(usart_handle_t handle);
 int32_t hal_usart_rx_enable_drq(usart_handle_t handle);

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+* Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
 *
 *  SPDX-License-Identifier: Apache-2.0
 *  author: <qi.xu@artinchip.com>
@@ -158,8 +158,7 @@ static int decode_ihdr_chunk(struct png_dec_ctx *s, uint32_t length)
     }
 
     s->bit_depth        = bytestream2_get_byte(&s->gb);
-    if (s->bit_depth != 1 && s->bit_depth != 2 && s->bit_depth != 4 &&
-        s->bit_depth != 8) {
+    if (s->bit_depth != 8) {
         loge("not support bit depth %d", s->bit_depth);
         goto error;
     }
@@ -362,6 +361,36 @@ static int memset_last_row_data(struct png_dec_ctx *s)
 }
 #endif
 
+static int decode_get_frame(struct png_dec_ctx *s)
+{
+    if(s->pix_fmt == MPP_FMT_ABGR_8888 || s->pix_fmt == MPP_FMT_ARGB_8888 ||
+       s->pix_fmt == MPP_FMT_BGRA_8888 || s->pix_fmt == MPP_FMT_RGBA_8888)
+        s->stride = ALIGN_8B(s->width*4);
+    else if(s->pix_fmt == MPP_FMT_BGR_888 || s->pix_fmt == MPP_FMT_RGB_888)
+        s->stride = ALIGN_8B(s->width*3);
+    else if(s->pix_fmt == MPP_FMT_BGR_565 || s->pix_fmt == MPP_FMT_RGB_565)
+        s->stride = ALIGN_8B(s->width*2);
+
+    if(s->decoder.fm == NULL) {
+        struct frame_manager_init_cfg cfg = {0};
+        cfg.frame_count = 1;
+        cfg.height = s->height;
+        cfg.width = s->width;
+        cfg.stride = s->stride;
+        cfg.height_align = s->height;
+        cfg.pixel_format = s->pix_fmt;
+        cfg.allocator = s->decoder.allocator;
+        s->decoder.fm = fm_create(&cfg);
+    }
+
+    s->curr_frame = fm_decoder_get_frame(s->decoder.fm);
+    if(s->curr_frame == NULL) {
+        pm_reclaim_ready_packet(s->decoder.pm, s->curr_packet);
+        return DEC_NO_EMPTY_FRAME;
+    }
+    return 0;
+}
+
 static int decode_frame_common(struct png_dec_ctx *s)
 {
     uint32_t tag, length;
@@ -439,30 +468,9 @@ static int decode_frame_common(struct png_dec_ctx *s)
     }
 exit_loop:
 
-    if(s->pix_fmt == MPP_FMT_ABGR_8888 || s->pix_fmt == MPP_FMT_ARGB_8888 ||
-       s->pix_fmt == MPP_FMT_BGRA_8888 || s->pix_fmt == MPP_FMT_RGBA_8888)
-        s->stride = ALIGN_8B(s->width*4);
-    else if(s->pix_fmt == MPP_FMT_BGR_888 || s->pix_fmt == MPP_FMT_RGB_888)
-        s->stride = ALIGN_8B(s->width*3);
-    else if(s->pix_fmt == MPP_FMT_BGR_565 || s->pix_fmt == MPP_FMT_RGB_565)
-        s->stride = ALIGN_8B(s->width*2);
-
-    if(s->decoder.fm == NULL) {
-        struct frame_manager_init_cfg cfg;
-        cfg.frame_count = 1;
-        cfg.height = s->height;
-        cfg.width = s->width;
-        cfg.stride = s->stride;
-        cfg.height_align = s->height;
-        cfg.pixel_format = s->pix_fmt;
-        cfg.allocator = s->decoder.allocator;
-        s->decoder.fm = fm_create(&cfg);
-    }
-
-    s->curr_frame = fm_decoder_get_frame(s->decoder.fm);
-    if(s->curr_frame == NULL) {
-        pm_reclaim_ready_packet(s->decoder.pm, s->curr_packet);
-        return DEC_NO_EMPTY_FRAME;
+    ret = decode_get_frame(s);
+    if (ret) {
+        return ret;
     }
 #ifdef AIC_VE_DRV_V10
     memset_last_row_data(s);

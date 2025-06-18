@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Authors: matteo <duanmt@artinchip.com>
  */
 
-#define LOG_TAG     "sc030iot"
+#define LOG_TAG     "sc03"
 
 #include <drivers/i2c.h>
 #include <drivers/pin.h>
@@ -19,20 +19,27 @@
 #include "drv_camera.h"
 #include "camera_inner.h"
 
-/* Default format configuration of SC030IOT */
-#define SC030IOT_DFT_WIDTH       VGA_WIDTH
-#define SC030IOT_DFT_HEIGHT      VGA_HEIGHT
-#define SC030IOT_DFT_BUS_TYPE    MEDIA_BUS_PARALLEL
-#define SC030IOT_DFT_CODE        MEDIA_BUS_FMT_YUYV8_2X8
+#ifdef AIC_USING_CAMERA_SC030IOT
+#define DEV_NAME    "SC030IOT"
+#endif
+#ifdef AIC_USING_CAMERA_SC031IOT
+#define DEV_NAME    "SC031IOT"
+#endif
 
-#define SC030IOT_I2C_SLAVE_ID    0x68
-#define SC030IOT_CHIP_ID         0x9A46
+/* Default format configuration of SC03XIOT */
+#define SC03XIOT_DFT_WIDTH       VGA_WIDTH
+#define SC03XIOT_DFT_HEIGHT      VGA_HEIGHT
+#define SC03XIOT_DFT_BUS_TYPE    MEDIA_BUS_PARALLEL
+#define SC03XIOT_DFT_CODE        MEDIA_BUS_FMT_YUYV8_2X8
 
-#define SC030_SENSOR_ID_HIGH_REG 0xF7
-#define SC030_SENSOR_ID_LOW_REG  0xF8
+#define SC03XIOT_I2C_SLAVE_ID    0x68
+#define SC03XIOT_CHIP_ID         0x9A46
+
+#define SC03_SENSOR_ID_HIGH_REG  0xF7
+#define SC03_SENSOR_ID_LOW_REG   0xF8
 
 // 640*480, xclk=20M, fps=50fps, xclk=10M, fps=25fps
-static const struct reg8_info sc030iot_init_regs[] = {
+static const struct reg8_info sc03xiot_init_regs[] = {
     {0xf0, 0x30},
     {0x01, 0xff},
     {0x02, 0xff},
@@ -50,11 +57,19 @@ static const struct reg8_info sc030iot_init_regs[] = {
     {0x76, 0x81},
     {0x77, 0x88},
     {0x78, 0xe1},
+#ifdef AIC_USING_CAMERA_SC030IOT
     {0x79, 0x01},
+#endif
+#ifdef AIC_USING_CAMERA_SC031IOT
+    {0x79, 0x31},
+#endif
     {0xf5, 0x01},
     {0xf4, 0x0a},
     {0xf0, 0x36},
     {0x37, 0x79},
+#ifdef AIC_USING_CAMERA_SC031IOT
+    {0xea, 0x09},
+#endif
     {0x31, 0x82},
     {0x3e, 0x60},
     {0x30, 0xf0},
@@ -155,7 +170,12 @@ static const struct reg8_info sc030iot_init_regs[] = {
     {0xf0, 0x36},
     {0x37, 0x74},
     {0xf0, 0x3f},
+#ifdef AIC_USING_CAMERA_SC030IOT
     {0x03, 0xa1},
+#endif
+#ifdef AIC_USING_CAMERA_SC031IOT
+    {0x03, 0x90},
+#endif
 
     {0xf0, 0x36},//cvbs_off
     {0x11, 0x80},
@@ -165,6 +185,7 @@ static const struct reg8_info sc030iot_init_regs[] = {
     {0xf0, 0x37},
     {0x24, 0x21},
     {0xf0, 0x36},
+#ifdef AIC_USING_CAMERA_SC030IOT
     {0x41, 0x00},
     {0xea, 0x09},
     {0xeb, 0x03},
@@ -197,6 +218,10 @@ static const struct reg8_info sc030iot_init_regs[] = {
     {0x96, 0x22},
     {0x97, 0x22},
     {0x98, 0x22},
+#endif
+#ifdef AIC_USING_CAMERA_SC031IOT
+    {0x41, 0x61},
+#endif
     {0xf0, 0x00},
     {0x72, 0x38},
     {0x7a, 0x80},
@@ -244,9 +269,9 @@ struct sc03_dev {
 
 static struct sc03_dev g_sc03_dev = {0};
 
-static int sc030_write_reg(struct rt_i2c_bus_device *i2c, u8 reg, u8 val)
+static int sc03_write_reg(struct rt_i2c_bus_device *i2c, u8 reg, u8 val)
 {
-    if (rt_i2c_write_reg(i2c, SC030IOT_I2C_SLAVE_ID, reg, &val, 1) != 1) {
+    if (rt_i2c_write_reg(i2c, SC03XIOT_I2C_SLAVE_ID, reg, &val, 1) != 1) {
         LOG_E("%s: error: reg = 0x%x, val = 0x%x", __func__, reg, val);
         return -1;
     }
@@ -254,9 +279,9 @@ static int sc030_write_reg(struct rt_i2c_bus_device *i2c, u8 reg, u8 val)
     return 0;
 }
 
-static int sc030_read_reg(struct rt_i2c_bus_device *i2c, u8 reg, u8 *val)
+static int sc03_read_reg(struct rt_i2c_bus_device *i2c, u8 reg, u8 *val)
 {
-    if (rt_i2c_read_reg(i2c, SC030IOT_I2C_SLAVE_ID, reg, val, 1) != 1) {
+    if (rt_i2c_read_reg(i2c, SC03XIOT_I2C_SLAVE_ID, reg, val, 1) != 1) {
         LOG_E("%s: error: reg = 0x%x, val = 0x%x", __func__, reg, *val);
         return -1;
     }
@@ -264,35 +289,40 @@ static int sc030_read_reg(struct rt_i2c_bus_device *i2c, u8 reg, u8 *val)
     return 0;
 }
 
-static int sc030iot_init(struct sc03_dev *sensor)
+static int sc03_init(struct sc03_dev *sensor)
 {
     int i = 0;
-    const struct reg8_info *info = sc030iot_init_regs;
+    const struct reg8_info *info = sc03xiot_init_regs;
 
-    for (i = 0; i < ARRAY_SIZE(sc030iot_init_regs); i++, info++) {
-        if (sc030_write_reg(sensor->i2c, info->reg, info->val))
+    for (i = 0; i < ARRAY_SIZE(sc03xiot_init_regs); i++, info++) {
+        if (sc03_write_reg(sensor->i2c, info->reg, info->val))
             return -1;
     }
 
     return 0;
 }
 
-static int sc030iot_probe(struct sc03_dev *sensor)
+static int sc03_probe(struct sc03_dev *sensor)
 {
     u8 id_h = 0, id_l = 0;
 
-    if (sc030_read_reg(sensor->i2c, SC030_SENSOR_ID_LOW_REG, &id_l) ||
-        sc030_read_reg(sensor->i2c, SC030_SENSOR_ID_HIGH_REG, &id_h))
+    if (sc03_read_reg(sensor->i2c, SC03_SENSOR_ID_LOW_REG, &id_l) ||
+        sc03_read_reg(sensor->i2c, SC03_SENSOR_ID_HIGH_REG, &id_h))
         return -1;
 
-    if ((id_h << 8 | id_l) != SC030IOT_CHIP_ID) {
+    if ((id_h << 8 | id_l) != SC03XIOT_CHIP_ID) {
         LOG_E("Invalid chip ID: %02x %02x\n", id_h, id_l);
         return -1;
     }
-    return sc030iot_init(sensor);
+    return sc03_init(sensor);
 }
 
-static void sc030iot_power_on(struct sc03_dev *sensor)
+static bool sc03_is_open(struct sc03_dev *sensor)
+{
+    return sensor->on;
+}
+
+static void sc03_power_on(struct sc03_dev *sensor)
 {
     if (sensor->on)
         return;
@@ -300,34 +330,33 @@ static void sc030iot_power_on(struct sc03_dev *sensor)
     camera_pin_set_high(sensor->pwdn_pin);
     aicos_udelay(2);
 
+    LOG_I("Power on");
     sensor->on = true;
 }
 
-static void sc030iot_power_off(struct sc03_dev *sensor)
+static void sc03_power_off(struct sc03_dev *sensor)
 {
-#if 0
     if (!sensor->on)
         return;
 
     camera_pin_set_low(sensor->pwdn_pin);
 
+    LOG_I("Power off");
     sensor->on = false;
-#endif
 }
 
-static rt_err_t sc03_init(rt_device_t dev)
+static rt_err_t sc03_ops_init(rt_device_t dev)
 {
-    int ret = 0;
     struct sc03_dev *sensor = (struct sc03_dev *)dev;
 
     sensor->i2c = camera_i2c_get();
     if (!sensor->i2c)
         return -RT_EINVAL;
 
-    sensor->fmt.code     = SC030IOT_DFT_CODE;
-    sensor->fmt.width    = SC030IOT_DFT_WIDTH;
-    sensor->fmt.height   = SC030IOT_DFT_HEIGHT;
-    sensor->fmt.bus_type = SC030IOT_DFT_BUS_TYPE;
+    sensor->fmt.code     = SC03XIOT_DFT_CODE;
+    sensor->fmt.width    = SC03XIOT_DFT_WIDTH;
+    sensor->fmt.height   = SC03XIOT_DFT_HEIGHT;
+    sensor->fmt.bus_type = SC03XIOT_DFT_BUS_TYPE;
     sensor->fmt.flags = MEDIA_SIGNAL_HSYNC_ACTIVE_HIGH |
                         MEDIA_SIGNAL_VSYNC_ACTIVE_LOW |
                         MEDIA_SIGNAL_PCLK_SAMPLE_FALLING;
@@ -336,26 +365,35 @@ static rt_err_t sc03_init(rt_device_t dev)
     if (!sensor->pwdn_pin)
         return -RT_EINVAL;
 
-    sc030iot_power_on(sensor);
-
-    ret = sc030iot_probe(sensor);
-    if (ret)
-        return -RT_ERROR;
-
-    LOG_I("SC030IOT inited");
     return RT_EOK;
 }
 
-static rt_err_t sc03_open(rt_device_t dev, rt_uint16_t oflag)
-{
-    return RT_EOK;
-}
-
-static rt_err_t sc03_close(rt_device_t dev)
+static rt_err_t sc03_ops_open(rt_device_t dev, rt_uint16_t oflag)
 {
     struct sc03_dev *sensor = (struct sc03_dev *)dev;
 
-    sc030iot_power_off(sensor);
+    if (sc03_is_open(sensor))
+        return RT_EOK;
+
+    sc03_power_on(sensor);
+
+    if (sc03_probe(sensor)) {
+        sc03_power_off(sensor);
+        return -RT_ERROR;
+    }
+
+    LOG_I("%s inited", DEV_NAME);
+    return RT_EOK;
+}
+
+static rt_err_t sc03_ops_close(rt_device_t dev)
+{
+    struct sc03_dev *sensor = (struct sc03_dev *)dev;
+
+    if (!sc03_is_open(sensor))
+        return -RT_ERROR;
+
+    sc03_power_off(sensor);
     return RT_EOK;
 }
 
@@ -381,7 +419,7 @@ static int sc03_stop(rt_device_t dev)
     return 0;
 }
 
-static rt_err_t sc03_control(rt_device_t dev, int cmd, void *args)
+static rt_err_t sc03_ops_control(rt_device_t dev, int cmd, void *args)
 {
     switch (cmd) {
     case CAMERA_CMD_START:
@@ -400,10 +438,10 @@ static rt_err_t sc03_control(rt_device_t dev, int cmd, void *args)
 #ifdef RT_USING_DEVICE_OPS
 static const struct rt_device_ops sc03_ops =
 {
-    .init = sc03_init,
-    .open = sc03_open,
-    .close = sc03_close,
-    .control = sc03_control,
+    .init = sc03_ops_init,
+    .open = sc03_ops_open,
+    .close = sc03_ops_close,
+    .control = sc03_ops_control,
 };
 #endif
 
@@ -412,10 +450,10 @@ int rt_hw_sc03_init(void)
 #ifdef RT_USING_DEVICE_OPS
     g_sc03_dev.dev.ops = &sc03_ops;
 #else
-    g_sc03_dev.dev.init = sc03_init;
-    g_sc03_dev.dev.open = sc03_open;
-    g_sc03_dev.dev.close = sc03_close;
-    g_sc03_dev.dev.control = sc03_control;
+    g_sc03_dev.dev.init = sc03_ops_init;
+    g_sc03_dev.dev.open = sc03_ops_open;
+    g_sc03_dev.dev.close = sc03_ops_close;
+    g_sc03_dev.dev.control = sc03_ops_control;
 #endif
     g_sc03_dev.dev.type = RT_Device_Class_CAMERA;
 

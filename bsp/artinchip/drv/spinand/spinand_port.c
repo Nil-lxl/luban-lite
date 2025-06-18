@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -340,8 +340,7 @@ static rt_uint32_t spinand_get_block_status(struct rt_mtd_nand_device *device,
 }
 
 static rt_err_t spinand_set_block_status(struct rt_mtd_nand_device *device,
-                                          rt_uint32_t block, rt_uint32_t block_pos,
-                                          rt_uint32_t status)
+                                          rt_uint32_t block, rt_uint32_t status)
 {
     rt_err_t result = RT_EOK;
     struct aic_spinand *flash = (struct aic_spinand *)device->priv;
@@ -356,7 +355,7 @@ static rt_err_t spinand_set_block_status(struct rt_mtd_nand_device *device,
     result = rt_mutex_take(flash->lock, RT_WAITING_FOREVER);
     RT_ASSERT(result == RT_EOK);
 
-    result = spinand_set_status(flash, block, block_pos, status);
+    result = spinand_set_status(flash, block, status);
 
     rt_mutex_release(flash->lock);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2022-2025 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,6 +15,8 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#define LV_USE_AIC_SIMULATOR 0
 
 #ifndef LVGL_STORAGE_PATH
 #define LVGL_STORAGE_PATH "/rodata/lvgl_data"
@@ -54,7 +56,7 @@ static inline void fake_image_parse(char *fake_name, int *width,
     cur_ptr = pos_ptr + 1;
     *blend = strtol(cur_ptr, &pos_ptr, 10);
     cur_ptr = pos_ptr + 1;
-    *color = strtol(cur_ptr, &pos_ptr, 16);
+    *color = strtoul(cur_ptr, NULL, 16);
     return;
 }
 

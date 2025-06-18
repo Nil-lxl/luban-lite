@@ -203,6 +203,25 @@ config AIC_LVGL_UI_BUILDER
     select LPKG_USING_FREETYPE
     bool "LVGL Support AiUIBuider"
 
+config AIC_WIDGETS_DEMO
+    bool "LVGL aic widgets demos"
+
+if AIC_WIDGETS_DEMO
+    choice
+        prompt "select AIC LVGL Widgets demo"
+        default AIC_IMG_ROLLER_DEMO
+
+        config AIC_IMG_ROLLER_DEMO
+           bool "LVGL image roller demo"
+
+        config AIC_PLAYER_DEMO
+           bool "LVGL aic player demo"
+
+        config AIC_IMAGE_USAGE_DEMO
+           bool "LVGL image usage demo"
+    endchoice
+endif
+
 config AIC_LVGL_BASE_DEMO
     bool "LVGL demo with basic function"
 
@@ -218,6 +237,9 @@ config AIC_LVGL_VSCODE_DEMO
     bool "LVGL vscode emultarot import demo"
     help
     "assets in packages/artinchip/lvgl-ui/aic_demo/vscode_simulator/hello_demo/lvgl_src"
+
+config AIC_LLM_DEMO
+    bool "LVGL aic llm demo"
 
 config AIC_LVGL_LAUNCHER_DEMO
     bool "LVGL launcher demo"
@@ -259,6 +281,8 @@ config AIC_LVGL_IMAGE_DEMO
     bool "LVGL image demo"
 
 endchoice
+
+
 
 config LV_COLOR_DEPTH
     int "LVGL color depth(32/16)"

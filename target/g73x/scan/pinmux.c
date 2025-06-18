@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -19,9 +19,6 @@ struct aic_pinmux
 };
 
 struct aic_pinmux aic_pinmux_config[] = {
-    {1, PIN_PULL_DIS, 3, "PA.4"},       // beep
-    {8, PIN_PULL_DIS, 3, "PA.10"},
-    {8, PIN_PULL_DIS, 3, "PA.11"},
 #ifdef AIC_USING_UART0
     /* uart0 */
     {5, PIN_PULL_DIS, 3, "PA.0"},
@@ -135,14 +132,15 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_UP, 3, "PC.5"},
     {2, PIN_PULL_UP, 3, "PC.6"},
 #endif
-#ifdef AIC_PANEL_DBI_ST7789V
+#ifdef AIC_PANEL_DBI_ST7789
+#ifdef ST7789_V3
     /* spi 4 line */
-    // {2, PIN_PULL_DIS, 3, "PD.20"}, //backlight io
     {2, PIN_PULL_DIS, 3, "PD.21"},
     {2, PIN_PULL_DIS, 3, "PD.24"},
     {2, PIN_PULL_DIS, 3, "PD.26"},
     {2, PIN_PULL_DIS, 3, "PD.27"},
-    {1, PIN_PULL_DIS, 3, "PD.23"},
+    {1, PIN_PULL_DIS, 3, ST7789_PANEL_RESET},
+#endif
 #endif
 #ifdef AIC_USING_CAP0
     {3, PIN_PULL_UP, 3, "PC.6"},
@@ -379,6 +377,13 @@ struct aic_pinmux aic_pinmux_config[] = {
 #ifdef AIC_USING_CTP
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_RST_PIN},
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN},
+#endif
+#ifdef AIC_USING_BARCODE_DEMO
+    {1, PIN_PULL_DIS, 3, BARCODE_DEMO_LED_GPIO},
+#endif
+#ifdef AIC_BARCODE_JTAG_DEBUG
+    {8, PIN_PULL_DIS, 3, "PA.10"},
+    {8, PIN_PULL_DIS, 3, "PA.11"},
 #endif
 };
 

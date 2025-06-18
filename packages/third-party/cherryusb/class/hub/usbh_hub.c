@@ -291,6 +291,8 @@ static void usbh_hubport_release(struct usbh_hubport *child)
         usb_osal_mutex_give(child->mutex);
         child->config.config_desc.bNumInterfaces = 0;
         usbh_kill_urb(&child->ep0_urb);
+        if (child->event)
+            usb_osal_event_delete(child->event);
         if (child->parent->is_roothub)
             usb_osal_mutex_delete(child->mutex);
     }
@@ -454,6 +456,7 @@ static void usbh_hub_events(struct usbh_hub *hub)
     uint16_t feat;
     uint8_t speed;
     int ret = 0, cnt = 0;
+    char event_name[32] = { 0 };
 
     if (!hub->connected) {
         return;
@@ -576,9 +579,8 @@ static void usbh_hub_events(struct usbh_hub *hub)
                         speed = USB_SPEED_HIGH;
                     } else if (portstatus & HUB_PORT_STATUS_LOW_SPEED) {
                         speed = USB_SPEED_LOW;
-                    }
+                    } else {
 #ifdef CONFIG_USBHOST_XHCI
-                    else {
                         extern uint8_t usbh_get_port_speed(struct usbh_hub * hub, const uint8_t port);
 
                         /* USB3.0 speed cannot get from portstatus, checkout port speed instead */
@@ -589,12 +591,10 @@ static void usbh_hub_events(struct usbh_hub *hub)
                         } else {
                             speed = USB_SPEED_FULL;
                         }
-                    }
 #else
-                    else {
                         speed = USB_SPEED_FULL;
-                    }
 #endif
+                    }
 
                     child = &hub->child[port];
                     /** release child sources first */
@@ -606,6 +606,8 @@ static void usbh_hub_events(struct usbh_hub *hub)
                     child->port = port + 1;
                     child->speed = speed;
                     child->bus = hub->bus;
+                    snprintf(event_name, 32, "usbh_hport%u", child->port);
+                    child->event = usb_osal_event_creat(event_name);
                     /* All child-hub share the same mutex. Otherwise if multiple child-hubs
                      * communicate simultaneously, resources will not be protected.
                      */

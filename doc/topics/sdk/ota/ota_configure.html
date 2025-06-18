@@ -1,15 +1,15 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="遵照以下流程，配置 Luban-Lite OTA 方案： 在 Luban-Lite 根目录下执行 scons --menuconfig 命令，进入 menuconfig 功能配置界面。 使能 aic-ota 配置，自动使能 aic-env 相关配置。 Local packages options ---&gt; ArtInChip packages options ---&gt; [*] aic-env ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota__sys_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_debug_lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>参数配置</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d5856e1581"/><meta name="wh-source-relpath" content="topics/sdk/ota/ota_configure.dita"/><meta name="wh-out-relpath" content="topics/sdk/ota/ota_configure.html"/>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="遵照以下流程，配置 Luban-Lite OTA 方案。 配置 BootLoader 在 SDK 根目录下执行下列命令之一，进入 BootLoader 的配置界面： bm 命令 scons –apply-def=dxxx_xxx-nor_baremetal_bootloader 和 scons –menuconfig 配置 aic-env 参数。 Local packages options ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota__sys_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/ota/ota_debug_lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>参数配置</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3703e1192"/><meta name="wh-source-relpath" content="topics/sdk/ota/ota_configure.dita"/><meta name="wh-out-relpath" content="topics/sdk/ota/ota_configure.html"/>
 
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
-    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
-    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
-    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
-<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
 
     <body id="id" class="wh_topic_page frmBody">
         <a href="#wh_topic_body" class="sr-only sr-only-focusable">
@@ -21,12 +21,12 @@
         
         <header class="navbar navbar-default wh_header">
     <div class="container-fluid">
-        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
             <div class="wh_logo_and_publication_title_container">
                 <div class="wh_logo_and_publication_title">
                     
-                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
-                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
                     
                 </div>
                 
@@ -39,13 +39,6 @@
                 
                 
             </div>
-        </div>
-    </div>
-</header>
-        
-        
-         
-        
         <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
             
             
@@ -54,7 +47,14 @@
             
             
             
-        </div>
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
         
         <div class="container-fluid" id="wh_topic_container">
             <div class="row">
@@ -94,61 +94,48 @@
                         <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
                             <div id="wh_publication_toc_content">
 		                        
-                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1431" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d5856e1431-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1443" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d5856e1443-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1455" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1455-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d5856e1455-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e1553" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e1553-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d5856e1553-link">OTA 方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e1569" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota__sys_intro.html" id="id-d5856e1569-link">OTA 系统结构</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d5856e1581" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_configure.html" id="id-d5856e1581-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1593" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_debug_lite.html" id="id-d5856e1593-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1605" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_test_guide.html" id="id-d5856e1605-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="ota-programming-d5856e1617" class="topicref" data-id="ota-programming" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_programming.html" id="ota-programming-d5856e1617-link">编程指南</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1631" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_design_lite.html" id="id-d5856e1631-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1645" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_faq_lite.html" id="id-d5856e1645-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1657" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1657-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d5856e1657-link">XIP 方案 </a></div></div></li><li role="treeitem"><div data-tocid="id-d5856e1734" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/psram_load.html" id="id-d5856e1734-link">分散加载</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1746" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1746-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d5856e1746-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1806" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1806-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d5856e1806-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d5856e1866" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d5856e1866-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1878" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1878-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/d13x_bare_boot/index.html" id="id-d5856e1878-link">客制化启动</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1963" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1963-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d5856e1963-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d5856e2011" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d5856e2011-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d5856e2011-link">USB Display 方案</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e1018" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d3703e1018-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e1032" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d3703e1032-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1046" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1046-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d3703e1046-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e1160" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e1160-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d3703e1160-link">OTA 方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e1178" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota__sys_intro.html" id="id-d3703e1178-link">OTA 系统结构</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d3703e1192" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_configure.html" id="id-d3703e1192-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e1206" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_debug_lite.html" id="id-d3703e1206-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e1220" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_test_guide.html" id="id-d3703e1220-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="ota-programming-d3703e1234" class="topicref" data-id="ota-programming" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_programming.html" id="ota-programming-d3703e1234-link">编程指南</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="id-d3703e1250" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_design_lite.html" id="id-d3703e1250-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e1266" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_faq_lite.html" id="id-d3703e1266-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1280" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1280-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d3703e1280-link">XIP 方案 </a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1369" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1369-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d3703e1369-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1439" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1439-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d3703e1439-link">安全方案</a></div></div></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d3703e1629" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d3703e1629-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1643" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1643-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d3703e1643-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d3703e1699" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d3703e1699-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d3703e1699-link">USB Display 方案</a></div></div></li><li role="treeitem"><div data-tocid="backtrace-d3703e1826" class="topicref" data-id="backtrace" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/backtrace.html" id="backtrace-d3703e1826-link">Backtrace 栈回溯</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
 		                        
                             </div>
                         </nav>
                     
                     
-                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
                         <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
                             <span class="close-toc-icon-container">
                                 <span class="close-toc-icon"></span>     
                             </span>
                         </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
                         
-                        
-                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/ota/ota_configure.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">参数配置</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
+    
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/ota/ota_configure.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">参数配置</h1>
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
                     Read time: 2 minute(s)
-                </div><div class="- topic/body body"><div class="- topic/p p" data-ofbid="d52633e21__20250121171519">遵照以下流程，配置 <span class="- topic/ph ph">Luban-Lite</span> OTA 方案： <ol class="- topic/ol ol" id="id__ol_sbm_nyk_vcc" data-ofbid="id__ol_sbm_nyk_vcc"><li class="- topic/li li" data-ofbid="d52633e27__20250121171519">
-                    <p class="- topic/p p" data-ofbid="d52633e29__20250121171519">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 命令，进入
-                        menuconfig 功能配置界面。</p>
-                </li><li class="- topic/li li" data-ofbid="d52633e38__20250121171519">使能 aic-ota 配置，自动使能 aic-env
-                    相关配置。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_uqt_tbf_vcc" data-ofbid="id__codeblock_uqt_tbf_vcc">Local packages options  ---&gt;
-    ArtInChip packages options  ---&gt;
-        [*] aic-env  ---&gt;
-            -*-   Enable ENV interface and CMD
-            [*]     Enable redundant environment support
-            (env)   Env part name
-            (env_r) Env redundant part name
-            (<span class="hl-number">4096</span>)  Environment Size
-            [ ]     Enable ENV debug
-        [*] aic-ota ---&gt;
-            [ ]   Enable OTA downloader debug
-            [*]   Enable OTA interface</pre></li><li class="- topic/li li" data-ofbid="d52633e44__20250121171519">
-                    <div class="- topic/p p" data-ofbid="d52633e46__20250121171519">如果需要测试网络 OTA ，需要按照如下配置打开网络 OTA，否则可跳过。<div class="- topic/div div highlight-Kconfig notranslate">
-                            
-                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_ogp_syk_vcc" data-ofbid="id__pre_ogp_syk_vcc">Local packages options  ---&gt;
-    Third-party packages options  ---&gt;
-        -*- WebClient: A HTTP/HTTPS Client <strong class="hl-keyword">for</strong> RT-Thread  ---&gt;
-        [*] ota_downloader: The firmware downloader which using on RT-Thread OTA component  ---&gt;
-            [*]   Enable HTTP/HTTPS OTA
-                (http:<em class="hl-comment">//192.168.31.22/ota.cpio) HTTP OTA Download default URL</em>
-            [ ]   Enable Ymodem OTA
-            Version (latest)  ---&gt;
-</pre>
-                            
-                        </div></div>
-                    <div class="- topic/div div admonition note">
-                        <div class="- topic/p p" data-ofbid="d52633e56__20250121171519">
-                            <div class="- topic/note note note note_note" id="id__note_umk_nmp_bdc" data-ofbid="id__note_umk_nmp_bdc"><span class="note__title">注：</span> 为了方便配置，使能
-                                LPKG_USING_HTTP_OTA 后，会自动选上 AIC_ENV_INTERFACE 和
-                                AIC_OTA_INTERFACE。</div>
-                        </div>
-                    </div>
-                </li><li class="- topic/li li" data-ofbid="d52633e67__20250121171519">保存配置后退出。</li><li class="- topic/li li" data-ofbid="d52633e69__20250121171519">在 <span class="- topic/ph ph">Luban-Lite</span> 根目录下执行 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span>，进入
-                    menuconfig 的功能配置界面，使能 Boot 配置。<div class="- topic/div div highlight-Kconfig notranslate">
-                        
+                </div>
+    <div class="- topic/body body">
+        <p class="- topic/p p" data-ofbid="d60611e31__20250409171035">遵照以下流程，配置 <span class="- topic/ph ph">Luban-Lite</span> OTA 方案。</p>
+        <section class="- topic/section section" id="id__section_mjw_zsj_w2c" data-ofbid="id__section_mjw_zsj_w2c"><h2 class="- topic/title title sectiontitle">配置 BootLoader </h2>
+            
+            <div class="- topic/p p" data-ofbid="d60611e42__20250409171035">
+                <ol class="- topic/ol ol" data-ofbid="d60611e44__20250409171035">
+                    <li class="- topic/li li" data-ofbid="d60611e46__20250409171035">
+                <div class="- topic/p p" id="id__p_acv_cw4_w2c" data-ofbid="id__p_acv_cw4_w2c">在 SDK 根目录下执行下列命令之一，进入 BootLoader 的配置界面：<ul class="- topic/ul ul" id="id__ul_omx_lv4_w2c" data-ofbid="id__ul_omx_lv4_w2c">
+                        <li class="- topic/li li" data-ofbid="d60611e52__20250409171035">
+                            <p class="- topic/p p" data-ofbid="d60611e54__20250409171035"><code class="+ topic/ph pr-d/codeph ph codeph">bm</code> 命令</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d60611e60__20250409171035">
+                            <p class="- topic/p p" data-ofbid="d60611e62__20250409171035"><code class="+ topic/ph pr-d/codeph ph codeph">scons –apply-def=dxxx_xxx-nor_baremetal_bootloader</code> 和
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">scons –menuconfig</code></p>
+                        </li>
+                    </ul></div>
+            </li>
+                    <li class="- topic/li li" data-ofbid="d60611e72__20250409171035">配置 aic-env 参数。<div class="- topic/div div highlight-Kconfig notranslate">
                             <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_psv_jzk_vcc" data-ofbid="id__pre_psv_jzk_vcc">Local packages options  ---&gt;
     ArtInChip packages options  ---&gt;
         [*] aic-env  ---&gt;
@@ -160,9 +147,65 @@
             [ ]     Enable ENV debug
             [*]   Enable A/B system support in bootloader
 </pre>
-                        
-                    </div></li><li class="- topic/li li" data-ofbid="d52633e82__20250121171519">使能 aic-env 相关配置。</li><li class="- topic/li li" data-ofbid="d52633e84__20250121171519">保存配置并退出。</li></ol>
-        </div></div></article></main></div>
+                        </div></li>
+                </ol>
+            </div>
+        </section>
+        <section class="- topic/section section" id="id__section_lsn_1tj_w2c" data-ofbid="id__section_lsn_1tj_w2c"><h2 class="- topic/title title sectiontitle">配置 OS </h2>
+            
+            <div class="- topic/p p" data-ofbid="d60611e88__20250409171035">
+                <ol class="- topic/ol ol" id="id__ol_sbm_nyk_vcc" data-ofbid="id__ol_sbm_nyk_vcc">
+                    <li class="- topic/li li" data-ofbid="d60611e92__20250409171035">在 SDK 根目录下执行下列命令之一，进入 OS 的配置界面：<ul class="- topic/ul ul" id="id__ul_s3p_zw4_w2c" data-ofbid="id__ul_s3p_zw4_w2c">
+                    <li class="- topic/li li" data-ofbid="d60611e96__20250409171035">
+                        <p class="- topic/p p" data-ofbid="d60611e98__20250409171035"><code class="+ topic/ph pr-d/codeph ph codeph">me</code> 命令</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d60611e104__20250409171035">
+                        <p class="- topic/p p" data-ofbid="d60611e106__20250409171035"><code class="+ topic/ph pr-d/codeph ph codeph">scons –apply-def=dxxx_xxx-nor_rt-thread_helloworld</code> 和
+                                <code class="+ topic/ph pr-d/codeph ph codeph">scons –menuconfig</code></p>
+                    </li>
+                </ul></li>
+                    <li class="- topic/li li" data-ofbid="d60611e115__20250409171035">使能 aic-ota 配置，同时 aic-env 相关配置会自动使能
+                        。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_uqt_tbf_vcc" data-ofbid="id__codeblock_uqt_tbf_vcc">Local packages options  ---&gt;
+    ArtInChip packages options  ---&gt;
+        [*] aic-env  ---&gt;
+            -*-   Enable ENV interface and CMD
+            [*]     Enable redundant environment support
+            (env)   Env part name
+            (env_r) Env redundant part name
+            (<span class="hl-number">4096</span>)  Environment Size
+            [ ]     Enable ENV debug
+        [*] aic-ota ---&gt;
+            [ ]   Enable OTA downloader debug
+            [*]   Enable OTA interface</pre></li>
+                    <li class="- topic/li li" data-ofbid="d60611e120__20250409171035">
+                        <div class="- topic/p p" data-ofbid="d60611e122__20250409171035">如需测试网络 OTA，需要按照如下配置打开网络 OTA，否则可跳过。<div class="- topic/div div highlight-Kconfig notranslate">
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__pre_ogp_syk_vcc" data-ofbid="id__pre_ogp_syk_vcc">Local packages options  ---&gt;
+    Third-party packages options  ---&gt;
+        -*- WebClient: A HTTP/HTTPS Client <strong class="hl-keyword">for</strong> RT-Thread  ---&gt;
+        [*] ota_downloader: The firmware downloader which using on RT-Thread OTA component  ---&gt;
+            [*]   Enable HTTP/HTTPS OTA
+                (http:<em class="hl-comment">//192.168.31.22/ota.cpio) HTTP OTA Download default URL</em>
+            [ ]   Enable Ymodem OTA</pre>
+                            </div></div>
+                        <div class="- topic/div div admonition note">
+                            <div class="- topic/p p" data-ofbid="d60611e132__20250409171035">
+                                <div class="- topic/note note note note_note" id="id__note_umk_nmp_bdc" data-ofbid="id__note_umk_nmp_bdc"><span class="note__title">注：</span> 为了方便配置，使能
+                                    LPKG_USING_HTTP_OTA 后，会自动选上 AIC_ENV_INTERFACE
+                                    和 AIC_OTA_INTERFACE。</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d60611e144__20250409171035">如需测试 Ymodem OTA ，按照如下配置打开 Ymodem
+                        OTA：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_xcm_qs3_w2c" data-ofbid="id__codeblock_xcm_qs3_w2c">Local packages options  ---&gt;
+    Third-party packages options  ---&gt;
+        [*] ota_downloader: The firmware downloader which using on RT-Thread OTA component  ---&gt;
+            [*]   Enable Ymodem OTA</pre></li>
+                    <li class="- topic/li li" data-ofbid="d60611e149__20250409171035">保存配置后退出。</li>
+                </ol>
+            </div>
+        </section>
+    </div>
+</article></main></div>
                         
                         
                         
@@ -170,6 +213,14 @@
                         
                         
                     </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_mjw_zsj_w2c" data-tocid="id__section_mjw_zsj_w2c">配置 BootLoader </a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_lsn_1tj_w2c" data-tocid="id__section_lsn_1tj_w2c">配置 OS </a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
                     
                 </div>
             </div>
@@ -180,8 +231,7 @@
         <footer class="navbar navbar-default wh_footer">
   <div class=" footer-container mx-auto ">
     <title>footer def</title>
-    <style><!--
-
+    <style>
 .p1 {
   font-family: FangZhengShuSong, Times, serif;
 }
@@ -191,26 +241,16 @@
 .p3 {
   font-family: "Lucida Console", "Courier New", monospace;
 }
-    
---></style>
-  
-
-  
-    
-  
-  
-    
-            
-   
-  
-
+    </style>
   <div class="webhelp.fragment.footer">
-    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
-  </div><div>
-    <div class="generation_time">
-      Update Time: 2025-01-21
-    </div>        
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
   </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
   </div>
 </footer>
         

@@ -1,3 +1,116 @@
+# V1.2.0 #
+## 新增 ##
+- USB：
+  - 增加OHCI支持
+  - Host：支持多interface的HID设备
+  - 增加Host UVC支持
+  - Host UVC支持MJpeg格式
+- LVGL：
+  - 增加Camera控件
+  - 增加图片滚动控件
+  - 增加aic_player控件，以及aic_player_demo，兼容单、双Buffer显示，支持V8、V9
+  - 支持BMP图片解码
+- MPP：
+  - 增加音频的循环播放功能
+  - 增加VE/GE test的配置选项
+- 正式支持VSCode Luban-Lite插件
+- defconfig：支持增量保存，需要维护的配置项省掉95%
+- AiPQ：支持通过UART调试DSI屏幕
+- SPI NAND：支持multi-plane的设备
+- PM：支持触屏唤醒
+- QEP：增加count清零的接口
+- CIR：新增NECX协议支持
+- baremetal：支持DFS的mkfs功能
+- aicupg：增加安全固件的传输和烧写
+- tools：增加一个Panic log分析脚本
+- FreeType：增加OTF格式支持
+- barcode：增加LED灯控制
+- 新增组件：llm（大语言模型）
+- 新增SoC型号：d123x
+- 新增器件：
+  - Touch：axs15260
+  - WiFi：aic8800dw
+  - Camera：SC035HGS、SC031IOT、OV9281、TP2850
+##优化##
+- USB副屏：
+  - 更新Windows驱动V1.0.2、Linux驱动V1.0.2、MacOS驱动V0.4.0，性能有优化
+  - OSD：完善Video播放的资源释放处理
+  - 支持动态旋转
+  - 休眠时显示logo图片
+  - 优化复合设备的配置参数和切换流程
+  - 优化非Cache的API访问
+  - 优化AMD显卡的兼容性
+- MPP：
+  - 优化MP3、WAV、MP4文件解析的兼容性
+  - 优化动态调音量的处理
+  - 优化播放器的内存占用
+  - TS格式支持AAC
+  - 优化音频脏数据、空数据的处理
+  - 优化音视频同步的策略
+- DVP：优化隔行模式的处理流程
+- BootLoader：支持关闭aicupg功能
+- OTA：检查坏块前先执行擦写
+- ABSystem：优化更新系统的逻辑
+- littlefs：支持长文件名；当文件系统满时抛出异常
+- I2C：收发数据完成后关闭I2C；针对不同速率优化超时条件
+- i2c-tools：支持16bit的寄存器读写
+- ADC：优化校准参数和计算方法
+- NOR：自适应的调整Rx delay模式
+- UART：
+  - 收发数据都支持中断方式
+  - 优化设置运行时设置波特率的处理
+- RTC：增加低功耗模式的配置选项
+- GPIO：优化GPIO中断的状态处理
+- ENV：当ENV数据没有变化的时候，不再写Flash
+- 编译：支持整个bsp目录生成一个静态库
+- 启动logo：完善SDK的配置选项
+- barcode：优化数据的Cache处理
+- benchmark：适配baremetal模式
+- VSCode配置：排除掉output、toolchain目录
+##修改##
+- LVGL：
+  - 优化fake图片资源的处理
+  - 修正lv_arc的区域裁剪处理
+  - 修正FreeRTOS环境的realloc处理
+  - 修正旋转时的BUF size处理
+  - 完善TP回调中的异常处理
+- USB：
+  - MSC：修正baremetal的异常处理，支持“弹出”操作
+  - 当键盘Device时增加超时处理
+- MPP：
+  - 修正多线程时的内存资源保护
+  - 修正Seek操作的位置计算
+- DVP：在D13x中提升工作频率到200MHz
+- CE：修正MD5算法的尾数处理
+- DDR3：修正工作频率为600MHz
+- SPI NAND：
+  - 修正RODATA的坏块管理
+  - 增强BBT扫描的边界保护
+- SPI NOR：修正写数据长度超过8KB的处理
+- GMAC：使用ChipID的MD5值生成默认的MAC地址
+- EPWM：修正脉冲输出的控制模式参数
+- QEP：修正中断函数的状态处理
+- eFuse：默认关闭eFuse的写功能；增强eFuse写保护的逻辑
+- PM：
+  - LVGL任务在运行时将阻止进入休眠
+  - test_pm：修正自动唤醒的处理
+  - 修正GPIO中断唤醒的处理流程
+- 编译：修正Win7系统中生成镜像时的错误
+- 打包镜像：修正FatFS镜像的分区大小匹配判断
+- RTP：兼容没有配置Y plate参数时的压力计算
+- UART：
+  - 修正G73x的自动波特率参数选择
+  - 修正DMA模式的Rx FIFO设置
+- 烧写：
+  - 当FB申请失败的时候避免进入异常
+  - 修正安全烧写时的CRC校验错误问题
+  - 修正tweak解析错误问题
+- DM：修正编译错误
+- pinmux冲突检查：兼容PM pin的检查
+- d21x_demo128_nand：增加NFTL配置
+
+
+
 # V1.1.2 #
 ## 新增 ##
 - USB：

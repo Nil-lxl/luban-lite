@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,8 +16,10 @@
 #include "aic_core.h"
 #include "aic_log.h"
 #include "aic_osal.h"
+#include "aic_utils.h"
 #include "aic_drv_gpio.h"
 
+#include "drv_dvp.h"
 #include "mpp_vin.h"
 #ifdef AIC_USING_CAMERA
 #include "drv_camera.h"
@@ -39,7 +41,16 @@
 #define VID_BUF_PLANE_NUM       2
 #define VID_SCALE_OFFSET        0
 
-static bool g_dvp_running = true;
+#define VID_DROP_FRESH_FRAME    1
+
+enum dvp_state {
+    DVP_STATUS_INIT,
+    DVP_STATUS_READY,
+    DVP_STATUS_PLAY,
+    DVP_STATUS_PAUSE
+};
+
+static enum dvp_state g_dvp_status = DVP_STATUS_INIT;
 
 static const char sopts[] = "f:c:a:h";
 static const struct option lopts[] = {
@@ -55,6 +66,7 @@ struct aic_dvp_data {
     int h;
     int frame_size;
     int frame_cnt;
+    int fresh_frame;
     int rotation;
     int dst_fmt;  // output format
     struct mpp_rect dst_pos;
@@ -86,19 +98,6 @@ static void usage(char *program)
     printf("\t -h, --usage \n");
     printf("\n");
     printf("Example: %s -f nv16 -c 1\n", program);
-}
-
-static long long int str2int(char *_str)
-{
-    if (_str == NULL) {
-        pr_err("The string is empty!\n");
-        return -1;
-    }
-
-    if (strncmp(_str, "0x", 2))
-        return atoi(_str);
-    else
-        return strtoll(_str, NULL, 16);
 }
 
 int get_fb_info(void)
@@ -179,6 +178,7 @@ int dvp_cfg(int width, int height, int format)
     f.height = g_vdata.src_fmt.height;
     f.pixelformat = format;
     f.num_planes = VID_BUF_PLANE_NUM;
+    f.frame_offset = 0;
 
     ret = mpp_dvp_ioctl(DVP_OUT_S_FMT, &f);
     if (ret < 0) {
@@ -191,7 +191,7 @@ int dvp_cfg(int width, int height, int format)
 
 int dvp_request_buf(struct vin_video_buf *vbuf)
 {
-    int i, min_num = 3;
+    int i, min_num = VID_BUF_NUM;
 
     if (mpp_dvp_ioctl(DVP_REQ_BUF, (void *)vbuf) < 0) {
         pr_err("Failed to request buf!\n");
@@ -210,6 +210,10 @@ int dvp_request_buf(struct vin_video_buf *vbuf)
 #ifdef SUPPORT_ROTATION
     if (g_vdata.rotation)
         min_num++;
+
+    g_vdata.num_buffers = g_vdata.binfo.num_buffers - 1;
+#else
+    g_vdata.num_buffers = g_vdata.binfo.num_buffers;
 #endif
 
     if (vbuf->num_buffers < min_num) {
@@ -259,9 +263,14 @@ int dvp_dequeue_buf(int *index)
     return 0;
 }
 
-int dvp_start(void)
+static int dvp_start(void)
 {
     int ret = 0;
+
+    if (g_dvp_status != DVP_STATUS_READY) {
+        pr_err("Invalid status: %d\n", g_dvp_status);
+        return -1;
+    }
 
     ret = mpp_dvp_ioctl(DVP_STREAM_ON, NULL);
     if (ret < 0) {
@@ -272,7 +281,7 @@ int dvp_start(void)
     return 0;
 }
 
-int dvp_stop(void)
+static int dvp_stop(void)
 {
     int ret = 0;
 
@@ -285,7 +294,9 @@ int dvp_stop(void)
     return 0;
 }
 
+/* Enable one of follow: SCALE or CROP */
 #define DVP_SCALE       1
+#define DVP_CROP        0
 
 int video_layer_disable(void)
 {
@@ -321,8 +332,8 @@ int do_rotate(struct aic_dvp_data *vdata, int index)
 
     dst->format = vdata->dst_fmt;
     dst->buf_type = MPP_PHY_ADDR;
-    dst->phy_addr[0] = binfo->planes[VID_BUF_NUM * VID_BUF_PLANE_NUM].buf;
-    dst->phy_addr[1] = binfo->planes[VID_BUF_NUM * VID_BUF_PLANE_NUM + 1].buf;
+    dst->phy_addr[0] = binfo->planes[g_vdata.num_buffers * VID_BUF_PLANE_NUM].buf;
+    dst->phy_addr[1] = binfo->planes[g_vdata.num_buffers * VID_BUF_PLANE_NUM + 1].buf;
     if (vdata->rotation == MPP_ROTATION_0
         || vdata->rotation == MPP_ROTATION_180) {
         dst->stride[0] = vdata->w;
@@ -383,28 +394,62 @@ int video_layer_set(struct aic_dvp_data *vdata, int index)
 {
 #ifdef AIC_DISPLAY_DRV
     int i;
+#if DVP_SCALE
+    u32 min_side = 0, max_side = 0;
+#endif
     struct aicfb_layer_data layer = {0};
     struct vin_video_buf *binfo = &vdata->binfo;
 
     layer.layer_id = AICFB_LAYER_TYPE_VIDEO;
     layer.enable = 1;
-#if DVP_SCALE
-    layer.scale_size.width = vdata->dst_pos.width;
-    layer.scale_size.height = vdata->dst_pos.height;
+
+    /* Dst image */
     layer.pos.x = vdata->dst_pos.x;
     layer.pos.y = vdata->dst_pos.y;
+#if DVP_SCALE
+    min_side = min(vdata->dst_pos.width, vdata->dst_pos.height);
+    max_side = max(vdata->dst_pos.width, vdata->dst_pos.height);
+    if (max_side > (min_side * 2)) {
+        layer.scale_size.width = min_side;
+        layer.scale_size.height = min_side;
+        if (vdata->dst_pos.width > vdata->dst_pos.height)
+            layer.pos.x = min_side;
+        else
+            layer.pos.y = min_side;
+    } else {
+        layer.scale_size.width = vdata->dst_pos.width;
+        layer.scale_size.height = vdata->dst_pos.height;
+    }
 #else
     layer.scale_size.width = vdata->w;
     layer.scale_size.height = vdata->h;
-    layer.pos.x = g_fb_info.width - vdata->w;
-    layer.pos.y = 0;
+    if (g_fb_info.width > vdata->w)
+        layer.pos.x = (g_fb_info.width - vdata->w) / 2;
+    if (g_fb_info.height > vdata->h)
+        layer.pos.y = (g_fb_info.height - vdata->h) / 2;
 #endif
+
+#if DVP_CROP
+    layer.buf.crop_en = 1;
+    layer.buf.crop.x = 0;
+    layer.buf.crop.y = 0;
+    layer.buf.crop.width = min(vdata->w, (int)g_fb_info.width);
+    layer.buf.crop.height = min(vdata->h, (int)g_fb_info.height);
+#endif
+
+    /* Src image */
     if (vdata->rotation == MPP_ROTATION_0
         || vdata->rotation == MPP_ROTATION_180) {
         layer.buf.size.width = vdata->w;
-        layer.buf.size.height = vdata->h;
+        if (aic_dvp_sfield_mode())
+            layer.buf.size.height = vdata->h / 2;
+        else
+            layer.buf.size.height = vdata->h;
     } else {
-        layer.buf.size.width = vdata->h;
+        if (aic_dvp_sfield_mode())
+            layer.buf.size.width = vdata->h / 2;
+        else
+            layer.buf.size.width = vdata->h;
         layer.buf.size.height = vdata->w;
     }
 
@@ -424,9 +469,48 @@ int video_layer_set(struct aic_dvp_data *vdata, int index)
     return 0;
 }
 
-void dvp_thread_stop()
+static int dvp_pause(void)
 {
-    g_dvp_running = false;
+    if (g_dvp_status == DVP_STATUS_PAUSE) {
+        pr_info("DVP is already pausing\n");
+        return 0;
+    }
+    if (g_dvp_status != DVP_STATUS_PLAY) {
+        pr_err("Invalid status: %d\n", g_dvp_status);
+        return -1;
+    }
+
+    if (mpp_dvp_ioctl(DVP_STREAM_PAUSE, NULL) < 0) {
+        pr_err("Failed to pause stream!\n");
+        return -1;
+    }
+    g_dvp_status = DVP_STATUS_PAUSE;
+    return 0;
+}
+
+static int dvp_resume(void)
+{
+    if (g_dvp_status == DVP_STATUS_PLAY) {
+        pr_info("DVP is already playing\n");
+        return 0;
+    }
+    if (g_dvp_status != DVP_STATUS_PAUSE) {
+        pr_err("Invalid status: %d\n", g_dvp_status);
+        return -1;
+    }
+
+    if (mpp_dvp_ioctl(DVP_STREAM_RESUME, NULL) < 0) {
+        pr_err("Failed to play stream!\n");
+        return -1;
+    }
+    g_vdata.fresh_frame = VID_DROP_FRESH_FRAME;
+    g_dvp_status = DVP_STATUS_PLAY;
+    return 0;
+}
+
+void dvp_thread_stop(void)
+{
+    g_dvp_status = DVP_STATUS_INIT;
 }
 
 static void test_dvp_thread(void *arg)
@@ -437,10 +521,11 @@ static void test_dvp_thread(void *arg)
     if (dvp_request_buf(&g_vdata.binfo) < 0)
         return;
 
-    for (i = 0; i < VID_BUF_NUM; i++) {
+    for (i = 0; i < g_vdata.num_buffers; i++) {
         if (dvp_queue_buf(i) < 0)
             return;
     }
+    g_dvp_status = DVP_STATUS_READY;
 
     if (dvp_start() < 0)
         return;
@@ -456,9 +541,15 @@ static void test_dvp_thread(void *arg)
 #endif
 
     gettimespec(&begin);
-    g_dvp_running = true;
     i = 0;
-    while (g_dvp_running) {
+    g_dvp_status = DVP_STATUS_PLAY;
+    g_vdata.fresh_frame = VID_DROP_FRESH_FRAME;
+    while (g_dvp_status == DVP_STATUS_PLAY || g_dvp_status == DVP_STATUS_PAUSE) {
+        if (g_dvp_status == DVP_STATUS_PAUSE) {
+            aicos_msleep(100);
+            continue;
+        }
+
         if (g_vdata.frame_cnt != 0 && i >= g_vdata.frame_cnt) {
             break;
         }
@@ -466,13 +557,20 @@ static void test_dvp_thread(void *arg)
 
         if (dvp_dequeue_buf(&index) < 0)
             break;
+
+        if (g_vdata.fresh_frame) {
+            dvp_queue_buf(index);
+            g_vdata.fresh_frame--;
+            continue;
+        }
+
         // pr_debug("Set the buf %d to video layer\n", index);
         if (g_vdata.rotation) {
 #ifdef SUPPORT_ROTATION
             if (do_rotate(&g_vdata, index) < 0)
                 break;
 
-            if (video_layer_set(&g_vdata, VID_BUF_NUM) < 0)
+            if (video_layer_set(&g_vdata, g_vdata.num_buffers) < 0)
                 break;
 #endif
         } else {
@@ -483,13 +581,13 @@ static void test_dvp_thread(void *arg)
         dvp_queue_buf(index);
 
         if (i && (i % 1000 == 0)) {
+            char tmp[32] = "";
+
+            snprintf(tmp, 32, "[DVP] %6d", i);
             gettimespec(&now);
-            show_fps("DVP", &begin, &now, i);
+            show_fps(tmp, &begin, &now, 1000);
+            gettimespec(&begin);
         }
-    }
-    if ((i > 0) && ((i - 1) % 1000 != 0)) {
-        gettimespec(&now);
-        show_fps("DVP", &begin, &now, i);
     }
 
     dvp_stop();
@@ -508,13 +606,40 @@ static void test_dvp_thread(void *arg)
     }
 #endif
 
-    pr_info("Total receive %d frames, so exit\n", i);
+    g_dvp_status = DVP_STATUS_INIT;
+    pr_info("Total receive %d frames, exit\n", i);
 }
 
-static void cmd_test_dvp(int argc, char **argv)
+static int dvp_play_ctrl(char *action)
+{
+    if (strncasecmp(action, "r", 1) == 0)
+        return dvp_resume();
+
+    if (strncasecmp(action, "p", 1) == 0)
+        return dvp_pause();
+
+    if (strncasecmp(action, "s", 1) == 0) {
+        dvp_thread_stop();
+        return 0;
+    }
+
+    printf("Invalid action: %s\n", action);
+    return -1;
+}
+
+static int cmd_test_dvp(int argc, char **argv)
 {
     int c;
     aicos_thread_t thid = NULL;
+
+    if (g_dvp_status != DVP_STATUS_INIT) {
+        /* DVP is running, so just do play control */
+        if (argc != 2) {
+            printf("Usage:\n\t%s [pause/resume/stop]: \n\n", argv[0]);
+            return -1;
+        }
+        return dvp_play_ctrl(argv[1]);
+    }
 
     memset(&g_vdata, 0, sizeof(struct aic_dvp_data));
     g_vdata.dst_fmt = MPP_FMT_NV16;
@@ -541,7 +666,7 @@ static void cmd_test_dvp(int argc, char **argv)
 
         case 'h':
             usage(argv[0]);
-            return;
+            return 0;
 
         default:
             break;
@@ -549,10 +674,10 @@ static void cmd_test_dvp(int argc, char **argv)
     }
 
     pr_info("Capture %d frames from camera\n", g_vdata.frame_cnt);
-    pr_info("DVP out format: %x\n", g_vdata.dst_fmt);
+    pr_info("DVP out format: 0x%x\n", g_vdata.dst_fmt);
 
     if (mpp_vin_init(CAMERA_DEV_NAME))
-        return;
+        return -1;
 
     if (sensor_get_fmt() < 0)
         goto error_out;
@@ -591,19 +716,12 @@ static void cmd_test_dvp(int argc, char **argv)
     if (dvp_cfg(g_vdata.w, g_vdata.h, g_vdata.dst_fmt) < 0)
         goto error_out;
 
-#ifdef SUPPORT_ROTATION
-    /* Use the last buf connect GE and Video layer */
-    g_vdata.num_buffers = VID_BUF_NUM + 1;
-#else
-    g_vdata.num_buffers = VID_BUF_NUM;
-#endif
-
     thid = aicos_thread_create("test_dvp", 4096, 0, test_dvp_thread, NULL);
     if (thid == NULL) {
         pr_err("Failed to create DVP thread\n");
-        return;
+        return -1;
     }
-    return;
+    return 0;
 
 error_out:
     mpp_vin_deinit();
@@ -617,5 +735,6 @@ error_out:
         mpp_fb_close(g_fb);
         g_fb = NULL;
     }
+    return -1;
 }
 MSH_CMD_EXPORT_ALIAS(cmd_test_dvp, test_dvp, Test DVP and camera);

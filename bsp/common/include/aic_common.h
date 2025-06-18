@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -18,8 +18,8 @@ extern "C" {
 
 /* Luban-Lite version information */
 #define LL_VERSION      1               /**< major version number */
-#define LL_SUBVERSION   1               /**< minor version number */
-#define LL_REVISION     2               /**< revise version number */
+#define LL_SUBVERSION   2               /**< minor version number */
+#define LL_REVISION     0               /**< revise version number */
 
 typedef __signed__ char     s8;
 typedef unsigned char       u8;
@@ -392,18 +392,23 @@ typedef enum {
 } aic_mem_region_t;
 
 /* cma */
+#ifdef AIC_BOOTLOADER
+#define MEM_CMA MEM_RESERVED
+#define CMA_DATA_DEFINE
+#else
 #if defined(AIC_DRAM_CMA_EN)
-#define MEM_CMA MEM_DRAM_CMA
+#define MEM_CMA         MEM_DRAM_CMA
 #define CMA_DATA_DEFINE DRAM_CMA_DATA_DEFINE
 #elif defined(AIC_PSRAM_CMA_EN)
-#define MEM_CMA MEM_PSRAM_CMA
+#define MEM_CMA         MEM_PSRAM_CMA
 #define CMA_DATA_DEFINE PSRAM_CMA_DATA_DEFINE
 #elif defined(AIC_SRAM1_CMA_EN)
-#define MEM_CMA MEM_SRAM1_CMA
+#define MEM_CMA         MEM_SRAM1_CMA
 #define CMA_DATA_DEFINE SRAM1_CMA_DATA_DEFINE
 #else
 #define MEM_CMA MEM_DEFAULT
 #define CMA_DATA_DEFINE
+#endif
 #endif
 
 /* heap size define is ld.s */

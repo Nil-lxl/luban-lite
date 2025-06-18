@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -597,9 +597,12 @@ static struct avi_index_entry *avi_find_next_sample(struct aic_avi_parser *c,
 int avi_read_packet(struct aic_avi_parser *s, struct aic_parser_packet *pkt)
 {
     struct aic_stream *c = s->stream;
+    int ret = PARSER_OK;
 
     aic_stream_seek(c, s->cur_sample->pos, SEEK_SET);
-    aic_stream_read(c, pkt->data, s->cur_sample->size);
+    ret = aic_stream_read(c, pkt->data, s->cur_sample->size);
+    if (ret < 0)
+        return PARSER_NODATA;
 
     return PARSER_OK;
 }

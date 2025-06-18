@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2025 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -152,9 +152,10 @@ static inline void ge2d_sync(struct mpp_ge *ge2d_dev)
 void lv_draw_ge2d_img(lv_draw_unit_t *draw_unit, const lv_draw_image_dsc_t *draw_dsc,
                       const lv_area_t *coords)
 {
+
     if (lv_image_src_get_type(draw_dsc->src) == LV_IMAGE_SRC_FILE) {
-        char *ptr = strrchr(draw_dsc->src, '.');
-        if (!strcmp(ptr, ".fake")) {
+        const char *ptr = lv_fs_get_ext(draw_dsc->src);
+        if (!strcmp(ptr, "fake")) {
             int width;
             int height;
             int alpha_en;
@@ -173,6 +174,10 @@ void lv_draw_ge2d_img(lv_draw_unit_t *draw_unit, const lv_draw_image_dsc_t *draw
                 return;
             }
 
+            _lv_image_buf_get_transformed_area(&clipped_img_area, lv_area_get_width(coords), lv_area_get_height(coords),
+                                            draw_dsc->rotation, draw_dsc->scale_x,
+                                            draw_dsc->scale_y, &draw_dsc->pivot);
+            lv_area_move(&clipped_img_area, coords->x1, coords->y1);
             lv_draw_ge2d_fill_with_blend(draw_unit, &fill_dsc, &clipped_img_area, alpha_en);
             return;
         }

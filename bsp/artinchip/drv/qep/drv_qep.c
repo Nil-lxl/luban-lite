@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -72,7 +72,7 @@ static rt_err_t aic_qep_clear_count(struct rt_pulse_encoder_device *qep)
 
     aicqep = (struct aic_qep *)qep;
 
-    LOG_I("%s enter!, id:%d\n", __FUNCTION__, aicqep->data->id);
+    hal_qep_clear_cnt(aicqep->data->id);
 
     return RT_EOK;
 }
@@ -87,9 +87,6 @@ static rt_err_t aic_qep_control(struct rt_pulse_encoder_device *qep, rt_uint32_t
 
     aicqep = (struct aic_qep *)qep;
 
-    hal_qep_set_cnt_ep(aicqep->data->id, 0xFFFFFFFF);
-    hal_qep_set_cnt_cmp(aicqep->data->id, 0xFFFFFFFF);
-
     switch (cmd) {
     case PULSE_ENCODER_CMD_ENABLE:
         hal_qep_int_enable(aicqep->data->id, 1);
@@ -98,6 +95,8 @@ static rt_err_t aic_qep_control(struct rt_pulse_encoder_device *qep, rt_uint32_t
     case PULSE_ENCODER_CMD_DISABLE:
         hal_qep_int_enable(aicqep->data->id, 0);
         hal_qep_enable(aicqep->data->id, 0);
+        hal_qep_set_cnt_ep(aicqep->data->id, 0);
+        hal_qep_set_cnt_cmp(aicqep->data->id, 0);
         break;
     case PULSE_ENCODER_CMD_SET_COUNT:
         p = (rt_uint32_t *)args;
@@ -123,15 +122,20 @@ static struct rt_pulse_encoder_ops aic_qep_ops =
 
 irqreturn_t aic_qep_irq(int irq, void *arg)
 {
+    u32 global_stat;
     u32 stat;
     u32 ch = 0;
 
+    global_stat = hal_qep_global_stat();
+
     for (int i = 0; i < AIC_QEP_CH_NUM; i++) {
-        stat = hal_qep_int_stat(i);
-        if (stat & QEP_POS_CMP_INT_FLG) {
-            ch = i;
-            g_qep[i]->rtdev.parent.tx_complete(&g_qep[i]->rtdev.parent, &ch);
-            hal_qep_clr_int(i, QEP_POS_CMP_INT_FLG);
+        if (global_stat & (1 << i)) {
+            stat = hal_qep_int_stat(i);
+            if (stat & QEP_POS_CMP_INT_FLG) {
+                ch = i;
+                g_qep[i]->rtdev.parent.tx_complete(&g_qep[i]->rtdev.parent, &ch);
+                hal_qep_clr_int(i, QEP_POS_CMP_INT_FLG);
+            }
         }
     }
 

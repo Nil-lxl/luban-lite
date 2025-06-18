@@ -51,9 +51,8 @@ void *_realloc_r(struct _reent *ptr, void *old, size_t newlen)
 #if defined(KERNEL_BAREMETAL) || defined(KERNEL_UCOS_II)
     result = (void*)aic_tlsf_realloc(MEM_DEFAULT, old, newlen);
 #elif defined(KERNEL_FREERTOS)
-    if (old)
-        vPortFree(old);
-    result = pvPortMalloc(newlen);
+    extern void *pvPortRealloc(void *pv, size_t xWantedSize);
+    result = pvPortRealloc(old, newlen);
 #else
     #error unknown kernel
 #endif

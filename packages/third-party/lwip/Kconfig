@@ -132,11 +132,11 @@ if LPKG_USING_LWIP
 
     config LPKG_LWIP_TCP_SND_BUF
         int "the size of send buffer"
-        default 8196
+        default 8192
 
     config LPKG_LWIP_TCP_WND
         int "the size of TCP send window"
-        default 8196
+        default 8192
 
     config LPKG_LWIP_REASSEMBLY_FRAG
         bool "Enable IP reassembly and frag"
@@ -197,7 +197,7 @@ if LPKG_USING_LWIP
 
             if LPKG_PING_USING_SOCKET
                 config LPKG_PING_THREAD_PRIORITY
-                int "the priority level value of ping thread "
+                int "the priority level value of ping thread"
                 default 20
             endif
         endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -27,6 +27,11 @@ void rt_pm_set_pin_wakeup_source(rt_base_t pin)
 void rt_pm_clear_pin_wakeup_source(rt_base_t pin)
 {
     rt_pm_pin_wakeup_source[pin >> 5] &= ~(1 << (pin % GPIO_GROUP_SIZE));
+}
+
+uint32_t rt_pm_pin_is_wakeup_source(rt_base_t pin)
+{
+    return rt_pm_pin_wakeup_source[pin >> 5] & (1 << (pin % GPIO_GROUP_SIZE));
 }
 
 void rt_pm_disable_pin_irq_nonwakeup(void)
@@ -68,7 +73,9 @@ void rt_pm_resume_pin_irq(void)
             pin_name = AIC_IRQ_TO_GPIO(index);
             group = GPIO_GROUP(pin_name);
             pin = GPIO_GROUP_PIN(pin_name);
-            hal_gpio_enable_irq(group, pin);
+            if (!rt_pm_pin_is_wakeup_source(pin_name))
+                hal_gpio_clr_irq_stat(group, pin);
+            hal_gpio_enable_irq_no_clr(group, pin);
         }
     }
 }

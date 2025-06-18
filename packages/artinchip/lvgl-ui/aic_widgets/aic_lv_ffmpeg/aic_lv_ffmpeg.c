@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MY_CLASS &lv_aic_player_class
+#define MY_CLASS &lv_ffmepg_aic_player_class
 
 struct ffmpeg_context_s {
     struct aic_player *aic_player;
@@ -63,7 +63,7 @@ static int aic_event_handle(void *app_data, int event, int data1, int data2)
     return ret;
 }
 
-const lv_obj_class_t lv_aic_player_class = {
+const lv_obj_class_t lv_ffmepg_aic_player_class = {
     .constructor_cb = lv_ffmpeg_player_constructor,
     .destructor_cb = lv_ffmpeg_player_destructor,
     .instance_size = sizeof(lv_ffmpeg_player_t),

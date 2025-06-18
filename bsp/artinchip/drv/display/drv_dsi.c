@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -19,10 +19,13 @@ struct aic_dsi_comp
     u32 ln_polrs;
     bool dc_inv;
 
+    u32 pixclk;
     u64 sclk_rate;
     u64 pll_disp_rate;
 
     struct aic_panel *panel;
+    struct panel_dsi *dsi;
+    const struct display_timing *timing;
 };
 static struct aic_dsi_comp *g_aic_dsi_comp;
 
@@ -44,7 +47,7 @@ static void aic_dsi_release_drvdata(void)
 static int aic_dsi_clk_enable(void)
 {
     struct aic_dsi_comp *comp = aic_dsi_request_drvdata();
-    u32 pixclk = comp->panel->timings->pixelclock;
+    u32 pixclk = comp->pixclk;
 
     hal_clk_set_freq(CLK_PLL_FRA2, comp->pll_disp_rate);
     hal_clk_set_rate(CLK_SCLK, comp->sclk_rate, comp->pll_disp_rate);
@@ -72,7 +75,7 @@ static int aic_dsi_clk_disable(void)
 static int aic_dsi_enable(void)
 {
     struct aic_dsi_comp *comp = aic_dsi_request_drvdata();
-    struct panel_dsi *dsi = comp->panel->dsi;
+    struct panel_dsi *dsi = comp->dsi;
     ulong lp_rate = MIPI_DSI_LP_RATE;
 
     reg_set_bit(comp->regs + DSI_CTL, DSI_CTL_EN);
@@ -104,16 +107,27 @@ static int aic_dsi_disable(void)
     return 0;
 }
 
-static int aic_dsi_attach_panel(struct aic_panel *panel)
+static int aic_dsi_attach_panel(struct aic_panel *panel, struct panel_desc *desc)
 {
     struct aic_dsi_comp *comp = aic_dsi_request_drvdata();
     u32 div[DSI_MAX_LANE_NUM] = {24, 24, 18, 16};
-    u32 pixclk = panel->timings->pixelclock;
-    struct panel_dsi *dsi = panel->dsi;
     u64 pll_disp_rate = 0;
     int i = 0;
+    struct panel_dsi *dsi;
+    u32 pixclk;
 
+    if (desc) {
+        pixclk = desc->timings->pixelclock;
+        comp->timing = desc->timings;
+        dsi = desc->dsi;
+    } else {
+        pixclk = panel->timings->pixelclock;
+        comp->timing = panel->timings;
+        dsi = panel->dsi;
+    }
+    comp->dsi = dsi;
     comp->panel = panel;
+    comp->pixclk = pixclk;
 
     if (dsi->lane_num <= DSI_MAX_LANE_NUM)
     {
@@ -155,7 +169,7 @@ static int aic_dsi_attach_panel(struct aic_panel *panel)
 static int aic_dsi_set_vm(const struct display_timing *timing, int enable)
 {
     struct aic_dsi_comp *comp = aic_dsi_request_drvdata();
-    struct panel_dsi *dsi = comp->panel->dsi;
+    struct panel_dsi *dsi = comp->dsi;
 
     if (enable) {
         dsi_dcs_lw(comp->regs, false);
@@ -180,10 +194,10 @@ static int aic_dsi_set_vm(const struct display_timing *timing, int enable)
 
 static void aic_dsi_send_debug_cmd(struct aic_dsi_comp *comp)
 {
-    struct dsi_command *commands = &comp->panel->dsi->command;
+    struct dsi_command *commands = &comp->dsi->command;
     unsigned int i = 0;
 
-    aic_dsi_set_vm(comp->panel->timings, false);
+    aic_dsi_set_vm(comp->timing, false);
     while (i < commands->len) {
         u8 command = commands->buf[i++];
         u8 num_parameters = commands->buf[i++];
@@ -196,15 +210,15 @@ static void aic_dsi_send_debug_cmd(struct aic_dsi_comp *comp)
 
         i += num_parameters;
     }
-    aic_dsi_set_vm(comp->panel->timings, true);
+    aic_dsi_set_vm(comp->timing, true);
 }
 
 static int aic_dsi_send_cmd(u32 dt, u32 vc, const u8 *data, u32 len)
 {
     struct aic_dsi_comp *comp = aic_dsi_request_drvdata();
-    int command_on = comp->panel->dsi->command.command_on;
+    struct panel_dsi *dsi = comp->dsi;
 
-    if (command_on) {
+    if (dsi->command.command_on) {
         aic_dsi_send_debug_cmd(comp);
         return 0;
     }
@@ -224,6 +238,32 @@ static int aic_dsi_read_cmd(u32 val)
     return readl(comp->regs + DSI_GEN_PD_CFG);
 }
 
+static int aic_dsi_get_output_bpp(void)
+{
+    struct aic_dsi_comp *comp = aic_dsi_request_drvdata();
+    struct panel_dsi *dsi = comp->dsi;
+    int bpp;
+
+    switch (dsi->format) {
+    case DSI_FMT_RGB888:
+        bpp = 24;
+        break;
+    case DSI_FMT_RGB666L:
+    case DSI_FMT_RGB666:
+        bpp = 18;
+        break;
+    case DSI_FMT_RGB565:
+        bpp = 16;
+        break;
+    default:
+        bpp = 24;
+        break;
+    }
+
+    aic_dsi_release_drvdata();
+    return bpp;
+}
+
 struct di_funcs aic_dsi_func = {
     .clk_enable = aic_dsi_clk_enable,
     .clk_disable = aic_dsi_clk_disable,
@@ -233,6 +273,7 @@ struct di_funcs aic_dsi_func = {
     .set_videomode = aic_dsi_set_vm,
     .send_cmd = aic_dsi_send_cmd,
     .read_cmd = aic_dsi_read_cmd,
+    .get_output_bpp = aic_dsi_get_output_bpp,
 };
 
 static int aic_dsi_probe(void)

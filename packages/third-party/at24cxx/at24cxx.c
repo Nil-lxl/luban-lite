@@ -9,6 +9,7 @@
  * 2019-12-04     RenMing      ADD PAGE WRITE and input address can be selected
  * 2022-10-11     GuangweiRen  Delay 2ms after writing one byte
  * 2023-09-28	  JiehuaHuang  fix input address invalid bug、add data intput func and fix some problems
+ * 2025-03-17     JiehuaHuang  fix page write error,add page read write test
  */
 #include <rtthread.h>
 #include <rtdevice.h>
@@ -23,6 +24,7 @@
 #define DBG_COLOR
 #include <rtdbg.h>
 
+#include "aic_utils.h"
 #include "at24cxx.h"
 
 #ifdef LPKG_USING_AT24CXX
@@ -64,7 +66,6 @@ static rt_err_t read_regs(at24cxx_device_t dev, rt_uint8_t len, rt_uint8_t *buf)
 {
     struct rt_i2c_msg msgs;
 
-    //msgs.addr = AT24CXX_ADDR | dev->addr_input;
 	msgs.addr = dev->addr_input;
     msgs.flags = RT_I2C_RD;
     msgs.buf = buf;
@@ -79,16 +80,16 @@ static rt_err_t read_regs(at24cxx_device_t dev, rt_uint8_t len, rt_uint8_t *buf)
         return -RT_ERROR;
     }
 }
-uint8_t at24cxx_read_one_byte(at24cxx_device_t dev, uint16_t r_addr)
+uint8_t at24cxx_read_one_byte(at24cxx_device_t dev, uint16_t addr)
 {
     rt_uint8_t buf[2];
     rt_uint8_t temp;
 #if (EE_TYPE > AT24C16)
-    buf[0] = (uint8_t)(r_addr>>8);
-    buf[1] = (uint8_t)r_addr;
+    buf[0] = (uint8_t)(addr>>8);
+    buf[1] = (uint8_t)addr;
     if (rt_i2c_master_send(dev->i2c, dev->addr_input, 0, buf, 2) == 0)
 #else
-    buf[0] = r_addr;
+    buf[0] = addr;
     if (rt_i2c_master_send(dev->i2c, dev->addr_input, 0, buf, 1) == 0)
 #endif
     {
@@ -98,18 +99,17 @@ uint8_t at24cxx_read_one_byte(at24cxx_device_t dev, uint16_t r_addr)
     return temp;
 }
 
-rt_err_t at24cxx_write_one_byte(at24cxx_device_t dev, uint16_t w_addr, uint8_t data)
+rt_err_t at24cxx_write_one_byte(at24cxx_device_t dev, uint16_t addr, uint8_t data)
 {
     rt_uint8_t buf[3];
 #if (EE_TYPE > AT24C16)
-    buf[0] = (uint8_t)(w_addr>>8);
-    buf[1] = (uint8_t)w_addr;
+    buf[0] = (uint8_t)(addr>>8);
+    buf[1] = (uint8_t)addr;
     buf[2] = data;
     if (rt_i2c_master_send(dev->i2c, dev->addr_input, 0, buf, 3) == 3)
 #else
-    buf[0] = w_addr; //cmd
+    buf[0] = addr; //cmd
     buf[1] = data;
-    //buf[2] = data[1];
 
 
     if (rt_i2c_master_send(dev->i2c, dev->addr_input, 0, buf, 2) == 2)
@@ -120,7 +120,7 @@ rt_err_t at24cxx_write_one_byte(at24cxx_device_t dev, uint16_t w_addr, uint8_t d
 
 }
 
-rt_err_t at24cxx_read_page(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffer, uint16_t num_r)
+rt_err_t at24cxx_read_page(at24cxx_device_t dev, uint32_t addr, uint8_t *buffer, uint16_t num)
 {
     struct rt_i2c_msg msgs[2];
     uint8_t addr_buf[2];
@@ -129,12 +129,12 @@ rt_err_t at24cxx_read_page(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffe
     msgs[0].flags = RT_I2C_WR;
 
 #if (EE_TYPE > AT24C16)
-    addr_buf[0] = r_addr >> 8;
-    addr_buf[1] = r_addr;
+    addr_buf[0] = addr >> 8;
+    addr_buf[1] = addr;
     msgs[0].buf = addr_buf;
     msgs[0].len = 2;
 #else
-    addr_buf[0] = r_addr;
+    addr_buf[0] = addr;
     msgs[0].buf = addr_buf;
     msgs[0].len = 1;
 #endif
@@ -142,7 +142,7 @@ rt_err_t at24cxx_read_page(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffe
     msgs[1].addr = dev->addr_input;
     msgs[1].flags = RT_I2C_RD;
     msgs[1].buf = buffer;
-    msgs[1].len = num_r;
+    msgs[1].len = num;
 
     if(rt_i2c_transfer(dev->i2c, msgs, 2) == 0)
     {
@@ -152,31 +152,33 @@ rt_err_t at24cxx_read_page(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffe
     return RT_EOK;
 }
 
-rt_err_t at24cxx_write_page(at24cxx_device_t dev, uint32_t waddr, uint8_t *buffer, uint16_t num_w)
+rt_err_t at24cxx_write_page(at24cxx_device_t dev, uint32_t waddr, uint8_t *buffer, uint16_t num)
 {
-    struct rt_i2c_msg msgs[2];
-    uint8_t addr_buf[2];
+    struct rt_i2c_msg msgs;
+    uint8_t addr_len = (EE_TYPE > AT24C16) ? 2 : 1;
 
-    msgs[0].addr = dev->addr_input;
-    msgs[0].flags = RT_I2C_WR;
+    /* The maximum length of each data transmission is 1/4 + 2 of maximum address */
+    uint8_t write_buf[AT24CXX_MAX_MEM_ADDRESS / 4 + 2] = {0};
+    if (num > (AT24CXX_MAX_MEM_ADDRESS / 4)) {
+        rt_kprintf("write fail,try to increse buf size\n");
+        return -RT_ERROR;
+    }
 
-#if (EE_TYPE > AT24C16)
-    addr_buf[0] = waddr >> 8;
-    addr_buf[1] = waddr;
-    msgs[0].buf = addr_buf;
-    msgs[0].len = 2;
-#else
-    addr_buf[0] = waddr;
-    msgs[0].buf = addr_buf;
-    msgs[0].len = 1;
-#endif
+    msgs.addr = dev->addr_input;
+    msgs.flags = RT_I2C_WR;
 
-    msgs[1].addr = dev->addr_input;
-    msgs[1].flags = RT_I2C_WR | RT_I2C_NO_START;
-    msgs[1].buf = buffer;
-    msgs[1].len = num_w;
+    if (addr_len > 1) {
+        write_buf[0] = waddr >> 8;
+        write_buf[1] = waddr & 0xff;
+    } else {
+        write_buf[0] = waddr;
+    }
 
-    if(rt_i2c_transfer(dev->i2c, msgs, 2) <= 0)
+    memcpy(&write_buf[addr_len], buffer, num);
+    msgs.len = num + addr_len;
+    msgs.buf = write_buf;
+
+    if(rt_i2c_transfer(dev->i2c, &msgs, 1) <= 0)
     {
         return RT_ERROR;
     }
@@ -205,17 +207,17 @@ rt_err_t at24cxx_check(at24cxx_device_t dev)
  * This function read the specific numbers of data to the specific position
  *
  * @param bus the name of at24cxx device
- * @param r_addr the start position to read
+ * @param addr the start position to read
  * @param buffer  the read data store position
- * @param num_r
+ * @param num
  * @return RT_EOK  write ok.
  */
-rt_err_t at24cxx_read(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffer, uint16_t num_r)
+rt_err_t at24cxx_read(at24cxx_device_t dev, uint32_t addr, uint8_t *buffer, uint16_t num)
 {
     rt_err_t result;
     RT_ASSERT(dev);
 
-    if(r_addr + num_r > AT24CXX_MAX_MEM_ADDRESS)
+    if(addr + num > AT24CXX_MAX_MEM_ADDRESS)
     {
         return RT_ERROR;
     }
@@ -223,10 +225,10 @@ rt_err_t at24cxx_read(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffer, ui
     result = rt_mutex_take(dev->lock, RT_WAITING_FOREVER);
     if (result == RT_EOK)
     {
-        while (num_r)
+        while (num)
         {
-            *buffer++ = at24cxx_read_one_byte(dev, r_addr++);
-            num_r--;
+            *buffer++ = at24cxx_read_one_byte(dev, addr++);
+            num--;
         }
     }
     else
@@ -242,19 +244,19 @@ rt_err_t at24cxx_read(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffer, ui
  * This function read the specific numbers of data to the specific position
  *
  * @param bus the name of at24cxx device
- * @param r_addr the start position to read
+ * @param addr the start position to read
  * @param buffer  the read data store position
- * @param num_r
+ * @param num
  * @return RT_EOK  write ok.
  */
-rt_err_t at24cxx_page_read(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffer, uint16_t num_r)
+rt_err_t at24cxx_page_read(at24cxx_device_t dev, uint32_t addr, uint8_t *buffer, uint16_t num)
 {
     rt_err_t result = RT_EOK;
-    uint16_t page_r_size = AT24CXX_PAGE_BYTE - r_addr % AT24CXX_PAGE_BYTE;
+    uint16_t page_r_size = AT24CXX_PAGE_BYTE - addr % AT24CXX_PAGE_BYTE;
 
     RT_ASSERT(dev);
 
-    if(r_addr + num_r > AT24CXX_MAX_MEM_ADDRESS)
+    if(addr + num > AT24CXX_MAX_MEM_ADDRESS)
     {
         return RT_ERROR;
     }
@@ -262,27 +264,27 @@ rt_err_t at24cxx_page_read(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffe
     result = rt_mutex_take(dev->lock, RT_WAITING_FOREVER);
     if(result == RT_EOK)
     {
-        while (num_r)
+        while (num)
         {
-            if(num_r > page_r_size)
+            if(num > page_r_size)
             {
-                if(at24cxx_read_page(dev, r_addr, buffer, page_r_size))
+                if(at24cxx_read_page(dev, addr, buffer, page_r_size))
                 {
                     result = RT_ERROR;
                 }
 
-                r_addr += page_r_size;
+                addr += page_r_size;
                 buffer += page_r_size;
-                num_r -= page_r_size;
+                num -= page_r_size;
                 page_r_size = AT24CXX_PAGE_BYTE;
             }
             else
             {
-                if(at24cxx_read_page(dev, r_addr, buffer, num_r))
+                if(at24cxx_read_page(dev, addr, buffer, num))
                 {
                     result = RT_ERROR;
                 }
-                num_r = 0;
+                num = 0;
             }
         }
     }
@@ -299,18 +301,18 @@ rt_err_t at24cxx_page_read(at24cxx_device_t dev, uint32_t r_addr, uint8_t *buffe
  * This function write the specific numbers of data to the specific position
  *
  * @param bus the name of at24cxx device
- * @param w_addr the start position to write
+ * @param addr the start position to write
  * @param buffer  the data need to write
- * @param num_w
+ * @param num
  * @return RT_EOK  write ok.at24cxx_device_t dev
  */
-rt_err_t at24cxx_write(at24cxx_device_t dev, uint32_t w_addr, uint8_t *buffer, uint16_t num_w)
+rt_err_t at24cxx_write(at24cxx_device_t dev, uint32_t addr, uint8_t *buffer, uint16_t num)
 {
     uint16_t i = 0;
     rt_err_t result;
     RT_ASSERT(dev);
 
-    if(w_addr + num_w > AT24CXX_MAX_MEM_ADDRESS)
+    if(addr + num > AT24CXX_MAX_MEM_ADDRESS)
     {
         return RT_ERROR;
     }
@@ -318,14 +320,14 @@ rt_err_t at24cxx_write(at24cxx_device_t dev, uint32_t w_addr, uint8_t *buffer, u
     result = rt_mutex_take(dev->lock, RT_WAITING_FOREVER);
     if (result == RT_EOK)
     {
-        while (1) //num_w--
+        while (1) //num--
         {
-            if (at24cxx_write_one_byte(dev, w_addr, buffer[i]) == RT_EOK)
+            if (at24cxx_write_one_byte(dev, addr, buffer[i]) == RT_EOK)
             {
                 rt_thread_mdelay(2);
-                w_addr++;
+                addr++;
             }
-            if (++i == num_w)
+            if (++i == num)
             {
                 break;
             }
@@ -345,19 +347,19 @@ rt_err_t at24cxx_write(at24cxx_device_t dev, uint32_t w_addr, uint8_t *buffer, u
  * This function write the specific numbers of data to the specific position
  *
  * @param bus the name of at24cxx device
- * @param w_addr the start position to write
+ * @param addr the start position to write
  * @param buffer  the data need to write
- * @param num_w
+ * @param num
  * @return RT_EOK  write ok.at24cxx_device_t dev
  */
-rt_err_t at24cxx_page_write(at24cxx_device_t dev, uint32_t w_addr, uint8_t *buffer, uint16_t num_w)
+rt_err_t at24cxx_page_write(at24cxx_device_t dev, uint32_t addr, uint8_t *buffer, uint16_t num)
 {
     rt_err_t result = RT_EOK;
-    uint16_t page_w_size = AT24CXX_PAGE_BYTE - w_addr % AT24CXX_PAGE_BYTE;
+    uint16_t page_w_size = AT24CXX_PAGE_BYTE - addr % AT24CXX_PAGE_BYTE;
 
     RT_ASSERT(dev);
 
-    if(w_addr + num_w > AT24CXX_MAX_MEM_ADDRESS)
+    if(addr + num > AT24CXX_MAX_MEM_ADDRESS)
     {
         return RT_ERROR;
     }
@@ -365,30 +367,30 @@ rt_err_t at24cxx_page_write(at24cxx_device_t dev, uint32_t w_addr, uint8_t *buff
     result = rt_mutex_take(dev->lock, RT_WAITING_FOREVER);
     if(result == RT_EOK)
     {
-        while (num_w)
+        while (num)
         {
-            if(num_w > page_w_size)
+            if(num > page_w_size)
             {
-                if(at24cxx_write_page(dev, w_addr, buffer, page_w_size))
+                if(at24cxx_write_page(dev, addr, buffer, page_w_size))
                 {
                     result = RT_ERROR;
                 }
                 rt_thread_mdelay(EE_TWR);    // wait 5ms befor next operation
 
-                w_addr += page_w_size;
+                addr += page_w_size;
                 buffer += page_w_size;
-                num_w -= page_w_size;
+                num -= page_w_size;
                 page_w_size = AT24CXX_PAGE_BYTE;
             }
             else
             {
-                if(at24cxx_write_page(dev, w_addr, buffer, num_w))
+                if(at24cxx_write_page(dev, addr, buffer, num))
                 {
                     result = RT_ERROR;
                 }
                 rt_thread_mdelay(EE_TWR);   // wait 5ms befor next operation
 
-                num_w = 0;
+                num = 0;
             }
         }
     }
@@ -518,6 +520,34 @@ void at24cxx(int argc, char *argv[])
                 rt_kprintf("check faild \n");
             }
         }
+        else if (!strcmp(argv[1], "page_write"))
+        {
+            unsigned char buffer[32] = {0};
+            uint32_t addr = 0;
+
+            addr = str2int(argv[2]);
+
+            for (int i = 0; i < argc - 2; i++) {
+                buffer[i] = str2int(argv[i+3]);
+            }
+
+            at24cxx_page_write(dev, addr, buffer, argc - 3);
+        }
+        else if (!strcmp(argv[1], "page_read"))
+        {
+            unsigned char read_buffer[32] = {0};
+            uint32_t addr = 0;
+            uint16_t len = 0;
+
+            addr = str2int(argv[2]);
+            len = str2int(argv[3]);
+
+            at24cxx_page_read(dev, addr, read_buffer, len);
+            for (int i = 0; i < len; i++) {
+                rt_kprintf("%#x ", read_buffer[i]);
+            }
+            rt_kprintf("\n");
+        }
         else
         {
             rt_kprintf("Unknown command. Please enter 'at24cxx0' for help\n");
@@ -526,11 +556,20 @@ void at24cxx(int argc, char *argv[])
     else
     {
         rt_kprintf("Usage:\n");
-        rt_kprintf("at24cxx probe <dev_name> <slave_addr>  - probe eeprom by given name\n");
-        rt_kprintf("at24cxx check                               - check eeprom at24cxx \n");
-        rt_kprintf("at24cxx read                             - read eeprom at24cxx data\n");
-        rt_kprintf("at24cxx write 0x24                      - write eeprom at24cxx data\n");
-
+        rt_kprintf("Before all operation, it is necessary to probe!!!!\n");
+        rt_kprintf("at24cxx probe <dev_name> <slave_addr>\n");
+        rt_kprintf("at24cxx check\n");
+        rt_kprintf("at24cxx write one byte\n");
+        rt_kprintf("at24cxx read one byte\n");
+        rt_kprintf("at24cxx page_write <reg_addr> data...\n");
+        rt_kprintf("at24cxx page_read <reg_addr> <len> \n");
+        rt_kprintf("Sample:\n");
+        rt_kprintf("at24cxx probe i2c0 0x50\n");
+        rt_kprintf("at24cxx check\n");
+        rt_kprintf("at24cxx write 0x55\n");
+        rt_kprintf("at24cxx read\n");
+        rt_kprintf("at24cxx page_write 0x00 0x1 0x2 0x3 0x4 0x5...\n");
+        rt_kprintf("at24cxx page_read 0x00 16\n");
     }
 }
 MSH_CMD_EXPORT(at24cxx, at24cxx eeprom function);

@@ -16,4 +16,8 @@ menu "RTC Parameter"
     config AIC_RTC_32K_IO_OUTPUT
         bool "Enable the 32K clock output"
         default n
+
+    config AIC_RTC_LOW_POWER
+        bool "Enable rtc low power"
+        default n
 endmenu

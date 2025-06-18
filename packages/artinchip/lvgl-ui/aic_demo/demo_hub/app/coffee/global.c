@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -26,7 +26,7 @@ void createTopTitle(lv_obj_t* scr)
     static lv_point_precise_t line_points[4] = { {56, 42}, {744, 42}, {351, 44}, {449, 44}};
 #endif
     static lv_style_t style_line;
-    if (style_line.prop_cnt > 1) {
+    if (style_line.prop_cnt >= 1) {
         lv_style_reset(&style_line);
     } else {
         lv_style_init(&style_line);
@@ -48,7 +48,7 @@ void createTopTitle(lv_obj_t* scr)
     lv_line_set_points(line, line_points, 2);
 
     static lv_style_t style_title;
-    if (style_title.prop_cnt > 1) {
+    if (style_title.prop_cnt >= 1) {
         lv_style_reset(&style_title);
     } else {
         lv_style_init(&style_title);

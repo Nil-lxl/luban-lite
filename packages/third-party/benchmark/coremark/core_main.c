@@ -20,7 +20,13 @@ Original Author: Shay Gal-on
 	This file contains the framework to acquire a block of memory, seed initial parameters, tun t he benchmark and report the results.
 */
 #include "coremark.h"
+
+#ifdef KERNEL_RTTHREAD
 #include <rtthread.h>
+#else
+#include <console.h>
+#endif // KERNEL_RTTHREAD
+
 /* Function: iterate
 	Run the benchmark for a specified number of iterations.
 
@@ -66,8 +72,10 @@ ee_s32 get_seed_32(int i);
 
 #if (MEM_METHOD==MEM_STATIC)
 ee_u8 static_memblk[TOTAL_DATA_SIZE];
+#elif (MEM_METHOD==MEM_STATIC_DDR)
+ee_u8 *static_memblk = (void *)0x600000;
 #endif
-char *mem_name[3] = {"Static","Heap","Stack"};
+char *mem_name[4] = {"Static","Heap","Stack", "DDR Static"};
 /* Function: main
 	Main entry routine for the benchmark.
 	This function is responsible for the following steps:
@@ -160,6 +168,13 @@ MAIN_RETURN_TYPE test_coremark(int argc, char *argv[]) {
 		results[i].err=0;
 		results[i].execs=results[0].execs;
 	}
+#elif (MEM_METHOD==MEM_STATIC_DDR)
+	results[0].memblock[0]=(void *)0x500000;
+	results[0].size=TOTAL_DATA_SIZE;
+	results[0].err=0;
+	#if (MULTITHREAD>1)
+	#error "Cannot use a static data area with multiple contexts!"
+	#endif
 #else
 #error "Please define a way to initialize a memory block."
 #endif
@@ -338,7 +353,8 @@ MAIN_RETURN_TYPE test_coremark(int argc, char *argv[]) {
 		}
 #else
 		if (known_id==3) {
-			ee_printf("CoreMark 1.0 : %d / %s %s",default_num_contexts*results[0].iterations/time_in_secs(total_time),COMPILER_VERSION,COMPILER_FLAGS);
+			ee_printf("CoreMark 1.0 : %d / %s %s / type %u",
+				default_num_contexts*results[0].iterations/time_in_secs(total_time),COMPILER_VERSION,COMPILER_FLAGS, MEM_METHOD);
 #if defined(MEM_LOCATION) && !defined(MEM_LOCATION_UNSPEC)
 			ee_printf(" / %s",MEM_LOCATION);
 #else
@@ -366,4 +382,8 @@ MAIN_RETURN_TYPE test_coremark(int argc, char *argv[]) {
 
 	return MAIN_RETURN_VAL;
 }
+#ifdef KERNEL_RTTHREAD
 MSH_CMD_EXPORT(test_coremark, "Coremark benchmark")
+#else
+CONSOLE_CMD(test_coremark, test_coremark, "Coremark benchmark");
+#endif	// KERNEL_RTTHREAD

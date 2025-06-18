@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -404,15 +404,24 @@ s32 mmc_fwc_raw_write(struct fwc_info *fwc, u8 *buf, s32 len)
     struct aicupg_mmc_priv *priv;
     struct aic_partition *parts = NULL;
     u64 blkstart, blkcnt;
-    u8 *rdbuf;
+    u8 __attribute__((unused)) *rdbuf = NULL;
     long n;
     u32 clen = 0, calc_len = 0;
 
+    if ((fwc->meta.size - fwc->trans_size) < len)
+        calc_len = fwc->meta.size - fwc->trans_size;
+    else
+        calc_len = len;
+
+    fwc->calc_partition_crc = crc32(fwc->calc_partition_crc, buf, calc_len);
+
+#ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
     rdbuf = aicupg_malloc_align(len, CACHE_LINE_SIZE);
     if (!rdbuf) {
         pr_err("Error: malloc buffer failed.\n");
         return 0;
     }
+#endif
 
     priv = (struct aicupg_mmc_priv *)fwc->priv;
     if (!priv) {
@@ -442,6 +451,7 @@ s32 mmc_fwc_raw_write(struct fwc_info *fwc, u8 *buf, s32 len)
         fwc->trans_size += clen;
     }
 
+#ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
     // Read data to calc crc
     n = mmc_bread(priv->host, (parts->start / MMC_BLOCK_SIZE) + blkstart, blkcnt, rdbuf);
     if (n != blkcnt) {
@@ -450,19 +460,9 @@ s32 mmc_fwc_raw_write(struct fwc_info *fwc, u8 *buf, s32 len)
         fwc->trans_size += clen;
     }
 
-    if ((fwc->meta.size - fwc->trans_size) < len)
-        calc_len = fwc->meta.size - fwc->trans_size;
-    else
-        calc_len = len;
-
-    fwc->calc_partition_crc = crc32(fwc->calc_partition_crc, rdbuf, calc_len);
-#ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
-    fwc->calc_trans_crc = crc32(fwc->calc_trans_crc, buf, calc_len);
-    if (fwc->calc_trans_crc != fwc->calc_partition_crc) {
+    if (crc32(0, buf, calc_len) != crc32(0, rdbuf, calc_len)) {
         pr_err("calc_len:%d\n", calc_len);
         pr_err("crc err at trans len %u\n", fwc->trans_size);
-        pr_err("trans crc:0x%x, partition crc:0x%x\n", fwc->calc_trans_crc,
-                fwc->calc_partition_crc);
     }
 #endif
 

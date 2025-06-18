@@ -74,12 +74,17 @@ config AIC_MPP_VIN_BUF_SIZE
     depends on LPKG_MPP && (AIC_MPP_VIN || AIC_MPP_VIN_DEV)
 
 config AIC_MPP_FB_TEST
-    bool "Install MPP FB test programs"
+    bool "Enable MPP FB test programs"
     default n
     depends on LPKG_MPP
 
-config AIC_STARTUP_UI_SHOW
-    bool "Show Startup Ui"
+config AIC_MPP_VE_TEST
+    bool "Enable MPP VE test programs"
+    default n
+    depends on LPKG_MPP
+
+config AIC_MPP_GE_TEST
+    bool "Enable MPP GE test programs"
     default n
     depends on LPKG_MPP
 

@@ -49,9 +49,10 @@ static void touch_panel_gt911_read_info(void)
 
 static void touch_entry(void *parameter) /* touch panel control entry */
 {
-    rt_device_control(dev, RT_TOUCH_CTRL_GET_INFO, &info);
 #ifdef AIC_USING_RTP /* by default, only one point is supported */
     info.point_num = 1;
+#else
+    rt_device_control(dev, RT_TOUCH_CTRL_GET_INFO, &info);
 #endif
 
     read_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * info.point_num);
@@ -70,6 +71,7 @@ static void touch_entry(void *parameter) /* touch panel control entry */
                 {
                     rt_uint16_t  u16X, u16Y;
 #ifdef AIC_USING_RTP
+                    rtp_check_event_type(read_data[i].event, read_data[i].pressure);
                     extern void lv_convert_adc_to_coord(rt_device_t rtp_dev, struct rt_touch_data *data);
                     lv_convert_adc_to_coord(dev, &read_data[i]);
 #endif
@@ -88,7 +90,8 @@ static void touch_entry(void *parameter) /* touch panel control entry */
 
 static rt_err_t rx_callback(rt_device_t dev, rt_size_t size)
 {
-    rt_sem_release(touch_sem);
+    if (touch_sem)
+        rt_sem_release(touch_sem);
     rt_device_control(dev, RT_TOUCH_CTRL_DISABLE_INT, RT_NULL);
 #ifdef AIC_PM_DEMO
     extern struct rt_event pm_event;
@@ -108,27 +111,27 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
 
     if (rt_device_open(dev, RT_DEVICE_FLAG_INT_RX) != RT_EOK)
     {
-        rt_kprintf("dev %s is occupied by someone!\n", name);
-    } else {
-        rt_kprintf("lvgl is occupying %s device\n", name);
+        rt_kprintf("Failed to open dev %s\n", name);
+        return -1;
+    }
 
 #ifdef AIC_USING_RTP
-        extern void lv_rtp_calibrate(rt_device_t rtp_dev, int fb_width, int fb_height);
-        lv_rtp_calibrate(dev, x, y);
+    extern void lv_rtp_calibrate(rt_device_t rtp_dev, int fb_width, int fb_height);
+    lv_rtp_calibrate(dev, x, y);
 #endif
-    
+
 #ifdef AIC_TOUCH_PANEL_GT911
-        touch_panel_gt911_read_info();
+    touch_panel_gt911_read_info();
 #endif
-        rt_device_set_rx_indicate(dev, rx_callback);
-    }
 
     touch_sem = rt_sem_create("touch_sem", 0, RT_IPC_FLAG_FIFO);
     if (touch_sem == RT_NULL)
     {
-        rt_kprintf("create dynamic semaphore failed.\n");
+        rt_kprintf("create touch semaphore failed.\n");
         return -1;
     }
+
+    rt_device_set_rx_indicate(dev, rx_callback);
 
     touch_thread = rt_thread_create("touch",
                                      touch_entry,
@@ -149,13 +152,19 @@ void lvgl_get_tp(void)
 {
     if (bak_callback == NULL) {
         bak_callback = dev->rx_indicate;
+#ifdef LV_DISPLAY_ROTATE_EN
+        rt_uint8_t flag = 1;
+        rt_device_control(dev, RT_TOUCH_CTRL_SET_OSD_FLAG, &flag);
+#endif
         rt_device_set_rx_indicate(dev, rx_callback);
     }
 }
 
 void lvgl_put_tp(void)
 {
+    rt_uint8_t flag = 0;
     if (bak_callback != NULL) {
+        rt_device_control(dev, RT_TOUCH_CTRL_SET_OSD_FLAG, &flag);
         rt_device_set_rx_indicate(dev, bak_callback);
         bak_callback = NULL;
     }

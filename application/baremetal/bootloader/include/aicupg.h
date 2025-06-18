@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -47,7 +47,7 @@ extern "C" {
 
 #define DATA_WRITE_ONCE_MAX_SIZE (1024 * 1024)
 #define DATA_WRITE_ONCE_MID_SIZE (64 * 1024)
-#define DATA_WRITE_ONCE_MIN_SIZE (20 * 1024)
+#define DATA_WRITE_ONCE_MIN_SIZE (16 * 1024)
 
 struct cmd_header {
     u32 magic; /* "UPGC" */

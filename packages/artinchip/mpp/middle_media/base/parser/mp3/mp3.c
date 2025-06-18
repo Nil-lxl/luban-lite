@@ -1,9 +1,11 @@
 /*
-* Copyright (C) 2020-2023 ArtInChip Technology Co. Ltd
-*
-*  author: <jun.ma@artinchip.com>
-*  Desc: mp3_parser
-*/
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Author: <jun.ma@artinchip.com>
+ * Desc: mp3_parser
+ */
 
 #include <stdlib.h>
 #include <inttypes.h>
@@ -512,7 +514,7 @@ int mp3_seek_packet(struct aic_mp3_parser *s, s64 seek_time)
 
 int mp3_peek_packet(struct aic_mp3_parser *s, struct aic_parser_packet *pkt)
 {
-	int64_t pos;
+	int64_t pos, old_pos;
 	struct mp3_dec_context *mp3 = &s->ctx;
 
 #ifdef MP3_PACKET_SIZE
@@ -530,15 +532,26 @@ int mp3_peek_packet(struct aic_mp3_parser *s, struct aic_parser_packet *pkt)
 #ifdef MP3_PACKET_SIZE
 	pkt->size = MP3_PACKET_SIZE;
 #else
+
+find_next_header:
 	// check header
 	v = rb32(s->stream);
 	if (mpa_check_header(v) < 0) {
-		loge("frame header error,resync header");
+		old_pos = pos;
 		if (mp3_sync(s,pos) < 0) {
 			loge("resync header error");
 			return -1;
 		}
 		pos = aic_stream_tell(s->stream);
+		if (old_pos == pos) {
+			aic_stream_skip(s->stream, SEEK_WINDOW);
+			pos += SEEK_WINDOW;
+			if (pos >= aic_stream_size(s->stream)) {
+				loge("can not find valid header, read to file end\n");
+				return -1;
+			}
+			goto find_next_header;
+		}
 		v = rb32(s->stream);
 	}
 	aic_stream_seek(s->stream,-4,SEEK_CUR);
@@ -555,8 +568,9 @@ int mp3_peek_packet(struct aic_mp3_parser *s, struct aic_parser_packet *pkt)
 
 int mp3_read_packet(struct aic_mp3_parser *s, struct aic_parser_packet *pkt)
 {
-    struct mp3_dec_context *mp3 = &s->ctx;
-    int64_t pos;
+	struct mp3_dec_context *mp3 = &s->ctx;
+	int ret = PARSER_OK;
+	int64_t pos;
 	pos = aic_stream_tell(s->stream);
 	if (pos >= mp3->filesize - ID3v1_TAG_SIZE) {
 		return PARSER_EOS;
@@ -564,8 +578,12 @@ int mp3_read_packet(struct aic_mp3_parser *s, struct aic_parser_packet *pkt)
 
 #ifdef MP3_PACKET_SIZE
 	pkt->size = aic_stream_read(s->stream,pkt->data,MP3_PACKET_SIZE);
+	if (pkt->size < 0)
+		return PARSER_NODATA;
 #else
-	aic_stream_read(s->stream,pkt->data,pkt->size);
+	ret = aic_stream_read(s->stream,pkt->data,pkt->size);
+	if (ret < 0)
+		return PARSER_NODATA;
 #endif
 	pos = aic_stream_tell(s->stream);
 	if (pos >= mp3->filesize - ID3v1_TAG_SIZE) {

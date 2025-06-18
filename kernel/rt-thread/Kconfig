@@ -14,7 +14,7 @@ config DRIVER_DRV_EN
 
 config RTT_DIR
     string
-    option env="RTT_ROOT"
+    # option env="RTT_ROOT"
     default "kernel/rt-thread"
 
 source "$RTT_DIR/src/Kconfig"

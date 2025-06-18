@@ -43,21 +43,6 @@ static void lv_rt_log(const char *buf)
 }
 #endif /* LV_USE_LOG */
 
-#ifdef RT_USING_PM
-struct rt_semaphore pm_sem;
-void app_notify(rt_uint8_t event, rt_uint8_t mode, void *data)
-{
-    if (event == RT_PM_ENTER_SLEEP)
-    {
-        rt_sem_take(&pm_sem, RT_WAITING_FOREVER);
-    }
-    else if (event == RT_PM_EXIT_SLEEP)
-    {
-        rt_sem_release(&pm_sem);
-    }
-}
-#endif
-
 static void lvgl_thread_entry(void *parameter)
 {
     lv_wait_sdcard_mounted();
@@ -68,21 +53,16 @@ static void lvgl_thread_entry(void *parameter)
     lv_port_disp_init();
     lv_port_indev_init();
     lv_user_gui_init();
-#ifdef RT_USING_PM
-    rt_sem_init(&pm_sem, "pm_sem", 1, RT_IPC_FLAG_PRIO);
-    rt_pm_notify_set(app_notify, NULL);
-#endif
+
     /* handle the tasks of LVGL */
     while(1)
     {
 #ifdef RT_USING_PM
-        rt_sem_take(&pm_sem, RT_WAITING_FOREVER);
         rt_pm_module_request(PM_MAIN_ID, PM_SLEEP_MODE_NONE);
 #endif
         lv_task_handler();
 #ifdef RT_USING_PM
         rt_pm_module_release(PM_MAIN_ID, PM_SLEEP_MODE_NONE);
-        rt_sem_release(&pm_sem);
 #endif
         //rt_thread_mdelay(LV_DISP_DEF_REFR_PERIOD);
 #ifndef AIC_LVGL_METER_DEMO

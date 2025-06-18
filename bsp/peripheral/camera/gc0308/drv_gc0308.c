@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -348,6 +348,11 @@ static int gc0308_probe(struct gc03_dev *sensor)
     return gc0308_init(sensor);
 }
 
+static bool gc0308_is_open(struct gc03_dev *sensor)
+{
+    return sensor->on;
+}
+
 static void gc0308_power_on(struct gc03_dev *sensor)
 {
     if (sensor->on)
@@ -357,24 +362,23 @@ static void gc0308_power_on(struct gc03_dev *sensor)
     aicos_udelay(1);
     camera_pin_set_high(sensor->rst_pin);
 
+    LOG_I("Power on");
     sensor->on = true;
 }
 
 static void gc0308_power_off(struct gc03_dev *sensor)
 {
-#if 0
     if (!sensor->on)
         return;
 
     camera_pin_set_high(sensor->pwdn_pin);
 
+    LOG_I("Power off");
     sensor->on = false;
-#endif
 }
 
 static rt_err_t gc03_init(rt_device_t dev)
 {
-    int ret = 0;
     struct gc03_dev *sensor = &g_gc03_dev;
 
     sensor->i2c = camera_i2c_get();
@@ -394,24 +398,33 @@ static rt_err_t gc03_init(rt_device_t dev)
     if (!sensor->rst_pin || !sensor->pwdn_pin)
         return -RT_EINVAL;
 
-    gc0308_power_on(sensor);
-
-    ret = gc0308_probe(sensor);
-    if (ret)
-        return -RT_ERROR;
-
-    LOG_I("GC0308 inited");
     return RT_EOK;
 }
 
 static rt_err_t gc03_open(rt_device_t dev, rt_uint16_t oflag)
 {
+    struct gc03_dev *sensor = (struct gc03_dev *)dev;
+
+    if (gc0308_is_open(sensor))
+        return RT_EOK;
+
+    gc0308_power_on(sensor);
+
+    if (gc0308_probe(sensor)) {
+        gc0308_power_off(sensor);
+        return -RT_ERROR;
+    }
+
+    LOG_I("GC0308 inited");
     return RT_EOK;
 }
 
 static rt_err_t gc03_close(rt_device_t dev)
 {
     struct gc03_dev *sensor = (struct gc03_dev *)dev;
+
+    if (!gc0308_is_open(sensor))
+        return -RT_ERROR;
 
     gc0308_power_off(sensor);
     return RT_EOK;
@@ -435,6 +448,16 @@ static int gc03_start(struct gc03_dev *sensor)
 static int gc03_stop(struct gc03_dev *sensor)
 {
     return 0;
+}
+
+static int gc03_pause(rt_device_t dev)
+{
+    return gc03_close(dev);
+}
+
+static int gc03_resume(rt_device_t dev)
+{
+    return gc03_open(dev, 0);
 }
 
 /* Edge Enhancement */
@@ -493,6 +516,10 @@ static rt_err_t gc03_control(rt_device_t dev, int cmd, void *args)
         return gc03_start(sensor);
     case CAMERA_CMD_STOP:
         return gc03_stop(sensor);
+    case CAMERA_CMD_PAUSE:
+        return gc03_pause(dev);
+    case CAMERA_CMD_RESUME:
+        return gc03_resume(dev);
     case CAMERA_CMD_GET_FMT:
         return gc03_get_fmt(sensor, (struct mpp_video_fmt *)args);
     case CAMERA_CMD_SET_SHARPNESS:

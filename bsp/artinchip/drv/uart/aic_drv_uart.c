@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -156,7 +156,7 @@ struct uart_freq_baud
 
 struct uart_freq_baud uart_freq_baud_list[] =
 {
-#if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_D21X)
+#if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_D21X) || defined(AIC_CHIP_G73X)
     {300, 48000000},
     {600, 48000000},
     {1200, 48000000},
@@ -352,12 +352,17 @@ static rt_err_t drv_uart_configure(struct rt_serial_device *serial, struct seria
     else
         databits = USART_DATA_BITS_8;
 
-    ret = hal_usart_config(uart, bauds, mode, parity, stopbits, databits, cfg->function);
+    hal_usart_set_loopback(uart, 1);
+    hal_uart_reset_fifo(uart);
 
+    ret = hal_usart_config(uart, bauds, mode, parity, stopbits, databits, cfg->function);
     if (ret < 0)
     {
+        hal_usart_set_loopback(uart, 0);
         return -RT_ERROR;
     }
+
+    hal_usart_set_loopback(uart, 0);
 
     return RT_EOK;
 }
@@ -462,7 +467,10 @@ static rt_err_t drv_uart_control(struct rt_serial_device *serial, int cmd, void 
         drv_usart_set_freq(*(uint32_t *)arg, serial->config.uart_index);
         hal_clk_enable(CLK_UART0 + serial->config.uart_index);
         aic_udelay(1000);
+        hal_usart_set_loopback(uart, 1);
+        hal_uart_reset_fifo(uart);
         hal_usart_config_baudrate(uart, *(uint32_t *)arg);
+        hal_usart_set_loopback(uart, 0);
         break;
     }
 

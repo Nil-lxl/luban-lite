@@ -126,6 +126,7 @@ typedef size_t ee_size_t;
 	MEM_STATIC - to use a static memory array.
 	MEM_STACK - to allocate the data block on the stack (NYI).
 */
+// #define MEM_METHOD MEM_STATIC_DDR
 #ifndef MEM_METHOD
 #define MEM_METHOD MEM_STACK
 #endif

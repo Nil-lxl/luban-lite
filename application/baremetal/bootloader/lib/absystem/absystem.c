@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -121,6 +121,7 @@ aic_set_upgrade_status_err:
 int aic_get_os_to_startup(char *target_os)
 {
     char *next = NULL;
+    char *now = NULL;
     int ret = 0;
 
     if (fw_env_open()) {
@@ -129,16 +130,20 @@ int aic_get_os_to_startup(char *target_os)
     }
 
     next = fw_getenv("osAB_next");
+    now = fw_getenv("osAB_now");
 #ifdef AIC_ENV_DEBUG
     printf("osAB_next = %s\n", next);
+    printf("osAB_now = %s\n", now);
 #endif
     if (strncmp(next, "A", 2) == 0) {
         memcpy(target_os, APPLICATION_PART, strlen(APPLICATION_PART));
-        ret = fw_env_write("osAB_now", "A");
+        if (strncmp(next, now, 2) != 0)
+            ret = fw_env_write("osAB_now", "A");
     } else if (strncmp(next, "B", 2) == 0) {
         memcpy(target_os, APPLICATION_PART_REDUNDAND,
                strlen(APPLICATION_PART_REDUNDAND));
-        ret = fw_env_write("osAB_now", "B");
+        if (strncmp(next, now, 2) != 0)
+            ret = fw_env_write("osAB_now", "B");
     } else {
         ret = -1;
         pr_err("Invalid osAB_next\n");
@@ -150,13 +155,17 @@ int aic_get_os_to_startup(char *target_os)
     }
 
     next = fw_getenv("rodataAB_next");
+    now = fw_getenv("rodataAB_now");
 #ifdef AIC_ENV_DEBUG
     printf("rodataAB_next = %s\n", next);
+    printf("rodataAB_now = %s\n", now);
 #endif
     if (strncmp(next, "A", 2) == 0) {
-        ret = fw_env_write("rodataAB_now", "A");
+        if (strncmp(next, now, 2) != 0)
+            ret = fw_env_write("rodataAB_now", "A");
     } else if (strncmp(next, "B", 2) == 0) {
-        ret = fw_env_write("rodataAB_now", "B");
+        if (strncmp(next, now, 2) != 0)
+            ret = fw_env_write("rodataAB_now", "B");
     } else {
         ret = -1;
         pr_err("Invalid rodataAB_next\n");
@@ -168,22 +177,27 @@ int aic_get_os_to_startup(char *target_os)
     }
 
     next = fw_getenv("dataAB_next");
+    now = fw_getenv("dataAB_now");
 #ifdef AIC_ENV_DEBUG
     printf("dataAB_next = %s\n", next);
+    printf("dataAB_now = %s\n", now);
 #endif
     if (strncmp(next, "A", 2) == 0) {
-        ret = fw_env_write("dataAB_now", "A");
+        if (strncmp(next, now, 2) != 0)
+            ret = fw_env_write("dataAB_now", "A");
     } else if (strncmp(next, "B", 2) == 0) {
-        ret = fw_env_write("dataAB_now", "B");
+        if (strncmp(next, now, 2) != 0)
+            ret = fw_env_write("dataAB_now", "B");
     } else {
         ret = -1;
         pr_err("Invalid dataAB_next\n");
     }
 
     if (ret) {
-        pr_err("dataAB write fail\n");
+        pr_err("dataAB_now write fail\n");
         goto err_write_next_os;
     }
+
 
     fw_env_flush();
 

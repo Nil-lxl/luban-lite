@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2021-2024 ArtInChip Technology Co., Ltd
+# Copyright (C) 2021-2025 ArtInChip Technology Co., Ltd
 
 import xml.etree.ElementTree as etree
 from xml.etree.ElementTree import SubElement
@@ -112,7 +112,7 @@ def TargetEclipse(env, sdk=False, update=False):
     # (1.2) modify project name
     l_name = l_root.find("./name")
     l_name.text = rtconfig.SOC
-
+    fsinstall = GetInstallList()
     if sdk:
         print('Copy .c .h file...')
         # (1.3) create 'dir'
@@ -152,6 +152,25 @@ def TargetEclipse(env, sdk=False, update=False):
                     des_f = os.path.basename(f)
                     des_f = os.path.join(des_d, des_f)
                     shutil.copy(f, des_f)
+        # (1.5) copy 'resource file'
+        if len(fsinstall):
+            for i in range(len(fsinstall)):
+                item = fsinstall[i]
+                if len(item[0]) == 0 or len(item[1]) == 0 or len(item[2]) == 0:
+                    continue
+                src_r = item[1]
+                dst_r = src_r.replace(aic_root, prj_eclipse_dir)
+                des_d = os.path.dirname(dst_r)
+                if os.path.exists(des_d) is False:
+                    os.makedirs(des_d)
+                if os.path.exists(src_r) is False:
+                    continue
+                if os.path.isdir(src_r) and os.path.exists(dst_r):
+                    shutil.rmtree(dst_r, ignore_errors=True)
+                if os.path.isdir(src_r):
+                    shutil.copytree(src_r, dst_r)
+                else:
+                    shutil.copy(src_r, dst_r)
     else:
         # (1.3) create 'dir' link
         for d in proj['DIRS']:
@@ -417,8 +436,8 @@ def TargetEclipse(env, sdk=False, update=False):
         print('Copy toolchain file...')
         src_d = os.path.join(aic_root, 'toolchain')
         des_d = os.path.join(prj_eclipse_dir, 'toolchain')
-        src_d = os.path.normpath(src_d);
-        des_d = os.path.normpath(des_d);
+        src_d = os.path.normpath(src_d)
+        des_d = os.path.normpath(des_d)
         if not os.path.exists(des_d):
             if platform.system() == 'Linux':
                 shutil.copytree(src_d, des_d)
@@ -433,9 +452,9 @@ def TargetEclipse(env, sdk=False, update=False):
         for src_d in dirs:
             des_d = os.path.relpath(src_d, aic_root)
             des_d = os.path.join(prj_eclipse_dir, des_d)
-            src_d = os.path.normpath(src_d);
-            des_d = os.path.normpath(des_d);
-            if not os.path.exists(des_d):
+            src_d = os.path.normpath(src_d)
+            des_d = os.path.normpath(des_d)
+            if os.path.exists(src_d) and not os.path.exists(des_d):
                 if platform.system() == 'Linux':
                     shutil.copytree(src_d, des_d)
                 elif platform.system() == 'Windows':
@@ -471,9 +490,9 @@ def TargetEclipse(env, sdk=False, update=False):
         aic_fs_image_dir = os.environ["aic_fs_image_dir"]
         src_d = os.path.join(aic_root, aic_fs_image_dir)
         des_d = os.path.join(prj_eclipse_dir, aic_fs_image_dir)
-        src_d = os.path.normpath(src_d);
-        des_d = os.path.normpath(des_d);
-        if not os.path.exists(des_d):
+        src_d = os.path.normpath(src_d)
+        des_d = os.path.normpath(des_d)
+        if os.path.exists(src_d) and not os.path.exists(des_d):
             if platform.system() == 'Linux':
                 shutil.copytree(src_d, des_d)
             elif platform.system() == 'Windows':

@@ -5,7 +5,7 @@
             "spl":        { "size": "512k" },
             "env":        { "size": "128k" },
             "os":         { "size": "1m" },
-
+            "data":        { "size": "256k" },
         },
     },
     "image": {
@@ -40,6 +40,11 @@
                 "file": "g73x_os.itb",
                 "attr": ["mtd", "required"],
                 "part": ["os"]
+            },
+            "data": {
+                "file": "data.lfs",
+                "attr": ["mtd", "optional"],
+                "part": ["data"]
             },
         },
     },

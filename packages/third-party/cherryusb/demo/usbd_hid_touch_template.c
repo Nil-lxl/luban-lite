@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,7 +20,7 @@
 /*!< endpoint address */
 #define HID_INT_EP          0x81
 #define HID_INT_EP_SIZE     (GLOBAL_REPORT_SIZE)
-#define HID_INT_EP_INTERVAL 10
+#define HID_INT_EP_INTERVAL 1
 
 #define USBD_VID           0x33C3
 #define USBD_PID           0x6789
@@ -33,6 +33,11 @@
 #define HID_TOUCHSCREEN_REPORT_DESC_SIZE    (73  + 90 * TOUCH_MAX_POINT_NUM)
 #define HID_TOUCHPAD_REPORT_DESC_SIZE       (196 + 92 * TOUCH_MAX_POINT_NUM)
 #define HID_TOUCH_REPORT_DESC_SIZE          (73  + 90 * TOUCH_MAX_POINT_NUM)
+#define HID_TOUCHSCREEN_REPORT_DESC_SIZE1   90
+#define HID_TOUCHSCREEN_REPORT_DESC_OFFSET  8
+#define HID_TOUCHSCREEN_PHYSICAL_MAX_OFFSET 44
+#define HID_TOUCHSCREEN_PHYSICAL_MIN_OFFSET 51
+
 /*!< config descriptor size offset*/
 #define HID_TOUCH_REPORT_DESC_SIZE_OFFSET   43
 #define HID_INT_EP_SIZE_OFFSET              49
@@ -385,7 +390,7 @@ static uint8_t touchpad_dev_certification[] = {
 };
 
 #ifdef HID_TOUCHSCREEN_MODE
-static const uint8_t hid_touchscreen_report_desc[] = {
+static uint8_t hid_touchscreen_report_desc[] = {
     0x05, 0x0d,                         // USAGE_PAGE (Digitizers)
     0x09, 0x04,                         // USAGE (Touch Screen)
     0xa1, 0x01,                         // COLLECTION (Application)
@@ -475,6 +480,8 @@ struct hid_touch_t {
 
     /* hardware param */
     uint16_t hid_touch_rotate;
+    uint16_t x_physical_maxnum;
+    uint16_t y_physical_maxnum;
     struct rt_touch_data *data;
     struct rt_touch_info info;
 
@@ -621,16 +628,16 @@ static int _touch_param_transform(uint8_t i)
         hid_touch->finger[i].x = temp;
     }
 
-    if (hid_touch->finger[i].x > TOUCH_X_PHYSICAL_MAXNUM ||
-        hid_touch->finger[i].y > TOUCH_Y_PHYSICAL_MAXNUM)
+    if (hid_touch->finger[i].x > hid_touch->x_physical_maxnum ||
+        hid_touch->finger[i].y > hid_touch->y_physical_maxnum)
         USB_LOG_WRN("WRN 1: The hardware x/y coordinates do not match the software scaling x/y reference values.\n"
                     "You can try rotating 90 degrees or 270 degrees.\n");
 
     // 2. resolution scaling
     x = hid_touch->finger[i].x;
     y = hid_touch->finger[i].y;
-    x = x * TOUCH_LOGICAL_MAXNUM / TOUCH_X_PHYSICAL_MAXNUM;
-    y = y * TOUCH_LOGICAL_MAXNUM / TOUCH_Y_PHYSICAL_MAXNUM;
+    x = x * TOUCH_LOGICAL_MAXNUM / hid_touch->x_physical_maxnum;
+    y = y * TOUCH_LOGICAL_MAXNUM / hid_touch->y_physical_maxnum;
     hid_touch->finger[i].x = (uint16_t)x;
     hid_touch->finger[i].y = (uint16_t)y;
 
@@ -1054,6 +1061,9 @@ static void hid_touch_init(void)
 
     memset(hid_touch, 0, sizeof(struct hid_touch_t));
     hid_touch->hid_touch_rotate = AIC_HID_ROTATE_DEGREE;
+    hid_touch->x_physical_maxnum = TOUCH_X_PHYSICAL_MAXNUM;
+    hid_touch->y_physical_maxnum = TOUCH_Y_PHYSICAL_MAXNUM;
+
     hid_touch_hw_init(HID_TOUCH_NAME);
     hid_touch_mode_switch();
 
@@ -1068,6 +1078,45 @@ static void hid_touch_init(void)
     usbd_comp_func_register(hid_descriptor,
                             usbd_comp_touch_event_handler,
                             usbd_comp_touch_init, "touch");
+#endif
+}
+#ifdef HID_TOUCHSCREEN_MODE
+static int _update_touchscreen_physical_maxnum(uint16_t x_max, uint16_t y_max)
+{
+
+    int offset = 0;
+    for (int i = 0; i < TOUCH_MAX_POINT_NUM; i++) {
+        offset = HID_TOUCHSCREEN_REPORT_DESC_OFFSET + i * HID_TOUCHSCREEN_REPORT_DESC_SIZE1 +
+            HID_TOUCHSCREEN_PHYSICAL_MAX_OFFSET;
+        hid_touchscreen_report_desc[offset] = (uint8_t)(x_max & 0xFF);
+        hid_touchscreen_report_desc[offset + 1] = (uint8_t)((x_max >> 8) & 0xFF);
+
+        offset = HID_TOUCHSCREEN_REPORT_DESC_OFFSET + i * HID_TOUCHSCREEN_REPORT_DESC_SIZE1 +
+            HID_TOUCHSCREEN_PHYSICAL_MIN_OFFSET;
+        hid_touchscreen_report_desc[offset] = (uint8_t)(y_max & 0xFF);
+        hid_touchscreen_report_desc[offset + 1] = (uint8_t)((y_max >> 8) & 0xFF);
+    }
+
+    return 0;
+}
+#endif
+void usbd_hid_touch_rotate(unsigned int rotate_angle)
+{
+#ifdef HID_TOUCHSCREEN_MODE
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    rt_uint16_t angle = rotate_angle;
+
+    rt_device_control(hid_touch->dev, RT_TOUCH_CTRL_SET_DYNAMIC_ROTATE, &angle);
+    rt_device_control(hid_touch->dev, RT_TOUCH_CTRL_GET_INFO, &hid_touch->info);
+    hid_touch->x_physical_maxnum = hid_touch->info.range_x;
+    hid_touch->y_physical_maxnum = hid_touch->info.range_y;
+
+    _update_touchscreen_physical_maxnum(hid_touch->info.range_x, hid_touch->info.range_y);
+
+#ifdef HID_TOUCH_DEBUG
+    USB_LOG_INFO("usbd_hid_touch_rotate:x_physical_maxnum: %d, y_physical_maxnum: %d.\n",
+        hid_touch->x_physical_maxnum, hid_touch->y_physical_maxnum);
+#endif
 #endif
 }
 

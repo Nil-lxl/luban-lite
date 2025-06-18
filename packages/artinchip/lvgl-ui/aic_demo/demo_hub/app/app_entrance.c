@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -83,7 +83,7 @@ void app_entrance(app_index_t index, int auto_del)
         case APP_CAMERA:
             layer_sys_ui_visible(0);
             scr = camera_ui_init();
-            demo_hub_default_theme_set(scr, true);
+            demo_hub_default_theme_set(scr, false);
             strncpy(cur_screen, "camera", sizeof(cur_screen));
             break;
         case APP_STEAM_BOX:

@@ -42,10 +42,11 @@
 
 #define SFUD_USING_QSPI
 
-#ifdef AIC_SPINOR_SFUD_WP_DEBUG
-#define SFUD_WP_INFO(fmt, ...)  printf(fmt"\n", ##__VA_ARGS__)
-#else
+
+#ifdef AIC_DISABLE_SFUD_WP_DEBUG
 #define SFUD_WP_INFO(...)   do {} while (0)
+#else
+#define SFUD_WP_INFO(fmt, ...)  printf(fmt"\n", ##__VA_ARGS__)
 #endif
 
 /**

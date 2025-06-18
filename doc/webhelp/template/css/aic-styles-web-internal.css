@@ -1,0 +1,847 @@
+/*
+ * ==============================================
+ * Skin for oXygen generated WebHelp.
+ * ==============================================
+ */
+@import "aic-common.css";
+
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fonts.
+ *  
+ */
+@font-face {
+    font-family: "FangZhengShuSong";
+    font-style: normal;
+    font-weight: 400;
+    src: url(../resources/fonts/FangZhengShuSong/FangZhengShuSongJianTi-1.ttf);
+}
+
+@font-face {
+    font-family: "Misans";
+    font-style: bold;
+    font-weight: 700; /* bold */
+    src: url(../resources/fonts/FangZhengShuSong/FangZhengHeiTi-GBK-1.ttf);
+}
+
+@font-face {
+    font-family: "FangZhengShuSong";
+    font-style: normal;
+    font-weight: 300;
+    src: url(../resources/fonts/FangZhengShuSong/FangZhengShuSong-GBK-1.ttf);
+}
+
+  
+
+html, body {
+    min-width:100%;
+}
+
+body{
+    font-family: "FangZhengShuSong", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 12pt;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fight with bootstrap
+ *  
+ */
+
+a,
+a:hover,
+a:visited {
+  color: #15499a;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication titles and logos
+ *  
+ */
+.wh_publication_title>a {
+    color: #000000; 
+    font-weight: 700;
+    font-size: 2em;
+}
+.wh_logo+.wh_publication_title {
+    margin-left: 3em;
+}
+
+.wh_logo {
+
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Menu
+ *  
+ */
+.wh_top_menu {
+    text-transform: none;
+    margin: .3em 0;
+    font-size: 1.2em;
+}
+
+.wh_top_menu a {
+    color: #000000; 
+    line-height: 1.8em;
+}
+
+.wh_top_menu ul a {
+    color: #000000;
+}
+
+/*
+* ------------------------------------------------------------------
+*  
+* Link to the index.
+* 
+*/
+.wh_indexterms_link a span{
+    display:none;
+  }
+  .wh_indexterms_link a:before{
+    color:#fff;
+  }
+
+/*
+ * ------------------------------------------------------------------
+ *
+ * Breadcrumb
+ *
+ */
+.wh_breadcrumb ol {
+  color: #adadad;
+}
+
+.wh_breadcrumb ol a {
+  color:inherit;
+}
+
+.wh_breadcrumb ol .active a {
+  color: #15499a;
+}
+
+/*
+* ------------------------------------------------------------------
+*  
+* Tools and navigation
+* 
+*/
+.wh_tools {
+  border-bottom: solid 1px #dce5f2;
+  background-color: #ffffff;
+  margin: 1em 0 2em;
+}
+
+.wh_print_link,
+.wh_navigation_links,
+.wh_navigation_links .navnext,
+.wh_navigation_links .navprev{
+}
+
+.webhelp_expand_collapse_sections,
+.wh_hide_highlight,
+.wh_print_link button,
+.oxy-icon-pdf-link,
+.wh_navigation_links a,
+.wh_navigation_links a:hover,
+.wh_navigation_links a:active,
+.wh_navigation_links a:visited,
+.wh_print_link a:before,
+.wh_navigation_links a:before,
+.wh_navigation_links a:hover:before,
+.wh_navigation_links a:active:before,
+.wh_navigation_links a:visited:before{
+    color: #347bb7;
+    text-decoration: none;
+}
+
+/*
+ * Other content
+ */
+.wh_topic_content .shortdesc {
+  font-style: italic;
+}
+
+/* x more */
+.dots-after span,
+.dots-before span {
+  border: 1px solid #babdc1;
+}
+
+/*
+* ------------------------------------------------------------------
+*  
+* Tiles
+* 
+*/
+.wh_tile {
+    background-color: #ECF2F9;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .wh_tile_shortdesc {
+    margin-top: 1em;
+    text-align: left;
+    color: #0D1A2B;
+    font-size: 1.2em;
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  .wh_tile_text:after{
+    background: linear-gradient(to bottom, rgba(236, 242, 249, 0), rgba(236, 242, 249, 1) 75%);
+  }
+  .wh_tile_title{
+    font-size:1.7em;
+    font-weight: 700;
+    font-style: bold;
+    text-align: center;
+    text-decoration: none;
+  }
+  .wh_tile_title a{
+    color: #3077be;
+  }
+  @media only screen and (max-width: 767px) {
+    .wh_tile > div {
+        height: auto;
+    }
+  }
+  
+  
+  /*
+   * ------------------------------------------------------------------
+   *
+   *
+   */
+  .wh_main_page .wh_content_area {
+    background-color: white;
+  }
+  
+  .wh_tile:nth-child(6n+1) {
+    background-color: rgba(0, 0, 0, 0.035);
+  }
+  
+  .wh_tile:nth-child(6n+2) {
+    background-color: rgba(0, 0, 0, 0.07);
+  }
+  
+  .wh_tile:nth-child(6n+3) {
+    background-color: rgba(0, 0, 0, 0.105);
+  }
+  
+  .wh_tile:nth-child(6n+4) {
+    background-color: rgba(0, 0, 0, 0.14);
+  }
+  
+  .wh_tile:nth-child(6n+5) {
+    background-color: rgba(0, 0, 0, 0.175);
+  }
+  
+  .wh_tile:nth-child(6n+0) {
+    background-color: rgba(0, 0, 0, 0.21);
+  }
+  
+  
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search
+ *  
+ */
+
+
+.wh_search_input {
+    padding: 0.5em 0; /* 减少 search-input 与上下文之间的间距 */
+    margin: 0;
+    align-items: center;
+    color: #494949;
+    background-color: #ffffff;
+    text-align: center;
+    display:block;
+    margin:0;
+    position:relative;
+}
+
+.wh_search_textfield {
+    border: solid 1px #939393;
+    color: #494949;
+    background-color: #ffffff;
+    padding: 0 .5em;
+    height: 2em;
+    font-size: 1em;
+}
+
+.wh_search_button {
+    height: 2em;
+    font-size: 1em;
+    padding: 0 1em;
+    border: solid 2px #15499a;
+    background-color: #15499a;
+    color: #ffffff;
+    border-radius: 0 !important;
+}
+
+.wh_search_button:hover {
+    background-color: rgba(2, 142, 178, 0.2);
+}
+
+.wh_search_button:after {
+    color: #ffffff;
+}
+
+/* Search autocomplete */
+
+.ui-menu-item {
+    font-size: 1.1em;
+    line-height: 1.7em;
+    color: #777;
+  }
+  
+  /* Selected autocomplete item */
+  .ui-menu-item .ui-state-active {
+    background-color: #15499a;
+    border: none;
+    margin: 0;
+  }
+  
+  /* Search autocomplete icons */
+  .search-autocomplete-proposal-type-history a,
+  .search-autocomplete-proposal-type-history a:hover,
+  .search-autocomplete-proposal-type-history a:visited,
+  .search-autocomplete-proposal-type-history a:active {
+    text-decoration: none;
+    color:inherit;
+    font-size: 0.8em;
+  }
+  
+  .ui-state-active .search-autocomplete-proposal-type-history a,
+  .ui-state-active .search-autocomplete-proposal-type-history a:hover,
+  .ui-state-active .search-autocomplete-proposal-type-history a:visited,
+  .ui-state-active .search-autocomplete-proposal-type-history a:active {
+    color: #ffffff;
+  }
+  
+  /* Search relative path */
+  .searchresult li .relativePath a {
+    color: #006621;
+  }
+  
+  /* Active search page */
+  #wh-search-pagination>ul>li.active>a {
+    background-color: #15499a;
+  }
+  
+  /* Color for the page number */
+  .pagination>li>a,
+  .pagination>li>span {
+    color: #15499a;
+  }
+  
+  /* Border for the hovered page */
+  .pagination>.active>a,
+  .pagination>.active>a:focus,
+  .pagination>.active>a:hover,
+  .pagination>.active>span,
+  .pagination>.active>span:focus,
+  .pagination>.active>span:hover {
+    border-color: #15499a !important;
+  }
+  
+  /* Do not allow the text to go beneath the search button  */
+  @media only screen and (min-width: 768px) {
+    .wh_search_textfield {
+      padding-right: 3em;
+    }
+  }
+  .wh_search_button:after {
+    color: #ffffff;
+  }
+  .wh_search_button:hover {
+    background-color: rgba(2, 142, 178, 0.2) /*rgba(255, 255, 255, 0.1)*/;
+  }
+  /* Search field placeholder */
+  ::-webkit-input-placeholder {
+    color: #ffffff;
+  }
+  :-moz-placeholder {
+    /* Firefox 18- */
+    color: #ffffff;
+  }
+  ::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #ffffff;
+  }
+  :-ms-input-placeholder {
+    color: #ffffff;
+  }
+  /* Change Autocomplete styles in Chrome */
+  :-webkit-autofill,
+  :-webkit-autofill:hover,
+  :-webkit-autofill:focus {
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    -webkit-text-fill-color: #17303c;
+    -webkit-box-shadow: none;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Publication TOC tooltip */
+.wh_breadcrumb .topicref .wh-tooltip,
+.wh-toc-tooltip {
+  background-color: #15499a;
+  color: #ffffff;
+  font-size: 1.4em;
+}
+
+.wh_breadcrumb .topicref .wh-tooltip a,
+.wh-toc-tooltip a {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* Tooltip arrow. */
+[data-tooltip-position="left"] .topicref .wh-tooltip::before,
+[data-tooltip-position="left"] .wh-toc-tooltip::before {
+  border-left-color: #15499a;
+}
+
+[data-tooltip-position="right"] .topicref .wh-tooltip::before,
+[data-tooltip-position="right"] .wh-toc-tooltip::before {
+  border-right-color: #15499a;
+}
+
+[data-tooltip-position="bottom"] .topicref .wh-tooltip::before,
+[data-tooltip-position="bottom"] .wh-toc-tooltip::before {
+  border-bottom-color: #15499a;
+}
+
+[data-tooltip-position="top"] .topicref .wh-tooltip::before,
+[data-tooltip-position="top"] .wh-toc-tooltip::before {
+  border-top-color: #15499a;
+}
+
+
+/*
+* ------------------------------------------------------------------
+*  
+* Search results.
+* 
+*/
+.searchresult {
+  list-style: none;
+}
+
+.searchresult li a {
+  color: #15499a;
+}
+
+.searchresult .shortdesclink {
+  margin: .3em .5em 0 0;
+}
+
+.wh_search_expression {
+  font-weight: bold;
+  font-weight: 700;
+}
+
+/* Search relative path */
+.searchresult li .relativePath a {
+  color: #006621;
+}
+
+/*--------- Search results breadcrumb ----------*/
+.search-breadcrumb li a {
+    background: #ECF2F9;
+  }
+  .search-breadcrumb li .title:before,
+  .search-breadcrumb li .title:after {
+    border-color: #ECF2F9;
+  }
+  .search-breadcrumb li .title:before {
+    border-left-color: transparent;
+  }
+  .search-breadcrumb li .title:after {
+    border-color: transparent;
+    border-left-color: #ECF2F9;
+  }
+  
+  
+/*
+* ------------------------------------------------------------------
+*  
+* Publication TOC
+* 
+*/
+.wh_publication_toc {
+  border-radius: 3px;
+  padding: 1.5em .5em;
+  background-color: #f8f8f8;
+}
+
+.wh_publication_toc .active>.topicref a {
+  color: #15499a;
+  font-weight: normal;
+  font-weight: 400;
+}
+
+.wh_publication_toc div,
+.wh_publication_toc a,
+.wh_publication_toc a:visited,
+.wh_publication_toc a:hover {
+  color: #878787;
+}
+
+.wh_publication_toc a:hover {
+  text-decoration: underline;
+}
+
+.wh_publication_toc ul li,
+#wh_topic_toc ul li {
+  margin-top: .7em;
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_publication_toc {
+    border-radius: 0;
+    padding: 1em 0.5em;
+    margin-top: 10px;
+    border: 1px solid #e0e0e0;
+  }
+
+  .wh_related_links,
+  .wh_child_links,
+  .wh_topic_content .related-links{
+      border: 1px solid #e0e0e0;
+  }
+}
+
+
+/*
+* ------------------------------------------------------------------
+*  
+* Header
+* 
+*/
+.wh_header {
+  padding:0;
+  text-align: left;
+}
+
+/*
+* ------------------------------------------------------------------
+*  
+* Footer
+* 
+*/
+.wh_footer {
+    text-align: center;
+    line-height: 1.7em;
+    font-size: 15px;
+    background-color: #000000;
+    padding: 1em;
+    position:relative;
+    bottom: 0;
+    width: 100%;
+    color: #ffffff;
+    margin-top: 2em;
+}
+
+.wh_topic_content,.wh_content_area {
+    color: #000000;
+    line-height: 1.5em;
+    margin-bottom: 80px;
+}
+
+.wh_main_page .wh_content_area {
+    margin: 40px 0;
+}
+
+/*
+* ------------------------------------------------------------------
+*  
+* Tiles
+* 
+*/
+
+.wh_topic_content .title.topictitle1 {
+    font-size: 2em;
+    font-weight: 700;
+    line-height: 1.1em;
+}
+
+.wh_topic_content.topictitle2,
+.wh_topic_content.topictitle3,
+.wh_topic_content.topictitle4,
+.wh_topic_content.topictitle5,
+.wh_topic_content.topictitle6,
+.wh_topic_content.sectiontitle {
+    font-weight: 700;
+    font-family: 'Roboto', Courier, monospace;
+    font-style: bold;
+}
+
+.topictitle2 {
+    font-weight: 700;
+}
+
+.sectiontitle { 
+    font-size: 1.3em !important;
+    margin-top: 1em !important;
+    margin-bottom: 1em !important;
+}
+
+.wh_related_links .related-links,
+.wh_topic_content .related-links,
+.wh_child_links {
+    border-top: 1px solid #ccc;
+    padding-top: 7px;
+    margin-top: 0;
+}
+
+.wh_related_links .related-links,
+.wh_topic_content .related-links {
+    padding: .5em 1.5em ;
+}
+
+.wh_child_links {
+    padding: 1.5em ;
+}
+
+.related-links strong {
+    font-weight: 500;
+    font-style: normal;
+}
+
+.related-links a,
+.related-links a:visited {
+    color: #1ea7ef;
+}
+
+.wh_topic_content .shortdesc {
+    font-style: italic;
+    font-weight: 400;
+}
+
+.dots-after span,
+.dots-before span {
+    border: 1px solid #babdc1;
+}
+
+
+  /* Highlights */
+  .highlight {
+    background-color: #dce5f2;
+    color: #15499a !important;
+    border-radius: 4px;
+    padding: 0 1px;
+  }
+  .wh-h {
+    padding: 0 1px;
+  }
+  /* Index terms */
+  .wh_term_group {
+    border-bottom: 1px solid #dce5f2;
+    background-color: #ffffff;
+    margin: 1em 0;
+    padding: 1em;
+  }
+  .wh_term > span {
+    color: #494949;
+    font-style: italic;
+  }
+  .wh_index_terms span.wh_first_letter {
+    color: #15499a;
+    border: none;
+    font-size: 1.5em;
+    margin: 0;
+  }
+  .wh_index_terms #indexList {
+    padding: 0;
+  }
+
+
+
+.wh_main_page_toc {
+    padding-left: 2em;
+    border: none;
+    border-left: 1px solid #939393;
+    background-color: #ffffff;
+}
+
+.wh_main_page_toc a {
+    color: #15499a;
+    font-size: 1.3em;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header:before {
+    content: "b";
+    left: -0.35em !important;
+    background-color: #ffffff;
+    font-size: 2em;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header.expanded:before {
+    content: "c";
+}
+
+.wh_main_page_toc>.wh_main_page_toc_accordion_header,
+.wh_main_page_toc>.wh_main_page_toc_entry {
+    padding: 0.5em;
+    margin: 0.5em;
+    border: 1px solid #939393 !important;
+}
+
+.wh_main_page_toc_accordion_header.expanded {
+    border-bottom: none !important;
+    margin-bottom: 0;
+}
+
+.wh_main_page_toc_accordion_header.expanded+.wh_main_page_toc_accordion_entries {
+    margin: 0 .5em .5em .5em;
+    border: 1px solid #939393;
+    border-top: none;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover,
+.wh_main_page_toc>.wh_main_page_toc_entry:hover {
+    background-color: rgba(147, 147, 147, 0.06);
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header,
+.wh_main_page_toc>.wh_main_page_toc_entry,
+.wh_main_page_toc_accordion_entries {
+    background-color: #ffffff;
+    text-align: left;
+}
+
+.wh_main_page_toc .wh_toc_shortdesc {
+    color: #494949;
+    background-color: transparent;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1em;
+}
+
+.wh_main_page_toc_accordion_header:before {
+    color: #15499a;
+}
+
+.wh_main_page_toc .expanded {
+    border: none;
+}
+
+.wh_main_page .wh_content_area {
+    background-color: #ffffff;
+    padding: 0 2em 0;
+    color: #15499a;
+    text-align: center;
+    align-items: center;
+}
+
+.highlight {
+    background-color: #dce5f2;
+    color: #15499a !important;
+    border-radius: 4px;
+    padding: 0 1px;
+}
+
+.wh-h {
+    padding: 0 1px;
+}
+
+*[class ~= "topic/xref"]{
+    color: #1ea7ef;
+}
+
+.table {
+    width: 90%;
+    border-collapse: collapse;
+    margin: 20px auto;
+}
+
+.tablecap {
+    font-weight: 700;
+    background-color: #ffffff;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.table th {
+    border: 1px solid #ccc;
+    text-align: left;
+    font-weight: 400;
+    font-style: normal;
+    background-color: #cccaca;
+}
+
+.table td {
+    text-align: left;
+}
+
+.table[class~="hazard-d/hazardstatement"] {
+    border-color: inherit;
+}
+
+.wh_footer {
+    flex-direction: column;
+}
+
+figure {
+    font-style: normal;
+    text-align: center;
+    font-size: medium;
+}
+
+figcaption {
+    display: block;
+    caption-side: bottom;
+    text-align: center;
+    font-weight: 700;
+}
+
+img.svg {
+    vertical-align: middle;
+    font-size: 12pt;
+    width: 8in;
+}
+
+*[class ~= "topic/fig"]{
+    text-align: center;
+}
+
+.oxy-insert,
+.oxy-delete {
+    display: none !important;
+}
+
+.oxy-range-end, 
+.oxy-range-start {
+    display: none !important;
+}
+
+*[class="+ topic/keyword sw-d/cmdname keyword cmdname"]{
+    display: inline;
+    font-family: 'courier', 'Menlo', Ubuntu, 'Segoe UI', -apple-system, system-ui, BlinkMacSystemFont, Roboto, Cantarell, 'Helvetica Neue', sans-serif;
+    font-size: medium;
+    font-weight: 400;
+    color:rgb(116, 116, 116);
+}

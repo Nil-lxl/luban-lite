@@ -79,7 +79,7 @@ menu "UART0 Parameter"
             depends on AIC_DEV_UART0_RS485
 
         config AIC_DEV_UART0_MODE_RS485_SIMULATION
-            bool "RS485 simulation "
+            bool "RS485 simulation"
             depends on AIC_DEV_UART0_RS485
     endchoice
 
@@ -166,6 +166,9 @@ menu "UART0 Parameter"
             config AIC_DEV_UART0_RX_BUFSZ
                 int "UART0 rx buffer size"
                 default 64
+            config AIC_DEV_UART0_TX_BUFSZ
+                int "UART0 tx buffer size"
+                default 64
         endif
     endif
 endmenu
@@ -247,7 +250,7 @@ menu "UART1 Parameter"
             depends on AIC_DEV_UART1_RS485
 
         config AIC_DEV_UART1_MODE_RS485_SIMULATION
-            bool "RS485 simulation "
+            bool "RS485 simulation"
             depends on AIC_DEV_UART1_RS485
     endchoice
 
@@ -334,6 +337,9 @@ menu "UART1 Parameter"
             config AIC_DEV_UART1_RX_BUFSZ
                 int "UART1 rx buffer size"
                 default 64
+            config AIC_DEV_UART1_TX_BUFSZ
+                int "UART1 tx buffer size"
+                default 64
         endif
     endif
 endmenu
@@ -415,7 +421,7 @@ menu "UART2 Parameter"
             depends on AIC_DEV_UART2_RS485
 
         config AIC_DEV_UART2_MODE_RS485_SIMULATION
-            bool "RS485 simulation "
+            bool "RS485 simulation"
             depends on AIC_DEV_UART2_RS485
     endchoice
 
@@ -503,6 +509,9 @@ menu "UART2 Parameter"
             config AIC_DEV_UART2_RX_BUFSZ
                 int "UART2 rx buffer size"
                 default 64
+            config AIC_DEV_UART2_TX_BUFSZ
+                int "UART2 tx buffer size"
+                default 64
         endif
     endif
 endmenu
@@ -584,7 +593,7 @@ menu "UART3 Parameter"
             depends on AIC_DEV_UART3_RS485
 
         config AIC_DEV_UART3_MODE_RS485_SIMULATION
-            bool "RS485 simulation "
+            bool "RS485 simulation"
             depends on AIC_DEV_UART3_RS485
     endchoice
 
@@ -671,6 +680,9 @@ menu "UART3 Parameter"
             config AIC_DEV_UART3_RX_BUFSZ
                 int "UART3 rx buffer size"
                 default 64
+            config AIC_DEV_UART3_TX_BUFSZ
+                int "UART3 tx buffer size"
+                default 64
         endif
     endif
 endmenu
@@ -752,7 +764,7 @@ menu "UART4 Parameter"
             depends on AIC_DEV_UART4_RS485
 
         config AIC_DEV_UART4_MODE_RS485_SIMULATION
-            bool "RS485 simulation "
+            bool "RS485 simulation"
             depends on AIC_DEV_UART4_RS485
     endchoice
 
@@ -840,6 +852,9 @@ menu "UART4 Parameter"
             config AIC_DEV_UART4_RX_BUFSZ
                 int "UART4 rx buffer size"
                 default 64
+            config AIC_DEV_UART4_TX_BUFSZ
+                int "UART4 tx buffer size"
+                default 64
         endif
     endif
 endmenu
@@ -921,7 +936,7 @@ menu "UART5 Parameter"
             depends on AIC_DEV_UART5_RS485
 
         config AIC_DEV_UART5_MODE_RS485_SIMULATION
-            bool "RS485 simulation "
+            bool "RS485 simulation"
             depends on AIC_DEV_UART5_RS485
     endchoice
 
@@ -1008,6 +1023,9 @@ menu "UART5 Parameter"
             config AIC_DEV_UART5_RX_BUFSZ
                 int "UART5 rx buffer size"
                 default 64
+            config AIC_DEV_UART5_TX_BUFSZ
+                int "UART5 tx buffer size"
+                default 64
         endif
     endif
 endmenu
@@ -1089,7 +1107,7 @@ menu "UART6 Parameter"
             depends on AIC_DEV_UART6_RS485
 
         config AIC_DEV_UART6_MODE_RS485_SIMULATION
-            bool "RS485 simulation "
+            bool "RS485 simulation"
             depends on AIC_DEV_UART6_RS485
     endchoice
 
@@ -1176,6 +1194,9 @@ menu "UART6 Parameter"
             config AIC_DEV_UART6_RX_BUFSZ
                 int "UART6 rx buffer size"
                 default 64
+            config AIC_DEV_UART6_TX_BUFSZ
+                int "UART6 tx buffer size"
+                default 64
         endif
     endif
 endmenu
@@ -1257,7 +1278,7 @@ menu "UART7 Parameter"
             depends on AIC_DEV_UART7_RS485
 
         config AIC_DEV_UART7_MODE_RS485_SIMULATION
-            bool "RS485 simulation "
+            bool "RS485 simulation"
             depends on AIC_DEV_UART7_RS485
     endchoice
 
@@ -1343,6 +1364,9 @@ menu "UART7 Parameter"
         if AIC_DEV_UART7_RX_MODE_INT
             config AIC_DEV_UART7_RX_BUFSZ
                 int "UART7 rx buffer size"
+                default 64
+            config AIC_DEV_UART7_TX_BUFSZ
+                int "UART7 tx buffer size"
                 default 64
         endif
     endif

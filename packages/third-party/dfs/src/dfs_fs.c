@@ -415,19 +415,17 @@ err1:
  */
 int dfs_mkfs(const char *fs_name, const char *device_name)
 {
-#if 0
+
     int index;
     rt_device_t dev_id = NULL;
 
-    /* check device name, and it should not be NULL */
-    if (device_name != NULL)
-        dev_id = rt_device_find(device_name);
-
-    if (dev_id == NULL)
+    /* open specific device */
+    if (device_name == NULL)
     {
-        rt_set_errno(-ENODEV);
-        LOG_E("Device (%s) was not found", device_name);
+        LOG_E("Device (NULL) was not found");
         return -1;
+    }  else {
+        dev_id = (void *)device_name;
     }
 
     /* lock file system */
@@ -456,7 +454,7 @@ int dfs_mkfs(const char *fs_name, const char *device_name)
     }
 
     LOG_E("File system (%s) was not found.", fs_name);
-#endif
+
     return -1;
 }
 

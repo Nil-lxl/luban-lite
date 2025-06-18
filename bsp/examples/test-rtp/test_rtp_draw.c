@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -125,6 +125,18 @@ static void rtp_draw_grid(void)
                                      g_fb_info.smem_len);
 }
 
+static void rtp_edge_area_protect(int *x, int *y)
+{
+    if (*x < 0)
+        *x = 0;
+    if (*y < 0)
+        *y = 0;
+    if (*x >= g_fb_info.width)
+        *x = g_fb_info.width - 1;
+    if (*y >= g_fb_info.height)
+        *y = g_fb_info.height - 1;
+}
+
 static void test_draw_a_point(u32 cnt, struct rt_touch_data *data,
                               calibration *cal)
 {
@@ -146,6 +158,7 @@ static void test_draw_a_point(u32 cnt, struct rt_touch_data *data,
             panel_y = (panel_x * a[4] + panel_y * a[5] + a[3]) / a[6];
     }
 
+    rtp_edge_area_protect(&panel_x, &panel_y);
     rt_kprintf("%d: X %d/%d, Y %d/%d \n", cnt, panel_x,
                data->x_coordinate, panel_y, data->y_coordinate);
 
@@ -244,8 +257,6 @@ static void rtp_entry(void *parameter)
 
         rtp_check_event_type(data->event, data->pressure);
         if (data->event != RT_TOUCH_EVENT_DOWN)
-            continue;
-        if (data->x_coordinate <= 0 && data->y_coordinate <= 0)
             continue;
         rt_device_control(g_rtp_dev, RT_TOUCH_CTRL_SET_X_TO_Y, (void *)data);
         test_draw_a_point(cnt, data, &g_cal);

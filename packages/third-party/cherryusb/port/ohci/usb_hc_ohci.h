@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef _USB_OHCI_PRIV_H
-#define _USB_OHCI_PRIV_H
+#ifndef _USB_HC_OHCI_H
+#define _USB_HC_OHCI_H
 
 #include "usbh_core.h"
 #include "usbh_hub.h"

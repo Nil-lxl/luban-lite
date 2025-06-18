@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -135,8 +135,9 @@ static int verify_mem(u8 *src1, u8 *src2, u32 cnt) {
 static int do_spinand_write_read()
 {
     u32 block = 0, page = 0, p;
-    int ret = 0;
     uint64_t start_us;
+    u32 page_count;
+    int ret = 0;
 
     if (s_spinand_flash == NULL)
         return -1;
@@ -156,33 +157,31 @@ static int do_spinand_write_read()
     }
 
     printf("write read all pages\n");
+    page_count = 0;
     for (block = 1; block < s_total_block; block++) {
+        if (spinand_block_isbad(s_spinand_flash, block)) {
+            printf("Found a bad block %u, skip it.\n", block);
+            continue;
+        }
         page = block * s_spinand_flash->info->pages_per_eraseblock;
         for (p = 0; p < s_spinand_flash->info->pages_per_eraseblock; p++) {
-            if (!spinand_block_isbad(s_spinand_flash, block)) {
-                ret = spinand_write_page(s_spinand_flash, page + p, s_write_buf, s_spinand_flash->info->page_size, NULL, 0);
-                if (ret)
-                    return ret;
-                ret = spinand_read_page(s_spinand_flash, page + p, s_read_buf, s_spinand_flash->info->page_size, NULL, 0);
-                if (ret)
-                    return ret;
+            page_count++;
+            ret = spinand_write_page(s_spinand_flash, page + p, s_write_buf, s_spinand_flash->info->page_size, NULL, 0);
+            if (ret)
+                return ret;
+            ret = spinand_read_page(s_spinand_flash, page + p, s_read_buf, s_spinand_flash->info->page_size, NULL, 0);
+            if (ret)
+                return ret;
+
+            ret = verify_mem(s_write_buf, s_read_buf, s_spinand_flash->info->page_size);
+            if (ret) {
+                printf("%s: %d, data verify faild! page: %u\n", __func__, __LINE__, p);
+                return ret;
             }
         }
     }
 
-    /* verify 5 pages */
-    int i;
-    for (i = 0; i < 5; i++) {
-        p = page + rand() % s_spinand_flash->info->pages_per_eraseblock;
-        ret = spinand_read_page(s_spinand_flash, p, s_read_buf, s_spinand_flash->info->page_size, NULL, 0);
-        if (ret)
-                return ret;
-        ret = verify_mem(s_write_buf, s_read_buf, s_spinand_flash->info->page_size);
-        if (ret) {
-            printf("%s: %d, data verify faild! page: %u\n", __func__, __LINE__, p);
-            return ret;
-        }
-    }
+    printf("Write, read and verify %u page success.\n", page_count);
 
     return 0;
 }

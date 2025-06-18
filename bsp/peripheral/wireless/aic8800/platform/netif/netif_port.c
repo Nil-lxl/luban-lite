@@ -163,11 +163,9 @@ err_t net_if_init(net_if_t *net_if)
 
     vif_mac = (struct macaddr *)aic_get_vif_mac_addr();
     memcpy(vif_mac, aic_get_mac_address(), 6);
-    //netifdev->wifi_uap_netif = netif_get_uap_if();
-    //memcpy(netifdev->wifi_uap_netif->hwaddr, vif_mac, 6);
     netifdev->netif_num  = 0;
 
-    //aic_dbg("net_if_init %s %s 0x%x\n", net_if->name, net_if->hostname, netifdev->wifi_uap_netif->flags);
+    aic_dbg("net_if_init %s %s\n", net_if->name, net_if->hostname);
     memcpy(net_if->hwaddr, vif_mac, 6);
 
     return status;

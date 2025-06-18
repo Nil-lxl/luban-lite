@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -111,7 +111,7 @@ int spinand_read_page(struct aic_spinand *flash, u32 page, u8 *data,
                       u32 data_len, u8 *spare, u32 spare_len);
 int spinand_block_isbad(struct aic_spinand *flash, u16 blk);
 int spinand_get_status(struct aic_spinand *flash, u16 blk);
-int spinand_set_status(struct aic_spinand *flash, u16 blk, u16 pos, u16 status);
+int spinand_set_status(struct aic_spinand *flash, u16 blk, u16 status);
 int spinand_continuous_read(struct aic_spinand *flash, u32 page, u8 *data,
                             u32 size);
 int spinand_write_page(struct aic_spinand *flash, u32 page, const u8 *data,
@@ -121,6 +121,7 @@ int spinand_config_set(struct aic_spinand *flash, u8 mask, u8 val);
 int spinand_erase(struct aic_spinand *flash, u32 offset, u32 size);
 int spinand_read(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size);
 int spinand_write(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size);
+int spinand_get_feature(struct aic_spinand *flash, u8 reg_addr);
 
 #ifdef AIC_SPINAND_CONT_READ
 

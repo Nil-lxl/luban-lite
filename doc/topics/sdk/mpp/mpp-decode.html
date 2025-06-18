@@ -1,15 +1,15 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="MPP Decoder 由三个主要模块组成： 解码模块（H264、JPEG、PNG 等）：负责将码流数据解码成视频图像 输入码流数据管理模块（ Packet manager ）：负责视频、图片码流数据和 buffer 的管理 显示帧管理模块（ Frame manager ）：负责解码图像 buffer 的管理 Packet 管理机制 Packet manager 负责管理码流数据和 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-05"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp_decode"/><title>MPP Decoder 设计及接口说明</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp-decode.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp-decode.html"/>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="MPP Decoder 由三个主要模块组成： 解码模块（H264、JPEG、PNG 等）：负责将码流数据解码成视频图像 输入码流数据管理模块（ Packet manager ）：负责视频、图片码流数据和 buffer 的管理 显示帧管理模块（ Frame manager ）：负责解码图像 buffer 的管理 Packet 管理机制 Packet manager 负责管理码流数据和 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_design.html"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_design.html"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_encoder_design.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp_decode"/><title>MPP Decoder 设计及接口说明</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="mpp_decode-d3703e4902"/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp-decode.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp-decode.html"/>
 
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
-    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
-    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
-    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
-<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
 
     <body id="mpp_decode" class="wh_topic_page frmBody">
         <a href="#wh_topic_body" class="sr-only sr-only-focusable">
@@ -21,12 +21,12 @@
         
         <header class="navbar navbar-default wh_header">
     <div class="container-fluid">
-        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
             <div class="wh_logo_and_publication_title_container">
                 <div class="wh_logo_and_publication_title">
                     
-                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
-                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
                     
                 </div>
                 
@@ -39,13 +39,6 @@
                 
                 
             </div>
-        </div>
-    </div>
-</header>
-        
-        
-         
-        
         <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
             
             
@@ -54,27 +47,39 @@
             
             
             
-        </div>
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
         
         <div class="container-fluid" id="wh_topic_container">
             <div class="row">
 
                 <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
                     
-                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="mpp"><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html">MPP 使用指南</a></div></div></li><li><div class="topicref" data-id="mpp_design_intro"><div class="title"><a href="../../../topics/sdk/mpp/mpp_design.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="mpp_decode"><div class="title"><a href="../../../topics/sdk/mpp/mpp-decode.html">MPP Decoder 设计及接口说明</a></div></div></li></ol></div>
                     
                     
                     
                     <div class="wh_right_tools">
                         <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
                         <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
-                        
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/mpp/mpp_design.html" title="设计说明" aria-label="上一主题: 设计说明" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/mpp/mpp_encoder_design.html" title="MPP Encoder 设计及接口说明" aria-label="下一主题: MPP Encoder 设计及接口说明" rel="next"></a></span>  </span></div>
                         
                         
                         
                         <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
                         
-                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
                     </div>
                     
                 </nav>
@@ -86,132 +91,246 @@
             <div class="wh_content_area">
                 <div class="row">
                     
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3703e2372" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3703e2372-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3703e2372-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3703e2556" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3703e2556-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3703e2556-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3703e3646" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3703e3646-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3703e3646-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d3703e3980" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d3703e3980-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3703e3980-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e3997" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e3997-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d3703e3997-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e4067" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e4067-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide.html" id="id-d3703e4067-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d3703e4350" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d3703e4350-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide.html" id="concept_h4d_fwt_tzb-d3703e4350-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d3703e4492" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d3703e4492-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide.html" id="ge-d3703e4492-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d3703e4634" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d3703e4634-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide.html" id="i2s-d3703e4634-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d3703e4760" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d3703e4760-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide.html" id="ve-d3703e4760-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="mpp-d3703e4832" class="topicref" data-id="mpp" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mpp-d3703e4832-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html" id="mpp-d3703e4832-link">MPP 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e4846" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_config_lite.html" id="id-d3703e4846-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4860" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_debug_lite.html" id="id-d3703e4860-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="mpp_test_guide-d3703e4874" class="topicref" data-id="mpp_test_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_test.html" id="mpp_test_guide-d3703e4874-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="mpp_design_intro-d3703e4888" class="topicref" data-id="mpp_design_intro" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mpp_design_intro-d3703e4888-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_design.html" id="mpp_design_intro-d3703e4888-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="mpp_decode-d3703e4902" class="topicref" data-id="mpp_decode" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp-decode.html" id="mpp_decode-d3703e4902-link">MPP Decoder 设计及接口说明</a></div></div></li><li role="treeitem"><div data-tocid="mpp_encoder_design_and_interface_intro-d3703e4916" class="topicref" data-id="mpp_encoder_design_and_interface_intro" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_encoder_design.html" id="mpp_encoder_design_and_interface_intro-d3703e4916-link">MPP Encoder 设计及接口说明</a></div></div></li><li role="treeitem"><div data-tocid="mpp_zlib_design_and_interface_intro-d3703e4930" class="topicref" data-id="mpp_zlib_design_and_interface_intro" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp-zlib_design_and_interface_intro.html" id="mpp_zlib_design_and_interface_intro-d3703e4930-link">MPP Zlib 设计及接口说明</a></div></div></li><li role="treeitem"><div data-tocid="mpp-ge-design-d3703e4944" class="topicref" data-id="mpp-ge-design" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_ge_design_lite.html" id="mpp-ge-design-d3703e4944-link">MPP GE 设计及接口说明</a></div></div></li><li role="treeitem"><div data-tocid="mpp_vin_设计及接口说明-d3703e4958" class="topicref" data-id="mpp_vin_设计及接口说明" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp-vin-design-interface.html" id="mpp_vin_设计及接口说明-d3703e4958-link">MPP VIN 设计及接口说明</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="mpp_common_issues-d3703e4972" class="topicref" data-id="mpp_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_faq.html" id="mpp_common_issues-d3703e4972-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d3703e4986" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d3703e4986-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide.html" id="mpp_0-d3703e4986-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5084" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5084-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d3703e5084-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5168" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5168-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d3703e5168-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5253" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5253-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d3703e5253-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d3703e5421" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d3703e5421-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3703e5421-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3703e6676" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3703e6676-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3703e6676-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
                     
-                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
-                        
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
                         <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
                             <span class="close-toc-icon-container">
                                 <span class="close-toc-icon"></span>     
                             </span>
                         </button>
                         
-                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mpp/mpp-decode.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">MPP Decoder 设计及接口说明</h1><div class="date inPage">5 Dec 2024</div><div style="color: gray;">
-                    Read time: 10 minute(s)
-                </div><div class="- topic/body concept/conbody body conbody"><div class="- topic/p p" data-ofbid="d41009e22__20250121171516">MPP Decoder 由三个主要模块组成：<ul class="- topic/ul ul simple" id="mpp_decode__ul_ntn_2nt_2dc" data-ofbid="mpp_decode__ul_ntn_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e25__20250121171516">
-                    <p class="- topic/p p" data-ofbid="d41009e27__20250121171516">解码模块（H264、JPEG、PNG 等）：负责将码流数据解码成视频图像</p>
-                </li><li class="- topic/li li" data-ofbid="d41009e30__20250121171516">
-                    <p class="- topic/p p" data-ofbid="d41009e32__20250121171516">输入码流数据管理模块（<a class="- topic/xref xref" href="mpp-decode.html#mpp_decode__packet">Packet
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/mpp/mpp-decode.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">MPP Decoder 设计及接口说明</h1>
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+                    Read time: 11 minute(s)
+                </div>
+    <div class="- topic/body concept/conbody body conbody">
+        <div class="- topic/p p" data-ofbid="d41868e33__20250409171033">MPP Decoder 由三个主要模块组成：<ul class="- topic/ul ul simple" id="mpp_decode__ul_ntn_2nt_2dc" data-ofbid="mpp_decode__ul_ntn_2nt_2dc">
+                <li class="- topic/li li" data-ofbid="d41868e37__20250409171033">
+                    <p class="- topic/p p" data-ofbid="d41868e39__20250409171033">解码模块（H264、JPEG、PNG 等）：负责将码流数据解码成视频图像</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d41868e43__20250409171033">
+                    <p class="- topic/p p" data-ofbid="d41868e45__20250409171033">输入码流数据管理模块（<a class="- topic/xref xref" href="mpp-decode.html#mpp_decode__packet">Packet
                         manager</a>）：负责视频、图片码流数据和 buffer 的管理</p>
-                </li><li class="- topic/li li" data-ofbid="d41009e39__20250121171516">
-                    <p class="- topic/p p" data-ofbid="d41009e41__20250121171516">显示帧管理模块（<a class="- topic/xref xref" href="mpp-decode.html#mpp_decode__packet">Frame manager</a>）：负责解码图像 buffer
+                </li>
+                <li class="- topic/li li" data-ofbid="d41868e53__20250409171033">
+                    <p class="- topic/p p" data-ofbid="d41868e55__20250409171033">显示帧管理模块（<a class="- topic/xref xref" href="mpp-decode.html#mpp_decode__packet">Frame manager</a>）：负责解码图像 buffer
                         的管理</p>
-                </li></ul></div><section class="- topic/section section" id="mpp_decode__packet" data-ofbid="mpp_decode__packet"><h2 class="- topic/title title sectiontitle">Packet 管理机制</h2>
+                </li>
+            </ul></div>
+        <section class="- topic/section section" id="mpp_decode__packet" data-ofbid="mpp_decode__packet"><h2 class="- topic/title title sectiontitle">Packet 管理机制</h2>
             
-            <p class="- topic/p p" data-ofbid="d41009e53__20250121171516">Packet manager 负责管理码流数据和 buffer。初始化时，该模块申请一块物理连续的内存（buffer
+            <p class="- topic/p p" data-ofbid="d41868e69__20250409171033">Packet manager 负责管理码流数据和 buffer。初始化时，该模块申请一块物理连续的内存（buffer
                 大小可由外部配置），用于存放视频/图片码流数据。</p>
-            <p class="- topic/p p" data-ofbid="d41009e56__20250121171516">Packet manager 管理的数据单元为 packet，packet 表示一笔码流数据，它可以是完整的一帧数据，也支持不是完整的一帧数据。 每个 packet
+            <p class="- topic/p p" data-ofbid="d41868e72__20250409171033">Packet manager 管理的数据单元为 packet，packet 表示一笔码流数据，它可以是完整的一帧数据，也支持不是完整的一帧数据。 每个 packet
                 与物理内存中的码流数据一一对应，它记录了每一笔码流的物理内存基地址、物理内存结束地址、物理内存偏移、虚拟内存地址、码流数据长度等信息。</p>
-            <figure class="- topic/fig fig fignone" id="mpp_decode__id13" data-ofbid="mpp_decode__id13"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_otn_2nt_2dc" src="../../../images/mpp/packet_manager.png" width="576" alt="packet_manager"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">packet 管理</span></figcaption></figure>
-            <p class="- topic/p p" data-ofbid="d41009e66__20250121171516">packet 通过 empty list 和 ready list 两个链表进行管理。 其中，empty list 用于存放空闲的 packet，ready list
+            <figure class="- topic/fig fig fignone" id="mpp_decode__id13" data-ofbid="mpp_decode__id13">
+                
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_otn_2nt_2dc" src="../../../images/mpp/packet_manager.png" width="576" alt="packet_manager"/></div><br/>
+            <figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">packet 管理</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d41868e87__20250409171033">packet 通过 empty list 和 ready list 两个链表进行管理。 其中，empty list 用于存放空闲的 packet，ready list
                 用于存放待解码的 packet。</p>
-            <p class="- topic/p p" data-ofbid="d41009e70__20250121171516">送码流数据时，从 empty list 获取一个空闲 packet，填充数据后，再把 packet 放入 ready list；</p>
-            <p class="- topic/p p" data-ofbid="d41009e73__20250121171516">解码前，解码器从 ready list 获取一个填充数据的 packet，使用完后再把该 packet 放入 empty list。</p>
-            <figure class="- topic/fig fig fignone" id="mpp_decode__id14" data-ofbid="mpp_decode__id14"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_ptn_2nt_2dc" src="../../../images/mpp/pm_flow.png" width="576" alt="pm_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">packet manager 调用流程</span></figcaption></figure>
-        </section><section class="- topic/section section" id="mpp_decode__frame" data-ofbid="mpp_decode__frame"><h2 class="- topic/title title sectiontitle">Frame 管理机制</h2>
+            <p class="- topic/p p" data-ofbid="d41868e91__20250409171033">送码流数据时，从 empty list 获取一个空闲 packet，填充数据后，再把 packet 放入 ready list；</p>
+            <p class="- topic/p p" data-ofbid="d41868e94__20250409171033">解码前，解码器从 ready list 获取一个填充数据的 packet，使用完后再把该 packet 放入 empty list。</p>
+            <figure class="- topic/fig fig fignone" id="mpp_decode__id14" data-ofbid="mpp_decode__id14">
+                
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_ptn_2nt_2dc" src="../../../images/mpp/pm_flow.png" width="576" alt="pm_flow"/></div><br/>
+            <figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 2</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">packet manager 调用流程</span></figcaption></figure>
+        </section>
+        <section class="- topic/section section" id="mpp_decode__frame" data-ofbid="mpp_decode__frame"><h2 class="- topic/title title sectiontitle">Frame 管理机制</h2>
             
-            <p class="- topic/p p" data-ofbid="d41009e88__20250121171516">Frame manager 负责管理图像 buffer。Frame manager 内部通过两个链表来管理图像 buffer：empty list 和 render
+            <p class="- topic/p p" data-ofbid="d41868e115__20250409171033">Frame manager 负责管理图像 buffer。Frame manager 内部通过两个链表来管理图像 buffer：empty list 和 render
                 list。 其中，empty list 存放可以给解码输出使用的图像 buffer，render list 存放解码完成但还未显示的图像 buffer。
                 在运行过程中，正在显示的图像 buffer 和用于参考的图像 buffer 可能不在这两个 list 中。</p>
-            <ol class="- topic/ol ol arabic simple" id="mpp_decode__ol_qtn_2nt_2dc" data-ofbid="mpp_decode__ol_qtn_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e92__20250121171516">
-                    <p class="- topic/p p" data-ofbid="d41009e94__20250121171516">frame 状态迁移</p>
-                    <div class="- topic/p p" data-ofbid="d41009e97__20250121171516">初始化时，该模块申请指定个数的图像 buffer（个数可由外部配置），每个图像 buffer 的信息存放在内部数组中。 每个图像 buffer 有 4
-                            种状态：<ul class="- topic/ul ul simple" id="mpp_decode__ul_rtn_2nt_2dc" data-ofbid="mpp_decode__ul_rtn_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e100__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e102__20250121171516">Decoding: 该帧正在被解码器使用（用于解码输出或作为参考帧）</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e105__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e107__20250121171516">wait_render: 该帧在 render list 中，等待显示</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e110__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e112__20250121171516">Rendering: 该帧正在被显示占用</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e115__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e117__20250121171516">IDLE: 该帧处于空闲状态（既没有被显示占用，也没有被解码器用作参考帧）</p>
-                            </li></ul></div>
-                    <div class="- topic/p p" data-ofbid="d41009e121__20250121171516">其状态转移如下图所示：<ul class="- topic/ul ul simple" id="mpp_decode__ul_stn_2nt_2dc" data-ofbid="mpp_decode__ul_stn_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e124__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e126__20250121171516">初始化时，所有图像 buffer 都在 empty list 中，此时处于 IDLE 状态；</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e129__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e131__20250121171516">解码模块从 empty list 链表头部获取一个空图像 buffer，此时 buffer 被解码模块占用，从 IDLE 状态变为
+            <ol class="- topic/ol ol arabic simple" id="mpp_decode__ol_qtn_2nt_2dc" data-ofbid="mpp_decode__ol_qtn_2nt_2dc">
+                <li class="- topic/li li" data-ofbid="d41868e120__20250409171033">
+                    <p class="- topic/p p" data-ofbid="d41868e122__20250409171033">frame 状态迁移</p>
+                    <div class="- topic/p p" data-ofbid="d41868e125__20250409171033">初始化时，该模块申请指定个数的图像 buffer（个数可由外部配置），每个图像 buffer 的信息存放在内部数组中。 每个图像 buffer 有 4
+                            种状态：<ul class="- topic/ul ul simple" id="mpp_decode__ul_rtn_2nt_2dc" data-ofbid="mpp_decode__ul_rtn_2nt_2dc">
+                            <li class="- topic/li li" data-ofbid="d41868e129__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e131__20250409171033">Decoding: 该帧正在被解码器使用（用于解码输出或作为参考帧）</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e135__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e137__20250409171033">wait_render: 该帧在 render list 中，等待显示</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e141__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e143__20250409171033">Rendering: 该帧正在被显示占用</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e147__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e149__20250409171033">IDLE: 该帧处于空闲状态（既没有被显示占用，也没有被解码器用作参考帧）</p>
+                            </li>
+                        </ul></div>
+                    <div class="- topic/p p" data-ofbid="d41868e154__20250409171033">其状态转移如下图所示：<ul class="- topic/ul ul simple" id="mpp_decode__ul_stn_2nt_2dc" data-ofbid="mpp_decode__ul_stn_2nt_2dc">
+                            <li class="- topic/li li" data-ofbid="d41868e158__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e160__20250409171033">初始化时，所有图像 buffer 都在 empty list 中，此时处于 IDLE 状态；</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e164__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e166__20250409171033">解码模块从 empty list 链表头部获取一个空图像 buffer，此时 buffer 被解码模块占用，从 IDLE 状态变为
                                     Decoding 状态;</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e134__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e136__20250121171516">解码完成后，解码模块还图像数据。此时分两种情况：</p>
-                                <ul class="- topic/ul ul" id="mpp_decode__ul_ttn_2nt_2dc" data-ofbid="mpp_decode__ul_ttn_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e140__20250121171516">
-                                        <p class="- topic/p p" data-ofbid="d41009e142__20250121171516">如果当前帧还未被显示，该帧加入 render list 链表尾部，从 Decoding 状态变为 wait
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e170__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e172__20250409171033">解码完成后，解码模块还图像数据。此时分两种情况：</p>
+                                <ul class="- topic/ul ul" id="mpp_decode__ul_ttn_2nt_2dc" data-ofbid="mpp_decode__ul_ttn_2nt_2dc">
+                                    <li class="- topic/li li" data-ofbid="d41868e177__20250409171033">
+                                        <p class="- topic/p p" data-ofbid="d41868e179__20250409171033">如果当前帧还未被显示，该帧加入 render list 链表尾部，从 Decoding 状态变为 wait
                                             render 状态；</p>
-                                    </li><li class="- topic/li li" data-ofbid="d41009e145__20250121171516">
-                                        <p class="- topic/p p" data-ofbid="d41009e147__20250121171516">该帧不再用做参考帧且已显示完成，此时该帧加入 empty list 链表尾部，由 Decoding 状态进入
+                                    </li>
+                                    <li class="- topic/li li" data-ofbid="d41868e183__20250409171033">
+                                        <p class="- topic/p p" data-ofbid="d41868e185__20250409171033">该帧不再用做参考帧且已显示完成，此时该帧加入 empty list 链表尾部，由 Decoding 状态进入
                                             IDLE 状态；</p>
-                                    </li></ul>
-                            </li><li class="- topic/li li" data-ofbid="d41009e151__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e153__20250121171516">显示模块从 render list 链表头部取一帧图像，此时当前帧由 wait render 状态进入 Rendering
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e191__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e193__20250409171033">显示模块从 render list 链表头部取一帧图像，此时当前帧由 wait render 状态进入 Rendering
                                     状态；</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e156__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e158__20250121171516">显示模块还图像 buffer，分两种情况：</p>
-                                <ul class="- topic/ul ul" id="mpp_decode__ul_utn_2nt_2dc" data-ofbid="mpp_decode__ul_utn_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e162__20250121171516">
-                                        <p class="- topic/p p" data-ofbid="d41009e164__20250121171516">如果当前帧不用于参考，此时由 Rendering 状态回到 IDLE 状态，该帧加入 empty list
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e197__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e199__20250409171033">显示模块还图像 buffer，分两种情况：</p>
+                                <ul class="- topic/ul ul" id="mpp_decode__ul_utn_2nt_2dc" data-ofbid="mpp_decode__ul_utn_2nt_2dc">
+                                    <li class="- topic/li li" data-ofbid="d41868e204__20250409171033">
+                                        <p class="- topic/p p" data-ofbid="d41868e206__20250409171033">如果当前帧不用于参考，此时由 Rendering 状态回到 IDLE 状态，该帧加入 empty list
                                             链表尾部；</p>
-                                    </li><li class="- topic/li li" data-ofbid="d41009e167__20250121171516">
-                                        <p class="- topic/p p" data-ofbid="d41009e169__20250121171516">如果当前帧用于参考，此时由 Rendering 状态进入 Decoding 状态，该图像 buffer
+                                    </li>
+                                    <li class="- topic/li li" data-ofbid="d41868e210__20250409171033">
+                                        <p class="- topic/p p" data-ofbid="d41868e212__20250409171033">如果当前帧用于参考，此时由 Rendering 状态进入 Decoding 状态，该图像 buffer
                                             不进入任何队列，等待解码器还参考帧；</p>
-                                    </li></ul>
-                            </li></ul><figure class="- topic/fig fig fignone" id="mpp_decode__id15" data-ofbid="mpp_decode__id15"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_vtn_2nt_2dc" src="../../../images/mpp/frame_status.png" width="480" alt="frame_status"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">frame 状态迁移</span></figcaption></figure></div>
-                </li><li class="- topic/li li" data-ofbid="d41009e180__20250121171516">
-                    <p class="- topic/p p" data-ofbid="d41009e182__20250121171516">frame manager 调用流程</p>
-                    <p class="- topic/p p" data-ofbid="d41009e185__20250121171516">对于 JPEG、PNG 这类没有参考帧概念的编码格式，每一帧的状态是唯一的，解码后的数据帧可直接送 render list</p>
-                    <figure class="- topic/fig fig fignone" id="mpp_decode__id16" data-ofbid="mpp_decode__id16"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_xtn_2nt_2dc" src="../../../images/mpp/frame_manager_jpeg.png" width="576" alt="frame_manager_jpeg"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">frame manager 调用流程（JPEG/PNG）</span></figcaption></figure>
-                    <p class="- topic/p p" data-ofbid="d41009e195__20250121171516">但对于 H264 这类有参考帧的编码格式，解码后的视频帧可能既被显示占用也会被解码器用作参考帧，并且由于双向参考帧的存在， 视频帧需要重排序后才能送显示。
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul><figure class="- topic/fig fig fignone" id="mpp_decode__id15" data-ofbid="mpp_decode__id15">
+                            
+                            <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_vtn_2nt_2dc" src="../../../images/mpp/frame_status.png" width="480" alt="frame_status"/></div><br/>
+                        <figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 3</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">frame 状态迁移</span></figcaption></figure></div>
+                </li>
+                <li class="- topic/li li" data-ofbid="d41868e231__20250409171033">
+                    <p class="- topic/p p" data-ofbid="d41868e233__20250409171033">frame manager 调用流程</p>
+                    <p class="- topic/p p" data-ofbid="d41868e236__20250409171033">对于 JPEG、PNG 这类没有参考帧概念的编码格式，每一帧的状态是唯一的，解码后的数据帧可直接送 render list</p>
+                    <figure class="- topic/fig fig fignone" id="mpp_decode__id16" data-ofbid="mpp_decode__id16">
+                        
+                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_xtn_2nt_2dc" src="../../../images/mpp/frame_manager_jpeg.png" width="576" alt="frame_manager_jpeg"/></div><br/>
+                    <figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 4</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">frame manager 调用流程（JPEG/PNG）</span></figcaption></figure>
+                    <p class="- topic/p p" data-ofbid="d41868e251__20250409171033">但对于 H264 这类有参考帧的编码格式，解码后的视频帧可能既被显示占用也会被解码器用作参考帧，并且由于双向参考帧的存在， 视频帧需要重排序后才能送显示。
                         不同于 JPG，H264 解码库内部存在一个 delay list 用于为显示帧重排序。</p>
-                    <figure class="- topic/fig fig fignone" id="mpp_decode__id17" data-ofbid="mpp_decode__id17"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_ytn_2nt_2dc" src="../../../images/mpp/frame_manager_264.png" width="576" alt="frame_manager_264"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 5</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">frame manager 调用流程（H264）</span></figcaption></figure>
-                </li></ol>
-        </section><section class="- topic/section section" id="mpp_decode__id4" data-ofbid="mpp_decode__id4"><h2 class="- topic/title title sectiontitle"> 物理连续内存使用情况</h2>
+                    <figure class="- topic/fig fig fignone" id="mpp_decode__id17" data-ofbid="mpp_decode__id17">
+                        
+                        <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_ytn_2nt_2dc" src="../../../images/mpp/frame_manager_264.png" width="576" alt="frame_manager_264"/></div><br/>
+                    <figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 5</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">frame manager 调用流程（H264）</span></figcaption></figure>
+                </li>
+            </ol>
+        </section>
+        <section class="- topic/section section" id="mpp_decode__id4" data-ofbid="mpp_decode__id4"><h2 class="- topic/title title sectiontitle"> 物理连续内存使用情况</h2>
             
-            <p class="- topic/p p" data-ofbid="d41009e211__20250121171516">H264 解码所需的物理连续内存如下所示：</p>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_ztn_2nt_2dc" data-ofbid="mpp_decode__table_ztn_2nt_2dc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:34.527687296416936%"/><col style="width:32.57328990228013%"/><col style="width:32.89902280130293%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_ztn_2nt_2dc__entry__1">内存占用模块</th><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_ztn_2nt_2dc__entry__2">计算方式</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_ztn_2nt_2dc__entry__3">说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1">输入码流</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2">-</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3">大小由应用层配置</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1">输出帧</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2">width*height*3/2*frame_num</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3">
+            <p class="- topic/p p" data-ofbid="d41868e274__20250409171033">H264 解码所需的物理连续内存如下所示：</p>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_ztn_2nt_2dc" data-ofbid="mpp_decode__table_ztn_2nt_2dc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"></span></caption><colgroup><col style="width:34.527687296416936%"/><col style="width:32.57328990228013%"/><col style="width:32.89902280130293%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_ztn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e294__20250409171033">内存占用模块</p></th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_ztn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e298__20250409171033">计算方式</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_ztn_2nt_2dc__entry__3"><p class="- topic/p p" data-ofbid="d41868e302__20250409171033">说明</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e312__20250409171033">输入码流</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e316__20250409171033">-</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3"><p class="- topic/p p" data-ofbid="d41868e320__20250409171033">大小由应用层配置</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e327__20250409171033">输出帧</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e331__20250409171033">width*height*3/2*frame_num</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3"><p class="- topic/p p" data-ofbid="d41868e335__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div"> frame_num 至少需要（参考帧个数+1）个</div>
                                     <div class="- topic/div div"> 显示占用个数可由应用层通过 struct decode_config</div>
                                     <div class="- topic/div div"> 结构体中的 extra_frame_num 配置</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1">帧内预测(需要上一行数据)</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e354__20250409171033">帧内预测(需要上一行数据)</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e358__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">帧格式：width*2</div>
                                     <div class="- topic/div div">MBAFF：width*4</div>
                                 </div>
-                            </td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1">宏块信息</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2">固定 12K</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1">dblk 模块(上一个宏块行最后 4 行数据)</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2">
+                            </p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3"><p class="- topic/p p" data-ofbid="d41868e371__20250409171033">-</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e378__20250409171033">宏块信息</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e382__20250409171033">固定 12K</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3"><p class="- topic/p p" data-ofbid="d41868e386__20250409171033">-</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e393__20250409171033">dblk 模块(上一个宏块行最后 4 行数据)</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e397__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">帧格式：width*8</div>
                                     <div class="- topic/div div">MBAFF：width*16</div>
                                 </div>
-                            </td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1">co-located 信息</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2">固定 68K</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3">-</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_ztn_2nt_2dc__entry__1">每一帧 co-located 数据缓存</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_ztn_2nt_2dc__entry__2">
+                            </p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3"><p class="- topic/p p" data-ofbid="d41868e410__20250409171033">-</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e418__20250409171033">co-located 信息</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e422__20250409171033">固定 68K</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_ztn_2nt_2dc__entry__3"><p class="- topic/p p" data-ofbid="d41868e426__20250409171033">-</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_ztn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e433__20250409171033">每一帧 co-located 数据缓存</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_ztn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e437__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">(width/16)*(height/16)*32*frame_num</div>
                                 </div>
-                            </td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_ztn_2nt_2dc__entry__3">-</td></tr></tbody></table></div>
+                            </p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_ztn_2nt_2dc__entry__3"><p class="- topic/p p" data-ofbid="d41868e447__20250409171033">-</p></td>
+                        </tr>
+                    </tbody></table></div>
             <div class="- topic/note note note note_note" id="mpp_decode__note_ttp_qn3_ddc" data-ofbid="mpp_decode__note_ttp_qn3_ddc"><span class="note__title">注：</span> 
-                <p class="- topic/p p" data-ofbid="d41009e317__20250121171516">co-located 两个 buffer，I、P 帧解码时会往 buffer 里写数据，B 帧解码时从 buffer 读数据。 如果当前码流中没有 B
+                <p class="- topic/p p" data-ofbid="d41868e456__20250409171033">co-located 两个 buffer，I、P 帧解码时会往 buffer 里写数据，B 帧解码时从 buffer 读数据。 如果当前码流中没有 B
                     帧，这两块内存也需要申请。</p>
             </div>
-        </section><section class="- topic/section section" id="mpp_decode__id5" data-ofbid="mpp_decode__id5"><h2 class="- topic/title title sectiontitle">MPP Decoder 调用流程</h2>
+        </section>
+        <section class="- topic/section section" id="mpp_decode__id5" data-ofbid="mpp_decode__id5"><h2 class="- topic/title title sectiontitle">MPP Decoder 调用流程</h2>
             
-            <ol class="- topic/ol ol" id="mpp_decode__ol_ht4_25h_d1c" data-ofbid="mpp_decode__ol_ht4_25h_d1c"><li class="- topic/li li" data-ofbid="d41009e327__20250121171516">在调用 MPP Decoder 的解码函数时，解码模块从 Packet manager 取一笔码流，同时从 Frame maneger 取一个空闲图像
-                    buffer，对码流进行解码 并输出图像到图像 buffer。</li><li class="- topic/li li" data-ofbid="d41009e329__20250121171516">解码后，解码模块将码流 buffer 归还 Packet manager，将解码图像 buffer 归还 Frame maneger。</li><li class="- topic/li li" data-ofbid="d41009e331__20250121171516">
-                    <p class="- topic/p p" data-ofbid="d41009e333__20250121171516">为保证解码效率，建议调用者创建 3 个线程实现解码功能：</p>
-                    <ul class="- topic/ul ul" id="mpp_decode__ul_sxt_fsh_d1c" data-ofbid="mpp_decode__ul_sxt_fsh_d1c"><li class="- topic/li li" data-ofbid="d41009e337__20250121171516"><span class="+ topic/ph ui-d/uicontrol ph uicontrol">send data thread</span><p class="- topic/p p" data-ofbid="d41009e340__20250121171516">通过 mpp_decoder_get_packet 和
-                                mpp_decoder_put_packet 这两个接口把码流数据送到 packet 管理模块</p></li><li class="- topic/li li" data-ofbid="d41009e342__20250121171516"><span class="+ topic/ph ui-d/uicontrol ph uicontrol">decode thread</span><p class="- topic/p p" data-ofbid="d41009e345__20250121171516">通过调用 mpp_decoder_decode 控制解码，解码库从
-                                packet 管理模块取一笔码流数据，解码完成后，将视频帧送入 frame 管理模块</p></li><li class="- topic/li li" data-ofbid="d41009e347__20250121171516"><span class="+ topic/ph ui-d/uicontrol ph uicontrol">render thread</span><p class="- topic/p p" data-ofbid="d41009e350__20250121171516">通过
+            <ol class="- topic/ol ol" id="mpp_decode__ol_ht4_25h_d1c" data-ofbid="mpp_decode__ol_ht4_25h_d1c">
+                <li class="- topic/li li" data-ofbid="d41868e468__20250409171033">在调用 MPP Decoder 的解码函数时，解码模块从 Packet manager 取一笔码流，同时从 Frame maneger 取一个空闲图像
+                    buffer，对码流进行解码 并输出图像到图像 buffer。</li>
+                <li class="- topic/li li" data-ofbid="d41868e471__20250409171033">解码后，解码模块将码流 buffer 归还 Packet manager，将解码图像 buffer 归还 Frame maneger。</li>
+                <li class="- topic/li li" data-ofbid="d41868e474__20250409171033">
+                    <p class="- topic/p p" data-ofbid="d41868e476__20250409171033">为保证解码效率，建议调用者创建 3 个线程实现解码功能：</p>
+                    <ul class="- topic/ul ul" id="mpp_decode__ul_sxt_fsh_d1c" data-ofbid="mpp_decode__ul_sxt_fsh_d1c">
+                        <li class="- topic/li li" data-ofbid="d41868e481__20250409171033"><span class="+ topic/ph ui-d/uicontrol ph uicontrol">send data thread</span><p class="- topic/p p" data-ofbid="d41868e484__20250409171033">通过 mpp_decoder_get_packet 和
+                                mpp_decoder_put_packet 这两个接口把码流数据送到 packet 管理模块</p></li>
+                        <li class="- topic/li li" data-ofbid="d41868e487__20250409171033"><span class="+ topic/ph ui-d/uicontrol ph uicontrol">decode thread</span><p class="- topic/p p" data-ofbid="d41868e490__20250409171033">通过调用 mpp_decoder_decode 控制解码，解码库从
+                                packet 管理模块取一笔码流数据，解码完成后，将视频帧送入 frame 管理模块</p></li>
+                        <li class="- topic/li li" data-ofbid="d41868e493__20250409171033"><span class="+ topic/ph ui-d/uicontrol ph uicontrol">render thread</span><p class="- topic/p p" data-ofbid="d41868e496__20250409171033">通过
                                     <span class="+ topic/keyword pr-d/parmname keyword parmname">mpp_decoder_get_frame</span> 和
                                     <span class="+ topic/keyword pr-d/parmname keyword parmname">mpp_decoder_put_frame</span> 两个接口从 frame
-                                管理模块获取视频帧，并控制该帧显示时机</p><figure class="- topic/fig fig fignone" id="mpp_decode__fig_pmr_c5h_d1c" data-ofbid="mpp_decode__fig_pmr_c5h_d1c"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_wxt_fsh_d1c" src="../../../images/mpp/mpp_decoder_flow.png" width="384" alt="mpp_decoder_flow"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 6</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">mpp_decoder 调用流程</span></figcaption></figure></li></ul>
-                </li></ol>
-        </section><section class="- topic/section section" id="mpp_decode__id6" data-ofbid="mpp_decode__id6"><h2 class="- topic/title title sectiontitle">MPP Decoder 数据结构</h2>
+                                管理模块获取视频帧，并控制该帧显示时机</p><figure class="- topic/fig fig fignone" id="mpp_decode__fig_pmr_c5h_d1c" data-ofbid="mpp_decode__fig_pmr_c5h_d1c">
+                                
+                                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="mpp_decode__image_wxt_fsh_d1c" src="../../../images/mpp/mpp_decoder_flow.png" width="384" alt="mpp_decoder_flow"/></div><br/>
+                            <figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 6</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">mpp_decoder 调用流程</span></figcaption></figure></li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+        <section class="- topic/section section" id="mpp_decode__id6" data-ofbid="mpp_decode__id6"><h2 class="- topic/title title sectiontitle">MPP Decoder 数据结构</h2>
             
-            <ul class="- topic/ul ul" id="mpp_decode__ul_aq3_lfn_4dc" data-ofbid="mpp_decode__ul_aq3_lfn_4dc"><li class="- topic/li li" data-ofbid="d41009e372__20250121171516">
+            <ul class="- topic/ul ul" id="mpp_decode__ul_aq3_lfn_4dc" data-ofbid="mpp_decode__ul_aq3_lfn_4dc">
+                <li class="- topic/li li" data-ofbid="d41868e528__20250409171033">
                     <div class="- topic/div div section" id="mpp_decode__struct-decode-config">
                         <strong class="+ topic/ph hi-d/b ph b">struct decode_config</strong>
                         <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_f5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_f5n_2nt_2dc"><strong class="hl-keyword">struct</strong> decode_config {
@@ -219,17 +338,23 @@
     <strong class="hl-keyword">int</strong> bitstream_buffer_size;      <em class="hl-comment">// bitstream buffer size in pm</em>
     <strong class="hl-keyword">int</strong> packet_count;               <em class="hl-comment">// packet number in pm</em>
     <strong class="hl-keyword">int</strong> extra_frame_num;            <em class="hl-comment">// extra frame number in fm</em>
-};</pre><p class="- topic/p p" data-ofbid="d41009e381__20250121171516"><code class="+ topic/ph pr-d/codeph ph codeph">decode_config</code> 结构体用于配置解码器初始化使用的参数。</p><ul class="- topic/ul ul simple" id="mpp_decode__ul_g5n_2nt_2dc" data-ofbid="mpp_decode__ul_g5n_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e386__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e388__20250121171516">pix_fmt 表示解码输出的颜色格式</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e391__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e393__20250121171516">bitstream_buffer_size 表示存放输入码流缓存的总长度</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e396__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e398__20250121171516">packet_count 表示 packet manager 中 packet 的最大个数</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e401__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e403__20250121171516">extra_frame_num 表示解码器额外分配的帧个数，主要用于缓存显示帧以保证显示平滑。</p>
-                            </li></ul>
+};</pre><p class="- topic/p p" data-ofbid="d41868e537__20250409171033"><code class="+ topic/ph pr-d/codeph ph codeph">decode_config</code> 结构体用于配置解码器初始化使用的参数。</p><ul class="- topic/ul ul simple" id="mpp_decode__ul_g5n_2nt_2dc" data-ofbid="mpp_decode__ul_g5n_2nt_2dc">
+                            <li class="- topic/li li" data-ofbid="d41868e543__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e545__20250409171033">pix_fmt 表示解码输出的颜色格式</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e549__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e551__20250409171033">bitstream_buffer_size 表示存放输入码流缓存的总长度</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e555__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e557__20250409171033">packet_count 表示 packet manager 中 packet 的最大个数</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e561__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e563__20250409171033">extra_frame_num 表示解码器额外分配的帧个数，主要用于缓存显示帧以保证显示平滑。</p>
+                            </li>
+                        </ul>
                     </div>
-                </li><li class="- topic/li li" data-ofbid="d41009e408__20250121171516">
+                </li>
+                <li class="- topic/li li" data-ofbid="d41868e570__20250409171033">
                     <div class="- topic/div div section" id="mpp_decode__struct-mpp-packet">
                         <strong class="+ topic/ph hi-d/b ph b">struct mpp_packet</strong>
                         <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_h5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_h5n_2nt_2dc"><strong class="hl-keyword">struct</strong> mpp_packet {
@@ -237,17 +362,23 @@
     <strong class="hl-keyword">int</strong> size;
     <strong class="hl-keyword">long</strong> <strong class="hl-keyword">long</strong> pts;
     <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> flag;
-};</pre><p class="- topic/p p" data-ofbid="d41009e417__20250121171516"><code class="+ topic/ph pr-d/codeph ph codeph">mpp_packet</code> 结构体用于表示输入码流信息。</p><ul class="- topic/ul ul simple" id="mpp_decode__ul_i5n_2nt_2dc" data-ofbid="mpp_decode__ul_i5n_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e422__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e424__20250121171516">data 表示码流数据存放的起始地址</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e427__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e429__20250121171516">size 表示该笔码流数据长度</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e432__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e434__20250121171516">pts 表示该笔码流的时间戳</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e437__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e439__20250121171516">flag 表示该笔码流的标记位，目前仅用于确定该码流是否为最后一笔码流（PACKET_FLAG_EOS）</p>
-                            </li></ul>
+};</pre><p class="- topic/p p" data-ofbid="d41868e579__20250409171033"><code class="+ topic/ph pr-d/codeph ph codeph">mpp_packet</code> 结构体用于表示输入码流信息。</p><ul class="- topic/ul ul simple" id="mpp_decode__ul_i5n_2nt_2dc" data-ofbid="mpp_decode__ul_i5n_2nt_2dc">
+                            <li class="- topic/li li" data-ofbid="d41868e585__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e587__20250409171033">data 表示码流数据存放的起始地址</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e591__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e593__20250409171033">size 表示该笔码流数据长度</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e597__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e599__20250409171033">pts 表示该笔码流的时间戳</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e603__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e605__20250409171033">flag 表示该笔码流的标记位，目前仅用于确定该码流是否为最后一笔码流（PACKET_FLAG_EOS）</p>
+                            </li>
+                        </ul>
                     </div>
-                </li><li class="- topic/li li" data-ofbid="d41009e444__20250121171516">
+                </li>
+                <li class="- topic/li li" data-ofbid="d41868e612__20250409171033">
                     <div class="- topic/div div section" id="mpp_decode__struct-mpp-frame">
                         <strong class="+ topic/ph hi-d/b ph b">struct mpp_frame</strong>
                         <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_j5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_j5n_2nt_2dc"><strong class="hl-keyword">struct</strong> mpp_size {
@@ -277,40 +408,55 @@
     <strong class="hl-keyword">struct</strong> mpp_rect         crop;
     <strong class="hl-keyword">enum</strong> mpp_pixel_format   format;
     <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            flags;
-};</pre><ul class="- topic/ul ul simple" id="mpp_decode__ul_k5n_2nt_2dc" data-ofbid="mpp_decode__ul_k5n_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e454__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e456__20250121171516">buf_type：表示 mpp_buf 类型，以 fd 方式 MPP_DMA_BUF_FD 或 以物理地址方式
+};</pre><ul class="- topic/ul ul simple" id="mpp_decode__ul_k5n_2nt_2dc" data-ofbid="mpp_decode__ul_k5n_2nt_2dc">
+                            <li class="- topic/li li" data-ofbid="d41868e623__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e625__20250409171033">buf_type：表示 mpp_buf 类型，以 fd 方式 MPP_DMA_BUF_FD 或 以物理地址方式
                                     MPP_PHY_ADDR；</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e459__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e461__20250121171516">fd[3]：表示 buffer 三个分量的 fd</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e464__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e466__20250121171516">phy_addr[3]：表示 buffer 三个分量的物理地址</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e469__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e471__20250121171516">stride[3]：表示 buffer 三个分量的 stride</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e474__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e476__20250121171516">size：表示 buffer 的宽、高</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e479__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e481__20250121171516">crop_en： 表示该 buffer 是否需要 crop</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e484__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e486__20250121171516">crop：表示该 buffer 的 crop 信息</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e489__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e491__20250121171516">format： 表示该 buffer 的颜色格式类型</p>
-                            </li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_l5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_l5n_2nt_2dc"><strong class="hl-keyword">struct</strong> mpp_frame {
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e629__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e631__20250409171033">fd[3]：表示 buffer 三个分量的 fd</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e635__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e637__20250409171033">phy_addr[3]：表示 buffer 三个分量的物理地址</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e641__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e643__20250409171033">stride[3]：表示 buffer 三个分量的 stride</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e647__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e649__20250409171033">size：表示 buffer 的宽、高</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e654__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e656__20250409171033">crop_en： 表示该 buffer 是否需要 crop</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e660__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e662__20250409171033">crop：表示该 buffer 的 crop 信息</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e666__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e668__20250409171033">format： 表示该 buffer 的颜色格式类型</p>
+                            </li>
+                        </ul><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_l5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_l5n_2nt_2dc"><strong class="hl-keyword">struct</strong> mpp_frame {
     <strong class="hl-keyword">struct</strong> mpp_buf          buf;
     <strong class="hl-keyword">long</strong> <strong class="hl-keyword">long</strong>               pts;
     <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            id;
     <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong>            flags;
 };</pre>
-                        <ul class="- topic/ul ul simple" id="mpp_decode__ul_m5n_2nt_2dc" data-ofbid="mpp_decode__ul_m5n_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e498__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e500__20250121171516">buf：表示 mpp_frame 的 buffer 信息</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e503__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e505__20250121171516">pts：表示 mpp_frame 的时间戳</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e508__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e510__20250121171516">id：表示 mpp_frame 的唯一标识</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e513__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e515__20250121171516">flags：表示 mpp_frame 的标志位</p>
-                            </li></ul>
+                        <ul class="- topic/ul ul simple" id="mpp_decode__ul_m5n_2nt_2dc" data-ofbid="mpp_decode__ul_m5n_2nt_2dc">
+                            <li class="- topic/li li" data-ofbid="d41868e677__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e679__20250409171033">buf：表示 mpp_frame 的 buffer 信息</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e683__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e685__20250409171033">pts：表示 mpp_frame 的时间戳</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e689__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e691__20250409171033">id：表示 mpp_frame 的唯一标识</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e695__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e697__20250409171033">flags：表示 mpp_frame 的标志位</p>
+                            </li>
+                        </ul>
                     </div>
-                </li><li class="- topic/li li" data-ofbid="d41009e520__20250121171516">
+                </li>
+                <li class="- topic/li li" data-ofbid="d41868e704__20250409171033">
                     <div class="- topic/div div section" id="mpp_decode__enum-mpp-dec-errno">
                         <strong class="+ topic/ph hi-d/b ph b">enum mpp_dec_errno</strong>
                         <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_n5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_n5n_2nt_2dc"><strong class="hl-keyword">enum</strong> mpp_dec_errno {
@@ -321,27 +467,36 @@
     DEC_ERR_NO_RENDER_FRAME     = <span class="hl-number">0x90000005</span>, <em class="hl-comment">//</em>
     DEC_ERR_NULL_PTR            = <span class="hl-number">0x90000006</span>,
     DEC_ERR_FM_NOT_CREATE       = <span class="hl-number">0x90000006</span>,
-};</pre><ul class="- topic/ul ul simple" id="mpp_decode__ul_o5n_2nt_2dc" data-ofbid="mpp_decode__ul_o5n_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e530__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e532__20250121171516">DEC_ERR_NOT_SUPPORT：该码流不支持</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e535__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e537__20250121171516">DEC_ERR_NO_EMPTY_PACKET：packet manager 中缺少空闲的 packet，可能是解码速度小于送
+};</pre><ul class="- topic/ul ul simple" id="mpp_decode__ul_o5n_2nt_2dc" data-ofbid="mpp_decode__ul_o5n_2nt_2dc">
+                            <li class="- topic/li li" data-ofbid="d41868e715__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e717__20250409171033">DEC_ERR_NOT_SUPPORT：该码流不支持</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e721__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e723__20250409171033">DEC_ERR_NO_EMPTY_PACKET：packet manager 中缺少空闲的 packet，可能是解码速度小于送
                                     packet 速度，此时需要等待一段时间；</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e540__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e542__20250121171516">DEC_ERR_NO_READY_PACKET：packet manager 中缺少填好码流数据的 packet，可能是送
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e727__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e729__20250409171033">DEC_ERR_NO_READY_PACKET：packet manager 中缺少填好码流数据的 packet，可能是送
                                     packet 速度小于解码速度，此时需要等待一段时间；</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e545__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e547__20250121171516">DEC_ERR_NO_EMPTY_FRAME：frame manager 中缺少空闲的
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e733__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e735__20250409171033">DEC_ERR_NO_EMPTY_FRAME：frame manager 中缺少空闲的
                                     frame，表示所有帧都处于使用状态，通常是解码速度大于显示速度导致，此时需要等待一段时间；</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e550__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e552__20250121171516">DEC_ERR_NO_RENDER_FRAME：frame manager 中缺少待显示的
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e739__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e741__20250409171033">DEC_ERR_NO_RENDER_FRAME：frame manager 中缺少待显示的
                                     frame，表示所有帧都处于空闲状态，通常是解码速度小于显示速度导致，此时需要等待一段时间；</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e555__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e557__20250121171516">DEC_ERR_NULL_PTR：表示接口函数输入参数存在空指针</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e560__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e562__20250121171516">DEC_ERR_FM_NOT_CREATE：表示在获取待显示 frame 时 frame manager 还未创建</p>
-                            </li></ul>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e746__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e748__20250409171033">DEC_ERR_NULL_PTR：表示接口函数输入参数存在空指针</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e752__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e754__20250409171033">DEC_ERR_FM_NOT_CREATE：表示在获取待显示 frame 时 frame manager 还未创建</p>
+                            </li>
+                        </ul>
                     </div>
-                </li><li class="- topic/li li" data-ofbid="d41009e567__20250121171516">
+                </li>
+                <li class="- topic/li li" data-ofbid="d41868e761__20250409171033">
                     <div class="- topic/div div section" id="mpp_decode__enum-mpp-codec-type">
                         <strong class="+ topic/ph hi-d/b ph b">enum mpp_codec_type</strong>
                         <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_p5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_p5n_2nt_2dc"><strong class="hl-keyword">enum</strong> mpp_codec_type {
@@ -350,9 +505,10 @@
     MPP_CODEC_VIDEO_DECODER_PNG,
 
     MPP_CODEC_VIDEO_ENCODER_H264 = <span class="hl-number">0x2000</span>,         <em class="hl-comment">// encoder</em>
-};</pre><p class="- topic/p p" data-ofbid="d41009e576__20250121171516">mpp_codec_type 枚举类型表示支持的编解码格式。</p>
+};</pre><p class="- topic/p p" data-ofbid="d41868e770__20250409171033">mpp_codec_type 枚举类型表示支持的编解码格式。</p>
                     </div>
-                </li><li class="- topic/li li" data-ofbid="d41009e580__20250121171516">
+                </li>
+                <li class="- topic/li li" data-ofbid="d41868e776__20250409171033">
                     <div class="- topic/div div section" id="mpp_decode__enum-mpp-dec-cmd">
                         <strong class="+ topic/ph hi-d/b ph b">enum mpp_dec_cmd</strong>
                         <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_q5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_q5n_2nt_2dc"><strong class="hl-keyword">enum</strong> mpp_dec_cmd {
@@ -361,22 +517,30 @@
     MPP_DEC_INIT_CMD_SET_SCALE,
     MPP_DEC_INIT_CMD_SET_CROP_INFO,
     MPP_DEC_INIT_CMD_SET_OUTPUT_POS,
-};</pre><ul class="- topic/ul ul simple" id="mpp_decode__ul_r5n_2nt_2dc" data-ofbid="mpp_decode__ul_r5n_2nt_2dc"><li class="- topic/li li" data-ofbid="d41009e590__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e592__20250121171516"> MPP_DEC_INIT_CMD_SET_EXT_FRAME_ALLOCATOR：表示由外部设置帧 buffer 分配器</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e595__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e597__20250121171516">MPP_DEC_INIT_CMD_SET_ROT_FLIP_FLAG: 表示设置旋转、镜像后处理，只用于 JPEG</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e600__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e602__20250121171516">MPP_DEC_INIT_CMD_SET_SCALE： 表示设置缩放系数，只用于 JPEG</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e605__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e607__20250121171516">MPP_DEC_INIT_CMD_SET_CROP_INFO：表示设置输出 crop 信息</p>
-                            </li><li class="- topic/li li" data-ofbid="d41009e610__20250121171516">
-                                <p class="- topic/p p" data-ofbid="d41009e612__20250121171516"> MPP_DEC_INIT_CMD_SET_OUTPUT_POS：表示设置解码图像在输出缓存的位置</p>
-                            </li></ul>
+};</pre><ul class="- topic/ul ul simple" id="mpp_decode__ul_r5n_2nt_2dc" data-ofbid="mpp_decode__ul_r5n_2nt_2dc">
+                            <li class="- topic/li li" data-ofbid="d41868e787__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e789__20250409171033"> MPP_DEC_INIT_CMD_SET_EXT_FRAME_ALLOCATOR：表示由外部设置帧 buffer 分配器</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e793__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e795__20250409171033">MPP_DEC_INIT_CMD_SET_ROT_FLIP_FLAG: 表示设置旋转、镜像后处理，只用于 JPEG</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e799__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e801__20250409171033">MPP_DEC_INIT_CMD_SET_SCALE： 表示设置缩放系数，只用于 JPEG</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e805__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e807__20250409171033">MPP_DEC_INIT_CMD_SET_CROP_INFO：表示设置输出 crop 信息</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d41868e811__20250409171033">
+                                <p class="- topic/p p" data-ofbid="d41868e813__20250409171033"> MPP_DEC_INIT_CMD_SET_OUTPUT_POS：表示设置解码图像在输出缓存的位置</p>
+                            </li>
+                        </ul>
                     </div>
-                </li></ul>
-        </section><section class="- topic/section section" id="mpp_decode__id7" data-ofbid="mpp_decode__id7"><h2 class="- topic/title title sectiontitle">MPP Decoder 接口设计</h2>
+                </li>
+            </ul>
+        </section>
+        <section class="- topic/section section" id="mpp_decode__id7" data-ofbid="mpp_decode__id7"><h2 class="- topic/title title sectiontitle">MPP Decoder 接口设计</h2>
             
-            <p class="- topic/p p" data-ofbid="d41009e623__20250121171516">接口如下 :</p>
+            <p class="- topic/p p" data-ofbid="d41868e827__20250409171033">接口如下 :</p>
             <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_s5n_2nt_2dc" data-ofbid="mpp_decode__codeblock_s5n_2nt_2dc"><strong class="hl-keyword">struct</strong> decode_config {
     <strong class="hl-keyword">enum</strong> mpp_pixel_format pix_fmt;  <em class="hl-comment">// output pixel format</em>
     <strong class="hl-keyword">int</strong> bitstream_buffer_size;      <em class="hl-comment">// bitstream buffer size in pm</em>
@@ -394,100 +558,321 @@
 <strong class="hl-keyword">int</strong> mpp_decoder_put_packet(<strong class="hl-keyword">struct</strong> mpp_decoder* decoder, <strong class="hl-keyword">struct</strong> mpp_packet* packet);
 <strong class="hl-keyword">int</strong> mpp_decoder_get_frame(<strong class="hl-keyword">struct</strong> mpp_decoder* decoder, <strong class="hl-keyword">struct</strong> mpp_frame* frame);
 <strong class="hl-keyword">int</strong> mpp_decoder_put_frame(<strong class="hl-keyword">struct</strong> mpp_decoder* decoder, <strong class="hl-keyword">struct</strong> mpp_frame* frame);</pre>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_t5n_2nt_2dc" data-ofbid="mpp_decode__table_t5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_create</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_t5n_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_t5n_2nt_2dc__entry__2">struct mpp_decoder* mpp_decoder_create(enum mpp_codec_type
-                                type)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__2">创建 mpp_decoder 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__2">type: 解码器类型</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__2">mpp_decoder 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_t5n_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_t5n_2nt_2dc__entry__2">-</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_u5n_2nt_2dc" data-ofbid="mpp_decode__table_u5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_destory</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_u5n_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_u5n_2nt_2dc__entry__2">void mpp_decoder_destory(struct mpp_decoder* decoder)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__2">销毁 mpp_decoder 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__2">decoder: mpp_decoder 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__2">无</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_u5n_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_u5n_2nt_2dc__entry__2">-</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_v5n_2nt_2dc" data-ofbid="mpp_decode__table_v5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_init</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_v5n_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_v5n_2nt_2dc__entry__2">int mpp_decoder_init(struct mpp_decoder *decoder, struct
-                                decode_config *config)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__2">初始化解码器</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__2">
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_t5n_2nt_2dc" data-ofbid="mpp_decode__table_t5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_create</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_t5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e849__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_t5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e853__20250409171033">struct mpp_decoder* mpp_decoder_create(enum mpp_codec_type
+                                type)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e863__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e867__20250409171033">创建 mpp_decoder 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e874__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e878__20250409171033">type: 解码器类型</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e885__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_t5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e889__20250409171033">mpp_decoder 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_t5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e896__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_t5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e900__20250409171033">-</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_u5n_2nt_2dc" data-ofbid="mpp_decode__table_u5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_destory</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_u5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e923__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_u5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e927__20250409171033">void mpp_decoder_destory(struct mpp_decoder* decoder)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e937__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e941__20250409171033">销毁 mpp_decoder 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e948__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e952__20250409171033">decoder: mpp_decoder 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e959__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_u5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e963__20250409171033">无</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_u5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e970__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_u5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e974__20250409171033">-</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_v5n_2nt_2dc" data-ofbid="mpp_decode__table_v5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_init</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_v5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e998__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_v5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1002__20250409171033">int mpp_decoder_init(struct mpp_decoder *decoder, struct
+                                decode_config *config)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1012__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1016__20250409171033">初始化解码器</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1023__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1027__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">decoder: mpp_decoder 对象</div>
                                     <div class="- topic/div div"> config：解码器的配置参数</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1043__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_v5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1047__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0:成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_v5n_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_v5n_2nt_2dc__entry__2">-</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_w5n_2nt_2dc" data-ofbid="mpp_decode__table_w5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_decode</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_w5n_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_w5n_2nt_2dc__entry__2">int mpp_decoder_decode(struct mpp_decoder* decoder)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__2">解码一笔数据</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__2">decoder: mpp_decoder 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_v5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1063__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_v5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1067__20250409171033">-</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_w5n_2nt_2dc" data-ofbid="mpp_decode__table_w5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_decode</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_w5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1090__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_w5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1094__20250409171033">int mpp_decoder_decode(struct mpp_decoder* decoder)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1104__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1108__20250409171033">解码一笔数据</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1115__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1119__20250409171033">decoder: mpp_decoder 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1126__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_w5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1130__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0:成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_w5n_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_w5n_2nt_2dc__entry__2">- </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_x5n_2nt_2dc" data-ofbid="mpp_decode__table_x5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_control</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_x5n_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_x5n_2nt_2dc__entry__2">int mpp_decoder_control(struct mpp_decoder* decoder, int cmd,
-                                void* param)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__2">向 mpp_decoder 对象发送控制命令</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_w5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1146__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_w5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1150__20250409171033">- </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_x5n_2nt_2dc" data-ofbid="mpp_decode__table_x5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_control</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_x5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1173__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_x5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1177__20250409171033">int mpp_decoder_control(struct mpp_decoder* decoder, int cmd,
+                                void* param)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1187__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1191__20250409171033">向 mpp_decoder 对象发送控制命令</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1198__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1202__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">decoder</span>: mpp_decoder 对象</div>
                                     <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">cmd</span>: 控制命令类型</div>
                                     <div class="- topic/div div"><span class="+ topic/keyword pr-d/parmname keyword parmname">param</span>: 控制参数</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1227__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_x5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1231__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0:成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_x5n_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_x5n_2nt_2dc__entry__2">- </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_y5n_2nt_2dc" data-ofbid="mpp_decode__table_y5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_reset</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_y5n_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_y5n_2nt_2dc__entry__2">int mpp_decoder_reset(struct mpp_decoder* decoder)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__2">重置 mpp_decoder 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_x5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1247__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_x5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1251__20250409171033">- </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_y5n_2nt_2dc" data-ofbid="mpp_decode__table_y5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_reset</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_y5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1274__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_y5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1278__20250409171033">int mpp_decoder_reset(struct mpp_decoder* decoder)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1288__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1292__20250409171033">重置 mpp_decoder 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1299__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1303__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">decoder: mpp_decoder 对象</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1316__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_y5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1320__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0:成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_y5n_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_y5n_2nt_2dc__entry__2">- </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_z5n_2nt_2dc" data-ofbid="mpp_decode__table_z5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_get_packet</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_z5n_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_z5n_2nt_2dc__entry__2">int mpp_decoder_get_packet(struct mpp_decoder* decoder, struct
-                                mpp_packet* packet, int size)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__2">获取一个写码流数据的 packet</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_y5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1336__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_y5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1340__20250409171033">- </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_z5n_2nt_2dc" data-ofbid="mpp_decode__table_z5n_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_get_packet</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_z5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1363__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_z5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1367__20250409171033">int mpp_decoder_get_packet(struct mpp_decoder* decoder, struct
+                                mpp_packet* packet, int size)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1377__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1381__20250409171033">获取一个写码流数据的 packet</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1388__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1392__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">decoder: mpp_decoder 对象</div>
                                     <div class="- topic/div div"> packet:码流数据结构指针</div>
                                     <div class="- topic/div div"> size:上层应用申请 packet 的 buffer 大小</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1411__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_z5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1415__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0:成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_z5n_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_z5n_2nt_2dc__entry__2">- </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_avn_2nt_2dc" data-ofbid="mpp_decode__table_avn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_put_packet</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_avn_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_avn_2nt_2dc__entry__2">int mpp_decoder_put_packet(struct mpp_decoder* decoder, struct
-                                mpp_packet* packet)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__2">归还码流数据的 packet 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_z5n_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1431__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_z5n_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1435__20250409171033">- </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_avn_2nt_2dc" data-ofbid="mpp_decode__table_avn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_put_packet</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_avn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1458__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_avn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1462__20250409171033">int mpp_decoder_put_packet(struct mpp_decoder* decoder, struct
+                                mpp_packet* packet)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1472__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1476__20250409171033">归还码流数据的 packet 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1483__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1487__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">decoder: mpp_decoder 对象</div>
                                     <div class="- topic/div div"> packet:码流数据结构指针</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1503__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_avn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1507__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0:成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_avn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_avn_2nt_2dc__entry__2">- </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_bvn_2nt_2dc" data-ofbid="mpp_decode__table_bvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_get_frame</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_bvn_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_bvn_2nt_2dc__entry__2">int mpp_decoder_get_frame(struct mpp_decoder* decoder, struct
-                                mpp_frame* frame)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__2">获取一个视频帧对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_avn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1523__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_avn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1527__20250409171033">- </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_bvn_2nt_2dc" data-ofbid="mpp_decode__table_bvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_get_frame</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_bvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1551__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_bvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1555__20250409171033">int mpp_decoder_get_frame(struct mpp_decoder* decoder, struct
+                                mpp_frame* frame)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1565__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1569__20250409171033">获取一个视频帧对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1576__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1580__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">decoder: mpp_decoder 对象</div>
                                     <div class="- topic/div div"> frame:视频帧数据结构指针</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1596__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_bvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1600__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0:成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_bvn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_bvn_2nt_2dc__entry__2">- </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_cvn_2nt_2dc" data-ofbid="mpp_decode__table_cvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_put_frame</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_cvn_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_cvn_2nt_2dc__entry__2">int mpp_decoder_put_frame(struct mpp_decoder* decoder, struct
-                                mpp_frame* frame)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__2">归还视频帧对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_bvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1616__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_bvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1620__20250409171033">- </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_cvn_2nt_2dc" data-ofbid="mpp_decode__table_cvn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_decoder_put_frame</span></caption><colgroup><col style="width:22.98850574712644%"/><col style="width:77.01149425287358%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_cvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1643__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_cvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1647__20250409171033">int mpp_decoder_put_frame(struct mpp_decoder* decoder, struct
+                                mpp_frame* frame)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1657__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1661__20250409171033">归还视频帧对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1668__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1672__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">decoder: mpp_decoder 对象</div>
                                     <div class="- topic/div div"> frame:视频帧数据结构指针</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1688__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_cvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1692__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0:成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_cvn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_cvn_2nt_2dc__entry__2">-</td></tr></tbody></table></div>
-        </section><section class="- topic/section section" id="mpp_decode__mpp_decoder-demo" data-ofbid="mpp_decode__mpp_decoder-demo"><h2 class="- topic/title title sectiontitle">MPP Decoder 参考 Demo</h2>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_cvn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1708__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_cvn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1712__20250409171033">-</p></td>
+                        </tr>
+                    </tbody></table></div>
+        </section>
+        <section class="- topic/section section" id="mpp_decode__mpp_decoder-demo" data-ofbid="mpp_decode__mpp_decoder-demo"><h2 class="- topic/title title sectiontitle">MPP Decoder 参考 Demo</h2>
             
             <div class="- topic/p p" id="mpp_decode__ref-picture-decoder-test" data-ofbid="mpp_decode__ref-picture-decoder-test">以下 Demo 为基本流程调用，具体实现可以参考代码
                     <span class="+ topic/ph sw-d/filepath ph filepath">mpp/mpp_test/picture_decoder_test.c</span><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_decode__codeblock_cfs_scw_3dc" data-ofbid="mpp_decode__codeblock_cfs_scw_3dc"><em class="hl-comment">//* 1.创建 mpp_decoder 对象</em>
@@ -531,12 +916,25 @@ mpp_decoder_put_frame(dec, &amp;frame);
 
 <em class="hl-comment">//* 10. 销毁 mpp_decoder</em>
 mpp_decoder_destory(dec);</pre></div>
-        </section><section class="- topic/section section" id="mpp_decode__id8" data-ofbid="mpp_decode__id8"><h2 class="- topic/title title sectiontitle">接口设计</h2>
+        </section>
+        <section class="- topic/section section" id="mpp_decode__id8" data-ofbid="mpp_decode__id8"><h2 class="- topic/title title sectiontitle">接口设计</h2>
             
-            <p class="- topic/p p" data-ofbid="d41009e1132__20250121171516">输出 JPEG 图片的缓存 buffer 由调用者申请，但调用者并不知道编码后图片的实际大小， 为避免 VE 写输出数据时越界，该 buffer
+            <p class="- topic/p p" data-ofbid="d41868e1738__20250409171033">输出 JPEG 图片的缓存 buffer 由调用者申请，但调用者并不知道编码后图片的实际大小， 为避免 VE 写输出数据时越界，该 buffer
                 需要预先申请较大的内存。</p>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_evn_2nt_2dc" data-ofbid="mpp_decode__table_evn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_encode_jpeg</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_evn_2nt_2dc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_evn_2nt_2dc__entry__2">int mpp_encode_jpeg(struct mpp_frame* frame, int quality, int
-                                dma_buf_fd, int buf_len, int* len)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__2">编码一帧 JPEG 图片</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__2">
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_decode__table_evn_2nt_2dc" data-ofbid="mpp_decode__table_evn_2nt_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_encode_jpeg</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_decode__table_evn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1757__20250409171033">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_decode__table_evn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1761__20250409171033">int mpp_encode_jpeg(struct mpp_frame* frame, int quality, int
+                                dma_buf_fd, int buf_len, int* len)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1771__20250409171033">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1775__20250409171033">编码一帧 JPEG 图片</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1782__20250409171033">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1786__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">frame: 待编码的原始 YUV 数据</div>
                                     <div class="- topic/div div">quality: 编码质量，取值范围 1~100，1 表示编码图片质量最差，100 表示最好</div>
@@ -544,13 +942,25 @@ mpp_decoder_destory(dec);</pre></div>
                                     <div class="- topic/div div">buf_len：输出 JPEG 图片 dma-buf 的长度</div>
                                     <div class="- topic/div div">len: 输出 JPEG 图片的真实大小</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1811__20250409171033">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_decode__table_evn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1815__20250409171033">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">0: 成功</div>
                                     <div class="- topic/div div">&lt;0:失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_evn_2nt_2dc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_evn_2nt_2dc__entry__2">-</td></tr></tbody></table></div>
-        </section></div></article></main></div>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_decode__table_evn_2nt_2dc__entry__1"><p class="- topic/p p" data-ofbid="d41868e1831__20250409171033">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_decode__table_evn_2nt_2dc__entry__2"><p class="- topic/p p" data-ofbid="d41868e1835__20250409171033">-</p></td>
+                        </tr>
+                    </tbody></table></div>
+        </section>
+    </div>
+</article></main></div>
                         
                         
                         
@@ -576,8 +986,7 @@ mpp_decoder_destory(dec);</pre></div>
         <footer class="navbar navbar-default wh_footer">
   <div class=" footer-container mx-auto ">
     <title>footer def</title>
-    <style><!--
-
+    <style>
 .p1 {
   font-family: FangZhengShuSong, Times, serif;
 }
@@ -587,26 +996,16 @@ mpp_decoder_destory(dec);</pre></div>
 .p3 {
   font-family: "Lucida Console", "Courier New", monospace;
 }
-    
---></style>
-  
-
-  
-    
-  
-  
-    
-            
-   
-  
-
+    </style>
   <div class="webhelp.fragment.footer">
-    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
-  </div><div>
-    <div class="generation_time">
-      Update Time: 2025-01-21
-    </div>        
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
   </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
   </div>
 </footer>
         

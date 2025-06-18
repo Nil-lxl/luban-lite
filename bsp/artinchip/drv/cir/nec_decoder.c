@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  * Authors:  dwj <weijie.ding@artinchip.com>
@@ -37,11 +37,9 @@ static uint32_t ir_nec_bytes_to_scancode(uint8_t address,
 {
     uint32_t scancode;
 
-    /* Normal NEC */
-    if (((address ^ not_address) != 0xff) || ((command ^ not_command) != 0xff))
-        return 0;
-    else
-        scancode = address << 8 | command;
+    /* Compatile with Normal NEC and Extended NEC(NECX) */
+    /* scancode encoding AAaaDD */
+    scancode = address << 16 | not_address <<  8 | command;
 
     return scancode;
 }
@@ -53,6 +51,7 @@ int ir_nec_decode(uint8_t * rx_data, uint32_t size, uint32_t *scancode)
     uint32_t i, data = 0, tmp_data = 0, data_count = 0;
     uint8_t address, not_address, command, not_command;
     enum nec_state state = STATE_INACTIVE;
+
     for (i = 0; i < size; i++) {
         if ((rx_data[i] & 0x80) == previous_level) {
             /* Level not flip */
@@ -143,11 +142,12 @@ static uint32_t ir_nec_scancode_to_raw(cir_protocol_t protocol,
 {
     uint8_t addr, addr_inv, data, data_inv;
 
-    /* Normal NEC */
-    /* scan encoding: AADD */
     data = scancode & 0xff;
-    addr       = (scancode >>  8) & 0xff;
-    addr_inv   = addr ^ 0xff;
+
+    /* Compatile with Normal NEC and Extended NEC(NECX) */
+    /* scancode encoding AAaaDD */
+    addr       = (scancode >> 16) & 0xff;
+    addr_inv   = (scancode >>  8) & 0xff;
     data_inv   = data ^ 0xff;
 
     /* raw encoding: ddDDaaAA */

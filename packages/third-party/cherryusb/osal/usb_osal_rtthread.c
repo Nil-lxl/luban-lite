@@ -12,8 +12,13 @@
 usb_osal_thread_t usb_osal_thread_create(const char *name, uint32_t stack_size, uint32_t prio, usb_thread_entry_t entry, void *args)
 {
     rt_thread_t htask;
+
     htask = rt_thread_create(name, entry, args, stack_size, prio, 10);
+    if (htask == NULL)
+        return NULL;
+
     rt_thread_startup(htask);
+
     return (usb_osal_thread_t)htask;
 }
 
@@ -121,6 +126,68 @@ int usb_osal_mq_recv(usb_osal_mq_t mq, uintptr_t *addr, uint32_t timeout)
     }
 
     return (int)ret;
+}
+
+usb_osal_event_t usb_osal_event_creat(const char *name)
+{
+    return (rt_event_t)rt_event_create(name, RT_IPC_FLAG_FIFO);
+}
+
+void usb_osal_event_delete(usb_osal_event_t event)
+{
+    rt_event_delete((rt_event_t)event);
+}
+
+int usb_osal_event_send(usb_osal_event_t event, uint32_t set)
+{
+    return rt_event_send((rt_event_t)event, set);
+}
+
+int usb_osal_event_recv(usb_osal_event_t event, uint32_t  set, uint8_t option,
+                        int32_t timeout, uint32_t *recved)
+{
+    uint8_t rt_opt = 0;
+
+    if (option & USB_OSAL_EVENT_FLAG_AND)
+        rt_opt |= RT_EVENT_FLAG_AND;
+
+    if (option & USB_OSAL_EVENT_FLAG_OR)
+        rt_opt |= RT_EVENT_FLAG_OR;
+
+    if (option & USB_OSAL_EVENT_FLAG_CLEAR)
+        rt_opt |= RT_EVENT_FLAG_CLEAR;
+
+    return rt_event_recv((rt_event_t)event, set, rt_opt, timeout, recved);
+}
+
+struct usb_osal_timer *usb_osal_timer_create(const char *name, uint32_t timeout_ms, usb_timer_handler_t handler, void *argument, bool is_period)
+{
+    struct usb_osal_timer *timer;
+
+    timer = rt_malloc(sizeof(struct usb_osal_timer));
+
+    memset(timer, 0, sizeof(struct usb_osal_timer));
+
+    timer->timer = (void *)rt_timer_create(name, handler, argument, timeout_ms, is_period ? (RT_TIMER_FLAG_PERIODIC | RT_TIMER_FLAG_SOFT_TIMER) : (RT_TIMER_FLAG_ONE_SHOT | RT_TIMER_FLAG_SOFT_TIMER));
+
+    return timer;
+}
+
+void usb_osal_timer_delete(struct usb_osal_timer *timer)
+{
+    rt_timer_stop((rt_timer_t)timer->timer);
+    rt_timer_delete((rt_timer_t)timer->timer);
+    rt_free(timer);
+}
+
+void usb_osal_timer_start(struct usb_osal_timer *timer)
+{
+    rt_timer_start((rt_timer_t)(timer->timer));
+}
+
+void usb_osal_timer_stop(struct usb_osal_timer *timer)
+{
+    rt_timer_stop((rt_timer_t)(timer->timer));
 }
 
 size_t usb_osal_enter_critical_section(void)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Artinchip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -356,12 +356,12 @@ int usb_otg_get_mode(unsigned int *auto_flg, unsigned int *mode)
 static int usb_otg_config_init(void)
 {
     struct usb_otg *d = &g_usb_otg;
-    int pin;
-    unsigned int g, p;
+    int __attribute__((unused)) pin;
+    unsigned int __attribute__((unused)) g, p;
 
     /* (1) Get id gpio */
     d->id_gpio = -1;
-#ifdef LPKG_CHERRYUSB_ID_GPIO
+#if defined(LPKG_CHERRYUSB_ID_GPIO) && !defined(AIC_BOOTLOADER)
     pin = hal_gpio_name2pin(LPKG_CHERRYUSB_ID_GPIO_NAME);
     if (pin < 0) {
         USB_LOG_ERR("get id gpio err.\n");
@@ -425,7 +425,7 @@ static int usb_otg_config_init(void)
 #endif
 
     /* (4) Get otg auto/manual mode */
-#ifdef LPKG_CHERRYUSB_OTG_AUTO
+#if defined(LPKG_CHERRYUSB_OTG_AUTO) && !defined(AIC_BOOTLOADER)
     d->auto_flg = 1;
     if (d->id_gpio < 0) {
         USB_LOG_ERR("get id gpio err.\n");

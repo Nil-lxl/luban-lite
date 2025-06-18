@@ -11,17 +11,20 @@ if GetDepend('AIC_USING_CAMERA'):
     CPPPATH.append(cwd + '/common')
     src += Glob('common/*.c')
 
-if GetDepend('AIC_USING_CAMERA_OV7670'):
-    src += Glob('ov7670/*.c')
-
-if GetDepend('AIC_USING_CAMERA_OV5640'):
-    src += Glob('ov5640/*.c')
+if GetDepend('AIC_USING_CAMERA_OV2640'):
+    src += Glob('ov2640/*.c')
 
 if GetDepend('AIC_USING_CAMERA_OV2659'):
     src += Glob('ov2659/*.c')
 
-if GetDepend('AIC_USING_CAMERA_OV2640'):
-    src += Glob('ov2640/*.c')
+if GetDepend('AIC_USING_CAMERA_OV5640'):
+    src += Glob('ov5640/*.c')
+
+if GetDepend('AIC_USING_CAMERA_OV7670'):
+    src += Glob('ov7670/*.c')
+
+if GetDepend('AIC_USING_CAMERA_OV9281'):
+    src += Glob('ov9281/*.c')
 
 if GetDepend('AIC_USING_CAMERA_GC0308'):
     src += Glob('gc0308/*.c')
@@ -32,7 +35,7 @@ if GetDepend('AIC_USING_CAMERA_GC032A'):
 if GetDepend('AIC_USING_CAMERA_GM7150'):
     src += Glob('gm7150/*.c')
 
-if GetDepend('AIC_USING_CAMERA_SC030IOT'):
+if GetDepend('AIC_USING_CAMERA_SC030IOT') or GetDepend('AIC_USING_CAMERA_SC031IOT'):
     src += Glob('sc030iot/*.c')
 
 if GetDepend('AIC_USING_CAMERA_SC031GS'):
@@ -41,7 +44,7 @@ if GetDepend('AIC_USING_CAMERA_SC031GS'):
 if GetDepend('AIC_USING_CAMERA_SC035HGS'):
     src += Glob('sc035/*.c')
 
-if GetDepend('AIC_USING_CAMERA_TP2825'):
+if GetDepend('AIC_USING_CAMERA_TP2825') or GetDepend('AIC_USING_CAMERA_TP9950'):
     src += Glob('tp2825b/tp2825bx.c')
 
 LOCAL_CCFLAGS = ''

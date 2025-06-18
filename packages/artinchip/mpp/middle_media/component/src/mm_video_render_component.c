@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+* Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
 *
 * SPDX-License-Identifier: Apache-2.0
 *
@@ -31,15 +31,7 @@
 #define VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG 0x02
 #define VIDEO_RENDER_WAIT_FRAME_INTERVAL (10 * 1000 * 1000)
 #define VIDEO_RENDER_WAIT_FRAME_MAX_TIME (8 * 1000 * 1000)
-#define MAX_VIDEO_SYNC_DIFF_TIME (10 * 1000)
 
-
-typedef enum MM_VIDEO_SYNC_TYPE {
-    MM_VIDEO_SYNC_INVAILD = -1,
-    MM_VIDEO_SYNC_DROP = 0,
-    MM_VIDEO_SYNC_DEALY,
-    MM_VIDEO_SYNC_SHOW,
-} MM_VIDEO_SYNC_TYPE;
 
 typedef struct mm_video_render_data {
     MM_STATE_TYPE state;
@@ -1416,9 +1408,9 @@ mm_vdieo_render_process_video_sync(mm_video_render_data *p_video_render_data,
                __LINE__, p_frame_info->pts, delay_time);
     }
 
-    if (delay_time > 2 * MAX_VIDEO_SYNC_DIFF_TIME) {
-        sync_type = MM_VIDEO_SYNC_DEALY;
-    } else if (delay_time > (-2) * MAX_VIDEO_SYNC_DIFF_TIME) {
+    if (delay_time > 2 * MM_VIDEO_SYNC_DIFF_TIME) {
+        sync_type = MM_VIDEO_SYNC_DELAY;
+    } else if (delay_time > (-2) * MM_VIDEO_SYNC_DIFF_TIME) {
         sync_type = MM_VIDEO_SYNC_SHOW;
     } else {
         sync_type = MM_VIDEO_SYNC_DROP;
@@ -1674,8 +1666,6 @@ _AIC_SHOW_DIRECT_:
                 FRAME_FLAG_EOS) {
                 p_video_render_data->flags |=
                     VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
-                logi("[%s:%d]receive frame_end_flag\n", __FUNCTION__,
-                       __LINE__);
             }
         } else {
             // how to do ,now deal with  same success
@@ -1708,12 +1698,8 @@ _AIC_SHOW_DIRECT_:
 
     } else if (sync_type == MM_VIDEO_SYNC_DROP) {
         static int drop_num = 0;
-        if (p_video_render_data->disp_frames[cur_frame_id].flags &
-            FRAME_FLAG_EOS) {
-            p_video_render_data->flags |=
-                VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
-            logi("[%s:%d]receive frame_end_flag\n", __FUNCTION__, __LINE__);
-        }
+        if (p_video_render_data->disp_frames[cur_frame_id].flags & FRAME_FLAG_EOS)
+            p_video_render_data->flags |= VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
 
         p_video_render_data->drop_frame_num++;
         drop_num++;
@@ -1723,20 +1709,20 @@ _AIC_SHOW_DIRECT_:
                    ",delay_time:" FMT_d64 "\n",
                    p_video_render_data->drop_frame_num, delay_time);
         }
-    } else if (sync_type == MM_VIDEO_SYNC_DEALY) {
+    } else if (sync_type == MM_VIDEO_SYNC_DELAY) {
         struct timespec delay_before = {0}, delay_after = {0};
         long  delay = 0;
-        logd("video sync delay:%lld,%lld\n", delay_time, delay_time-MAX_VIDEO_SYNC_DIFF_TIME);
+        logd("video sync delay:%lld,%lld\n", delay_time, delay_time-MM_VIDEO_SYNC_DIFF_TIME);
         pthread_mutex_lock(&p_video_render_data->in_frame_lock);
         p_video_render_data->wait_ready_frame_flag = MM_FALSE;
         pthread_mutex_unlock(&p_video_render_data->in_frame_lock);
         clock_gettime(CLOCK_REALTIME, &delay_before);
-        aic_msg_wait_new_msg(&p_video_render_data->s_msg, delay_time-MAX_VIDEO_SYNC_DIFF_TIME);
+        aic_msg_wait_new_msg(&p_video_render_data->s_msg, delay_time-MM_VIDEO_SYNC_DIFF_TIME);
         clock_gettime(CLOCK_REALTIME, &delay_after);
         delay = (delay_after.tv_sec - delay_before.tv_sec) * 1000 * 1000 +
                 (delay_after.tv_nsec - delay_before.tv_nsec) / 1000;
         logd("[%s:%d]:true sleep time %ld, predict sleep time:%lld\n", __FUNCTION__, __LINE__,
-             delay, delay_time - MAX_VIDEO_SYNC_DIFF_TIME);
+             delay, delay_time - MM_VIDEO_SYNC_DIFF_TIME);
         goto _AIC_SHOW_DIRECT_;
     }
 
@@ -1819,7 +1805,7 @@ static void *mm_video_render_component_thread(void *p_thread_data)
                 mm_time_config_timestamp timestamp;
                 timestamp.port_index = p_bind_clock->bind_port_index;
                 timestamp.timestamp =
-                    p_video_render_data->disp_frames[last_frame_id].pts;
+                    p_video_render_data->disp_frames[cur_frame_id].pts;
                 mm_set_config(p_bind_clock->p_bind_comp,
                               MM_INDEX_CONFIG_TIME_CLIENT_START_TIME,
                               &timestamp);
@@ -1842,12 +1828,18 @@ static void *mm_video_render_component_thread(void *p_thread_data)
                         &p_video_render_data->cur_disp_frame_id,
                         &p_video_render_data->last_disp_frame_id);
                     p_video_render_data->disp_frame_num++;
+                    if (p_video_render_data->disp_frames[cur_frame_id].flags & FRAME_FLAG_EOS) {
+                        mm_video_render_event_notify(p_video_render_data,
+                                                     MM_EVENT_VIDEO_RENDER_FIRST_FRAME,
+                                                     0, 0, NULL);
+                        p_video_render_data->flags |= VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
+                        goto _AIC_MSG_GET_;
+                    }
                     aic_msg_wait_new_msg(&p_video_render_data->s_msg,
                                          10 * 1000);
                     goto _AIC_MSG_GET_;
                 }
-                logi("[%s:%d]audio start time arrive\n", __FUNCTION__,
-                       __LINE__);
+                logi("[%s:%d]audio start time arrive\n", __FUNCTION__, __LINE__);
             } else { //if it does not tunneld with clock ,it need calcuaute media time by self for control frame rate
                 mm_vdieo_render_set_media_clock(
                     p_video_render_data,
@@ -1867,12 +1859,9 @@ static void *mm_video_render_component_thread(void *p_thread_data)
                 mm_video_render_event_notify(p_video_render_data,
                                              MM_EVENT_VIDEO_RENDER_FIRST_FRAME,
                                              0, 0, NULL);
-                if (p_video_render_data->disp_frames[cur_frame_id].flags &
-                    FRAME_FLAG_EOS) {
+                if (p_video_render_data->disp_frames[cur_frame_id].flags & FRAME_FLAG_EOS) {
                     p_video_render_data->flags |=
                         VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
-                    logi("[%s:%d]receive frame_end_flag\n", __FUNCTION__,
-                           __LINE__);
                 }
             } else {
                 // how to do ,now deal with  same success

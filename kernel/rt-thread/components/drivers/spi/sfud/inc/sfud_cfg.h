@@ -52,7 +52,12 @@
 #define DBG_TAG "SFUD"
 #include <rtdbg.h>
 #define SFUD_INFO(...)        LOG_I(__VA_ARGS__)
-#define SFUD_WP_INFO(...)     LOG_I(__VA_ARGS__)
+
+#ifdef AIC_DISABLE_SFUD_WP_DEBUG
+#define SFUD_WP_INFO(...)   do {} while (0)
+#else
+#define SFUD_WP_INFO(...)  LOG_E(__VA_ARGS__)
+#endif
 
 /**
  * Using probe flash JEDEC SFDP parameter.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -63,7 +63,7 @@ static void usage(char *program)
     printf("\t -l, --list\t\tList all the supported command\n");
     printf("\t -h, --usage \n");
     printf("\n");
-    printf("Example: %s -f nv16 -c 1\n", program);
+    printf("Example: %s -c \"fps\" -v 20\n", program);
 }
 
 struct camera_cmd *camera_scan_cmd(char *arg)

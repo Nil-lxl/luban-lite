@@ -82,7 +82,7 @@ if GetDepend(['LPKG_MPP']):
             src += Glob('ve/decoder/h264/*.c')
 
 
-if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_VE_TEST']):
+if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_VE_TEST']):
     src += Glob('./mpp_test/pic_dec_test.c')
     src += Glob('./mpp_test/mpp_dec_test.c')
     src += Glob('./mpp_test/bit_stream_parser.c')
@@ -93,11 +93,11 @@ if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AI
     if GetDepend(['AIC_VE_DRV_V10']):
         src += Glob('./mpp_test/test_mpp_dec.c')
 
-if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_GE_TEST']):
+if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_GE_TEST']):
     src += Glob('./mpp_test/ge_test/public/*.c')
     src += Glob('./mpp_test/ge_test/*.c')
 
-if GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_FB_TEST']) :
+if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_FB_TEST']) :
     src += Glob('./mpp_test/mpp_fb/*.c')
 
 if GetDepend(['AIC_MPP_PLAYER_INTERFACE']):
@@ -139,10 +139,10 @@ if GetDepend(['AIC_MPP_PLAYER_INTERFACE']):
     src += Glob('middle_media/mini_audio_player/mini_audio_player_demo.c')
 
 if GetDepend(['AIC_MPP_PLAYER_VE_USE_FILL_FB']):
-    src += Glob('middle_media/player/player_dec_share_test.c')
+    src += Glob('middle_media/player/test/player_video_test.c')
 
 if GetDepend(['AIC_MPP_PLAYER_AUDIO_RENDER_SHARE_TEST']):
-    src += Glob('middle_media/player/player_audio_render_share_test.c')
+    src += Glob('middle_media/player/test/player_audio_test.c')
 
 if GetDepend(['LPKG_USING_LIBFLAC']):
     src += Glob('middle_media/audio_decoder/decoder/flac/flac_decoder.c')

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2021-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -146,6 +146,82 @@ static const uint32_t uart_standard_baudrate[] = {
 
 extern int32_t drv_usart_target_init(int32_t idx, uint32_t *base, uint32_t *irq, void **handler);
 
+int32_t hal_uart_reset_fifo(usart_handle_t handle)
+{
+    USART_NULL_PARAM_CHK(handle);
+    aic_usart_priv_t *usart_priv = handle;
+    aic_usart_reg_t *addr = (aic_usart_reg_t *)(usart_priv->base);
+
+    addr->FCR = (FCR_FIFO_EN | FCR_TX_FIFO_RST | FCR_RX_FIFO_RST);
+    return 0;
+}
+
+static void hal_usart_get_dma_flag(void)
+{
+    uint8_t i;
+    for (i = 0; i < AIC_UART_MAX_NUM; i++) {
+        dma_flag[i].dma_enable = 0;
+    }
+
+#ifdef AIC_UART0_DMA_ENABLE_FLAG
+    dma_flag[0].dma_enable = 1;
+#endif
+#ifdef AIC_UART1_DMA_ENABLE_FLAG
+    dma_flag[1].dma_enable = 1;
+#endif
+#ifdef AIC_UART2_DMA_ENABLE_FLAG
+    dma_flag[2].dma_enable = 1;
+#endif
+#ifdef AIC_UART3_DMA_ENABLE_FLAG
+    dma_flag[3].dma_enable = 1;
+#endif
+#ifdef AIC_UART4_DMA_ENABLE_FLAG
+    dma_flag[4].dma_enable = 1;
+#endif
+#ifdef AIC_UART5_DMA_ENABLE_FLAG
+    dma_flag[5].dma_enable = 1;
+#endif
+#ifdef AIC_UART6_DMA_ENABLE_FLAG
+    dma_flag[6].dma_enable = 1;
+#endif
+#ifdef AIC_UART7_DMA_ENABLE_FLAG
+    dma_flag[7].dma_enable = 1;
+#endif
+}
+
+int32_t hal_usart_set_loopback(usart_handle_t handle, uint8_t enable)
+{
+    USART_NULL_PARAM_CHK(handle);
+    aic_usart_priv_t *usart_priv = handle;
+    aic_usart_reg_t *addr = (aic_usart_reg_t *)(usart_priv->base);
+
+    if (enable)
+        addr->MCR |= AIC_UART_MCR_LOOPBACK;
+    else
+        addr->MCR &= ~AIC_UART_MCR_LOOPBACK;
+
+    return 0;
+}
+
+int32_t hal_usart_config_fifo(usart_handle_t handle)
+{
+    USART_NULL_PARAM_CHK(handle);
+    aic_usart_priv_t *usart_priv = handle;
+    aic_usart_reg_t *addr = (aic_usart_reg_t *)(usart_priv->base);
+
+    hal_usart_get_dma_flag();
+    /* if use dma reconfigure the fcr reg */
+    if (dma_flag[usart_priv->idx].dma_enable == 1) {
+        addr->FCR = FCR_TX_FIFO_RST | FCR_RX_FIFO_RST;
+        addr->FCR = AIC_UART_DMA_MODE(1) | FRC_TX_FIFO_SET(3) | FRC_RX_FIFO_SET(2) | FCR_FIFO_EN;
+    } else {
+        addr->FCR = FCR_FIFO_EN | FCR_RX_FIFO_RST | FCR_TX_FIFO_RST | FRC_RX_FIFO_SET(3);
+    }
+
+    return 0;
+}
+
+
 /**
   \brief       set the bautrate of usart.
   \param[in]   addr  usart base to operate.
@@ -167,17 +243,17 @@ int32_t hal_usart_config_baudrate(usart_handle_t handle, uint32_t baud)
         divisor = divisor / 10;
     }
 
-    addr->FCR = FCR_FIFO_EN | FCR_RX_FIFO_RST | FCR_TX_FIFO_RST;
+    hal_usart_config_fifo(handle);
+
     while (addr->USR & USR_UART_BUSY) {
         timecount++;
+        hal_usart_clear_rxfifo(handle);
         if (timecount >= UART_BUSY_TIMEOUT)
         {
-            hal_log_info("Uart controller busy, waiting for timeout\n");
+            hal_log_err("Uart controller busy, waiting for timeout\n");
             return ERR_USART(DRV_ERROR_TIMEOUT);
         }
     };
-
-    addr->HALT |= (HALT_CHCFG_AT_BUSY);
 
     addr->LCR |= LCR_SET_DLAB;
     /* DLL and DLH is lower 8-bits and higher 8-bits of divisor.*/
@@ -188,8 +264,6 @@ int32_t hal_usart_config_baudrate(usart_handle_t handle, uint32_t baud)
      * to access other registers.
      */
     addr->LCR &= (~LCR_SET_DLAB);
-
-    addr->HALT |= (HALT_CHANGE_UPDATE);
 
     return 0;
 }
@@ -329,57 +403,6 @@ int32_t hal_usart_config_databits(usart_handle_t handle, usart_data_bits_e datab
 
         default:
             return ERR_USART(USART_ERROR_DATA_BITS);
-    }
-
-    return 0;
-}
-
-static void hal_usart_get_dma_flag(void)
-{
-    uint8_t i;
-    for (i = 0; i < AIC_UART_MAX_NUM; i++) {
-        dma_flag[i].dma_enable = 0;
-    }
-
-#ifdef AIC_UART0_DMA_ENABLE_FLAG
-    dma_flag[0].dma_enable = 1;
-#endif
-#ifdef AIC_UART1_DMA_ENABLE_FLAG
-    dma_flag[1].dma_enable = 1;
-#endif
-#ifdef AIC_UART2_DMA_ENABLE_FLAG
-    dma_flag[2].dma_enable = 1;
-#endif
-#ifdef AIC_UART3_DMA_ENABLE_FLAG
-    dma_flag[3].dma_enable = 1;
-#endif
-#ifdef AIC_UART4_DMA_ENABLE_FLAG
-    dma_flag[4].dma_enable = 1;
-#endif
-#ifdef AIC_UART5_DMA_ENABLE_FLAG
-    dma_flag[5].dma_enable = 1;
-#endif
-#ifdef AIC_UART6_DMA_ENABLE_FLAG
-    dma_flag[6].dma_enable = 1;
-#endif
-#ifdef AIC_UART7_DMA_ENABLE_FLAG
-    dma_flag[7].dma_enable = 1;
-#endif
-}
-
-int32_t hal_usart_config_fifo(usart_handle_t handle)
-{
-    USART_NULL_PARAM_CHK(handle);
-    aic_usart_priv_t *usart_priv = handle;
-    aic_usart_reg_t *addr = (aic_usart_reg_t *)(usart_priv->base);
-
-    hal_usart_get_dma_flag();
-    /* if use dma reconfigure the fcr reg */
-    if (dma_flag[usart_priv->idx].dma_enable == 1) {
-        addr->FCR = FCR_TX_FIFO_RST | FCR_RX_FIFO_RST;
-        addr->FCR = AIC_UART_DMA_MODE(1) | FRC_TX_FIFO_SET(3) | FRC_RX_FIFO_SET(2) | FCR_FIFO_EN;
-    } else {
-        addr->FCR = FCR_FIFO_EN | FCR_RX_FIFO_RST | FCR_TX_FIFO_RST | FRC_RX_FIFO_SET(3);
     }
 
     return 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -42,8 +42,11 @@ static inline bool aicos_in_irq(void)
 static inline aicos_thread_t aicos_thread_create(const char *name, uint32_t stack_size, uint32_t prio, aic_thread_entry_t entry, void *args)
 {
     TaskHandle_t htask = NULL;
+    BaseType_t ret;
     stack_size /= sizeof(StackType_t);
-    xTaskCreate(entry, name, stack_size, args, prio, &htask);
+    ret = xTaskCreate(entry, name, stack_size, args, prio, &htask);
+    if (ret != pdPASS)
+        return NULL;
     return (aicos_thread_t)htask;
 }
 

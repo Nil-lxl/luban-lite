@@ -15,6 +15,36 @@
 #define DBG_LVL DBG_INFO
 #include <rtdbg.h>
 
+static uint16_t g_touch_angle = 0;
+static uint8_t g_touch_dynamic_enable = 0;
+static uint8_t g_osd_enable = 0;
+
+static void aic_set_dynamic_touch_rotation(uint16_t angle)
+{
+    g_touch_angle = angle;
+    g_touch_dynamic_enable = 1;
+}
+
+static uint16_t aic_get_touch_dynamic_rotation(uint16_t angle)
+{
+    return g_touch_angle;
+}
+
+static uint8_t aic_get_touch_dynamic_rotation_enabled(uint8_t flag)
+{
+    return g_touch_dynamic_enable;
+}
+
+static void aic_set_osd_rotation_flag(uint8_t flag)
+{
+    g_osd_enable = flag;
+}
+
+static uint8_t aic_get_osd_rotation_flag(uint8_t flag)
+{
+    return g_osd_enable;
+}
+
 /* ISR for touch interrupt */
 void rt_hw_touch_isr(rt_touch_t touch)
 {
@@ -144,6 +174,8 @@ static rt_err_t rt_touch_control(rt_device_t dev, int cmd, void *args)
     rt_err_t result = RT_EOK;
     RT_ASSERT(dev != RT_NULL);
     touch = (rt_touch_t)dev;
+    rt_uint16_t angle = 0;
+    rt_uint8_t flag = 0;
 
     switch (cmd)
     {
@@ -179,6 +211,43 @@ static rt_err_t rt_touch_control(rt_device_t dev, int cmd, void *args)
             touch->info.range_y = *(rt_uint32_t *)args;
             LOG_D("set y coordinate range :%d \n", touch->info.range_x);
         }
+
+        break;
+    case RT_TOUCH_CTRL_SET_DYNAMIC_ROTATE:
+        if (args) {
+            angle = *(rt_uint16_t *)args;
+            aic_set_dynamic_touch_rotation(angle);
+        } else {
+            result = -RT_EINVAL;
+        }
+        break;
+    case RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE:
+        if (args)
+            *(rt_uint16_t *)args = aic_get_touch_dynamic_rotation(angle);
+        else
+            result = -RT_EINVAL;
+
+        break;
+    case RT_TOUCH_CTRL_GET_DYNAMIC_FLAG:
+        if (args)
+            *(rt_uint8_t *)args = aic_get_touch_dynamic_rotation_enabled(flag);
+        else
+            result = -RT_EINVAL;
+
+        break;
+    case RT_TOUCH_CTRL_SET_OSD_FLAG:
+        if (args) {
+            flag = *(rt_uint8_t *)args;
+            aic_set_osd_rotation_flag(flag);
+        } else {
+            result = -RT_EINVAL;
+        }
+        break;
+    case RT_TOUCH_CTRL_GET_OSD_FLAG:
+        if (args)
+            *(rt_uint8_t *)args = aic_get_osd_rotation_flag(flag);
+        else
+            result = -RT_EINVAL;
 
         break;
     case RT_TOUCH_CTRL_DISABLE_INT:

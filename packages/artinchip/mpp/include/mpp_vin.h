@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -124,6 +124,7 @@ struct dvp_out_fmt {
     u32 pixelformat;
     u32 field;
     u32 colorspace;
+    u8  frame_offset;
     u8  num_planes;
     struct dvp_plane_pix_format plane_fmt[VIN_MAX_PLANE_NUM];
 };
@@ -146,11 +147,14 @@ struct vin_video_buf {
 #define DVP_IN_S_FMT        _IOWR('V',  5, struct dvp_in_fmt)
 #define DVP_OUT_S_FMT       _IOWR('V',  6, struct dvp_out_fmt)
 
+#define DVP_STREAM_PAUSE    _IO('V', 10)
+#define DVP_STREAM_RESUME   _IO('V', 11)
 #define DVP_STREAM_ON       _IO('V', 18)
 #define DVP_STREAM_OFF      _IO('V', 19)
 #define DVP_REQ_BUF         _IOWR('V',  8, struct vin_video_buf)
 #define DVP_Q_BUF           _IOWR('V', 15, int)
 #define DVP_DQ_BUF          _IOWR('V', 17, int)
+#define DVP_GET_TIMESTAMP   _IOR('V', 20, int)
 
 int mpp_vin_init(char *camera);
 void mpp_vin_deinit(void);

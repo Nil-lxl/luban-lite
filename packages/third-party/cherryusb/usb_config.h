@@ -118,7 +118,8 @@
 
 /* ================ USB HOST Stack Configuration ================== */
 
-#if defined(AIC_USING_USB0_HOST) && defined(AIC_USING_USB1_HOST)
+#if (defined(AIC_USING_USB0_HOST)|| defined(AIC_USING_USB0_OTG)) \
+        && defined(AIC_USING_USB1_HOST)
 #define CONFIG_USBHOST_MAX_BUS              2
 #else
 #define CONFIG_USBHOST_MAX_BUS              1
@@ -127,8 +128,13 @@
 #define CONFIG_USBHOST_MAX_RHPORTS          1
 #define CONFIG_USBHOST_MAX_EXTHUBS          1
 #define CONFIG_USBHOST_MAX_EHPORTS          4
+#ifdef LPKG_CHERRYUSB_HOST_UVC
+#define CONFIG_USBHOST_MAX_INTERFACES       16
+#define CONFIG_USBHOST_MAX_INTF_ALTSETTINGS 16
+#else
 #define CONFIG_USBHOST_MAX_INTERFACES       8
 #define CONFIG_USBHOST_MAX_INTF_ALTSETTINGS 8
+#endif
 #define CONFIG_USBHOST_MAX_ENDPOINTS        4
 
 #define CONFIG_USBHOST_MAX_CDC_ACM_CLASS 4
@@ -152,7 +158,11 @@
 #define CONFIG_USBHOST_MSOS_VENDOR_CODE 0x00
 
 /* Ep0 max transfer buffer */
+#ifdef LPKG_CHERRYUSB_HOST_UVC
+#define CONFIG_USBHOST_REQUEST_BUFFER_LEN 5120
+#else
 #define CONFIG_USBHOST_REQUEST_BUFFER_LEN 512
+#endif
 
 #ifndef CONFIG_USBHOST_CONTROL_TRANSFER_TIMEOUT
 #define CONFIG_USBHOST_CONTROL_TRANSFER_TIMEOUT 500
@@ -195,6 +205,7 @@
 // #define CONFIG_USB_EHCI_HCOR_RESERVED_DISABLE
 #define CONFIG_USB_EHCI_CONFIGFLAG
 #define CONFIG_USB_EHCI_PORT_POWER
+#define CONFIG_USB_EHCI_ISO
 // #define CONFIG_USB_EHCI_PRINT_HW_PARAM
 
 /* ================ OHCI Configuration ================ */

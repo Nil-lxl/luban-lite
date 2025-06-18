@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,6 +13,7 @@
 #include "aic_hal.h"
 #include "hal_wdt.h"
 #include "aic_drv_wdt.h"
+#include "aic_hal_clk.h"
 
 #define AIC_WDT_DEFAULT_CLR_THD     3
 
@@ -220,8 +221,49 @@ void drv_wdt_uninit(rt_watchdog_t *wdt)
 {
     aicos_irq_disable(WDT_IRQn);
     hal_clk_disable_assertrst(CLK_WDT);
-    hal_clk_disable(CLK_WDT);
 }
+
+#ifdef RT_USING_PM
+static int aic_wdt_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        hal_clk_disable(CLK_WDT);
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_wdt_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        hal_clk_enable(CLK_WDT);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_wdt_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_wdt_suspend, aic_wdt_resume)
+    NULL,
+};
+#endif
 
 static struct rt_watchdog_ops aic_wdt_ops = {
     .init = drv_wdt_init,
@@ -237,6 +279,10 @@ int rt_hw_wdt_init(void)
                                   RT_DEVICE_FLAG_RDWR, 0);
     if (ret != RT_EOK)
         LOG_E("Failed to register WDT, return %d", ret);
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&g_wdt_dev.wdt.parent, &aic_wdt_pm_ops);
+#endif
 
     LOG_I("ArtInChip WDT loaded");
     return ret;

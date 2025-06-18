@@ -91,9 +91,9 @@ env.PrependENVPath('PATH', rtconfig.EXEC_PATH)
 
 # add --start-group and --end-group for GNU GCC
 if sys.platform != "win32":
-    env['LINKCOM'] = '$LINK -o $TARGET $LINKFLAGS $__RPATH $SOURCES $_LIBDIRFLAGS -Wl,--start-group $_LIBFLAGS -Wl,--end-group'
+    env['LINKCOM'] = '$LINK -o $TARGET $LINKFLAGS $__RPATH $SOURCES $_LIBDIRFLAGS -Wl,--whole-archive -Wl,--start-group $_LIBFLAGS -Wl,--end-group -Wl,--no-whole-archive'
 else:
-    env['LINKCOM'] = "${TEMPFILE('$LINK -o $TARGET $LINKFLAGS $__RPATH $SOURCES $_LIBDIRFLAGS -Wl,--start-group $_LIBFLAGS -Wl,--end-group','$LINKCOMSTR')}"
+    env['LINKCOM'] = "${TEMPFILE('$LINK -o $TARGET $LINKFLAGS $__RPATH $SOURCES $_LIBDIRFLAGS -Wl,--whole-archive -Wl,--start-group $_LIBFLAGS -Wl,--end-group -Wl,--no-whole-archive','$LINKCOMSTR')}"
 env['ASCOM'] = env['ASPPCOM']
 
 # signature database

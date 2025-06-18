@@ -9,15 +9,14 @@ src     = Glob('run.c')
 if GetDepend('AIC_STRIP_MODE'):
     src     = []
 else:
-    src     += Glob('aicupg.c')
-    src     += Glob('aicupg_detect.c')
-    src     += Glob('aicupg.c')
-    src     += Glob('aicupg_detect.c')
-    src     += Glob('aicupg_erase.c')
     src     += Glob('ram_boot.c')
     src     += Glob('crc32.c')
     if GetDepend('AIC_WDT_DRV') and GetDepend('AIC_WRI_DRV'):
         src     += Glob('reset.c')
+    if GetDepend('AICUPG_SUPPORT'):
+        src     += Glob('aicupg.c')
+        src     += Glob('aicupg_detect.c')
+        src     += Glob('aicupg_erase.c')
 if GetDepend('AIC_BOOTLOADER_CMD_PROGRESS_BAR'):
     src     += Glob('progress_bar.c')
 if GetDepend('AIC_BOOTLOADER_CMD_MEM'):

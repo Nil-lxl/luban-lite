@@ -115,23 +115,29 @@ config AIC_PAN_DISPLAY
     default n
     depends on AIC_DISPLAY_DRV
 
-config AIC_DISP_COLOR_BLOCK
-    bool "Display color block"
+menuconfig AIC_DISP_BOOTUP_LOGO
+    bool "Bootup Logo"
     default y
     depends on AIC_DISPLAY_DRV
+    help
+        Enable and select frame buffer bootup logos.
 
-config AIC_DISPLAY_DITHER
-    bool
-    depends on (AIC_LVDS_JEIDA_18BIT  || AIC_PRGB_18BIT_LD || \
-                AIC_PRGB_18BIT_HD     || AIC_PRGB_16BIT_LD || \
-                AIC_PRGB_16BIT_HD     || AICFB_ARGB8888    || \
-                AICFB_ABGR8888        || AICFB_XRGB8888    || \
-                AICFB_RGB888)         && (!AICFB_RGB565    && !AICFB_ARGB1555)
+choice
+    prompt "select logo type"
+    depends on AIC_DISP_BOOTUP_LOGO
+
+config AIC_DISP_COLOR_BLOCK
+    bool "Color Block"
+
+config AIC_STARTUP_UI_SHOW
+    bool "Bootup Animation"
+    depends on LPKG_MPP
+endchoice
 
 config AIC_DISABLE_DITHER
-    bool "Disable Display Dither"
+    bool "Disable Auto Dither"
     default n
-    depends on AIC_DISPLAY_DITHER
+    depends on AIC_DISPLAY_DRV
 
 choice
     prompt "framebuffer rotation degree"
@@ -162,23 +168,6 @@ config AIC_FB_ROTATE_DEGREE
     default 90 if AICFB_ROTATE_90
     default 180 if AICFB_ROTATE_180
     default 270 if AICFB_ROTATE_270
-
-choice
-    prompt "select Output depth"
-    default AIC_OUTPUT_DEPTH_16
-    depends on AIC_DISPLAY_DITHER
-
-config AIC_OUTPUT_DEPTH_16
-    bool "Dither rgb565 Output depth 16"
-
-config AIC_OUTPUT_DEPTH_18
-    bool "Dither rgb666 Output depth 18"
-endchoice
-
-config AIC_DISP_OUTPUT_DEPTH
-    int
-    default 1 if AIC_OUTPUT_DEPTH_16
-    default 2 if AIC_OUTPUT_DEPTH_18
 
 if AIC_DISPLAY_DRV
 source "bsp/artinchip/drv/display/panel/Kconfig"

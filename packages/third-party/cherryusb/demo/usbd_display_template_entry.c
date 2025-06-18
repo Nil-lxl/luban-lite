@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -44,10 +44,21 @@ uint8_t fps_print = 1;
 uint8_t fps_print = 0;
 #endif
 
-#ifdef AIC_FB_ROTATE_EN
+#if defined(AIC_FB_ROTATE_EN)
 uint32_t usb_disp_rotate = AIC_FB_ROTATE_DEGREE;
+uint32_t usb_fb_rotate = AIC_FB_ROTATE_DEGREE;
+uint8_t usb_disp_lv_rotate_en = 0;
+uint8_t usb_disp_fb_rotate_en = 1;
+#elif defined(LV_DISPLAY_ROTATE_EN)
+uint32_t usb_disp_rotate = LV_ROTATE_DEGREE;
+uint32_t usb_fb_rotate = 0;
+uint8_t usb_disp_lv_rotate_en = 1;
+uint8_t usb_disp_fb_rotate_en = 0;
 #else
 uint32_t usb_disp_rotate = 0;
+uint32_t usb_fb_rotate = 0;
+uint8_t usb_disp_lv_rotate_en = 0;
+uint8_t usb_disp_fb_rotate_en = 0;
 #endif
 
 #ifdef AIC_USB_DISP_DEF_DIS
@@ -73,6 +84,9 @@ uint8_t usb_large_transfer = 0;
 #else
 uint8_t usb_large_transfer = 1;
 #endif
+uint8_t usb_disp_debug_en = 0;
+
+extern int usb_display_rotate(unsigned int rotate_angle);
 
 static void usage_fps(char * program)
 {
@@ -105,7 +119,82 @@ static int test_usb_fps(int argc, char *argv[])
     return 0;
 }
 
+static void usage_display_dbg(char * program)
+{
+    printf("\n");
+    printf("%s - Show debug print on/off.\n\n", program);
+    printf("Usage: %s <on|off>\n", program);
+    printf("For example:\n");
+    printf("\t%s on\n", program);
+    printf("\t%s off\n", program);
+    printf("\n");
+}
+
+static int test_usb_display_dbg(int argc, char *argv[])
+{
+    if (argc != 2) {
+        usage_display_dbg(argv[0]);
+        return -RT_EINVAL;
+    }
+
+    if (strcmp(argv[1], "on") == 0) {
+        usb_disp_debug_en = 1;
+    } else if (strcmp(argv[1], "off") == 0) {
+        usb_disp_debug_en = 0;
+    } else {
+        usage_display_dbg(argv[0]);
+        return -RT_EINVAL;
+    }
+
+    return 0;
+}
+
+static void usage_display_rotate(char * program)
+{
+    printf("\n");
+    printf("%s - Set usb display rotate 0/90/180/270.\n\n", program);
+    printf("Usage: %s <0|90|180|270>\n", program);
+    printf("For example:\n");
+    printf("\t%s 90\n", program);
+    printf("\n");
+}
+
+int usb_display_set_rotate(unsigned int rotate_angle)
+{
+    return usb_display_rotate(rotate_angle);
+}
+
+int usb_display_get_rotate()
+{
+    return usb_disp_rotate;
+}
+
+static int test_usb_display_rotate(int argc, char *argv[])
+{
+    if (argc != 2) {
+        usage_display_rotate(argv[0]);
+        return -RT_EINVAL;
+    }
+
+    if (strcmp(argv[1], "0") == 0) {
+        usb_display_set_rotate(0);
+    } else if (strcmp(argv[1], "90") == 0) {
+        usb_display_set_rotate(90);
+    } else if (strcmp(argv[1], "180") == 0) {
+        usb_display_set_rotate(180);
+    } else if (strcmp(argv[1], "270") == 0) {
+        usb_display_set_rotate(270);
+    } else {
+        usage_display_rotate(argv[0]);
+        return -RT_EINVAL;
+    }
+
+    return 0;
+}
+
 MSH_CMD_EXPORT_ALIAS(test_usb_fps, usb_fps, usb display fps);
+MSH_CMD_EXPORT_ALIAS(test_usb_display_dbg, usb_display_dbg, usb display debug info);
+MSH_CMD_EXPORT_ALIAS(test_usb_display_rotate, usb_display_rotate, usb display rotate);
 
 #ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
 #include "composite_template.h"
@@ -135,9 +224,12 @@ void usb_display_init(void)
 #if defined(KERNEL_RTTHREAD)
 #include <rtthread.h>
 #include <rtdevice.h>
+#define COMP_USING_DISP_MSC         1
+#define COMP_USING_DISP_UAC_TOUCH   2
 
-void usbd_disp_comp_setup(void *parameter)
+void usbd_disp_comp_normal_mode(void *parameter)
 {
+    usbd_composite_func_switch(COMP_USING_DISP_UAC_TOUCH);
 #if defined(LPKG_USING_COMP_MSC) && \
     defined(LPKG_CHERRYUSB_DEVICE_MSC)
     extern int msc_usbd_forbid(void);
@@ -161,8 +253,9 @@ int comp_dev_ctl_table(void)
 #if defined(LPKG_CHERRYUSB_AIC_DISP_DR)
     if (usbd_comp_disp_tid == NULL) {
         usbd_comp_disp_tid = rt_thread_create("usbd_disp_comp_setup",
-                                    usbd_disp_comp_setup, RT_NULL,
-                                    2048, RT_THREAD_PRIORITY_MAX - 2, 20);
+                                    usbd_disp_comp_normal_mode, RT_NULL,
+                                    4096, RT_THREAD_PRIORITY_MAX - 2, 20);
+
         if (usbd_comp_disp_tid != RT_NULL)
             rt_thread_startup(usbd_comp_disp_tid);
         else
@@ -290,7 +383,14 @@ INIT_APP_EXPORT(lcd_sw_key_init);
 #endif
 
 #if defined(LPKG_CHERRYUSB_AIC_DISP_DR)
-extern int usbd_msc_detection(void);
-INIT_APP_EXPORT(usbd_msc_detection);
+int usbd_disp_comp_udisk_mode(void)
+{
+    usbd_composite_func_switch(COMP_USING_DISP_MSC);
+    extern int usbd_msc_detection(void);
+    usbd_msc_detection();
+
+    return 0;
+}
+INIT_APP_EXPORT(usbd_disp_comp_udisk_mode);
 #endif
 #endif

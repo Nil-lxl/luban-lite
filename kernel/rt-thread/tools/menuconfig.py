@@ -36,6 +36,7 @@ DEFAULT_RTT_PACKAGE_URL = 'https://github.com/RT-Thread/packages.git'
 
 # make rtconfig.h from .config
 
+
 def is_pkg_special_config(config_str):
     ''' judge if it's CONFIG_PKG_XX_PATH or CONFIG_PKG_XX_VER'''
 
@@ -180,8 +181,10 @@ def get_file_md5(file):
         fp_md5 = MD5.hexdigest()
         return fp_md5
 
+
 def config():
     mk_rtconfig('.config')
+
 
 def get_env_dir():
     if os.environ.get('ENV_ROOT'):
@@ -198,6 +201,7 @@ def get_env_dir():
         return None
 
     return env_dir
+
 
 def help_info():
     print("**********************************************************************************\n"
@@ -291,8 +295,10 @@ def touch_env():
         env_sh.write('env_abs_dir=$(cd "$(dirname ${BASH_SOURCE[0]})";pwd)\n')
         env_sh.write('export PATH=$env_abs_dir/tools/scripts:$PATH')
     else:
-        if os.path.exists(os.path.join(env_dir, 'tools', 'scripts')):
-            os.environ["PATH"] = os.path.join(env_dir, 'tools', 'scripts') + ';' + os.environ["PATH"]
+        script_path = os.path.join(env_dir, 'tools', 'scripts')
+        if os.path.exists(script_path):
+            os.environ['PATH'] = os.path.join(script_path + ';' + os.environ['PATH'])
+
 
 # Exclude utestcases
 def exclude_utestcases(RTT_ROOT):
@@ -308,6 +314,7 @@ def exclude_utestcases(RTT_ROOT):
         for line in data:
             if line.find('examples/utest/testcases/Kconfig') == -1:
                 f.write(line)
+
 
 # menuconfig for Linux
 def menuconfig(RTT_ROOT):
@@ -328,7 +335,10 @@ def menuconfig(RTT_ROOT):
 
     kconfig_cmd = os.path.join(RTT_ROOT, 'tools', 'kconfig-frontends', 'kconfig-mconf')
     print(kconfig_cmd + ' Kconfig')
+    md5dot0 = get_file_md5(fn)
     os.system(kconfig_cmd + ' Kconfig')
+    md5dot1 = get_file_md5(fn)
+    changed = not operator.eq(md5dot0, md5dot1)
 
     if os.path.isfile(fn):
         if os.path.isfile(fn_old):
@@ -339,9 +349,11 @@ def menuconfig(RTT_ROOT):
         sys.exit(-1)
 
     # make rtconfig.h
-    if diff_eq == False:
+    if diff_eq is False:
         shutil.copyfile(fn, fn_old)
         mk_rtconfig(fn)
+    return changed
+
 
 # guiconfig for windows and linux
 def guiconfig(RTT_ROOT):

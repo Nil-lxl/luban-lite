@@ -101,6 +101,7 @@ struct rt_spi_ops
     rt_uint32_t (*xfer)(struct rt_spi_device *device, struct rt_spi_message *message);
     rt_err_t (*nonblock)(struct rt_spi_device *device, rt_uint32_t nonblock);
     rt_uint32_t (*gstatus)(struct rt_spi_device *device);
+    void (*delaymode)(struct rt_spi_device *device, rt_uint32_t delaymode);
 };
 
 /**
@@ -222,6 +223,10 @@ rt_err_t rt_spi_nonblock_set(struct rt_spi_device        *device,
 
 /* get async transfer status */
 rt_uint32_t rt_spi_get_transfer_status(struct rt_spi_device        *device);
+
+/* set rx delay mode on SPI device */
+void rt_spi_set_rx_delay_mode(struct rt_spi_device        *device,
+                          rt_uint32_t mode);
 
 /* send data then receive data from SPI device */
 rt_err_t rt_spi_send_then_recv(struct rt_spi_device *device,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -44,11 +44,13 @@ enum pm_module_id {
 #ifdef AIC_USING_PM
 void rt_pm_set_pin_wakeup_source(rt_base_t pin);
 void rt_pm_clear_pin_wakeup_source(rt_base_t pin);
+uint32_t rt_pm_pin_is_wakeup_source(rt_base_t pin);
 void rt_pm_disable_pin_irq_nonwakeup(void);
 void rt_pm_resume_pin_irq(void);
 #else
 static inline void rt_pm_set_pin_wakeup_source(rt_base_t pin) {}
 static inline void rt_pm_clear_pin_wakeup_source(rt_base_t pin) {}
+static inline uint32_t rt_pm_pin_is_wakeup_source(rt_base_t pin) {return 0;}
 static inline void rt_pm_disable_pin_irq_nonwakeup(void) {}
 static inline void rt_pm_resume_pin_irq(void) {}
 #endif

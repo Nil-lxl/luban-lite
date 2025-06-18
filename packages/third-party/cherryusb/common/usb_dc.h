@@ -109,6 +109,7 @@ int usbd_ep_is_stalled(const uint8_t ep, uint8_t *stalled);
  * @return 0 on success, negative errno code on fail.
  */
 int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len);
+int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, uint8_t cache_align);
 
 /**
  * @brief Setup out ep transfer setting and start transfer.
@@ -128,6 +129,7 @@ int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len
  * @return 0 on success, negative errno code on fail.
  */
 int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len);
+int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, uint8_t cache_align);
 
 /* usb dcd irq callback */
 

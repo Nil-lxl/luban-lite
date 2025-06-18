@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -437,8 +437,18 @@ static inline void hal_i2c_enable_sda_scl_stuck_timeout_restore(aic_i2c_ctrl *i2
 
 static inline void hal_i2c_set_sda_scl_stuck_time(aic_i2c_ctrl *i2c_dev)
 {
-    writel(0x1000, i2c_dev->reg_base + I2C_SCL_STUCK_TIMEOUT);
-    writel(0x1000, i2c_dev->reg_base + I2C_SDA_STUCK_TIMEOUT);
+    uint32_t rate = i2c_dev->target_rate;
+
+    if (rate <= 10000) {
+        writel(0xa00000, i2c_dev->reg_base + I2C_SCL_STUCK_TIMEOUT);
+        writel(0xa00000, i2c_dev->reg_base + I2C_SDA_STUCK_TIMEOUT);
+    } else if (rate > 10000 && rate <= 100000) {
+        writel(0x6000, i2c_dev->reg_base + I2C_SCL_STUCK_TIMEOUT);
+        writel(0x6000, i2c_dev->reg_base + I2C_SDA_STUCK_TIMEOUT);
+    } else {
+        writel(0x1000, i2c_dev->reg_base + I2C_SCL_STUCK_TIMEOUT);
+        writel(0x1000, i2c_dev->reg_base + I2C_SDA_STUCK_TIMEOUT);
+    }
 }
 
 int hal_i2c_init(aic_i2c_ctrl *i2c_dev);

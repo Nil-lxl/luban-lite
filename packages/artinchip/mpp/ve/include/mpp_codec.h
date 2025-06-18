@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -19,6 +19,7 @@
 
 #define ALIGN_8B(x) (((x) + (7)) & ~(7))
 #define ALIGN_16B(x) (((x) + (15)) & ~(15))
+#define ALIGN_64B(x) (((x) + (63)) & ~(63))
 
 struct mpp_decoder {
 	struct dec_ops *ops;

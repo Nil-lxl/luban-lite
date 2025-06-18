@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -265,7 +265,9 @@ void aicfb_draw_bar(unsigned int value)
     char str[5];
 
     aicfb_probe();
-    aicfb_ioctl(AICFB_GET_SCREENINFO, &info);
+
+    if (aicfb_ioctl(AICFB_GET_SCREENINFO, &info) < 0)
+        return;
 
     if (!power_on) {
         memset(info.framebuffer, 0x00, info.smem_len);

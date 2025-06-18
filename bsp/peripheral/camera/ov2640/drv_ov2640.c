@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -307,7 +307,7 @@ struct ov2640_dev {
     const struct ov2640_win_size    *win;
 
     bool streaming;
-    int power_count;
+    bool on;
 };
 
 static struct ov2640_dev g_ov2640_dev = {0};
@@ -702,15 +702,23 @@ err:
     return ret;
 }
 
+static bool ov2640_is_open(struct ov2640_dev *sensor)
+{
+    return sensor->on;
+}
+
 static void ov2640_set_power(struct ov2640_dev *sensor, int on)
 {
-    if (sensor->power_count == on)
+    if (sensor->on == on)
         return;
 
-    if (on)
+    if (on) {
+        LOG_I("Power on");
         camera_pin_set_low(sensor->pwdn_pin);
-    else
+    } else {
+        LOG_I("Power off");
         camera_pin_set_high(sensor->pwdn_pin);
+    }
 
     if (on && sensor->rst_pin) {
         /* Active the reset pin to perform a reset pulse */
@@ -719,9 +727,15 @@ static void ov2640_set_power(struct ov2640_dev *sensor, int on)
         camera_pin_set_high(sensor->rst_pin);
     }
 
-    sensor->power_count += on ? 1 : -1;
-    if (sensor->power_count < 0)
-        LOG_E("Invalid power count: %d\n", sensor->power_count);
+    sensor->on = on ? true : false;
+}
+
+static void ov2640_set_sleep(struct ov2640_dev *sensor, int enable)
+{
+    if (enable)
+        camera_pin_set_high(sensor->pwdn_pin);
+    else
+        camera_pin_set_low(sensor->pwdn_pin);
 }
 
 static int ov2640_set_params(struct rt_i2c_bus_device *i2c,
@@ -823,8 +837,6 @@ static int ov2640_video_probe(struct ov2640_dev *sensor)
     const char *devname;
     int ret = 0;
 
-    ov2640_set_power(sensor, 1);
-
     /* check and show product ID and manufacturer ID */
     ov2640_write_reg(sensor->i2c, BANK_SEL, BANK_SEL_SENS);
     ov2640_read_reg(sensor->i2c, PID, &pid);
@@ -844,6 +856,7 @@ static int ov2640_video_probe(struct ov2640_dev *sensor)
 
     LOG_I("%s Product ID %0x:%0x Manufacturer ID %x:%x\n",
             devname, pid, ver, midh, midl);
+    return 0;
 
 done:
     ov2640_set_power(sensor, 0);
@@ -852,7 +865,6 @@ done:
 
 static rt_err_t ov2640_init(rt_device_t dev)
 {
-    int ret = 0;
     struct ov2640_dev *sensor = &g_ov2640_dev;
 
     sensor->i2c = camera_i2c_get();
@@ -880,11 +892,6 @@ static rt_err_t ov2640_init(rt_device_t dev)
     if (!sensor->rst_pin || !sensor->pwdn_pin)
         return -RT_EINVAL;
 
-    ret = ov2640_video_probe(sensor);
-    if (ret)
-        return -RT_ERROR;
-
-    LOG_I("OV2640 inited");
     return RT_EOK;
 }
 
@@ -892,8 +899,17 @@ static rt_err_t ov2640_open(rt_device_t dev, rt_uint16_t oflag)
 {
     struct ov2640_dev *sensor = (struct ov2640_dev *)dev;
 
+    if (ov2640_is_open(sensor))
+        return RT_EOK;
+
     ov2640_set_power(sensor, 1);
-    LOG_I("OV2640 Open");
+
+    if (ov2640_video_probe(sensor)) {
+        ov2640_set_power(sensor, 0);
+        return -RT_ERROR;
+    }
+
+    LOG_I("OV2640 inited");
     return RT_EOK;
 }
 
@@ -901,8 +917,11 @@ static rt_err_t ov2640_close(rt_device_t dev)
 {
     struct ov2640_dev *sensor = (struct ov2640_dev *)dev;
 
+    if (!ov2640_is_open(sensor))
+        return -RT_ERROR;
+
     ov2640_set_power(sensor, 0);
-    LOG_I("OV2640 Close");
+    LOG_D("OV2640 Close");
     return RT_EOK;
 }
 
@@ -928,6 +947,22 @@ static int ov2640_stop(rt_device_t dev)
     return ov2640_s_stream((struct ov2640_dev *)dev, 0);
 }
 
+static int ov2640_pause(rt_device_t dev)
+{
+    struct ov2640_dev *sensor = (struct ov2640_dev *)dev;
+
+    ov2640_set_sleep(sensor, 1);
+    return 0;
+}
+
+static int ov2640_resume(rt_device_t dev)
+{
+    struct ov2640_dev *sensor = (struct ov2640_dev *)dev;
+
+    ov2640_set_sleep(sensor, 0);
+    return 0;
+}
+
 static rt_err_t ov2640_control(rt_device_t dev, int cmd, void *args)
 {
     switch (cmd) {
@@ -935,6 +970,10 @@ static rt_err_t ov2640_control(rt_device_t dev, int cmd, void *args)
         return ov2640_start(dev);
     case CAMERA_CMD_STOP:
         return ov2640_stop(dev);
+    case CAMERA_CMD_PAUSE:
+        return ov2640_pause(dev);
+    case CAMERA_CMD_RESUME:
+        return ov2640_resume(dev);
     case CAMERA_CMD_GET_FMT:
         return ov2640_get_fmt(dev, (struct mpp_video_fmt *)args);
     default:

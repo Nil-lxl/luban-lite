@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -39,6 +39,7 @@ struct vb_buffer {
     struct vb_queue    *queue;
     unsigned int        index;
     unsigned int        num_planes;
+    unsigned int        timestamp; // unit: ms
 
     enum vb_buffer_state state;
     struct vb_plane     planes[VIN_MAX_PLANE_NUM];
@@ -86,5 +87,6 @@ int vin_vb_stream_on(struct vb_queue *q);
 int vin_vb_stream_off(struct vb_queue *q);
 
 void vin_vb_show_info(struct vb_queue *q);
+u32 vin_vb_get_timestamp(struct vb_queue *q, u32 index);
 
 #endif /* _ARTINCHIP_MPP_VIN_VB_H_ */

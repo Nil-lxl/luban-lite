@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,6 +21,8 @@ extern "C" {
 
 #define CAMERA_CMD_START                (RT_DEVICE_CTRL_BASE(CAMERA) + 0x01)
 #define CAMERA_CMD_STOP                 (RT_DEVICE_CTRL_BASE(CAMERA) + 0x02)
+#define CAMERA_CMD_PAUSE                (RT_DEVICE_CTRL_BASE(CAMERA) + 0xA1)
+#define CAMERA_CMD_RESUME               (RT_DEVICE_CTRL_BASE(CAMERA) + 0xA2)
 /* Argument type: (struct mpp_video_fmt *) */
 #define CAMERA_CMD_GET_FMT              (RT_DEVICE_CTRL_BASE(CAMERA) + 0x03)
 #define CAMERA_CMD_SET_FMT              (RT_DEVICE_CTRL_BASE(CAMERA) + 0x05)
@@ -77,6 +79,11 @@ int camera_set_wpc(struct rt_device *dev, bool enable);
 int camera_set_h_flip(struct rt_device *dev, bool enable);
 int camera_set_v_flip(struct rt_device *dev, bool enable);
 int camera_set_colorbar(struct rt_device *dev, bool enable);
+
+int camera_start(struct rt_device *dev);
+int camera_stop(struct rt_device *dev);
+int camera_pause(struct rt_device *dev);
+int camera_resume(struct rt_device *dev);
 
 #ifdef __cplusplus
 }

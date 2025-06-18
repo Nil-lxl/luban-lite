@@ -13,6 +13,7 @@
 
 #include <lvgl.h>
 #include <rtthread.h>
+#include <rtdevice.h>
 
 #define DBG_TAG    "LVGL"
 #define DBG_LVL    DBG_INFO
@@ -75,7 +76,13 @@ static void lvgl_thread_entry(void *parameter)
     /* handle the tasks of LVGL */
     while(1)
     {
+#ifdef RT_USING_PM
+        rt_pm_module_request(PM_MAIN_ID, PM_SLEEP_MODE_NONE);
+#endif
         lv_task_handler();
+#ifdef RT_USING_PM
+        rt_pm_module_release(PM_MAIN_ID, PM_SLEEP_MODE_NONE);
+#endif
         rt_thread_mdelay(LPKG_LVGL_DELAY_TIME);
     }
 }

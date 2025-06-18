@@ -1128,24 +1128,7 @@ int hal_qspi_master_get_status(qspi_master_handle *h)
     return (qspi->status) & (~HAL_QSPI_STATUS_INTERNAL_MSK);
 }
 
-#ifdef AIC_QSPI_DRV_V11
-int hal_qspi_master_set_qio_mode(qspi_master_handle *h)
-{
-    struct qspi_master_state *qspi;
-    u32 base;
-
-    CHECK_PARAM(h, -EINVAL);
-
-    qspi = (struct qspi_master_state *)h;
-    base = qspi_hw_index_to_base(qspi->idx);
-
-    qspi_hw_set_bus_width(base, 4);
-    qspi_hw_set_qio_mode(base);
-
-    return 0;
-}
-
-void hal_qspi_master_set_cs_owner(qspi_master_handle *h, u8 soft_hw)
+void hal_qspi_master_set_rxdelay_mode(qspi_master_handle *h, u32 delay_mode)
 {
     struct qspi_master_state *qspi;
     u32 base;
@@ -1155,77 +1138,5 @@ void hal_qspi_master_set_cs_owner(qspi_master_handle *h, u8 soft_hw)
     qspi = (struct qspi_master_state *)h;
     base = qspi_hw_index_to_base(qspi->idx);
 
-    if (soft_hw == QSPI_CS_CTL_BY_SW) {
-        qspi_hw_set_cs_owner(base, QSPI_CS_CTL_BY_SW);
-    } else {
-        qspi_hw_set_cs_owner(base, QSPI_CS_CTL_BY_HW);
-    }
+    qspi_hw_set_rx_delay_mode(base, delay_mode);
 }
-
-void hal_qspi_master_set_xip_burst_cfg(qspi_master_handle *h,
-                                       struct qspi_xip_burst_cfg *cfg)
-{
-    struct qspi_master_state *qspi;
-    u32 base;
-
-    CHECK_PARAM_RET(h);
-    CHECK_PARAM_RET(cfg);
-
-    qspi = (struct qspi_master_state *)h;
-    base = qspi_hw_index_to_base(qspi->idx);
-
-    qspi_hw_set_wrap_len(base, cfg->wrap.auto_wl8, cfg->wrap.auto_wl16,
-                         cfg->wrap.auto_wl32, cfg->wrap.auto_wl64);
-
-    qspi_hw_set_btr_cmd_index(base, cfg->cmd_set_burst);
-    qspi_hw_set_btr_dummy_byte(base, cfg->cmd_dummy_byte);
-    if (cfg->cmd_bits_width)
-        qspi_hw_set_btr_width(base, 1);
-    if (cfg->wrap_en == HAL_XIP_BURST_WRAPPED_WITH_FIXED_LEN)
-        qspi_hw_set_btr_wrap_en(base, 1);
-    if (cfg->wrap_en == HAL_XIP_BURST_WRAPPED_WITH_AUTO_SEL_LEN) {
-        qspi_hw_set_btr_wrap_en(base, 1);
-        qspi_hw_set_btr_auto_wrap_len_en(base, 1);
-    }
-    qspi_hw_set_btr_burst_wrap(base, cfg->wrap.fixed_len);
-    qspi_hw_set_btr_burst_linear(base, cfg->wrap.disable);
-}
-
-void hal_qspi_master_set_xip_read_cfg(qspi_master_handle *h,
-                                      struct qspi_xip_read_cfg *cfg)
-{
-    struct qspi_master_state *qspi;
-    u32 base;
-
-    CHECK_PARAM_RET(h);
-    CHECK_PARAM_RET(cfg);
-
-    qspi = (struct qspi_master_state *)h;
-    base = qspi_hw_index_to_base(qspi->idx);
-
-    qspi_hw_set_rcm_cmd_index(base, cfg->read_cmd);
-    qspi_hw_set_rcm_dummy_byte(base, cfg->dummy_byte);
-    if (cfg->addr_mode)
-        qspi_hw_set_rcm_addr_4byte_en(base, 1);
-    qspi_hw_set_rcm_rdmode_byte_en(base, 1);
-    if (cfg->read_cmd_bypass_en)
-        qspi_hw_set_rcm_rdcmd_bypass_en(base, 1);
-
-    qspi_hw_set_rcm_rdcmd_bypass_code(base, cfg->mode.bypass);
-    qspi_hw_set_rcm_rdcmd_normal_code(base, cfg->mode.normal);
-}
-
-void hal_qspi_master_xip_enable(qspi_master_handle *h, bool enable)
-{
-    struct qspi_master_state *qspi;
-    u32 base;
-
-    CHECK_PARAM_RET(h);
-
-    qspi = (struct qspi_master_state *)h;
-    base = qspi_hw_index_to_base(qspi->idx);
-
-    qspi_hw_set_xip_en(base, enable);
-}
-
-#endif /* AIC_QSPI_DRV_V11 */

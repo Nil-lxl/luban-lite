@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -41,6 +41,7 @@ struct gm7150_dev {
 
     struct mpp_video_fmt fmt;
 
+    bool on;
     bool streaming;
 };
 
@@ -116,16 +117,43 @@ static void gm7150_cur_status(struct gm7150_dev *sensor)
         g_gm7150_dev.fmt.height = NTSC_HEIGHT;
 }
 
-static int gm7150_probe(struct gm7150_dev *sensor)
+static bool gm7150_is_open(struct gm7150_dev *sensor)
 {
-    u8 id_h = 0, id_l = 0;
+    return sensor->on;
+}
+
+static void gm7150_power_on(struct gm7150_dev *sensor)
+{
+    if (sensor->on)
+        return;
 
     aicos_msleep(30);
     camera_pin_set_low(sensor->pwdn_pin);
     aicos_msleep(10);
     camera_pin_set_high(sensor->pwdn_pin);
-
     aicos_msleep(30);
+
+    LOG_I("Power on");
+    sensor->on = true;
+}
+
+static void gm7150_power_off(struct gm7150_dev *sensor)
+{
+    if (!sensor->on)
+        return;
+
+    if (sensor->pwdn_pin)
+        camera_pin_set_low(sensor->pwdn_pin);
+
+    LOG_I("Power off");
+    sensor->on = false;
+}
+
+static int gm7150_probe(struct gm7150_dev *sensor)
+{
+    u8 id_h = 0, id_l = 0;
+
+    gm7150_power_on(sensor);
 
     if (gm7150_read_reg(sensor->i2c, 0x80, &id_h) ||
         gm7150_read_reg(sensor->i2c, 0x81, &id_l))
@@ -144,8 +172,7 @@ static int gm7150_probe(struct gm7150_dev *sensor)
 
 static rt_err_t gm7150_init(rt_device_t dev)
 {
-    int ret = 0;
-    struct gm7150_dev *sensor = &g_gm7150_dev;
+    struct gm7150_dev *sensor = (struct gm7150_dev *)dev;
 
     sensor->i2c = camera_i2c_get();
     if (!sensor->i2c)
@@ -164,21 +191,33 @@ static rt_err_t gm7150_init(rt_device_t dev)
     if (!sensor->pwdn_pin)
         return -RT_EINVAL;
 
-    ret = gm7150_probe(sensor);
-    if (ret)
+    return RT_EOK;
+}
+
+static rt_err_t gm7150_open(rt_device_t dev, rt_uint16_t oflag)
+{
+    struct gm7150_dev *sensor = (struct gm7150_dev *)dev;
+
+    if (gm7150_is_open(sensor))
+        return RT_EOK;
+
+
+    if (gm7150_probe(sensor))
         return -RT_ERROR;
 
     LOG_I("GM7150 inited");
     return RT_EOK;
 }
 
-static rt_err_t gm7150_open(rt_device_t dev, rt_uint16_t oflag)
-{
-    return RT_EOK;
-}
-
 static rt_err_t gm7150_close(rt_device_t dev)
 {
+    struct gm7150_dev *sensor = (struct gm7150_dev *)dev;
+
+    if (!gm7150_is_open(sensor))
+        return -RT_ERROR;
+
+    gm7150_power_off(sensor);
+    LOG_D("GM7150 Close");
     return RT_EOK;
 }
 
@@ -200,6 +239,23 @@ static int gm7150_start(rt_device_t dev)
 static int gm7150_stop(rt_device_t dev)
 {
     return 0;
+}
+
+static u8 g_gm7150_workmode = 0;
+
+static int gm7150_pause(rt_device_t dev)
+{
+    struct gm7150_dev *sensor = (struct gm7150_dev *)dev;
+
+    gm7150_read_reg(sensor->i2c, 0x2, &g_gm7150_workmode);
+    return gm7150_write_reg(sensor->i2c, 0x2, 0x1);
+}
+
+static int gm7150_resume(rt_device_t dev)
+{
+    struct gm7150_dev *sensor = (struct gm7150_dev *)dev;
+
+    return gm7150_write_reg(sensor->i2c, 0x2, g_gm7150_workmode);
 }
 
 static int gm7150_set_brightness(struct gm7150_dev *sensor, u32 percent)
@@ -239,6 +295,10 @@ static rt_err_t gm7150_control(rt_device_t dev, int cmd, void *args)
         return gm7150_start(dev);
     case CAMERA_CMD_STOP:
         return gm7150_stop(dev);
+    case CAMERA_CMD_PAUSE:
+        return gm7150_pause(dev);
+    case CAMERA_CMD_RESUME:
+        return gm7150_resume(dev);
     case CAMERA_CMD_GET_FMT:
         return gm7150_get_fmt(sensor, (struct mpp_video_fmt *)args);
     case CAMERA_CMD_SET_CONTRAST:

@@ -16,6 +16,8 @@ path += [cwd + '/class/wireless']
 path += [cwd + '/class/dfu']
 path += [cwd + '/class/hub']
 path += [cwd + '/class/vender']
+path += [cwd + '/third_party/cherrymp']
+path += [cwd + '/third_party/cherryrb']
 path += [cwd]
 src = []
 libs = ['']
@@ -111,6 +113,7 @@ if GetDepend(['LPKG_CHERRYUSB_DEVICE']) and GetDepend(['AIC_USB_DEVICE_DRV']):
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_WINUSB20_TEMPLATE']):
         src += Glob('demo/winusb2.0_template.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_DISPLAY_TEMPLATE']):
+        path += [cwd + '/demo']
         src += Glob('demo/usbd_display_template_entry.c')
         lib_demo_path = os.path.join(cwd, 'demo')
         lib_display_src = os.path.join(lib_demo_path, 'usbd_display_template.c')
@@ -180,6 +183,23 @@ if GetDepend(['LPKG_CHERRYUSB_HOST']) and GetDepend(['AIC_USB_HOST_EHCI_DRV']):
         src += Glob('class/cdc/usbh_cdc_ecm.c')
     if GetDepend(['LPKG_CHERRYUSB_HOST_BLUETOOTH']):
         src += Glob('class/wireless/usbh_bluetooth.c')
+    if GetDepend(['LPKG_CHERRYUSB_HOST_UVC']):
+        src += Glob('class/video/usbh_video.c')
+        lib_uvc_path = os.path.join(cwd, 'class/video/')
+        lib_uvc_src = os.path.join(lib_uvc_path, 'usbh_uvc_stream.c')
+        lib_uvc_name = 'usbh_uvc_stream_' + rtconfig.CPUNAME + '.a'
+        if os.path.exists(lib_uvc_src):
+            DefineGroup(os.path.join(lib_uvc_path, lib_uvc_name), Glob(lib_uvc_src), depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES, LIBRARY='')
+        libs += ['usbh_uvc_stream_' + rtconfig.CPUNAME]
+        lib_path += [lib_uvc_path]
+        lib_uvc_src = os.path.join(lib_uvc_path, 'usbh_uvc_port.c')
+        lib_uvc_name = 'usbh_uvc_port_' + rtconfig.CPUNAME + '.a'
+        if os.path.exists(lib_uvc_src):
+            DefineGroup(os.path.join(lib_uvc_path, lib_uvc_name), Glob(lib_uvc_src), depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES, LIBRARY='')
+        libs += ['usbh_uvc_port_' + rtconfig.CPUNAME]
+
+    if GetDepend(['LPKG_CHERRYUSB_HOST_UAC']):
+        src += Glob('class/audio/usbh_audio.c')
 
     if GetDepend(['LPKG_CHERRYUSB_HOST_DWC2']):
         src += Glob('port/dwc2/usb_hc_dwc2.c')
@@ -193,6 +213,13 @@ if GetDepend(['LPKG_CHERRYUSB_HOST']) and GetDepend(['AIC_USB_HOST_EHCI_DRV']):
 
     if GetDepend(['LPKG_CHERRYUSB_HOST_EHCI']):
         src += Glob('port/ehci/usb_hc_ehci.c')
+        lib_iso_path = os.path.join(cwd, 'port/ehci/')
+        lib_iso_src = os.path.join(lib_iso_path, 'usb_hc_ehci_iso.c')
+        lib_iso_name = 'usb_hc_ehci_iso_' + rtconfig.CPUNAME + '.a'
+        if os.path.exists(lib_iso_src):
+            DefineGroup(os.path.join(lib_iso_path, lib_iso_name), Glob(lib_iso_src), depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES, LIBRARY='')
+        libs += ['usb_hc_ehci_iso_' + rtconfig.CPUNAME]
+        lib_path += [lib_iso_path]
         if GetDepend(['LPKG_CHERRYUSB_HOST_EHCI_AIC']):
             src += Glob('port/ehci/usb_glue_aic.c')
         if GetDepend(['LPKG_CHERRYUSB_HOST_EHCI_HPM']):
@@ -226,6 +253,21 @@ if GetDepend(['LPKG_CHERRYUSB_HOST']) and GetDepend(['AIC_USB_HOST_EHCI_DRV']):
         src += Glob('demo/usbh_hid_template.c')
     if GetDepend(['LPKG_CHERRYUSB_HOST_MSC_TEMPLATE']):
         src += Glob('demo/usbh_msc_template.c')
+    if GetDepend(['LPKG_CHERRYUSB_HOST_UVC_TEMPLATE']):
+        src += Glob('demo/usbh_video_template.c')
+
+# USB Third_party
+if GetDepend(['LPKG_CHERRYUSB_THIRD_PARTY']):
+    if GetDepend(['LPKG_CHERRYUSB_MEMORY_POOL']):
+        src += Glob('third_party/cherrymp/chry_mempool.c')
+        if PRJ_KERNEL == 'rt-thread':
+            src += Glob('third_party/cherrymp/chry_mempool_osal_rtthread.c')
+        elif PRJ_KERNEL == 'freertos':
+            src += Glob('third_party/cherrymp/chry_mempool_osal_freertos.c')
+        elif PRJ_KERNEL == 'baremetal':
+            src += Glob('third_party/cherrymp/chry_mempool_osal_nonos.c')
+    if GetDepend(['LPKG_CHERRYUSB_RINGBUFFER']):
+        src += Glob('third_party/cherryrb/*.c')
 
 group = DefineGroup('CherryUSB', src, depend = ['LPKG_USING_CHERRYUSB'], CPPPATH = path, CPPDEFINES = CPPDEFINES, LIBS = libs, LIBPATH = lib_path)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -48,6 +48,8 @@ int pinmux_fdt_parse(void);
 
 void aic_board_pinmux_init(void);
 void aic_board_pinmux_deinit(void);
+
+long long int str2int(char *str);
 
 #ifdef __cplusplus
 }

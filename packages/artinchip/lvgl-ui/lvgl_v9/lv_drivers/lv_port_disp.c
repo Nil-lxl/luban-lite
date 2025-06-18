@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -376,10 +376,12 @@ void lv_port_disp_init(void)
     lv_display_set_color_format(disp, cf);
     lv_display_set_flush_cb(disp, disp_flush);
     lv_display_set_user_data(disp, aic_disp);
-    lv_display_set_buffers(disp, buf1, buf2, fb_size, LV_DISPLAY_RENDER_MODE_DIRECT);
 
 #if defined(LV_DISPLAY_ROTATE_EN) && defined(LV_ROTATE_DEGREE)
+    lv_display_set_buffers(disp, buf1, buf2, aic_disp->buf_size, LV_DISPLAY_RENDER_MODE_DIRECT);
     lv_display_set_rotation(disp, LV_ROTATE_DEGREE / 90);
+#else
+    lv_display_set_buffers(disp, buf1, buf2, fb_size, LV_DISPLAY_RENDER_MODE_DIRECT);
 #endif
 
 #if LV_USE_OS && defined(AIC_PAN_DISPLAY) && defined(LV_DISPLAY_ROTATE_EN)

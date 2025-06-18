@@ -34,10 +34,12 @@ struct usbh_iso_frame_packet {
  * Structure containing the USB Urb configuration.
  */
 struct usbh_urb {
+    usb_slist_t list;
     void *hcpriv;
     struct usbh_hubport *hport;
     struct usb_endpoint_descriptor *ep;
     uint8_t data_toggle;
+    uint8_t interval;
     struct usb_setup_packet *setup;
     uint8_t *transfer_buffer;
     uint32_t transfer_buffer_length;

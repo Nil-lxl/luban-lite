@@ -456,10 +456,10 @@ static inline void qspi_hw_set_tx_delay_mode(u32 base, u32 en)
 static inline u32 qspi_hw_freq_to_delay_mode(u32 freq)
 {
     if (freq <= 24000000)
-        return TCFG_RX_SAMP_DLY_NONE;
+        return RX_SAMP_DLY_NONE;
     else if (freq <= 60000000)
-        return TCFG_RX_SAMP_DLY_HALF;
-    return TCFG_RX_SAMP_DLY_ONE;
+        return RX_SAMP_DLY_HALF_CYCLE;
+    return RX_SAMP_DLY_ONE_CYCLE;
 }
 
 static inline void qspi_hw_set_rx_delay_mode(u32 base, u32 mode)

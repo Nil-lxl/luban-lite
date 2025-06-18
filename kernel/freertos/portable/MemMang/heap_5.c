@@ -67,6 +67,7 @@
  *
  */
 #include <stdlib.h>
+#include <string.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
  * all the API functions to use the MPU wrappers.  That should only be done when
@@ -149,7 +150,7 @@ void * pvPortMalloc( size_t xWantedSize )
         {
             /* The wanted size is increased so it can contain a BlockLink_t
              * structure in addition to the requested amount of bytes. */
-            if( ( xWantedSize > 0 ) && 
+            if( ( xWantedSize > 0 ) &&
                 ( ( xWantedSize + xHeapStructSize ) >  xWantedSize ) ) /* Overflow check */
             {
                 xWantedSize += xHeapStructSize;
@@ -162,8 +163,8 @@ void * pvPortMalloc( size_t xWantedSize )
                          xWantedSize )
                     {
                         xWantedSize += ( portBYTE_ALIGNMENT - ( xWantedSize & portBYTE_ALIGNMENT_MASK ) );
-                    } 
-                    else 
+                    }
+                    else
                     {
                         xWantedSize = 0;
                     }
@@ -554,4 +555,42 @@ void vPortGetHeapStats( HeapStats_t * pxHeapStats )
         pxHeapStats->xMinimumEverFreeBytesRemaining = xMinimumEverFreeBytesRemaining;
     }
     taskEXIT_CRITICAL();
+}
+/*-----------------------------------------------------------*/
+
+void *pvPortRealloc(void *pv, size_t xWantedSize)
+{
+    BlockLink_t *pxLink;
+    void *pvReturn = NULL;
+    uint8_t *puc = (uint8_t *)pv;
+    size_t xOriginalDataSize;
+
+    if (pv == NULL) {
+        return pvPortMalloc(xWantedSize);
+    }
+
+    if (xWantedSize == 0) {
+        vPortFree(pv);
+        return NULL;
+    }
+
+    puc -= xHeapStructSize;
+    pxLink = (BlockLink_t *)puc;
+
+    configASSERT((pxLink->xBlockSize & xBlockAllocatedBit) != 0);
+    configASSERT(pxLink->pxNextFreeBlock == NULL);
+
+    xOriginalDataSize = (pxLink->xBlockSize & ~xBlockAllocatedBit) - xHeapStructSize;
+    if (xWantedSize <= xOriginalDataSize) {
+        return pv;
+    }
+
+    pvReturn = pvPortMalloc(xWantedSize);
+    if (pvReturn != NULL) {
+        memcpy(pvReturn, pv, xOriginalDataSize);
+
+        vPortFree(pv);
+    }
+
+    return pvReturn;
 }

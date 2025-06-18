@@ -344,7 +344,6 @@
  ***************************************************************************
  */
 
-#include <rtthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -362,7 +361,12 @@
 #undef HZ
 #undef TIMES
 #include <time.h>
+#ifdef KERNEL_RTTHREAD
+#include <rtthread.h>
 #define HZ        RT_TICK_PER_SECOND
+#else
+#define HZ        1000
+#endif	// KERNEL_RTTHREAD
 #endif
                 /* Use Microsoft C hi-res clock */
 
@@ -404,13 +408,30 @@
 #define true  1
 #define false 0
 
+#define STATIC_DDR  0
+
+#if !STATIC_DDR
+#define INT_GLOB    Int_Glob
+#define BOOL_GLOB   Bool_Glob
+#define CH_1_GLOB   Ch_1_Glob
+#define CH_2_GLOB   Ch_2_Glob
+
+typedef int     Arr_2_Dim [50] [50];
+#else
+#define INT_GLOB    *Int_Glob
+#define BOOL_GLOB   *Bool_Glob
+#define CH_1_GLOB   *Ch_1_Glob
+#define CH_2_GLOB   *Ch_2_Glob
+
+typedef int     **Arr_2_Dim;
+#endif
+
 typedef int     One_Thirty;
 typedef int     One_Fifty;
 typedef char    Capital_Letter;
 typedef int     Boolean;
 typedef char    Str_30 [31];
 typedef int     Arr_1_Dim [50];
-typedef int     Arr_2_Dim [50] [50];
 
 typedef struct record 
     {

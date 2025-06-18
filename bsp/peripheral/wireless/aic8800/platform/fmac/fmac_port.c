@@ -457,7 +457,7 @@ int rwnx_load_firmware(uint16_t chipid, int mode, u32 **fw_buf)
     int size = 0;
 
     if (chipid == PRODUCT_ID_AIC8801) {
-        #if defined(CONFIG_AIC8801)
+        #if defined(CONFIG_AIC8801_SUPPORT)
         if (mode == WIFI_MODE_RFTEST) {
             *fw_buf = (u32 *)aic8800d_rf_fw_ptr_get();
             size = aic8800d_rf_fw_size_get();
@@ -465,9 +465,9 @@ int rwnx_load_firmware(uint16_t chipid, int mode, u32 **fw_buf)
             *fw_buf = (u32 *)aic8800d_fw_ptr_get();
             size = aic8800d_fw_size_get();
         }
-        #endif /* CONFIG_AIC8801 */
+        #endif /* CONFIG_AIC8801_SUPPORT */
     } else if (chipid == PRODUCT_ID_AIC8800DC || chipid == PRODUCT_ID_AIC8800DW) {
-        #if defined(CONFIG_AIC8800DC) || defined(CONFIG_AIC8800DW)
+        #if defined(CONFIG_AIC8800DC_SUPPORT) || defined(CONFIG_AIC8800DW_SUPPORT)
         if (aic_get_chip_sub_id() == 0) {
             if (mode == WIFI_MODE_RFTEST) {
                 #if defined(CONFIG_WIFI_MODE_RFTEST)
@@ -520,9 +520,9 @@ int rwnx_load_firmware(uint16_t chipid, int mode, u32 **fw_buf)
 				size = fmac_aic8800dc_h_u02_calib_fw_size_get();
         	}
         }
-        #endif /* CONFIG_AIC8800DC or CONFIG_AIC8800DW */
+        #endif /* CONFIG_AIC8800DC_SUPPORT or CONFIG_AIC8800DW_SUPPORT */
     } else if (chipid == PRODUCT_ID_AIC8800D80) {
-        #if defined(CONFIG_AIC8800D80)
+        #if 1//defined(CONFIG_AIC8800D80_SUPPORT)
         if (aic_get_chip_id() == CHIP_REV_U01) {
             if (mode == WIFI_MODE_RFTEST) {
                 #if defined(CONFIG_WIFI_MODE_RFTEST)
@@ -544,7 +544,7 @@ int rwnx_load_firmware(uint16_t chipid, int mode, u32 **fw_buf)
                 size = fmac_aic8800d80_u02_fw_size_get();
             }
         }
-        #endif /* CONFIG_AIC8800D80 */
+        #endif /* CONFIG_AIC8800D80_SUPPORT */
     }
     return size;
 }
@@ -554,7 +554,7 @@ int rwnx_load_patch_tbl(uint16_t chipid, u32 **fw_buf)
     int size = 0;
 
     if (chipid == PRODUCT_ID_AIC8800DC || chipid == PRODUCT_ID_AIC8800DW) {
-        #if defined(CONFIG_AIC8800DC) || defined(CONFIG_AIC8800DW)
+        #if defined(CONFIG_AIC8800DC_SUPPORT) || defined(CONFIG_AIC8800DW_SUPPORT)
         if (aic_get_chip_sub_id() == 1) {
 			AIC_LOG_PRINTF("aic load fmacfw_patch_tbl_8800dc_u02.bin\n\r");
             *fw_buf = (u32 *)fmac_aic8800dc_u02_patch_tbl_ptr_get();         //fmacfw_patch_tbl_8800dc_u02.bin
@@ -564,7 +564,7 @@ int rwnx_load_patch_tbl(uint16_t chipid, u32 **fw_buf)
             *fw_buf = (u32 *)fmac_aic8800dc_h_u02_patch_tbl_ptr_get();       //fmacfw_patch_tbl_8800dc_h_u02.bin
             size = fmac_aic8800dc_h_u02_patch_tbl_size_get();
         }
-        #endif /* CONFIG_AIC8800DC or CONFIG_AIC8800DW */
+        #endif /* CONFIG_AIC8800DC_SUPPORT or CONFIG_AIC8800DW_SUPPORT */
     }
     return size;
 }
@@ -575,7 +575,7 @@ int rwnx_load_calib(uint16_t chipid, u32 **fw_buf)
 
     if (chipid == PRODUCT_ID_AIC8800DC || chipid == PRODUCT_ID_AIC8800DW)
     {
-        #if defined(CONFIG_AIC8800DC) || defined(CONFIG_AIC8800DW)
+        #if defined(CONFIG_AIC8800DC_SUPPORT) || defined(CONFIG_AIC8800DW_SUPPORT)
         if (aic_get_chip_sub_id() == 1) {
             AIC_LOG_PRINTF("aic load fmacfw_calib_8800dc_u02.bin\n\r");
             *fw_buf = (u32 *)fmac_aic8800dc_u02_calib_fw_ptr_get();

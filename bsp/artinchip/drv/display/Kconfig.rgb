@@ -7,7 +7,7 @@ menu "RGB interface options"
 
 choice
     prompt "rgb mode"
-    default PRGB
+    default PRGB_MODE
     depends on AIC_DISP_RGB
 
 config PRGB_MODE
@@ -36,19 +36,15 @@ config AIC_PRGB_24BIT
 
 config AIC_PRGB_18BIT_LD
     bool "PRGB 18 BIT LD"
-    select AIC_DISPLAY_DITHER if !(AICFB_RGB565 || AICFB_ARGB1555)
 
 config AIC_PRGB_18BIT_HD
     bool "PRGB 18 BIT HD"
-    select AIC_DISPLAY_DITHER if !(AICFB_RGB565 || AICFB_ARGB1555)
 
 config AIC_PRGB_16BIT_LD
     bool "PRGB 16 BIT LD"
-    select AIC_DISPLAY_DITHER if !(AICFB_RGB565 || AICFB_ARGB1555)
 
 config AIC_PRGB_16BIT_HD
     bool "PRGB 16 BIT HD"
-    select AIC_DISPLAY_DITHER if !(AICFB_RGB565 || AICFB_ARGB1555)
 
 config AIC_SRGB_8BIT
     bool "SRGB_8BIT"
@@ -104,7 +100,7 @@ config AIC_RGB_DATA_ORDER
 
 choice
     prompt "clock phase select"
-    default DEGREE_0
+    default AIC_DEGREE_0
     depends on AIC_DISP_RGB
 
 config AIC_DEGREE_0

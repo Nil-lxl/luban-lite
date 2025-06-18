@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -37,6 +37,8 @@ int panel_dsi_dcs_enter_sleep_mode(struct aic_panel *panel);
 
 void panel_dsi_send_perpare(struct aic_panel *panel);
 void panel_dsi_setup_realmode(struct aic_panel *panel);
+
+int panel_dsi_enter_command_mode(struct aic_panel *panel);
 
 #endif /* _PANEL_DSI_H_ */
 

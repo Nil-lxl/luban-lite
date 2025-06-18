@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -103,9 +103,10 @@ s32 aich_gpai_data2vol(u16 data);
 
 struct aic_gpai_ch *hal_gpai_ch_is_valid(u32 ch);
 void hal_gpai_set_ch_num(u32 num);
-
+void hal_gpai_set_high_priority(u32 ch);
 void aich_gpai_status_show(struct aic_gpai_ch *chan);
-s32 hal_gpai_clk_init(void);
+s32 hal_gpai_init(void);
+s32 hal_gpai_deinit(void);
 void hal_gpai_clk_get(struct aic_gpai_ch *chan);
 #ifdef AIC_GPAI_DRV_DMA
 void hal_gpai_config_dma(struct aic_gpai_ch *chan);

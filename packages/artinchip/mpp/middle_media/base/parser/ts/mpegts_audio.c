@@ -17,6 +17,20 @@
 #define MPA_DUAL 2
 #define MPA_MONO 3
 
+struct mpegts_aac_sequence_header
+{
+    unsigned short ext_flag:1;
+    unsigned short dep_on_code_coder:1;
+    unsigned short frame_len_flag:1;
+    unsigned short chn_config:4;
+    unsigned short samp_rate_index:4;
+    unsigned short aud_obj_type:5;
+
+    unsigned short aud_obj_type1:5;
+    unsigned short sync_ext_type:11;
+};
+
+
 const uint16_t mpegts_mpa_freq_tab[3] = {44100, 48000, 32000};
 const uint32_t mpegts_aac_freq_tab[] = {96000, 88200, 64000, 48000, 44100, 32000,
                                         24000, 22050, 16000, 12000, 11025, 8000, 7350};
@@ -150,11 +164,17 @@ static int aac_check_header(uint32_t header)
     return 0;
 }
 
-int mpegaudio_decode_aac_header(uint8_t *data, struct mpegts_audio_decode_header *s)
+
+int mpegaudio_decode_aac_header(uint8_t *data, struct mpegts_audio_decode_header *s,
+                                bool is_gen_seq_header, uint8_t *seq_header_data)
 {
     int frame_size;
     int sample_rate_index;
+    int chn_config = 0;
     int ret;
+
+    struct mpegts_aac_sequence_header seq_header = {0};
+
     /*adts(Audio dta transport stream) include 7Byte*/
     uint32_t header = AIC_RB32(data);
     uint32_t header1 = AIC_RB24(data + 4);
@@ -172,6 +192,9 @@ int mpegaudio_decode_aac_header(uint8_t *data, struct mpegts_audio_decode_header
 
     s->sample_rate = mpegts_aac_freq_tab[sample_rate_index];
 
+    chn_config = (header >> 6) & 0x7;
+    s->nb_channels = chn_config;
+
     /*Get adts variable header: 28 bits*/
     frame_size = ((header & 0x3) << 11);
     frame_size |= ((header1 >> 13) & 0x7FF);
@@ -179,5 +202,23 @@ int mpegaudio_decode_aac_header(uint8_t *data, struct mpegts_audio_decode_header
     s->aac.header_offset = 7;
     /*one frame include 1024 sample*/
     s->frame_duration = 1024 * 1000 * 1000 / s->sample_rate;
+
+    /*Generate aac sequence header data*/
+    if (is_gen_seq_header && seq_header_data) {
+        seq_header.aud_obj_type = 2;                            //AAC-LC
+        seq_header.samp_rate_index = sample_rate_index;
+        seq_header.chn_config = chn_config;
+        seq_header.frame_len_flag = 0;
+        seq_header.dep_on_code_coder = 0;
+        seq_header.sync_ext_type = 0x2b7;                       //HE-AAC
+        seq_header.aud_obj_type1 = 5;
+        seq_header.ext_flag = 0;
+
+        seq_header_data[0] = *((char *)&seq_header + 1);
+        seq_header_data[1] = *((char *)&seq_header);
+        seq_header_data[2] = *((char *)&seq_header + 3);
+        seq_header_data[3] = *((char *)&seq_header + 2);
+        seq_header_data[4] = 0;
+    }
     return 0;
 }

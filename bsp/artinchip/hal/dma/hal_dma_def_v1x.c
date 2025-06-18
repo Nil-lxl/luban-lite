@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -264,11 +264,14 @@ void *aic_dma_task_add(struct aic_dma_task *prev,
 
 void aic_dma_free_desc(struct aic_dma_chan *chan)
 {
+    unsigned long state;
     struct aic_dma_task *task;
     struct aic_dma_task *next;
 
     CHECK_PARAM_RET(chan != NULL);
+    CHECK_PARAM_RET(chan->desc != NULL);
 
+    aicos_local_irq_save(&state);
     task = chan->desc;
     chan->desc = NULL;
 
@@ -279,8 +282,7 @@ void aic_dma_free_desc(struct aic_dma_chan *chan)
         task = next;
     }
 
-    chan->callback = NULL;
-    chan->callback_param = NULL;
+    aicos_local_irq_restore(state);
 }
 
 enum dma_status hal_dma_chan_tx_status(struct aic_dma_chan *chan,
@@ -288,13 +290,12 @@ enum dma_status hal_dma_chan_tx_status(struct aic_dma_chan *chan,
 {
     CHECK_PARAM(chan != NULL && left_size != NULL, -EINVAL);
 
+    *left_size = readl(chan->base + DMA_CH_LEFT_REG);
+
     if (!(readl(aich_dma.base + DMA_CH_STA_REG) & BIT(chan->ch_nr)))
         return DMA_COMPLETE;
 
-    *left_size = readl(chan->base + DMA_CH_LEFT_REG);
-        return DMA_IN_PROGRESS;
-
-    return DMA_COMPLETE;
+    return DMA_IN_PROGRESS;
 }
 
 int hal_dma_chan_stop(struct aic_dma_chan *chan)
@@ -370,7 +371,7 @@ int hal_dma_chan_register_cb(struct aic_dma_chan *chan,
                                      dma_async_callback callback,
                                      void *callback_param)
 {
-    CHECK_PARAM(chan != NULL && callback != NULL && callback_param != NULL, -EINVAL);
+    CHECK_PARAM(chan != NULL && callback != NULL, -EINVAL);
 
     chan->callback = callback;
     chan->callback_param = callback_param;
@@ -397,6 +398,8 @@ int hal_release_dma_chan(struct aic_dma_chan *chan)
     aic_dma_free_desc(chan);
 
     chan->used = 0;
+    chan->callback = NULL;
+    chan->callback_param = NULL;
 
     return 0;
 }
@@ -538,10 +541,11 @@ int hal_dma_chan_prep_memset(struct aic_dma_chan *chan,
 int hal_dma_chan_prep_memcpy(struct aic_dma_chan *chan,
                              u32 p_dest, u32 p_src, u32 len)
 {
-    struct aic_dma_task *task;
+    unsigned long state;
+    struct aic_dma_task *task = NULL;
+    struct aic_dma_task *prev = NULL;
 
-   CHECK_PARAM(chan != NULL && len != 0 && len < MAX_LEN, -EINVAL);
-
+    CHECK_PARAM(chan != NULL && len != 0 && len < MAX_LEN, -EINVAL);
     CHECK_PARAM((p_dest % AIC_DMA_ALIGN_SIZE) == 0
             && (p_src % AIC_DMA_ALIGN_SIZE) == 0, -EINVAL);
 
@@ -563,7 +567,16 @@ int hal_dma_chan_prep_memcpy(struct aic_dma_chan *chan,
     aicos_dcache_clean_range((void *)(unsigned long)task->src, task->len);
     aicos_dcache_clean_invalid_range((void *)(unsigned long)task->dst, task->len);
 
-    aic_dma_task_add(NULL, task, chan);
+    aicos_local_irq_save(&state);
+    prev = chan->desc;
+    if (prev != NULL) {
+        while (prev->v_next != NULL) {
+            prev = prev->v_next;
+        }
+    }
+
+    aic_dma_task_add(prev, task, chan);
+    aicos_local_irq_restore(state);
 
 #ifdef AIC_DMA_DRV_DEBUG
     hal_dma_task_dump(chan);

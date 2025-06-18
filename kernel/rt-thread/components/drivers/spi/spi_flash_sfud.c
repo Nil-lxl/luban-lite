@@ -157,6 +157,16 @@ static sfud_err spi_get_bus_id(const sfud_spi *spi, uint32_t *bus_id)
     return SFUD_SUCCESS;
 }
 
+static void spi_set_rx_delay(const sfud_spi *spi, uint32_t mode)
+{
+    sfud_flash *sfud_dev = (sfud_flash *) (spi->user_data);
+    rt_spi_flash_device_t rtt_dev = RT_NULL;
+
+    rtt_dev = sfud_dev->user_data;
+
+    rt_spi_set_rx_delay_mode(rtt_dev->rt_spi_device, mode);
+}
+
 /**
  * SPI write data then read data
  */
@@ -331,6 +341,7 @@ sfud_err sfud_spi_port_init(sfud_flash *flash) {
     flash->spi.wr = spi_write_read;
     flash->spi.set_speed = spi_set_speed;
     flash->spi.get_bus_id = spi_get_bus_id;
+    flash->spi.set_rx_delay = spi_set_rx_delay;
 #ifdef SFUD_USING_QSPI
     flash->spi.qspi_read = qspi_read;
 #endif

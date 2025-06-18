@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -116,13 +116,13 @@ int aic_ota_nand_erase_part(void)
     LOG_I("Start erase nand flash partition!");
 
     while (nand_mtd->block_total > blk_offset) {
-        if (rt_mtd_nand_check_block(nand_mtd, blk_offset) != RT_EOK) {
-            LOG_W("Erase block is bad, skip it.\n");
-            blk_offset++;
-            continue;
+        if (rt_mtd_nand_erase_block(nand_mtd, blk_offset) != RT_EOK) {
+            LOG_W("Erase block failed, mark it. block offset: %u\n", blk_offset);
+            if (rt_mtd_nand_mark_badblock(nand_mtd, blk_offset)) {
+                LOG_E("Mark bad block failed.\n");
+            }
         }
 
-        rt_mtd_nand_erase_block(nand_mtd, blk_offset);
         blk_offset++;
     }
 
@@ -144,6 +144,10 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
         return -RT_ERROR;
     }
 
+    /* A bad block should not impact other partitions. */
+    if (addr == 0)
+        bad_block_off = 0;
+
     if (g_nftl_flag == 0) {
         ret = rt_device_open(nand_dev, RT_DEVICE_OFLAG_RDWR);
         if (ret) {
@@ -160,7 +164,7 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
             blk = offset / blk_size;
             while (rt_mtd_nand_check_block(nand_mtd, blk) != RT_EOK) {
                 LOG_W("find a bad block(%d), off adjust to the next block\n", blk);
-                bad_block_off += nand_mtd->pages_per_block;
+                bad_block_off += blk_size;
                 offset = addr + bad_block_off;
                 blk = offset / blk_size;
             }
@@ -186,7 +190,8 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
 
         page = addr / page_size;
         sector = page * 4;
-       sector_total = (size / page_size) * 4;
+
+       sector_total = (size / page_size) * 4;
 
         ret = rt_device_write(nand_dev, sector, buf, sector_total);
         if (ret < 0) {

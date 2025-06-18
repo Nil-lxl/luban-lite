@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -44,7 +44,18 @@ int panel_dbi_commands_execute(struct aic_panel *panel,
 
 int panel_dbi_default_enable(struct aic_panel *panel)
 {
-    struct panel_dbi_commands *commands = &panel->dbi->commands;
+    struct panel_dbi_commands *commands;
+    struct panel_dbi *dbi;
+    struct panel_desc *desc;
+
+    if (panel->desc && panel->match_num) {
+        desc = &panel->desc[panel->match_id];
+        dbi = desc->dbi;
+    } else {
+        dbi = panel->dbi;
+    }
+
+    commands = &dbi->commands;
 
     panel_di_enable(panel, 0);
 

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2022-2024, ArtInChip Technology Co., Ltd
+# Copyright (C) 2022-2025, ArtInChip Technology Co., Ltd
 
 import os
 import platform
@@ -88,12 +88,16 @@ if PLATFORM == 'gcc':
     if CPUNAME == 'e906' or CPUNAME == 'e907':
         DEVICE = ' -march=rv32imac_xtheade -mabi=ilp32'
 
-    B_CFLAGS  += ' -c -g -ffunction-sections -fdata-sections -Wall -mcmodel=medlow -mno-dup-loop-header'
+    B_CFLAGS  += ' -c -g -ffunction-sections -fdata-sections -Wall -mcmodel=medlow'
     B_AFLAGS  += ' -c' + ' -x assembler-with-cpp' + ' -D__ASSEMBLY__'
-    CFLAGS  = DEVICE + B_CFLAGS + CFLAGS_DBG
+    CFLAGS  = DEVICE + B_CFLAGS + CFLAGS_DBG + ' -mno-dup-loop-header'
     AFLAGS  = DEVICE + B_AFLAGS + AFLAGS_DBG
     CXXFLAGS = CFLAGS
-    LFLAGS  = DEVICE + ' -nostartfiles -Wl,--no-whole-archive -lm -lc -lgcc -Wl,-gc-sections -Wl,-zmax-page-size=1024 -Wl,-Map=' + prj_out_dir + SOC + '.map'
+    PRJ_KERNEL = os.getenv('PRJ_KERNEL')
+    if PRJ_KERNEL == 'rt-thread':
+        LFLAGS  = DEVICE + ' -nostartfiles -Wl,--no-whole-archive -lgcc -Wl,-gc-sections -Wl,-zmax-page-size=1024 -Wl,-Map=' + prj_out_dir + SOC + '.map'
+    else:
+        LFLAGS  = DEVICE + ' -nostartfiles -Wl,--no-whole-archive -lm -lc -lgcc -Wl,-gc-sections -Wl,-zmax-page-size=1024 -Wl,-Map=' + prj_out_dir + SOC + '.map'
     CPATH   = ''
     LPATH   = ''
 

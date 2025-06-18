@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -111,7 +111,7 @@ static int cmd_gpio_get_pin_cfg_status(int argc, char **argv)
         break;
     }
 
-    ret = hal_gpio_get_pincfg(g, p, GPIO_CHECK_PIN_GEN_PIN_DRV);
+    ret = hal_gpio_get_pincfg(g, p, GPIO_CHECK_PIN_GEN_PULL);
     switch(ret) {
     case PIN_PULL_DIS:
         printf("pull mode    : disabled\n");
@@ -155,6 +155,7 @@ static int cmd_gpio_input_pin_cfg(int argc, char **argv)
     p = GPIO_GROUP_PIN(pin);
 
     hal_gpio_set_func(g, p, 1);
+    hal_gpio_set_bias_pull(g, p, PIN_PULL_UP);
     hal_gpio_direction_input(g, p);
     hal_gpio_set_irq_mode(g, p, PIN_IRQ_MODE_EDGE_BOTH);
 

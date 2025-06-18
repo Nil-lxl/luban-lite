@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -41,6 +41,8 @@ static inline aicos_thread_t aicos_thread_create(const char *name, uint32_t stac
 {
     rt_thread_t htask;
     htask = rt_thread_create(name, entry, args, stack_size, prio, 10);
+    if (htask == NULL)
+        return NULL;
     rt_thread_startup(htask);
     return (aicos_thread_t)htask;
 }

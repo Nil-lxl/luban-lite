@@ -34,6 +34,8 @@ extern "C" {
 #define CLASS_CONNECT(hport, i)    ((hport)->config.intf[i].class_driver->connect(hport, i))
 #define CLASS_DISCONNECT(hport, i) ((hport)->config.intf[i].class_driver->disconnect(hport, i))
 
+#define USBH_EVENT_ENUMERATE        (1 << 0)
+
 #ifdef __ARMCC_VERSION /* ARM C Compiler */
 #define CLASS_INFO_DEFINE __attribute__((section("usbh_class_info"))) __USED __ALIGNED(1)
 #elif defined(__GNUC__)
@@ -98,6 +100,7 @@ struct usbh_hubport {
     uint8_t port;     /* Hub port index */
     uint8_t dev_addr; /* device address */
     uint8_t speed;    /* device speed */
+    uint16_t raw_config_desc_len;
     struct usb_device_descriptor device_desc;
     struct usbh_configuration config;
     const char *iManufacturer;
@@ -113,6 +116,7 @@ struct usbh_hubport {
     struct usb_endpoint_descriptor ep0;
     struct usbh_urb ep0_urb;
     usb_osal_mutex_t mutex;
+    usb_osal_event_t event;
 };
 
 struct usbh_hub {
@@ -263,6 +267,7 @@ int usbh_deinitialize(struct usbh_bus *bus);
 void *usbh_find_class_instance(const char *devname);
 int usbh_init(void);
 
+int usbh_hubport_enumerate_wait(struct usbh_hubport *hport);
 int lsusb(int argc, char **argv);
 
 #ifdef __cplusplus

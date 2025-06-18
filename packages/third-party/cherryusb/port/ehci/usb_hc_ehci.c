@@ -26,7 +26,6 @@ USB_NOCACHE_RAM_SECTION struct ehci_qh_hw g_periodic_qh_head[CONFIG_USBHOST_MAX_
 
 /* The frame list */
 USB_NOCACHE_RAM_SECTION uint32_t g_framelist[CONFIG_USBHOST_MAX_BUS][CONFIG_USB_EHCI_FRAME_LIST_SIZE] __attribute__((aligned(4096)));
-
 #ifdef CONFIG_USB_DCACHE_ENABLE
 
 #define EHCI_QH_HDR_ALIGN_SIZE  \
@@ -34,7 +33,9 @@ USB_NOCACHE_RAM_SECTION uint32_t g_framelist[CONFIG_USBHOST_MAX_BUS][CONFIG_USB_
 #define EHCI_QTD_HDR_ALIGN_SIZE  \
             ALIGN_UP(sizeof(struct ehci_qtd), CONFIG_USB_ALIGN_SIZE)
 
-USB_MEM_ALIGNX static uint8_t g_usb_ehci_buf[CONFIG_USBHOST_MAX_BUS][CONFIG_USB_EHCI_FRAME_LIST_SIZE];
+#define CONFIG_USB_EHCI_BUF_NUM     3
+static bool g_usb_ehci_buf_usbd[CONFIG_USBHOST_MAX_BUS][CONFIG_USB_EHCI_BUF_NUM];
+USB_MEM_ALIGNX static uint8_t g_usb_ehci_buf[CONFIG_USBHOST_MAX_BUS][CONFIG_USB_EHCI_BUF_NUM][CONFIG_USB_EHCI_FRAME_LIST_SIZE];
 
 void usb_dcache_clean(uintptr_t addr, uint32_t len);
 void usb_dcache_invalidate(uintptr_t addr, uint32_t len);
@@ -42,6 +43,7 @@ void usb_dcache_clean_invalidate(uintptr_t addr, uint32_t len);
 
 static int usb_ehci_buf_alloc(struct ehci_qtd_hw *qtd, uint32_t len)
 {
+    size_t flags;
     struct usbh_bus *bus = qtd->urb->hport->bus;
 
     if (len % CONFIG_USB_ALIGN_SIZE)
@@ -59,7 +61,17 @@ static int usb_ehci_buf_alloc(struct ehci_qtd_hw *qtd, uint32_t len)
             return -5;
         }
     } else {
-        qtd->align_buffer = g_usb_ehci_buf[bus->hcd.hcd_id];
+        for (int i = 0; i < CONFIG_USB_EHCI_BUF_NUM; i++) {
+            if (!g_usb_ehci_buf_usbd[bus->hcd.hcd_id][i]) {
+                flags = usb_osal_enter_critical_section();
+                g_usb_ehci_buf_usbd[bus->hcd.hcd_id][i] = true;
+                usb_osal_leave_critical_section(flags);
+                qtd->align_buffer = g_usb_ehci_buf[bus->hcd.hcd_id][i];
+                return 0;
+            }
+        }
+
+        USB_LOG_ERR("USB EHCI alloc buffer failed. \n");
     }
 
     return 0;
@@ -67,15 +79,24 @@ static int usb_ehci_buf_alloc(struct ehci_qtd_hw *qtd, uint32_t len)
 
 static void usb_ehci_buf_free(struct ehci_qtd_hw *qtd)
 {
+    size_t flags;
     struct usbh_bus *bus = qtd->urb->hport->bus;
 
     if (!qtd->align_buffer)
         return;
 
     /* Whether the buf is allocated dynamically */
-    if (qtd->align_buffer != g_usb_ehci_buf[bus->hcd.hcd_id])
-        aicos_free_align(0, qtd->align_buffer);
+    for (int i = 0; i < CONFIG_USB_EHCI_BUF_NUM; i++) {
+        if (qtd->align_buffer == g_usb_ehci_buf[bus->hcd.hcd_id][i]) {
+            flags = usb_osal_enter_critical_section();
+            g_usb_ehci_buf_usbd[bus->hcd.hcd_id][i] = false;
+            usb_osal_leave_critical_section(flags);
+            goto free;
+        }
+    }
+    aicos_free_align(0, qtd->align_buffer);
 
+free:
     qtd->align_buffer = NULL;
     qtd->align_buffer_len = 0;
 }
@@ -965,6 +986,7 @@ int usb_hc_init(struct usbh_bus *bus)
     uint32_t regval;
 
     memset(&g_ehci_hcd[bus->hcd.hcd_id], 0, sizeof(struct ehci_hcd));
+    memset(&ehci_qh_pool[bus->hcd.hcd_id], 0, sizeof(struct ehci_qh_hw) * CONFIG_USB_EHCI_QH_NUM);
 
     if (sizeof(struct ehci_qh_hw) % 32) {
         USB_LOG_ERR("struct ehci_qh_hw is not align 32\r\n");
@@ -1537,7 +1559,7 @@ int usbh_kill_urb(struct usbh_urb *urb)
         }
     } else {
 #ifdef CONFIG_USB_EHCI_ISO
-        ehci_remove_itd_urb(urb);
+        ehci_kill_iso_urb(bus, urb);
         EHCI_HCOR->usbcmd |= (EHCI_USBCMD_PSEN | EHCI_USBCMD_ASEN);
         usb_osal_leave_critical_section(flags);
         return 0;

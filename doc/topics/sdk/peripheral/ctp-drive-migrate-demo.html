@@ -1,15 +1,15 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节描述了 GT911 触摸屏驱动的初始化和配置示例，包括 I2C 通信、GPIO 引脚配置以及触摸事件的处理。 主要功能模块简介 I2C 通信初始化： gt911_client.bus 获取 I2C 总线设备。 打开 I2C 总线设备，并设置从机地址。 GPIO 引脚配置： 使用 drv_pin_get 函数获取复位引脚和中断引脚。 配置复位引脚和中断引脚为输入模式，并设置中断模式： ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2024-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ctp-drive-migrate-demo"/><title>驱动文件移植解析</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="ctp-drive-migrate-demo-d5856e2172"/><meta name="wh-source-relpath" content="topics/sdk/peripheral/ctp-drive-migrate-demo.dita"/><meta name="wh-out-relpath" content="topics/sdk/peripheral/ctp-drive-migrate-demo.html"/>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节描述了 GT911 触摸屏驱动的初始化和配置示例，包括 I2C 通信、GPIO 引脚配置以及触摸事件的处理。 主要功能模块简介 I2C 通信初始化： gt911_client.bus 获取 I2C 总线设备。 打开 I2C 总线设备，并设置从机地址。 GPIO 引脚配置： 使用 drv_pin_get 函数获取复位引脚和中断引脚。 配置复位引脚和中断引脚为输入模式，并设置中断模式： ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ctp-drive-migrate-demo"/><title>驱动文件移植解析</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="ctp-drive-migrate-demo-d3703e1902"/><meta name="wh-source-relpath" content="topics/sdk/peripheral/ctp-drive-migrate-demo.dita"/><meta name="wh-out-relpath" content="topics/sdk/peripheral/ctp-drive-migrate-demo.html"/>
 
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
-    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
-    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
-    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
-<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
 
     <body id="ctp-drive-migrate-demo" class="wh_topic_page frmBody">
         <a href="#wh_topic_body" class="sr-only sr-only-focusable">
@@ -21,12 +21,12 @@
         
         <header class="navbar navbar-default wh_header">
     <div class="container-fluid">
-        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
             <div class="wh_logo_and_publication_title_container">
                 <div class="wh_logo_and_publication_title">
                     
-                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
-                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
                     
                 </div>
                 
@@ -39,13 +39,6 @@
                 
                 
             </div>
-        </div>
-    </div>
-</header>
-        
-        
-         
-        
         <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
             
             
@@ -54,7 +47,14 @@
             
             
             
-        </div>
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
         
         <div class="container-fluid" id="wh_topic_container">
             <div class="row">
@@ -94,7 +94,7 @@
                         <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
                             <div id="wh_publication_toc_content">
 		                        
-                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d5856e989" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d5856e989-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1003" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1003-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d5856e1003-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e1152" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e1152-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d5856e1152-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">系统镜像、编译选项、开发板、应用等相关的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d5856e1416" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d5856e1416-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d5856e1416-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2119" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2119-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d5856e2119-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d5856e2136" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/keyadc.html" id="id-d5856e2136-link">按键矩阵</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d5856e2148" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d5856e2148-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch.html" id="id-d5856e2148-link">CTP 移植指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="touch-migrate-ctp-process-d5856e2160" class="topicref" data-id="touch-migrate-ctp-process" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html" id="touch-migrate-ctp-process-d5856e2160-link">新建 CTP 驱动</a></div></div></li><li role="treeitem" class="active"><div data-tocid="ctp-drive-migrate-demo-d5856e2172" class="topicref" data-id="ctp-drive-migrate-demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html" id="ctp-drive-migrate-demo-d5856e2172-link">驱动文件移植解析</a></div></div></li><li role="treeitem"><div data-tocid="touch_revise_existing_gt911_drive-d5856e2184" class="topicref" data-id="touch_revise_existing_gt911_drive" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html" id="touch_revise_existing_gt911_drive-d5856e2184-link">修改已有 CTP 驱动</a></div></div></li><li role="treeitem"><div data-tocid="touch_obtain_key_info-d5856e2196" class="topicref" data-id="touch_obtain_key_info" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-obtain-key-info.html" id="touch_obtain_key_info-d5856e2196-link">获取和配置 IC 关键信息</a></div></div></li><li role="treeitem"><div data-tocid="touch-configure-d5856e2208" class="topicref" data-id="touch-configure" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-configure.html" id="touch-configure-d5856e2208-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="touch_faq-d5856e2220" class="topicref" data-id="touch_faq" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-faq.html" id="touch_faq-d5856e2220-link">常见问题</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d5856e2232" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/wifi.html" id="id-d5856e2232-link">无线网络</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2244" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2244-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d5856e2244-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d5856e2345" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d5856e2345-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d5856e2345-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e1860" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/keyadc.html" id="id-d3703e1860-link">按键矩阵</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e1874" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e1874-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch.html" id="id-d3703e1874-link">CTP 移植指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="touch-migrate-ctp-process-d3703e1888" class="topicref" data-id="touch-migrate-ctp-process" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html" id="touch-migrate-ctp-process-d3703e1888-link">新建 CTP 驱动</a></div></div></li><li role="treeitem" class="active"><div data-tocid="ctp-drive-migrate-demo-d3703e1902" class="topicref" data-id="ctp-drive-migrate-demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html" id="ctp-drive-migrate-demo-d3703e1902-link">驱动文件移植解析</a></div></div></li><li role="treeitem"><div data-tocid="touch_revise_existing_gt911_drive-d3703e1916" class="topicref" data-id="touch_revise_existing_gt911_drive" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html" id="touch_revise_existing_gt911_drive-d3703e1916-link">修改已有 CTP 驱动</a></div></div></li><li role="treeitem"><div data-tocid="touch_obtain_key_info-d3703e1930" class="topicref" data-id="touch_obtain_key_info" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-obtain-key-info.html" id="touch_obtain_key_info-d3703e1930-link">获取和配置 IC 关键信息</a></div></div></li><li role="treeitem"><div data-tocid="touch-configure-d3703e1944" class="topicref" data-id="touch-configure" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-configure.html" id="touch-configure-d3703e1944-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="touch_faq-d3703e1958" class="topicref" data-id="touch_faq" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-faq.html" id="touch_faq-d3703e1958-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1972" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1972-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/wifi.html" id="id-d3703e1972-link">无线网络</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
 		                        
                             </div>
                         </nav>
@@ -108,16 +108,28 @@
                         </button>
                         
                         
-                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/peripheral/ctp-drive-migrate-demo.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">驱动文件移植解析</h1><div class="date inPage">15 Jan 2024</div><div style="color: gray;">
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/peripheral/ctp-drive-migrate-demo.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">驱动文件移植解析</h1>
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
                     Read time: 19 minute(s)
-                </div><div class="- topic/body body"><p class="- topic/p p" data-ofbid="d93399e26__20250121171531">本节描述了 GT911 触摸屏驱动的初始化和配置示例，包括 I2C 通信、GPIO 引脚配置以及触摸事件的处理。</p><div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">主要功能模块简介</strong><ol class="- topic/ol ol" id="ctp-drive-migrate-demo__ol_fts_gq3_ndc" data-ofbid="ctp-drive-migrate-demo__ol_fts_gq3_ndc"><li class="- topic/li li" data-ofbid="d93399e32__20250121171531">
-                    <p class="- topic/p p" data-ofbid="d93399e34__20250121171531">I2C 通信初始化：</p>
-                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_gfd_sw1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_gfd_sw1_b2c"><li class="- topic/li li" data-ofbid="d93399e38__20250121171531"><code class="+ topic/ph pr-d/codeph ph codeph">gt911_client.bus</code> 获取 I2C 总线设备。</li><li class="- topic/li li" data-ofbid="d93399e42__20250121171531">打开 I2C 总线设备，并设置从机地址。</li></ul>
-                </li><li class="- topic/li li" data-ofbid="d93399e45__20250121171531">
-                    <p class="- topic/p p" data-ofbid="d93399e47__20250121171531">GPIO 引脚配置：</p>
-                    <div class="- topic/p p" data-ofbid="d93399e50__20250121171531">
-                        <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_nfm_tw1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_nfm_tw1_b2c"><li class="- topic/li li" data-ofbid="d93399e53__20250121171531">使用 <code class="+ topic/ph pr-d/codeph ph codeph">drv_pin_get</code> 函数获取复位引脚和中断引脚。</li><li class="- topic/li li" data-ofbid="d93399e58__20250121171531">
-                                <div class="- topic/p p" data-ofbid="d93399e60__20250121171531">配置复位引脚和中断引脚为输入模式，并设置中断模式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_l35_kq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_l35_kq3_ndc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_gt911_gpio_cfg() {
+                </div>
+    <div class="- topic/body body">
+        <p class="- topic/p p" data-ofbid="d98367e36__20250409171041">本节描述了 GT911 触摸屏驱动的初始化和配置示例，包括 I2C 通信、GPIO 引脚配置以及触摸事件的处理。</p>
+        <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">主要功能模块简介</strong><ol class="- topic/ol ol" id="ctp-drive-migrate-demo__ol_fts_gq3_ndc" data-ofbid="ctp-drive-migrate-demo__ol_fts_gq3_ndc">
+                <li class="- topic/li li" data-ofbid="d98367e44__20250409171041">
+                    <p class="- topic/p p" data-ofbid="d98367e46__20250409171041">I2C 通信初始化：</p>
+                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_gfd_sw1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_gfd_sw1_b2c">
+                        <li class="- topic/li li" data-ofbid="d98367e51__20250409171041"><code class="+ topic/ph pr-d/codeph ph codeph">gt911_client.bus</code> 获取 I2C 总线设备。</li>
+                        <li class="- topic/li li" data-ofbid="d98367e56__20250409171041">打开 I2C 总线设备，并设置从机地址。</li>
+                    </ul>
+                </li>
+                <li class="- topic/li li" data-ofbid="d98367e61__20250409171041">
+                    <p class="- topic/p p" data-ofbid="d98367e63__20250409171041">GPIO 引脚配置：</p>
+                    <div class="- topic/p p" data-ofbid="d98367e66__20250409171041">
+                        <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_nfm_tw1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_nfm_tw1_b2c">
+                            <li class="- topic/li li" data-ofbid="d98367e70__20250409171041">使用 <code class="+ topic/ph pr-d/codeph ph codeph">drv_pin_get</code> 函数获取复位引脚和中断引脚。</li>
+                            <li class="- topic/li li" data-ofbid="d98367e76__20250409171041">
+                                <div class="- topic/p p" data-ofbid="d98367e78__20250409171041">配置复位引脚和中断引脚为输入模式，并设置中断模式：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_l35_kq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_l35_kq3_ndc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_gt911_gpio_cfg() {
     <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> g, p;
     <strong class="hl-keyword">long</strong> pin;
 
@@ -134,19 +146,27 @@
 
     <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
 }</pre></div>
-                            </li></ul>
+                            </li>
+                        </ul>
                     </div>
-                </li><li class="- topic/li li" data-ofbid="d93399e67__20250121171531">
-                    <p class="- topic/p p" data-ofbid="d93399e69__20250121171531">触摸事件处理：</p>
-                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_jts_gq3_ndc" data-ofbid="ctp-drive-migrate-demo__ul_jts_gq3_ndc"><li class="- topic/li li" data-ofbid="d93399e73__20250121171531"><span class="+ topic/keyword pr-d/apiname keyword apiname">gt911_read_point()</span>
-                            读取触摸点信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_fpq_nq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_fpq_nq3_ndc"><strong class="hl-keyword">static</strong> rt_err_t gt911_read_point(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">void</strong> *buf, rt_size_t read_num)</pre></li><li class="- topic/li li" data-ofbid="d93399e79__20250121171531"><span class="+ topic/keyword pr-d/apiname keyword apiname">gt911_control()</span> 控制 TP 设备，如获取
-                            ID、校准等：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_ecp_qq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_ecp_qq3_ndc"><strong class="hl-keyword">static</strong> rt_err_t gt911_control(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">int</strong> cmd, <strong class="hl-keyword">void</strong> *arg)</pre></li><li class="- topic/li li" data-ofbid="d93399e85__20250121171531">注册了 <code class="+ topic/ph pr-d/codeph ph codeph">gt911_touch_ops</code> 结构体，将上述两个函数指针赋值给相应的操作函数。</li></ul>
-                </li><li class="- topic/li li" data-ofbid="d93399e91__20250121171531">
-                    <p class="- topic/p p" data-ofbid="d93399e93__20250121171531">注册触摸设备：</p>
-                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_wxl_3x1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_wxl_3x1_b2c"><li class="- topic/li li" data-ofbid="d93399e97__20250121171531">
-                            <p class="- topic/p p" data-ofbid="d93399e99__20250121171531">在 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_init</code> 函数中，创建并初始化
+                </li>
+                <li class="- topic/li li" data-ofbid="d98367e87__20250409171041">
+                    <p class="- topic/p p" data-ofbid="d98367e89__20250409171041">触摸事件处理：</p>
+                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_jts_gq3_ndc" data-ofbid="ctp-drive-migrate-demo__ul_jts_gq3_ndc">
+                        <li class="- topic/li li" data-ofbid="d98367e94__20250409171041"><span class="+ topic/keyword pr-d/apiname keyword apiname">gt911_read_point()</span>
+                            读取触摸点信息：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_fpq_nq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_fpq_nq3_ndc"><strong class="hl-keyword">static</strong> rt_err_t gt911_read_point(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">void</strong> *buf, rt_size_t read_num)</pre></li>
+                        <li class="- topic/li li" data-ofbid="d98367e101__20250409171041"><span class="+ topic/keyword pr-d/apiname keyword apiname">gt911_control()</span> 控制 TP 设备，如获取
+                            ID、校准等：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_ecp_qq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_ecp_qq3_ndc"><strong class="hl-keyword">static</strong> rt_err_t gt911_control(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">int</strong> cmd, <strong class="hl-keyword">void</strong> *arg)</pre></li>
+                        <li class="- topic/li li" data-ofbid="d98367e108__20250409171041">注册了 <code class="+ topic/ph pr-d/codeph ph codeph">gt911_touch_ops</code> 结构体，将上述两个函数指针赋值给相应的操作函数。</li>
+                    </ul>
+                </li>
+                <li class="- topic/li li" data-ofbid="d98367e116__20250409171041">
+                    <p class="- topic/p p" data-ofbid="d98367e118__20250409171041">注册触摸设备：</p>
+                    <ul class="- topic/ul ul" id="ctp-drive-migrate-demo__ul_wxl_3x1_b2c" data-ofbid="ctp-drive-migrate-demo__ul_wxl_3x1_b2c">
+                        <li class="- topic/li li" data-ofbid="d98367e123__20250409171041">
+                            <p class="- topic/p p" data-ofbid="d98367e125__20250409171041">在 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_init</code> 函数中，创建并初始化
                                     <code class="+ topic/ph pr-d/codeph ph codeph">rt_touch_device</code> 结构体。</p>
-                            <div class="- topic/p p" data-ofbid="d93399e108__20250121171531">分配内存并初始化触摸设备结构体，然后注册该设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_dwl_mq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_dwl_mq3_ndc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_hw_gt911_init(<strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *name, <strong class="hl-keyword">struct</strong> rt_touch_config *cfg) {
+                            <div class="- topic/p p" data-ofbid="d98367e134__20250409171041">分配内存并初始化触摸设备结构体，然后注册该设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_dwl_mq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_dwl_mq3_ndc"><strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_hw_gt911_init(<strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *name, <strong class="hl-keyword">struct</strong> rt_touch_config *cfg) {
     touch_device = (<strong class="hl-keyword">struct</strong> rt_touch_device *)rt_malloc(<strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
     <strong class="hl-keyword">if</strong> (touch_device == RT_NULL) {
         LOG_E(<span class="hl-string">"touch device malloc fail"</span>);
@@ -164,12 +184,17 @@
     LOG_I(<span class="hl-string">"touch device gt911 init success"</span>);
     <strong class="hl-keyword">return</strong> RT_EOK;
 }</pre></div>
-                        </li><li class="- topic/li li" data-ofbid="d93399e113__20250121171531">调用 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_touch_register</code> 函数注册触摸设备。</li></ul>
-                </li><li class="- topic/li li" data-ofbid="d93399e119__20250121171531">
-                    <p class="- topic/p p" data-ofbid="d93399e121__20250121171531">硬件初始化：</p>
-                    <p class="- topic/p p" data-ofbid="d93399e124__20250121171531">在 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_port</code> 函数中，调用 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_init</code>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d98367e140__20250409171041">调用 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_touch_register</code> 函数注册触摸设备。</li>
+                    </ul>
+                </li>
+                <li class="- topic/li li" data-ofbid="d98367e148__20250409171041">
+                    <p class="- topic/p p" data-ofbid="d98367e150__20250409171041">硬件初始化：</p>
+                    <p class="- topic/p p" data-ofbid="d98367e153__20250409171041">在 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_port</code> 函数中，调用 <code class="+ topic/ph pr-d/codeph ph codeph">rt_hw_gt911_init</code>
                         完成设备的初始化和注册。</p>
-                </li></ol></div><div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">完整代码示例</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_zkq_vq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_zkq_vq3_ndc">#include &lt;rtthread.h&gt;
+                </li>
+            </ol></div>
+        <div class="- topic/div div"><strong class="+ topic/ph hi-d/b ph b">完整代码示例</strong><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="ctp-drive-migrate-demo__codeblock_zkq_vq3_ndc" data-ofbid="ctp-drive-migrate-demo__codeblock_zkq_vq3_ndc">#include &lt;rtthread.h&gt;
 #include &lt;rtdevice.h&gt;
 
 #include &lt;string.h&gt;
@@ -180,7 +205,7 @@
 
 #include <span class="hl-string">"gt911.h"</span>
 
-<em class="hl-comment">//dev 结构体定义，其他 TP 也需要定义这个变量</em>
+<em class="hl-comment">//dev 结构体定义，其它 TP 也需要定义这个变量</em>
 <strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_i2c_client gt911_client;
 
 <em class="hl-comment">//这个是 gt911 特有的数组用于更改固件的，没这需求的可以不定义</em>
@@ -395,7 +420,7 @@
     rt_uint8_t touch_num = <span class="hl-number">0</span>;
     rt_uint8_t write_buf[<span class="hl-number">3</span>];
     rt_uint8_t cmd[<span class="hl-number">2</span>];
-    <em class="hl-comment">//要读取的数据的长度，一般是读取坐标数量*每一个坐标信息的 buf 长度+一些其他信息</em>
+    <em class="hl-comment">//要读取的数据的长度，一般是读取坐标数量*每一个坐标信息的 buf 长度+一些其它信息</em>
     rt_uint8_t read_buf[<span class="hl-number">8</span> * GT911_MAX_TOUCH] = { <span class="hl-number">0</span> };
     rt_uint8_t read_index;
     int8_t read_id = <span class="hl-number">0</span>;
@@ -513,7 +538,7 @@ exit_:
 }
 
 <em class="hl-comment">/*
- * TP 的控制函数，一般来说只需要实现 RT_TOUCH_CTRL_GET_INFO，其他的可以不管
+ * TP 的控制函数，一般来说只需要实现 RT_TOUCH_CTRL_GET_INFO，其它的可以不管
  */</em>
 <strong class="hl-keyword">static</strong> rt_err_t gt911_control(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">int</strong> cmd, <strong class="hl-keyword">void</strong> *arg)
 {
@@ -744,7 +769,9 @@ exit_:
     <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
 }
 <em class="hl-comment">//通过宏 ``INIT_DEVICE_EXPORT``，驱动在系统启动时自动加载,即可轻松适配不同型号的触控芯片</em>
-INIT_DEVICE_EXPORT(rt_hw_gt911_port);</pre></div></div></article></main></div>
+INIT_DEVICE_EXPORT(rt_hw_gt911_port);</pre></div>
+    </div>
+</article></main></div>
                         
                         
                         
@@ -762,8 +789,7 @@ INIT_DEVICE_EXPORT(rt_hw_gt911_port);</pre></div></div></article></main></div>
         <footer class="navbar navbar-default wh_footer">
   <div class=" footer-container mx-auto ">
     <title>footer def</title>
-    <style><!--
-
+    <style>
 .p1 {
   font-family: FangZhengShuSong, Times, serif;
 }
@@ -773,26 +799,16 @@ INIT_DEVICE_EXPORT(rt_hw_gt911_port);</pre></div></div></article></main></div>
 .p3 {
   font-family: "Lucida Console", "Courier New", monospace;
 }
-    
---></style>
-  
-
-  
-    
-  
-  
-    
-            
-   
-  
-
+    </style>
   <div class="webhelp.fragment.footer">
-    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
-  </div><div>
-    <div class="generation_time">
-      Update Time: 2025-01-21
-    </div>        
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
   </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
   </div>
 </footer>
         

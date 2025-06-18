@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -353,7 +353,11 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #ifdef AIC_USING_CTP
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_RST_PIN},
+#ifdef AIC_PM_DEMO_TOUCH_WAKEUP
+    {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN, FLAG_WAKEUP_SOURCE},
+#else
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN},
+#endif
 #endif
 #ifdef LV_USB_OSD_SETTINGS_MENU
     {1, PIN_PULL_DIS, 3, LV_USB_OSD_SETTINGS_WAKEUP_KEY},
@@ -361,7 +365,7 @@ struct aic_pinmux aic_pinmux_config[] = {
 #ifdef AIC_USING_PM
     {1, PIN_PULL_DIS, 3, AIC_BOARD_LEVEL_POWER_PIN, FLAG_POWER_PIN},
 #ifdef AIC_PM_DEMO
-    {1, PIN_PULL_DIS, 3, AIC_PM_POWER_KEY_GPIO, FLAG_WAKEUP_SOURCE},
+    {1, PIN_PULL_UP, 3, AIC_PM_POWER_KEY_GPIO, FLAG_WAKEUP_SOURCE},
 #endif
 #endif
 };

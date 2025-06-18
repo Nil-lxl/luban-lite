@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,6 +14,7 @@
 #define LOG_TAG            "GPAI"
 #include "aic_core.h"
 #include "hal_gpai.h"
+#include "aic_hal_clk.h"
 
 extern struct aic_gpai_ch aic_gpai_chs[];
 extern const int aic_gpai_chs_size;
@@ -160,6 +161,48 @@ static rt_err_t drv_gpai_stop_dma(struct rt_adc_device *dev, rt_uint32_t channel
 }
 #endif
 
+#ifdef RT_USING_PM
+static int aic_gpai_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        hal_clk_disable(CLK_GPAI);
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_gpai_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        hal_clk_enable(CLK_GPAI);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_gpai_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_gpai_suspend, aic_gpai_resume)
+    NULL,
+};
+#endif
+
 static const struct rt_adc_ops aic_adc_ops =
 {
     .enabled = drv_gpai_enabled,
@@ -181,7 +224,7 @@ static int drv_gpai_init(void)
     struct rt_adc_device *dev = NULL;
     s32 ret = 0;
 
-    if (hal_gpai_clk_init())
+    if (hal_gpai_init())
         return -RT_ERROR;
 
 #ifndef AIC_GPAI_DRV_POLL
@@ -205,6 +248,9 @@ static int drv_gpai_init(void)
         LOG_E("Failed to register ADC. ret %d", ret);
         return ret;
     }
+#ifdef RT_USING_PM
+    rt_pm_device_register(&dev->parent, &aic_gpai_pm_ops);
+#endif
     return 0;
 }
-INIT_BOARD_EXPORT(drv_gpai_init);
+INIT_DEVICE_EXPORT(drv_gpai_init);

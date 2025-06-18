@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -18,7 +18,8 @@ extern const int aic_gpai_chs_size;
 
 void drv_gpai_init(void)
 {
-    hal_gpai_clk_init();
+
+    hal_gpai_init();
     hal_gpai_set_ch_num(aic_gpai_chs_size);
 #if defined(AIC_GPAI_DRV_V21)
     aich_gpai_adc_sel_enable(AIC_GPAI_ADC_ACC);

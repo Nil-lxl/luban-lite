@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -294,7 +294,7 @@ static void gpai_single_mode(u32 ch)
     gpai_writel(val, GPAI_CHnCR(ch));
 
     val = gpai_readl(GPAI_CHnCR(ch));
-    val |= GPAI_CHnCR_PERIOD_SAMPLE_EN;
+    val |= GPAI_CHnCR_SINGLE_SAMPLE_EN;
     gpai_writel(val, GPAI_CHnCR(ch));
     gpai_int_enable(ch, 1,
             GPAI_CHnINT_DAT_RDY_IE | GPAI_CHnINT_FIFO_ERR_IE);
@@ -340,6 +340,15 @@ static void gpai_period_mode(struct aic_gpai_ch *chan, u32 pclk)
 
     val = gpai_readl(GPAI_CHnCR(ch));
     val |= GPAI_CHnCR_PERIOD_SAMPLE_EN;
+    gpai_writel(val, GPAI_CHnCR(ch));
+}
+
+void hal_gpai_set_high_priority(u32 ch)
+{
+    u32 val = 0;
+
+    val = gpai_readl(GPAI_CHnCR(ch));
+    val |= GPAI_CHnCR_HIGH_ADC_PRIORITY;
     gpai_writel(val, GPAI_CHnCR(ch));
 }
 
@@ -402,9 +411,10 @@ static int hal_gpai_irq_read_fifo(struct aic_gpai_ch *chan)
     }
 
     chan->fifo_valid_cnt = cnt;
-    if (chan->mode == AIC_GPAI_MODE_SINGLE)
+    if (chan->mode == AIC_GPAI_MODE_SINGLE) {
         chan->avg_data = tmp / cnt;
-    pr_debug("There are %d data ready in ch%d, last %d\n", cnt, ch, chan->avg_data);
+        pr_debug("There are %d data ready in ch%d, last %d\n", cnt, ch, chan->avg_data);
+    }
 
     return 0;
 }
@@ -567,19 +577,26 @@ irqreturn_t aich_gpai_isr(int irq, void *arg)
     return IRQ_HANDLED;
 }
 
-s32 hal_gpai_clk_init(void)
+s32 hal_gpai_init(void)
 {
     s32 ret = 0;
 
-    ret = hal_clk_enable(CLK_GPAI);
+    ret = hal_clk_enable_deassertrst(CLK_GPAI);
     if (ret < 0) {
-        pr_err("GPAI clk enable failed!");
+        pr_err("GPAI clock/reset enable failed!");
         return -1;
     }
 
-    ret = hal_clk_enable_deassertrst(CLK_GPAI);
+    return ret;
+}
+
+s32 hal_gpai_deinit(void)
+{
+    s32 ret = 0;
+
+    ret = hal_clk_disable_assertrst(CLK_GPAI);
     if (ret < 0) {
-        pr_err("GPAI reset deassert failed!");
+        pr_err("GPAI clock/reset disable failed!");
         return -1;
     }
 

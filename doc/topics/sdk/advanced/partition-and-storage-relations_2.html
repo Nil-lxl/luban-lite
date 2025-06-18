@@ -1,0 +1,505 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="description" content="Luban-Lite 上使用 RT-Thread 时，每个分区都对应一个或者多个系统设备。不同存储介质的对应关系如下表格所示。系统中出现但此处未列出的其它分区，同样遵循下列规则。 表 1 . SPI NOR 上的分区、设备和文件系统 分区名 MTD 设备名 块设备名 文件系统 备注 &#34;spl&#34; &#34;spl&#34; - - - &#34;os&#34; &#34;os&#34; - - - &#34;rodata&#34; &#34;rodata&#34; ..."/><meta name="DC.relation" content="../../../topics/sdk/advanced/partition_config_2.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/partition_intro_2.html"/><meta name="DC.relation" content="../../../topics/sdk/bringup/lite-bringup-console.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="partition-and-storage-relations"/>        
+      <title>分区与存储设备的关系</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="partition-and-storage-relations-d3703e2212"/><meta name="wh-source-relpath" content="topics/sdk/advanced/partition-and-storage-relations.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/partition-and-storage-relations_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
+
+    <body id="partition-and-storage-relations" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/advanced/partition_config_2.html">配置分区</a></div></div></li><li class="active"><div class="topicref" data-id="partition-and-storage-relations"><div class="title"><a href="../../../topics/sdk/advanced/partition-and-storage-relations_2.html">分区与存储设备的关系</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/advanced/partition_intro_2.html" title="分区类型介绍" aria-label="上一主题: 分区类型介绍" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/bringup/lite-bringup-console.html" title="调试配置" aria-label="下一主题: 调试配置" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e2032" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-prepare.html" id="id-d3703e2032-link">准备工作</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e2048" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-soc.html" id="id-d3703e2048-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e2062" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-ram.html" id="id-d3703e2062-link">内存配置</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2076" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2076-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-storage.html" id="id-d3703e2076-link">存储配置</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2184" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2184-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition_config_2.html" id="id-d3703e2184-link">配置分区</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="partition-intro-d3703e2198" class="topicref" data-id="partition-intro" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition_intro_2.html" id="partition-intro-d3703e2198-link">分区类型介绍</a></div></div></li><li role="treeitem" class="active"><div data-tocid="partition-and-storage-relations-d3703e2212" class="topicref" data-id="partition-and-storage-relations" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition-and-storage-relations_2.html" id="partition-and-storage-relations-d3703e2212-link">分区与存储设备的关系</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d3703e2228" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-console.html" id="id-d3703e2228-link">调试配置</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2242" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2242-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-display.html" id="id-d3703e2242-link">屏幕配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e2340" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-samples.html" id="id-d3703e2340-link">示例程序</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/advanced/partition-and-storage-relations.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">分区与存储设备的关系</h1>
+    
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div>
+    <div class="- topic/body concept/conbody body conbody"><p class="- topic/shortdesc shortdesc"></p>
+        <p class="- topic/p p" data-ofbid="d82213e30__20250409171038"><span class="- topic/ph ph">Luban-Lite</span> 上使用 RT-Thread
+            时，每个分区都对应一个或者多个系统设备。不同存储介质的对应关系如下表格所示。系统中出现但此处未列出的其它分区，同样遵循下列规则。</p>
+        <div class="table-container"><table class="- topic/table table longtable colwidths-given docutils align-default frame-all" id="partition-and-storage-relations__id10" data-ofbid="partition-and-storage-relations__id10" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">SPI NOR 上的分区、设备和文件系统</span></caption><colgroup><col style="width:16.707920792079207%"/><col style="width:16.707920792079207%"/><col style="width:16.707920792079207%"/><col style="width:12.376237623762377%"/><col style="width:37.5%"/></colgroup><thead class="- topic/thead thead">
+                    <tr class="- topic/row">
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id10__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e59__20250409171038">分区名</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id10__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e65__20250409171038">MTD 设备名</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id10__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e71__20250409171038">块设备名</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id10__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e77__20250409171038">文件系统</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-0 rowsep-1" id="partition-and-storage-relations__id10__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e83__20250409171038">备注</p>
+                        </th>
+                    </tr>
+                </thead><tbody class="- topic/tbody tbody">
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e95__20250409171038">"spl" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e101__20250409171038">"spl" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e107__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e113__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id10__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e119__20250409171038">-</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e128__20250409171038">"os" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e134__20250409171038">"os" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e140__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e146__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id10__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e152__20250409171038">-</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e161__20250409171038">"rodata" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e167__20250409171038">"rodata" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e173__20250409171038">"blk_rodata" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id10__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e179__20250409171038">FATFS</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id10__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e185__20250409171038">FATFS 通过 "blk_rodata" 设备访问 Flash</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id10__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e194__20250409171038">"data" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id10__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e200__20250409171038">"data" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id10__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e206__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id10__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e212__20250409171038">LittleFS</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-0" headers="partition-and-storage-relations__id10__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e218__20250409171038">LittleFS 直接通过 MTD 设备访问 Flash</p>
+                        </td>
+                    </tr>
+                </tbody></table></div>
+        <ul class="- topic/ul ul" id="partition-and-storage-relations__ul_xbz_pjy_5cc" data-ofbid="partition-and-storage-relations__ul_xbz_pjy_5cc">
+            <li class="- topic/li li" data-ofbid="d82213e228__20250409171038">分区名：<ul class="- topic/ul ul" id="partition-and-storage-relations__ul_ocj_zjy_5cc" data-ofbid="partition-and-storage-relations__ul_ocj_zjy_5cc">
+                    <li class="- topic/li li" data-ofbid="d82213e232__20250409171038">"spl"：分区及其设备名，"spl" 分区主要用于存储二次引导加载程序，是系统启动的第一个阶段所加载的程序。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e235__20250409171038">"os"："os" 分区，存放操作系统的主要部分，是系统运行的核心区域。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e238__20250409171038">"rodata"："rodata" 分区，主要用于存储只读数据，包括系统在运行时需要读取但不修改的配置信息等。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e241__20250409171038">"data"："data" 分区，用来存储可变数据，如用户生成的数据或系统运行时产生的临时数据。</li>
+                </ul></li>
+            <li class="- topic/li li" data-ofbid="d82213e245__20250409171038">MTD 设备名：对 Flash 的底层直接访问，便于进行读写硬件等操作。</li>
+            <li class="- topic/li li" data-ofbid="d82213e248__20250409171038">块设备名：通过将物理存储抽象为块设备，简化了对文件系统的操作。仅 "rodata" 分区关联了一个块设备名 "blk_rodata"。</li>
+            <li class="- topic/li li" data-ofbid="d82213e251__20250409171038">文件系统："rodata" 分区使用 FATFS 文件系统，使得数据以文件的形式进行存储和管理。"data" 分区使用 LittleFS 文件系统。</li>
+            <li class="- topic/li li" data-ofbid="d82213e254__20250409171038">访问规则：<ul class="- topic/ul ul" id="partition-and-storage-relations__ul_bst_25n_hdc" data-ofbid="partition-and-storage-relations__ul_bst_25n_hdc">
+                    <li class="- topic/li li" data-ofbid="d82213e258__20250409171038">
+                        <p class="- topic/p p" data-ofbid="d82213e260__20250409171038">直接访问 Flash，使用 MTD 设备</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d82213e264__20250409171038">
+                        <p class="- topic/p p" data-ofbid="d82213e266__20250409171038">FATFS 访问 Flash，需要使用块设备</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d82213e270__20250409171038">
+                        <p class="- topic/p p" data-ofbid="d82213e272__20250409171038">LittleFS 访问 Flash，使用 MTD 设备</p>
+                    </li>
+                </ul></li>
+        </ul>
+        <div class="table-container"><table class="- topic/table table longtable colwidths-given docutils align-default frame-all" id="partition-and-storage-relations__id11" data-ofbid="partition-and-storage-relations__id11" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">SPI NAND 上的分区、设备和文件系统</span></caption><colgroup><col style="width:11.014176663031625%"/><col style="width:14.394765539803709%"/><col style="width:14.067611777535442%"/><col style="width:10.905125408942203%"/><col style="width:49.61832061068702%"/></colgroup><thead class="- topic/thead thead">
+                    <tr class="- topic/row">
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id11__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e302__20250409171038">分区名字</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id11__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e308__20250409171038">MTD 设备名</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id11__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e314__20250409171038">块设备名</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id11__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e320__20250409171038">文件系统</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-0 rowsep-1" id="partition-and-storage-relations__id11__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e326__20250409171038">备注</p>
+                        </th>
+                    </tr>
+                </thead><tbody class="- topic/tbody tbody">
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e338__20250409171038">"spl" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e344__20250409171038">"spl" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e350__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e356__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id11__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e362__20250409171038">-</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e371__20250409171038">"os" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e377__20250409171038">"os" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e383__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e389__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id11__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e395__20250409171038">-</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e404__20250409171038">"rodata" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e410__20250409171038">"rodata" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e416__20250409171038">"blk_rodata" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id11__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e422__20250409171038">FATFS</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id11__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e428__20250409171038">通过 "blk_rodata" 设备访问 Flash，FATFS 只读</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id11__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e437__20250409171038">"data" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id11__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e443__20250409171038">"data" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id11__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e449__20250409171038">"blk_data" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id11__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e455__20250409171038">FATFS</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-0" headers="partition-and-storage-relations__id11__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e461__20250409171038">"blk_data"设备是通过 NFTL 层创建，</p>
+                            <p class="- topic/p p" data-ofbid="d82213e464__20250409171038">FATFS 访问 "blk_data" 时，通过 NFTL 访问 Flash。</p>
+                        </td>
+                    </tr>
+                </tbody></table></div>
+        <ul class="- topic/ul ul" id="partition-and-storage-relations__ul_s5j_3nq_gdc" data-ofbid="partition-and-storage-relations__ul_s5j_3nq_gdc">
+            <li class="- topic/li li" data-ofbid="d82213e474__20250409171038">分区名：<ul class="- topic/ul ul" id="partition-and-storage-relations__ul_wlb_5ky_5cc" data-ofbid="partition-and-storage-relations__ul_wlb_5ky_5cc">
+                    <li class="- topic/li li" data-ofbid="d82213e478__20250409171038">"spl"：分区及其设备名，"spl" 分区主要用于存储 二次引导加载程序，是系统启动的第一个阶段所加载的程序。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e481__20250409171038">"os"："os" 分区，存放操作系统的主要部分，是系统运行的核心区域。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e484__20250409171038">"rodata"："rodata" 分区，主要用于存储只读数据，包括系统在运行时需要读取但不修改的配置信息等。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e487__20250409171038">"data"："data" 分区，用来存储可变数据，如用户生成的数据或系统运行时产生的临时数据。</li>
+                </ul></li>
+            <li class="- topic/li li" data-ofbid="d82213e491__20250409171038">MTD 设备名：对 Flash 的底层直接访问，便于进行读写硬件等操作。</li>
+            <li class="- topic/li li" data-ofbid="d82213e494__20250409171038">块设备名：通过将物理存储抽象为块设备，简化了对文件系统的操作。"blk_rodata" 和 "blk_data" 分别支持对 "rodata" 和 "data"
+                分区的文件系统访问。</li>
+            <li class="- topic/li li" data-ofbid="d82213e497__20250409171038">文件系统："rodata" 分区使用 FATFS 文件系统，使得数据以文件的形式进行存储和管理。"data" 分区使用 FATFS 文件系统。</li>
+            <li class="- topic/li li" data-ofbid="d82213e500__20250409171038">NFTL 层：网络闪存转换层，主要用来将 Flash 的物理特性映射为一般块设备，便于 FATFS 等文件系统无需关心底层 NAND Flash 的具体特性。<div class="- topic/note note note note_note" id="partition-and-storage-relations__note_dr3_4mq_gdc" data-ofbid="partition-and-storage-relations__note_dr3_4mq_gdc"><span class="note__title">注：</span> 
+                    <p class="- topic/p p" data-ofbid="d82213e504__20250409171038">建议只设置一个使用 NFTL 的分区，并且分区不要太小。因为 NFTL 需要预留至少 6 MB 空间做坏块管理。</p>
+                </div></li>
+            <li class="- topic/li li" data-ofbid="d82213e509__20250409171038">访问规则：<ul class="- topic/ul ul" id="partition-and-storage-relations__ul_oxj_f5n_hdc" data-ofbid="partition-and-storage-relations__ul_oxj_f5n_hdc">
+                    <li class="- topic/li li" data-ofbid="d82213e513__20250409171038">
+                        <p class="- topic/p p" data-ofbid="d82213e515__20250409171038">直接访问 Flash，使用 MTD 设备</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d82213e519__20250409171038">
+                        <p class="- topic/p p" data-ofbid="d82213e521__20250409171038">FATFS 访问 Flash，需要使用块设备，通过 NFTL 层访问 Flash</p>
+                    </li>
+                </ul></li>
+        </ul>
+        <div class="table-container"><table class="- topic/table table longtable colwidths-given docutils align-default frame-all" id="partition-and-storage-relations__id12" data-ofbid="partition-and-storage-relations__id12" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">eMMC 上的分区、设备和文件系统</span></caption><colgroup><col style="width:16.770186335403725%"/><col style="width:16.770186335403725%"/><col style="width:16.770186335403725%"/><col style="width:12.422360248447204%"/><col style="width:37.267080745341616%"/></colgroup><thead class="- topic/thead thead">
+                    <tr class="- topic/row">
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id12__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e552__20250409171038">分区名字</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id12__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e558__20250409171038">MTD 设备名</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id12__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e564__20250409171038">块设备名</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="partition-and-storage-relations__id12__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e570__20250409171038">文件系统</p>
+                        </th>
+                        <th class="- topic/entry entry colsep-0 rowsep-1" id="partition-and-storage-relations__id12__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e576__20250409171038">备注</p>
+                        </th>
+                    </tr>
+                </thead><tbody class="- topic/tbody tbody">
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e588__20250409171038">"spl" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e594__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e600__20250409171038"><code class="+ topic/ph pr-d/codeph ph codeph">mmc0p0</code>
+                            </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e608__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id12__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e614__20250409171038">-</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e623__20250409171038">"os" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e629__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e635__20250409171038"><code class="+ topic/ph pr-d/codeph ph codeph">mmc0p1</code>
+                            </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e643__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id12__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e649__20250409171038">-</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e658__20250409171038">"rodata" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e664__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e670__20250409171038"><code class="+ topic/ph pr-d/codeph ph codeph">mmc0p2</code>
+                            </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="partition-and-storage-relations__id12__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e678__20250409171038">FATFS</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="partition-and-storage-relations__id12__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e684__20250409171038">此处的分区排序仅为示例</p>
+                        </td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id12__entry__1">
+                            <p class="- topic/p p" data-ofbid="d82213e693__20250409171038">"data" </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id12__entry__2">
+                            <p class="- topic/p p" data-ofbid="d82213e699__20250409171038">-</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id12__entry__3">
+                            <p class="- topic/p p" data-ofbid="d82213e705__20250409171038"><code class="+ topic/ph pr-d/codeph ph codeph">mmc0p3</code>
+                            </p>
+                        </td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="partition-and-storage-relations__id12__entry__4">
+                            <p class="- topic/p p" data-ofbid="d82213e713__20250409171038">FATFS</p>
+                        </td>
+                        <td class="- topic/entry entry colsep-0 rowsep-0" headers="partition-and-storage-relations__id12__entry__5">
+                            <p class="- topic/p p" data-ofbid="d82213e719__20250409171038">此处的分区排序仅为示例</p>
+                        </td>
+                    </tr>
+                </tbody></table></div>
+        <ul class="- topic/ul ul" id="partition-and-storage-relations__ul_gtf_yly_5cc" data-ofbid="partition-and-storage-relations__ul_gtf_yly_5cc">
+            <li class="- topic/li li" data-ofbid="d82213e729__20250409171038"><strong class="+ topic/ph hi-d/b ph b">分区名</strong>：<ul class="- topic/ul ul" id="partition-and-storage-relations__ul_htf_yly_5cc" data-ofbid="partition-and-storage-relations__ul_htf_yly_5cc">
+                    <li class="- topic/li li" data-ofbid="d82213e735__20250409171038">"spl"：分区及其设备名，"spl" 分区主要用于存储 二次引导加载程序，是系统启动的第一个阶段所加载的程序。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e738__20250409171038">"os"："os" 分区，存放操作系统的主要部分，是系统运行的核心区域。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e741__20250409171038">"rodata" ："rodata" 分区，主要用于存储只读数据，包括系统在运行时需要读取但不修改的配置信息等。</li>
+                    <li class="- topic/li li" data-ofbid="d82213e744__20250409171038">"data"："data" 分区，用来存储可变数据，如用户生成的数据或系统运行时产生的临时数据。</li>
+                </ul></li>
+            <li class="- topic/li li" data-ofbid="d82213e748__20250409171038">MTD 设备名：对 Flash 的底层直接访问，便于进行读写硬件等操作。</li>
+            <li class="- topic/li li" data-ofbid="d82213e751__20250409171038">块设备名：块设备按照分区顺序从 0 开始编号，例如从 mmc0p0 到 mmc0p3。每个块设备代表 eMMC
+                中的一个分区，简化了物理存储到逻辑存储的映射，便于后续的文件系统管理。</li>
+            <li class="- topic/li li" data-ofbid="d82213e754__20250409171038">文件系统："rodata" 和 "data" 分区均使用 FATFS 文件系统。</li>
+            <li class="- topic/li li" data-ofbid="d82213e757__20250409171038">访问规则：块设备的命名，按照分区的排序从 0 开始编号</li>
+        </ul>
+    </div>
+</article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style>
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    </style>
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

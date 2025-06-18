@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -213,6 +213,22 @@ int hal_gpio_toggle_output(unsigned int group, unsigned int pin)
     return 0;
 }
 
+int hal_gpio_enable_irq_no_clr(unsigned int group, unsigned int pin)
+{
+    unsigned int val = 0;
+
+    CHECK_PARAM(group < GPIO_GROUP_MAX && group >= 0 && pin < 32 && pin >= 0,
+                -EINVAL);
+
+    val = readl(gen_reg(group, GEN_TRQ_EN_REG));
+
+    val |= (1 << pin);
+
+    writel(val, gen_reg(group, GEN_TRQ_EN_REG));
+
+    return 0;
+}
+
 int hal_gpio_enable_irq(unsigned int group, unsigned int pin)
 {
     unsigned int val = 0;
@@ -220,6 +236,7 @@ int hal_gpio_enable_irq(unsigned int group, unsigned int pin)
     CHECK_PARAM(group < GPIO_GROUP_MAX && group >= 0 && pin < 32 && pin >= 0,
                 -EINVAL);
 
+    hal_gpio_clr_irq_stat(group, pin);
     val = readl(gen_reg(group, GEN_TRQ_EN_REG));
 
     val |= (1 << pin);

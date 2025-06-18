@@ -1,8 +1,9 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
+ * Authors: ArtInChip
  */
 
 #include <rtconfig.h>
@@ -21,9 +22,19 @@
 
 #include "mpp_fb.h"
 
-#define MIPI_DSI_DISABLE_COMMAND 0
-#define MIPI_DSI_UPDATE_COMMAND  1
-#define MIPI_DSI_SEND_COMMAND    2
+#define MIPI_DSI_DISABLE_COMMAND     0
+#define MIPI_DSI_ADB_UPDATE_COMMAND  1
+#define MIPI_DSI_SEND_COMMAND        2
+#define MIPI_DSI_UART_UPDATE_COMMAND  3
+#define MIPI_DSI_UART_COPY_COMMAND   4
+
+#define MIPI_DBI_UPDATE_COMMAND  0
+#define MIPI_DBI_SEND_COMMAND    1
+
+#define RGB_SPI_COMMAND_UPDATE  0
+#define RGB_SPI_COMMAND_DISABLE 1
+#define RGB_SPI_COMMAND_CLEAR   2
+#define RGB_SPI_COMMAND_SEND    3
 
 enum AIC_COM_TYPE {
     AIC_DE_COM   = 0x00,  /* display engine component */
@@ -36,6 +47,7 @@ enum AIC_COM_TYPE {
 struct panel_dbi_commands {
     const u8 *buf;
     size_t len;
+    unsigned int command_flag;
 };
 
 struct spi_cfg {
@@ -54,12 +66,19 @@ struct panel_dbi {
     struct spi_cfg *spi;
 };
 
+struct rgb_spi_command {
+    unsigned int len;
+    unsigned int command_on;
+    unsigned char *buf;
+};
+
 struct panel_rgb {
     unsigned int mode;
     unsigned int format;
     unsigned int clock_phase;
     unsigned int data_order;
     unsigned int data_mirror;
+    struct rgb_spi_command spi_command;
 };
 
 struct panel_lvds {
@@ -106,6 +125,21 @@ static long long int str2int(char *_str)
         return strtoll(_str, NULL, 16);
 }
 
+static unsigned char hex_char_to_u8(char c) {
+    if (c >= '0' && c <= '9')
+        return c - '0';
+    else if (c >= 'A' && c <= 'F')
+        return 10 + (c - 'A');
+    else if (c >= 'a' && c <= 'f')
+        return 10 + (c - 'a');
+    else
+        return 0;
+}
+
+static unsigned char hex_pair_to_u8(char c1, char c2) {
+    return (hex_char_to_u8(c1) << 4) | hex_char_to_u8(c2);
+}
+
 static void usage(char *app)
 {
     printf("Usage: %s [Options], built on %s %s\n", app, __DATE__, __TIME__);
@@ -115,6 +149,9 @@ static void usage(char *app)
     printf("\t-g, --get: get aipq tools config \n");
     printf("\t-p, --pin: set or clr gpio \n");
     printf("\t-i, --input: input dsi command file \n");
+    printf("\t-m, --merge the dsi command \n");
+    printf("\t-a, --analysis for dbi command \n");
+    printf("\t-s, --spi init command for rgb panel \n");
     printf("\n");
     printf("Example: %s \n", app);
 }
@@ -286,6 +323,194 @@ static void aipq_parse_timing(struct display_timing *timing)
     timing->vsync_len = str2int(str_3);
 }
 
+static int handle_dbi_command(struct panel_dbi *dbi, char *optarg,
+                               void *fb, struct aicfb_pq_config *config)
+{
+    char dbi_src_num[64] = { 0 };
+    u8 dbi_data[64] = { 0 };
+
+    if (!dbi || !optarg || !fb || !config) {
+        fprintf(stderr, "Invalid input parameters\n");
+        return -1;
+    }
+
+    strncpy(dbi_src_num, optarg, sizeof(dbi_src_num) - 1);
+    dbi_src_num[sizeof(dbi_src_num) - 1] = '\0';
+
+    size_t input_len = strlen(dbi_src_num);
+    if (input_len < 3) {
+        fprintf(stderr, "Error: Input string too short\n");
+        return -1;
+    }
+
+    unsigned char dbi_data_len = hex_char_to_u8(dbi_src_num[2]);
+    size_t expected_len = 3 + 2 * dbi_data_len;
+
+    if (input_len != expected_len) {
+        fprintf(stderr, "Error: Expected %zu chars, got %zu\n", expected_len, input_len);
+        return -1;
+    }
+
+    size_t dbi_data_size = 2 + dbi_data_len;
+    if (dbi_data_size > sizeof(dbi_data)) {
+        fprintf(stderr, "Error: Data exceeds buffer size\n");
+        return -1;
+    }
+
+    dbi_data[0] = hex_pair_to_u8(dbi_src_num[0], dbi_src_num[1]);
+    dbi_data[1] = dbi_data_len;
+
+    for (int i = 0; i < dbi_data_len; ++i) {
+        int pos = 3 + 2 * i;
+        if (pos + 1 >= input_len) {
+            fprintf(stderr, "Error: Data part incomplete\n");
+            break;
+        }
+        dbi_data[2 + i] = hex_pair_to_u8(dbi_src_num[pos], dbi_src_num[pos + 1]);
+    }
+
+    dbi->commands.len = dbi_data_size;
+    dbi->commands.buf = aicos_malloc(MEM_CMA, dbi->commands.len);
+    memcpy((u8*)dbi->commands.buf, dbi_data, dbi->commands.len);
+
+    dbi->commands.command_flag = MIPI_DBI_UPDATE_COMMAND;
+
+    config->data = dbi;
+    int ret = mpp_fb_ioctl(fb, AICFB_PQ_SET_CONFIG, config);
+
+    if (dbi->commands.buf) {
+        aicos_free(MEM_CMA, (u8*)dbi->commands.buf);
+    }
+    dbi->commands.len = 0;
+
+    return ret;
+}
+
+static int handle_dsi_command(struct panel_dsi *dsi, char *optarg,
+                             void *fb, struct aicfb_pq_config *config)
+{
+    char dsi_src_num[64] = { 0 };
+    unsigned char dsi_data[64] = { 0 };
+    size_t check_dsi_command = 0;
+    int ret = 0;
+
+    if (!dsi || !optarg || !fb || !config) {
+        fprintf(stderr, "Invalid DSI command parameters\n");
+        return -EINVAL;
+    }
+
+    strncpy(dsi_src_num, optarg, sizeof(dsi_src_num) - 1);
+    dsi_src_num[sizeof(dsi_src_num) - 1] = '\0';
+
+    size_t input_dsi_len = strlen(dsi_src_num);
+
+    if (input_dsi_len < 2) {
+        printf("Enter command update mode!\n");
+        check_dsi_command = str2int(optarg);
+    } else {
+        for (int i = 0; i < input_dsi_len; ++i) {
+            hex_char_to_u8(dsi_src_num[i]);
+        }
+
+        size_t dsi_data_size = input_dsi_len / 2;
+        for (int i = 0; i < dsi_data_size; ++i) {
+            int pos = 2 * i;
+            if (pos + 1 >= input_dsi_len) {
+                fprintf(stderr, "Data incomplete at position %d\n", pos);
+                return -EINVAL;
+            }
+            dsi_data[i] = hex_pair_to_u8(dsi_src_num[pos], dsi_src_num[pos + 1]);
+        }
+
+        dsi->command.len = dsi_data_size;
+        dsi->command.buf = aicos_malloc(MEM_CMA, dsi->command.len);
+        if (!dsi->command.buf) {
+            fprintf(stderr, "DSI command buffer allocation failed\n");
+            return -ENOMEM;
+        }
+        memcpy(dsi->command.buf, dsi_data, dsi->command.len);
+        dsi->command.command_on = MIPI_DSI_UART_COPY_COMMAND;
+    }
+
+    if (check_dsi_command)
+        dsi->command.command_on = MIPI_DSI_UART_UPDATE_COMMAND;
+
+    config->data = dsi;
+
+    ret = mpp_fb_ioctl(fb, AICFB_PQ_SET_CONFIG, config);
+
+    if (dsi->command.buf) {
+        aicos_free(MEM_CMA, dsi->command.buf);
+        dsi->command.buf = NULL;
+    }
+    dsi->command.len = 0;
+
+    return ret;
+}
+
+static int handle_rgb_spi_command(struct panel_rgb *rgb, char *optarg,
+                                 void *fb, struct aicfb_pq_config *config)
+{
+    char rgb_spi_src_num[64] = { 0 };
+    unsigned char rgb_spi_data[64] = { 0 };
+    size_t check_rgb_spi_command = -1;
+
+    if (!rgb || !optarg || !fb || !config) {
+        fprintf(stderr, "Invalid input parameters\n");
+        return -1;
+    }
+
+    strncpy(rgb_spi_src_num, optarg, sizeof(rgb_spi_src_num) - 1);
+    rgb_spi_src_num[sizeof(rgb_spi_src_num) - 1] = '\0';
+
+    size_t input_len = strlen(rgb_spi_src_num);
+
+    if (input_len < 2) {
+        printf("Enter command mode!\n");
+        check_rgb_spi_command = str2int(optarg);
+    } else {
+        for (int i = 0; i < input_len; ++i) {
+            hex_char_to_u8(rgb_spi_src_num[i]);
+        }
+
+        size_t rgb_spi_data_size = input_len / 2;
+        for (int i = 0; i < rgb_spi_data_size; ++i) {
+            int pos = 2 * i;
+            if (pos + 1 >= input_len) {
+                fprintf(stderr, "Error: Data part incomplete\n");
+                return -1;
+            }
+            rgb_spi_data[i] = hex_pair_to_u8(rgb_spi_src_num[pos], rgb_spi_src_num[pos + 1]);
+        }
+
+        rgb->spi_command.len = rgb_spi_data_size;
+        rgb->spi_command.buf = aicos_malloc(MEM_CMA, rgb->spi_command.len);
+        if (!rgb->spi_command.buf) {
+            fprintf(stderr, "Memory allocation failed\n");
+            return -1;
+        }
+        memcpy(rgb->spi_command.buf, rgb_spi_data, rgb->spi_command.len);
+
+        rgb->spi_command.command_on = RGB_SPI_COMMAND_UPDATE;
+    }
+
+    if (check_rgb_spi_command == RGB_SPI_COMMAND_DISABLE)
+        rgb->spi_command.command_on = RGB_SPI_COMMAND_DISABLE;
+    if (check_rgb_spi_command == RGB_SPI_COMMAND_CLEAR)
+        rgb->spi_command.command_on = RGB_SPI_COMMAND_CLEAR;
+
+    config->data = rgb;
+    int ret = mpp_fb_ioctl(fb, AICFB_PQ_SET_CONFIG, config);
+
+    if (rgb->spi_command.buf) {
+        aicos_free(MEM_CMA, rgb->spi_command.buf);
+        rgb->spi_command.buf = NULL;
+    }
+    rgb->spi_command.len = 0;
+
+    return ret;
+}
+
 static int aipq_config_test(int argc, char **argv)
 {
     struct mpp_fb *fb = NULL;
@@ -298,13 +523,16 @@ static int aipq_config_test(int argc, char **argv)
     int connector_type = 1;
     int c, ret = 0;
 
-    const char sopts[] = "g:p:i:t:c:u";
+    const char sopts[] = "g:p:i:t:m:a:s:c:u";
     const struct option lopts[] = {
         {"timing",          required_argument, NULL, 't'},
         {"connector",       required_argument, NULL, 'c'},
         {"get",             required_argument, NULL, 'g'},
         {"pin",             required_argument, NULL, 'p'},
         {"input",           required_argument, NULL, 'i'},
+        {"merge",           required_argument, NULL, 'm'},
+        {"analysis",        required_argument, NULL, 'a'},
+        {"spi-init",        required_argument, NULL, 's'},
         {"usage",                 no_argument, NULL, 'u'},
         {0, 0, 0, 0}
     };
@@ -380,11 +608,38 @@ static int aipq_config_test(int argc, char **argv)
                 return -1;
             }
 
-            dsi.command.command_on = MIPI_DSI_UPDATE_COMMAND;
+            dsi.command.command_on = MIPI_DSI_ADB_UPDATE_COMMAND;
             config.data  = &dsi;
             mpp_fb_ioctl(fb, AICFB_PQ_SET_CONFIG, &config);
 
             aicos_free(MEM_CMA, dsi.command.buf);
+            break;
+        }
+        case 'm':
+        {
+            int ret = handle_dsi_command(&dsi, optarg, fb, &config);
+            if (ret != 0) {
+                fprintf(stderr, "DSI command handling failed (err:%d)\n", ret);
+            }
+
+            break;
+        }
+        case 'a':
+        {
+            int ret = handle_dbi_command(&dbi, optarg, fb, &config);
+            if (ret != 0) {
+                fprintf(stderr, "Failed to handle DBI command\n");
+                }
+
+            break;
+        }
+        case 's':
+        {
+            int ret = handle_rgb_spi_command(&rgb, optarg, fb, &config);
+            if (ret != 0) {
+                fprintf(stderr, "Failed to handle RGB SPI command\n");
+            }
+
             break;
         }
         case 't':
@@ -417,6 +672,7 @@ static int aipq_config_test(int argc, char **argv)
                     data_order_id   = char2int(con_info[4]);
                     rgb.data_mirror = char2int(con_info[5]);
                     rgb.data_order  = data_order_val[data_order_id];
+                    rgb.spi_command.command_on = RGB_SPI_COMMAND_SEND;
                     config.data     = &rgb;
                     break;
                 }
@@ -495,6 +751,7 @@ static int aipq_config_test(int argc, char **argv)
                     memcpy(str, con_info + 15, 2);
                     dbi.spi->code[2]    = strtoll(str, NULL, 16);
 
+                    dbi.commands.command_flag = MIPI_DBI_SEND_COMMAND;
                     config.data         = &dbi;
                     break;
                 }

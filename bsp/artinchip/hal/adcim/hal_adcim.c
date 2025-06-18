@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,6 +29,9 @@
 #define ADCIM_CALCSR_CALVAL_MASK        GENMASK(27, 16)
 #define ADCIM_CALCSR_ADC_ACQ_SHIFT      8
 #define ADCIM_CALCSR_ADC_ACQ_MASK       GENMASK(15, 8)
+#ifdef AIC_ADCIM_DELTA_ADC
+#define ADCIM_CALCSR_ADC_CAL_SEL        BIT(4)
+#endif
 #define ADCIM_CALCSR_DCAL_MASK          BIT(1)
 #define ADCIM_CALCSR_CAL_ENABLE         BIT(0)
 #define ADCIM_FIFOSTS_ADC_ARBITER_IDLE  BIT(6)
@@ -137,7 +140,11 @@ u32 hal_adcim_auto_calibration(void)
     u32 cal_array[ADCIM_CALCSR_NUM];
 
     for (int i = 0; i < ADCIM_CALCSR_NUM; i++) {
+#ifdef AIC_ADCIM_DELTA_ADC
+        adcim_writel(0x08002f01, ADCIM_CALCSR);//auto cal
+#else
         adcim_writel(0x08002f03, ADCIM_CALCSR);//auto cal
+#endif
         do {
             flag = adcim_readl(ADCIM_CALCSR) & 0x00000001;
         } while (flag);
@@ -363,6 +370,20 @@ ssize_t hal_adcdm_sram_write(int *buf, u32 offset, size_t count)
 
 #endif
 
+#ifdef AIC_ADCIM_DELTA_ADC
+void hal_adcim_set_cal_enable(void)
+{
+    int val;
+
+    //Init delta ADC
+    adcim_writel(0xf002a600, ADCIM_MCSR);
+    val = adcim_readl(ADCIM_CALCSR);
+    val = val | ADCIM_CALCSR_ADC_ACQ_MASK;
+    val = val | ADCIM_CALCSR_ADC_CAL_SEL;
+
+    adcim_writel(val, ADCIM_CALCSR);
+}
+#else
 void hal_adcim_set_dcalmask(void)
 {
     int val;
@@ -370,6 +391,49 @@ void hal_adcim_set_dcalmask(void)
     val = adcim_readl(ADCIM_CALCSR);
     val = val | ADCIM_CALCSR_DCAL_MASK | ADCIM_CALCSR_ADC_ACQ_MASK;
     adcim_writel(val, ADCIM_CALCSR);
+}
+#endif
+
+int hal_adcim_init(void)
+{
+    int ret = 0;
+
+#ifdef AIC_ADCIM_DRV_V11
+    ret = hal_clk_set_freq(CLK_ADCIM, 48000000);
+    if (ret < 0) {
+        hal_log_err("Failed to set ADCIM clk\n");
+        return -1;
+    }
+#endif
+
+    ret = hal_clk_enable_deassertrst(CLK_ADCIM);
+    if (ret < 0) {
+        hal_log_err("ADCIM clock/reset enable failed!\n");
+        return -1;
+    }
+
+#ifdef AIC_ADCIM_DELTA_ADC
+    hal_adcim_set_cal_enable();
+#else
+    hal_adcim_set_dcalmask();
+#endif
+
+    g_adcim_cal_param = hal_adcim_auto_calibration();
+
+    return ret;
+}
+
+int hal_adcim_deinit(void)
+{
+    int ret = 0;
+
+    ret = hal_clk_disable_assertrst(CLK_ADCIM);
+    if (ret < 0) {
+        hal_log_err("ADCIM clock/reset disable failed!");
+        return -1;
+    }
+
+    return ret;
 }
 
 s32 hal_adcim_probe(void)
@@ -382,33 +446,11 @@ s32 hal_adcim_probe(void)
         return 0;
     }
 
-#ifdef AIC_ADCIM_DRV_V11
-    ret = hal_clk_set_freq(CLK_ADCIM, 48000000);
+    ret = hal_adcim_init();
     if (ret < 0) {
-        hal_log_err("Failed to set ADCIM clk\n");
+        hal_log_err("ADCIM init failed!\n");
         return -1;
     }
-#endif
-
-    ret = hal_clk_enable(CLK_ADCIM);
-    if (ret < 0) {
-        hal_log_err("ADCIM clk enable failed!\n");
-        return -1;
-    }
-
-    ret = hal_clk_enable_deassertrst(CLK_ADCIM);
-    if (ret < 0) {
-        hal_log_err("ADCIM reset deassert failed!\n");
-        return -1;
-    }
-
-#ifdef AIC_ADCIM_DELTA_ADC
-    //Init delta ADC
-    adcim_writel(0xf002a600, ADCIM_MCSR);
-#endif
-
-    hal_adcim_set_dcalmask();
-    g_adcim_cal_param = hal_adcim_auto_calibration();
 
     inited = 1;
     return 0;

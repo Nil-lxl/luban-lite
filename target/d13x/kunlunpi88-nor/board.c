@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -200,3 +200,8 @@ const struct dfs_mount_tbl mount_table[] = {
     {0}
 };
 #endif
+
+void show_board_version(void)
+{
+    printf("Board: %s\n\n", PRJ_BOARD);
+}

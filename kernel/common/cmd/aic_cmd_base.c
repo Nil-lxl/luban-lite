@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -57,6 +57,7 @@ void show_fps(char *mod, struct timespec *start, struct timespec *end, int cnt)
            (u32)(cnt / diff), (u32)(cnt * MS_PER_SEC / diff) % 10, cnt,
            (u32)diff, (u32)(diff * MS_PER_SEC) % MS_PER_SEC);
 }
+#endif
 
 #ifdef RT_USING_FINSH
 #include <finsh.h>
@@ -93,12 +94,15 @@ static void test_in_loop_thread(void *arg)
 {
     char backup[124] = "";
     char tmp[128] = "";
+    u32 cnt = 0, err_cnt = 0;
 
     strncpy(backup, (char *)arg, 123);
     while (1) {
         memset(tmp, 0, 128);
         strncpy(tmp, backup, 127);
-        msh_exec(tmp, strlen(tmp));
+        err_cnt += msh_exec(tmp, strlen(tmp));
+        cnt++;
+        printf("\n======== Run [%s] %d time, %d error ========\n\n", backup, cnt, err_cnt);
         aicos_msleep(10);
     }
 }
@@ -118,5 +122,4 @@ static void cmd_run_in_loop_thread(int argc, char **argv)
         pr_err("Failed to create test thread\n");
 }
 MSH_CMD_EXPORT_ALIAS(cmd_run_in_loop_thread, run_in_loop_thread, run a command in loop thread);
-#endif
 #endif

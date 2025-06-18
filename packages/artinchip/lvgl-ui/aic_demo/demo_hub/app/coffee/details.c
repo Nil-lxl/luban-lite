@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -101,7 +101,7 @@ static void createOperate(struct coffeeParam* data ,int x, int y)
     lv_img_set_src(img, data->iconSrc);
 
     static lv_style_t style_def;
-    if (style_def.prop_cnt > 1) {
+    if (style_def.prop_cnt >= 1) {
         lv_style_reset(&style_def);
     } else {
         lv_style_init(&style_def);
@@ -143,7 +143,7 @@ static void createOperate(struct coffeeParam* data ,int x, int y)
     line_points[pos+3].x = pos_width_conversion(x + 394);
     line_points[pos+3].y = pos_height_conversion(y + 45);
     static lv_style_t style_line;
-    if (style_line.prop_cnt > 1) {
+    if (style_line.prop_cnt >= 1) {
         lv_style_reset(&style_line);
     } else {
         lv_style_init(&style_line);
@@ -158,7 +158,7 @@ static void createOperate(struct coffeeParam* data ,int x, int y)
     lv_line_set_points(line2, &line_points[pos+2], 2);
 
     static lv_style_t style_value;
-    if (style_value.prop_cnt > 1) {
+    if (style_value.prop_cnt >= 1) {
         lv_style_reset(&style_value);
     } else {
         lv_style_init(&style_value);
@@ -181,7 +181,7 @@ static void createOperate(struct coffeeParam* data ,int x, int y)
     data->valueLabel = label_value;
 
     static lv_style_t style_unit;
-    if (style_unit.prop_cnt > 1) {
+    if (style_unit.prop_cnt >= 1) {
         lv_style_reset(&style_unit);
     } else {
         lv_style_init(&style_unit);
@@ -256,7 +256,7 @@ static void createBigImage()
     lv_obj_set_pos(bigImg, pos_width_conversion(56), pos_height_conversion(66));
 
     static lv_style_t style_def;
-    if (style_def.prop_cnt > 1) {
+    if (style_def.prop_cnt >= 1) {
         lv_style_reset(&style_def);
     } else {
         lv_style_init(&style_def);

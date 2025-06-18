@@ -13,6 +13,7 @@ struct rt_wlan_device * s_wlan_dev = NULL;
 struct rt_wlan_device * s_ap_dev = NULL;
 rt_err_t aic8800_init(struct rt_wlan_device *wlan)
 {
+    int ret = 0;
     AIC_LOG_PRINTF("%s, mode=%d\n", __func__, wlan->mode);
     #if 0
     AIC_LOG_PRINTF("%s ctrl pwrkey\n", __func__);
@@ -22,8 +23,8 @@ rt_err_t aic8800_init(struct rt_wlan_device *wlan)
     platform_pwr_wifi_pin_enable();
     #endif
 
-    wifi_if_sdio_init();
-    return 0;
+    ret = wifi_if_sdio_init();
+    return ret;
 }
 
 rt_err_t aic8800_set_mode(struct rt_wlan_device *wlan, rt_wlan_mode_t mode)

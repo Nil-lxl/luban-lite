@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -214,6 +214,7 @@ struct ov5640_dev {
 
     bool pending_mode_change;
     bool streaming;
+    bool on;
 };
 
 static struct ov5640_dev g_ov5640_dev = {0};
@@ -1889,9 +1890,17 @@ static void ov5640_power(struct ov5640_dev *sensor, bool enable)
 #endif
 }
 
+static bool ov5640_is_open(struct ov5640_dev *sensor)
+{
+    return sensor->on;
+}
+
 static int ov5640_set_power_on(struct ov5640_dev *sensor)
 {
 #ifndef FPGA_BOARD_ARTINCHIP
+    if (ov5640_is_open(sensor))
+        return 0;
+
     camera_pin_set_low(sensor->rst_pin);
 
     ov5640_power(sensor, 0);
@@ -1901,15 +1910,20 @@ static int ov5640_set_power_on(struct ov5640_dev *sensor)
 
     camera_pin_set_high(sensor->rst_pin);
     rt_thread_mdelay(2);
-    pr_info("power on\n");
 #endif
+    LOG_I("Power on");
+    sensor->on = true;
     return 0;
 }
 
 static int ov5640_set_power_off(struct ov5640_dev *sensor)
 {
-    pr_info("power off\n");
+    if (!ov5640_is_open(sensor))
+        return -1;
+
+    LOG_I("Power off");
     ov5640_power(sensor, 0);
+    sensor->on = false;
     return 0;
 }
 
@@ -2144,6 +2158,8 @@ static int ov5640_check_chip_id(struct ov5640_dev *sensor)
     if (chip_id != 0x5640) {
         LOG_E("%s: wrong chip identifier, expected 0x5640, got 0x%x", __func__, chip_id);
         ret = -ENXIO;
+    } else {
+        return 0;
     }
 
 power_off:
@@ -2153,7 +2169,6 @@ power_off:
 
 static rt_err_t ov5640_init(rt_device_t dev)
 {
-    int ret = 0;
     struct ov5640_dev *sensor = &g_ov5640_dev;
 
     sensor->iic = camera_i2c_get();
@@ -2185,11 +2200,6 @@ static rt_err_t ov5640_init(rt_device_t dev)
     if (!sensor->rst_pin || !sensor->pwdn_pin)
         return -RT_EINVAL;
 
-    ret = ov5640_check_chip_id(sensor);
-    if (ret)
-        return -RT_ERROR;
-
-    LOG_I("OV5640 inited");
     return RT_EOK;
 }
 
@@ -2197,8 +2207,17 @@ static rt_err_t ov5640_open(rt_device_t dev, rt_uint16_t oflag)
 {
     struct ov5640_dev *sensor = (struct ov5640_dev *)dev;
 
+    if (ov5640_is_open(sensor))
+        return RT_EOK;
+
     ov5640_set_power(sensor, 1);
-    LOG_I("OV5640 Open");
+
+    if (ov5640_check_chip_id(sensor)) {
+        ov5640_set_power(sensor, 0);
+        return -RT_ERROR;
+    }
+
+    LOG_I("OV5640 inited");
     return RT_EOK;
 }
 
@@ -2206,8 +2225,11 @@ static rt_err_t ov5640_close(rt_device_t dev)
 {
     struct ov5640_dev *sensor = (struct ov5640_dev *)dev;
 
+    if (!ov5640_is_open(sensor))
+        return -RT_ERROR;
+
     ov5640_set_power(sensor, 0);
-    LOG_I("OV5640 Close");
+    LOG_D("OV5640 Close");
     return RT_EOK;
 }
 
@@ -2233,6 +2255,22 @@ static int ov5640_stop(rt_device_t dev)
     return ov5640_s_stream((struct ov5640_dev *)dev, 0);
 }
 
+static int ov5640_pause(rt_device_t dev)
+{
+    struct ov5640_dev *sensor = (struct ov5640_dev *)dev;
+
+    ov5640_power(sensor, 0);
+    return 0;
+}
+
+static int ov5640_resume(rt_device_t dev)
+{
+    struct ov5640_dev *sensor = (struct ov5640_dev *)dev;
+
+    ov5640_power(sensor, 1);
+    return 0;
+}
+
 static rt_err_t ov5640_control(rt_device_t dev, int cmd, void *args)
 {
     switch (cmd) {
@@ -2240,6 +2278,10 @@ static rt_err_t ov5640_control(rt_device_t dev, int cmd, void *args)
         return ov5640_start(dev);
     case CAMERA_CMD_STOP:
         return ov5640_stop(dev);
+    case CAMERA_CMD_PAUSE:
+        return ov5640_pause(dev);
+    case CAMERA_CMD_RESUME:
+        return ov5640_resume(dev);
     case CAMERA_CMD_GET_FMT:
         return ov5640_get_fmt(dev, (struct mpp_video_fmt *)args);
     default:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -28,9 +28,12 @@ s32 mov_peek(struct aic_parser * parser, struct aic_parser_packet *pkt)
 s32 mov_read(struct aic_parser * parser, struct aic_parser_packet *pkt)
 {
 	struct aic_mov_parser *c = (struct aic_mov_parser *)parser;
+	int ret = 0;
 
-	aic_stream_seek(c->stream, c->cur_sample->pos, SEEK_SET);
-	aic_stream_read(c->stream, pkt->data, c->cur_sample->size);
+	aic_stream_seek(c->stream, c->cur_sample.pos, SEEK_SET);
+	ret = aic_stream_read(c->stream, pkt->data, c->cur_sample.size);
+	if (ret < 0)
+		return PARSER_NODATA;
 
 	return 0;
 }

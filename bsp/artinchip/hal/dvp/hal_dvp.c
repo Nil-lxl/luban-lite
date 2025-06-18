@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -66,9 +66,14 @@ int hal_dvp_clr_int(void)
 
 void hal_dvp_enable_int(struct aic_dvp_config *cfg, int enable)
 {
+    int hnum = cfg->height / 4;
+
+    if (cfg->interlaced)
+        hnum = hnum / 2;
+
     /* When HNUM IRQ happened, so we can update the address */
     if (enable)
-        dvp_writel((cfg->height / 4) << DVP_IRQ_CFG_HNUM_SHIFT, DVP_IRQ_CFG);
+        dvp_writel(hnum << DVP_IRQ_CFG_HNUM_SHIFT, DVP_IRQ_CFG);
 
     hal_dvp_reg_enable(DVP_IRQ_EN,
                        DVP_IRQ_EN_FRAME_DONE | DVP_IRQ_EN_HNUM, enable);
@@ -105,8 +110,13 @@ void hal_dvp_set_cfg(struct aic_dvp_config *cfg)
 
     if (cfg->interlaced) {
         height  = cfg->height / 2;
+#ifdef DVP_SFIELD_MODE
+        stride0 = cfg->stride[0];
+        stride1 = cfg->stride[1];
+#else
         stride0 = cfg->stride[0] * 2;
         stride1 = cfg->stride[1] * 2;
+#endif
     } else {
         height  = cfg->height;
         stride0 = cfg->stride[0];
@@ -131,14 +141,14 @@ void hal_dvp_set_cfg(struct aic_dvp_config *cfg)
     dvp_writel(stride1, DVP_OUT_LINE_STRIDE1);
 }
 
-void hal_dvp_update_buf_addr(dma_addr_t y, dma_addr_t uv, u32 offset)
+void hal_dvp_update_buf_addr(dma_addr_t y, dma_addr_t uv, u32 y_offset, u32 uv_offset)
 {
     if ((y == 0) || (uv == 0)) {
         hal_log_err("Invalid DMA address: Y 0x%x, UV 0x%x\n", (u32)y, (u32)uv);
         return;
     }
-    dvp_writel(y + offset, DVP_OUT_ADDR_BUF(0));
-    dvp_writel(uv + offset, DVP_OUT_ADDR_BUF(1));
+    dvp_writel(y + y_offset, DVP_OUT_ADDR_BUF(0));
+    dvp_writel(uv + uv_offset, DVP_OUT_ADDR_BUF(1));
 }
 
 void hal_dvp_update_ctl(void)
@@ -148,7 +158,21 @@ void hal_dvp_update_ctl(void)
 
 void hal_dvp_record_mode(void)
 {
-    dvp_writel(0x80000000, DVP_OUT_FRA_NUM);
+    dvp_writel(0x80000003, DVP_OUT_FRA_NUM);
+}
+
+void hal_dvp_set_frame_offset(u32 num)
+{
+    u32 val = 0;
+
+    if (!num || num > 0xFF) {
+        pr_warn("Invalid frame offset %d\n", num);
+        return;
+    }
+
+    val = dvp_readl(DVP_OUT_FRA_NUM);
+    setbits(num, DVP_OUT_FRA_NUM_MASK, 0, val);
+    dvp_writel(val, DVP_OUT_FRA_NUM);
 }
 
 void hal_dvp_qos_cfg(u32 high, u32 low, u32 inc_thd, u32 dec_thd)

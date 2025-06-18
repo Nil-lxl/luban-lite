@@ -134,6 +134,10 @@ int main(void)
 {
     board_init();
 
+#ifdef AIC_IOPMP_DRV
+    hal_iopmp_init();
+#endif
+
 #ifdef AIC_DMA_DRV
     drv_dma_init();
 #endif

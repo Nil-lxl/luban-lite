@@ -5,6 +5,7 @@
  */
 
 #include "usbd_core.h"
+#include "usb_osal.h"
 #include "usbd_hid.h"
 
 #define USBD_VID           0x33C3
@@ -303,7 +304,8 @@ void usbd_event_handler(uint8_t event)
 
 /*!< hid state ! Data can be sent only when state is idle  */
 static volatile uint8_t hid_state = HID_STATE_IDLE;
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t write_buffer[64];
+static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t write_buffer[64];
+static usb_osal_mutex_t usbd_keyboard_mutex;
 
 void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
 {
@@ -331,7 +333,7 @@ int usbd_comp_keyboard_init(uint8_t *ep_table, void *data)
 
 void hid_keyboard_init(void)
 {
-
+    usbd_keyboard_mutex = usb_osal_mutex_create();
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     usbd_desc_register(hid_descriptor);
     usbd_add_interface(usbd_hid_init_intf(&intf0, hid_keyboard_report_desc, HID_KEYBOARD_REPORT_DESC_SIZE));
@@ -346,9 +348,43 @@ void hid_keyboard_init(void)
 
 }
 
+static int usbd_keyboard_send_data(uint8_t *buf)
+{
+    uint32_t timeout = 0, err_cnt = 0;
+    int ret =0;
+
+_retry:
+    ret = usbd_ep_start_write(hid_in_ep.ep_addr, buf, 8);
+    if (ret < 0 && err_cnt < 10) {
+        aic_udelay(1);
+        err_cnt++;
+        goto _retry;
+    } else {
+        err_cnt = 0;
+    }
+
+    if (err_cnt) {
+        USB_LOG_WRN("USB send data failed. %d\n", ret);
+        return ret;
+    }
+
+    hid_state = HID_STATE_BUSY;
+    while (hid_state == HID_STATE_BUSY) {
+        timeout++;
+        aic_udelay(1);
+        if (timeout > 30000) {
+            hid_state = HID_STATE_IDLE;
+            return USB_ERR_TIMEOUT;
+        }
+    }
+
+    return 0;
+}
+
 int usbd_keyboard_putchar(const char str)
 {
     uint8_t index = (uint8_t)str;
+    int ret =0;
 
     if (index > 128 || index < 0) {
         return -index;
@@ -356,33 +392,27 @@ int usbd_keyboard_putchar(const char str)
 
     USB_LOG_DBG("[%d]: %c -> %#x\n", index, str, hid_keyboard_map[index]);
 
+    usb_osal_mutex_take(usbd_keyboard_mutex);
     /* keydown */
     write_buffer[0] = (uint8_t)(hid_keyboard_map[index] >> 16);
     write_buffer[1] = 0x00;
     write_buffer[2] = (uint8_t)hid_keyboard_map[index];
 
-    int ret = usbd_ep_start_write(hid_in_ep.ep_addr, write_buffer, 8);
+    ret = usbd_keyboard_send_data(write_buffer);
     if (ret < 0) {
-        USB_LOG_WRN("USB send data failed. %d\n", ret);
+        usb_osal_mutex_give(usbd_keyboard_mutex);
         return ret;
-    }
-
-    hid_state = HID_STATE_BUSY;
-    while (hid_state == HID_STATE_BUSY) {
     }
 
     /* keyup */
     memset(write_buffer, 0, 8);
-    ret = usbd_ep_start_write(hid_in_ep.ep_addr, write_buffer, 8);
+    ret = usbd_keyboard_send_data(write_buffer);
     if (ret < 0) {
-        USB_LOG_WRN("USB send data failed. %d\n", ret);
+        usb_osal_mutex_give(usbd_keyboard_mutex);
         return ret;
     }
 
-    hid_state = HID_STATE_BUSY;
-    while (hid_state == HID_STATE_BUSY) {
-    }
-
+    usb_osal_mutex_give(usbd_keyboard_mutex);
     return 0;
 }
 

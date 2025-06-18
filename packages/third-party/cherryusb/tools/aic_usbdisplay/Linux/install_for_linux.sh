@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2024 ArtInChip Technology Co., Ltd
+# Copyright (C) 2024-2025 ArtInChip Technology Co., Ltd
 
 MY_NAME=$0
 TOPDIR=$PWD
@@ -52,19 +52,18 @@ check_root()
 
 check_os()
 {
-	if [ -f /etc/lsb-release ]; then
-		OS_VER=$(cat /etc/lsb-release | grep RELEASE | awk -F '=' '{print $2}')
-		OS_TYPE="Ubuntu"
-	elif [ -f /etc/issue ]; then
-		cat /etc/issue 2>&1 | grep Debian > /dev/null
-		if [ $? -eq 0 ]; then
-			OS_VER=$(cat /etc/issue | awk '{print $3}')
-			OS_TYPE="Debian"
-		fi
-	else
-		pr_err "Unknow system OS"
-		exit $ERR_UNSUPPORTED
+	OS_TYPE="Unknown"
+	if [ ! -f /etc/os-release ]; then
+		return
 	fi
+	OS_TYPE=$(cat /etc/os-release | grep NAME -w | awk -F '=' '{printf $2}')
+	OS_TYPE=$(echo $OS_TYPE | sed 's/"//g' | awk '{printf $1}')
+
+	OS_VER=$(cat /etc/os-release | grep VERSION_ID -w | awk -F '=' '{printf $2}')
+	OS_VER=$(echo $OS_VER | sed 's/"//g')
+
+	echo "  "$OS_TYPE $OS_VER
+	echo "  "$(uname -rsm)
 }
 
 check_arch()
@@ -87,7 +86,7 @@ check_arch()
 
 check_pi()
 {
-	uname -r | grep "rpi" > /dev/null
+	which raspi-config 1 > /dev/null
 	if [ $? -eq 0 ]; then
 		echo It is Raspberry PI
 		IS_RPI=YES
@@ -95,6 +94,7 @@ check_pi()
 	else
 		XORG_CFG_WAY="sudo vim /etc/gdm3/custom.conf\n\tthen unncomment \"#WaylandEnable=false\"\n"
 	fi
+	echo "  "$(cat /proc/cpuinfo | grep Model | awk -F ': ' '{printf $2}')
 }
 
 check_xorg()

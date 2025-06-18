@@ -273,6 +273,9 @@ int hal_spi_master_transfer_async(qspi_master_handle *h, struct qspi_transfer *t
 
 int hal_qspi_master_transfer_bit_mode(qspi_master_handle *h, struct qspi_bm_transfer *t);
 
+/* set delay mode for RX sampling */
+void hal_qspi_master_set_rxdelay_mode(qspi_master_handle *h, u32 delay_mode);
+
 #ifdef __cplusplus
 }
 #endif

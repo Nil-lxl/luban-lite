@@ -95,12 +95,13 @@ static rt_err_t gt911_get_product_id(struct rt_i2c_client *dev,
     return RT_EOK;
 }
 
-static rt_err_t gt911_get_info(struct rt_i2c_client *dev,
+static rt_err_t gt911_get_info(struct rt_i2c_client *dev, struct rt_touch_device *touch,
                                struct rt_touch_info *info)
 {
     rt_uint8_t reg[2];
     rt_uint8_t out_info[7];
     rt_uint8_t out_len = 7;
+    uint16_t angle = 0;
 
     reg[0] = (rt_uint8_t)(GT911_CONFIG_REG >> 8);
     reg[1] = (rt_uint8_t)(GT911_CONFIG_REG & 0xFF);
@@ -112,6 +113,16 @@ static rt_err_t gt911_get_info(struct rt_i2c_client *dev,
 
     info->range_x = (out_info[2] << 8) | out_info[1];
     info->range_y = (out_info[4] << 8) | out_info[3];
+
+    rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE, &angle);
+    if (angle == 90 || angle == 270) {
+        info->range_x = (rt_int16_t)AIC_TOUCH_Y_COORDINATE_RANGE;
+        info->range_y = (rt_int16_t)AIC_TOUCH_X_COORDINATE_RANGE;
+    } else {
+        info->range_x = (rt_int16_t)AIC_TOUCH_X_COORDINATE_RANGE;
+        info->range_y = (rt_int16_t)AIC_TOUCH_Y_COORDINATE_RANGE;
+    }
+
     info->point_num = out_info[5] & 0x0f;
     if (info->point_num > GT911_MAX_TOUCH) {
         info->point_num = GT911_MAX_TOUCH;
@@ -305,6 +316,11 @@ static rt_size_t gt911_read_point(struct rt_touch_device *touch, void *buf,
     if (touch_num) /* point down */
     {
         rt_uint8_t off_set;
+        rt_uint8_t dynamic_flag = 0;
+        rt_uint8_t osd_flag = 0;
+
+        rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_FLAG, &dynamic_flag);
+        rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_OSD_FLAG, &osd_flag);
 
         for (read_index = 0; read_index < touch_num; read_index++) {
             off_set = read_index * 8;
@@ -317,11 +333,19 @@ static rt_size_t gt911_read_point(struct rt_touch_device *touch, void *buf,
             input_w =
                 read_buf[off_set + 5] | (read_buf[off_set + 6] << 8); /* size */
 
-            aic_touch_flip(&input_x, &input_y);
-            aic_touch_rotate(&input_x, &input_y);
-            aic_touch_scale(&input_x, &input_y);
-            if (!aic_touch_crop(&input_x, &input_y))
-                continue;
+            if (!dynamic_flag) {    // static rotate(osd || video)
+                if (!osd_flag) {    // if osd flag enabled we should do nothing
+                    aic_touch_flip(&input_x, &input_y);
+                    aic_touch_rotate(&input_x, &input_y);
+                    aic_touch_scale(&input_x, &input_y);
+                    if (!aic_touch_crop(&input_x, &input_y))
+                        continue;
+                }
+            } else {    // dynamic rotata (osd || video)
+                if (!osd_flag)  // if osd flag enabled we should do nothing
+                    aic_touch_dynamic_rotate(touch, &input_x, &input_y);
+            }
+
             gt911_touch_down(buf, read_id, input_x, input_y, input_w);
         }
     } else if (pre_touch) {
@@ -348,7 +372,7 @@ static rt_err_t gt911_control(struct rt_touch_device *touch, int cmd, void *arg)
     }
 
     if (cmd == RT_TOUCH_CTRL_GET_INFO) {
-        return gt911_get_info(&gt911_client, arg);
+        return gt911_get_info(&gt911_client, touch, arg);
     }
 
     rt_uint8_t buf[4];
@@ -547,7 +571,7 @@ static int rt_hw_gt911_port(void)
     cfg.irq_pin.pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
     cfg.irq_pin.mode = PIN_MODE_INPUT;
     cfg.user_data = &rst_pin;
-#ifdef AIC_PM_DEMO
+#ifdef AIC_PM_DEMO_TOUCH_WAKEUP
     rt_pm_set_pin_wakeup_source(cfg.irq_pin.pin);
 #endif
 

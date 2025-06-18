@@ -4,24 +4,33 @@
    <appContext helpID="id" path="topics/sdk/env/sdk-compile.html"/>
    <appContext helpID="id" path="topics/sdk/env/sourcecode.html"/>
    <appContext helpID="id" path="topics/sdk/advanced/sourcecode.html"/>
-   <appContext helpID="id" path="topics/sdk/env/eclipse.html"/>
-   <appContext helpID="id" path="topics/sdk/env/ubuntu2004.html"/>
-   <appContext helpID="id" path="topics/sdk/env/vscode.html"/>
-   <appContext helpID="id" path="topics/sdk/env/vmware.html"/>
-   <appContext helpID="wmware-create-vm" path="topics/sdk/env/wmware-create-vm.html"/>
-   <appContext helpID="vmware-install-ubuntu"
-               path="topics/sdk/env/vmware-install-ubuntu.html"/>
-   <appContext helpID="vmware-config-vm" path="topics/sdk/env/vmware-config-vm.html"/>
    <appContext helpID="id" path="topics/sdk/env/windows.html"/>
+   <appContext helpID="id" path="topics/sdk/env/vscode.html"/>
+   <appContext helpID="lite-compile-vscode-cmd"
+               path="topics/sdk/env/lite-compile-vscode-cmd.html"/>
+   <appContext helpID="lite-compile-vscode-extension"
+               path="topics/sdk/env/lite-compile-vscode-extension.html"/>
+   <appContext helpID="id" path="topics/sdk/env/ubuntu2004.html"/>
    <appContext helpID="id" path="topics/sdk/advanced/sdk-usage.html"/>
    <appContext helpID="id" path="topics/sdk/advanced/commands.html"/>
    <appContext helpID="scons-commands" path="topics/sdk/advanced/scons-commands.html"/>
    <appContext helpID="lb-onestep-command-ref-guide"
                path="topics/sdk/advanced/onestep_command_ref.html"/>
+   <appContext helpID="tree-cmd-user-guide"
+               path="topics/sdk/advanced/tree_cmd_user_guide.html"/>
    <appContext helpID="id" path="topics/sdk/advanced/architecture.html"/>
    <appContext helpID="id" path="topics/sdk/advanced/sconstruct.html"/>
    <appContext helpID="id" path="topics/sdk/advanced/compile.html"/>
-   <appContext helpID="id" path="topics/sdk/advanced/partition.html"/>
+   <appContext helpID="config-storage" path="topics/sdk/advanced/config-storage.html"/>
+   <appContext helpID="config-storage-bootloader"
+               path="topics/sdk/bringup/config-storage-bootloader.html"/>
+   <appContext helpID="config-storage-os"
+               path="topics/sdk/bringup/config-storage-os.html"/>
+   <appContext helpID="id" path="topics/sdk/advanced/partition_config.html"/>
+   <appContext helpID="partition-intro"
+               path="topics/sdk/advanced/partition_intro.html"/>
+   <appContext helpID="partition-and-storage-relations"
+               path="topics/sdk/advanced/partition-and-storage-relations.html"/>
    <appContext helpID="id" path="topics/sdk/advanced/image_burn_and_config.html"/>
    <appContext helpID="burn-image-and-tool" path="topics/sdk/advanced/fs_image.html"/>
    <appContext helpID="burn-cfg-file" path="topics/sdk/advanced/burn-cfg-file.html"/>
@@ -63,7 +72,6 @@
    <appContext helpID="id" path="topics/sdk/xip/3_test_guide.html"/>
    <appContext helpID="id" path="topics/sdk/xip/4_adapter_guide.html"/>
    <appContext helpID="id" path="topics/sdk/xip/5_faq.html"/>
-   <appContext helpID="id" path="topics/sdk/app/psram_load.html"/>
    <appContext helpID="id" path="topics/sdk/app/dm.html"/>
    <appContext helpID="kernel_config" path="topics/sdk/app/dm_kernel_config.html"/>
    <appContext helpID="dm_app_dev" path="topics/sdk/app/dm_app_dev.html"/>
@@ -75,22 +83,25 @@
                path="topics/sdk/secure/firmware_encryption_with_spienc.html"/>
    <appContext helpID="hw_authentication"
                path="topics/sdk/secure/hw_authorization.html"/>
-   <appContext helpID="id" path="topics/sdk/secure/spienc_function_d12x.html"/>
+   <appContext helpID="spi-flash-enc-function"
+               path="topics/sdk/secure/spi_flash_enc_function.html"/>
    <appContext helpID="spienc_function"
-               path="topics/sdk/secure/spienc_function_d13x.html"/>
+               path="topics/sdk/secure/spienc_function_v1.html"/>
+   <appContext helpID="spienc-generate-efuse"
+               path="topics/sdk/secure/spienc-generate-efuse_v1-1.html"/>
+   <appContext helpID="spienc-generate-production-firmware"
+               path="topics/sdk/secure/spienc-generate-production-firmware-1.html"/>
+   <appContext helpID="spinenc-efuse-and-firmware-combined"
+               path="topics/sdk/secure/spinenc-efuse-and-firmware-combined-1.html"/>
+   <appContext helpID="id" path="topics/sdk/secure/spienc_function_v2.html"/>
+   <appContext helpID="spienc-generate-efuse"
+               path="topics/sdk/secure/spienc-generate-efuse_v1-2.html"/>
+   <appContext helpID="spienc-generate-production-firmware"
+               path="topics/sdk/secure/spienc-generate-production-firmware-2.html"/>
+   <appContext helpID="spinenc-efuse-and-firmware-combined"
+               path="topics/sdk/secure/spinenc-efuse-and-firmware-combined-2.html"/>
    <appContext helpID="mkfs_partition_image"
                path="topics/sdk/app/mkfs_partition_image.html"/>
-   <appContext helpID="id" path="topics/sdk/d13x_bare_boot/index.html"/>
-   <appContext helpID="generate-cus-brom-app"
-               path="topics/sdk/d13x_bare_boot/generate-cus-brom-app.html"/>
-   <appContext helpID="run-burn-cus-app"
-               path="topics/sdk/d13x_bare_boot/run_burn_cus_app.html"/>
-   <appContext helpID="init-config-prsam"
-               path="topics/sdk/d13x_bare_boot/init-config-prsam.html"/>
-   <appContext helpID="brom-load-limit-and-notes"
-               path="topics/sdk/d13x_bare_boot/brom-load-limit-and-notes.html"/>
-   <appContext helpID="reference-configuration"
-               path="topics/sdk/d13x_bare_boot/reference-configuration.html"/>
    <appContext helpID="id" path="topics/sdk/burnsys/burner_offline_lite.html"/>
    <appContext helpID="burn_spinor" path="topics/sdk/burnsys/burn_spinor.html"/>
    <appContext helpID="burn_spinand" path="topics/sdk/burnsys/burn_spinand.html"/>
@@ -113,6 +124,7 @@
                path="topics/sdk/app/usb-display-install-drive.html"/>
    <appContext helpID="usb_display_tp_calibrate_windows"
                path="topics/sdk/app/usb-display-tp-calibrate_windows.html"/>
+   <appContext helpID="backtrace" path="topics/sdk/app/backtrace.html"/>
    <appContext helpID="id" path="topics/sdk/peripheral/peripheral-intro.html"/>
    <appContext helpID="id" path="topics/sdk/peripheral/keyadc.html"/>
    <appContext helpID="id" path="topics/sdk/peripheral/touch.html"/>
@@ -128,21 +140,62 @@
                path="topics/sdk/peripheral/touch-configure.html"/>
    <appContext helpID="touch_faq" path="topics/sdk/peripheral/touch-faq.html"/>
    <appContext helpID="id" path="topics/sdk/peripheral/wifi.html"/>
+   <appContext helpID="wifi-rtl8189" path="topics/sdk/peripheral/wifi_rtl8189.html"/>
+   <appContext helpID="wifi-aic8800" path="topics/sdk/peripheral/wifi_aic8800.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/chapter-bringup.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-prepare.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-soc.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-ram.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-storage.html"/>
+   <appContext helpID="select-storage-device"
+               path="topics/sdk/bringup/select-storage-device.html"/>
+   <appContext helpID="config-storage" path="topics/sdk/advanced/config-storage.html"/>
+   <appContext helpID="config-storage-bootloader"
+               path="topics/sdk/bringup/config-storage-bootloader.html"/>
+   <appContext helpID="config-storage-os"
+               path="topics/sdk/bringup/config-storage-os.html"/>
+   <appContext helpID="config-filesys-and-partition"
+               path="topics/sdk/bringup/config-filesys-and-partition.html"/>
+   <appContext helpID="compile-and-burn-firmware"
+               path="topics/sdk/bringup/compile-and-burn-firmware.html"/>
+   <appContext helpID="id" path="topics/sdk/advanced/partition_config.html"/>
+   <appContext helpID="partition-intro"
+               path="topics/sdk/advanced/partition_intro.html"/>
+   <appContext helpID="partition-and-storage-relations"
+               path="topics/sdk/advanced/partition-and-storage-relations.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-console.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-display.html"/>
+   <appContext helpID="section_etw_v5b_bdc"
+               path="topics/sdk/bringup/lite-bringup-display_rgb.html"/>
+   <appContext helpID="section_nch_w5b_bdc"
+               path="topics/sdk/bringup/lite-bringup-display_lvds.html"/>
+   <appContext helpID="section_f4q_w5b_bdc"
+               path="topics/sdk/bringup/lite-bringup-display_mipi.html"/>
+   <appContext helpID="section_t5h_xxn_42c"
+               path="topics/sdk/bringup/lite-bringup-display_mipi-dbi.html"/>
+   <appContext helpID="section_ib4_x5b_bdc"
+               path="topics/sdk/bringup/lite-bringup-display_背光配置.html"/>
+   <appContext helpID="section_rqc_hg4_42c"
+               path="topics/sdk/bringup/lite-bringup-display_启动_log.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-samples.html"/>
    <appContext helpID="id" path="topics/sdk/chapter-advanced-app.html"/>
    <appContext helpID="_0" path="topics/sdk/boot/lite_boot_direct.html"/>
-   <appContext helpID="id" path="topics/sdk/boot/lite_boot_introduction.html"/>
    <appContext helpID="id" path="topics/sdk/boot/lite_boot_config_guide.html"/>
    <appContext helpID="id" path="topics/sdk/boot/lite_boot_debug_guide.html"/>
    <appContext helpID="id" path="topics/sdk/boot/lite_boot_test_guide.html"/>
    <appContext helpID="id" path="topics/sdk/boot/lite_boot_design_guide.html"/>
+   <appContext helpID="id" path="topics/sdk/app/psram_load.html"/>
+   <appContext helpID="id" path="topics/sdk/d13x_bare_boot/index.html"/>
+   <appContext helpID="generate-cus-brom-app"
+               path="topics/sdk/d13x_bare_boot/generate-cus-brom-app.html"/>
+   <appContext helpID="run-burn-cus-app"
+               path="topics/sdk/d13x_bare_boot/run_burn_cus_app.html"/>
+   <appContext helpID="init-config-prsam"
+               path="topics/sdk/d13x_bare_boot/init-config-prsam.html"/>
+   <appContext helpID="brom-load-limit-and-notes"
+               path="topics/sdk/d13x_bare_boot/brom-load-limit-and-notes.html"/>
+   <appContext helpID="reference-configuration"
+               path="topics/sdk/d13x_bare_boot/reference-configuration.html"/>
    <appContext helpID="chapter-system" path="topics/chapter-title/chapter-system.html"/>
    <appContext helpID="chapter-memory" path="topics/sdk/mem/memory-user-guide.html"/>
    <appContext helpID="mem-intro" path="topics/sdk/mem/d12x_mem_guide.html"/>
@@ -266,7 +319,8 @@
                path="topics/sdk/spinand/spi-nand_rtos_design_guide_lite.html"/>
    <appContext helpID="spi_nand_baremetal_design_intro_luban_lite"
                path="topics/sdk/spinand/spi-nand_baremetal_design_guide-lite.html"/>
-   <appContext helpID="id" path="topics/sdk/spinor/spinor_user_guide_lite.html"/>
+   <appContext helpID="spi_nor_user_guide"
+               path="topics/sdk/spinor/spinor_user_guide.html"/>
    <appContext helpID="id" path="topics/sdk/spinor/spinor_config_lite.html"/>
    <appContext helpID="id" path="topics/sdk/spinor/spinor_test_guide.html"/>
    <appContext helpID="id" path="topics/sdk/spinor/spinor_design_guide.html"/>

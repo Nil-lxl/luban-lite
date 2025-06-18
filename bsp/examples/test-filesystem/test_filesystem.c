@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -121,6 +121,7 @@ static void test_fs_read(int argc, char **argv)
     char *data;
     FILE *fp;
     char file_path[128] = { 0 };
+    uint32_t f_len = 0, todo_len, read_len;
 
     data = aicos_malloc_align(0, DATA_LEN_64K, CACHE_LINE_SIZE);
     if (data == NULL) {
@@ -145,12 +146,21 @@ static void test_fs_read(int argc, char **argv)
         return;
     }
 
+    fseek(fp, 0, SEEK_END);
+    f_len = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    todo_len = f_len;
+
     start_us = aic_get_time_us();
-    if (DATA_LEN_64K != fread(data, sizeof(char), DATA_LEN_64K, fp)) {
-        printf("Fs read data success \n");
-        goto read_err;
+    while (todo_len) {
+        read_len = todo_len < DATA_LEN_64K ? todo_len : DATA_LEN_64K;
+        if (read_len != fread(data, sizeof(char), read_len, fp)) {
+            printf("Fs read data error \n");
+            goto read_err;
+        }
+        todo_len -= read_len;
     }
-    show_speed("read", DATA_LEN_64K, aic_get_time_us() - start_us);
+    show_speed("read", f_len, aic_get_time_us() - start_us);
 
 read_err:
     fclose(fp);

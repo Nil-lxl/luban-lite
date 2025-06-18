@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,6 +16,7 @@
 #include <sfud.h>
 #include "upg_internal.h"
 #include <spienc.h>
+#include <firmware_security.h>
 
 #define MAX_DUPLICATED_PART 6
 #define MAX_NOR_NAME        32
@@ -118,6 +119,10 @@ void nor_fwc_start(struct fwc_info *fwc)
 #endif
     fwc->block_size = 2048;
 
+#ifdef AICUPG_FIRMWARE_SECURITY
+    firmware_security_init();
+#endif
+
     return;
 err:
     if (priv)
@@ -135,13 +140,26 @@ s32 nor_fwc_data_write(struct fwc_info *fwc, u8 *buf, s32 len)
     struct mtd_dev *mtd;
     unsigned long offset, erase_offset;
     int i, calc_len = 0, ret = 0;
-    u8 *rdbuf;
+    u8 __attribute__((unused)) *rdbuf = NULL;
 
+    if ((fwc->meta.size - fwc->trans_size) < len)
+        calc_len = fwc->meta.size - fwc->trans_size;
+    else
+        calc_len = len;
+
+    fwc->calc_partition_crc = crc32(fwc->calc_partition_crc, buf, calc_len);
+
+#ifdef AICUPG_FIRMWARE_SECURITY
+    firmware_security_decrypt(buf, len);
+#endif
+
+#ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
     rdbuf = aicupg_malloc_align(len, CACHE_LINE_SIZE);
     if (!rdbuf) {
         pr_err("Error: malloc buffer failed.\n");
         return 0;
     }
+#endif
 
     priv = (struct aicupg_nor_priv *)fwc->priv;
     for (i = 0; i < MAX_DUPLICATED_PART; i++) {
@@ -173,35 +191,29 @@ s32 nor_fwc_data_write(struct fwc_info *fwc, u8 *buf, s32 len)
             goto out;
         }
 
+#ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
         // Read data to calc crc
         ret = mtd_read(mtd, offset, rdbuf, len);
         if (ret) {
             pr_err("Read mtd %s error.\n", mtd->name);
             goto out;
         }
+#endif
         priv->start_offset[i] = offset + len;
     }
 
-    if ((fwc->meta.size - fwc->trans_size) < len)
-        calc_len = fwc->meta.size - fwc->trans_size;
-    else
-        calc_len = len;
-
-    fwc->calc_partition_crc = crc32(fwc->calc_partition_crc, rdbuf, calc_len);
 #ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
-    fwc->calc_trans_crc = crc32(fwc->calc_trans_crc, buf, calc_len);
-    if (fwc->calc_trans_crc != fwc->calc_partition_crc) {
+    if (crc32(0, buf, calc_len) != crc32(0, rdbuf, calc_len)) {
         pr_err("calc_len:%d\n", calc_len);
         pr_err("crc err at trans len %u\n", fwc->trans_size);
-        pr_err("trans crc:0x%x, partition crc:0x%x\n", fwc->calc_trans_crc,
-                fwc->calc_partition_crc);
     }
 #endif
 
     fwc->trans_size += len;
     pr_debug("%s, data len %d, trans len %d\n", __func__, len, fwc->trans_size);
 
-    aicupg_free_align(rdbuf);
+    if (rdbuf)
+        aicupg_free_align(rdbuf);
     return len;
 
 out:

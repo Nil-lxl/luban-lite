@@ -1,15 +1,15 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="接口设计 这一层是对外提供的接口，用户只与这一层交互即可。 状态机设计 状态机说明: IDLE 闲置状态,刚创建完 player 处于此状态,此状态只能通过 aic_player_set_uri 转换为 INITIALIZED INITIALIZED 初始化完成状态,和 IDLE 状态相比,仅仅是多了媒体数据源的信息 PREPARING 在 INITIALIZED 状态调用异步 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-01-18"/><meta name="DC.date.modified" content="2024-12-02"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp_player_interface_design"/><meta name="DC.language" content="zh-CN"/><title>MPP Player 接口设计</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp_player_interface.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp_player_interface.html"/>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="接口设计 这一层是对外提供的接口，用户只与这一层交互即可。 状态机设计 状态机说明: IDLE 闲置状态,刚创建完 player 处于此状态,此状态只能通过 aic_player_set_uri 转换为 INITIALIZED INITIALIZED 初始化完成状态,和 IDLE 状态相比,仅仅是多了媒体数据源的信息 PREPARING 在 INITIALIZED 状态调用异步 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_player_design.html"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_player_design.html"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_player_faq.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp_player_interface_design"/><meta name="DC.language" content="zh-CN"/><title>MPP Player 接口设计</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="mpp_player_interface_design-d3703e5056"/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp_player_interface.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp_player_interface.html"/>
 
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
-    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
-    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
-    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
-<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
 
     <body id="mpp_player_interface_design" class="wh_topic_page frmBody">
         <a href="#wh_topic_body" class="sr-only sr-only-focusable">
@@ -21,12 +21,12 @@
         
         <header class="navbar navbar-default wh_header">
     <div class="container-fluid">
-        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
             <div class="wh_logo_and_publication_title_container">
                 <div class="wh_logo_and_publication_title">
                     
-                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
-                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
                     
                 </div>
                 
@@ -39,13 +39,6 @@
                 
                 
             </div>
-        </div>
-    </div>
-</header>
-        
-        
-         
-        
         <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
             
             
@@ -54,27 +47,39 @@
             
             
             
-        </div>
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
         
         <div class="container-fluid" id="wh_topic_container">
             <div class="row">
 
                 <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
                     
-                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="mpp_0"><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide.html">MPP 播放器使用指南</a></div></div></li><li><div class="topicref" data-id="mpp_player_design_intro"><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_design.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="mpp_player_interface_design"><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_interface.html">MPP Player 接口设计</a></div></div></li></ol></div>
                     
                     
                     
                     <div class="wh_right_tools">
                         <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
                         <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
-                        
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/mpp/mpp_player_design.html" title="设计说明" aria-label="上一主题: 设计说明" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/mpp/mpp_player_faq.html" title="常见问题" aria-label="下一主题: 常见问题" rel="next"></a></span>  </span></div>
                         
                         
                         
                         <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
                         
-                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
                     </div>
                     
                 </nav>
@@ -86,70 +91,149 @@
             <div class="wh_content_area">
                 <div class="row">
                     
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3703e2372" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3703e2372-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3703e2372-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3703e2556" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3703e2556-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3703e2556-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3703e3646" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3703e3646-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3703e3646-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d3703e3980" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d3703e3980-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3703e3980-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e3997" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e3997-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d3703e3997-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e4067" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e4067-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide.html" id="id-d3703e4067-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d3703e4350" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d3703e4350-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide.html" id="concept_h4d_fwt_tzb-d3703e4350-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d3703e4492" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d3703e4492-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide.html" id="ge-d3703e4492-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d3703e4634" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d3703e4634-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide.html" id="i2s-d3703e4634-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d3703e4760" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d3703e4760-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide.html" id="ve-d3703e4760-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d3703e4832" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d3703e4832-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html" id="mpp-d3703e4832-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="mpp_0-d3703e4986" class="topicref" data-id="mpp_0" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mpp_0-d3703e4986-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide.html" id="mpp_0-d3703e4986-link">MPP 播放器使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="mpp_player_configuration-d3703e5000" class="topicref" data-id="mpp_player_configuration" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_config.html" id="mpp_player_configuration-d3703e5000-link">MPP 播放器配置</a></div></div></li><li role="treeitem"><div data-tocid="mpp_player_debug_guide-d3703e5014" class="topicref" data-id="mpp_player_debug_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_debug.html" id="mpp_player_debug_guide-d3703e5014-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="mpp_player_test_guide-d3703e5028" class="topicref" data-id="mpp_player_test_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_test.html" id="mpp_player_test_guide-d3703e5028-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="mpp_player_design_intro-d3703e5042" class="topicref" data-id="mpp_player_design_intro" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mpp_player_design_intro-d3703e5042-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_design.html" id="mpp_player_design_intro-d3703e5042-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="mpp_player_interface_design-d3703e5056" class="topicref" data-id="mpp_player_interface_design" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_interface.html" id="mpp_player_interface_design-d3703e5056-link">MPP Player 接口设计</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="mpp_player_common_issues-d3703e5070" class="topicref" data-id="mpp_player_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_faq.html" id="mpp_player_common_issues-d3703e5070-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5084" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5084-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d3703e5084-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5168" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5168-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d3703e5168-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5253" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5253-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d3703e5253-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d3703e5421" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d3703e5421-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3703e5421-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3703e6676" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3703e6676-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3703e6676-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
                     
-                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
-                        
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
                         <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
                             <span class="close-toc-icon-container">
                                 <span class="close-toc-icon"></span>     
                             </span>
                         </button>
                         
-                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mpp/mpp_player_interface.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">MPP Player 接口设计</h1><div class="date inPage">2 Dec 2024</div><div style="color: gray;">
-                    Read time: 18 minute(s)
-                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="mpp_player_interface_design__player-interface" data-ofbid="mpp_player_interface_design__player-interface"><h2 class="- topic/title title sectiontitle">接口设计</h2>
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/mpp/mpp_player_interface.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">MPP Player 接口设计</h1>
+    
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+                    Read time: 19 minute(s)
+                </div>
+    <div class="- topic/body concept/conbody body conbody">
+        <section class="- topic/section section" id="mpp_player_interface_design__player-interface" data-ofbid="mpp_player_interface_design__player-interface"><h2 class="- topic/title title sectiontitle">接口设计</h2>
             
-            <p class="- topic/p p" data-ofbid="d59438e28__20250121171520">这一层是对外提供的接口，用户只与这一层交互即可。</p>
+            <p class="- topic/p p" data-ofbid="d68640e38__20250409171036">这一层是对外提供的接口，用户只与这一层交互即可。</p>
             <div class="- topic/div div section" id="mpp_player_interface_design__id4"><strong class="+ topic/ph hi-d/b ph b">状态机设计</strong>
-                <p class="- topic/p p" data-ofbid="d59438e35__20250121171520">状态机说明:</p><ul class="- topic/ul ul simple" id="mpp_player_interface_design__ul_tjz_trf_fdc" data-ofbid="mpp_player_interface_design__ul_tjz_trf_fdc"><li class="- topic/li li" data-ofbid="d59438e38__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_ujz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_ujz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e42__20250121171520">IDLE</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e46__20250121171520">闲置状态,刚创建完 player 处于此状态,此状态只能通过 aic_player_set_uri 转换为
+                <p class="- topic/p p" data-ofbid="d68640e45__20250409171036">状态机说明:</p><ul class="- topic/ul ul simple" id="mpp_player_interface_design__ul_tjz_trf_fdc" data-ofbid="mpp_player_interface_design__ul_tjz_trf_fdc">
+                    <li class="- topic/li li" data-ofbid="d68640e49__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_ujz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_ujz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e55__20250409171036">IDLE</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e60__20250409171036">闲置状态,刚创建完 player 处于此状态,此状态只能通过 aic_player_set_uri 转换为
                                         INITIALIZED</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e50__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_vjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_vjz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e54__20250121171520">INITIALIZED</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e58__20250121171520">初始化完成状态,和 IDLE 状态相比,仅仅是多了媒体数据源的信息</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e62__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_wjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_wjz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e66__20250121171520">PREPARING</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e70__20250121171520">在 INITIALIZED 状态调用异步 aic_player_prepare_async
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e67__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_vjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_vjz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e73__20250409171036">INITIALIZED</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e78__20250409171036">初始化完成状态,和 IDLE 状态相比,仅仅是多了媒体数据源的信息</p>
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e85__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_wjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_wjz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e91__20250409171036">PREPARING</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e96__20250409171036">在 INITIALIZED 状态调用异步 aic_player_prepare_async
                                         到达此状态,这一状态主要是打开媒体文件并解析它,解析成功之后,自动转换为 PREPARED 状态,通过事件
                                         AIC_PLAYER_EVENT_DEMUXER_FORMAT_DETECTED 告知 app</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e74__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_xjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_xjz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e78__20250121171520">PREPARED</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e82__20250121171520">在 INITIALIZED 状态调用同步 aic_player_prepare_sync
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e103__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_xjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_xjz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e109__20250409171036">PREPARED</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e114__20250409171036">在 INITIALIZED 状态调用同步 aic_player_prepare_sync
                                         到达此状态,这一状态主要是打开媒体文件并解析它,解析完成后转换到 PREPARED 状态</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e86__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_yjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_yjz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e90__20250121171520">STARTED</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e94__20250121171520">在 PREPARED 状态调用 aic_player_start
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e121__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_yjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_yjz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e127__20250409171036">STARTED</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e132__20250409171036">在 PREPARED 状态调用 aic_player_start
                                         到达此状态,这一状态主要是根据解析出的文件创建音视频解码线程和音视频显示线程,可以随时进行播放了</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e98__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_zjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_zjz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e102__20250121171520">PLAYING</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e106__20250121171520">在 STARTED 或 PAUSED 状态调用 aic_player_play 到达此状态,开始播放媒体</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e110__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_akz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_akz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e114__20250121171520">PAUSED</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e118__20250121171520">在 PLAYING 状态调用 aic_player_pause 到达此状态,暂停播放媒体</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e122__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_bkz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_bkz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e126__20250121171520">COMPLETED</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e130__20250121171520">媒体播放完毕后,自动转换为 COMPLETED 状态,并以事件 AIC_PLAYER_EVENT_PLAY_END 告知
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e140__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_zjz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_zjz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e146__20250409171036">PLAYING</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e151__20250409171036">在 STARTED 或 PAUSED 状态调用 aic_player_play 到达此状态,开始播放媒体</p>
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e158__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_akz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_akz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e164__20250409171036">PAUSED</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e169__20250409171036">在 PLAYING 状态调用 aic_player_pause 到达此状态,暂停播放媒体</p>
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e176__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_bkz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_bkz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e182__20250409171036">COMPLETED</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e187__20250409171036">媒体播放完毕后,自动转换为 COMPLETED 状态,并以事件 AIC_PLAYER_EVENT_PLAY_END 告知
                                         app</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e134__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_ckz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_ckz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e138__20250121171520">STOPPED</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e142__20250121171520">无论处于任何状态都可以调用 aic_player_stop 回到 STOPPED
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e194__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_ckz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_ckz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e200__20250409171036">STOPPED</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e205__20250409171036">无论处于任何状态都可以调用 aic_player_stop 回到 STOPPED
                                         状态。切换文件时，无论是否播放结束，要先调用 aic_player_stop 停止当前文件的播放。</p>
-                                </dd></dl>
-                    </li><li class="- topic/li li" data-ofbid="d59438e146__20250121171520">
-                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_dkz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_dkz_trf_fdc"><dt class="- topic/dt dt dlterm" data-ofbid="d59438e150__20250121171520">END</dt><dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d59438e154__20250121171520">这里 END 表示释放掉播放器所有的资源，不是播放器的内部状态。</p>
-                                </dd></dl>
-                    </li></ul></div>
-        </section><section class="- topic/section section" id="mpp_player_interface_design__section_fll_hsf_fdc" data-ofbid="mpp_player_interface_design__section_fll_hsf_fdc"><h2 class="- topic/title title sectiontitle">数据结构设计</h2>
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d68640e212__20250409171036">
+                        <dl class="- topic/dl dl simple" id="mpp_player_interface_design__dl_dkz_trf_fdc" data-ofbid="mpp_player_interface_design__dl_dkz_trf_fdc">
+                            
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d68640e218__20250409171036">END</dt>
+                                <dd class="- topic/dd dd">
+                                    <p class="- topic/p p" data-ofbid="d68640e223__20250409171036">这里 END 表示释放掉播放器所有的资源，不是播放器的内部状态。</p>
+                                </dd>
+                            
+                        </dl>
+                    </li>
+                </ul></div>
+        </section>
+        <section class="- topic/section section" id="mpp_player_interface_design__section_fll_hsf_fdc" data-ofbid="mpp_player_interface_design__section_fll_hsf_fdc"><h2 class="- topic/title title sectiontitle">数据结构设计</h2>
             
             <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_player_interface_design__codeblock_imh_3sf_fdc" data-ofbid="mpp_player_interface_design__codeblock_imh_3sf_fdc"><em class="hl-comment">// 事件回调函数</em>
 <strong class="hl-keyword">typedef</strong> s32 (*event_handler)(<strong class="hl-keyword">void</strong>* app_data,s32 event,s32 data1,s32 data2);
@@ -182,7 +266,8 @@
         <strong class="hl-keyword">struct</strong> aic_video_stream video_stream;
         <strong class="hl-keyword">struct</strong> aic_audio_stream audio_stream;
 };</pre>
-        </section><section class="- topic/section section" id="mpp_player_interface_design__section_f3x_3sf_fdc" data-ofbid="mpp_player_interface_design__section_f3x_3sf_fdc"><h2 class="- topic/title title sectiontitle">接口设计 </h2>
+        </section>
+        <section class="- topic/section section" id="mpp_player_interface_design__section_f3x_3sf_fdc" data-ofbid="mpp_player_interface_design__section_f3x_3sf_fdc"><h2 class="- topic/title title sectiontitle">接口设计 </h2>
             
             <pre class="+ topic/pre pr-d/codeblock pre codeblock" id="mpp_player_interface_design__codeblock_vbn_n3n_4dc" data-ofbid="mpp_player_interface_design__codeblock_vbn_n3n_4dc"><code>struct aic_player *aic_player_create(char *uri);
 
@@ -232,180 +317,643 @@ s32 aic_player_capture(struct aic_player *player, struct aic_capture_info *captu
 s32 aic_player_set_rotation(struct aic_player *player, int rotation_angle);
 
 s32 aic_player_get_rotation(struct aic_player *player);</code></pre>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_ekz_trf_fdc" data-ofbid="mpp_player_interface_design__table_ekz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_create</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_ekz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_ekz_trf_fdc__entry__2">struct aic_player *aic_player_create(char *uri)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__2">创建 player 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__2">
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_ekz_trf_fdc" data-ofbid="mpp_player_interface_design__table_ekz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_create</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_ekz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e265__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_ekz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e269__20250409171036">struct aic_player *aic_player_create(char *uri)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e279__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e283__20250409171036">创建 player 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e290__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e294__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div"> uri：媒体文件路径</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__2">palyer 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__2">-</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_fkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_fkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_destroy</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_fkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_fkz_trf_fdc__entry__2">s32 aic_player_destroy(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__2">销毁 player 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e307__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e311__20250409171036">palyer 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e318__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_ekz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e322__20250409171036">-</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_fkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_fkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_destroy</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_fkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e345__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_fkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e349__20250409171036">s32 aic_player_destroy(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e359__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e363__20250409171036">销毁 player 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e370__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e374__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e387__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e391__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__2">在 IDLE 和 STOPPED 状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_gkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_gkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_uri </span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_gkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_gkz_trf_fdc__entry__2">s32 aic_player_set_uri(struct aic_player *player,char
-                                *uri)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__2">设置媒体文件路径</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e404__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_fkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e408__20250409171036">在 IDLE 和 STOPPED 状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_gkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_gkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_uri </span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_gkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e431__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_gkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e435__20250409171036">s32 aic_player_set_uri(struct aic_player *player,char
+                                *uri)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e445__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e449__20250409171036">设置媒体文件路径</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e456__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e460__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象，uri：媒体文件路径</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e473__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e477__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__2">在 IDLE 和 STOPPED 状态起作用</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_hkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_hkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_prepare_async</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_hkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_hkz_trf_fdc__entry__2">s32 aic_player_prepare_async(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__2">异步解析媒体文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__2">player：player 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e490__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_gkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e494__20250409171036">在 IDLE 和 STOPPED 状态起作用</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_hkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_hkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_prepare_async</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_hkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e518__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_hkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e522__20250409171036">s32 aic_player_prepare_async(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e532__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e536__20250409171036">异步解析媒体文件</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e543__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e547__20250409171036">player：player 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e554__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e558__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：解析命令发送成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：解析命令发送成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__2">在 INITIALIZED 状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_ikz_trf_fdc" data-ofbid="mpp_player_interface_design__table_ikz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_prepare_sync</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_ikz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_ikz_trf_fdc__entry__2">s32 aic_player_prepare_sync(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__2">同步解析媒体文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__2">player：player 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e571__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_hkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e575__20250409171036">在 INITIALIZED 状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_ikz_trf_fdc" data-ofbid="mpp_player_interface_design__table_ikz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_prepare_sync</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_ikz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e598__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_ikz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e602__20250409171036">s32 aic_player_prepare_sync(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e612__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e616__20250409171036">同步解析媒体文件</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e623__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e627__20250409171036">player：player 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e634__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e638__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：解析文件成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：解析文件成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__2">在 INITIALIZED 状态起作用</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_jkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_jkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_jkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_jkz_trf_fdc__entry__2">s32 aic_player_start(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__2">启动播放器，创建音视频解码线程和音视频渲染线程</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__2">player：player 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e651__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_ikz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e655__20250409171036">在 INITIALIZED 状态起作用</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_jkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_jkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_start</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_jkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e678__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_jkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e682__20250409171036">s32 aic_player_start(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e692__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e696__20250409171036">启动播放器，创建音视频解码线程和音视频渲染线程</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e703__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e707__20250409171036">player：player 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e714__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e718__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__2">在 PREPARED 状态起作用</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_kkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_kkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_play</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_kkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_kkz_trf_fdc__entry__2">s32 aic_player_play(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__2">播放媒体文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__2">player：player 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e731__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_jkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e735__20250409171036">在 PREPARED 状态起作用</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_kkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_kkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_play</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_kkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e758__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_kkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e762__20250409171036">s32 aic_player_play(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e772__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e776__20250409171036">播放媒体文件</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e783__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e787__20250409171036">player：player 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e794__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e798__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__2">在 STARETED 状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_lkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_lkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_pause</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_lkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_lkz_trf_fdc__entry__2">s32 aic_player_pause(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__2">暂停播放媒体文件</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__2">player：player 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e811__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_kkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e815__20250409171036">在 STARETED 状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_lkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_lkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_pause</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_lkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e838__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_lkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e842__20250409171036">s32 aic_player_pause(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e852__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e856__20250409171036">暂停播放媒体文件</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e863__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e867__20250409171036">player：player 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e874__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e878__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__2">在 PLAYING 和 PAUSED 状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_mkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_mkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_mkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_mkz_trf_fdc__entry__2">s32 aic_player_stop(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__2">停止播放，释放音视频解码线程和音视频显示线程</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__2">player：player 对象</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e891__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_lkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e895__20250409171036">在 PLAYING 和 PAUSED 状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_mkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_mkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_stop</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_mkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e918__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_mkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e922__20250409171036">s32 aic_player_stop(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e932__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e936__20250409171036">停止播放，释放音视频解码线程和音视频显示线程</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e943__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e947__20250409171036">player：player 对象</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e954__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e958__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__2"> 任意状态可以调用该函数来停止播放器。切换文件时一定要调用 aic_player_stop。 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_nkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_nkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_media_info</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_nkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_nkz_trf_fdc__entry__2">s32 aic_player_get_media_info(struct aic_player *player, struct
-                                av_media_info *media_info)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__2">获取媒体信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e971__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_mkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e975__20250409171036"> 任意状态可以调用该函数来停止播放器。切换文件时一定要调用 aic_player_stop。 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_nkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_nkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_media_info</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_nkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e999__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_nkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1003__20250409171036">s32 aic_player_get_media_info(struct aic_player *player, struct
+                                av_media_info *media_info)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1013__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1017__20250409171036">获取媒体信息</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1024__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1028__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象，media_info：媒体信息</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1041__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1045__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__2">在 PREPARED 和 COMPLETED 区间的状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_okz_trf_fdc" data-ofbid="mpp_player_interface_design__table_okz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_event_callback</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_okz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_okz_trf_fdc__entry__2">s32 aic_player_set_event_callback(struct aic_player *player,
-                                event_handler event_handle)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__2">获取媒体信息</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1058__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_nkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1062__20250409171036">在 PREPARED 和 COMPLETED 区间的状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_okz_trf_fdc" data-ofbid="mpp_player_interface_design__table_okz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_event_callback</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_okz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1085__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_okz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1089__20250409171036">s32 aic_player_set_event_callback(struct aic_player *player,
+                                event_handler event_handle)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1099__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1103__20250409171036">获取媒体信息</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1110__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1114__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象，event_handle：监听事件函数</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1127__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1131__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__2">一定要注册，播放结束通过回调函数通知</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_pkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_pkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_screen_size</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_pkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_pkz_trf_fdc__entry__2">s32 aic_player_get_screen_size(struct aic_player *player, struct
-                                mpp_size *screen_size)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__2">获取屏幕大小</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1144__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_okz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1148__20250409171036">一定要注册，播放结束通过回调函数通知</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_pkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_pkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_screen_size</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_pkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1171__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_pkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1175__20250409171036">s32 aic_player_get_screen_size(struct aic_player *player, struct
+                                mpp_size *screen_size)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1185__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1189__20250409171036">获取屏幕大小</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1196__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1200__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象，screen_size：屏幕大小</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1213__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1217__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__2">在 STARETED 和 COMPLETED 区间的状态均起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_qkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_qkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 13</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_disp_rect</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_qkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_qkz_trf_fdc__entry__2">s32 aic_player_set_disp_rect(struct aic_player *player, struct
-                                mpp_rect *disp_rect)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__2">设置显示区域</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1230__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_pkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1234__20250409171036">在 STARETED 和 COMPLETED 区间的状态均起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_qkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_qkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 13</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_disp_rect</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_qkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1257__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_qkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1261__20250409171036">s32 aic_player_set_disp_rect(struct aic_player *player, struct
+                                mpp_rect *disp_rect)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1271__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1275__20250409171036">设置显示区域</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1282__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1286__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象，disp_rect：显示区域</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1299__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1303__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__2">在 STARETED 和 COMPLETED 区间的状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_rkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_rkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 14</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_disp_rect</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_rkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_rkz_trf_fdc__entry__2">s32 aic_player_get_disp_rect(struct aic_player *player, struct
-                                mpp_rect *disp_rect)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__2">设置显示区域</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1316__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_qkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1320__20250409171036">在 STARETED 和 COMPLETED 区间的状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_rkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_rkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 14</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_disp_rect</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_rkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1343__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_rkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1347__20250409171036">s32 aic_player_get_disp_rect(struct aic_player *player, struct
+                                mpp_rect *disp_rect)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1357__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1361__20250409171036">设置显示区域</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1368__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1372__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象，disp_rect：显示区域</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1385__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1389__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__2">在 STARETED 和 COMPLETED 区间的状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_skz_trf_fdc" data-ofbid="mpp_player_interface_design__table_skz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 15</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_mute</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_skz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_skz_trf_fdc__entry__2">s32 aic_player_set_mute(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__2">静音切换</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__2">
-                                <div class="- topic/div div">
-                                    <div class="- topic/div div">player：player 对象</div>
-                                </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__2">
-                                <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
-                                </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__2">在 STARETED 和 COMPLETED 区间的状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_tkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_tkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 16</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_volum</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_tkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_tkz_trf_fdc__entry__2">s32 aic_player_set_volum(struct aic_player *player,s32
-                                vol)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__2">设置音量</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__2">
-                                <div class="- topic/div div">
-                                    <div class="- topic/div div">player：player 对象，vol：音量</div>
-                                </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__2">
-                                <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
-                                </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__2">在 STARETED 和 COMPLETED 区间的状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_ukz_trf_fdc" data-ofbid="mpp_player_interface_design__table_ukz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 17</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_volum</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_ukz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_ukz_trf_fdc__entry__2">s32 aic_player_get_volum(struct aic_player *player,s32
-                                *vol)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__2">获取音量</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__2">
-                                <div class="- topic/div div">
-                                    <div class="- topic/div div">player：player 对象，vol：音量</div>
-                                </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__2">
-                                <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
-                                </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__2">在 STARETED 和 COMPLETED 区间的状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_vkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_vkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 18</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_play_time</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_vkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_vkz_trf_fdc__entry__2">s64 aic_player_get_play_time(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__2">获取播放时间</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1402__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_rkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1406__20250409171036">在 STARETED 和 COMPLETED 区间的状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_skz_trf_fdc" data-ofbid="mpp_player_interface_design__table_skz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 15</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_mute</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_skz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1429__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_skz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1433__20250409171036">s32 aic_player_set_mute(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1443__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1447__20250409171036">静音切换</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1454__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1458__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1471__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1475__20250409171036">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
+                                </div>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1488__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_skz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1492__20250409171036">在 STARETED 和 COMPLETED 区间的状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_tkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_tkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 16</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_volum</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_tkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1516__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_tkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1520__20250409171036">s32 aic_player_set_volum(struct aic_player *player,s32
+                                vol)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1530__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1534__20250409171036">设置音量</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1541__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1545__20250409171036">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">player：player 对象，vol：音量</div>
+                                </div>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1558__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1562__20250409171036">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
+                                </div>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1575__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_tkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1579__20250409171036">在 STARETED 和 COMPLETED 区间的状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_ukz_trf_fdc" data-ofbid="mpp_player_interface_design__table_ukz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 17</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_volum</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_ukz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1602__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_ukz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1606__20250409171036">s32 aic_player_get_volum(struct aic_player *player,s32
+                                *vol)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1616__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1620__20250409171036">获取音量</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1627__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1631__20250409171036">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">player：player 对象，vol：音量</div>
+                                </div>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1644__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1648__20250409171036">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
+                                </div>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1661__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_ukz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1665__20250409171036">在 STARETED 和 COMPLETED 区间的状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_vkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_vkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 18</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_play_time</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_vkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1688__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_vkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1692__20250409171036">s64 aic_player_get_play_time(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1702__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1706__20250409171036">获取播放时间</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1713__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1717__20250409171036">
+                                <div class="- topic/div div">
+                                    <div class="- topic/div div">player：player 对象</div>
+                                </div>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1730__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1734__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div"> &gt;=0：播放时间，&lt;0：获取播放时间的状态不对</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__2">在 STARETED 和 COMPLETED 区间的状态起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_wkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_wkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 19</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_seek</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_wkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_wkz_trf_fdc__entry__2">s32 aic_player_seek(struct aic_player *player, u64
-                                seek_time)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__2">跳转指定时间点</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1747__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_vkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1751__20250409171036">在 STARETED 和 COMPLETED 区间的状态起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_wkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_wkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 19</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_seek</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_wkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1774__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_wkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1778__20250409171036">s32 aic_player_seek(struct aic_player *player, u64
+                                seek_time)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1788__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1792__20250409171036">跳转指定时间点</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1799__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1803__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象，seek_time：跳转的时间点</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1816__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1820__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__2">在 IDLE/INITIALIZED/PREPARING 状态下设置不起作用 </td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_xkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_xkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 20</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_rotation</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_xkz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_xkz_trf_fdc__entry__2">s32 aic_player_set_rotation(struct aic_player *player, int
-                                rotation_angle)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__2">设置视频旋转角度</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1833__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_wkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1837__20250409171036">在 IDLE/INITIALIZED/PREPARING 状态下设置不起作用 </p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_xkz_trf_fdc" data-ofbid="mpp_player_interface_design__table_xkz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 20</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_set_rotation</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_xkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1860__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_xkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1864__20250409171036">s32 aic_player_set_rotation(struct aic_player *player, int
+                                rotation_angle)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1874__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1878__20250409171036">设置视频旋转角度</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1885__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1889__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象，rotation_angle：旋转角度</div>
                                     <div class="- topic/div div">rotation_angle 可取值
                                         MPP_ROTATION_0，MPP_ROTATION_90，MPP_ROTATION_180，MPP_ROTATION_270</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1905__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1909__20250409171036">
                                 <div class="- topic/div div">
-                                    <div class="- topic/div div"> 0：成功，其他：失败</div>
+                                    <div class="- topic/div div"> 0：成功，其它：失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__2">在 STARTED/PLAYING/PAUSED/COMPLETED 状态下设置起作用</td></tr></tbody></table></div>
-            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_ykz_trf_fdc" data-ofbid="mpp_player_interface_design__table_ykz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 21</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_rotation</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_ykz_trf_fdc__entry__1">函数原型</th><th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_ykz_trf_fdc__entry__2">s32 aic_player_get_rotation(struct aic_player *player)</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__1">功能说明</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__2">获取视频旋转角度</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__1">参数定义</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1922__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_xkz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1926__20250409171036">在 STARTED/PLAYING/PAUSED/COMPLETED 状态下设置起作用</p></td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="mpp_player_interface_design__table_ykz_trf_fdc" data-ofbid="mpp_player_interface_design__table_ykz_trf_fdc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 21</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">aic_player_get_rotation</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="mpp_player_interface_design__table_ykz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1949__20250409171036">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="mpp_player_interface_design__table_ykz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1953__20250409171036">s32 aic_player_get_rotation(struct aic_player *player)</p></th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1963__20250409171036">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1967__20250409171036">获取视频旋转角度</p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1974__20250409171036">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1978__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div">player：player 对象</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__1">返回值</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__2">
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e1991__20250409171036">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e1995__20250409171036">
                                 <div class="- topic/div div">
                                     <div class="- topic/div div"> &gt;=0：旋转角度，&lt;0：获取失败</div>
                                 </div>
-                            </td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__1">注意事项</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__2">在 STARTED/PLAYING/PAUSED/COMPLETED 状态下可以获取</td></tr></tbody></table></div>
-        </section><section class="- topic/section section" id="mpp_player_interface_design__section_pkd_jsf_fdc" data-ofbid="mpp_player_interface_design__section_pkd_jsf_fdc"><h2 class="- topic/title title sectiontitle">APP Demo</h2>
+                            </p></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__1"><p class="- topic/p p" data-ofbid="d68640e2008__20250409171036">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="mpp_player_interface_design__table_ykz_trf_fdc__entry__2"><p class="- topic/p p" data-ofbid="d68640e2012__20250409171036">在 STARTED/PLAYING/PAUSED/COMPLETED 状态下可以获取</p></td>
+                        </tr>
+                    </tbody></table></div>
+        </section>
+        <section class="- topic/section section" id="mpp_player_interface_design__section_pkd_jsf_fdc" data-ofbid="mpp_player_interface_design__section_pkd_jsf_fdc"><h2 class="- topic/title title sectiontitle">APP Demo</h2>
             
             <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_player_interface_design__codeblock_yj4_jsf_fdc" data-ofbid="mpp_player_interface_design__codeblock_yj4_jsf_fdc">#include &lt;string.h&gt;
 #include &lt;malloc.h&gt;
@@ -947,7 +1495,9 @@ _EXIT0_:
 }
 
 MSH_CMD_EXPORT_ALIAS(player_demo_test,player_demo, player demo      );</pre>
-        </section></div></article></main></div>
+        </section>
+    </div>
+</article></main></div>
                         
                         
                         
@@ -973,8 +1523,7 @@ MSH_CMD_EXPORT_ALIAS(player_demo_test,player_demo, player demo      );</pre>
         <footer class="navbar navbar-default wh_footer">
   <div class=" footer-container mx-auto ">
     <title>footer def</title>
-    <style><!--
-
+    <style>
 .p1 {
   font-family: FangZhengShuSong, Times, serif;
 }
@@ -984,26 +1533,16 @@ MSH_CMD_EXPORT_ALIAS(player_demo_test,player_demo, player demo      );</pre>
 .p3 {
   font-family: "Lucida Console", "Courier New", monospace;
 }
-    
---></style>
-  
-
-  
-    
-  
-  
-    
-            
-   
-  
-
+    </style>
   <div class="webhelp.fragment.footer">
-    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
-  </div><div>
-    <div class="generation_time">
-      Update Time: 2025-01-21
-    </div>        
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
   </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
   </div>
 </footer>
         

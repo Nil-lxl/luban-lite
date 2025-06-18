@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -23,7 +23,6 @@
 #include <aic_time.h>
 #include <boot_time.h>
 #include <aic_clk_id.h>
-#include <upg_uart.h>
 #include <hal_syscfg.h>
 #include <boot_rom.h>
 #include <ram_param.h>
@@ -96,13 +95,13 @@ static int board_init(enum boot_device bd)
     }
 #endif
 
+    aic_board_heap_init(bd);
+    boot_time_trace("Heap init done");
+
     cons_uart = AIC_BOOTLOADER_CONSOLE_UART;
     uart_init(cons_uart);
     stdio_set_uart(cons_uart);
     boot_time_trace("Console UART ready");
-
-    aic_board_heap_init(bd);
-    boot_time_trace("Heap init done");
 
     return 0;
 }
@@ -115,7 +114,7 @@ void show_banner(void)
 int main(void)
 {
     enum boot_device bd;
-    int ctrlc = -1, cont_boot;
+    int ctrlc = -1, cont_boot = 1;
 
     boot_time_trace("Enter main");
 
@@ -145,7 +144,9 @@ int main(void)
 
     ctrlc = console_get_ctrlc();
     if (ctrlc < 0) {
+#ifdef AICUPG_SUPPORT
         cont_boot = bl_upgmode_detect(bd);
+#endif
         /*
          * Set bootcmd string to console, bootloader will check and run bootcmd
          * first in console_loop

@@ -537,6 +537,7 @@ int usbh_enumerate(struct usbh_hubport *hport)
     }
     USB_LOG_INFO("The device has %d interfaces\r\n", ((struct usb_configuration_descriptor *)ep0_request_buffer[hport->bus->busid])->bNumInterfaces);
     hport->raw_config_desc = usb_malloc(wTotalLength);
+    hport->raw_config_desc_len = wTotalLength;
     if (hport->raw_config_desc == NULL) {
         ret = -USB_ERR_NOMEM;
         USB_LOG_ERR("No memory to alloc for raw_config_desc\r\n");
@@ -618,17 +619,39 @@ int usbh_enumerate(struct usbh_hubport *hport)
             continue;
         }
         hport->config.intf[i].class_driver = class_driver;
-        USB_LOG_INFO("Loading %s class driver\r\n", class_driver->driver_name);
+        USB_LOG_INFO("Loading %s class driver (interfaces :%d)\r\n", class_driver->driver_name, i);
         usb_osal_mutex_take(hport->mutex);
         ret = CLASS_CONNECT(hport, i);
         usb_osal_mutex_give(hport->mutex);
+        if (ret < 0)
+            USB_LOG_WRN("%s Class connect abnormal :%d)\r\n", __func__, ret);
     }
 
+    if (hport->event)
+        usb_osal_event_send(hport->event, USBH_EVENT_ENUMERATE);
 errout:
     if (hport->raw_config_desc) {
         usb_free(hport->raw_config_desc);
         hport->raw_config_desc = NULL;
+        hport->raw_config_desc_len = 0;
     }
+    return ret;
+}
+
+int usbh_hubport_enumerate_wait(struct usbh_hubport *hport)
+{
+    int ret = 0;
+    uint32_t cur_event = 0;
+
+    if (hport->event == NULL)
+        return -USB_ERR_NOTSUPP;
+
+    ret = usb_osal_event_recv(hport->event, USBH_EVENT_ENUMERATE,
+                                USB_OSAL_EVENT_FLAG_OR, USB_OSAL_WAITING_FOREVER,
+                                &cur_event);
+
+    USB_LOG_DBG("%s cur_event: %d \n", __func__, cur_event);
+
     return ret;
 }
 

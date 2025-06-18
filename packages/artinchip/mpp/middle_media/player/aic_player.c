@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -73,6 +73,7 @@ struct aic_player {
     void *vdec_allocator;
     s8 init_vdec_crop;
     struct mpp_dec_crop_info vdec_crop;
+    s32 vdec_ext_frame_num;
 #endif
 };
 
@@ -111,7 +112,11 @@ static s32 component_event_handler (
             break;
         case MM_EVENT_BUFFER_FLAG:
             if (player->media_info.has_video) {
+#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+                if (player->vdecoder_handle == h_component) {
+#else
                 if (player->video_render_handle == h_component) {
+#endif
                     player->video_audio_end_mask &= ~AIC_VIDEO;
                     logi("[%s:%d]rececive video_render_end,video_audio_end_mask:%d!!!\n",
                            __FUNCTION__, __LINE__, player->video_audio_end_mask);
@@ -167,7 +172,11 @@ static s32 component_event_handler (
         case MM_EVENT_VIDEO_RENDER_FIRST_FRAME:
         case MM_EVENT_AUDIO_RENDER_FIRST_FRAME:
             if (player->media_info.has_video) {
+#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+                if (player->vdecoder_handle == h_component) {
+#else
                 if (player->video_render_handle == h_component) {
+#endif
                     logi("[%s:%d]first video frame come!!!\n",__FUNCTION__,__LINE__);
                     player->video_audio_seek_mask &= ~AIC_VIDEO;
                     if (player->video_audio_seek_mask == 0) {
@@ -379,6 +388,12 @@ s32 aic_player_start_video(struct aic_player *player)
                 loge("set allocator to vdec comp failed.\n");
                 return MM_ERROR_INSUFFICIENT_RESOURCES;
             }
+            if (MM_ERROR_NONE != mm_set_config(player->vdecoder_handle,
+                                               MM_INDEX_CONFIG_VIDEO_DECODER_EXT_FRAME_NUM,
+                                               (void *)&player->vdec_ext_frame_num)) {
+                loge("set allocator to vdec comp failed.\n");
+                return MM_ERROR_INSUFFICIENT_RESOURCES;
+            }
             if (player->init_vdec_crop) {
                 if (MM_ERROR_NONE != mm_set_config(player->vdecoder_handle,
                                                MM_INDEX_CONFIG_VIDEO_DECODER_CROP_INFO,
@@ -391,7 +406,11 @@ s32 aic_player_start_video(struct aic_player *player)
 #endif
         video_port_format.color_format = MM_COLOR_FORMAT_YUV420P;
         if (video_port_format.compression_format == MM_VIDEO_CODING_MJPEG) {
+#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+            if (strcmp(PRJ_CHIP, "d12x") == 0 || strcmp(PRJ_CHIP, "d13x") == 0) {
+#else
             if (strcmp(PRJ_CHIP, "d12x") == 0) {
+#endif
                 switch (AICFB_FORMAT) {
                     case 0x00:
                         video_port_format.color_format =
@@ -542,6 +561,13 @@ s32 aic_player_start_audio(struct aic_player *player)
                                            MM_INDEX_VENDOR_AUDIO_RENDER_INIT,
                                            NULL)) {
             logd("audio render init error!!!!.\n");
+            mm_param_skip_track skip_track;
+            skip_track.port_index = DEMUX_PORT_AUDIO_INDEX;
+            mm_set_parameter(player->demuxer_handle,
+                             MM_INDEX_VENDOR_DEMUXER_SKIP_TRACK, &skip_track);
+            mm_free_handle(player->adecoder_handle);
+            player->adecoder_handle = NULL;
+
             mm_free_handle(player->audio_render_handle);
             player->audio_render_handle = NULL;
             player->media_info.has_audio = 0;
@@ -576,10 +602,6 @@ s32 aic_player_start_audio(struct aic_player *player)
 
 s32 aic_player_start_clock(struct aic_player *player)
 {
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
-    return MM_ERROR_NONE;
-#endif
-
 #ifdef _CLOCK_COMPONENT_
     if (player->media_info.has_video && player->media_info.has_audio) {
         mm_time_config_clock_state clock_state;
@@ -596,6 +618,15 @@ s32 aic_player_start_clock(struct aic_player *player)
             return MM_ERROR_INSUFFICIENT_RESOURCES;
         }
 
+#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+        if (MM_ERROR_NONE != mm_set_bind(player->clock_handle,
+                                         CLOCK_PORT_OUT_VIDEO,
+                                         player->vdecoder_handle,
+                                         VDEC_PORT_IN_CLOCK_INDEX)) {
+            loge("unable to bind vdecoder_handle component and clock component.\n");
+            return MM_ERROR_INSUFFICIENT_RESOURCES;
+        }
+#else
         if (MM_ERROR_NONE != mm_set_bind(player->clock_handle,
                                          CLOCK_PORT_OUT_VIDEO,
                                          player->video_render_handle,
@@ -603,7 +634,7 @@ s32 aic_player_start_clock(struct aic_player *player)
             loge("unable to bind video_render component and clock component.\n");
             return MM_ERROR_INSUFFICIENT_RESOURCES;
         }
-
+#endif
         if (MM_ERROR_NONE != mm_set_bind(player->clock_handle,
                                          CLOCK_PORT_OUT_AUDIO,
                                          player->audio_render_handle,
@@ -1275,6 +1306,28 @@ s32 aic_player_get_volum(struct aic_player *player,s32 *vol)
     return 0;
 }
 
+s32 aic_player_get_frame(struct aic_player *player, struct mpp_frame *frame)
+{
+    if (!player->media_info.has_video || !player->vdecoder_handle) {
+        return -1;
+    }
+    mm_buffer buffer = {0};
+    buffer.p_buffer = (void *)frame;
+    buffer.data_type = MM_BUFFER_DATA_FRAME;
+
+    return mm_get_buffer(player->vdecoder_handle, &buffer);
+}
+
+s32 aic_player_put_frame(struct aic_player *player, struct mpp_frame *frame)
+{
+    if (!player->media_info.has_video || !player->vdecoder_handle) {
+        return -1;
+    }
+    mm_buffer buffer = {0};
+    buffer.p_buffer = (void *)frame;
+    buffer.data_type = MM_BUFFER_DATA_FRAME;
+    return mm_giveback_buffer(player->vdecoder_handle, &buffer);
+}
 
 s32 aic_player_capture(struct aic_player *player, struct aic_capture_info *capture_info)
 {
@@ -1344,31 +1397,13 @@ s32 aic_player_control(struct aic_player *player, enum aic_player_command cmd, v
 {
     s32 ret = 0;
     switch (cmd) {
-        case AIC_PLAYER_CMD_GET_VDEC_DECODER_FRAME: {
-            mm_buffer buffer = {0};
-            buffer.p_buffer = data;
-            buffer.data_type = MM_BUFFER_DATA_FRAME;
-            if (!player->vdecoder_handle) {
-                return -1;
-            }
-            ret = mm_get_buffer(player->vdecoder_handle, &buffer);
-            break;
-        }
-
-        case AIC_PLAYER_CMD_PUT_VDEC_DECODER_FRAME: {
-            mm_buffer buffer = {0};
-            buffer.p_buffer = data;
-            buffer.data_type = MM_BUFFER_DATA_FRAME;
-            if (!player->vdecoder_handle) {
-                return -1;
-            }
-            ret = mm_giveback_buffer(player->vdecoder_handle, &buffer);
-            break;
-        }
-
 #ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
         case AIC_PLAYER_CMD_SET_VDEC_EXT_FRAME_ALLOCATOR:
             player->vdec_allocator = data;
+            break;
+
+        case AIC_PLAYER_CMD_SET_VDEC_EXT_FRAME_NUM:
+            player->vdec_ext_frame_num = *(s32 *)data;
             break;
 
         case AIC_PLAYER_CMD_SET_VDEC_SET_CROP_INFO:
@@ -1381,6 +1416,8 @@ s32 aic_player_control(struct aic_player *player, enum aic_player_command cmd, v
                                 MM_INDEX_CONFIG_VIDEO_DECODER_CROP_INFO, data);
             break;
 #endif
+
+#ifndef AIC_CHIP_D12X
         case AIC_PLAYER_CMD_SET_VIDEO_RENDER_KEEP_LAST_FRAME: {
             if (!data) {
                 loge("video render set last frame data is null\n");
@@ -1389,6 +1426,7 @@ s32 aic_player_control(struct aic_player *player, enum aic_player_command cmd, v
             player->video_render_keep_last_frame = *(s8 *)data;
             break;
         }
+#endif
 
         default:
             return -1;

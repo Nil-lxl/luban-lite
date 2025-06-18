@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -14,9 +14,11 @@ struct aic_rgb_comp
 {
     void *regs;
 
-    struct aic_panel *panel;
+    u32 pixclk;
     u64 sclk_rate;
     u64 pll_disp_rate;
+    struct aic_panel *panel;
+    struct panel_rgb *rgb;
 };
 static struct aic_rgb_comp *g_aic_rgb_comp;
 
@@ -35,58 +37,31 @@ static void aic_rgb_release_drvdata(void)
 
 }
 
-#ifdef AIC_DISP_RGB_DRV_V12
-struct rgb_bits_valid {
+struct aic_rgb_info {
     u32 mode;
     u32 format;
     u32 bits_valid;
+    u32 bpp;
 };
 
-static const struct rgb_bits_valid rgb_valid[] = {
-    {
-        .mode       = PRGB,
-        .format     = PRGB_24BIT,
-        .bits_valid = 0x777,
-    },
-    {
-        .mode       = PRGB,
-        .format     = PRGB_18BIT_LD,
-        .bits_valid = 0x555,
-    },
-    {
-        .mode       = PRGB,
-        .format     = PRGB_18BIT_HD,
-        .bits_valid = 0x555,
-    },
-    {
-        .mode       = PRGB,
-        .format     = PRGB_16BIT_LD,
-        .bits_valid = 0x454,
-    },
-    {
-        .mode       = PRGB,
-        .format     = PRGB_16BIT_HD,
-        .bits_valid = 0x454,
-    },
-    {
-        .mode       = SRGB,
-        .format     = SRGB_8BIT,
-        .bits_valid = 0x777,
-    },
-    {
-        .mode       = SRGB,
-        .format     = SRGB_6BIT,
-        .bits_valid = 0x555,
-    },
+static const struct aic_rgb_info rgb_info[] = {
+    { .mode = PRGB, .format = PRGB_24BIT,    .bits_valid = 0x777, .bpp = 24, },
+    { .mode = PRGB, .format = PRGB_18BIT_LD, .bits_valid = 0x555, .bpp = 18, },
+    { .mode = PRGB, .format = PRGB_18BIT_HD, .bits_valid = 0x555, .bpp = 18, },
+    { .mode = PRGB, .format = PRGB_16BIT_LD, .bits_valid = 0x454, .bpp = 16, },
+    { .mode = PRGB, .format = PRGB_16BIT_HD, .bits_valid = 0x454, .bpp = 16, },
+    { .mode = SRGB, .format = SRGB_8BIT,     .bits_valid = 0x777, .bpp = 24, },
+    { .mode = SRGB, .format = SRGB_6BIT,     .bits_valid = 0x555, .bpp = 18, },
 };
 
+#ifdef AIC_DISP_RGB_DRV_V12
 static int aic_rgb_data_valid(u32 mode, u32 format, u32 *bits_valid)
 {
     unsigned int i;
 
-    for (i = 0; i < ARRAY_SIZE(rgb_valid); ++i)
-        if (rgb_valid[i].mode == mode && rgb_valid[i].format == format) {
-            *bits_valid = rgb_valid[i].bits_valid;
+    for (i = 0; i < ARRAY_SIZE(rgb_info); i++)
+        if (rgb_info[i].mode == mode && rgb_info[i].format == format) {
+            *bits_valid = rgb_info[i].bits_valid;
             return 0;
         }
 
@@ -97,7 +72,7 @@ static int aic_rgb_data_valid(u32 mode, u32 format, u32 *bits_valid)
 static int aic_rgb_clk_enable(void)
 {
     struct aic_rgb_comp *comp = aic_rgb_request_drvdata();
-    u32 pixclk = comp->panel->timings->pixelclock;
+    u32 pixclk = comp->pixclk;
 
     hal_clk_set_freq(CLK_PLL_FRA2, comp->pll_disp_rate);
     hal_clk_set_rate(CLK_SCLK, comp->sclk_rate, comp->pll_disp_rate);
@@ -126,7 +101,7 @@ static int aic_rgb_clk_disable(void)
 static void aic_rgb_swap(void)
 {
     struct aic_rgb_comp *comp = aic_rgb_request_drvdata();
-    struct panel_rgb *rgb = comp->panel->rgb;
+    struct panel_rgb *rgb = comp->rgb;
     u32 bits_valid = 0;
 
     if (rgb->data_mirror) {
@@ -152,10 +127,44 @@ static void aic_rgb_swap(void)
     aic_rgb_release_drvdata();
 }
 
+#ifdef AIC_PANEL_SPI_EMULATION
+static void aic_rgb_spi_init_debug(struct aic_rgb_comp *comp)
+{
+    struct rgb_spi_command *commands = &comp->panel->rgb->spi_command;
+    unsigned int i = 0;
+
+    while (i < commands->len) {
+        u8 command = commands->buf[i++];
+        u8 num_parameters = commands->buf[i++];
+        u8 *parameters = &commands->buf[i];
+
+        if (command == 0x00 && num_parameters == 1) {
+            aic_delay_ms(parameters[0]);
+        }
+        if (command == 0x02 && num_parameters >= 1) {
+            for (int j = 0; j < num_parameters; j++) {
+                panel_spi_data_wr(parameters[j]);
+            }
+        }
+        if (command == 0x01 && num_parameters == 1) {
+            panel_spi_cmd_wr(parameters[0]);
+        }
+
+        i += num_parameters;
+    }
+}
+#endif
+
 static int aic_rgb_enable(void)
 {
     struct aic_rgb_comp *comp = aic_rgb_request_drvdata();
-    struct panel_rgb *rgb = comp->panel->rgb;
+    struct panel_rgb *rgb = comp->rgb;
+
+#ifdef AIC_PANEL_SPI_EMULATION
+    if (rgb->spi_command.command_on) {
+        aic_rgb_spi_init_debug(comp);
+    }
+#endif
 
     reg_set_bits(comp->regs + RGB_LCD_CTL,
             RGB_LCD_CTL_MODE_MASK,
@@ -194,15 +203,24 @@ static int aic_rgb_disable(void)
     return 0;
 }
 
-static int aic_rgb_attach_panel(struct aic_panel *panel)
+static int aic_rgb_attach_panel(struct aic_panel *panel, struct panel_desc *desc)
 {
     struct aic_rgb_comp *comp = aic_rgb_request_drvdata();
-    u32 pixclk = panel->timings->pixelclock;
-    struct panel_rgb *rgb = panel->rgb;
     u64 pll_disp_rate = 0;
     int i = 0;
+    struct panel_rgb *rgb;
+    u32 pixclk;
 
+    if (desc) {
+        pixclk = desc->timings->pixelclock;
+        rgb = desc->rgb;
+    } else {
+        pixclk = panel->timings->pixelclock;
+        rgb = panel->rgb;
+    }
+    comp->rgb = rgb;
     comp->panel = panel;
+    comp->pixclk = pixclk;
 
     if (rgb->mode == PRGB)
 #ifdef AIC_DISP_RGB_DRV_V10
@@ -229,12 +247,30 @@ static int aic_rgb_attach_panel(struct aic_panel *panel)
     return 0;
 }
 
+static int aic_rgb_get_output_bpp(void)
+{
+    struct aic_rgb_comp *comp = aic_rgb_request_drvdata();
+    struct panel_rgb *rgb = comp->rgb;
+    int i, bpp = 24;
+
+    for (i = 0; i < ARRAY_SIZE(rgb_info); i++) {
+        if (rgb->mode == rgb_info[i].mode && rgb->format == rgb_info[i].format) {
+            bpp = rgb_info[i].bpp;
+            break;
+        }
+    }
+
+    aic_rgb_release_drvdata();
+    return bpp;
+}
+
 struct di_funcs aic_rgb_func = {
     .clk_enable = aic_rgb_clk_enable,
     .clk_disable = aic_rgb_clk_disable,
     .enable = aic_rgb_enable,
     .disable = aic_rgb_disable,
     .attach_panel = aic_rgb_attach_panel,
+    .get_output_bpp = aic_rgb_get_output_bpp,
 };
 
 static int aic_rgb_probe(void)

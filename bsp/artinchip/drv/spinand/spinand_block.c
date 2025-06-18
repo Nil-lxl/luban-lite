@@ -92,17 +92,22 @@ static u32 spinand_start_page_calculate(rt_device_t dev, rt_off_t pos)
     struct spinand_blk_device *blk_dev = (struct spinand_blk_device *)dev;
     struct rt_mtd_nand_device *mtd_dev = blk_dev->mtd_device;
     const u8 SECTORS_PP = mtd_dev->page_size / blk_dev->geometry.bytes_per_sector;
-    u32 start_page = 0, block, pos_block;
+    u32 start_page = 0, block;
+    u32 block_temp = 0, good_blk_cnt = 0;
 
     start_page = pos / SECTORS_PP + mtd_dev->block_start * mtd_dev->pages_per_block;
     block = start_page / mtd_dev->pages_per_block;
-    pos_block = mtd_dev->ops->get_block_status(mtd_dev, block);
-    pr_debug("block = %d, pos_block = %d\n", block, pos_block);
-    if (pos_block != 0) {
-        block += pos_block;
-        pos += pos_block * mtd_dev->pages_per_block * SECTORS_PP;
-        start_page = pos / SECTORS_PP + mtd_dev->block_start * mtd_dev->pages_per_block;
+
+    for (block_temp = mtd_dev->block_start; block_temp < mtd_dev->block_end; block_temp++) {
+        if (mtd_dev->ops->get_block_status(mtd_dev, block_temp) == BBT_BLOCK_GOOD)
+            good_blk_cnt++;
+
+        /* Find the (block)th good block. */
+        if (good_blk_cnt - 1 == block - mtd_dev->block_start)
+            break;
     }
+
+    start_page += (block_temp - block)*mtd_dev->pages_per_block;
 
     return start_page;
 }
@@ -340,7 +345,6 @@ rt_size_t rt_spinand_write_nonftl(rt_device_t dev, rt_off_t pos,
 
 rt_err_t rt_spinand_init_nonftl(rt_device_t dev)
 {
-    u32 bad_block_pos = 0;
     struct spinand_blk_device *part = (struct spinand_blk_device *)dev;
     struct rt_mtd_nand_device *device = part->mtd_device;
     rt_uint32_t block;
@@ -350,13 +354,9 @@ rt_err_t rt_spinand_init_nonftl(rt_device_t dev)
     for (block = device->block_start; block < device->block_end; block++) {
         if (device->ops->check_block(device, block)) {
             pr_err("Find a bad block, block: %u.\n", block);
-            /* Find next good block. */
-            do {
-                bad_block_pos++;
-            } while (device->ops->check_block(device, block + bad_block_pos));
-            device->ops->set_block_status(device, block, bad_block_pos, BBT_BLOCK_FACTORY_BAD);
+            device->ops->set_block_status(device, block, BBT_BLOCK_FACTORY_BAD);
         } else {
-            device->ops->set_block_status(device, block, bad_block_pos, BBT_BLOCK_GOOD);
+            device->ops->set_block_status(device, block, BBT_BLOCK_GOOD);
         }
     }
     return 0;
@@ -470,6 +470,7 @@ int rt_blk_nand_register_device(const char *name,
 {
     char str[32] = { 0 };
     struct spinand_blk_device *blk_dev;
+    u32 nftl_bbm_reserver_sectors = 0;
 
     blk_dev = (struct spinand_blk_device *)rt_malloc(
         sizeof(struct spinand_blk_device));
@@ -499,6 +500,17 @@ int rt_blk_nand_register_device(const char *name,
     blk_dev->geometry.sector_count =
         device->block_total * device->pages_per_block * device->page_size /
         blk_dev->geometry.bytes_per_sector;
+
+    /* Reserve 51 blocks for bad block management in NFTL blk device. */
+    if (blk_dev->attr == PART_ATTR_NFTL) {
+        nftl_bbm_reserver_sectors = 51 * device->pages_per_block * device->page_size /
+                                    blk_dev->geometry.bytes_per_sector;
+        if (blk_dev->geometry.sector_count < nftl_bbm_reserver_sectors) {
+            pr_err("total sectors is not enough for NFTL bad block management\n");
+            return -1;
+        }
+        blk_dev->geometry.sector_count -= nftl_bbm_reserver_sectors;
+    }
 
     blk_dev->pagebuf =
         aicos_malloc_align(0, device->page_size, CACHE_LINE_SIZE);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2024 ArtInChip Technology Co.,Ltd
+ * Copyright (C) 2023-2025 ArtInChip Technology Co.,Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -92,7 +92,7 @@ int heap_init(void)
         start = heap_def[i].start;
         end = heap_def[i].end;
         if (start >= end) {
-            pr_err("%s: region %d addr err. start = 0x%x, end = 0x%x\n", __func__, i, (u32)start, (u32)end);
+            pr_warn("%s: region %d addr err. start = 0x%x, end = 0x%x\n", __func__, i, (u32)start, (u32)end);
             return -1;
         }
 

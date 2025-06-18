@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -216,7 +216,7 @@ lv_obj_t *dashboard_ui_init(void)
     lv_obj_set_style_opa(img_bg, LV_OPA_100, 0);
 
     static lv_style_t style_bg;
-    if (style_bg.prop_cnt > 1) {
+    if (style_bg.prop_cnt >= 1) {
         lv_style_reset(&style_bg);
     } else {
         lv_style_init(&style_bg);
@@ -226,7 +226,7 @@ lv_obj_t *dashboard_ui_init(void)
     lv_style_set_arc_opa(&style_bg, LV_OPA_0);
 
     static lv_style_t style_fp;
-    if (style_fp.prop_cnt > 1) {
+    if (style_fp.prop_cnt >= 1) {
         lv_style_reset(&style_fp);
     } else {
         lv_style_init(&style_fp);

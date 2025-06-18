@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -76,6 +76,10 @@ rt_err_t drv_audio_start(struct rt_audio_device *audio, int stream)
     group = GPIO_GROUP(p_snd_dev->gpio_pa);
     pin = GPIO_GROUP_PIN(p_snd_dev->gpio_pa);
 
+    /* Set fade default volume */
+    hal_audio_enable_fade(pcodec);
+    hal_audio_set_fade_volume(pcodec, FADE_MAX_CONTROL);
+
     if (!audio->replay->transfer_mode)
         hal_audio_attach_callback(pcodec, drv_audio_callback, NULL);
 
@@ -83,9 +87,11 @@ rt_err_t drv_audio_start(struct rt_audio_device *audio, int stream)
     {
         #ifdef AIC_AUDIO_SPK_0
         hal_audio_set_playback_by_spk0(pcodec);
+        hal_audio_disable_fade_ch1(pcodec);
         #endif
         #ifdef AIC_AUDIO_SPK_1
         hal_audio_set_playback_by_spk1(pcodec);
+        hal_audio_disable_fade_ch0(pcodec);
         #endif
         #ifdef AIC_AUDIO_SPK_0_1
         hal_audio_set_playback_by_spk0(pcodec);
@@ -101,9 +107,6 @@ rt_err_t drv_audio_start(struct rt_audio_device *audio, int stream)
             rt_audio_tx_complete(audio);
             hal_audio_playback_start(pcodec);
         }
-
-        /* Delay 10ms and then enable the PA to prevent pop */
-        rt_thread_mdelay(10);
         /* Enable PA */
 #ifdef AIC_AUDIO_EN_PIN_HIGH
         hal_gpio_set_output(group, pin);
@@ -140,6 +143,9 @@ rt_err_t drv_audio_stop(struct rt_audio_device *audio, int stream)
             hal_gpio_set_output(group, pin);
         #endif
         hal_audio_playback_stop(pcodec);
+        hal_audio_disable_fade(pcodec);
+        /* Delay 50ms to prevent pop */
+        rt_thread_mdelay(50);
     }
     else
     {
@@ -157,6 +163,7 @@ rt_err_t drv_audio_configure(struct rt_audio_device *audio,
     struct aic_audio *p_snd_dev;
     aic_audio_ctrl *pcodec;
     rt_uint32_t volume, reg_volume;
+    rt_uint32_t value = 0;
 
     p_snd_dev = (struct aic_audio *)audio;
     pcodec = &p_snd_dev->codec;
@@ -169,14 +176,13 @@ rt_err_t drv_audio_configure(struct rt_audio_device *audio,
         {
         case AUDIO_MIXER_VOLUME:
             volume = caps->udata.value;
-            /*
-             * Set max user volume to 0db
-             */
-            reg_volume = volume * (MAX_VOLUME_0DB - MIN_AUDIO_VOLUME_THRESHOLD) / 100 +
-                         MIN_AUDIO_VOLUME_THRESHOLD;
-
-            hal_audio_set_playback_volume(pcodec, reg_volume);
-            hal_audio_set_dmic_volume(pcodec, reg_volume);
+            /* Max vol is 32767, each step represents 320 */
+            value = FADE_MAX_VOLUME - volume;
+            if (value == 100)
+                reg_volume = 0;
+            else
+                reg_volume = FADE_MAX_CONTROL - (value * FADE_STEP_VOL);
+            hal_audio_set_fade_volume(pcodec, reg_volume);
             p_snd_dev->volume = volume;
             break;
 

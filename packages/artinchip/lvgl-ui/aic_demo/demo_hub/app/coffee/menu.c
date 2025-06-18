@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -185,7 +185,7 @@ static void createMenuBtn(lv_obj_t* scr, enum coffeeType type, int x, int y)
     lv_obj_add_event_cb(btn, menuBtnEventCb, LV_EVENT_CLICKED, (void*)type);
 
     static lv_style_t style_def;
-    if (style_def.prop_cnt > 1) {
+    if (style_def.prop_cnt >= 1) {
         lv_style_reset(&style_def);
     } else {
         lv_style_init(&style_def);
@@ -258,7 +258,7 @@ void createSettingBtn(lv_obj_t* scr)
 void createPageLed(lv_obj_t* scr, int size, int pos)
 {
     static lv_style_t style_led;
-    if (style_led.prop_cnt > 1) {
+    if (style_led.prop_cnt >= 1) {
         lv_style_reset(&style_led);
     } else {
         lv_style_init(&style_led);
@@ -268,7 +268,7 @@ void createPageLed(lv_obj_t* scr, int size, int pos)
     lv_style_set_shadow_width(&style_led, 0);
 
     static lv_style_t style_line;
-    if (style_line.prop_cnt > 1) {
+    if (style_line.prop_cnt >= 1) {
         lv_style_reset(&style_line);
     } else {
         lv_style_init(&style_line);

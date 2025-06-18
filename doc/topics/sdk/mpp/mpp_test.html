@@ -1,15 +1,15 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="软件配置 VE 驱动 ：详见 VE 配置 。 GE 驱动 ：详见 GE 配置 。 DE 驱动 ：详见 Display 配置 。 运行测试用例 mpp_test ：测试 mpp_decoder 接口，解码视频或图片文件并通过 display 接口显示在屏幕上。 目前支持 h264, jpg，png 的解码和显示，使用方式如下： mpp_test -h Usage: mpp_test ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-23"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp_test_guide"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp_test.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp_test.html"/>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="软件配置 VE 驱动 ：详见 VE 配置 。 GE 驱动 ：详见 GE 配置 。 DE 驱动 ：详见 Display 配置 。 运行测试用例 mpp_test ：测试 mpp_decoder 接口，解码视频或图片文件并通过 display 接口显示在屏幕上。 目前支持 h264, jpg，png 的解码和显示，使用方式如下： mpp_test -h Usage: mpp_test ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_debug_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/mpp/mpp_design.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="mpp_test_guide"/><meta name="DC.language" content="zh-CN"/><title>测试指南</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="mpp_test_guide-d3703e4874"/><meta name="wh-source-relpath" content="topics/sdk/mpp/mpp_test.dita"/><meta name="wh-out-relpath" content="topics/sdk/mpp/mpp_test.html"/>
 
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
-    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
-    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
-    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
-<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
 
     <body id="mpp_test_guide" class="wh_topic_page frmBody">
         <a href="#wh_topic_body" class="sr-only sr-only-focusable">
@@ -21,12 +21,12 @@
         
         <header class="navbar navbar-default wh_header">
     <div class="container-fluid">
-        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
             <div class="wh_logo_and_publication_title_container">
                 <div class="wh_logo_and_publication_title">
                     
-                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
-                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
                     
                 </div>
                 
@@ -39,13 +39,6 @@
                 
                 
             </div>
-        </div>
-    </div>
-</header>
-        
-        
-         
-        
         <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
             
             
@@ -54,27 +47,39 @@
             
             
             
-        </div>
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
         
         <div class="container-fluid" id="wh_topic_container">
             <div class="row">
 
                 <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
                     
-                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="mpp"><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html">MPP 使用指南</a></div></div></li><li class="active"><div class="topicref" data-id="mpp_test_guide"><div class="title"><a href="../../../topics/sdk/mpp/mpp_test.html">测试指南</a></div></div></li></ol></div>
                     
                     
                     
                     <div class="wh_right_tools">
                         <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
                         <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
-                        
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/mpp/mpp_debug_lite.html" title="调试指南" aria-label="上一主题: 调试指南" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/mpp/mpp_design.html" title="设计说明" aria-label="下一主题: 设计说明" rel="next"></a></span>  </span></div>
                         
                         
                         
                         <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
                         
-                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
                     </div>
                     
                 </nav>
@@ -86,26 +91,49 @@
             <div class="wh_content_area">
                 <div class="row">
                     
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3703e2372" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3703e2372-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3703e2372-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3703e2556" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3703e2556-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3703e2556-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3703e3646" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3703e3646-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3703e3646-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d3703e3980" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d3703e3980-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3703e3980-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e3997" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e3997-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d3703e3997-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e4067" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e4067-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide.html" id="id-d3703e4067-link">Display 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d3703e4350" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d3703e4350-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide.html" id="concept_h4d_fwt_tzb-d3703e4350-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d3703e4492" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d3703e4492-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide.html" id="ge-d3703e4492-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d3703e4634" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d3703e4634-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide.html" id="i2s-d3703e4634-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d3703e4760" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d3703e4760-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide.html" id="ve-d3703e4760-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="mpp-d3703e4832" class="topicref" data-id="mpp" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mpp-d3703e4832-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html" id="mpp-d3703e4832-link">MPP 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e4846" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_config_lite.html" id="id-d3703e4846-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4860" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_debug_lite.html" id="id-d3703e4860-link">调试指南</a></div></div></li><li role="treeitem" class="active"><div data-tocid="mpp_test_guide-d3703e4874" class="topicref" data-id="mpp_test_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_test.html" id="mpp_test_guide-d3703e4874-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_design_intro-d3703e4888" class="topicref" data-id="mpp_design_intro" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_design_intro-d3703e4888-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_design.html" id="mpp_design_intro-d3703e4888-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="mpp_common_issues-d3703e4972" class="topicref" data-id="mpp_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_faq.html" id="mpp_common_issues-d3703e4972-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d3703e4986" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d3703e4986-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide.html" id="mpp_0-d3703e4986-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5084" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5084-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d3703e5084-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5168" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5168-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d3703e5168-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5253" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5253-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d3703e5253-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d3703e5421" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d3703e5421-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3703e5421-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3703e6676" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3703e6676-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3703e6676-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
                     
-                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12" id="wh_topic_body">
-                        
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
                         <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
                             <span class="close-toc-icon-container">
                                 <span class="close-toc-icon"></span>     
                             </span>
                         </button>
                         
-                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/mpp/mpp_test.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1><div class="date inPage">23 Dec 2024</div><div style="color: gray;">
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/mpp/mpp_test.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">测试指南</h1>
+    
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
                     Read time: 4 minute(s)
-                </div><div class="- topic/body concept/conbody body conbody"><section class="- topic/section section" id="mpp_test_guide__section_flb_zj4_f1c" data-ofbid="mpp_test_guide__section_flb_zj4_f1c"><h2 class="- topic/title title sectiontitle">软件配置</h2>
+                </div>
+    <div class="- topic/body concept/conbody body conbody">
+        <section class="- topic/section section" id="mpp_test_guide__section_flb_zj4_f1c" data-ofbid="mpp_test_guide__section_flb_zj4_f1c"><h2 class="- topic/title title sectiontitle">软件配置</h2>
             
-            <div class="- topic/p p" data-ofbid="d269463e27__20250121171738">
-                <ul class="- topic/ul ul" id="mpp_test_guide__ul_dcn_zj4_f1c" data-ofbid="mpp_test_guide__ul_dcn_zj4_f1c"><li class="- topic/li li" data-ofbid="d269463e30__20250121171738"><strong class="+ topic/ph hi-d/b ph b">VE 驱动</strong>：详见 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="../ve/ve-config.html">VE 配置</a>。</li><li class="- topic/li li" data-ofbid="d269463e38__20250121171738"><strong class="+ topic/ph hi-d/b ph b">GE 驱动</strong>：详见 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="../ge/ge_config.html">GE 配置</a>。</li><li class="- topic/li li" data-ofbid="d269463e46__20250121171738"><strong class="+ topic/ph hi-d/b ph b">DE 驱动</strong>：详见 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="../display/display_config.html" title="显示模块的参数配置，包括 menuconfig 配置 和 dts 配置。">Display 配置</a>。</li></ul>
+            <div class="- topic/p p" data-ofbid="d124914e38__20250409171044">
+                <ul class="- topic/ul ul" id="mpp_test_guide__ul_dcn_zj4_f1c" data-ofbid="mpp_test_guide__ul_dcn_zj4_f1c">
+                    <li class="- topic/li li" data-ofbid="d124914e42__20250409171044"><strong class="+ topic/ph hi-d/b ph b">VE 驱动</strong>：详见 <a xml:lang="zh-CN" lang="zh-CN" class="- topic/xref xref" href="../ve/ve-config.html">VE 配置</a>。</li>
+                    <li class="- topic/li li" data-ofbid="d124914e51__20250409171044"><strong class="+ topic/ph hi-d/b ph b">GE 驱动</strong>：详见 <a class="- topic/xref xref" href="../ge/ge_config_lite.html">GE 配置</a>。</li>
+                    <li class="- topic/li li" data-ofbid="d124914e60__20250409171044"><strong class="+ topic/ph hi-d/b ph b">DE 驱动</strong>：详见 <a class="- topic/xref xref" href="../display/display_config_lite.html">Display 配置</a>。</li>
+                </ul>
             </div>
-        </section><section class="- topic/section section" id="mpp_test_guide__section_ehv_xj4_f1c" data-ofbid="mpp_test_guide__section_ehv_xj4_f1c"><h2 class="- topic/title title sectiontitle">运行测试用例</h2>
+        </section>
+        <section class="- topic/section section" id="mpp_test_guide__section_ehv_xj4_f1c" data-ofbid="mpp_test_guide__section_ehv_xj4_f1c"><h2 class="- topic/title title sectiontitle">运行测试用例</h2>
             
-            <div class="- topic/p p" data-ofbid="d269463e64__20250121171738">
-                <ul class="- topic/ul ul" id="mpp_test_guide__ul_prb_hgh_d1c" data-ofbid="mpp_test_guide__ul_prb_hgh_d1c"><li class="- topic/li li" data-ofbid="d269463e67__20250121171738"><strong class="+ topic/ph hi-d/b ph b">mpp_test</strong>：测试 mpp_decoder 接口，解码视频或图片文件并通过 display 接口显示在屏幕上。<div class="- topic/p p" data-ofbid="d269463e71__20250121171738">目前支持 h264, jpg，png
+            <div class="- topic/p p" data-ofbid="d124914e77__20250409171044">
+                <ul class="- topic/ul ul" id="mpp_test_guide__ul_prb_hgh_d1c" data-ofbid="mpp_test_guide__ul_prb_hgh_d1c">
+                    <li class="- topic/li li" data-ofbid="d124914e81__20250409171044"><strong class="+ topic/ph hi-d/b ph b">mpp_test</strong>：测试 mpp_decoder 接口，解码视频或图片文件并通过 display 接口显示在屏幕上。<div class="- topic/p p" data-ofbid="d124914e85__20250409171044">目前支持 h264, jpg，png
                             的解码和显示，使用方式如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_xg5_3gh_d1c" data-ofbid="mpp_test_guide__codeblock_xg5_3gh_d1c">mpp_test -h</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_pqp_hcn_4dc" data-ofbid="mpp_test_guide__codeblock_pqp_hcn_4dc">
 Usage: mpp_test [options]:
     -i                             input stream file name
@@ -118,7 +146,8 @@ Usage: mpp_test [options]:
     -h                             help
 
 Example1(test single file): mpp_test -i test.<span class="hl-number">264</span>
-Example2(test some files) : mpp_test -t /usr/data/</pre></div></li><li class="- topic/li li" data-ofbid="d269463e77__20250121171738"><strong class="+ topic/ph hi-d/b ph b">pic_test</strong>：测试 JPEG/PNG 图片解码和显示，相比于 mpp_test
+Example2(test some files) : mpp_test -t /usr/data/</pre></div></li>
+                    <li class="- topic/li li" data-ofbid="d124914e92__20250409171044"><strong class="+ topic/ph hi-d/b ph b">pic_test</strong>：测试 JPEG/PNG 图片解码和显示，相比于 mpp_test
                             代码更加精简。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_il1_jgh_d1c" data-ofbid="mpp_test_guide__codeblock_il1_jgh_d1c">pic_test -h</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_fdf_hcn_4dc" data-ofbid="mpp_test_guide__codeblock_fdf_hcn_4dc">
 Usage: dec_test [options]
 
@@ -126,20 +155,25 @@ Options:
 -i                             input stream file name
 -h                             help
 </pre><div class="- topic/note note note note_note" id="mpp_test_guide__note_qzz_2k4_f1c" data-ofbid="mpp_test_guide__note_qzz_2k4_f1c"><span class="note__title">注：</span> 
-                            <p class="- topic/p p" data-ofbid="d269463e87__20250121171738">GE
+                            <p class="- topic/p p" data-ofbid="d124914e102__20250409171044">GE
                                     测试文件在<span class="+ topic/ph sw-d/filepath ph filepath">luban-lite/packages/artinchip/mpp/mpp_test/ge_test</span>,
                                 需要把 test 整个文件复制到``SD 卡``根目录下</p>
-                        </div></li></ul>
-                <ul class="- topic/ul ul" id="mpp_test_guide__ul_pzx_ccn_4dc" data-ofbid="mpp_test_guide__ul_pzx_ccn_4dc"><li class="- topic/li li" data-ofbid="d269463e95__20250121171738"><strong class="+ topic/ph hi-d/b ph b">ge_fill</strong>：测试位块填充的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_dvm_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_dvm_mk4_f1c">ge_fill</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_rxb_ffk_5dc" data-ofbid="mpp_test_guide__codeblock_rxb_ffk_5dc">Usage: ge_fill [Options]：
+                        </div></li>
+                </ul>
+                <ul class="- topic/ul ul" id="mpp_test_guide__ul_pzx_ccn_4dc" data-ofbid="mpp_test_guide__ul_pzx_ccn_4dc">
+                    <li class="- topic/li li" data-ofbid="d124914e112__20250409171044"><strong class="+ topic/ph hi-d/b ph b">ge_fill</strong>：测试位块填充的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_dvm_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_dvm_mk4_f1c">ge_fill</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_rxb_ffk_5dc" data-ofbid="mpp_test_guide__codeblock_rxb_ffk_5dc">Usage: ge_fill [Options]：
     -c, --circle test
     -n, --number of run, <strong class="hl-keyword">default</strong> run once
-    -u, --usage</pre></li><li class="- topic/li li" data-ofbid="d269463e103__20250121171738"><strong class="+ topic/ph hi-d/b ph b">ge_bitblt</strong>：测试位块搬移的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_kdr_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_kdr_mk4_f1c">ge_bitblt</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_uv3_ffk_5dc" data-ofbid="mpp_test_guide__codeblock_uv3_ffk_5dc">Usage: ge_bitblt [Options]：
+    -u, --usage</pre></li>
+                    <li class="- topic/li li" data-ofbid="d124914e121__20250409171044"><strong class="+ topic/ph hi-d/b ph b">ge_bitblt</strong>：测试位块搬移的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_kdr_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_kdr_mk4_f1c">ge_bitblt</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_uv3_ffk_5dc" data-ofbid="mpp_test_guide__codeblock_uv3_ffk_5dc">Usage: ge_bitblt [Options]：
     -c, --circle test
     -n, --number of run, <strong class="hl-keyword">default</strong> run once
-    -u, --usage</pre></li><li class="- topic/li li" data-ofbid="d269463e111__20250121171738"><strong class="+ topic/ph hi-d/b ph b">ge_rotate</strong>：测试图形旋转的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_iws_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_iws_mk4_f1c">ge_rotate</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_ddp_ffk_5dc" data-ofbid="mpp_test_guide__codeblock_ddp_ffk_5dc">Usage: ge_rotate [Options]：
+    -u, --usage</pre></li>
+                    <li class="- topic/li li" data-ofbid="d124914e130__20250409171044"><strong class="+ topic/ph hi-d/b ph b">ge_rotate</strong>：测试图形旋转的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_iws_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_iws_mk4_f1c">ge_rotate</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_ddp_ffk_5dc" data-ofbid="mpp_test_guide__codeblock_ddp_ffk_5dc">Usage: ge_rotate [Options]：
     -c, --circle test
     -n, --number of run, <strong class="hl-keyword">default</strong> run once
-    -u, --usage</pre></li><li class="- topic/li li" data-ofbid="d269463e119__20250121171738"><strong class="+ topic/ph hi-d/b ph b">ge_scan_order</strong>：测试在不同方向读取内存的功能的差异<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_a5v_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_a5v_mk4_f1c">ge_scan_order -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_jmv_ffk_5dc" data-ofbid="mpp_test_guide__codeblock_jmv_ffk_5dc">Usage: ge_scan_order [Options]：
+    -u, --usage</pre></li>
+                    <li class="- topic/li li" data-ofbid="d124914e139__20250409171044"><strong class="+ topic/ph hi-d/b ph b">ge_scan_order</strong>：测试在不同方向读取内存的功能的差异<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_a5v_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_a5v_mk4_f1c">ge_scan_order -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_jmv_ffk_5dc" data-ofbid="mpp_test_guide__codeblock_jmv_ffk_5dc">Usage: ge_scan_order [Options]：
         -r, --region the  region of screen (<strong class="hl-keyword">default</strong> <span class="hl-number">0</span>),The range of region is <span class="hl-number">0</span>~<span class="hl-number">7</span>
         -m, --mode   scan order flags <strong class="hl-keyword">for</strong> GE ctrl (<strong class="hl-keyword">default</strong> <span class="hl-number">0</span>)
             --mode=<span class="hl-number">0</span> scan order flags = MPP_LR_TB
@@ -147,13 +181,15 @@ Options:
             --mode=<span class="hl-number">2</span> scan order flags = MPP_LR_BT
             --mode=<span class="hl-number">3</span> scan order flags = MPP_RL_BT
         -u, --usage
-        -h, --help</pre></li><li class="- topic/li li" data-ofbid="d269463e127__20250121171738"><strong class="+ topic/ph hi-d/b ph b">ge_dither</strong>：测试 Dither
+        -h, --help</pre></li>
+                    <li class="- topic/li li" data-ofbid="d124914e148__20250409171044"><strong class="+ topic/ph hi-d/b ph b">ge_dither</strong>：测试 Dither
                         的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_slx_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_slx_mk4_f1c">ge_dither -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_ppc_gfk_5dc" data-ofbid="mpp_test_guide__codeblock_ppc_gfk_5dc">Usage: ge_dither [Options]：
         -o, --dither_on,  Select open dither (<strong class="hl-keyword">default</strong> <span class="hl-number">0</span>), <span class="hl-number">0</span> :close  <span class="hl-number">1</span> :open
         -s, --src_format, Select src format  (<strong class="hl-keyword">default</strong> argb8888)
         -d, --dst_format, Select dst format  (<strong class="hl-keyword">default</strong> argb4444)
         -u, --usage
-        -h, --help, list the supported format and the test instructions</pre></li><li class="- topic/li li" data-ofbid="d269463e135__20250121171738"><strong class="+ topic/ph hi-d/b ph b">ge_alpha_blending</strong>：测试 alpha
+        -h, --help, list the supported format and the test instructions</pre></li>
+                    <li class="- topic/li li" data-ofbid="d124914e158__20250409171044"><strong class="+ topic/ph hi-d/b ph b">ge_alpha_blending</strong>：测试 alpha
                         混合的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_orz_mk4_f1c" data-ofbid="mpp_test_guide__codeblock_orz_mk4_f1c">ge_alpha_blending -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_vz3_gfk_5dc" data-ofbid="mpp_test_guide__codeblock_vz3_gfk_5dc">Usage: ge_alpha_blending [Options]：
 
         -s, --src_alpha_mode,   Select src_alpha_mode (<strong class="hl-keyword">default</strong> <span class="hl-number">0</span>), <span class="hl-number">0</span>: pixel alpha mode, <span class="hl-number">1</span>: global alpha mode, <span class="hl-number">2</span>: mixded alpha mode
@@ -161,19 +197,24 @@ Options:
 
         -d, --dst_alpha_mode,   Select dst_alpha_mode (<strong class="hl-keyword">default</strong> <span class="hl-number">0</span>), <span class="hl-number">0</span>: pixel alpha mode, <span class="hl-number">1</span>: global alpha mode, <span class="hl-number">2</span>: mixded alpha mode
         -p, --dst_alpha_global, Select dst_alpha_global value (<strong class="hl-keyword">default</strong> <span class="hl-number">0</span>), destination global alpha value (<span class="hl-number">0</span>~<span class="hl-number">255</span>)
-        -u, --usage</pre></li><li class="- topic/li li" data-ofbid="d269463e143__20250121171738"><strong class="+ topic/ph hi-d/b ph b">ge_scale</strong>：测试图像缩放的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_nkb_nk4_f1c" data-ofbid="mpp_test_guide__codeblock_nkb_nk4_f1c">ge_scale -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_frs_gfk_5dc" data-ofbid="mpp_test_guide__codeblock_frs_gfk_5dc">Usage: ge_scale [Options]：
+        -u, --usage</pre></li>
+                    <li class="- topic/li li" data-ofbid="d124914e167__20250409171044"><strong class="+ topic/ph hi-d/b ph b">ge_scale</strong>：测试图像缩放的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_nkb_nk4_f1c" data-ofbid="mpp_test_guide__codeblock_nkb_nk4_f1c">ge_scale -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_frs_gfk_5dc" data-ofbid="mpp_test_guide__codeblock_frs_gfk_5dc">Usage: ge_scale [Options]：
             --Framebuffer uses <strong class="hl-keyword">double</strong> buffer in this test, ensure that fb0 is properly configure
 
         -t, --type, Select scale type (<strong class="hl-keyword">default</strong> <span class="hl-number">2</span>)
             --type, <span class="hl-number">0</span>: wide stretch, <span class="hl-number">1</span>: height stretch, <span class="hl-number">2</span>: width and height stretch
 
-        -u, --usage</pre></li><li class="- topic/li li" data-ofbid="d269463e151__20250121171738"><strong class="+ topic/ph hi-d/b ph b">ge_format</strong>：测试格式转换的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_k4d_nk4_f1c" data-ofbid="mpp_test_guide__codeblock_k4d_nk4_f1c">ge_format -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_kv1_hfk_5dc" data-ofbid="mpp_test_guide__codeblock_kv1_hfk_5dc">Usage: ge_format [Options]：
+        -u, --usage</pre></li>
+                    <li class="- topic/li li" data-ofbid="d124914e176__20250409171044"><strong class="+ topic/ph hi-d/b ph b">ge_format</strong>：测试格式转换的功能<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_k4d_nk4_f1c" data-ofbid="mpp_test_guide__codeblock_k4d_nk4_f1c">ge_format -u</pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="mpp_test_guide__codeblock_kv1_hfk_5dc" data-ofbid="mpp_test_guide__codeblock_kv1_hfk_5dc">Usage: ge_format [Options]：
         -m, --mode, select format conversion type (<strong class="hl-keyword">default</strong> rgbtorgb),
         Format conversion supports rgbtorgb, yuvtoyuv, yuvtorgb and rgbtoyuv.
         -u, --usage
-        -h, --help to see more</pre></li></ul>
+        -h, --help to see more</pre></li>
+                </ul>
             </div>
-        </section></div></article></main></div>
+        </section>
+    </div>
+</article></main></div>
                         
                         
                         
@@ -199,8 +240,7 @@ Options:
         <footer class="navbar navbar-default wh_footer">
   <div class=" footer-container mx-auto ">
     <title>footer def</title>
-    <style><!--
-
+    <style>
 .p1 {
   font-family: FangZhengShuSong, Times, serif;
 }
@@ -210,26 +250,16 @@ Options:
 .p3 {
   font-family: "Lucida Console", "Courier New", monospace;
 }
-    
---></style>
-  
-
-  
-    
-  
-  
-    
-            
-   
-  
-
+    </style>
   <div class="webhelp.fragment.footer">
-    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
-  </div><div>
-    <div class="generation_time">
-      Update Time: 2025-01-21
-    </div>        
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
   </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
   </div>
 </footer>
         

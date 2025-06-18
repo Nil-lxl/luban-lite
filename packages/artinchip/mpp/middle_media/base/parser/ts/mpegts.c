@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -683,6 +683,9 @@ static int mpegts_set_audio_info(struct mpegts_stream_ctx *st, mpegts_pes_contex
 
     struct mpegts_audio_decode_header audio_header = {0};
 
+    st->codecpar.extradata = NULL;
+    st->codecpar.extradata_size = 0;
+
     if (ts->cur_codec_id == CODEC_ID_MP3) {
         ret = mpegaudio_decode_mp3_header(ts->pkt.data + ts->read_offset, &audio_header);
         if (ret < 0) {
@@ -691,7 +694,17 @@ static int mpegts_set_audio_info(struct mpegts_stream_ctx *st, mpegts_pes_contex
         }
 
     } else if (ts->cur_codec_id == CODEC_ID_AAC) {
-        ret = mpegaudio_decode_aac_header(ts->pkt.data + ts->read_offset, &audio_header);
+        st->codecpar.extradata_size = AAC_SEQUENCE_HEADER_SIZE;
+        st->codecpar.extradata = mpp_alloc(st->codecpar.extradata_size);
+        if (!st->codecpar.extradata) {
+            st->codecpar.extradata_size = 0;
+            st->codecpar.extradata = NULL;
+            loge("mpp_alloc for aac extradata failed, size:%d", st->codecpar.extradata_size);
+            return PARSER_NOMEM;
+        }
+        memset(st->codecpar.extradata, 0, sizeof(st->codecpar.extradata_size));
+        ret = mpegaudio_decode_aac_header(ts->pkt.data + ts->read_offset, &audio_header, 1,
+                                          st->codecpar.extradata);
         if (ret < 0) {
             loge("mpegaudio_decode_aac_header failed, ret:%d", ret);
             return ret;
@@ -1411,6 +1424,7 @@ static int read_packet(struct aic_mpegts_parser *s, uint8_t *buf, int raw_packet
 {
     struct aic_stream *pb = s->stream;
     int len;
+    int ret = 0;
 
     for (;;) {
         len = aic_stream_read(pb, buf, TS_PACKET_SIZE);
@@ -1419,8 +1433,9 @@ static int read_packet(struct aic_mpegts_parser *s, uint8_t *buf, int raw_packet
         /* check packet sync byte */
         if (buf[0] != 0x47) {
             /* find a new packet start */
-            if (mpegts_resync(s, raw_packet_size, buf) < 0)
-                return PARSER_ERROR;
+            ret = mpegts_resync(s, raw_packet_size, buf);
+            if (ret != 0)
+                return ret;
             else
                 continue;
         } else {
@@ -1562,7 +1577,7 @@ static int handle_audio_packets(struct mpegts_context *ts, struct aic_parser_pac
             ts->no_need_peek = 0;
         }
     } else if (ts->cur_codec_id == CODEC_ID_AAC) {
-        ret = mpegaudio_decode_aac_header(ts->pkt.data + ts->read_offset, &audio_header);
+        ret = mpegaudio_decode_aac_header(ts->pkt.data + ts->read_offset, &audio_header, 0, NULL);
         if (ret < 0)
             return ret;
         new_read_offset = ts->read_offset + audio_header.frame_size;
@@ -1669,6 +1684,10 @@ int mpegts_read_close(struct aic_mpegts_parser *s)
         struct mpegts_stream_ctx *st = s->streams[i];
         if (!st) {
             continue;
+        }
+        if (st->codecpar.extradata) {
+            mpp_free(st->codecpar.extradata);
+            st->codecpar.extradata = NULL;
         }
         mpp_free(st);
         s->streams[i] = NULL;

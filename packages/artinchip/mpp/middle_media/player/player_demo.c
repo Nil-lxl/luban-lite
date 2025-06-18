@@ -1,10 +1,10 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- *  Author: <jun.ma@artinchip.com>
- *  Desc: player demo
+ * Author: <jun.ma@artinchip.com>
+ * Desc: player demo
  */
 
 #include <string.h>
@@ -29,8 +29,8 @@
 #include "mpp_fb.h"
 #include "aic_message.h"
 #include "aic_player.h"
-#include "player_dec_share_test.h"
-#include "player_audio_render_share_test.h"
+#include "test/player_video_test.h"
+#include "test/player_audio_test.h"
 
 #include <rthw.h>
 #include <rtthread.h>

@@ -55,10 +55,6 @@ extern "C" {
 #define SFUD_INFO(...)  sfud_log_info(__VA_ARGS__)
 #endif
 
-#ifndef SFUD_WP_INFO
-#define SFUD_WP_INFO(...)  sfud_log_info(__VA_ARGS__)
-#endif
-
 /* assert for developer. */
 #ifdef SFUD_DEBUG_MODE
 #define SFUD_ASSERT(EXPR)                                                       \
@@ -327,6 +323,7 @@ typedef struct __sfud_spi {
     /* SPI bus work frequency */
     sfud_err (*set_speed)(const struct __sfud_spi *spi, uint32_t bus_hz);
     sfud_err (*get_bus_id)(const struct __sfud_spi *spi, uint32_t *bus_id);
+    void (*set_rx_delay)(const struct __sfud_spi *spi, uint32_t mode);
     /* SPI bus write read data function */
     sfud_err (*wr)(const struct __sfud_spi *spi, const uint8_t *write_buf, size_t write_size, uint8_t *read_buf,
                    size_t read_size);

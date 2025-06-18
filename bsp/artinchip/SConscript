@@ -267,6 +267,12 @@ if GetDepend('AIC_PANEL_DSI_JD9365'):
 if GetDepend('AIC_PANEL_DSI_AXS15231B'):
     src += Glob('drv/display/panel/panel_dsi_axs15231b.c')
 #
+# MIPI-DBI Panel Driver
+#
+if GetDepend('AIC_PANEL_DBI_ST7789'):
+    src += Glob('drv/display/panel/panel_dbi_st7789.c')
+
+#
 # MIPI-DBI Type B I8080 Panel Driver
 #
 if GetDepend('AIC_PANEL_DBI_ILI9488'):
@@ -274,10 +280,6 @@ if GetDepend('AIC_PANEL_DBI_ILI9488'):
 
 if GetDepend('AIC_PANEL_DBI_ILI9486L'):
     src += Glob('drv/display/panel/panel_dbi_ili9486l.c')
-
-if GetDepend('AIC_PANEL_DBI_ST7789'):
-    src += Glob('drv/display/panel/panel_dbi_st7789.c')
-
 #
 # MIPI-DBI Type C SPI Panel Driver
 #
@@ -289,12 +291,6 @@ if GetDepend('AIC_PANEL_DBI_ILI9327'):
 
 if GetDepend('AIC_PANEL_DBI_ST77903'):
     src += Glob('drv/display/panel/panel_dbi_st77903.c')
-
-if GetDepend('AIC_PANEL_DBI_ST7789T3'):
-    src += Glob('drv/display/panel/panel_dbi_st7789t3.c')
-
-if GetDepend('AIC_PANEL_DBI_ST7789V'):
-    src += Glob('drv/display/panel/panel_dbi_st7789v.c')
 #
 # RGB Panel Driver SPI Init
 #
@@ -498,7 +494,7 @@ if GetDepend('AIC_PSADC_DRV'):
         src += Glob('drv/psadc/*.c')
     if GetDepend('DRIVER_HAL_EN'):
         src += Glob('hal/psadc/*.c')
- 
+
 if GetDepend('AIC_GMAC_DRV'):
     if GetDepend('AIC_USING_GMAC0') or GetDepend('AIC_USING_GMAC1'):
         src += Glob('hal/mac/*.c')

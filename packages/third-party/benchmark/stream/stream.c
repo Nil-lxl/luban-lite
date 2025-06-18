@@ -46,8 +46,12 @@
 # include <float.h>
 # include <limits.h>
 # include <sys/time.h>
-
+#ifdef KERNEL_RTTHREAD
 #include <rtthread.h>
+#else
+#include <console.h>
+#endif	// KERNEL_RTTHREAD
+
 #include "aic_osal.h"
 
 /*-----------------------------------------------------------------------
@@ -177,9 +181,11 @@
 # define MAX(x,y) ((x)>(y)?(x):(y))
 # endif
 
-#ifdef ARCH_RISCV_FPU_S
+#if defined(ARCH_RISCV_FPU_S) || defined(ARCH_CSKY)
 #define double	float
 #endif
+
+#define USE_MALLOC	1
 
 #ifndef STREAM_TYPE
 #define STREAM_TYPE double
@@ -195,9 +201,15 @@ int psram_malloc(void)
 {
     int size = sizeof(STREAM_TYPE) * (STREAM_ARRAY_SIZE + OFFSET);
 
+#if USE_MALLOC
     a_temp = (STREAM_TYPE *)aicos_malloc(MEM_CMA, size + CACHE_LINE_SIZE);
     b_temp = (STREAM_TYPE *)aicos_malloc(MEM_CMA, size + CACHE_LINE_SIZE);
     c_temp = (STREAM_TYPE *)aicos_malloc(MEM_CMA, size + CACHE_LINE_SIZE);
+#else
+	a_temp = (STREAM_TYPE *)0x500000;
+	b_temp = (STREAM_TYPE *)0x580000;
+	c_temp = (STREAM_TYPE *)0x600000;
+#endif // USE_MALLOC
 
     a = (STREAM_TYPE *)__PALIGN_UP((u32)a_temp, CACHE_LINE_SIZE);
     b = (STREAM_TYPE *)__PALIGN_UP((u32)b_temp, CACHE_LINE_SIZE);
@@ -243,7 +255,7 @@ extern void tuned_STREAM_Triad(STREAM_TYPE scalar);
 extern int omp_get_num_threads();
 #endif
 int
-test_stream()
+test_stream(int argc, char *argv[])
     {
     int			quantum, checktick();
     int			BytesPerWord;
@@ -276,13 +288,13 @@ test_stream()
     printf("*****  WARNING: ******\n");
 #endif
 
-    printf("Array size = %llu (elements), Offset = %d (elements)\n" , (unsigned long long) STREAM_ARRAY_SIZE, OFFSET);
-    printf("Memory per array = %.1f MiB (= %.1f GiB).\n",
-	BytesPerWord * ( (double) STREAM_ARRAY_SIZE / 1024.0/1024.0),
-	BytesPerWord * ( (double) STREAM_ARRAY_SIZE / 1024.0/1024.0/1024.0));
-    printf("Total memory required = %.1f MiB (= %.1f GiB).\n",
-	(3.0 * BytesPerWord) * ( (double) STREAM_ARRAY_SIZE / 1024.0/1024.),
-	(3.0 * BytesPerWord) * ( (double) STREAM_ARRAY_SIZE / 1024.0/1024./1024.));
+    printf("Array size = %lu (elements), Offset = %d (elements)\n" , (unsigned long) STREAM_ARRAY_SIZE, OFFSET);
+
+	float temp = BytesPerWord * ( (double) STREAM_ARRAY_SIZE / 1024.0/1024.0);
+	printf("Memory per array = %d.%03d MiB .\n", (int)(temp), (int)(temp * 1000 ) % 1000);
+	temp = (3.0 * BytesPerWord) * ( (double) STREAM_ARRAY_SIZE / 1024.0/1024.);
+    printf("Total memory required = %d.%03d MiB.\n", (int)(temp), (int)(temp * 1000) % 1000);
+
     printf("Each kernel will be executed %d times.\n", NTIMES);
     printf(" The *best* time for each kernel (excluding the first iteration)\n");
     printf(" will be used to compute the reported bandwidth.\n");
@@ -403,15 +415,17 @@ test_stream()
 	    }
 	}
 
-    printf("Function    Best Rate MB/s  Avg time     Min time     Max time\n");
+    printf("Function    Best Rate MB/s   Avg time   Min time   Max time\n");
     for (j=0; j<4; j++) {
 		avgtime[j] = avgtime[j]/(double)(NTIMES-1);
 #ifndef AIC_PRINT_FLOAT_CUSTOM
-		printf("%s%12.1f  %11.6f  %11.6f  %11.6f\n", label[j],
-			1.0E-06 * bytes[j]/mintime[j],
-			avgtime[j],
-			mintime[j],
-			maxtime[j]);
+		float temp;
+		temp = (1.0E-06 * bytes[j]/mintime[j]);
+		printf("%s%10d.%03d  %5d/1000 %5d/1000 %5d/1000\n", label[j],
+			(int)(temp), (int)(temp * 1000) % 1000,
+			(int)(avgtime[j] * 1000),
+			(int)(mintime[j] * 1000),
+			(int)(maxtime[j] * 1000));
 #else
 		/* print float */
 		double p_f[4] = {0};
@@ -431,7 +445,7 @@ test_stream()
 			p_i2[i] = (unsigned int)((p_f[i]-p_i1[i])*1000000.0);
 		}
 
-		printf("%s%12d.%-1d  %11d.%-6d  %11d.%-6d %11d.%-6d\n", label[j],
+		printf("%s%10d.%-1d    %3d.%06d %3d.%06d %3d.%06d\n", label[j],
 			p_i1[0], p_i2[0],
 			p_i1[1], p_i2[1],
 			p_i1[2], p_i2[2],
@@ -444,9 +458,12 @@ test_stream()
     ret = checkSTREAMresults();
     printf(HLINE);
 
+#if USE_MALLOC
     aicos_free(MEM_CMA, a_temp);
     aicos_free(MEM_CMA, b_temp);
     aicos_free(MEM_CMA, c_temp);
+#endif
+
     a = NULL;
     b = NULL;
     c = NULL;
@@ -600,7 +617,7 @@ int checkSTREAMresults ()
 	}
 	if (abs(cAvgErr/cj) > epsilon) {
 		err++;
-		printf ("Failed Validation on array c[], AvgRelAbsErr > epsilon (%e)\n",epsilon);
+		printf ("Failed Validation on array c[], AvgRelAbsErr > epsilon (%d)\n",(int)epsilon);
 		printf ("     Expected Value: %e, AvgAbsErr: %e, AvgRelAbsErr: %e\n",cj,cAvgErr,abs(cAvgErr)/cj);
 		printf ("     AvgRelAbsErr > Epsilon (%e)\n",epsilon);
 		ierr = 0;
@@ -665,5 +682,9 @@ void tuned_STREAM_Triad(STREAM_TYPE scalar)
 /* end of stubs for the "tuned" versions of the kernels */
 #endif
 
+#ifdef KERNEL_RTTHREAD
 MSH_CMD_EXPORT(test_stream, "Stream benchmark")
+#else
+CONSOLE_CMD(test_stream, test_stream, "Stream benchmark");
+#endif
 

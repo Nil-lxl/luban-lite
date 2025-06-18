@@ -10,13 +10,15 @@ CPPPATH = [cwd]
 src = []
 
 src += Glob('./usb_osd_ui.c')
-src += Glob('./usb_osd_pictures.c')
-src += Glob('./usb_osd_settings.c')
-src += Glob('./usb_osd_config_parse.c')
+
+src += Glob('./settings/usb_osd_settings.c')
+src += Glob('./settings/usb_osd_config_parse.c')
+src += Glob('./settings/menu_factory.c')
+src += Glob('./settings/event_handler.c')
 
 if GetDepend(['LV_USB_OSD_PLAY_VIDEO']):
-    src += Glob('./usb_osd_video.c')
-    src += Glob('./media_list.c')
+    src += Glob('./video/usb_osd_video.c')
+    src += Glob('./video/media_list.c')
 
 list = os.listdir(cwd)
 for d in list:

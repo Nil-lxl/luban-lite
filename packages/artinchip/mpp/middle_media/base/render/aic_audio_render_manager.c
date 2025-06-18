@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -7,17 +7,22 @@
  * Desc: aic audio render manager
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+#include <inttypes.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <getopt.h>
+#include <pthread.h>
+
 #include "aic_audio_render_manager.h"
 #include "aic_audio_render_device.h"
 #include "mpp_log.h"
 #include "mpp_mem.h"
-#include <fcntl.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 struct aic_audio_render_scene {
     enum audio_render_scene_type scene_type;
@@ -203,6 +208,20 @@ s32 aic_audio_render_manager_control(struct aic_audio_render *render,
     return ret;
 }
 
+static int64_t wait_time(int size, struct aic_audio_render_attr *attr)
+{
+    if (size <= 0)
+        return 0;
+
+    int pcm_size_1s = attr->sample_rate * attr->channels * attr->bits_per_sample / 8;
+    int64_t data_size = (int64_t)size;
+
+    if (pcm_size_1s <= 0)
+        return 0;
+
+    return (data_size * 1000000 / pcm_size_1s);//us
+}
+
 s32 aic_audio_render_manager_rend(struct aic_audio_render *render, void *data, s32 size)
 {
     if (!render || !data)
@@ -216,6 +235,7 @@ s32 aic_audio_render_manager_rend(struct aic_audio_render *render, void *data, s
     ret = aic_audio_render_manager_check_bypass(render);
     if(ret != 0) {
         /*Bypass audio render means drop the data and return success*/
+        usleep(wait_time(size, &audio_render->attr));
         return 0;
     }
 

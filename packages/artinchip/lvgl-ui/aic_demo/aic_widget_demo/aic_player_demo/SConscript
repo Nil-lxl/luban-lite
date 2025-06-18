@@ -1,0 +1,37 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+src = Glob('*.c')
+CPPPATH = [cwd]
+
+if (GetDepend('AIC_PLAYER_DEMO')):
+    list = os.listdir(cwd)
+    for d in list:
+        path = os.path.join(cwd, d)
+        if os.path.isfile(os.path.join(path, 'SConscript')):
+            group = group + SConscript(os.path.join(d, 'SConscript'))
+
+if GetDepend(['LVGL_STORAGE_PATH']):
+    ins_dst = GetDepend('LVGL_STORAGE_PATH').strip('"/')
+else:
+    ins_dst='rodata/lvgl_data'
+
+if GetDepend(['PANEL_HACTIVE']):
+    hactice = GetDepend('PANEL_HACTIVE')
+else:
+    hactice = 480
+
+if hactice == 1024:
+    ins_src='assets/1024x600/'
+else:
+    ins_src='assets/480x272/'
+
+print(ins_src)
+install = [(ins_src, ins_dst)]
+
+group = group + DefineGroup('LVGL-port', src, depend = ['AIC_PLAYER_DEMO'], CPPPATH = CPPPATH,
+        INSTALL = install)
+
+Return('group')

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,6 +16,7 @@
 #include <mtd.h>
 #include "upg_internal.h"
 #include "nand_fwc_spl.h"
+#include <firmware_security.h>
 
 struct aicupg_nand_spl {
     struct mtd_dev *mtd;
@@ -85,14 +86,14 @@ static s32 get_good_blocks_for_spl(struct mtd_dev *mtd, u32 *spl_blocks,
             continue;
 
         offset = mtd->erasesize * blkidx;
-        if (mtd_block_isbad(mtd, offset)) {
-            pr_err("Block %d is bad.\n", blkidx);
-            continue;
-        }
-
         ret = mtd_read_oob(mtd, offset, NULL, 0, buf, 2);
         if (ret) {
             pr_err("Read OOB from block %d failed. ret = %d\n", blkidx, ret);
+            continue;
+        }
+
+        if (IS_BADBLOCK(buf[0], buf[1])) {
+            pr_err("Block %d is bad.\n", blkidx);
             continue;
         }
 
@@ -356,10 +357,20 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
     u8 *page_data = NULL, *rd_page_data = NULL, *p, *end;
     struct nand_page_table *pt = NULL;
     ulong offset;
-    u32 data_size, blkidx, blkcnt, pa, pgidx, slice_size;
-    u32 trans_size, trans_crc, partition_crc;
+    u32 data_size, blkidx, pa, pgidx, slice_size;
     u32 page_per_blk;
     s32 ret, i, calc_len;
+
+    if ((fwc->meta.size - fwc->trans_size) < spl->rx_size)
+        calc_len = fwc->meta.size - fwc->trans_size;
+    else
+        calc_len = spl->rx_size;
+
+    fwc->calc_partition_crc = crc32(fwc->calc_partition_crc, spl->image_buf, calc_len);
+
+#ifdef AICUPG_FIRMWARE_SECURITY
+    firmware_security_decrypt(spl->image_buf, spl->rx_size);
+#endif
 
     pt = malloc(PAGE_TABLE_USE_SIZE);
     page_data = malloc(PAGE_MAX_SIZE);
@@ -369,12 +380,14 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
         goto out;
     }
 
+#ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
     rd_page_data = malloc(PAGE_MAX_SIZE);
     if (!rd_page_data) {
         pr_err("malloc rd_page_data failed.\n");
         ret = -ENOMEM;
         goto out;
     }
+#endif
 
     ret = spl_build_page_table(spl, pt);
     if (ret) {
@@ -386,16 +399,6 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
     slice_size = spl->mtd->writesize;
     page_per_blk = spl->mtd->erasesize / spl->mtd->writesize;
 
-    /* How many blocks will be used */
-    blkcnt = (pt->head.entry_cnt + page_per_blk - 1) / page_per_blk;
-    for (i = 0; i < blkcnt; i++) {
-        blkidx = spl->spl_blocks[i];
-        if (blkidx < 4) {
-            /* First 4 blocks don't mark */
-            continue;
-        }
-        mark_image_block_as_reserved(spl->mtd, blkidx);
-    }
     /* Program page table and image data to blocks */
     blkidx = spl->spl_blocks[0];
     if (blkidx == SPL_INVALID_BLOCK_IDX) {
@@ -425,9 +428,6 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
     }
 
     /* Write image data to page */
-    trans_crc = 0;
-    partition_crc = 0;
-    trans_size = 0;
     p = spl->image_buf;
     end = p + spl->buf_size;
     for (pgidx = 1; pgidx < pt->head.entry_cnt; pgidx++) {
@@ -449,41 +449,30 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
         offset = pa * spl->mtd->writesize;
         pr_debug("Write data to blk %d pa 0x%x, offset 0x%x\n", blkidx, pa,
                  (u32)offset);
-        ret = mtd_write(spl->mtd, offset, page_data, spl->mtd->writesize);
+        ret = mtd_write(spl->mtd, offset, page_data, slice_size);
         if (ret) {
             pr_err("Write SPL page %d failed.\n", pgidx);
             ret = -1;
             goto out;
         }
 
+#ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
         // Read data to calc crc
-        ret = mtd_read(spl->mtd, offset, rd_page_data, spl->mtd->writesize);
+        ret = mtd_read(spl->mtd, offset, rd_page_data, slice_size);
         if (ret) {
             pr_err("Read SPL page %d failed.\n", pgidx);
             ret = -1;
             goto out;
         }
 
-        if ((trans_size + data_size) > fwc->meta.size)
-            calc_len = fwc->meta.size % slice_size;
-        else
-            calc_len = slice_size;
-
-        partition_crc = crc32(partition_crc, rd_page_data, calc_len);
-#ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
-        trans_crc = crc32(trans_crc, page_data, calc_len);
-        if (trans_crc != partition_crc) {
+        if (crc32(0, page_data, slice_size) != crc32(0, rd_page_data, slice_size)) {
             pr_err("calc_len:%d\n", calc_len);
-            pr_err("crc err at trans len %u\n", trans_size);
-            pr_err("trans crc:0x%x, partition crc:0x%x\n", trans_crc, partition_crc);
+            pr_err("crc err at trans len %u\n", fwc->trans_size);
             ret = -1;
             goto out;
         }
 #endif
-        trans_size += data_size;
     }
-    fwc->calc_partition_crc = partition_crc;
-    fwc->calc_trans_crc = trans_crc;
 
 out:
     if (page_data)
@@ -698,8 +687,19 @@ s32 nand_fwc_spl_write(struct fwc_info *fwc, u8 *buf, s32 len)
 s32 nand_fwc_spl_end(struct aicupg_nand_priv *priv)
 {
     struct aicupg_nand_spl *spl;
+    u32 blkidx;
+    int i;
 
     spl = &g_nand_spl;
+    /* mark blocks as spl reserved */
+    for (i = 0; i < 4; i++) {
+        blkidx = spl->spl_blocks[i];
+        if (blkidx < 4) {
+            /* First 4 blocks don't mark */
+            continue;
+        }
+        mark_image_block_as_reserved(spl->mtd, blkidx);
+    }
     if (spl->image_buf)
         free(spl->image_buf);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 Artinchip Technology Co., Ltd.
+ * Copyright (C) 2020-2025 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,7 +29,7 @@
 #define SHA384_DIGEST_SIZE  48
 #define SHA512_DIGEST_SIZE  64
 
-#define MD5_BLOCK_SIZE      16
+#define MD5_BLOCK_SIZE      64
 #define SHA1_BLOCK_SIZE     64
 #define SHA224_BLOCK_SIZE	64
 #define SHA256_BLOCK_SIZE   64

@@ -1,3 +1,25 @@
 menuconfig AIC_USING_BARCODE_DEMO
     bool "ArtInChip Barcode Demo"
     default n
+
+if AIC_USING_BARCODE_DEMO
+    config AIC_BARCODE_DEMO_LED
+        bool "barcode backlight enable"
+        default y
+
+    if AIC_BARCODE_DEMO_LED
+        config BARCODE_DEMO_LED_GPIO
+            string "barcode backlight  pin"
+            depends on AIC_BARCODE_DEMO_LED
+            default "PA.5"
+    endif
+
+    config AIC_BARCODE_JTAG_DEBUG
+        bool "barcode jtag debug"
+        default y
+
+    config AIC_BARCODE_BEEP
+        bool "barcode beep"
+        default y
+
+endif

@@ -1,10 +1,11 @@
 /*
-* Copyright (C) 2020-2023 ArtInChip Technology Co. Ltd
-*
-*  author: <qi.xu@artinchip.com>
-*  Desc: mov tags
-*/
-
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ *  author: <qi.xu@artinchip.com>
+ *  Desc: mov tags
+ */
 #include "mov_tags.h"
 
 const struct codec_tag mp4_obj_type[] = {
@@ -49,6 +50,7 @@ const struct codec_tag mov_video_tags[] = {
     { CODEC_ID_MJPEG,  MKTAG('A', 'V', 'D', 'J') }, /* MJPEG with alpha-channel (AVID JFIF meridien compressed) */
     { CODEC_ID_MJPEG,  MKTAG('A', 'V', 'R', 'n') }, /* MJPEG with alpha-channel (AVID ABVB/Truevision NuVista) */
     { CODEC_ID_MJPEG,  MKTAG('d', 'm', 'b', '1') }, /* Motion JPEG OpenDML */
+    { CODEC_ID_MPEG4,  MKTAG('m', 'p', '4', 'v') },
 
     { CODEC_ID_H264,   MKTAG('a', 'v', 'c', '1') }, /* AVC-1/H.264 */
     { CODEC_ID_H264,   MKTAG('a', 'v', 'c', '2') },

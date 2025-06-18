@@ -47,8 +47,8 @@ static int aic_get_part(struct dfs_partition *part)
         part->type = 0;
         part->offset = parts->start / dev_desc.blksz;
         part->size = parts->size / dev_desc.blksz;
-        pr_info("GPT: Found partition: type = %d, offet=0x%lx, size=0x%x\n",
-                    part->type, part->offset, part->size);
+        printf("GPT: Found partition: type = %d, offet=0x%lx, size=0x%x\n",
+                    (unsigned int)part->type, part->offset, (unsigned int)part->size);
         aic_part_free(parts);
         return 0;
     }
@@ -61,17 +61,17 @@ static int aic_no_part_handle(struct dfs_partition *part)
     part->offset = 0x0;
     part->size = (unsigned int)active_msc_class->blocknum;
 
-    rt_kprintf("No partition info. Using capacity info size: ");
+    pr_warn("No partition info. Using capacity info size: ");
 
     if ((part->size >> 11) == 0) {
-        rt_kprintf("%d%s", part->size >> 1, "KB\n");
+        printf("%d%s", (unsigned int)(part->size >> 1), "KB\n");
     } else {
         unsigned int part_size;
         part_size = part->size >> 11;
         if ((part_size >> 10) == 0)
-            rt_kprintf("%d.%d%s", part_size, (part->size >> 1) & 0x3FF, "MB\n");
+            printf("%d.%d%s", (unsigned int)part_size, (unsigned int)((part->size >> 1) & 0x3FF), "MB\n");
         else
-            rt_kprintf("%d.%d%s", part_size >> 10, part_size & 0x3FF, "GB\n");
+            printf("%d.%d%s", (unsigned int)(part_size >> 10), (unsigned int)(part_size & 0x3FF), "GB\n");
     }
 
     return 0;

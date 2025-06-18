@@ -502,7 +502,7 @@ static void aicwf_sdio_irq_hdl(void *arg)
 int sdio_interrupt_init(struct aic_sdio_dev *sdiodev)
 {
     int ret;
-    AIC_LOG_PRINTF("%s\n", __func__);
+    AIC_LOG_PRINTF("%s, chipid=%d\n", __func__, sdiodev->chipid);
     // func1
     sdio_claim_host(sdio_function[FUNC_1]);
     aic_sdio_claim_irq(sdio_function[FUNC_1], aicwf_sdio_irq_hdl);
@@ -514,8 +514,19 @@ int sdio_interrupt_init(struct aic_sdio_dev *sdiodev)
         AIC_LOG_PRINTF("reg:%d write failed!\n", sdiodev->sdio_reg.intr_config_reg);
         return ret;
     }
-    // func2
-    //aic_sdio_claim_irq(sdio_function[FUNC_2], aicwf_sdio_irq_hdl);
+    if ((sdiodev->chipid == PRODUCT_ID_AIC8800DC) || (sdiodev->chipid == PRODUCT_ID_AIC8800DW)) {
+        // func2
+        sdio_claim_host(sdio_function[FUNC_2]);
+        aic_sdio_claim_irq(sdio_function[FUNC_2], aicwf_sdio_irq_hdl);
+        //enable sdio interrupt
+        sdio_writeb(sdio_function[FUNC_2], 0x7, sdiodev->sdio_reg.intr_config_reg, &ret);
+        sdio_release_host(sdio_function[FUNC_2]);
+        if (ret) {
+            ret = EREMOTEIO;
+            AIC_LOG_PRINTF("func2 reg:%d write failed!\n", sdiodev->sdio_reg.intr_config_reg);
+            return ret;
+        }
+    }
     msgcfm_poll_en = 0;
     return 0;
 }
@@ -726,7 +737,7 @@ int aicwf_sdio_probe(struct sdio_func *func)
     sdio_function[FUNC_1] = &func[1];
     sdio_function[FUNC_2] = &func[2];
     #if 1
-    aic_wifi_init(WIFI_MODE_STA, 0, NULL);
+    aic_wifi_init(WIFI_MODE_STA, CONFIG_CHIPID_SELECT, NULL);
     #else
     wifi_driver_init();
     #endif

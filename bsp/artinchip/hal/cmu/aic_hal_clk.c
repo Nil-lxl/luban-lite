@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -250,7 +250,7 @@ int32_t hal_clk_get_id(char *name)
 
     for (clk_id = 1; clk_id < AIC_CLK_NUM; clk_id++) {
         cfg = (struct aic_clk_comm_cfg *)aic_clk_cfgs[clk_id];
-        if (cfg == NULL && cfg->name == NULL)
+        if (cfg == NULL || cfg->name == NULL)
             continue;
         if (strcmp(name, cfg->name) == 0)
             return clk_id;

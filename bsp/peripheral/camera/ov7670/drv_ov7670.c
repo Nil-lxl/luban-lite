@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -779,6 +779,11 @@ static int ov7675_set_framerate(struct ov7670_dev *sensor, u32 fr)
     return 0;
 }
 
+static bool ov7670_is_open(struct ov7670_dev *sensor)
+{
+    return sensor->on;
+}
+
 static void ov7670_power_on(struct ov7670_dev *sensor)
 {
     if (sensor->on)
@@ -794,6 +799,7 @@ static void ov7670_power_on(struct ov7670_dev *sensor)
     if (sensor->pwdn_pin || sensor->rst_pin || sensor->clk)
         aicos_msleep(3);
 
+    LOG_I("Power on");
     sensor->on = true;
 }
 
@@ -805,6 +811,7 @@ static void ov7670_power_off(struct ov7670_dev *sensor)
     if (sensor->pwdn_pin)
         camera_pin_set_high(sensor->pwdn_pin);
 
+    LOG_I("Power off");
     sensor->on = false;
 }
 
@@ -839,7 +846,6 @@ static void ov7670_get_default_format(struct ov7670_dev *sensor)
 
 static rt_err_t ov7670_init(rt_device_t dev)
 {
-    int ret = 0;
     struct ov7670_dev *sensor = &g_ov7670_dev;
 
     sensor->i2c = camera_i2c_get();
@@ -859,33 +865,32 @@ static rt_err_t ov7670_init(rt_device_t dev)
     if (!sensor->rst_pin || !sensor->pwdn_pin)
         return -RT_EINVAL;
 
-    ov7670_power_on(sensor);
-    ret = ov7670_detect(sensor);
-    if (ret) {
-        LOG_E("chip found @ 0x%x (i2c%d) is not an ov7670 chip.\n",
-              OV7670_I2C_SLAVE_ID, AIC_CAMERA_I2C_CHAN);
-        goto power_off;
-    }
-
-    sensor->devtype->set_framerate(sensor, OV7670_DFT_FR);
-
-    LOG_I("OV7670 inited");
-
-power_off:
-    ov7670_power_off(sensor);
-    return ret;
+    return RT_EOK;
 }
 
 static rt_err_t ov7670_open(rt_device_t dev, rt_uint16_t oflag)
 {
     struct ov7670_dev *sensor = (struct ov7670_dev *)dev;
 
+    if (ov7670_is_open(sensor))
+        return RT_EOK;
+
     ov7670_power_on(sensor);
+
+    if (ov7670_detect(sensor)) {
+        ov7670_power_off(sensor);
+        LOG_E("Chip found @ 0x%x (i2c%d) is not an ov7670 chip.\n",
+              OV7670_I2C_SLAVE_ID, AIC_CAMERA_I2C_CHAN);
+        return -RT_ERROR;
+    }
+
+    sensor->devtype->set_framerate(sensor, OV7670_DFT_FR);
+
     ov7670_base_init(sensor);
     ov7670_apply_fmt(sensor);
     ov7675_apply_framerate(sensor);
 
-    LOG_I("OV7670 Open");
+    LOG_I("OV7670 inited");
     return RT_EOK;
 }
 
@@ -893,8 +898,11 @@ static rt_err_t ov7670_close(rt_device_t dev)
 {
     struct ov7670_dev *sensor = (struct ov7670_dev *)dev;
 
+    if (!ov7670_is_open(sensor))
+        return -RT_ERROR;
+
     ov7670_power_off(sensor);
-    LOG_I("OV7670 Close");
+    LOG_D("OV7670 Close");
     return RT_EOK;
 }
 
@@ -920,6 +928,20 @@ static int ov7670_stop(rt_device_t dev)
     return 0;
 }
 
+static int ov7670_pause(rt_device_t dev)
+{
+    struct ov7670_dev *sensor = (struct ov7670_dev *)dev;
+
+    return ov7670_write_reg(sensor->i2c, REG_COM2, COM2_SSLEEP);
+}
+
+static int ov7670_resume(rt_device_t dev)
+{
+    struct ov7670_dev *sensor = (struct ov7670_dev *)dev;
+
+    return ov7670_write_reg(sensor->i2c, REG_COM2, 0x1);
+}
+
 static rt_err_t ov7670_control(rt_device_t dev, int cmd, void *args)
 {
     switch (cmd) {
@@ -927,6 +949,10 @@ static rt_err_t ov7670_control(rt_device_t dev, int cmd, void *args)
         return ov7670_start(dev);
     case CAMERA_CMD_STOP:
         return ov7670_stop(dev);
+    case CAMERA_CMD_PAUSE:
+        return ov7670_pause(dev);
+    case CAMERA_CMD_RESUME:
+        return ov7670_resume(dev);
     case CAMERA_CMD_GET_FMT:
         return ov7670_get_fmt(dev, (struct mpp_video_fmt *)args);
     default:

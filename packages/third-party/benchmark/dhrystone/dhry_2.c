@@ -23,8 +23,8 @@
         /* i.e. no register variables   */
 #endif
 
-extern  int     Int_Glob;
-extern  char    Ch_1_Glob;
+extern  int     INT_GLOB;
+extern  char    CH_1_GLOB;
 
 
 void Proc_6 (Enumeration Enum_Val_Par, Enumeration *Enum_Ref_Par)
@@ -42,7 +42,7 @@ void Proc_6 (Enumeration Enum_Val_Par, Enumeration *Enum_Ref_Par)
       *Enum_Ref_Par = Ident_1;
       break;
     case Ident_2: 
-      if (Int_Glob > 100)
+      if (INT_GLOB > 100)
         /* then */
       *Enum_Ref_Par = Ident_1;
       else *Enum_Ref_Par = Ident_4;
@@ -92,7 +92,7 @@ void Proc_8 (Arr_1_Dim Arr_1_Par_Ref, Arr_2_Dim Arr_2_Par_Ref, int Int_1_Par_Val
     Arr_2_Par_Ref [Int_Loc] [Int_Index] = Int_Loc;
   Arr_2_Par_Ref [Int_Loc] [Int_Loc-1] += 1;
   Arr_2_Par_Ref [Int_Loc+20] [Int_Loc] = Arr_1_Par_Ref [Int_Loc];
-  Int_Glob = 5;
+  INT_GLOB = 5;
 } /* Proc_8 */
 
 
@@ -113,7 +113,7 @@ Enumeration Func_1 (Capital_Letter Ch_1_Par_Val, Capital_Letter Ch_2_Par_Val)
     return (Ident_1);
   else  /* not executed */
   {
-    Ch_1_Glob = Ch_1_Loc;
+    CH_1_GLOB = Ch_1_Loc;
     return (Ident_2);
    }
 } /* Func_1 */
@@ -149,7 +149,7 @@ Boolean Func_2 (Str_30 Str_1_Par_Ref, Str_30 Str_2_Par_Ref)
       /* then, not executed */
     {
       Int_Loc += 7;
-      Int_Glob = Int_Loc;
+      INT_GLOB = Int_Loc;
       return (true);
     }
     else /* executed */

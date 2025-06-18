@@ -1,9 +1,12 @@
 /*
-* Copyright (C) 2020-2023 ArtInChip Technology Co. Ltd
-*
-*  author: <jun.ma@artinchip.com>
-*  Desc: mp3
-*/
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Author: <jun.ma@artinchip.com>
+ * Desc: wav parser
+ */
+
 
 #ifndef __WAV_H__
 #define __WAV_H__
@@ -55,6 +58,7 @@ struct aic_wav_parser {
     uint64_t first_packet_pos;
 
     uint64_t file_size;
+    uint64_t stream_size;
     uint64_t duration;//us
     uint32_t frame_id;
 

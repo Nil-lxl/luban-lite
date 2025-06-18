@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -91,10 +91,7 @@ s32 rt_audio_render_set_attr(struct aic_audio_render_dev *render,struct aic_audi
         loge("AUDIO_CTL_GETCAPS failed!\n");
         return -1;
     }
-    if (caps.udata.config.samplerate == attr->sample_rate &&
-        caps.udata.config.channels  == attr->channels) {
-         return 0;
-    }
+
     channels = caps.udata.config.channels;
 
     caps.main_type               = AUDIO_TYPE_MIXER;
@@ -113,7 +110,6 @@ s32 rt_audio_render_set_attr(struct aic_audio_render_dev *render,struct aic_audi
             return -1;
         }
         reinit_flag = 1;
-        rt_thread_mdelay(50);
         printf("recreate snd dev channels %d, transfer_mode %d\n!",
                attr->channels, attr->transfer_mode);
     }
@@ -132,6 +128,8 @@ s32 rt_audio_render_set_attr(struct aic_audio_render_dev *render,struct aic_audi
 
     stream = AUDIO_STREAM_REPLAY;
     rt_device_control(rt_render->snd_dev, AUDIO_CTL_START, (void *)&stream);
+    // delay 200ms, to wait audio device work
+    // it is an experience value
     rt_thread_mdelay(200);
 
     if (reinit_flag) {
@@ -305,6 +303,7 @@ s32 aic_audio_render_dev_create(struct aic_audio_render_dev **render)
         *render = NULL;
         return -1;
     }
+    memset(rt_render, 0, sizeof(struct aic_rt_audio_render));
     rt_render->status = AIC_AUDIO_STATUS_STOP;
     rt_render->base.init = rt_audio_render_init;
     rt_render->base.destroy = rt_audio_render_destroy;

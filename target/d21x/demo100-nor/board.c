@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -45,7 +45,7 @@ void aic_memheap_init(void)
     rt_ubase_t end_align;
     int i = 0;
 
-    for (i=0; i<sizeof(aic_memheaps)/sizeof(struct aic_memheap); i++){
+    for (i=0; i<sizeof(aic_memheaps)/sizeof(struct aic_memheap); i++) {
         begin_align = RT_ALIGN((rt_ubase_t)aic_memheaps[i].begin_addr, RT_ALIGN_SIZE);
         end_align   = RT_ALIGN_DOWN((rt_ubase_t)aic_memheaps[i].end_addr, RT_ALIGN_SIZE);
         RT_ASSERT(end_align > begin_align);
@@ -61,7 +61,7 @@ void *aic_memheap_malloc(int type, size_t size)
     void *ptr;
     int i = 0;
 
-    for (i=0; i<sizeof(aic_memheaps)/sizeof(struct aic_memheap); i++){
+    for (i=0; i<sizeof(aic_memheaps)/sizeof(struct aic_memheap); i++) {
         if (aic_memheaps[i].type == type)
             break;
     }
@@ -85,7 +85,7 @@ void aic_memheap_free(int type, void *rmem)
     if (rmem == RT_NULL)
         return;
 
-    for (i=0; i<sizeof(aic_memheaps)/sizeof(struct aic_memheap); i++){
+    for (i=0; i<sizeof(aic_memheaps)/sizeof(struct aic_memheap); i++) {
         if (aic_memheaps[i].type == type)
             break;
     }
@@ -185,3 +185,8 @@ const struct dfs_mount_tbl mount_table[] = {
     {0}
 };
 #endif
+
+void show_board_version(void)
+{
+    printf("Board: %s\n\n", PRJ_BOARD);
+}

@@ -123,6 +123,7 @@ static int aic_udc_ep_buf_alloc(struct aic_ep_state *ep, uint32_t len,
     if (ep->xfer_align_len > USB_RAM_SIZE) {
         ep->xfer_align_buf = aicos_malloc_align(0, ep->xfer_align_len,
                                                 CACHE_LINE_SIZE);
+        USB_LOG_DBG("aicos_malloc_align %d bytes.", ep->xfer_align_len);
         if (!ep->xfer_align_buf) {
             USB_LOG_ERR("alloc error.\r\n");
             return -5;
@@ -140,8 +141,10 @@ static void aic_udc_ep_buf_free(struct aic_ep_state *ep, uint8_t *sbuf)
         return;
 
     /* Whether the buf is allocated dynamically */
-    if (ep->xfer_align_buf != sbuf)
+    if (ep->xfer_align_buf != sbuf) {
+        USB_LOG_DBG("aicos_free_align %d bytes.", ep->xfer_align_len);
         aicos_free_align(0, ep->xfer_align_buf);
+    }
 
     ep->xfer_align_buf = NULL;
     ep->xfer_align_len = 0;
@@ -1184,7 +1187,7 @@ int usbd_ep_is_stalled(const uint8_t ep, uint8_t *stalled)
     return 0;
 }
 
-int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len)
+int usbd_ep_start_write_raw(const uint8_t ep, const uint8_t *data, uint32_t data_len, uint8_t cache_align)
 {
     uint8_t ep_idx = USB_EP_GET_IDX(ep);
     uint32_t pktcnt = 0;
@@ -1211,7 +1214,7 @@ int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len
     g_aic_udc.in_ep[ep_idx].actual_xfer_len = 0;
 
 #ifdef CONFIG_USB_AIC_DMA_ENABLE
-    if ((ep_idx != 0) && (data_len > 0) &&
+    if (cache_align && (ep_idx != 0) && (data_len > 0) &&
         ((((uint32_t)(uintptr_t)data % CACHE_LINE_SIZE) != 0) ||
          (((uint32_t)(uintptr_t)(data + data_len) % CACHE_LINE_SIZE) != 0))) {
 
@@ -1288,7 +1291,13 @@ int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len
     return 0;
 }
 
-int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
+
+int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len)
+{
+    return usbd_ep_start_write_raw(ep, data, data_len, 1);
+}
+
+int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, uint8_t cache_align)
 {
     uint8_t ep_idx = USB_EP_GET_IDX(ep);
     uint32_t pktcnt = 0;
@@ -1326,7 +1335,7 @@ int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
     g_aic_udc.out_ep[ep_idx].actual_xfer_len = 0;
 
 #ifdef CONFIG_USB_AIC_DMA_ENABLE
-    if ((ep_idx != 0) && (data_len > 0) &&
+    if (cache_align && (ep_idx != 0) && (data_len > 0) &&
         ((((uint32_t)(uintptr_t)data % CACHE_LINE_SIZE) != 0) ||
          (((uint32_t)(uintptr_t)(data + data_len) % CACHE_LINE_SIZE) != 0))) {
 
@@ -1395,6 +1404,12 @@ int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
     writel(outepcfg, &AIC_UDC_REG->outepcfg[ep_idx]);
 
     return 0;
+}
+
+
+int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
+{
+    return usbd_ep_start_read_raw(ep, data, data_len, 1);
 }
 
 void USBD_IRQHandler(void)

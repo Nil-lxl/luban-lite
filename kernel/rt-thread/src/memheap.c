@@ -955,6 +955,7 @@ int memheaptrace(int argc, char *argv[])
     struct rt_memheap *mh;
     struct rt_list_node *node;
     char *name;
+    rt_uint32_t max_size = 0;
 
     name = argc > 1 ? argv[1] : RT_NULL;
     info = rt_object_get_information(RT_Object_Class_MemHeap);
@@ -1005,6 +1006,9 @@ int memheaptrace(int argc, char *argv[])
             if (block_size < 0)
                 break;
 
+            if (block_size > max_size)
+                max_size = block_size;
+
             rt_kprintf("[0x%p - ", header_ptr);
             if (block_size < 1024)
                 rt_kprintf("%5d", block_size);
@@ -1024,6 +1028,9 @@ int memheaptrace(int argc, char *argv[])
             /* release lock */
             rt_sem_release(&(mh->lock));
         }
+        rt_kprintf("%s:max alloc continuous memory size:%u bytes.\n", mh->parent.name, max_size);
+        /* set zero for next node use */
+        max_size = 0;
     }
     return 0;
 }

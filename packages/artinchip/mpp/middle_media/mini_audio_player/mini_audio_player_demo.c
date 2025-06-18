@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,6 +21,7 @@
 #include <shell.h>
 #include <artinchip_fb.h>
 #include "mini_audio_player.h"
+#include "mpp_log.h"
 
 #ifdef LPKG_USING_CPU_USAGE
 #include "cpu_usage.h"
@@ -42,6 +43,7 @@ static void print_help(const char* prog)
         "\t-i                             input stream file name\n"
         "\t-t                             directory of test files\n"
         "\t-l                             loop time\n"
+        "\t-f                             set loop flag\n"
         "\t-h                             help\n\n"
         "---------------------------------------------------------------------------------------\n"
         "-------------------------------control key while playing-------------------------------\n"
@@ -168,9 +170,11 @@ static void audio_player_demo(int argc, char **argv)
     int vol = 80;
     int opt;
     int loop_time = 1;
+    int loop_flag = 0;
     rt_device_t uart_dev = RT_NULL;
     struct mini_audio_player *player = NULL;
     struct audio_file_list  files = {0};
+    char state_name[3][8] = {"stop", "playing", "pause"};
 
     uart_dev = rt_device_find(RT_CONSOLE_DEVICE_NAME);
     if (uart_dev == NULL) {
@@ -180,16 +184,19 @@ static void audio_player_demo(int argc, char **argv)
 
     optind = 0;
     while (1) {
-        opt = getopt(argc, argv, "i:t:l:h");
+        opt = getopt(argc, argv, "i:t:l:fh");
         if (opt == -1) {
             break;
         }
         switch (opt) {
         case 'i':
-            read_file(optarg,&files);
+            read_file(optarg, &files);
             break;
         case 'l':
             loop_time = atoi(optarg);
+            break;
+        case 'f':
+            loop_flag = 1;
             break;
         case 't':
             read_dir(optarg, &files);
@@ -216,29 +223,35 @@ static void audio_player_demo(int argc, char **argv)
 
     mini_audio_player_set_volume(player,vol);
 
-    for(i = 0;i < loop_time; i++) {
+    for(i = 0; i < loop_time; i++) {
         for(j = 0; j < files.file_num; j++) {
-            mini_audio_player_play(player,files.file_path[j]);
+            if (loop_flag)
+                mini_audio_player_play_loop(player,files.file_path[j]);
+            else
+                mini_audio_player_play(player,files.file_path[j]);
             printf("loop:%d,index:%d,path:%s\n",i,j,files.file_path[j]);
             while(1) {
                 if (rt_device_read(uart_dev, -1, &ch, 1) == 1) {
                     if (ch == 's') {// stop cur
+                        time_start(mini_audio_player_stop);
                         mini_audio_player_stop(player);
-                        printf("force stop\n");
+                        time_end(mini_audio_player_stop);
                         break;
                     } else if (ch == '+') {// volume++
                         mini_audio_player_set_volume(player,volume(&vol,ch));
                     } else if (ch == '-') {// volume--
                         mini_audio_player_set_volume(player,volume(&vol,ch));
                     } else if (ch == 'p') {// pause
-                        mini_audio_player_pause(player);
                         printf("enter pause\n");
+                        mini_audio_player_pause(player);
                     } else if (ch == 'r') {// resume
-                        mini_audio_player_resume(player);
                         printf("resume \n");
+                        mini_audio_player_resume(player);
                     } else if (ch == 'e') {// exit app
                         printf("exit app \n");
                         goto _exit;
+                    } else if (ch == 'g') {// get_state
+                        printf("get status: %s \n", state_name[mini_audio_player_get_state(player)]);
                     }
                 }
                 if (mini_audio_player_get_state(player) == MINI_AUDIO_PLAYER_STATE_STOPED) {
@@ -257,7 +270,7 @@ _exit:
     }
     for(i = 0; i <files.file_num ;i++) {
         if (files.file_path[i]) {
-            aicos_free(MEM_DEFAULT,files.file_path[i]);
+            aicos_free(MEM_DEFAULT, files.file_path[i]);
         }
     }
 }

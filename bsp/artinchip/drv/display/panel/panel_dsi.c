@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -99,16 +99,41 @@ int panel_dsi_dcs_enter_sleep_mode(struct aic_panel *panel)
     return 0;
 }
 
+int panel_dsi_enter_command_mode(struct aic_panel *panel)
+{
+    return panel->callbacks.di_send_cmd(0, 0, NULL, 0);
+}
+
 /* Set mipi dsi to command mode, ready to send command */
 void panel_dsi_send_perpare(struct aic_panel *panel)
 {
+    struct panel_desc *desc = NULL;
+    struct display_timing *timing;
+
+    if (panel->desc && panel->match_num) {
+        desc = &panel->desc[panel->match_id];
+        timing = desc->timings;
+    } else {
+        timing = panel->timings;
+    }
+
     if (panel && panel->callbacks.di_set_videomode)
-        panel->callbacks.di_set_videomode(panel->timings, false);
+        panel->callbacks.di_set_videomode(timing, false);
 }
 
 /* Set mipi dsi to its real mode */
 void panel_dsi_setup_realmode(struct aic_panel *panel)
 {
+    struct panel_desc *desc = NULL;
+    struct display_timing *timing;
+
+    if (panel->desc && panel->match_num) {
+        desc = &panel->desc[panel->match_id];
+        timing = desc->timings;
+    } else {
+        timing = panel->timings;
+    }
+
     if (panel && panel->callbacks.di_set_videomode)
-        panel->callbacks.di_set_videomode(panel->timings, true);
+        panel->callbacks.di_set_videomode(timing, true);
 }

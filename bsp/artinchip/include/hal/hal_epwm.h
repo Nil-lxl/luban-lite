@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,6 +20,12 @@
 #endif
 
 #define EPWM_INT_FLG         BIT(0)
+
+enum aic_epwm_act_sw_ct {
+    EPWM_ACT_SW_NONE = 0,
+    EPWM_ACT_SW_LOW,
+    EPWM_ACT_SW_HIGH,
+};
 
 enum aic_epwm_mode {
     EPWM_MODE_UP_COUNT = 0,
@@ -82,6 +88,15 @@ struct aic_epwm_pulse_para {
 
 void hal_epwm_ch_init(u32 ch, bool sync_mode, enum aic_epwm_mode mode, u32 default_level,
                      struct aic_epwm_action *a0, struct aic_epwm_action *a1);
+void hal_epwm_act_sw_ct(u32 ch, u32 output, u32 action);
+void hal_epwm_count_ct(u32 ch, enum aic_epwm_mode mode);
+#ifdef AIC_EPWM_DRV_V11
+void hal_epwm_pul_config(u32 ch);
+int hal_epwm_pul_set(u32 ch, u32 duty_ns, u32 period_ns, u32 output, u32 num);
+void hal_epwm_pul_out_ct(u32 ch, u32 enable);
+void hal_epwm_pul_sw_updt(u32 ch);
+#endif
+int hal_epwm_get_default_level(u32 ch);
 int hal_epwm_set(u32 ch, u32 duty_ns, u32 period_ns, u32 output);
 int hal_epwm_get(u32 ch, u32 *duty_ns, u32 *period_ns);
 int hal_epwm_enable(u32 ch);

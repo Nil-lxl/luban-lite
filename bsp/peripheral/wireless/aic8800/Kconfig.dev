@@ -6,6 +6,15 @@
 
 menu "Wlan0 Parameter"
 
+    choice
+        prompt "Select AIC8800 MODEL"
+        default CHIP_SELECT_AIC8800D40L
+        config CHIP_SELECT_AIC8800D40L
+            bool "select AIC8800D40L"
+        config CHIP_SELECT_AIC8800DW
+            bool "select AIC8800DW"
+    endchoice
+
     config AIC_DEV_AIC8800_WLAN0_PWR_GPIO
         string "aic8800 wlan0 power on gpio"
 

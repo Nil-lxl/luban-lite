@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -98,7 +98,6 @@ int mpp_dvp_ioctl(int cmd, void *arg)
     switch (cmd) {
     case DVP_IN_S_FMT:
         return aic_dvp_set_in_fmt((struct mpp_video_fmt *)arg);
-        break;
 
     case DVP_OUT_S_FMT:
         return aic_dvp_set_out_fmt((struct dvp_out_fmt *)arg);
@@ -112,8 +111,7 @@ int mpp_dvp_ioctl(int cmd, void *arg)
         return -ENODEV;
 
     case DVP_STREAM_ON:
-        if (g_camera_dev)
-            rt_device_control(g_camera_dev, CAMERA_CMD_START, arg);
+        camera_start(g_camera_dev);
         if (aic_dvp_open())
             return -1;
         if (aic_dvp_stream_on())
@@ -121,12 +119,22 @@ int mpp_dvp_ioctl(int cmd, void *arg)
         return 0;
 
     case DVP_STREAM_OFF:
-        if (g_camera_dev)
-            rt_device_control(g_camera_dev, CAMERA_CMD_STOP, arg);
+        camera_stop(g_camera_dev);
         if (aic_dvp_stream_off())
             return -1;
         if (aic_dvp_close())
             return -1;
+        return 0;
+
+    case DVP_STREAM_PAUSE:
+        camera_pause(g_camera_dev);
+        aicos_msleep(50);
+        aic_dvp_stream_pause();
+        return 0;
+
+    case DVP_STREAM_RESUME:
+        camera_resume(g_camera_dev);
+        aic_dvp_stream_resume();
         return 0;
 #endif
 
@@ -141,6 +149,9 @@ int mpp_dvp_ioctl(int cmd, void *arg)
 
     case DVP_DQ_BUF:
         return aic_dvp_dq_buf((u32 *)arg);
+
+    case DVP_GET_TIMESTAMP:
+        return aic_dvp_get_timestamp((u32)(ptr_t)arg);
 
     default:
         pr_err("Unsupported ioctl command: 0x%x\n", cmd);

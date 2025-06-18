@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+* Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
 *
 * SPDX-License-Identifier: Apache-2.0
 *
@@ -82,15 +82,15 @@ static void print_help(const char* prog)
 {
     printf("name: %s\n", prog);
     printf("Compile time: %s\n", __TIME__);
-    printf("Usage: mpp_test [options]:\n"
+    printf("Usage: video_dec [options]:\n"
         "\t-i                             input stream file name\n"
         "\t-t                             directory of test files\n"
         "\t-d                             display the picture\n"
         "\t-f                             output pixel format\n"
         "\t-l                             loop time\n"
         "\t-h                             help\n\n"
-        "Example1(test single file): mpp_test -i /sdmc/test.264\n"
-        "Example2(test some files) : mpp_test -t /sdmc/\n");
+        "Example1(test single file): video_dec -i /sdmc/test.264\n"
+        "Example2(test some files) : video_dec -t /sdmc/\n");
 }
 
 static long long get_now_us(void)
@@ -376,7 +376,7 @@ int dec_decode(struct dec_ctx *data, char* filename)
                                                 ,data);
 
     // 4. create render thread
-    data->decode_thread = aicos_thread_create("render_thread"
+    data->render_thread = aicos_thread_create("render_thread"
                                                 ,PTHREAD_DEFAULT_STACK_SIZE
                                                 ,PTHREAD_DEFAULT_PRIORITY
                                                 ,render_thread

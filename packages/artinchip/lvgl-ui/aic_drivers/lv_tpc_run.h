@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,6 +21,7 @@ extern "C" {
 int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y);
 void lvgl_get_tp(void);
 void lvgl_put_tp(void);
+void rtp_check_event_type(int event_type, int pressure);
 
 #endif
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -42,7 +42,7 @@ lv_obj_t *cookbook_comp_create(lv_obj_t *parent)
 
     /*Create a style for the scrollbars*/
     static lv_style_t style_rollbars;
-    if (style_rollbars.prop_cnt > 1) {
+    if (style_rollbars.prop_cnt >= 1) {
         lv_style_reset(&style_rollbars);
     } else {
         lv_style_init(&style_rollbars);

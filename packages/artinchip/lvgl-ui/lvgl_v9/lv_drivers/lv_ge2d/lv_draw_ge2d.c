@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2025 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -147,6 +147,11 @@ static bool ge2d_draw_img_supported(const lv_draw_image_dsc_t *draw_dsc)
         return false;
 
     if (draw_dsc->header.w * draw_dsc->header.h < LV_GE2D_FILL_OPA_SIZE_LIMIT) {
+        if (lv_image_src_get_type(draw_dsc->src) == LV_IMAGE_SRC_FILE) {
+            if (!strcmp(lv_fs_get_ext(draw_dsc->src), "fake")) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -232,6 +237,7 @@ static int32_t ge2d_evaluate(lv_draw_unit_t *u, lv_draw_task_t *t)
                     t->preference_score = 70;
                     t->preferred_draw_unit_id = DRAW_UNIT_ID_GE2D;
                 }
+
                 return 0;
             }
         default:

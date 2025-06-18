@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -87,6 +87,7 @@ int hal_gpio_set_value(unsigned int group, unsigned int pin,
 int hal_gpio_clr_output(unsigned int group, unsigned int pin);
 int hal_gpio_set_output(unsigned int group, unsigned int pin);
 int hal_gpio_toggle_output(unsigned int group, unsigned int pin);
+int hal_gpio_enable_irq_no_clr(unsigned int group, unsigned int pin);
 int hal_gpio_enable_irq(unsigned int group, unsigned int pin);
 int hal_gpio_disable_irq(unsigned int group, unsigned int pin);
 int hal_gpio_group_get_irq_en(unsigned int group, unsigned int *pen);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -32,8 +32,9 @@
 #define RPMSG_CMD_EFUSE_RD      RPMSG_CMD_DEF('e', 3) /* Read eFuse */
 #define RPMSG_CMD_EFUSE_WR      RPMSG_CMD_DEF('e', 4) /* Write eFuse */
 /* Only in APP environment */
-#define RPMSG_CMD_REQ_STANDBY   RPMSG_CMD_DEF('e', 5) /* Request to enter standby */
+#define RPMSG_CMD_GMAC_PARAMS   RPMSG_CMD_DEF('e', 5) /* pass params to SPSS */
 #define RPMSG_CMD_DDR_RDY       RPMSG_CMD_DEF('e', 6) /* DDR is ready */
+#define RPMSG_CMD_REQ_STANDBY   RPMSG_CMD_DEF('e', 9) /* Request to enter standby */
 
 /* SCSS is receiver */
 

@@ -1,0 +1,311 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="description" content="本节介绍不同存储介质类型的 BootLoader 配置步骤。 配置 SPI NOR BootLoader 在 SDK 根目录下执行下列命令之一，进入 BootLoader 的配置界面： bm 命令 scons –apply-def=dxxx_xxx-nor_baremetal_bootloader 和 scons –menuconfig 打开 SPI NOR 设备： Board options ..."/><meta name="DC.relation" content="../../../topics/sdk/bringup/lite-bringup-storage.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/config-storage_2.html"/><meta name="DC.relation" content="../../../topics/sdk/bringup/config-storage-os_2.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="config-storage-bootloader"/>        
+      <title>配置 BootLoader</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="config-storage-bootloader-d3703e2120"/><meta name="wh-source-relpath" content="topics/sdk/bringup/config-storage-bootloader.dita"/><meta name="wh-out-relpath" content="topics/sdk/bringup/config-storage-bootloader_2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
+
+    <body id="config-storage-bootloader" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-storage.html">存储配置</a></div></div></li><li class="active"><div class="topicref" data-id="config-storage-bootloader"><div class="title"><a href="../../../topics/sdk/bringup/config-storage-bootloader_2.html">配置 BootLoader</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/advanced/config-storage_2.html" title="切换存储类型" aria-label="上一主题: 切换存储类型" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/bringup/config-storage-os_2.html" title="配置 OS" aria-label="下一主题: 配置 OS" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e2032" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-prepare.html" id="id-d3703e2032-link">准备工作</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e2048" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-soc.html" id="id-d3703e2048-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e2062" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-ram.html" id="id-d3703e2062-link">内存配置</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2076" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2076-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-storage.html" id="id-d3703e2076-link">存储配置</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="select-storage-device-d3703e2090" class="topicref" data-id="select-storage-device" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/select-storage-device.html" id="select-storage-device-d3703e2090-link">选择存储设备类型</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="config-storage-d3703e2106" class="topicref" data-id="config-storage" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/config-storage_2.html" id="config-storage-d3703e2106-link">切换存储类型</a></div></div></li><li role="treeitem" class="active"><div data-tocid="config-storage-bootloader-d3703e2120" class="topicref" data-id="config-storage-bootloader" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/config-storage-bootloader_2.html" id="config-storage-bootloader-d3703e2120-link">配置 BootLoader</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="config-storage-os-d3703e2136" class="topicref" data-id="config-storage-os" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/config-storage-os_2.html" id="config-storage-os-d3703e2136-link">配置 OS</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="config-filesys-and-partition-d3703e2152" class="topicref" data-id="config-filesys-and-partition" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/config-filesys-and-partition.html" id="config-filesys-and-partition-d3703e2152-link">配置文件系统和分区</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="compile-and-burn-firmware-d3703e2168" class="topicref" data-id="compile-and-burn-firmware" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/compile-and-burn-firmware.html" id="compile-and-burn-firmware-d3703e2168-link">编译和烧录固件</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2184" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2184-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition_config_2.html" id="id-d3703e2184-link">配置分区</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e2228" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-console.html" id="id-d3703e2228-link">调试配置</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2242" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2242-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-display.html" id="id-d3703e2242-link">屏幕配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e2340" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-samples.html" id="id-d3703e2340-link">示例程序</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/bringup/config-storage-bootloader.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">配置 BootLoader</h1>
+    
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+                    Read time: 3 minute(s)
+                </div>
+    <div class="- topic/body concept/conbody body conbody"><p class="- topic/shortdesc shortdesc"></p>
+        <p class="- topic/p p" data-ofbid="d174774e30__20250409171051">本节介绍不同存储介质类型的 BootLoader 配置步骤。</p>
+        <section class="- topic/section section" id="config-storage-bootloader__section_dvx_xhp_w2c" data-ofbid="config-storage-bootloader__section_dvx_xhp_w2c"><h2 class="- topic/title title sectiontitle">配置 SPI NOR BootLoader</h2>
+            
+            <div class="- topic/p p" data-ofbid="d174774e38__20250409171051">
+                <ol class="- topic/ol ol" data-ofbid="d174774e40__20250409171051">
+                    <li class="- topic/li li" data-ofbid="d174774e42__20250409171051">
+                <div class="- topic/p p" id="config-storage-bootloader__p_acv_cw4_w2c" data-ofbid="config-storage-bootloader__p_acv_cw4_w2c">在 SDK 根目录下执行下列命令之一，进入 BootLoader 的配置界面：<ul class="- topic/ul ul" id="config-storage-bootloader__ul_omx_lv4_w2c" data-ofbid="config-storage-bootloader__ul_omx_lv4_w2c">
+                        <li class="- topic/li li" data-ofbid="d174774e48__20250409171051">
+                            <p class="- topic/p p" data-ofbid="d174774e50__20250409171051"><code class="+ topic/ph pr-d/codeph ph codeph">bm</code> 命令</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d174774e56__20250409171051">
+                            <p class="- topic/p p" data-ofbid="d174774e58__20250409171051"><code class="+ topic/ph pr-d/codeph ph codeph">scons –apply-def=dxxx_xxx-nor_baremetal_bootloader</code> 和
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">scons –menuconfig</code></p>
+                        </li>
+                    </ul></div>
+            </li>
+                    <li class="- topic/li li" data-ofbid="d174774e68__20250409171051">打开 SPI NOR
+                        设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_xvq_k3p_w2c" data-ofbid="config-storage-bootloader__codeblock_xvq_k3p_w2c">Board options  ---&gt;
+    [*] SPI0 Devices: SPINOR  ----</pre></li>
+                    <li class="- topic/li li" data-ofbid="d174774e73__20250409171051">打开 SPI NOR 驱动选项：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_xw2_m3p_w2c" data-ofbid="config-storage-bootloader__codeblock_xw2_m3p_w2c">Drivers options  ---&gt;
+    Peripheral  ---&gt;
+        [*] SPINOR Driver SFUD: Serial Flash Universal Driver  ----
+    Drivers examples  ---&gt;
+                [*] Enable MTD driver test command</pre><div class="- topic/p p" data-ofbid="d174774e77__20250409171051">
+                            <div class="- topic/note note note note_note" id="config-storage-bootloader__note_yw2_m3p_w2c" data-ofbid="config-storage-bootloader__note_yw2_m3p_w2c"><span class="note__title">注：</span> BootLoader 和 SPL 分区一般都比较小，如开启过多的 SPI NAND
+                                型号，会导致存储容易越界，建议仅打开需要用到的型号。</div>
+                        </div></li>
+                    <li class="- topic/li li" data-ofbid="d174774e83__20250409171051">打开 BootLoader
+                        相关参数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_zw2_m3p_w2c" data-ofbid="config-storage-bootloader__codeblock_zw2_m3p_w2c">Bootloader options  ---&gt;
+    Commands  ---&gt;
+        [*] spinor
+        [*] nor boot
+    [*] Upgrading  ---&gt;
+        [*]   Write to NOR support
+    Drivers  ---&gt;
+        [*] SPI NOR boot support</pre></li>
+                </ol>
+            </div>
+        </section>
+        <section class="- topic/section section" id="config-storage-bootloader__section_yrk_rhp_w2c" data-ofbid="config-storage-bootloader__section_yrk_rhp_w2c"><h2 class="- topic/title title sectiontitle">配置 SPI NAND BootLoader</h2>
+            
+            <div class="- topic/p p" data-ofbid="d174774e96__20250409171051">
+                <ol class="- topic/ol ol" id="config-storage-bootloader__ul_ghy_1gp_w2c" data-ofbid="config-storage-bootloader__ul_ghy_1gp_w2c">
+                    <li class="- topic/li li" data-ofbid="d174774e100__20250409171051">
+                <div class="- topic/p p" id="config-storage-bootloader__d392e32" data-ofbid="config-storage-bootloader__d392e32">在 SDK 根目录下执行下列命令之一，进入 BootLoader 的配置界面：<ul class="- topic/ul ul" id="config-storage-bootloader__d392e34" data-ofbid="config-storage-bootloader__d392e34">
+                        <li class="- topic/li li" data-ofbid="d174774e106__20250409171051">
+                            <p class="- topic/p p" data-ofbid="d174774e108__20250409171051"><code class="+ topic/ph pr-d/codeph ph codeph">bm</code> 命令</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d174774e114__20250409171051">
+                            <p class="- topic/p p" data-ofbid="d174774e116__20250409171051"><code class="+ topic/ph pr-d/codeph ph codeph">scons –apply-def=dxxx_xxx-nor_baremetal_bootloader</code> 和
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">scons –menuconfig</code></p>
+                        </li>
+                    </ul></div>
+            </li>
+                    <li class="- topic/li li" data-ofbid="d174774e126__20250409171051">打开 SPI NAND
+                        设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_hzh_2gp_w2c" data-ofbid="config-storage-bootloader__codeblock_hzh_2gp_w2c">Board options  ---&gt;
+    [*] SPI0 Devices: SPINAND  ---&gt;</pre></li>
+                    <li class="- topic/li li" data-ofbid="d174774e131__20250409171051">打开 SPI NAND 驱动选项：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_hvb_ggp_w2c" data-ofbid="config-storage-bootloader__codeblock_hvb_ggp_w2c">Drivers options  ---&gt;
+    Peripheral  ---&gt;
+        [*]   Support Winbond SPI NAND (NEW)        <em class="hl-comment">//根据 SPINAND 厂商使能配置，如华邦等</em>
+        [*] Aic NFTL support
+        [*]   Aic NFTL use lib</pre><div class="- topic/p p" data-ofbid="d174774e135__20250409171051">
+                            <div class="- topic/note note note note_note" id="config-storage-bootloader__note_iks_gbb_bdc" data-ofbid="config-storage-bootloader__note_iks_gbb_bdc"><span class="note__title">注：</span> BootLoader 和 SPL 分区一般都比较小，如开启过多的 SPI NAND
+                                型号，会导致存储容易越界，建议仅打开需要用到的型号。</div>
+                        </div></li>
+                    <li class="- topic/li li" data-ofbid="d174774e141__20250409171051">打开 BootLoader
+                        相关参数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_rtt_hgp_w2c" data-ofbid="config-storage-bootloader__codeblock_rtt_hgp_w2c">Bootloader options  ---&gt;
+    Drivers  ---&gt;
+        [*] SPI NAND boot support
+    [*] Upgrading  ---&gt;
+        [*]   Write to NAND support
+    Commands  ---&gt;
+        [*] nand boot
+        [*] spinand</pre></li>
+                </ol>
+            </div>
+            <div class="- topic/p p" id="config-storage-bootloader__p_gkf_mkp_w2c" data-ofbid="config-storage-bootloader__p_gkf_mkp_w2c"><span class="+ topic/keyword pr-d/parmname keyword parmname">SPINAND Driver library</span> 中会列示不同品牌的存储芯片，如
+                Dosilicon 和
+                Macronix，确保选中相应的驱动支持：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_yk4_rw1_bdc" data-ofbid="config-storage-bootloader__codeblock_yk4_rw1_bdc">-*- SPINAND Driver library
+[*]   Support Dosilicon SPI NAND
+[*]   Support Etron SPI NAND
+[*]   Support Micron SPI NAND
+[*]   Support Macronix SPI NAND
+[*]   Support Winbond SPI NAND
+[*]   Support GigaDevice SPI NAND
+[*]   Support Toshiba SPI NAND
+[*]   Support Foresee SPI NAND
+[*]   Support Xtx SPI NAND
+[*]   Support Zetta SPI NAND
+[ ]   Support Zbit SPI NAND
+[ ]   Support ESMT SPI NAND
+[ ]   Support UMTEK SPI NAND
+[ ]   Support QUANXING SPI NAND</pre></div>
+        </section>
+        <section class="- topic/section section" id="config-storage-bootloader__section_bxp_yhp_w2c" data-ofbid="config-storage-bootloader__section_bxp_yhp_w2c"><h2 class="- topic/title title sectiontitle">配置 eMMC BootLoader</h2>
+            
+            <div class="- topic/p p" data-ofbid="d174774e161__20250409171051">
+                <ol class="- topic/ol ol" id="config-storage-bootloader__ol_mgw_pkp_w2c" data-ofbid="config-storage-bootloader__ol_mgw_pkp_w2c">
+                    <li class="- topic/li li" data-ofbid="d174774e165__20250409171051">
+                <div class="- topic/p p" id="config-storage-bootloader__d392e32" data-ofbid="config-storage-bootloader__d392e32">在 SDK 根目录下执行下列命令之一，进入 BootLoader 的配置界面：<ul class="- topic/ul ul" id="config-storage-bootloader__d392e34" data-ofbid="config-storage-bootloader__d392e34">
+                        <li class="- topic/li li" data-ofbid="d174774e171__20250409171051">
+                            <p class="- topic/p p" data-ofbid="d174774e173__20250409171051"><code class="+ topic/ph pr-d/codeph ph codeph">bm</code> 命令</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d174774e179__20250409171051">
+                            <p class="- topic/p p" data-ofbid="d174774e181__20250409171051"><code class="+ topic/ph pr-d/codeph ph codeph">scons –apply-def=dxxx_xxx-nor_baremetal_bootloader</code> 和
+                                    <code class="+ topic/ph pr-d/codeph ph codeph">scons –menuconfig</code></p>
+                        </li>
+                    </ul></div>
+            </li>
+                    <li class="- topic/li li" data-ofbid="d174774e191__20250409171051">打开 eMMC
+                        设备：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_ngw_pkp_w2c" data-ofbid="config-storage-bootloader__codeblock_ngw_pkp_w2c">Board options  ---&gt;
+    [*] Using SDMC0</pre></li>
+                    <li class="- topic/li li" data-ofbid="d174774e196__20250409171051">打开 BootLoader
+                        相关参数：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_qgw_pkp_w2c" data-ofbid="config-storage-bootloader__codeblock_qgw_pkp_w2c">Bootloader options  ---&gt;
+    Commands  ---&gt;
+        [*] mmc boot</pre></li>
+                    <li class="- topic/li li" data-ofbid="d174774e201__20250409171051">关闭 DE
+                        进度条：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="config-storage-bootloader__codeblock_ogw_pkp_w2c" data-ofbid="config-storage-bootloader__codeblock_ogw_pkp_w2c">Board options  ---&gt;
+    [ ] Using Wireless LAN  ----
+    [ ] Using Display Engine (DE)   <em class="hl-comment">//EMMC 需要关闭进度条</em></pre></li>
+                </ol>
+            </div>
+        </section>
+    </div>
+</article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#config-storage-bootloader__section_dvx_xhp_w2c" data-tocid="config-storage-bootloader__section_dvx_xhp_w2c">配置 SPI NOR BootLoader</a></div></li><li class="section-item"><div class="section-title"><a href="#config-storage-bootloader__section_yrk_rhp_w2c" data-tocid="config-storage-bootloader__section_yrk_rhp_w2c">配置 SPI NAND BootLoader</a></div></li><li class="section-item"><div class="section-title"><a href="#config-storage-bootloader__section_bxp_yhp_w2c" data-tocid="config-storage-bootloader__section_bxp_yhp_w2c">配置 eMMC BootLoader</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style>
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    </style>
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -182,7 +182,7 @@ static void aic_timer_start(struct rt_pm *pm, rt_uint32_t timeout)
                     csi_coret_get_value();
     tmp_counter = (uint64_t)timeout * tick_resolution;
 
-    csi_coret_set_load(tmp_counter);
+    csi_coret_set_load(tmp_counter + sleep_counter);
 }
 
 static void aic_timer_stop(struct rt_pm *pm)

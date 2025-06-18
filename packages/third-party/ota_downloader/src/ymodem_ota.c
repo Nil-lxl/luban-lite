@@ -133,6 +133,7 @@ void ymodem_ota(uint8_t argc, char **argv)
         /* wait some time for terminal response finish */
         rt_thread_delay(RT_TICK_PER_SECOND);
         rt_kprintf("Update firmware fail.\n");
+        ota_deinit();
     }
 
     return;

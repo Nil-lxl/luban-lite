@@ -1,10 +1,10 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- *  Author: <jun.ma@artinchip.com>
- *  Desc: aic_player api
+ * Author: <jun.ma@artinchip.com>
+ * Desc: aic_player api
  */
 
 #ifndef __AIC_PLAYER_H__
@@ -37,6 +37,7 @@ enum aic_player_event {
 
 enum aic_player_command {
     AIC_PLAYER_CMD_SET_VDEC_EXT_FRAME_ALLOCATOR = 0,
+    AIC_PLAYER_CMD_SET_VDEC_EXT_FRAME_NUM,
     AIC_PLAYER_CMD_SET_VDEC_SET_CROP_INFO,
     AIC_PLAYER_CMD_GET_VDEC_DECODER_FRAME,
     AIC_PLAYER_CMD_PUT_VDEC_DECODER_FRAME,
@@ -121,6 +122,10 @@ s32 aic_player_set_rotation(struct aic_player *player, int rotation_angle);
 s32 aic_player_get_rotation(struct aic_player *player);
 
 s32 aic_player_control(struct aic_player *player, enum aic_player_command cmd, void *data);
+
+s32 aic_player_get_frame(struct aic_player *player, struct mpp_frame *frame);
+
+s32 aic_player_put_frame(struct aic_player *player, struct mpp_frame *frame);
 #ifdef __cplusplus
 #if __cplusplus
 }

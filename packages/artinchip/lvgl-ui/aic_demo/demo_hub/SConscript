@@ -12,19 +12,13 @@ for d in list:
     if os.path.isfile(os.path.join(path, 'SConscript')):
         group = group + SConscript(os.path.join(d, 'SConscript'))
 
-if GetDepend(['PANEL_HACTIVE']):
-    hactice = GetDepend('PANEL_HACTIVE')
-else:
-    hactice = 480
-
-if hactice == 1024:
-    install=[
-            ('assets/1024x600/', 'rodata/'),
-            ]
-else:
-    install=[
-            ('assets/480x272/', 'rodata/'),
-            ]
+install=[('assets/1024x600/', 'rodata/')]
+if (GetDepend(['AIC_PANEL_480X272_RESOLUTION'])):
+    install=[('assets/480x272/', 'rodata/')]
+elif (GetDepend(['AIC_PANEL_CUSTOM_RESOLUTION'])):
+    hactice = GetDepend(['PANEL_HACTIVE'])
+    if hactice < 1024:
+        install=[('assets/480x272/', 'rodata/')]
 
 group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_DEMO_HUB_DEMO'], CPPPATH = CPPPATH,
         INSTALL=install)

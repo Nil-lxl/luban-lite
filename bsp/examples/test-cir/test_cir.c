@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  * Authors:  dwj <weijie.ding@artinchip.com>
@@ -34,7 +34,7 @@ static void cir_rx_thread(void *parameter)
         rt_sem_take(&rx_sem, RT_WAITING_FOREVER);
         size = rt_device_read(cir_dev, 0, &scancode, sizeof(scancode));
 	    if (size)
-            rt_kprintf("cir received scancode: %08x\n", scancode);
+            rt_kprintf("cir received scancode: 0x%06x\n", scancode);
     }
 }
 
@@ -45,7 +45,7 @@ static void usage(char * program)
     rt_kprintf("   -p proto     CIR protocol, such as NEC/RC5.\n");
     rt_kprintf("   -h           Display this help.\n\n");
     rt_kprintf("Example:\n");
-    rt_kprintf("   %s -p NEC 0x8523\n", program);
+    rt_kprintf("   %s -p NEC 0x00ff23\n", program);
     rt_kprintf("   %s -p RC5 0x81b\n", program);
 }
 

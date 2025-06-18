@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -26,6 +26,7 @@
     "  spinand erase <offset size>\n"      \
     "  spinand bad <offset size>\n"        \
     "  spinand contread <offset size>\n"   \
+    "  spinand regr <reg>\n"                \
     "  spinand read 0x40000000 0 0x20000\n"
 
 struct aic_spinand *g_spinand_flash;
@@ -122,8 +123,7 @@ static int do_spinand_contread(int argc, char *argv[])
 
     start_us = aic_get_time_us();
     err = spinand_continuous_read(g_spinand_flash, page, (uint8_t *)data, size);
-    start_us = aic_get_time_us() - start_us;
-    printf("start_us = %lu size = %lu\n", start_us, size);
+    show_speed("continue reading speed", size, aic_get_time_us() - start_us);
 
     hexdump((void *)data, size, 1);
 
@@ -235,6 +235,28 @@ static int do_spinand_bad(int argc, char **argv)
     return 0;
 }
 
+static int do_spinand_reg_read(int argc, char *argv[])
+{
+    int status;
+    u8 reg;
+    if (argc < 2) {
+        spinand_help();
+        return -1;
+    }
+
+    reg = strtol(argv[1], NULL, 0) & 0xff;
+
+    status =  spinand_get_feature(g_spinand_flash, reg);
+    if (status < 0) {
+        printf("Spinand get feature failed. ret %d\n", status);
+        spinand_help();
+        return -1;
+    }
+    printf("status: 0x%x\n", status);
+
+    return 0;
+}
+
 static int do_spinand_init(int argc, char *argv[])
 {
     unsigned long spi_bus;
@@ -286,6 +308,8 @@ static int do_spinand(int argc, char *argv[])
     else if (!strncmp(argv[1], "contread", 8))
         return do_spinand_contread(argc - 1, &argv[1]);
 #endif
+    else if (!strncmp(argv[1], "regr", 4))
+        return do_spinand_reg_read(argc - 1, &argv[1]);
     spinand_help();
     return 0;
 }

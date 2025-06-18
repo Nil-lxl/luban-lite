@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -330,7 +330,32 @@ u16 hal_rtp_adc_soft_trigger(struct aic_rtp_dev *rtp, int ch)
     return rtp->adc_info.data;
 }
 
-static u32 rtp_press_calc(struct aic_rtp_dev *rtp)
+static u32 rtp_press_calc_only_xplate(struct aic_rtp_dev *rtp)
+{
+    struct aic_rtp_dat *dat = &rtp->latest;
+    u32 pressure = rtp->x_plate * dat->x_minus / AIC_RTP_VAL_RANGE;
+
+    if (rtp->y_plate && rtp->mode != RTP_MODE_AUTO2) {
+        pressure = pressure * (AIC_RTP_VAL_RANGE - dat->z_a) / dat->z_a;
+        pressure -= rtp->y_plate * (AIC_RTP_VAL_RANGE - dat->y_minus)
+                / AIC_RTP_VAL_RANGE;
+    } else {
+        pressure = pressure * (dat->z_b - dat->z_a) / dat->z_a;
+    }
+    pr_debug("Current pressure: %d\n", pressure);
+
+    if (pressure > rtp->max_press || pressure < AIC_RTP_INVALID_MIN_VAL) {
+        pr_debug("Invalid pressure %d\n", pressure);
+        pressure = AIC_RTP_INVALID_VAL;
+    }
+#if defined(CONFIG_ARTINCHIP_ADCIM_DM)
+    return (dat->z_a + dat->z_b) / 2;
+#else
+    return pressure;
+#endif
+}
+
+static u32 rtp_press_calc_xy_plate(struct aic_rtp_dev *rtp)
 {
     struct aic_rtp_dat *dat = &rtp->latest;
     u32 pressure = 0;
@@ -366,9 +391,14 @@ static void rtp_report_abs(struct aic_rtp_dev *rtp, u16 down_event)
         return;
 
     if (rtp->pressure_det) {
-        int pressure = rtp_press_calc(rtp);
+        int pressure = 0;
+        if (rtp->y_plate == 0) {
+            pressure = rtp_press_calc_only_xplate(rtp);
+        } else {
+            pressure = rtp_press_calc_xy_plate(rtp);
+        }
 
-    pr_debug("[original] down %d, pressure %d\n", down_event, pressure);
+        pr_debug("[original] down %d, pressure %d\n", down_event, pressure);
 
         if (down_event == 0)
             down =  0;

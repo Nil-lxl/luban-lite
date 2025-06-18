@@ -1,0 +1,26 @@
+# RT-Thread building script for component
+
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('rtconfig')
+from building import *
+import os
+
+cwd     = GetCurrentDir()
+src   = []
+group   = []
+
+PATH = AIC_ROOT + '/application/baremetal/bootloader/lib/firmware_security/'
+CPPPATH = [cwd]
+prj_chip = GetDepend('PRJ_CHIP').strip('"')
+
+if GetDepend('AICUPG_FIRMWARE_SECURITY'):
+    lib_name = 'firmware_security_' + prj_chip + '.a'
+
+    if os.path.exists(PATH + 'firmware_security.c'):
+        src     += Glob('firmware_security.c')
+        DefineGroup(PATH + lib_name, src, depend = [''], LIBRARY='')
+
+    group = DefineGroup('FIRMWARE_SECURITY', src, depend = [''], CPPPATH = CPPPATH, LIBS = ['firmware_security_' + prj_chip], LIBPATH = [PATH])
+
+Return('group')

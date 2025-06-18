@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,9 +16,9 @@
 #include "aic_core.h"
 #include "mpp_mem.h"
 #include "mpp_ge.h"
-#include "mpp_decoder.h"
-#include "frame_allocator.h"
 #include "lv_mpp_dec.h"
+#include "lv_aic_stream.h"
+#include "lv_aic_bmp.h"
 #include "aic_ui.h"
 #include "lv_draw_ge2d_utils.h"
 
@@ -29,36 +29,7 @@
 #define JPEG_SOF 0xFFC0
 #define ALIGN_16B(x) (((x) + (15)) & ~(15))
 
-#define CHECK_RET(func, ret)  do {\
-                            if (func != ret) {\
-                                LV_LOG_ERROR("Invalid status");\
-                                res = LV_RESULT_INVALID;\
-                                goto out;\
-                            }\
-                         } while (0)
-
-#define CHECK_PTR(ptr)  do {\
-                            if (ptr == NULL) {\
-                                LV_LOG_ERROR("ptr == NULL");\
-                                res = LV_RESULT_INVALID;\
-                                goto out;\
-                            }\
-                        } while (0)
-
-typedef struct {
-    lv_draw_buf_t decoded;
-    struct mpp_buf dec_buf;
-    uint8_t *data[3];
-    bool cached;
-} mpp_decoder_data_t;
-
-typedef struct {
-    lv_mutex_t lock;
-    int32_t cache_num;
-    int32_t max_num;
-} mpp_cache_t;
-
-static lv_color_format_t mpp_fmt_to_lv_fmt(enum mpp_pixel_format cf)
+lv_color_format_t mpp_fmt_to_lv_fmt(enum mpp_pixel_format cf)
 {
     lv_color_format_t fmt = LV_COLOR_FORMAT_ARGB8888;
 
@@ -120,121 +91,6 @@ static int mpp_get_rgb_stride(int width, enum mpp_pixel_format fmt)
     return stride;
 }
 
-static inline bool image_suffix_is_jpg(char *ptr)
-{
-    return ((!strcmp(ptr, ".jpg")) || (!strcmp(ptr, ".jpeg"))
-            || (!strcmp(ptr, ".JPG")) || (!strcmp(ptr, ".JPEG")));
-}
-
-struct lv_stream_t
-{
-    lv_fs_file_t f;
-    int cur_index;
-    const uint8_t *src;
-    int is_file;
-    int data_size;
-};
-
-static inline uint64_t stream_to_u64(uint8_t *ptr)
-{
-    return ((uint64_t)ptr[0] << 56) | ((uint64_t)ptr[1] << 48) |
-           ((uint64_t)ptr[2] << 40) | ((uint64_t)ptr[3] << 32) |
-           ((uint64_t)ptr[4] << 24) | ((uint64_t)ptr[5] << 16) |
-           ((uint64_t)ptr[6] << 8) | ((uint64_t)ptr[7]);
-}
-
-static inline unsigned int stream_to_u32(uint8_t *ptr)
-{
-    return ((unsigned int)ptr[0] << 24) |
-           ((unsigned int)ptr[1] << 16) |
-           ((unsigned int)ptr[2] << 8) |
-           (unsigned int)ptr[3];
-}
-
-static inline unsigned short stream_to_u16(uint8_t *ptr)
-{
-    return  ((unsigned int)ptr[0] << 8) | (unsigned int)ptr[1];
-}
-
-static lv_fs_res_t lv_aic_stream_open(struct lv_stream_t *stream, const void *src)
-{
-    lv_fs_res_t res = LV_FS_RES_OK;
-
-    stream->src = ((lv_img_dsc_t *)src)->data;
-    stream->cur_index = 0;
-    if (lv_image_src_get_type(src) == LV_IMAGE_SRC_FILE) {
-        stream->is_file = 1;
-        res = lv_fs_open(&stream->f, src, LV_FS_MODE_RD);
-    } else {
-        stream->is_file = 0;
-        stream->data_size = ((lv_img_dsc_t *)src)->data_size;
-    }
-
-    return res;
-}
-
-static lv_fs_res_t lv_aic_stream_close(struct lv_stream_t *stream)
-{
-   if (stream->is_file)
-        lv_fs_close(&stream->f);
-
-    return LV_FS_RES_OK;
-}
-
-static lv_fs_res_t lv_aic_stream_seek(struct lv_stream_t *stream, uint32_t pos, lv_fs_whence_t whence)
-{
-    lv_fs_res_t res = LV_FS_RES_OK;
-
-    if (stream->is_file) {
-        res = lv_fs_seek(&stream->f, pos, whence);
-    } else {
-        // only support SEEK_CUR
-        stream->cur_index += pos;
-    }
-
-    return res;
-}
-
-static lv_fs_res_t lv_aic_stream_read(struct lv_stream_t *stream, void *buf, uint32_t btr, uint32_t *br)
-{
-    lv_fs_res_t res = LV_FS_RES_OK;
-
-    if (stream->is_file) {
-        res = lv_fs_read(&stream->f, buf, btr, br);
-    } else {
-        if (stream->cur_index + btr <= stream->data_size) {
-            memcpy(buf, &stream->src[stream->cur_index], btr);
-            stream->cur_index += btr;
-            *br = btr;
-        } else {
-            LV_LOG_WARN("data_size:%d, cur_index:%d", stream->data_size, stream->cur_index);
-        }
-    }
-
-    return res;
-}
-
-static void lv_aic_stream_reset(struct lv_stream_t *stream)
-{
-    stream->cur_index = 0;
-    return;
-}
-
-static lv_result_t lv_aic_stream_get_size(struct lv_stream_t *stream, uint32_t *file_size)
-{
-    lv_result_t res = LV_RESULT_OK;
-
-    if (stream->is_file) {
-        lv_fs_seek(&stream->f, 0, SEEK_END);
-        lv_fs_tell(&stream->f, file_size);
-        lv_fs_seek(&stream->f, 0, SEEK_SET);
-    } else {
-        *file_size = stream->data_size;
-    }
-
-    return res;
-}
-
 static int get_jpeg_format(uint8_t *buf, enum mpp_pixel_format *pix_fmt)
 {
     int i;
@@ -288,7 +144,7 @@ static int get_jpeg_format(uint8_t *buf, enum mpp_pixel_format *pix_fmt)
     return 0;
 }
 
-static inline lv_result_t check_jpeg_soi(struct lv_stream_t *stream)
+static inline lv_result_t check_jpeg_soi(lv_stream_t *stream)
 {
     uint32_t read_num;
     uint8_t buf[128];
@@ -318,7 +174,7 @@ read_err:
     return res;
 }
 
-static lv_result_t jpeg_get_img_size(struct lv_stream_t *stream, int *w, int *h, enum mpp_pixel_format *pix_fmt)
+static lv_result_t jpeg_get_img_size(lv_stream_t *stream, int *w, int *h, enum mpp_pixel_format *pix_fmt)
 {
     uint32_t read_num;
     uint8_t buf[128];
@@ -364,15 +220,19 @@ read_err:
     return res;
 }
 
-static lv_result_t jpeg_decoder_info(lv_image_decoder_t *decoder, const void *src, lv_image_header_t *header)
+lv_result_t lv_jpeg_decoder_info(const char *src, lv_image_header_t *header, uint32_t size, bool is_file)
 {
     lv_fs_res_t res;
     int width;
     int height;
     enum mpp_pixel_format format = MPP_FMT_ARGB_8888;
-    struct lv_stream_t stream;
+    lv_stream_t stream;
 
-    res = lv_aic_stream_open(&stream, src);
+    if (is_file)
+        res = lv_aic_stream_open_file(&stream, src);
+    else
+       res = lv_aic_stream_open_buf(&stream, src, size);
+
     if (res != LV_FS_RES_OK)
         return LV_RESULT_INVALID;
 
@@ -402,7 +262,7 @@ static lv_result_t jpeg_decoder_info(lv_image_decoder_t *decoder, const void *sr
     return LV_RESULT_OK;
 }
 
-static inline lv_result_t check_png_sig(struct lv_stream_t *stream)
+static inline lv_result_t check_png_sig(lv_stream_t *stream)
 {
     uint32_t read_num;
     unsigned char buf[64];
@@ -417,16 +277,21 @@ static inline lv_result_t check_png_sig(struct lv_stream_t *stream)
     return LV_RESULT_OK;
 }
 
-static lv_result_t png_decoder_info(lv_image_decoder_t *decoder, const void *src, lv_image_header_t *header)
+lv_result_t lv_png_decoder_info(const char *src, lv_image_header_t *header, uint32_t size, bool is_file)
 {
     lv_fs_res_t res;
     uint32_t read_num;
     uint8_t buf[64];
-    struct lv_stream_t stream;
+    lv_stream_t stream;
     int color_type;
 
-    res = lv_aic_stream_open(&stream, src);
+    if (is_file)
+        res = lv_aic_stream_open_file(&stream, src);
+    else
+       res = lv_aic_stream_open_buf(&stream, src, size);
+
     if (res != LV_FS_RES_OK) {
+        LV_LOG_ERROR("open %s failed", src);
         return LV_RESULT_INVALID;
     }
 
@@ -464,7 +329,7 @@ static lv_result_t png_decoder_info(lv_image_decoder_t *decoder, const void *src
     return LV_RESULT_OK;
 }
 
-static lv_res_t fake_decoder_info(lv_image_decoder_t *decoder, const void *src, lv_image_header_t *header)
+static lv_res_t fake_decoder_info(const void *src, lv_image_header_t *header)
 {
     int width;
     int height;
@@ -483,23 +348,40 @@ static lv_result_t lv_mpp_dec_info(lv_image_decoder_t *decoder, const void *src,
     char* ptr = NULL;
     lv_result_t res = LV_RESULT_INVALID;
 
+    LV_UNUSED(decoder);
+
     if (lv_image_src_get_type(src) == LV_IMAGE_SRC_FILE) {
         ptr = strrchr(src, '.');
+        if (!ptr)
+            return LV_RESULT_INVALID;
         if (!strcmp(ptr, ".png")) {
-            return png_decoder_info(decoder, src, header);
+            return lv_png_decoder_info(src, header, 0, true);
         } else if (image_suffix_is_jpg(ptr)) {
-            return jpeg_decoder_info(decoder, src, header);
+            return lv_jpeg_decoder_info(src, header, 0, true);
         } else if (!strcmp(ptr, ".fake")) {
-            return fake_decoder_info(decoder, src, header);
+            return fake_decoder_info(src, header);
+#if LV_USE_AIC_BMP
+        } else if (!strcmp(ptr, ".bmp") || !strcmp(ptr, ".BMP")) {
+            return lv_bmp_decoder_info(src, header, 0, true);
+#endif
         } else {
             return LV_RESULT_INVALID;
         }
     } else if (lv_image_src_get_type(src) == LV_IMAGE_SRC_VARIABLE) {
         lv_color_format_t cf = ((lv_img_dsc_t *)src)->header.cf;
+        char *data = (char *)((lv_img_dsc_t *)src)->data;
+        uint32_t data_size = ((lv_img_dsc_t *)src)->data_size;
+
         if (cf == LV_COLOR_FORMAT_RAW || cf == LV_COLOR_FORMAT_RAW) {
-            res = jpeg_decoder_info(decoder, src, header);
-            if (res != LV_RESULT_OK)
-                res = png_decoder_info(decoder, src, header);
+            res = lv_jpeg_decoder_info(data, header, data_size, false);
+            if (res != LV_RESULT_OK) {
+                res = lv_png_decoder_info(data, header, data_size, false);
+#if LV_USE_AIC_BMP
+                if (res != LV_RESULT_OK) {
+                    res = lv_bmp_decoder_info(data, header, data_size, false);
+                }
+#endif
+            }
         }
     }
 
@@ -540,7 +422,7 @@ static struct alloc_ops def_ops = {
     .close_allocator = close_allocator,
 };
 
-static struct frame_allocator* open_allocator(struct mpp_frame* frame)
+struct frame_allocator* lv_open_allocator(struct mpp_frame* frame)
 {
     struct ext_frame_allocator* impl = (struct ext_frame_allocator*)malloc(sizeof(struct ext_frame_allocator));
 
@@ -555,7 +437,7 @@ static struct frame_allocator* open_allocator(struct mpp_frame* frame)
     return &impl->base;
 }
 
-static void frame_buf_free(mpp_decoder_data_t *mpp_data)
+void lv_frame_buf_free(mpp_decoder_data_t *mpp_data)
 {
     int i;
     for (i = 0; i < 3; i++) {
@@ -566,8 +448,8 @@ static void frame_buf_free(mpp_decoder_data_t *mpp_data)
     }
 }
 
-static lv_result_t frame_buf_alloc(mpp_decoder_data_t *mpp_data, struct mpp_buf *alloc_buf,
-                                   int *size, uint32_t cf)
+lv_result_t lv_frame_buf_alloc(mpp_decoder_data_t *mpp_data, struct mpp_buf *alloc_buf,
+                              int *size, uint32_t cf)
 {
     int i;
     int data_size = 0;
@@ -603,11 +485,11 @@ static lv_result_t frame_buf_alloc(mpp_decoder_data_t *mpp_data, struct mpp_buf 
 
     return LV_RESULT_OK;
 alloc_error:
-    frame_buf_free(mpp_data);
+    lv_frame_buf_free(mpp_data);
     return LV_RESULT_INVALID;
 }
 
-static void set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_shift)
+void lv_set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_shift)
 {
     int height_align;
     int width = frame->buf.size.width;
@@ -665,6 +547,7 @@ static void set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_
             frame->buf.stride[0] =  ALIGN_16B(width) * 2;
 
         buf_size[0] = frame->buf.stride[0] * height_align;
+        break;
     case MPP_FMT_RGB_888:
         if (size_shift > 0)
             frame->buf.stride[0] =  ALIGN_16B(ALIGN_16B(width) >> size_shift) * 3;
@@ -688,27 +571,11 @@ static void set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_
     }
 }
 
-static inline bool image_cache_check(mpp_cache_t *mpp_cache)
-{
-#if LV_CACHE_IMG_NUM_LIMIT == 0
-    return true;
-#else
-    if (mpp_cache->cache_num < mpp_cache->max_num) {
-        return true;
-    } else {
-        if (lv_drop_one_cached_image())
-            return true;
-        else
-            return false;
-    }
-#endif
-}
-
 static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder_dsc_t *dsc)
 {
     lv_result_t res = LV_RESULT_OK;
     uint32_t file_len = 0;
-    struct lv_stream_t stream;
+    lv_stream_t stream;
     struct mpp_packet packet;
     int width = 0;
     int height = 0;
@@ -718,6 +585,21 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
     int buf_size[3] = { 0 };
     struct mpp_decoder *dec = NULL;
     struct frame_allocator *allocator = NULL;
+
+#if LV_USE_AIC_BMP
+    if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_FILE) {
+        const char *ext = lv_fs_get_ext(dsc->src);
+        if (lv_strcmp(ext, "bmp") == 0 || lv_strcmp(ext, "BMP") == 0) {
+            return lv_bmp_dec_open(decoder, dsc);
+        }
+    } else if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_VARIABLE) {
+        if (lv_aic_stream_open(&stream, dsc->src) != LV_FS_RES_OK)
+            return LV_RESULT_INVALID;
+
+        if (lv_check_bmp_header(&stream) == LV_RESULT_OK)
+            return lv_bmp_dec_open(decoder, dsc);
+    }
+#endif
 
     if (lv_aic_stream_open(&stream, dsc->src) != LV_FS_RES_OK)
         return LV_RESULT_INVALID;
@@ -731,7 +613,7 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
 
     if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_FILE) {
         ptr = strrchr(dsc->src, '.');
-        if (image_suffix_is_jpg(ptr))
+        if (ptr && image_suffix_is_jpg(ptr))
             type = MPP_CODEC_VIDEO_DECODER_MJPEG;
 
     } else if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_VARIABLE) {
@@ -766,7 +648,7 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
     if (type == MPP_CODEC_VIDEO_DECODER_MJPEG)
         size_shift = dsc->header.reserved_2;
 #endif
-    set_frame_buf_size(&dec_frame, buf_size, 0);
+    lv_set_frame_buf_size(&dec_frame, buf_size, 0);
     if (size_shift > 0) {
         struct mpp_scale_ratio scale;
         scale.hor_scale = size_shift;
@@ -774,10 +656,10 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
         mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_SCALE, &scale);
     }
 
-    CHECK_RET(frame_buf_alloc(mpp_data, &dec_frame.buf, buf_size, dsc->header.cf), LV_RESULT_OK);
+    CHECK_RET(lv_frame_buf_alloc(mpp_data, &dec_frame.buf, buf_size, dsc->header.cf), LV_RESULT_OK);
 
     // allocator will be released in decoder
-    allocator = open_allocator(&dec_frame);
+    allocator = lv_open_allocator(&dec_frame);
     CHECK_PTR(allocator);
 
     mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_EXT_FRAME_ALLOCATOR, (void*)allocator);
@@ -804,7 +686,7 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
 #if LV_CACHE_DEF_SIZE > 0
     if (!dsc->args.no_cache) {
         mpp_cache_t *mpp_cache = (mpp_cache_t *)decoder->user_data;
-        if (image_cache_check(mpp_cache)) {
+        if (lv_image_cache_check(mpp_cache)) {
             // Add it to cache
             lv_image_cache_data_t search_key;
             search_key.src_type = dsc->src_type;
@@ -828,7 +710,7 @@ out:
     if (res == LV_RESULT_INVALID) {
         dsc->decoded = NULL;
         if (mpp_data) {
-            frame_buf_free(mpp_data);
+            lv_frame_buf_free(mpp_data);
             lv_free(mpp_data);
         }
     }
@@ -843,7 +725,7 @@ static void mpp_dec_data_release(mpp_decoder_data_t *decoder_data)
         return;
 
     if (decoder_data) {
-        frame_buf_free(decoder_data);
+        lv_frame_buf_free(decoder_data);
         lv_free(decoder_data);
     }
 }
@@ -912,7 +794,7 @@ void lv_mpp_dec_deinit(void)
     }
 }
 
-#if defined(LPKG_USING_LVGL) && defined(LVGL_V_9) && LV_CACHE_DEF_SIZE > 0
+#if LV_CACHE_DEF_SIZE > 0
 bool lv_drop_one_cached_image()
 {
     #define img_cache_p (LV_GLOBAL_DEFAULT()->img_cache)
@@ -922,7 +804,28 @@ bool lv_drop_one_cached_image()
     else
         return false;
 }
-#endif
+
+bool lv_image_cache_check(mpp_cache_t *mpp_cache)
+{
+#if LV_CACHE_IMG_NUM_LIMIT == 0
+    return true;
+#else
+    if (mpp_cache->cache_num < mpp_cache->max_num) {
+        return true;
+    } else {
+        if (lv_drop_one_cached_image())
+            return true;
+        else
+            return false;
+    }
+#endif //LV_CACHE_IMG_NUM_LIMIT
+}
+#else
+bool lv_drop_one_cached_image()
+{
+    return false;
+}
+#endif // LV_CACHE_DEF_SIZE
 
 void lv_img_cache_set_size(uint16_t max_num)
 {

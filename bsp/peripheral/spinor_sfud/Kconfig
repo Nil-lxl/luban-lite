@@ -12,6 +12,9 @@ if LPKG_USING_SFUD
         default n
         help
             Support read/write/erase security registers for spinor
+    config AIC_DISABLE_SFUD_WP_DEBUG
+        bool "SFUD: Disable write protect debug"
+        default n
 endif
 
 # only for bootloader, rtos use RT_SFUD_USING_FLASH_INFO_TABLE

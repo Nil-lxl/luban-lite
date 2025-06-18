@@ -18,8 +18,19 @@ Original Author: Shay Gal-on
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <rtthread.h>
 #include "coremark.h"
+
+#ifdef KERNEL_RTTHREAD
+#include <rtthread.h>
+#define NSECS_PER_SEC RT_TICK_PER_SECOND
+#define CORETIMETYPE rt_tick_t
+#define GETMYTIME(_t) (*_t=rt_tick_get())
+#else
+#include <aic_common.h>
+#define NSECS_PER_SEC	1000
+#define CORETIMETYPE uint64_t
+#define GETMYTIME(_t) (*_t=aic_get_time_ms())
+#endif	// KERNEL_RTTHREAD
 
 #if VALIDATION_RUN
 	volatile ee_s32 seed1_volatile=0x3415;
@@ -49,9 +60,6 @@ Original Author: Shay Gal-on
 	Use lower values to increase resolution, but make sure that overflow does not occur.
 	If there are issues with the return value overflowing, increase this value.
 	*/
-#define NSECS_PER_SEC RT_TICK_PER_SECOND
-#define CORETIMETYPE rt_tick_t  
-#define GETMYTIME(_t) (*_t=rt_tick_get())
 #define MYTIMEDIFF(fin,ini) ((fin)-(ini))
 #define TIMER_RES_DIVIDER 1
 #define SAMPLE_TIME_IMPLEMENTATION 1

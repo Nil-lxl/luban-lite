@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -2045,8 +2045,12 @@ int matroska_peek_packet(struct aic_matroska_parser *s, struct aic_parser_packet
 
 int matroska_read_packet(struct aic_matroska_parser *s, struct aic_parser_packet *pkt)
 {
+    int ret = PARSER_OK;
+
     aic_stream_seek(s->stream, s->matroska_c.cur_pos, SEEK_SET);
-    aic_stream_read(s->stream, pkt->data, pkt->size);
+    ret = aic_stream_read(s->stream, pkt->data, pkt->size);
+    if (ret < 0)
+        return PARSER_NODATA;
 
     return PARSER_OK;
 }

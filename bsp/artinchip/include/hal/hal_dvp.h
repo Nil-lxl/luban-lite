@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -12,6 +12,7 @@
 #define DVP_PLANE_NUM           2
 #define DVP_MAX_HEIGHT          4096U
 #define DVP_MAX_WIDTH           4096U
+#define DVP_SFIELD_MODE
 
 #define DVP_CH_BASE                 0x100
 #define DVP_CTL                     0x0
@@ -82,6 +83,8 @@
 
 #define DVP_OUT_ADDR_BUF(plane) (plane ? DVP_OUT_ADDR_BUF1 : DVP_OUT_ADDR_BUF0)
 
+#define DVP_OUT_FRA_NUM_MASK            GENMASK(13, 0)
+
 #define DVP_OUT_CTL_CAP_OFF_IMMEDIATELY BIT(1)
 #define DVP_OUT_CTL_CAP_ON              BIT(0)
 
@@ -149,7 +152,7 @@ int  hal_dvp_clr_int(void);
 void hal_dvp_enable_int(struct aic_dvp_config *cfg, int enable);
 void hal_dvp_set_pol(u32 flags);
 void hal_dvp_set_cfg(struct aic_dvp_config *cfg);
-void hal_dvp_update_buf_addr(dma_addr_t y, dma_addr_t uv, u32 offset);
+void hal_dvp_update_buf_addr(dma_addr_t y, dma_addr_t uv, u32 y_offset, u32 uv_offset);
 void hal_dvp_update_ctl(void);
 void hal_dvp_record_mode(void);
 void hal_dvp_qos_cfg(u32 high, u32 low, u32 inc_thd, u32 dec_thd);
@@ -158,5 +161,6 @@ u32 hal_dvp_get_current_xy(void);
 u32 hal_dvp_is_top_field(void);
 u32 hal_dvp_is_bottom_field(void);
 void hal_dvp_field_tag_clr(void);
+void hal_dvp_set_frame_offset(u32 num);
 
 #endif /* _ARTINCHIP_HAL_DVP_H_ */

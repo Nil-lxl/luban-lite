@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -19,12 +19,7 @@
 
 #define AIC_DVP_NAME    "aic-dvp"
 
-#ifdef AIC_DVP_DRV_V10
 #define AIC_DVP_CLK_RATE    200000000   /* 200MHz */
-#endif
-#ifdef AIC_DVP_DRV_V11
-#define AIC_DVP_CLK_RATE    150000000   /* 150MHz */
-#endif
 #define AIC_DVP_QOS_HIGH    0xB
 #define AIC_DVP_QOS_LOW     0x7
 
@@ -49,15 +44,20 @@ int aic_dvp_set_in_fmt(struct mpp_video_fmt *fmt);
 int aic_dvp_set_out_fmt(struct dvp_out_fmt *fmt);
 int aic_dvp_stream_on(void);
 int aic_dvp_stream_off(void);
+void aic_dvp_stream_pause(void);
+void aic_dvp_stream_resume(void);
 
 int aic_dvp_req_buf(char *buf, u32 size, struct vin_video_buf *vbuf);
 int aic_dvp_q_buf(u32 index);
 int aic_dvp_dq_buf(u32 *pindex);
+u32 aic_dvp_get_timestamp(u32 index);
 
 int aic_dvp_probe(void);
 int aic_dvp_vb_init(void);
 void aic_dvp_vb_deinit(void);
 int aic_dvp_open(void);
 int aic_dvp_close(void);
+
+bool aic_dvp_sfield_mode(void);
 
 #endif /* _ARTINCHIP_DRV_DVP_H_ */

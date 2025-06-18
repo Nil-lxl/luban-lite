@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -147,8 +147,17 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_DIS, 3, "PD.26"},
     {2, PIN_PULL_DIS, 3, "PD.27"},
 #endif
+#ifdef AIC_USING_CLK_OUT0
+    {6, PIN_PULL_DIS, 3, "PD.13"},
+#endif
 #ifdef AIC_USING_CLK_OUT1
     {2, PIN_PULL_DIS, 3, "PE.11"},
+#endif
+#ifdef AIC_USING_CLK_OUT2
+    {2, PIN_PULL_DIS, 3, "PE.10"},
+#endif
+#ifdef AIC_USING_CLK_OUT3
+    {7, PIN_PULL_DIS, 3, "PC.6"},
 #endif
 #ifdef AIC_USING_DVP
     {3, PIN_PULL_DIS, 3, "PE.0"},

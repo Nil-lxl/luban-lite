@@ -16,7 +16,7 @@ config AIC_RTP_X_PLATE
 
 config AIC_RTP_Y_PLATE
     int "The Y-plate value of RTP touchscreen"
-    default 665
+    default 0
     depends on AIC_USING_RTP
 
 config AIC_RTP_DELAY

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,7 +17,9 @@
 
 static struct rt_device_pwm g_aic_epwm = {0};
 static struct aic_epwm_pulse_para g_pulse_para[AIC_EPWM_CH_NUM] = {0};
-
+#ifdef AIC_EPWM_DRV_V11
+static u8 g_epwm_pul_flag[AIC_EPWM_CH_NUM] = {0};
+#endif
 static void aic_epwm_default_action(void)
 {
     struct aic_epwm_action action0 = {
@@ -126,12 +128,29 @@ static rt_err_t drv_epwm_set_pul(struct rt_device_pwm *device,
     g_pulse_para[cfg->channel].duty_ns = cfg->pulse;
     g_pulse_para[cfg->channel].prd_ns = cfg->period;
 
+#ifdef AIC_EPWM_DRV_V11
+    hal_epwm_pul_config(cfg->channel);
+
+    g_epwm_pul_flag[cfg->channel] = 1;
+
+    /* temporarily control two outputs simultaneously */
+    if (hal_epwm_pul_set(cfg->channel, cfg->pulse, cfg->period, EPWM_SET_CMPA_CMPB, cfg->pul_cnt))
+        return -RT_ERROR;
+
+    hal_epwm_act_sw_ct(cfg->channel, EPWM_SET_CMPA_CMPB, EPWM_ACT_SW_NONE);
+
+    hal_epwm_count_ct(cfg->channel, EPWM_MODE_UP_COUNT);
+
+    hal_epwm_pul_sw_updt(cfg->channel);
+#else
     if (hal_epwm_set(cfg->channel, cfg->pulse, cfg->period, (rt_uint32_t)EPWM_SET_CMPA_CMPB))
         return -RT_ERROR;
 
     hal_epwm_int_config(cfg->channel, cfg->irq_mode, 1);
 
     hal_epwm_enable(cfg->channel);
+#endif
+
     return RT_EOK;
 }
 
@@ -226,13 +245,26 @@ static struct rt_device_pm_ops drv_epwm_pm_ops =
 
 irqreturn_t aic_epwm_irq(int irq, void *arg)
 {
-    static u32 isr_cnt[AIC_EPWM_CH_NUM] = {0};
     u32 stat;
     int i;
+#ifndef AIC_EPWM_DRV_V11
+    static u32 isr_cnt[AIC_EPWM_CH_NUM] = {0};
+#endif
 
     for (i = 0; i < AIC_EPWM_CH_NUM; i++) {
         stat = hal_epwm_int_sts(i);
         if (stat & EPWM_INT_FLG) {
+#ifdef AIC_EPWM_DRV_V11
+            int level = hal_epwm_get_default_level(i);
+            hal_epwm_act_sw_ct(i, EPWM_SET_CMPA_CMPB, level + EPWM_ACT_SW_LOW);
+            if (g_epwm_pul_flag[i] == 0) {
+                /* enable the EPWM_PUL_OUT_EN will enter the interrupt */
+                hal_epwm_count_ct(i, (u32)EPWM_MODE_STOP_COUNT);
+            }
+            if (g_epwm_pul_flag[i] == 1) {
+                g_epwm_pul_flag[i] = 0;
+            }
+#else
             isr_cnt[i]++;
             if (isr_cnt[i] == g_pulse_para[i].pulse_cnt) {
                 hal_epwm_set(i, g_pulse_para[i].prd_ns, g_pulse_para[i].prd_ns, (rt_uint32_t)EPWM_SET_CMPA_CMPB);
@@ -240,6 +272,7 @@ irqreturn_t aic_epwm_irq(int irq, void *arg)
                 pr_info("\nisr cnt:%d,disabled the epwm%d interrupt now.\n", isr_cnt[i], i);
                 isr_cnt[i] = 0;
             }
+#endif
             hal_epwm_clr_int(stat, i);
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, sakumisu
+ * Copyright (c) 2022-2025, sakumisu
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,26 +8,40 @@
 
 #include "usb_video.h"
 
-#define USBH_VIDEO_FORMAT_UNCOMPRESSED 0
-#define USBH_VIDEO_FORMAT_MJPEG        1
+#define USBH_VIDEO_FORMAT_UNCOMPRESSED BIT(0)
+#define USBH_VIDEO_FORMAT_MJPEG        BIT(1)
+#define USBH_VIDEO_FORMAT_H264         BIT(2)
+#define USBH_VIDEO_FORMAT_UNCOMPRESSED_YUY2 ((1 << 4) | USBH_VIDEO_FORMAT_UNCOMPRESSED)
+#define USBH_VIDEO_FORMAT_UNCOMPRESSED_NV12 ((1 << 5) | USBH_VIDEO_FORMAT_UNCOMPRESSED)
 
+#define UVC_GET_FORMAT(x)           ((x) & 0xf)
+#define UVC_GET_SUBFORMAT(x)        ((x >> 4) & 0xf)
 struct usbh_video_resolution {
     uint16_t wWidth;
     uint16_t wHeight;
 };
 
 struct usbh_video_format {
-    struct usbh_video_resolution frame[12];
+    struct usbh_video_resolution frame[36];
+    char format_type_name[5];
     uint8_t format_type;
     uint8_t num_of_frames;
 };
 
+struct usbh_videoframe {
+    uint8_t *frame_buf;
+    uint32_t frame_bufsize;
+    uint32_t frame_format;
+    uint32_t frame_size;
+    uint8_t index;
+};
+
 struct usbh_videostreaming {
+    struct usbh_videoframe *frame;
+    uint32_t frame_format;
     uint32_t bufoffset;
-    uint32_t buflen;
     uint16_t width;
-    uint16_t heigth;
-    void (*video_one_frame_callback)(struct usbh_videostreaming *stream);
+    uint16_t height;
 };
 
 struct usbh_video {
@@ -48,6 +62,8 @@ struct usbh_video {
     uint8_t num_of_intf_altsettings;
     uint8_t num_of_formats;
     struct usbh_video_format format[3];
+
+    void *user_data;
 };
 
 #ifdef __cplusplus

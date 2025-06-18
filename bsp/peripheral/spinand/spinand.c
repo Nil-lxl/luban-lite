@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -195,12 +195,12 @@ int spinand_die_select(struct aic_spinand *flash, u8 select_die)
     return 0;
 }
 
-int spinand_read_status(struct aic_spinand *flash, u8 *status)
+static int spinand_read_status(struct aic_spinand *flash, u8 *status)
 {
     return spinand_read_reg_op(flash, REG_STATUS, status);
 }
 
-int spinand_read_cfg(struct aic_spinand *flash, u8 *cfg)
+static int spinand_read_cfg(struct aic_spinand *flash, u8 *cfg)
 {
     return spinand_read_reg_op(flash, REG_CFG, cfg);
 }
@@ -348,6 +348,28 @@ int spinand_config_set(struct aic_spinand *flash, u8 mask, u8 val)
     status |= val;
 
     return spinand_set_cfg(flash, status);
+}
+
+static bool spinand_support_regs(u8 reg) {
+    if (reg == REG_BLOCK_LOCK || reg == REG_CFG || reg == REG_STATUS)
+        return true;
+
+    return false;
+}
+
+int spinand_get_feature(struct aic_spinand *flash, u8 reg_addr)
+{
+    u8 status = 0;
+    int result;
+
+    if (!spinand_support_regs(reg_addr))
+        return -SPINAND_ERR;
+
+    result = spinand_read_reg_op(flash, reg_addr, &status);
+    if (result != SPINAND_SUCCESS)
+        return result;
+
+    return status;
 }
 
 int spinand_erase_op(struct aic_spinand *flash, u32 page)
@@ -674,6 +696,10 @@ int spinand_read_page(struct aic_spinand *flash, u32 page, u8 *data,
     }
 
     if (spare && spare_len) {
+        if (data_copy_mode) {
+            memcpy(spare, flash->oobbuf, spare_len);
+        }
+
         if (spare_only) {
             memcpy(spare, flash->oobbuf, spare_len);
         }
@@ -723,14 +749,14 @@ int spinand_get_status(struct aic_spinand *flash, u16 blk)
     return nand_bbt_get_block_status(flash, blk);
 }
 
-int spinand_set_status(struct aic_spinand *flash, u16 blk, u16 pos, u16 status)
+int spinand_set_status(struct aic_spinand *flash, u16 blk, u16 status)
 {
     if (!flash) {
         pr_err("flash is NULL\r\n");
         return -SPINAND_ERR;
     }
 
-    nand_bbt_set_block_status(flash, blk, pos, status);
+    nand_bbt_set_block_status(flash, blk, status);
     return 0;
 }
 
@@ -863,10 +889,12 @@ int spinand_write_page(struct aic_spinand *flash, u32 page, const u8 *data,
     if (spare && spare_len) {
         /* if use extra buf, write oob data size used spare_len */
         if (!spinand_check_if_do_memcpy(flash, (u8 *)data, data_len,
-                                        (u8 *)spare, spare_len))
+                                        (u8 *)spare, spare_len)) {
             nbytes += spare_len;
-        else
+        } else {
             nbytes += flash->info->oob_size;
+            memcpy(flash->oobbuf, spare, spare_len);
+        }
 
         if (!buf) {
             memcpy(flash->oobbuf, spare, spare_len);
@@ -989,7 +1017,7 @@ int spinand_read(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size)
 
     /* Search for the first good block after the given offset */
     while (spinand_block_isbad(flash, blk)) {
-        pr_warn("find a bad block, off adjust to the next block\n");
+        pr_warn("find a bad block %d, off adjust to the next block\n", blk);
         off += blk_size;
         blk = off / blk_size;
     }
@@ -1120,7 +1148,7 @@ int spinand_write(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size)
 
     /* Search for the first good block after the given offset */
     while (spinand_block_isbad(flash, blk)) {
-        pr_warn("find a bad block, off adjust to the next block\n");
+        pr_warn("find a bad block %u, off adjust to the next block\n", blk);
         off += blk_size;
         blk = off / blk_size;
     }

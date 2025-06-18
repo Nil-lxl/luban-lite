@@ -34,8 +34,8 @@ Original Author: Shay Gal-on
 #define MEM_STATIC 0
 #define MEM_MALLOC 1
 #define MEM_STACK 2
+#define MEM_STATIC_DDR 3
 
-#include <rtthread.h>
 #include "core_portme.h"
 
 
@@ -46,7 +46,12 @@ Original Author: Shay Gal-on
 #if(HAS_FLOAT)
 #define ee_printf printf
 #else
+#ifdef KERNEL_RTTHREAD
+#include <rtthread.h>
 #define ee_printf rt_kprintf
+#else
+#define ee_printf printf
+#endif	// KERNEL_RTTHREAD
 #endif
 #endif
 

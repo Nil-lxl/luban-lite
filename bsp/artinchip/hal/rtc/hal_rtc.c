@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -250,6 +250,7 @@ void hal_rtc_set_alarm(u32 sec)
 
 static void hal_rtc_low_power(void)
 {
+#ifdef AIC_RTC_LOW_POWER
     u8 val = 0;
 
     val |= RTC_ANA0_RC1M_EN | RTC_ANA0_LDO18_EN;
@@ -268,6 +269,7 @@ static void hal_rtc_low_power(void)
     val = RTC_ANA0_RC1M_EN;
     val |= RTC_ANA0_LDO18_VOL_120 << RTC_ANA0_LDO18_VOL_SHIFT;
     RTC_WRITEB(val, RTC_REG_ANALOG0);
+#endif
 #endif
 }
 

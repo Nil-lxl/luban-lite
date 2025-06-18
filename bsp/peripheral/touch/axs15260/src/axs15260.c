@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -164,6 +164,14 @@ const struct rt_touch_ops axs15260_touch_ops =
     .touch_control = axs15260_control,
 };
 
+struct rt_touch_info axs15260_info = {
+    RT_TOUCH_TYPE_CAPACITANCE,
+    RT_TOUCH_VENDOR_UNKNOWN,
+    AXS_MAX_TOUCH_NUMBER,
+    (rt_int32_t)AIC_TOUCH_X_COORDINATE_RANGE,
+    (rt_int32_t)AIC_TOUCH_Y_COORDINATE_RANGE,
+};
+
 int rt_hw_axs15260_init(const char *name, struct rt_touch_config *cfg)
 {
     rt_touch_t touch_device = RT_NULL;
@@ -201,8 +209,8 @@ int rt_hw_axs15260_init(const char *name, struct rt_touch_config *cfg)
     axs15260_client.client_addr = AXS15260_SLAVE_ADDR;
 
     /* register touch device */
-    touch_device->info.type = RT_TOUCH_TYPE_CAPACITANCE;
-    touch_device->info.vendor = RT_TOUCH_VENDOR_UNKNOWN;
+    touch_device->info = axs15260_info;
+
     rt_memcpy(&touch_device->config, cfg, sizeof(struct rt_touch_config));
     touch_device->ops = &axs15260_touch_ops;
 

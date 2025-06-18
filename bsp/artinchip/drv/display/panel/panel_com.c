@@ -100,7 +100,7 @@ struct aic_panel *aic_find_panel(u32 connector_type)
     if (i >= ARRAY_SIZE(panels))
         return NULL;
 
-    pr_info("find panel driver : %s\n", panels[i]->name);
+    pr_debug("find panel driver : %s\n", panels[i]->name);
 
     return panels[i];
 }

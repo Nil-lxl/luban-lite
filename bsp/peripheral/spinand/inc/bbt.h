@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,12 +15,12 @@
 #define BBT_BLOCK_GOOD		    0x01
 #define BBT_BLOCK_RESERVED	    0x02
 #define BBT_BLOCK_FACTORY_BAD	0x03
+#define BBT_BLOCK_STATUS_MSK	GENMASK(1, 0)
 
 int nand_bbt_init(struct aic_spinand *flash);
 bool nand_bbt_is_initialized(struct aic_spinand *flash);
 void nand_bbt_cleanup(struct aic_spinand *flash);
 int nand_bbt_get_block_status(struct aic_spinand *flash, u32 block);
-void nand_bbt_set_block_status(struct aic_spinand *flash, u32 block, u32 pos_block,
-                               u32 status);
+void nand_bbt_set_block_status(struct aic_spinand *flash, u32 block, u32 status);
 
 #endif /* __BBT_H__ */

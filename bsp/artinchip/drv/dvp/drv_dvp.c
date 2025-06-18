@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,6 +21,7 @@
 
 struct aic_dvp g_dvp = {0};
 static u32 g_dvp_full_cnt = 0;
+static bool g_dvp_resumed = false;
 
 static const struct {
     u32 fmt;
@@ -158,6 +159,19 @@ int aic_dvp_stream_off(void)
     return ret;
 }
 
+void aic_dvp_stream_pause(void)
+{
+    hal_dvp_enable_int(&g_dvp.cfg, 0);
+}
+
+void aic_dvp_stream_resume(void)
+{
+    hal_dvp_clr_fifo();
+    hal_dvp_clr_int();
+    g_dvp_resumed = true;
+    hal_dvp_enable_int(&g_dvp.cfg, 1);
+}
+
 int aic_dvp_req_buf(char *buf, u32 size, struct vin_video_buf *vbuf)
 {
     struct aic_dvp_config *cfg = &g_dvp.cfg;
@@ -196,12 +210,23 @@ int aic_dvp_dq_buf(u32 *pindex)
     return vin_vb_dq_buf(&g_dvp.queue, pindex);
 }
 
+/* Return: 0, error; > 0, the elapse time in ms unit */
+u32 aic_dvp_get_timestamp(u32 index)
+{
+    if (index >= g_dvp.queue.num_buffers) {
+        pr_err("Invalid index out of range: %d\n", index);
+        return 0;
+    }
+
+    return vin_vb_get_timestamp(&g_dvp.queue, index);
+}
+
 static int aic_dvp_buf_reload(struct aic_dvp *dvp, struct vb_buffer *buf)
 {
     buf->hw_using = 1;
     pr_debug("Set %d buf 0x%x-0x%x to register\n", buf->index,
              (long)buf->planes[0].buf, (long)buf->planes[1].buf);
-    hal_dvp_update_buf_addr(buf->planes[0].buf, buf->planes[1].buf, 0);
+    hal_dvp_update_buf_addr(buf->planes[0].buf, buf->planes[1].buf, 0, 0);
     hal_dvp_update_ctl();
     return 0;
 }
@@ -228,7 +253,7 @@ static int aic_dvp_top_field_done(struct aic_dvp *dvp, u32 err)
 
     cur_buf = list_first_entry(&dvp->active_list, struct vb_buffer, active_entry);
     pr_debug("cur: index %d, dvp_using %d\n",
-             cur_buf->vb.vb2_buf.index, cur_buf->dvp_using);
+             cur_buf->index, cur_buf->hw_using);
     if (BUF_IS_INVALID(cur_buf->index)) {
         pr_err("Invalid buf %d\n", cur_buf->index);
         return -1;
@@ -236,8 +261,13 @@ static int aic_dvp_top_field_done(struct aic_dvp *dvp, u32 err)
 
     pr_debug("Add offset %d of cur buf %d", dvp->cfg.stride[0], cur_buf->index);
 
+#ifdef DVP_SFIELD_MODE
     hal_dvp_update_buf_addr(cur_buf->planes[0].buf, cur_buf->planes[1].buf,
-                            dvp->cfg.stride[0]);
+                            dvp->cfg.sizeimage[0] / 2, dvp->cfg.sizeimage[1] / 2);
+#else
+    hal_dvp_update_buf_addr(cur_buf->planes[0].buf, cur_buf->planes[1].buf,
+                            dvp->cfg.stride[0], dvp->cfg.stride[0]);
+#endif
     hal_dvp_update_ctl();
     dvp->sequence++;
     return 0;
@@ -299,12 +329,6 @@ static int aic_dvp_update_addr(struct aic_dvp *dvp)
         return -1;
     }
 
-    if (!cur_buf->hw_using) {
-        aic_dvp_buf_reload(dvp, cur_buf);
-        dvp->sequence++;
-        return 0;
-    }
-
     if (cur_buf == list_last_entry(&dvp->active_list, struct vb_buffer,
                                    active_entry)) {
 #ifndef AIC_DVP_IGNORE_LOSS
@@ -327,8 +351,9 @@ static int aic_dvp_update_addr(struct aic_dvp *dvp)
         dvp->sequence++;
     } else {
         /* This should not happened! */
-        pr_warn("Weird! DVP is using two buf %d & %d!\n",
-                cur_buf->index, next_buf->index);
+        if (!dvp->cfg.interlaced)
+            pr_info("Weird! DVP is using two buf %d & %d!\n",
+                    cur_buf->index, next_buf->index);
         return -1;
     }
 
@@ -372,6 +397,9 @@ static int aic_dvp_start_streaming(struct vb_queue *q)
     hal_dvp_set_cfg(&dvp->cfg);
     hal_dvp_set_pol(dvp->cfg.flags);
     hal_dvp_record_mode();
+
+    if (g_dvp.fmt.frame_offset)
+        hal_dvp_set_frame_offset(g_dvp.fmt.frame_offset);
 
     hal_dvp_clr_int();
     hal_dvp_enable_int(&dvp->cfg, 1);
@@ -439,6 +467,12 @@ static irqreturn_t aic_dvp_isr(int irq, void *data)
         if (err)
             hal_dvp_clr_fifo();
 
+        if (g_dvp_resumed) {
+            hal_dvp_clr_fifo();
+            hal_dvp_clr_fifo();
+            g_dvp_resumed = false;
+        }
+
         if (dvp->cfg.interlaced) {
             /* If the first field is a bottom field, ignore it */
             if (!recv_first_field && hal_dvp_is_bottom_field()) {
@@ -450,9 +484,17 @@ static irqreturn_t aic_dvp_isr(int irq, void *data)
 
             if (hal_dvp_is_top_field()) {
                 recv_first_field = 1;
+#ifdef DVP_SFIELD_MODE
+            } else {
+                /* Ignore the bottom field */
                 return IRQ_HANDLED;
             }
         }
+#else
+                return IRQ_HANDLED;
+            }
+        }
+#endif
 
         aic_dvp_frame_done(dvp, err);
     }
@@ -478,6 +520,18 @@ static irqreturn_t aic_dvp_isr(int irq, void *data)
     }
 
     return IRQ_HANDLED;
+}
+
+bool aic_dvp_sfield_mode(void)
+{
+#ifdef DVP_SFIELD_MODE
+    if (g_dvp.cfg.interlaced)
+        return true;
+    else
+        return false;
+#else
+    return false;
+#endif
 }
 
 int aic_dvp_probe(void)
@@ -520,12 +574,6 @@ int aic_dvp_open(void)
         return 0;
     }
 
-    ret = hal_clk_enable(CLK_DVP);
-    if (ret < 0) {
-        pr_err("DVP clk enable failed!\n");
-        return -1;
-    }
-
     ret = hal_clk_set_freq(CLK_DVP, AIC_DVP_CLK_RATE);
     if (ret < 0) {
         pr_err("Failed to set DVP clk %d\n", AIC_DVP_CLK_RATE);
@@ -557,14 +605,21 @@ int aic_dvp_close(void)
         return -1;
     }
 
-    ret = hal_clk_disable(CLK_DVP);
-    if (ret < 0) {
-        pr_err("DVP clk disable failed!\n");
-        return -1;
-    }
-
     if (g_dvp_full_cnt)
         pr_info("DVP FIFO full happened %d times\n", g_dvp_full_cnt);
 
     return 0;
 }
+
+void cmd_dvp_vb_info(int argc, char **argv)
+{
+    struct vb_buffer *vb = NULL;
+
+    vin_vb_show_info(&g_dvp.queue);
+
+    printf("Active list  : [");
+    list_for_each_entry(vb, &g_dvp.active_list, active_entry)
+        printf("%d%s", vb->index, vb->hw_using ? "* " : " ");
+    printf("]\n");
+}
+MSH_CMD_EXPORT_ALIAS(cmd_dvp_vb_info, vbinfo, Show VB status);

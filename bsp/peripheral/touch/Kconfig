@@ -96,6 +96,13 @@ config AIC_TOUCH_90_DEGREE_ROTATION
     default n
     depends on AIC_USING_CTP
 
+config AIC_TOUCH_180_DEGREE_ROTATION
+    bool "Touch 180 degrees rotation"
+    default n
+    depends on AIC_USING_CTP
+    select AIC_TOUCH_X_FLIP
+    select AIC_TOUCH_Y_FLIP
+
 config AIC_TOUCH_270_DEGREE_ROTATION
     bool "Touch 270 degrees rotation"
     default n

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -50,7 +50,8 @@ extern "C" {
 #define MUX_PORT_CLOCK_INDEX 2
 
 #define VDEC_PORT_IN_INDEX  0
-#define VDEC_PORT_OUT_INDEX 1
+#define VDEC_PORT_IN_CLOCK_INDEX 1
+#define VDEC_PORT_OUT_INDEX 2
 
 #define VENC_PORT_IN_INDEX  0
 #define VENC_PORT_OUT_INDEX 1

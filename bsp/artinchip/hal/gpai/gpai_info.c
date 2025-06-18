@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -60,7 +60,7 @@ struct aic_gpai_ch aic_gpai_chs[] = {
 #endif
         .obtain_data_mode = AIC_GPAI2_OBTAIN_DATA_MODE,
         .mode = AIC_GPAI2_MODE,
-#ifdef AIC_GPAI0_MODE_PERIOD
+#ifdef AIC_GPAI2_MODE_PERIOD
         .smp_period = AIC_GPAI2_PERIOD_TIME,
 #endif
         .fifo_depth = 8,

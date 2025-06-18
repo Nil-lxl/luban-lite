@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -27,10 +27,10 @@
 // #define SC031GS_TEST_MODE
 
 #define SC031GS_I2C_SLAVE_ID     0x30
-#define SC031GS_CHIP_ID          0x0031
+#define SC031GS_CHIP_ID          0x3105
 
-#define SC031GS_PID_HIGH_REG                    0x3107
-#define SC031GS_PID_LOW_REG                     0x3108
+#define SC031GS_PID_HIGH_REG                    0x3108
+#define SC031GS_PID_LOW_REG                     0x3109
 #define SC031GS_MAX_FRAME_WIDTH                 (640)
 #define SC031GS_MAX_FRAME_HIGH                  (480)
 
@@ -320,6 +320,11 @@ static int sc031gs_probe(struct sc03_dev *sensor)
     return sc031gs_init(sensor);
 }
 
+static bool sc031gs_is_open(struct sc03_dev *sensor)
+{
+    return sensor->on;
+}
+
 static void sc031gs_power_on(struct sc03_dev *sensor)
 {
     if (sensor->on)
@@ -328,6 +333,7 @@ static void sc031gs_power_on(struct sc03_dev *sensor)
     camera_pin_set_high(sensor->pwdn_pin);
     aicos_udelay(2);
 
+    LOG_I("Power on");
     sensor->on = true;
 }
 
@@ -338,6 +344,7 @@ static void sc031gs_power_off(struct sc03_dev *sensor)
 
     camera_pin_set_low(sensor->pwdn_pin);
 
+    LOG_I("Power off");
     sensor->on = false;
 }
 
@@ -361,23 +368,33 @@ static rt_err_t sc03_init(rt_device_t dev)
     if (!sensor->pwdn_pin)
         return -RT_EINVAL;
 
-    sc031gs_power_on(sensor);
-
-    if (sc031gs_probe(sensor))
-        return -RT_ERROR;
-
-    LOG_I("SC031GS inited");
     return RT_EOK;
 }
 
 static rt_err_t sc03_open(rt_device_t dev, rt_uint16_t oflag)
 {
+    struct sc03_dev *sensor = (struct sc03_dev *)dev;
+
+    if (sc031gs_is_open(sensor))
+        return RT_EOK;
+
+    sc031gs_power_on(sensor);
+
+    if (sc031gs_probe(sensor)) {
+        sc031gs_power_off(sensor);
+        return -RT_ERROR;
+    }
+
+    LOG_I("SC031GS inited");
     return RT_EOK;
 }
 
 static rt_err_t sc03_close(rt_device_t dev)
 {
     struct sc03_dev *sensor = (struct sc03_dev *)dev;
+
+    if (!sc031gs_is_open(sensor))
+        return -RT_ERROR;
 
     sc031gs_power_off(sensor);
     return RT_EOK;
@@ -406,17 +423,11 @@ static int sc03_stop(struct sc03_dev *sensor)
 static int sc03_set_fps(struct sc03_dev *sensor, u32 fps)
 {
     u16 cur = 0, base = 0x2ab, val = 0;
-    u32 i, avail_fps[] = {120, 60, 30, 15};
 
-    if (fps < 15)
-        fps = 15;
-
-    for (i = 0; i < ARRAY_SIZE(avail_fps); i++) {
-        if (fps >= avail_fps[i]) {
-            val = base << i;
-            break;
-        }
-    }
+    if (fps < 10)
+        fps = 10;
+    if (fps > 120)
+        fps = 120;
 
     cur = sc031gs_read_u16(sensor->i2c, 0x320e, 0x320f);
     if (!cur) {
@@ -424,8 +435,10 @@ static int sc03_set_fps(struct sc03_dev *sensor, u32 fps)
         return -1;
     }
 
+    val = base * 120 / fps;
+
     LOG_I("Set FPS %d[0x%03x] -> %d[0x%03x]\n",
-          120 / (cur / 0x2ab), cur, 120 / (val / 0x2ab), val);
+          120 * base / cur, cur, 120 * base / val, val);
 
     if (cur == val)
         return 0;

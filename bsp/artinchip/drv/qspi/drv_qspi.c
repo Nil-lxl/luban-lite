@@ -531,6 +531,14 @@ static rt_uint32_t spi_get_transfer_status(struct rt_spi_device *device)
     return hal_qspi_master_get_status(&qspi->handle);
 }
 
+static void qspi_set_rxdelay_mode(struct rt_spi_device *device, rt_uint32_t mode)
+{
+    struct aic_qspi *qspi;
+
+    qspi = (struct aic_qspi *)device->bus;
+
+    hal_qspi_master_set_rxdelay_mode(&qspi->handle, mode);
+}
 
 rt_err_t aic_qspi_bus_attach_device(const char *bus_name,
                                     const char *device_name, rt_uint32_t pin,
@@ -575,6 +583,7 @@ static const struct rt_spi_ops aic_qspi_ops = {
     .xfer = qspi_xfer,
     .nonblock = spi_nonblock_set,
     .gstatus = spi_get_transfer_status,
+    .delaymode = qspi_set_rxdelay_mode,
 };
 
 static int rt_hw_qspi_bus_init(void)

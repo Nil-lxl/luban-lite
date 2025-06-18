@@ -7,8 +7,8 @@
             "env_r":      { "size": "256k" },
             "os":         { "size": "4m" },
             "os_r":       { "size": "4m" },
-            "rodata":     { "size": "12m" },
-            "rodata_r":   { "size": "12m" },
+            "rodata":     { "size": "16m" },
+            "rodata_r":   { "size": "16m" },
             "data": {
                 "size": "40m",
                 "nftl": { // Volume in NFTL device

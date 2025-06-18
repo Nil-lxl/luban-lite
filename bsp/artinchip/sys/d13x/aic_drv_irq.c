@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -33,7 +33,9 @@ void drv_irq_vectors_init(void)
         g_irqdata[i] = NULL;
     }
 
+#ifndef KERNEL_BAREMETAL
     g_irqvector[CORET_IRQn] = SysTick_Handler;
+#endif
     g_nmivector = TIM4_NMIHandler;
 }
 
@@ -143,8 +145,6 @@ void drv_irq_unregister(uint32_t irq_num)
     }
 }
 
-#if defined(RT_USING_FINSH)
-#include <finsh.h>
 
 static int cmd_list_irq(int argc, char **argv)
 {
@@ -160,5 +160,11 @@ static int cmd_list_irq(int argc, char **argv)
     }
     return 0;
 }
+#if defined(RT_USING_FINSH)
+#include <finsh.h>
 MSH_CMD_EXPORT_ALIAS(cmd_list_irq, list_irq, list system irq);
+#endif
+#ifdef AIC_CONSOLE_BARE_DRV
+#include "console.h"
+CONSOLE_CMD(list_irq, cmd_list_irq, "list system irq");
 #endif

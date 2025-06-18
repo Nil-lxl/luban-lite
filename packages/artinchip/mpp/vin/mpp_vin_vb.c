@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -59,13 +59,13 @@ int vin_vb_req_buf(struct vb_queue *q,
             offset += cur_plane->len;
             cur_plane++;
         }
+        q->num_buffers++;
         q->bufs[i].index = i;
         q->bufs[i].queue = q;
         q->bufs[i].num_planes = vbuf->num_planes;
         q->bufs[i].state = VB_BUF_STATE_DEQUEUED;
     }
-    q->num_buffers = i;
-    vbuf->num_buffers = i;
+    vbuf->num_buffers = q->num_buffers;
     pr_debug("Requested %d buffers(size %d)\n", i, one_buf_size);
     return 0;
 }
@@ -108,6 +108,7 @@ int vin_vb_q_buf(struct vb_queue *q, u32 index)
     list_add_tail(&vb->queued_entry, &q->queued_list);
     q->queued_count++;
     vb->state = VB_BUF_STATE_QUEUED;
+    vb->timestamp = 0;
 
     /*
      * If already streaming, give the buffer to driver for processing.
@@ -141,7 +142,7 @@ static int __wait_for_done_vb(struct vb_queue *q)
 
     if (!list_empty(&q->done_list)) {
         /* Found a buffer that we were waiting for.*/
-        pr_debug("done_list is not empty after tried %d times!\n", i + 1);
+        pr_debug("done_list is not empty\n");
         return 0;
     }
 
@@ -221,12 +222,31 @@ void vin_vb_buffer_done(struct vb_buffer *vb, enum vb_buffer_state state)
         vb->state = VB_BUF_STATE_QUEUED;
     } else {
         /* Add the buffer to the done buffers list */
+        vb->timestamp = rt_tick_get_millisecond();
         list_add_tail(&vb->done_entry, &q->done_list);
         aicos_sem_give(q->done);
         vb->state = state;
     }
 
     q->owned_by_drv_count--;
+}
+
+u32 vin_vb_get_timestamp(struct vb_queue *q, u32 index)
+{
+    struct vb_buffer *vb = NULL;
+
+    if (!g_vb_ops) {
+        pr_err("Should init VideoBuf ops first!\n");
+        return 0;
+    }
+
+    vb = &q->bufs[index];
+    if (!vb->timestamp) {
+        pr_warn("Buf %d has no timestamp\n", index);
+        return 0;
+    }
+
+    return vb->timestamp;
 }
 
 int vin_vb_stream_on(struct vb_queue *q)

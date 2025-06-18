@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,11 +22,11 @@
 /* Default format configuration of SC035 */
 #define SC035_DFT_WIDTH        VGA_WIDTH
 #define SC035_DFT_HEIGHT       VGA_HEIGHT
-#define SC035_DFT_BUS_TYPE     MEDIA_BUS_PARALLEL
-#define SC035_DFT_CODE         MEDIA_BUS_FMT_YUYV8_2X8
+#define SC035_DFT_BUS_TYPE     MEDIA_BUS_RAW8_MONO
+#define SC035_DFT_CODE         MEDIA_BUS_FMT_Y8_1X8
 
 #define SC035_I2C_SLAVE_ID     0x30
-#define SC035_CHIP_ID          0x310B
+#define SC035_CHIP_ID          0x310b
 
 #define ENABLE                                  1
 #define DISABLE                                 0
@@ -38,8 +38,8 @@
 #define SC035_DELAY_ADDR                        0x0000
 #define SC035_SOFTWARE_RESET_ADDR               0x0103
 #define SC035_SLEEP_MODE_CTRL_ADDR              0x0100
-#define SC035_CHIP_ID_HIGH_ADDR                 0x3107
-#define SC035_CHIP_ID_LOW_ADDR                  0x3108
+#define SC035_CHIP_ID_HIGH_ADDR                 0x3108
+#define SC035_CHIP_ID_LOW_ADDR                  0x3109
 /* Output Window */
 #define SC035_FRAME_WIDTH_HIGH_ADDR             0x3208
 #define SC035_FRAME_WIDTH_LOW_ADDR              0x3209
@@ -290,7 +290,6 @@ static const struct reg16_info sc035_640x480_60fps_regs[] = {
     {REG16_ADDR_INVALID, 0x00}
 };
 
-
 struct sc03_dev {
     struct rt_device dev;
     struct rt_i2c_bus_device *i2c;
@@ -315,6 +314,17 @@ static int sc035_read_reg(struct rt_i2c_bus_device *i2c, u16 reg, u8 *val)
     return 0;
 }
 
+static u16 sc035_read_u16(struct rt_i2c_bus_device *i2c, u16 reg_h, u16 reg_l)
+{
+    u8 val_h = 0, val_l = 0;
+
+    if (sc035_read_reg(i2c, reg_h, &val_h) ||
+        sc035_read_reg(i2c, reg_l, &val_l))
+        return 0;
+
+    return val_h << 8 | val_l;
+}
+
 static int sc035_write_reg(struct rt_i2c_bus_device *i2c, u16 reg, u8 val)
 {
     if (rt_i2c_write_reg16(i2c, SC035_I2C_SLAVE_ID, reg, &val, 1) != 1) {
@@ -326,28 +336,179 @@ static int sc035_write_reg(struct rt_i2c_bus_device *i2c, u16 reg, u8 val)
 }
 
 static int sc035_write_array(struct rt_i2c_bus_device *i2c,
-                               const struct reg16_info *regs)
+                               const struct reg16_info *regs, u32 size)
 {
     int i, ret = 0;
 
-    for (i = 0; ret == 0 && regs[i].reg != REG16_ADDR_INVALID; i++)
+    for (i = 0; i < size; i++) {
+
+        if (regs[i].reg == REG16_ADDR_INVALID)
+            break;
+
+        if (regs[i].reg == SC035_DELAY_ADDR) {
+            aicos_udelay(regs[i].val * 1000);
+            continue;
+        }
+
         ret = sc035_write_reg(i2c, regs[i].reg, regs[i].val);
+        if (ret < 0)
+            return ret;
+    }
 
     return ret;
 }
 
-#if 0
-static void sc031_reset(struct sc03_dev *sensor)
+static int sc03_set_fps(struct sc03_dev *sensor, u32 fps)
 {
-    sc035_write_reg(sensor->i2c, SC035_SOFTWARE_RESET_ADDR, 1);
+    u16 cur = 0, base = 0x207, val = 0;
+
+    if (fps < 10)
+        fps = 10;
+    if (fps > 120)
+        fps = 120;
+
+    cur = sc035_read_u16(sensor->i2c, 0x320e, 0x320f);
+    if (!cur) {
+        LOG_E("Failed to read FPS\n");
+        return -1;
+    }
+
+    val = base * 120 / fps;
+
+    LOG_I("Set FPS %d[0x%03x] -> %d[0x%03x]\n",
+          120 * base / cur, cur, 120 * base / val, val);
+
+    if (cur == val)
+        return 0;
+
+    if (sc035_write_reg(sensor->i2c, 0x320e, val >> 8) ||
+        sc035_write_reg(sensor->i2c, 0x320f, val & 0xFF))
+        return -1;
+    else
+        return 0;
 }
-#endif
+
+/* Adjust AEC preferentially, and then adjust AGC */
+static int sc03_set_agc(struct sc03_dev *sensor, u32 percent)
+{
+    u16 cur = 0, val = 0, gain = PERCENT_TO_INT(0x10, 0xFF, percent);
+    u8 val_h = 0, val_l = 0;
+
+    if (sc035_read_reg(sensor->i2c, 0x3e08, &val_h)
+        || sc035_read_reg(sensor->i2c, 0x3e09, &val_l)) {
+        LOG_E("Failed to get current AGC\n");
+        return -1;
+    }
+    cur = ((val_h & 0xC) << 6) | val_l; /* {16'h3e08[4:2],16h3e09} */
+
+    sc035_write_reg(sensor->i2c, 0x3303, 0x0b);
+
+    if (gain < 0x20) { /* 1x ~ 2x */
+        val_h = 0x03;
+        val_l = 0x10 | ((gain - 0x10) & 0xF);
+    } else if (gain < 0x40) { /* 2x ~ 4x */
+        val_h = 0x7;
+        val_l = 0x10 | (((gain - 0x20) >> 1) & 0xF);
+    } else if (gain < 0x80) { /* 4x ~ 8x */
+        val_h = 0xf;
+        val_l = 0x10 | (((gain - 0x40) >> 2) & 0xF);
+    } else { /* 8x ~ 16x */
+        val_h = 0x1f;
+        val_l = 0x10 | (((gain - 0x80) >> 3) & 0xF);
+    }
+
+    val = (val_h << 8) | val_l;
+    LOG_I("Set AGC %d[0x%03x] -> %d[0x%03x]\n", cur, cur, val, val);
+
+    if (cur == val)
+        return 0;
+
+    if (sc035_write_reg(sensor->i2c, 0x3e08, val_h) ||
+        sc035_write_reg(sensor->i2c, 0x3e09, val_l))
+        return -1;
+    else
+        return 0;
+}
+
+/* SC031GS doesn't support AEC. Adjust the exposure time to control brightness. */
+static int sc03_set_aec(struct sc03_dev *sensor, u32 percent)
+{
+    u16 frame_len = 0, cur = 0, val = 0;
+    u8 val_h = 0, val_l = 0;
+
+    frame_len = sc035_read_u16(sensor->i2c, 0x320e, 0x320f);
+    if (!frame_len) {
+        LOG_E("Failed to get frame length\n");
+        return -1;
+    }
+    if (frame_len - 6 > 0xFFF) {
+        LOG_W("Frame length %d is too large\n", frame_len);
+        frame_len = 0xFFF + 6;
+    }
+
+    if (sc035_read_reg(sensor->i2c, 0x3e01, &val_h)
+        || sc035_read_reg(sensor->i2c, 0x3e02, &val_l)) {
+        LOG_E("Failed to get current AEC\n");
+        return -1;
+    }
+    cur = (val_h << 4) | (val_l >> 4); // {16'h3e01,16'h3e02[7:4]}
+
+    val = PERCENT_TO_INT(1, frame_len - 6, percent);
+    LOG_I("Set AEC %d[0x%03x] -> %d[0x%03x] (Frame length %d[0x%03x])\n",
+          cur, cur, val, val, frame_len, frame_len);
+
+    if (cur == val)
+        return 0;
+
+    if (sc035_write_reg(sensor->i2c, 0x3e01, (val >> 4) & 0xFF) ||
+        sc035_write_reg(sensor->i2c, 0x3e02, (val & 0xF) << 4))
+        return -1;
+    else
+        return 0;
+}
+
+static int sc03_enable_h_flip(struct sc03_dev *sensor, bool enable)
+{
+    u8 cur = 0, mask = 0x6;
+
+    if (sc035_read_reg(sensor->i2c, 0x3221, &cur)) {
+        LOG_E("Failed to get the H flip status\n");
+        return -1;
+    }
+
+    LOG_I("Set H flip 0x%x -> 0x%x\n", (cur & mask) >> 1, enable ? 3 : 0);
+    if (enable)
+        return sc035_write_reg(sensor->i2c, 0x3221, cur | mask);
+    else
+        return sc035_write_reg(sensor->i2c, 0x3221, cur & ~mask);
+}
+
+static int sc03_enable_v_flip(struct sc03_dev *sensor, bool enable)
+{
+    u8 cur = 0, mask = 0x60;
+
+    if (sc035_read_reg(sensor->i2c, 0x3221, &cur)) {
+        LOG_E("Failed to get the V flip status\n");
+        return -1;
+    }
+
+    LOG_I("Set V flip 0x%x -> 0x%x\n", (cur & mask) >> 5, enable ? 3 : 0);
+    if (enable)
+        return sc035_write_reg(sensor->i2c, 0x3221, cur | mask);
+    else
+        return sc035_write_reg(sensor->i2c, 0x3221, cur & ~mask);
+}
 
 static int sc035_init(struct sc03_dev *sensor)
 {
-    if (sc035_write_array(sensor->i2c, sc035_640x480_60fps_regs))
+    if (sc035_write_array(sensor->i2c, sc035_640x480_60fps_regs, ARRAY_SIZE(sc035_640x480_60fps_regs)))
         return -1;
 
+    if (sc03_set_aec(sensor, 100))
+        return -1;
+
+    if (sc03_set_agc(sensor, 6))
+        return -1;
     return 0;
 }
 
@@ -366,25 +527,34 @@ static int sc035_probe(struct sc03_dev *sensor)
     return sc035_init(sensor);
 }
 
-static void sc035_power_on(struct sc03_dev *sensor)
+static bool sc035_is_open(struct sc03_dev *sensor)
+{
+    return sensor->on;
+}
+
+static int sc035_power_on(struct sc03_dev *sensor)
 {
     if (sensor->on)
-        return;
+        return -1;
 
     camera_pin_set_high(sensor->pwdn_pin);
     aicos_udelay(2);
 
+    LOG_I("Power on");
     sensor->on = true;
+    return 0;
 }
 
-static void sc031gs_power_off(struct sc03_dev *sensor)
+static int sc035_power_off(struct sc03_dev *sensor)
 {
     if (!sensor->on)
-        return;
+        return -1;
 
     camera_pin_set_low(sensor->pwdn_pin);
 
+    LOG_I("Power off");
     sensor->on = false;
+    return 0;
 }
 
 static rt_err_t sc03_init(rt_device_t dev)
@@ -413,16 +583,18 @@ static rt_err_t sc03_init(rt_device_t dev)
 static rt_err_t sc03_open(rt_device_t dev, rt_uint16_t oflag)
 {
     struct sc03_dev *sensor = (struct sc03_dev *)dev;
-    int ret = 0;
+
+    if (sc035_is_open(sensor))
+        return RT_EOK;
 
     sc035_power_on(sensor);
 
-    ret = sc035_probe(sensor);
-    if (ret)
+    if (sc035_probe(sensor)) {
+        sc035_power_off(sensor);
         return -RT_ERROR;
+    }
 
-    LOG_I("SC031GS inited");
-
+    LOG_I("SC035HGS inited");
     return RT_EOK;
 }
 
@@ -430,14 +602,15 @@ static rt_err_t sc03_close(rt_device_t dev)
 {
     struct sc03_dev *sensor = (struct sc03_dev *)dev;
 
-    sc031gs_power_off(sensor);
+    if (!sc035_is_open(sensor))
+        return -RT_ERROR;
+
+    sc035_power_off(sensor);
     return RT_EOK;
 }
 
-static int sc03_get_fmt(rt_device_t dev, struct mpp_video_fmt *cfg)
+static int sc03_get_fmt(struct sc03_dev *sensor, struct mpp_video_fmt *cfg)
 {
-    struct sc03_dev *sensor = (struct sc03_dev *)dev;
-
     cfg->code   = sensor->fmt.code;
     cfg->width  = sensor->fmt.width;
     cfg->height = sensor->fmt.height;
@@ -446,25 +619,57 @@ static int sc03_get_fmt(rt_device_t dev, struct mpp_video_fmt *cfg)
     return RT_EOK;
 }
 
-static int sc03_start(rt_device_t dev)
+static int sc03_start(struct sc03_dev *sensor)
 {
     return 0;
 }
 
-static int sc03_stop(rt_device_t dev)
+static int sc03_stop(struct sc03_dev *sensor)
 {
     return 0;
+}
+
+static int sc03_pause(rt_device_t dev)
+{
+    struct sc03_dev *sensor = (struct sc03_dev *)dev;
+
+    return sc035_write_reg(sensor->i2c, SC035_SLEEP_MODE_CTRL_ADDR,
+                           SC035_SLEEP_ENABLE);
+}
+
+static int sc03_resume(rt_device_t dev)
+{
+    struct sc03_dev *sensor = (struct sc03_dev *)dev;
+
+    return sc035_write_reg(sensor->i2c, SC035_SLEEP_MODE_CTRL_ADDR,
+                           SC035_SLEEP_DISABLE);
 }
 
 static rt_err_t sc03_control(rt_device_t dev, int cmd, void *args)
 {
+    struct sc03_dev *sensor = (struct sc03_dev *)dev;
+
     switch (cmd) {
     case CAMERA_CMD_START:
-        return sc03_start(dev);
+        return sc03_start(sensor);
     case CAMERA_CMD_STOP:
-        return sc03_stop(dev);
+        return sc03_stop(sensor);
+    case CAMERA_CMD_PAUSE:
+        return sc03_pause(dev);
+    case CAMERA_CMD_RESUME:
+        return sc03_resume(dev);
     case CAMERA_CMD_GET_FMT:
-        return sc03_get_fmt(dev, (struct mpp_video_fmt *)args);
+        return sc03_get_fmt(sensor, (struct mpp_video_fmt *)args);
+    case CAMERA_CMD_SET_FPS:
+        return sc03_set_fps(sensor, *(u32 *)args);
+    case CAMERA_CMD_SET_AUTOGAIN:
+        return sc03_set_agc(sensor, *(u32 *)args);
+    case CAMERA_CMD_SET_AEC_VAL:
+        return sc03_set_aec(sensor, *(u32 *)args);
+    case CAMERA_CMD_SET_H_FLIP:
+        return sc03_enable_h_flip(sensor, *(bool *)args);
+    case CAMERA_CMD_SET_V_FLIP:
+        return sc03_enable_v_flip(sensor, *(bool *)args);
     default:
         LOG_I("Unsupported cmd: 0x%x", cmd);
         return -RT_EINVAL;

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+* Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
 *
 * SPDX-License-Identifier: Apache-2.0
 *
@@ -87,13 +87,18 @@ s32 file_stream_open(const char* uri,struct aic_stream **stream, int flags)
 	memset(file_stream, 0x00, sizeof(struct aic_file_stream));
 
 	file_stream->fd = open(uri, flags);
-	if (file_stream->fd < 0) {
+	if (file_stream->fd <= 0) {
 		loge("open uri:%s failed!!!!!\n",uri);
 		ret = -2;
 		goto exit;
 	}
 
 	file_stream->file_size = lseek(file_stream->fd, 0, SEEK_END);
+	if (file_stream->file_size <= 0) {
+		loge("uri:%s file_size is illegality!!!!!\n",uri);
+		ret = -2;
+		goto exit;
+	}
 	lseek(file_stream->fd, 0, SEEK_SET);
 	if (flags == O_RDONLY && file_stream->file_size > EN_CLTBL_FILE_SIZE) {
 		file_stream->cltbl = (uint32_t *)mpp_alloc(AIC_CLTBL_SIZE * sizeof(uint32_t));
@@ -118,6 +123,11 @@ s32 file_stream_open(const char* uri,struct aic_stream **stream, int flags)
 	return ret;
 
 exit:
+	if (file_stream->fd > 0) {
+		close(file_stream->fd);
+		file_stream->fd = -1;
+	}
+
 	if (file_stream && file_stream->cltbl) {
 		mpp_free(file_stream->cltbl);
 		file_stream->cltbl = NULL;

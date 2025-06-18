@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -53,6 +53,10 @@ struct tiny_console {
 
 static struct tiny_console *g_console = NULL;
 
+__WEAK void show_board_version(void)
+{
+}
+
 extern struct boot_args boot_arg;
 void show_version(void)
 {
@@ -74,6 +78,7 @@ void show_version(void)
     if (isdigit((int)boot_arg.image_version[0]))
         printf("Image version: %s\n", boot_arg.image_version);
     printf("Built on %s %s\n", __DATE__, __TIME__);
+    show_board_version();
 }
 
 static int putnchar(const char *str, int n)

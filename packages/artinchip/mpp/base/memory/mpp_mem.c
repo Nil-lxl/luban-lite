@@ -202,6 +202,10 @@ void mpp_phy_free(unsigned int addr)
     pthread_mutex_unlock(&g_phy_mem_mutex);
 #endif
 
+    if (addr == 0) {
+        loge("mpp_phy_free addr is 0, maybe error");
+        return;
+    }
     aicos_free_align(MEM_CMA, (void*)(unsigned long)addr);
 
     logw("phy_free success, addr: %08x", addr);

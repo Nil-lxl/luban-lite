@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,6 +8,8 @@
 #include <rtthread.h>
 #include "rtdevice.h"
 #include <aic_core.h>
+
+static struct rt_lptimer lptimer;
 
 #define PM_TEST_HELP                                                \
     "test_pm TIME:\n"                                               \
@@ -40,7 +42,6 @@ static void pm_timer_timeout(void *parameter)
 int test_pm(int argc, char *argv[])
 {
     rt_tick_t timeout;
-    rt_timer_t timer;
     uint32_t seconds = 0;
 
     if (argc != 2) {
@@ -51,10 +52,9 @@ int test_pm(int argc, char *argv[])
     seconds = strtoul(argv[1], NULL, 10);
     rt_pm_default_set(PM_SLEEP_MODE_LIGHT);
     timeout = seconds * RT_TICK_PER_SECOND;
-    timer = rt_timer_create("pm_test_timer", pm_timer_timeout, RT_NULL,
+    rt_lptimer_init(&lptimer, "pm_test_timer", pm_timer_timeout, RT_NULL,
                             timeout, RT_TIMER_FLAG_PERIODIC);
-    if (timer)
-        rt_timer_start(timer);
+    rt_lptimer_start(&lptimer);
 
     return 0;
 }

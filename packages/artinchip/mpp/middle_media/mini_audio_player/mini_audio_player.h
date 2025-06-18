@@ -1,9 +1,11 @@
 /*
-* Copyright (C) 2020-2023 ArtInChip Technology Co. Ltd
-*
-*  author: <jun.ma@artinchip.com>
-*  Desc: mini_audio_player
-*/
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ *  Author: <qi.xu@artinchip.com>
+ *  Desc: mini_audio_player
+ */
 
 #ifndef __MINI_AUDIO_PLAYER_H__
 #define __MINI_AUDIO_PLAYER_H__
@@ -21,6 +23,7 @@ enum MINI_AUDIO_PLAYER_STATE {
     MINI_AUDIO_PLAYER_STATE_STOPED = 0,
     MINI_AUDIO_PLAYER_STATE_PLAYING = 1,
     MINI_AUDIO_PLAYER_STATE_PAUSED = 2,
+    MINI_AUDIO_PLAYER_STATE_INIT = 3,
 };
 
 struct mini_player_audio_info {
@@ -35,7 +38,9 @@ struct mini_audio_player* mini_audio_player_create(void);
 
 int mini_audio_player_destroy(struct mini_audio_player *player);
 
-int mini_audio_player_play(struct mini_audio_player *player,char *uri);
+int mini_audio_player_play(struct mini_audio_player *player, char *uri);
+
+int mini_audio_player_play_loop(struct mini_audio_player *player, char *uri);
 
 int mini_audio_player_stop(struct mini_audio_player *player);
 
@@ -50,7 +55,6 @@ int mini_audio_player_set_volume(struct mini_audio_player *player,int vol);
 int mini_audio_player_get_volume(struct mini_audio_player *player,int *vol);
 
 int mini_audio_player_get_state(struct mini_audio_player *player);
-
 
 #ifdef __cplusplus
 }

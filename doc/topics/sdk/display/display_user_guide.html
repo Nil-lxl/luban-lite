@@ -1,15 +1,15 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.0">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="显示子系统 (DSS) 负责将内存中的数据转换成 LCD 信号输出。DSS 包括以下主要组件： 显示引擎 (DE)：提供多图层叠加，支持 Alpha Blending 和 Color Key，支持各种像素操作，例如颜色空间转换和缩放等。 显示接口 (DI)：将显示输出的无缝连接到 LCD 外设，支持 RGB/ LVDS/ MIPI-DSI/ MIPI-DBI 等接口标准。 表 1 . 术语定义 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.created" content="2024-11-05"/><meta name="DC.date.modified" content="2024-11-28"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><title>Display 使用指南</title><!--  Build number 2023110923.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/sdk/display/display_user_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_user_guide.html"/>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="显示子系统 (DSS) 负责将内存中的数据转换成 LCD 信号输出。DSS 包括以下主要组件： 显示引擎 (DE)：提供多图层叠加，支持 Alpha Blending 和 Color Key，支持各种像素操作，例如颜色空间转换和缩放等。 显示接口 (DI)：将显示输出的无缝连接到 LCD 外设，支持 RGB/ LVDS/ MIPI-DSI/ MIPI-DBI 等接口标准。 表 1 . 术语定义 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/chapter-title/chapter-multi-media-sdk.html"/><meta name="DC.relation" content="../../../topics/sdk/audio/audio_faq.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_config_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_config_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_debug_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_test_guide_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display-design_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_panel_port_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_fb_rotation_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_color_property_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_burn_process.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_blending.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_startup_ui.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_faq_screen.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><title>Display 使用指南</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3703e4067"/><meta name="wh-source-relpath" content="topics/sdk/display/display_user_guide.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_user_guide.html"/>
 
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2023110923"/>
-    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2023110923"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250121171154"></script>
-    <script src="../../../webhelp/app/localization/strings.js?buildId=2023110923"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250121171154"></script>
-    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2023110923"></script>
-    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2023110923"></script>
-<link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-styles-web.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/notes.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-common.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-images.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/footnote.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/aic-web-watermark.css?buildId=2023110923"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/topic-body-list.css?buildId=2023110923"/></head>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
 
     <body id="id" class="wh_topic_page frmBody">
         <a href="#wh_topic_body" class="sr-only sr-only-focusable">
@@ -21,12 +21,12 @@
         
         <header class="navbar navbar-default wh_header">
     <div class="container-fluid">
-        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
             <div class="wh_logo_and_publication_title_container">
                 <div class="wh_logo_and_publication_title">
                     
-                    <a href="http://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo-white.png" alt="RTOS SDK 使用指南SDK 指南文件"/></a>
-                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle"><span class="ph mainbooktitle">RTOS SDK 使用指南</span><span class="ph booktitlealt">SDK 指南文件</span></span></a></div>
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
                     
                 </div>
                 
@@ -39,13 +39,6 @@
                 
                 
             </div>
-        </div>
-    </div>
-</header>
-        
-        
-         
-        
         <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
             
             
@@ -54,27 +47,39 @@
             
             
             
-        </div>
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
         
         <div class="container-fluid" id="wh_topic_container">
             <div class="row">
 
                 <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
                     
-                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "></div>
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="concept_mcc_32s_nbc"><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/display/display_user_guide.html">Display 使用指南</a></div></div></li></ol></div>
                     
                     
                     
                     <div class="wh_right_tools">
                         <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
                         <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
-                        
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/audio/audio_faq.html" title="常见问题" aria-label="上一主题: 常见问题" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/display/display_config_lite.html" title="Display 配置" aria-label="下一主题: Display 配置" rel="next"></a></span>  </span></div>
                         
                         
                         
                         <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
                         
-                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
                     </div>
                     
                 </nav>
@@ -86,85 +91,197 @@
             <div class="wh_content_area">
                 <div class="row">
                     
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3703e2372" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3703e2372-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3703e2372-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3703e2556" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3703e2556-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3703e2556-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3703e3646" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3703e3646-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3703e3646-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d3703e3980" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d3703e3980-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3703e3980-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e3997" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e3997-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d3703e3997-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true" class="active"><div data-tocid="id-d3703e4067" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e4067-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide.html" id="id-d3703e4067-link">Display 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e4083" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e4083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_config_lite.html" id="id-d3703e4083-link">Display 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4125" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_debug_lite.html" id="id-d3703e4125-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4139" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_test_guide_lite.html" id="id-d3703e4139-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="display_design_intro-d3703e4153" class="topicref" data-id="display_design_intro" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action display_design_intro-d3703e4153-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display-design_intro.html" id="display_design_intro-d3703e4153-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4237" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_panel_port_lite.html" id="id-d3703e4237-link">屏适配指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e4251" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e4251-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_fb_rotation_lite.html" id="id-d3703e4251-link">屏幕旋转</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4279" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_color_property_lite.html" id="id-d3703e4279-link">色彩调整</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4293" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_burn_process.html" id="id-d3703e4293-link">烧录进度条</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4307" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_blending.html" id="id-d3703e4307-link">Blending</a></div></div></li><li role="treeitem"><div data-tocid="startup-ui-d3703e4321" class="topicref" data-id="startup-ui" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_startup_ui.html" id="startup-ui-d3703e4321-link">开机动画</a></div></div></li><li role="treeitem"><div data-tocid="concept_smb_cl3_pzb-d3703e4336" class="topicref" data-id="concept_smb_cl3_pzb" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_faq_screen.html" id="concept_smb_cl3_pzb-d3703e4336-link">调屏常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d3703e4350" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d3703e4350-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide.html" id="concept_h4d_fwt_tzb-d3703e4350-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d3703e4492" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d3703e4492-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide.html" id="ge-d3703e4492-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d3703e4634" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d3703e4634-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide.html" id="i2s-d3703e4634-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d3703e4760" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d3703e4760-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide.html" id="ve-d3703e4760-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d3703e4832" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d3703e4832-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html" id="mpp-d3703e4832-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d3703e4986" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d3703e4986-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide.html" id="mpp_0-d3703e4986-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5084" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5084-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d3703e5084-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5168" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5168-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d3703e5168-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5253" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5253-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d3703e5253-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d3703e5421" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d3703e5421-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3703e5421-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3703e6676" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3703e6676-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3703e6676-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
                     
-                    <div class="col-12" id="wh_topic_body">
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
                         
                         
-                        
-                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1"><span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://172.16.35.88/tasks/jdssno1uvvbf2mltu9kb9v3if05d5gopuakboe8hlud18rma/edit/F:/aicdita/aicdita-cn/topics/sdk/display/display_user_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Display 使用指南</h1><div class="date inPage">28 Nov 2024</div><div style="color: gray;">
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/display/display_user_guide.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">Display 使用指南</h1>
+    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
                     Read time: 2 minute(s)
-                </div><div class="- topic/body body"><div class="- topic/p p" data-ofbid="d134887e18__20250121171607">显示子系统 (DSS) 负责将内存中的数据转换成 LCD 信号输出。DSS 包括以下主要组件：<ul class="- topic/ul ul" id="id__ul_wqj_bsv_ddc" data-ofbid="id__ul_wqj_bsv_ddc"><li class="- topic/li li" data-ofbid="d134887e21__20250121171607">显示引擎 (DE)：提供多图层叠加，支持 Alpha Blending 和 Color Key，支持各种像素操作，例如颜色空间转换和缩放等。</li><li class="- topic/li li" data-ofbid="d134887e23__20250121171607">显示接口 (DI)：将显示输出的无缝连接到 LCD 外设，支持 <span class="- topic/ph ph">RGB/ LVDS/ MIPI-DSI/ MIPI-DBI</span>
-                    等接口标准。</li></ul></div><div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_ib2_srv_ddc" data-ofbid="id__table_ib2_srv_ddc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">术语定义</span></caption><colgroup><col style="width:18.315018315018314%"/><col style="width:31.684981684981683%"/><col style="width:50%"/></colgroup><thead class="- topic/thead thead"><tr class="- topic/row"><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ib2_srv_ddc__entry__1">术语</th><th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ib2_srv_ddc__entry__2">定义</th><th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_ib2_srv_ddc__entry__3">注释说明</th></tr></thead><tbody class="- topic/tbody tbody"><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1">DSS</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2">Display SubSystem</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3">显示子系统</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1">DE</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2">Display Engine</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3">显示引擎</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1">DI</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2">Display Interface</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3">显示接口，包括 RGB/LVDS/MIPI-DSI/MIPI-DBI 等</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1">PANEL</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2">panel</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3">外接屏幕驱动</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1">RGB</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2">Red Green Blue</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3">按红绿蓝三原色编码的显示接口标准</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1">LVDS</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2">Low Voltage Differential Signaling</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3">低压差分信号的显示接口标准</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1">MIPI-DSI</td><td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2">Mipi Display Serial Interface</td><td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3">MIPI 组织定义的一个显示接口标准</td></tr><tr class="- topic/row"><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ib2_srv_ddc__entry__1">MIPI-DBI</td><td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ib2_srv_ddc__entry__2">Mipi Display Bus Interface</td><td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_ib2_srv_ddc__entry__3">MIPI 组织定义的一个显示接口标准</td></tr></tbody></table></div><div class="- topic/div div section" id="id__id3">从硬件角度看，DSS 框架如下所示：<figure class="- topic/fig fig fignone" id="id__id7" data-ofbid="id__id7"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_ukg_srv_ddc" src="../../../images/display/display_system.png" width="384" alt="/display_system"/></div><br/><figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">显示子系统</span></figcaption></figure>
-        </div><section class="- topic/section section" id="id__section_xc4_3k1_ybc" data-ofbid="id__section_xc4_3k1_ybc"><h2 class="- topic/title title sectiontitle">特性说明</h2>
+                </div>
+    <div class="- topic/body body">
+        <div class="- topic/p p" data-ofbid="d153775e28__20250409171048">显示子系统 (DSS) 负责将内存中的数据转换成 LCD 信号输出。DSS 包括以下主要组件：<ul class="- topic/ul ul" id="id__ul_wqj_bsv_ddc" data-ofbid="id__ul_wqj_bsv_ddc">
+                <li class="- topic/li li" data-ofbid="d153775e32__20250409171048">显示引擎 (DE)：提供多图层叠加，支持 Alpha Blending 和 Color Key，支持各种像素操作，例如颜色空间转换和缩放等。</li>
+                <li class="- topic/li li" data-ofbid="d153775e35__20250409171048">显示接口 (DI)：将显示输出的无缝连接到 LCD 外设，支持 <span class="- topic/ph ph">RGB/ LVDS/ MIPI-DSI/ MIPI-DBI</span>
+                    等接口标准。</li>
+            </ul></div>
+        <div class="table-container"><table class="- topic/table table colwidths-given docutils align-default frame-all" id="id__table_ib2_srv_ddc" data-ofbid="id__table_ib2_srv_ddc" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">术语定义</span></caption><colgroup><col style="width:18.315018315018314%"/><col style="width:31.684981684981683%"/><col style="width:50%"/></colgroup><thead class="- topic/thead thead">
+                    <tr class="- topic/row">
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e60__20250409171048">术语</p></th>
+                        <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e64__20250409171048">定义</p></th>
+                        <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e68__20250409171048">注释说明</p></th>
+                    </tr>
+                </thead><tbody class="- topic/tbody tbody">
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e78__20250409171048">DSS</p></td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e82__20250409171048">Display SubSystem</p></td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e86__20250409171048">显示子系统</p></td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e93__20250409171048">DE</p></td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e97__20250409171048">Display Engine</p></td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e101__20250409171048">显示引擎</p></td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e108__20250409171048">DI</p></td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e112__20250409171048">Display Interface</p></td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e116__20250409171048">显示接口，包括 RGB/LVDS/MIPI-DSI/MIPI-DBI 等</p></td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e123__20250409171048">PANEL</p></td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e127__20250409171048">panel</p></td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e131__20250409171048">外接屏幕驱动</p></td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e138__20250409171048">RGB</p></td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e142__20250409171048">Red Green Blue</p></td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e146__20250409171048">按红绿蓝三原色编码的显示接口标准</p></td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e154__20250409171048">LVDS</p></td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e158__20250409171048">Low Voltage Differential Signaling</p></td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e162__20250409171048">低压差分信号的显示接口标准</p></td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e169__20250409171048">MIPI-DSI</p></td>
+                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e173__20250409171048">Mipi Display Serial Interface</p></td>
+                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e177__20250409171048">MIPI 组织定义的一个显示接口标准</p></td>
+                    </tr>
+                    <tr class="- topic/row">
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ib2_srv_ddc__entry__1"><p class="- topic/p p" data-ofbid="d153775e184__20250409171048">MIPI-DBI</p></td>
+                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_ib2_srv_ddc__entry__2"><p class="- topic/p p" data-ofbid="d153775e188__20250409171048">Mipi Display Bus Interface</p></td>
+                        <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_ib2_srv_ddc__entry__3"><p class="- topic/p p" data-ofbid="d153775e192__20250409171048">MIPI 组织定义的一个显示接口标准</p></td>
+                    </tr>
+                </tbody></table></div>
+        <div class="- topic/div div section" id="id__id3">从硬件角度看，DSS 框架如下所示：<figure class="- topic/fig fig fignone" id="id__id7" data-ofbid="id__id7">
+                
+                <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="id__image_ukg_srv_ddc" src="../../../images/display/display_system.png" width="384" alt="/display_system"/></div><br/>
+            <figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">显示子系统</span></figcaption></figure>
+        </div>
+        <section class="- topic/section section" id="id__section_xc4_3k1_ybc" data-ofbid="id__section_xc4_3k1_ybc"><h2 class="- topic/title title sectiontitle">特性说明</h2>
             
-            <p class="- topic/p p" data-ofbid="d134887e114__20250121171607"><strong class="+ topic/ph hi-d/b ph b">Display Engine</strong></p>
-            <ul class="- topic/ul ul" id="id__ul_yc4_3k1_ybc" data-ofbid="id__ul_yc4_3k1_ybc"><li class="- topic/li li" data-ofbid="d134887e119__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e121__20250121171607">最高性能 1920*1080@60 fps</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e124__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e126__20250121171607">支持两个显示图层，一个 Video 图层，一个 UI 图层，UI 图层内支持 4 个矩形窗口</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e129__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e131__20250121171607">UI 图层支持图像格式：ARGB8888/ XRGB8888/ RGB888/ ARGB4444/ ARGB1555/ RGB565</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e134__20250121171607">
-                    <div class="- topic/p p" data-ofbid="d134887e136__20250121171607">Video 图层支持图像格式：<ul class="- topic/ul ul" id="id__ul_odk_zhp_bcc" data-ofbid="id__ul_odk_zhp_bcc"><li class="- topic/li li" data-ofbid="d134887e139__20250121171607">
-                                <p class="- topic/p p" data-ofbid="d134887e141__20250121171607">ARGB8888/ XRGB8888/ RGB888/ ARGB4444/ ARGB1555/ RGB565</p>
-                            </li><li class="- topic/li li" data-ofbid="d134887e144__20250121171607">
-                                <p class="- topic/p p" data-ofbid="d134887e146__20250121171607">NV12/NV21/ NV16/ NV61/ YUYV/ YVYU/ UYVY/ VYUY/ YUV400</p>
-                            </li></ul></div>
-                </li><li class="- topic/li li" data-ofbid="d134887e150__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e152__20250121171607">Video 图层的 YUV 格式支持 1/31.999x ~ 32x 缩放（RGB 格式不支持）</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e155__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e157__20250121171607">支持误差扩散 Dither</p>
-                </li></ul>
-            <p class="- topic/p p" data-ofbid="d134887e161__20250121171607"><strong class="+ topic/ph hi-d/b ph b">RGB 接口</strong></p>
-            <ul class="- topic/ul ul" id="id__ul_bd4_3k1_ybc" data-ofbid="id__ul_bd4_3k1_ybc"><li class="- topic/li li" data-ofbid="d134887e166__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e168__20250121171607">支持 PRGB 24/ 18/ 16-bit 模式，最高 120 MHz PIXELCLK</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e171__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e173__20250121171607">支持 SRGB 8/6-bit 模式，最高 480x320@60 fps</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e176__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e178__20250121171607">支持 8 位色深，R/G/B 三组信号可任意交叉，空白区域数据可配置</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e181__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e183__20250121171607">支持 R/G/B 组内数据高低位互换</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e186__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e188__20250121171607">PRGB/SRGB 时钟提供 4 个相位选择</p>
-                </li></ul>
-            <p class="- topic/p p" data-ofbid="d134887e193__20250121171607"><strong class="+ topic/ph hi-d/b ph b">LVDS 接口</strong></p>
-            <ul class="- topic/ul ul" id="id__ul_cd4_3k1_ybc" data-ofbid="id__ul_cd4_3k1_ybc"><li class="- topic/li li" data-ofbid="d134887e198__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e200__20250121171607">支持 Single Link 和 Dual Link，最高速率 700 Mbps</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e203__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e205__20250121171607">支持 VESA 和 JEIDA 模式</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e208__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e210__20250121171607">支持 18-bit 和 24-bit 数据传输</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e213__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e215__20250121171607">支持 LVDS 信号极性选择模式</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e218__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e220__20250121171607">支持 LVDS 五组差分对信号任意互换</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e223__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e225__20250121171607">支持 LVDS Link0 和 LVDS Link1 输出互换</p>
-                </li></ul>
-            <p class="- topic/p p" data-ofbid="d134887e229__20250121171607"><strong class="+ topic/ph hi-d/b ph b">MIPI-DSI 接口</strong></p>
-            <ul class="- topic/ul ul" id="id__ul_dd4_3k1_ybc" data-ofbid="id__ul_dd4_3k1_ybc"><li class="- topic/li li" data-ofbid="d134887e234__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e236__20250121171607">最大支持 1080P60 及衍生分辨率，支持 Video 和 Command 模式</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e239__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e241__20250121171607">Video 模式支持 Non-burst 和 Burst 两种方式</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e244__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e246__20250121171607">可配置为 1/ 2/ 3/ 4 对数据通道，每通道最大支持 1 Gbps 速率</p>
-                </li><li class="- topic/li li" data-ofbid="d134887e249__20250121171607">
-                    <p class="- topic/p p" data-ofbid="d134887e251__20250121171607">支持 RGB888，RGB666，RGB666 packed，RGB565</p>
-                </li></ul>
+            <p class="- topic/p p" data-ofbid="d153775e219__20250409171048"><strong class="+ topic/ph hi-d/b ph b">Display Engine</strong></p>
+            <ul class="- topic/ul ul" id="id__ul_yc4_3k1_ybc" data-ofbid="id__ul_yc4_3k1_ybc">
+                
+                <li class="- topic/li li" data-ofbid="d153775e225__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e227__20250409171048">最高性能 1920*1080@60 fps</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e231__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e233__20250409171048">支持两个显示图层，一个 Video 图层，一个 UI 图层，UI 图层内支持 4 个矩形窗口</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e237__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e239__20250409171048">UI 图层支持图像格式：ARGB8888/ XRGB8888/ RGB888/ ARGB4444/ ARGB1555/ RGB565</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e243__20250409171048">
+                    <div class="- topic/p p" data-ofbid="d153775e245__20250409171048">Video 图层支持图像格式：<ul class="- topic/ul ul" id="id__ul_odk_zhp_bcc" data-ofbid="id__ul_odk_zhp_bcc">
+                            <li class="- topic/li li" data-ofbid="d153775e249__20250409171048">
+                                <p class="- topic/p p" data-ofbid="d153775e251__20250409171048">ARGB8888/ XRGB8888/ RGB888/ ARGB4444/ ARGB1555/ RGB565</p>
+                            </li>
+                            
+                            
+                            
+                            <li class="- topic/li li" data-ofbid="d153775e255__20250409171048">
+                                <p class="- topic/p p" data-ofbid="d153775e257__20250409171048">NV12/NV21/ NV16/ NV61/ YUYV/ YVYU/ UYVY/ VYUY/ YUV400</p>
+                            </li>
+                        </ul></div>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e263__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e265__20250409171048">Video 图层的 YUV 格式支持 1/31.999x ~ 32x 缩放（RGB 格式不支持）</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e270__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e272__20250409171048">支持误差扩散 Dither</p>
+                </li>
+            </ul>
+            <p class="- topic/p p" data-ofbid="d153775e277__20250409171048"><strong class="+ topic/ph hi-d/b ph b">RGB 接口</strong></p>
+            <ul class="- topic/ul ul" id="id__ul_bd4_3k1_ybc" data-ofbid="id__ul_bd4_3k1_ybc">
+                
+                <li class="- topic/li li" data-ofbid="d153775e283__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e285__20250409171048">支持 PRGB 24/ 18/ 16-bit 模式，最高 120 MHz PIXELCLK</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e289__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e291__20250409171048">支持 SRGB 8/6-bit 模式，最高 480x320@60 fps</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e295__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e297__20250409171048">支持 8 位色深，R/G/B 三组信号可任意交叉，空白区域数据可配置</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e301__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e303__20250409171048">支持 R/G/B 组内数据高低位互换</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e307__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e309__20250409171048">PRGB/SRGB 时钟提供 4 个相位选择</p>
+                </li>
+            </ul>
+            <p class="- topic/p p" data-ofbid="d153775e315__20250409171048"><strong class="+ topic/ph hi-d/b ph b">LVDS 接口</strong></p>
+            <ul class="- topic/ul ul" id="id__ul_cd4_3k1_ybc" data-ofbid="id__ul_cd4_3k1_ybc">
+                <li class="- topic/li li" data-ofbid="d153775e321__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e323__20250409171048">支持 Single Link 和 Dual Link，最高速率 700 Mbps</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e327__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e329__20250409171048">支持 VESA 和 JEIDA 模式</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e333__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e335__20250409171048">支持 18-bit 和 24-bit 数据传输</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e339__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e341__20250409171048">支持 LVDS 信号极性选择模式</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e345__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e347__20250409171048">支持 LVDS 五组差分对信号任意互换</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e352__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e354__20250409171048">支持 LVDS Link0 和 LVDS Link1 输出互换</p>
+                </li>
+            </ul>
+            <p class="- topic/p p" data-ofbid="d153775e359__20250409171048"><strong class="+ topic/ph hi-d/b ph b">MIPI-DSI 接口</strong></p>
+            <ul class="- topic/ul ul" id="id__ul_dd4_3k1_ybc" data-ofbid="id__ul_dd4_3k1_ybc">
+                <li class="- topic/li li" data-ofbid="d153775e365__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e367__20250409171048">最大支持 1080P60 及衍生分辨率，支持 Video 和 Command 模式</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e371__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e373__20250409171048">Video 模式支持 Non-burst 和 Burst 两种方式</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e377__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e379__20250409171048">可配置为 1/ 2/ 3/ 4 对数据通道，每通道最大支持 1 Gbps 速率</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d153775e383__20250409171048">
+                    <p class="- topic/p p" data-ofbid="d153775e385__20250409171048">支持 RGB888，RGB666，RGB666 packed，RGB565</p>
+                </li>
+            </ul>
             <div class="- topic/div div">
-                <div class="- topic/p p" data-ofbid="d134887e257__20250121171607"><strong class="+ topic/ph hi-d/b ph b">MIPI-DBI 接口</strong><ul class="- topic/ul ul" id="id__ul_xmd_sx3_ndc" data-ofbid="id__ul_xmd_sx3_ndc"><li class="- topic/li li" data-ofbid="d134887e261__20250121171607">
-                            <p class="- topic/p p" data-ofbid="d134887e263__20250121171607">支持 B 类接口，Intel 8080 总线</p>
-                        </li><li class="- topic/li li" data-ofbid="d134887e266__20250121171607">
-                            <p class="- topic/p p" data-ofbid="d134887e268__20250121171607">支持 C 类接口，SPI 总线</p>
-                        </li><li class="- topic/li li" data-ofbid="d134887e271__20250121171607">
-                            <p class="- topic/p p" data-ofbid="d134887e273__20250121171607">I8080 支持 24/18/16/9/8-bit 模式，最高 960x540@60 fps</p>
-                        </li><li class="- topic/li li" data-ofbid="d134887e276__20250121171607">
-                            <p class="- topic/p p" data-ofbid="d134887e278__20250121171607">SPI 支持 3/4-wire 以及 4-sda 模式，最高 480x320@60 fps</p>
-                        </li></ul></div>
+                <div class="- topic/p p" data-ofbid="d153775e392__20250409171048"><strong class="+ topic/ph hi-d/b ph b">MIPI-DBI 接口</strong><ul class="- topic/ul ul" id="id__ul_xmd_sx3_ndc" data-ofbid="id__ul_xmd_sx3_ndc">
+                        <li class="- topic/li li" data-ofbid="d153775e397__20250409171048">
+                            <p class="- topic/p p" data-ofbid="d153775e399__20250409171048">支持 B 类接口，Intel 8080 总线</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d153775e403__20250409171048">
+                            <p class="- topic/p p" data-ofbid="d153775e405__20250409171048">支持 C 类接口，SPI 总线</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d153775e409__20250409171048">
+                            <p class="- topic/p p" data-ofbid="d153775e411__20250409171048">I8080 支持 24/18/16/9/8-bit 模式，最高 960x540@60 fps</p>
+                        </li>
+                        <li class="- topic/li li" data-ofbid="d153775e415__20250409171048">
+                            <p class="- topic/p p" data-ofbid="d153775e417__20250409171048">SPI 支持 3/4-wire 以及 4-sda 模式，最高 480x320@60 fps</p>
+                        </li>
+                    </ul></div>
             </div>
-        </section></div></article></main></div>
+        </section>
+    </div>
+</article></main></div>
                         
-                        
+                        <div class=" wh_child_links d-print-none "><nav aria-label="Child Links" role="navigation" class="- topic/related-links related-links"><ul class="ullinks"><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_config_lite.html">Display 配置</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_debug_lite.html">调试指南</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_test_guide_lite.html">测试指南</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display-design_intro.html">设计说明</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_panel_port_lite.html">屏适配指南</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_fb_rotation_lite.html">屏幕旋转</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_color_property_lite.html">色彩调整</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_burn_process.html">烧录进度条</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_blending.html">Blending</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_startup_ui.html">开机动画</a></strong></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/display/display_faq_screen.html">调屏常见问题</a></strong></li></ul></nav></div>
                         
                         
                         
@@ -180,8 +297,7 @@
         <footer class="navbar navbar-default wh_footer">
   <div class=" footer-container mx-auto ">
     <title>footer def</title>
-    <style><!--
-
+    <style>
 .p1 {
   font-family: FangZhengShuSong, Times, serif;
 }
@@ -191,26 +307,16 @@
 .p3 {
   font-family: "Lucida Console", "Courier New", monospace;
 }
-    
---></style>
-  
-
-  
-    
-  
-  
-    
-            
-   
-  
-
+    </style>
   <div class="webhelp.fragment.footer">
-    <p class="p1">Copyright © 2019-2024 广东匠芯创科技有限公司. All rights reserved.</p>
-  </div><div>
-    <div class="generation_time">
-      Update Time: 2025-01-21
-    </div>        
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
   </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-04-09
+    </div>        
+  </div> 
+  
   </div>
 </footer>
         

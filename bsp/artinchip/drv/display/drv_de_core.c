@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -173,19 +173,84 @@ static void aic_de_calc_config(const struct display_timing *timing)
     comp->accum_line = vtotal - line - 1;
 }
 
-static int aic_de_set_mode(struct aic_panel *panel)
+struct de_fmt_info {
+    u32 fmt;
+    u32 bpp;
+};
+
+static const struct de_fmt_info de_formats[] = {
+    { .fmt = MPP_FMT_ARGB_8888, .bpp = 32, },
+    { .fmt = MPP_FMT_ABGR_8888, .bpp = 32, },
+    { .fmt = MPP_FMT_RGBA_8888, .bpp = 32, },
+    { .fmt = MPP_FMT_BGRA_8888, .bpp = 32, },
+    { .fmt = MPP_FMT_XRGB_8888, .bpp = 32, },
+    { .fmt = MPP_FMT_XBGR_8888, .bpp = 32, },
+    { .fmt = MPP_FMT_RGBX_8888, .bpp = 32, },
+    { .fmt = MPP_FMT_BGRX_8888, .bpp = 32, },
+    { .fmt = MPP_FMT_RGB_888,   .bpp = 24, },
+    { .fmt = MPP_FMT_BGR_888,   .bpp = 24, },
+    { .fmt = MPP_FMT_ARGB_1555, .bpp = 16, },
+    { .fmt = MPP_FMT_ABGR_1555, .bpp = 16, },
+    { .fmt = MPP_FMT_RGBA_5551, .bpp = 16, },
+    { .fmt = MPP_FMT_BGRA_5551, .bpp = 16, },
+    { .fmt = MPP_FMT_RGB_565,   .bpp = 16, },
+    { .fmt = MPP_FMT_BGR_565,   .bpp = 16, },
+    { .fmt = MPP_FMT_ARGB_4444, .bpp = 16, },
+    { .fmt = MPP_FMT_ABGR_4444, .bpp = 16, },
+    { .fmt = MPP_FMT_RGBA_4444, .bpp = 16, },
+    { .fmt = MPP_FMT_BGRA_4444, .bpp = 16, },
+};
+
+static int aic_de_set_mode(struct aic_panel *panel, struct panel_desc *desc, u32 output_bpp, u32 dither_en)
 {
     struct aic_de_comp *comp = aic_de_request_drvdata();
+    u32 source_bpp;
+    int i;
 
-    comp->timing = panel->timings;
-    aic_de_calc_config(panel->timings);
+    if (desc)
+        comp->timing = desc->timings;
+    else
+        comp->timing = panel->timings;
 
-#if defined AIC_DISPLAY_DITHER && !defined AIC_DISABLE_DITHER
+    aic_de_calc_config(comp->timing);
+
     if (comp->timing->hactive > DE_DITHER_WIDTH_MAX) {
         memset(&comp->dither, 0x00, sizeof(struct aic_de_dither));
         pr_err("Screen width is invalid, disable dither\n");
+        return -1;
     }
-#endif
+
+    for (i = 0; i < ARRAY_SIZE(de_formats); i++) {
+        if (AICFB_FORMAT == de_formats[i].fmt)
+            break;
+    }
+    source_bpp = de_formats[i].bpp;
+
+    if (!dither_en || source_bpp < 24 || output_bpp == 24) {
+        pr_debug("Disable dither, en(%d), source_bpp(%d), output_bpp(%d)\n",
+                                 dither_en, source_bpp, output_bpp);
+        memset(&comp->dither, 0x00, sizeof(struct aic_de_dither));
+        return 0;
+    }
+
+    switch (output_bpp) {
+    case 16:
+        comp->dither.red_bitdepth = 5;
+        comp->dither.gleen_bitdepth = 6;
+        comp->dither.blue_bitdepth = 5;
+        comp->dither.enable = 1;
+        break;
+    case 18:
+        comp->dither.red_bitdepth = 6;
+        comp->dither.gleen_bitdepth = 6;
+        comp->dither.blue_bitdepth = 6;
+        comp->dither.enable = 1;
+        break;
+    default:
+        memset(&comp->dither, 0x00, sizeof(struct aic_de_dither));
+        break;
+    }
+
     return 0;
 }
 

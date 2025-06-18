@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -32,29 +32,37 @@
 #define EPWM_CNT_CONF(n)         ((((n) & 0xF) << 8) + 0x00C)
 #define EPWM_CNT_AV(n)           ((((n) & 0xF) << 8) + 0x014)
 #define EPWM_CNT_BV(n)           ((((n) & 0xF) << 8) + 0x018)
+#define EPWM_UPDT_MOD(n)         ((((n) & 0xF) << 8) + 0x01C)
 #define EPWMA_ACT(n)             ((((n) & 0xF) << 8) + 0x020)
 #define EPWMB_ACT(n)             ((((n) & 0xF) << 8) + 0x024)
 #define EPWM_SW_ACT(n)           ((((n) & 0xF) << 8) + 0x028)
 #define EPWM_ACT_SW_CT(n)        ((((n) & 0xF) << 8) + 0x02C)
+#define EPWM_FLT_PRTCT(n)        ((((n) & 0xF) << 8) + 0x044)
 #define EPWM_ADC_INT_CTL(n)      ((((n) & 0xF) << 8) + 0x058)
 #define EPWM_ADC_INT_PRE(n)      ((((n) & 0xF) << 8) + 0x05C)
 #define EPWM_EVNT_FLAG(n)        ((((n) & 0xF) << 8) + 0x060)
 #define EPWM_EVENT_CLR(n)        ((((n) & 0xF) << 8) + 0x064)
 #define EPWM_HRPWM_EN(n)         ((((n) & 0xF) << 8) + 0x080)
 #define EPWM_HRPWM_CFG(n)        ((((n) & 0xF) << 8) + 0x084)
+#ifdef AIC_EPWM_DRV_V11
+#define EPWM_PUL_OUT_CFG(n)      ((((n) & 0xF) << 8) + 0x0A0)
+#define EPWM_PUL_OUT_NUM(n)      ((((n) & 0xF) << 8) + 0x0A4)
+#endif
 #define EPWM_VERSION(n)          ((((n) & 0xF) << 8) + 0x0FC)
 
 #define GLB_EPWM_EN_B            BIT(0)
 #define EPWM_S0_CLK_EN           BIT(0)
 #define EPMW_SX_CLK_EN(n)        (EPWM_S0_CLK_EN << (n))
+#define EPWMA_ACT_LP_CNT_ZRO     0x0
+#define EPWMA_ACT_LP_PUL_CNT_ZRO 0x4
+#define EPWMA_ACT_LP_MASK        GENMASK(14, 12)
+#define EPWMA_ACT_LP_SHIFT       12
 #define EPWMA_ACT_CNTDBV_SHIFT   10
 #define EPWMA_ACT_CNTUBV_SHIFT   8
 #define EPWMA_ACT_CNTDAV_SHIFT   6
 #define EPWMA_ACT_CNTUAV_SHIFT   4
 #define EPWMA_ACT_CNTPRD_SHIFT   2
 #define EPWM_TBPRD_MAX           0xFFFF
-#define EPWM_A_INIT              BIT(16)
-#define EPWM_B_INIT              BIT(18)
 #define EPWM_CLK_DIV1_MAX        0x7
 #define EPWM_CLK_DIV2_SHIFT      10
 #define EPWM_CLK_DIV1_SHIFT      7
@@ -65,14 +73,34 @@
 #define EPWM_INT_EN_SHITF        3
 #define EPWM_INT_SEL_SHIFT       0
 #define EPWM_INT_CLR             BIT(0)
+#define EPWM_ACT_SW_CT_UPDT_PUL  0x4
+#define EPWM_ACT_SW_CT_UPDT_MASK GENMASK(8, 6)
 #define EPWM_ACT_SW_CT_UPDT      6
 #define EPWM_SWACT_UPDT          3 << EPWM_ACT_SW_CT_UPDT
-#define EPWM_ACT_SW_NONE         0x0
-#define EPWM_ACT_SW_HIGH         0xA
-#define EPWM_ACT_SW_LOW          0x5
+#define EPWMA_ACT_SW_CT_SHIFT    0
+#define EPWMA_ACT_SW_CT_MASK     GENMASK(1, 0)
+#define EPWMB_ACT_SW_CT_SHIFT    2
+#define EPWMB_ACT_SW_CT_MASK     GENMASK(3, 2)
 #define HRPWM_OUTPUT_MODE_NO_ACT 0xF00
+#define EPWM_CNT_PRD_LD_SHIFT    4
+#define EPWM_CNT_PRD_LD_MASK     GENMASK(5, 4)
+#define EPWM_PRD_LD_CNT_ZRO      0x0
+#define EPWM_PRD_LD_PUL_CNT_ZRO  0x1
 #define EPWM_CNT_PH_EN           BIT(2)
 #define EPWM_SW_FRC_SYNC         BIT(6)
+#define EPWM_CMPA_LP_SHIFT       0
+#define EPWM_CMPA_LP_MASK        GENMASK(2, 0)
+#define EPWM_CMPB_LP_SHIFT       3
+#define EPWM_CMPB_LP_MASK        GENMASK(5, 3)
+#define EPWM_CMP_LP_CNT_ZRO      0x0
+#define EPWM_CMP_LP_PUL_CNT_ZRO  0x4
+#ifdef AIC_EPWM_DRV_V11
+#define EPWM_PUL_CNT_SRC_SHIFT   1
+#define EPWM_PUL_CNT_SRC_MASK    GENMASK(3, 1)
+#define EPWM_PUL_CNT_SRC_CNT_DB  0x5
+#define EPWM_PUL_OUT_EN          BIT(0)
+#define EPWM_PUL_SW_UPDT         BIT(4)
+#endif
 
 #ifndef NSEC_PER_SEC
 #define NSEC_PER_SEC            1000000000
@@ -110,6 +138,15 @@ static void aic_epwm_ch_info(char *buf, u32 ch, u32 en, struct aic_epwm_arg *arg
         act[arg->action1.CBD], act[arg->action1.CBU],
         act[arg->action1.CAD], act[arg->action1.CAU],
         act[arg->action1.PRD], act[arg->action1.ZRO]);
+}
+
+static int hal_epwm_ch_check(u32 ch)
+{
+    if (ch >= AIC_EPWM_CH_NUM) {
+        hal_log_err("ch%d is out of range, max num:%d\n", ch, AIC_EPWM_CH_NUM -1);
+        return -EINVAL;
+    }
+    return 0;
 }
 
 void hal_epwm_status_show(void)
@@ -158,7 +195,12 @@ void hal_epwm_int_config(u32 ch, u8 irq_mode, u8 enable)
 void hal_epwm_ch_init(u32 ch, bool sync_mode, enum aic_epwm_mode mode, u32 default_level,
                      struct aic_epwm_action *a0, struct aic_epwm_action *a1)
 {
-    struct aic_epwm_arg *arg = &g_epwm_args[ch];
+    struct aic_epwm_arg *arg =  NULL;
+
+    if (hal_epwm_ch_check(ch) < 0)
+        return;
+
+    arg = &g_epwm_args[ch];
 
     arg->sync_mode = sync_mode;
     arg->mode = mode;
@@ -175,6 +217,11 @@ void hal_epwm_ch_init(u32 ch, bool sync_mode, enum aic_epwm_mode mode, u32 defau
         epwm_writel(EPWM_SWACT_UPDT, EPWM_SW_ACT(ch));
         epwm_writel(HRPWM_OUTPUT_MODE_NO_ACT, EPWM_HRPWM_CFG(ch));
     }
+
+    if (arg->def_level)
+        hal_epwm_act_sw_ct(ch, EPWM_SET_CMPA_CMPB, EPWM_ACT_SW_HIGH);
+    else
+        hal_epwm_act_sw_ct(ch, EPWM_SET_CMPA_CMPB, EPWM_ACT_SW_LOW);
 }
 
 static int hal_epwm_calculate_div(u32 ch, float tar_freq)
@@ -221,9 +268,14 @@ static int hal_epwm_calculate_div(u32 ch, float tar_freq)
 
 int hal_epwm_set(u32 ch, u32 duty_ns, u32 period_ns, u32 output)
 {
-    struct aic_epwm_arg *arg = &g_epwm_args[ch];
     u32 prd = 0;
     u64 duty = 0;
+    struct aic_epwm_arg *arg =  NULL;
+
+    if (hal_epwm_ch_check(ch) < 0)
+        return -EINVAL;
+
+    arg = &g_epwm_args[ch];
 
     if (!arg->available) {
         hal_log_err("ch%d is unavailable\n", ch);
@@ -280,9 +332,76 @@ int hal_epwm_set(u32 ch, u32 duty_ns, u32 period_ns, u32 output)
     return 0;
 }
 
+void hal_epwm_act_sw_ct(u32 ch, u32 output, u32 action)
+{
+    switch (output) {
+    case EPWM_SET_CMPA:
+        epwm_writel_bits(action, EPWMA_ACT_SW_CT_MASK, EPWMA_ACT_SW_CT_SHIFT, EPWM_ACT_SW_CT(ch));
+        break;
+    case EPWM_SET_CMPB:
+        epwm_writel_bits(action, EPWMB_ACT_SW_CT_MASK, EPWMB_ACT_SW_CT_SHIFT, EPWM_ACT_SW_CT(ch));
+        break;
+    case EPWM_SET_CMPA_CMPB:
+        epwm_writel_bits(action, EPWMA_ACT_SW_CT_MASK, EPWMA_ACT_SW_CT_SHIFT, EPWM_ACT_SW_CT(ch));
+        epwm_writel_bits(action, EPWMB_ACT_SW_CT_MASK, EPWMB_ACT_SW_CT_SHIFT, EPWM_ACT_SW_CT(ch));
+        break;
+    default:
+        break;
+    }
+}
+
+void hal_epwm_count_ct(u32 ch, enum aic_epwm_mode mode)
+{
+    epwm_writel_bits(mode, EPWM_CNT_MOD_MASK, EPWM_CNT_MOD_SHIFT, EPWM_CNT_CONF(ch));
+}
+
+#ifdef AIC_EPWM_DRV_V11
+void hal_epwm_pul_config(u32 ch)
+{
+    hal_epwm_act_sw_ct(ch, EPWM_SET_CMPA_CMPB, EPWM_ACT_SW_LOW);
+    epwm_writel_bits(EPWM_PRD_LD_PUL_CNT_ZRO, EPWM_CNT_PRD_LD_MASK, EPWM_CNT_PRD_LD_SHIFT, EPWM_CNT_CONF(ch));
+    epwm_writel_bits(EPWM_CMP_LP_PUL_CNT_ZRO, EPWM_CMPA_LP_MASK, EPWM_CMPA_LP_SHIFT, EPWM_UPDT_MOD(ch));
+    epwm_writel_bits(EPWM_CMP_LP_PUL_CNT_ZRO, EPWM_CMPB_LP_MASK, EPWM_CMPB_LP_SHIFT, EPWM_UPDT_MOD(ch));
+    epwm_writel_bits(EPWMA_ACT_LP_PUL_CNT_ZRO, EPWMA_ACT_LP_MASK, EPWMA_ACT_LP_SHIFT, EPWMA_ACT(ch));
+    epwm_writel_bits(EPWMA_ACT_LP_PUL_CNT_ZRO, EPWMA_ACT_LP_MASK, EPWMA_ACT_LP_SHIFT, EPWMB_ACT(ch));
+    epwm_writel_bits(EPWM_ACT_SW_CT_UPDT_PUL, EPWM_ACT_SW_CT_UPDT_MASK, EPWM_ACT_SW_CT_UPDT, EPWM_SW_ACT(ch));
+    epwm_writel_bits(0x1, EPWM_PUL_CNT_SRC_MASK, EPWM_PUL_CNT_SRC_SHIFT, EPWM_PUL_OUT_CFG(ch));
+    hal_epwm_int_config(ch, 5, 1);
+    epwm_reg_enable(EPWM_BASE + EPWM_PUL_OUT_CFG(ch), EPWM_PUL_OUT_EN, 1);
+}
+
+int hal_epwm_pul_set(u32 ch, u32 duty_ns, u32 period_ns, u32 output, u32 num)
+{
+    int ret;
+
+    epwm_writel(num - 1, EPWM_PUL_OUT_NUM(ch));
+
+    ret = hal_epwm_set(ch, duty_ns, period_ns, output);
+    if (ret)
+        return ret;
+
+    return 0;
+}
+
+void hal_epwm_pul_out_ct(u32 ch, u32 enable)
+{
+    epwm_reg_enable(EPWM_BASE + EPWM_PUL_OUT_CFG(ch), EPWM_PUL_OUT_EN, enable);
+}
+
+void hal_epwm_pul_sw_updt(u32 ch)
+{
+    epwm_reg_enable(EPWM_BASE + EPWM_PUL_OUT_CFG(ch), EPWM_PUL_SW_UPDT, 1);
+}
+#endif
+
 int hal_epwm_get(u32 ch, u32 *duty_ns, u32 *period_ns)
 {
-    struct aic_epwm_arg *arg = &g_epwm_args[ch];
+    struct aic_epwm_arg *arg =  NULL;
+
+    if (hal_epwm_ch_check(ch) < 0)
+        return -EINVAL;
+
+    arg = &g_epwm_args[ch];
 
     if (!arg->available) {
         hal_log_err("ch%d is unavailable\n", ch);
@@ -292,6 +411,23 @@ int hal_epwm_get(u32 ch, u32 *duty_ns, u32 *period_ns)
     *duty_ns   = arg->duty;
     *period_ns = arg->period;
     return 0;
+}
+
+int hal_epwm_get_default_level(u32 ch)
+{
+    struct aic_epwm_arg *arg =  NULL;
+
+    if (hal_epwm_ch_check(ch) < 0)
+        return -EINVAL;
+
+    arg = &g_epwm_args[ch];
+
+    if (!arg->available) {
+        hal_log_err("ch%d is unavailable\n", ch);
+        return -EINVAL;
+    }
+
+    return (int)arg->def_level;
 }
 
 static void epwm_action_set(u32 ch, struct aic_epwm_action *act, char *name)
@@ -314,24 +450,22 @@ static void epwm_action_set(u32 ch, struct aic_epwm_action *act, char *name)
 
 int hal_epwm_enable(u32 ch)
 {
-    u32 div1_index = 0x4, div2_index = 0x0;
-    struct aic_epwm_arg *arg = &g_epwm_args[ch];
+    struct aic_epwm_arg *arg =  NULL;
+
+    if (hal_epwm_ch_check(ch) < 0)
+        return -EINVAL;
+
+    arg = &g_epwm_args[ch];
 
     if (!arg->available) {
         hal_log_err("ch%d is unavailable\n", ch);
         return -EINVAL;
     }
 
-    epwm_writel(EPWM_ACT_SW_NONE, EPWM_ACT_SW_CT(ch));
+    hal_epwm_act_sw_ct(ch, EPWM_SET_CMPA_CMPB, EPWM_ACT_SW_NONE);
 
     epwm_action_set(ch, &arg->action0, "action0");
     epwm_action_set(ch, &arg->action1, "action1");
-
-    hal_log_debug("ch%d tb_clk_rate: %d Hz\n", ch, arg->tb_clk_rate);
-
-    //Set the default time-base
-    epwm_writel_bits(div1_index, EPWM_CLK_DIV1_MASK, EPWM_CLK_DIV1_SHIFT, EPWM_CNT_CONF(ch));
-    epwm_writel_bits(div2_index, EPWM_CLK_DIV2_MASK, EPWM_CLK_DIV2_SHIFT, EPWM_CNT_CONF(ch));
 
     //For sync mode
     if (arg->sync_mode) {
@@ -362,7 +496,12 @@ static void hal_epwm_dll_ldo_en(void)
 
 int hal_epwm_disable(u32 ch)
 {
-    struct aic_epwm_arg *arg = &g_epwm_args[ch];
+    struct aic_epwm_arg *arg =  NULL;
+
+    if (hal_epwm_ch_check(ch) < 0)
+        return -EINVAL;
+
+    arg = &g_epwm_args[ch];
 
     if (!arg->available) {
         hal_log_err("ch%d is unavailable\n", ch);
@@ -371,12 +510,23 @@ int hal_epwm_disable(u32 ch)
 
     hal_log_debug("ch%d disable\n", ch);
 
-    if (arg->def_level)
-        epwm_writel(EPWM_ACT_SW_HIGH, EPWM_ACT_SW_CT(ch));
-    else
-        epwm_writel(EPWM_ACT_SW_LOW, EPWM_ACT_SW_CT(ch));
+#ifdef AIC_EPWM_DRV_V11
+    epwm_writel_bits(EPWM_PRD_LD_CNT_ZRO, EPWM_CNT_PRD_LD_MASK, EPWM_CNT_PRD_LD_SHIFT, EPWM_CNT_CONF(ch));
+    epwm_writel_bits(EPWM_CMP_LP_CNT_ZRO, EPWM_CMPA_LP_MASK, EPWM_CMPA_LP_SHIFT, EPWM_UPDT_MOD(ch));
+    epwm_writel_bits(EPWM_CMP_LP_CNT_ZRO, EPWM_CMPB_LP_MASK, EPWM_CMPB_LP_SHIFT, EPWM_UPDT_MOD(ch));
+    epwm_writel_bits(EPWMA_ACT_LP_CNT_ZRO, EPWMA_ACT_LP_MASK, EPWMA_ACT_LP_SHIFT, EPWMA_ACT(ch));
+    epwm_writel_bits(EPWMA_ACT_LP_CNT_ZRO, EPWMA_ACT_LP_MASK, EPWMA_ACT_LP_SHIFT, EPWMB_ACT(ch));
+    epwm_writel(EPWM_SWACT_UPDT, EPWM_SW_ACT(ch));
+    hal_epwm_int_config(ch, 0, 0);
+    epwm_reg_enable(EPWM_BASE + EPWM_PUL_OUT_CFG(ch), EPWM_PUL_OUT_EN, 0);
+#endif
 
-    epwm_writel((u32)EPWM_MODE_STOP_COUNT, EPWM_CNT_CONF(ch));
+    if (arg->def_level)
+        hal_epwm_act_sw_ct(ch, EPWM_SET_CMPA_CMPB, EPWM_ACT_SW_HIGH);
+    else
+        hal_epwm_act_sw_ct(ch, EPWM_SET_CMPA_CMPB, EPWM_ACT_SW_LOW);
+
+    epwm_writel_bits(EPWM_MODE_STOP_COUNT, EPWM_CNT_MOD_MASK, EPWM_CNT_MOD_SHIFT, EPWM_CNT_CONF(ch));
 
     epwm_writel(0, EPWM_CNT_V(ch));
 

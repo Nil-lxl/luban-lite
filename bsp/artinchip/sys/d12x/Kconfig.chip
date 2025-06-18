@@ -125,6 +125,7 @@ config AIC_DMA_ALIGN_SIZE
 config AIC_UART_DRV
     bool
     default n
+    select RING_BUFFER if DRIVER_BARE_DRV_EN
 
 config AIC_UART_DRV_V11
     bool

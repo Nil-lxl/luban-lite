@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2024-2025 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -9,10 +9,8 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
-#include "mpp_fb.h"
 #include "usb_osd_ui.h"
-#include "usb_osd_video.h"
-#include "usb_osd_settings.h"
+#include "video/usb_osd_video.h"
 #include "aic_lv_ffmpeg.h"
 #include "lv_tpc_run.h"
 
@@ -23,284 +21,226 @@
 #define USB_OSD_DEBUG(fmt, ...)
 #endif
 
-#define DISPLAY_LOGO_SCREEN        (0x1 << 0)
-#define DISPLAY_PICTURES_SCREEN    (0x1 << 1)
-#define DISPLAY_VIDEO_SCREEN       (0x1 << 2)
-#define DISPLAY_SETTINGS_SCREEN    (0x1 << 3)
-#define DISPLAY_GLOBAL_ALPHA_LATER (0x1 << 4)
-#define DISPLAY_MIXDER_ALPHA_LATER (0x1 << 5)
-#define DISPLAY_PIXEL_ALPHA_LATER  (0x1 << 6)
-#define DISPLAY_VIDEO_SUSPEND      (0x1 << 7)
-
-static lv_obj_t * video_screen = NULL;
-static lv_obj_t * settings_screen = NULL;
-static lv_obj_t * logo_screen = NULL;
-
-static struct mpp_fb *g_fb = NULL;
-static unsigned int disp_osd_flags = 0;
-static bool screen_blank = false;
-static rt_sem_t osd_sem = NULL;
+static lv_osd_manager_t* instance = NULL;
 
 #ifdef LV_USB_OSD_LOGO_TYPE_VIDEO
 static lv_obj_t *ffmpeg = NULL;
+static lv_timer_t *play_end_timer = NULL;
 #endif
 
-#define ClrBit(reg, bit)         ((reg) &= ~(bit))
-#define SetBit(reg, bit)         ((reg) |= (bit))
-
-#define usb_osd_add_flag(bit, flags) SetBit(flags, bit)
-#define usb_osd_clear_flag(bit, flags)  ClrBit(flags, bit)
-
-static inline bool is_usb_osd_has_flag(unsigned int nr, unsigned int flags)
+static lv_osd_manager_t* usb_osd_get_ui_manager()
 {
-    return nr & flags ? true : false;
+    return instance;
 }
 
-static void usb_osd_open_mpp_fb()
+static void blank_timer_cb(lv_timer_t *tmr)
 {
-    g_fb = mpp_fb_open();
-}
+    lv_osd_manager_t* mgr = tmr->user_data;
 
-bool is_usb_disp_suspend(void)
-{
-    return is_usb_osd_has_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags);
-}
-
-void usb_osd_modify_blank_status(bool enable)
-{
-    if (enable)
-        screen_blank = true;
-    else
-        screen_blank = false;
-}
-
-bool is_usb_osd_screen_blank(void)
-{
-    return screen_blank;
-}
-
-void back_video_screen(void)
-{
-    usb_osd_add_flag(DISPLAY_VIDEO_SCREEN, disp_osd_flags);
-}
-
-void back_settings_screen(void)
-{
-    usb_osd_add_flag(DISPLAY_SETTINGS_SCREEN, disp_osd_flags);
-}
-
-void lv_load_video_screen(void)
-{
-    lv_scr_load(video_screen);
-}
-
-static void usb_osd_blank_screen_callback(lv_timer_t *tmr)
-{
-    if (!lv_logo_screen_is_enabled())
+    if (!lv_get_logo_state())
         /* the status of the logo screen has been changed */
         return;
 
-    USB_OSD_DEBUG("%s, %d\n", __func__, __LINE__);
-
-    if (is_usb_osd_has_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags)) {
-        usb_osd_modify_blank_status(true);
-        mpp_fb_ioctl(g_fb, AICFB_POWEROFF, 0);
+    if (mgr->usb_suspend) {
+        mgr->screen_blank = true;
         lvgl_put_tp();
-        rt_sem_take(osd_sem, RT_WAITING_FOREVER);
+        mpp_fb_ioctl(mgr->fb, AICFB_POWEROFF, 0);
+        rt_sem_take(mgr->osd_sem, RT_WAITING_FOREVER);
     }
 }
 
-/*
- * usb_osd_ui_callback()     - usb osd ui timer callback
- *
- * This timer monitor the status of disp_osd_flags and switchs screens. The disp_osd_flags
- * will be modified by usb_disp_suspend_enter() and usb_disp_suspend_exit() first.
- *
- * To ensure that no tears occur when the UI switch screen, this timer callback will be
- * called twice when switching screens.
- *
- * The steps to switch logo screen are as follows:
- *
- *                     usb set logo screen flag
- *
- *                       |
- *                       |
- *                       |
- *                       v
- * ----------------------------------------------------------------------------------------->
- *     ^                           ^                              ^                             lvgl timer
- *     |                           |                              |                             Cycle 200 milliseconds
- *     |                           |                              |
- *     |                           |                              |
- *
- *   this cycle do nothing      lvgl switch to logo screen      enable ui global alpha mode
- *                              set global alpha flag
- */
-static void usb_osd_ui_callback(lv_timer_t *tmr)
+void handle_logo_state(lv_osd_manager_t* mgr)
+{
+    lv_obj_t * screen = mgr->screens[SETTINGS_SCREEN];
+
+    if (!mgr->usb_suspend || !(mgr->new_state & STATE_LOGO))
+        return;
+
+    USB_OSD_DEBUG("%s\n", __func__);
+
+    lv_scr_load(screen);
+    lv_settings_disp_logo();
+
+    unsigned int blank_time = lv_get_screen_blank_time_ms();
+    if (blank_time > 0) {
+        lv_timer_t* timer = lv_timer_create(blank_timer_cb, blank_time, mgr);
+        lv_timer_set_repeat_count(timer, 1);
+    }
+
+    if (mgr->usb_suspend) {
+        mgr->adjusted_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+        mgr->adjusted_alpha_value = 255;
+    } else {
+        mgr->adjusted_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+        mgr->adjusted_alpha_value = 0;
+    }
+
+}
+
+void handle_usb_resume_state(lv_osd_manager_t* mgr)
+{
+    (void)mgr;
+    USB_OSD_DEBUG("%s\n", __func__);
+}
+
+void handle_pictures_state(lv_osd_manager_t* mgr)
+{
+    lv_obj_t * screen = mgr->screens[SETTINGS_SCREEN];
+
+    if (!mgr->usb_suspend || !(mgr->new_state & STATE_PICTURES))
+        return;
+
+    lv_scr_load(screen);
+
+    lv_settings_disp_pic();
+
+    if (mgr->usb_suspend) {
+        mgr->adjusted_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+        mgr->adjusted_alpha_value = 255;
+    } else {
+        mgr->adjusted_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+        mgr->adjusted_alpha_value = 0;
+    }
+}
+
+void handle_settings_state(lv_osd_manager_t* mgr)
+{
+    lv_obj_t * screen = mgr->screens[SETTINGS_SCREEN];
+    bool usb_suspend = mgr->new_state & STATE_USB_SUSPEND;
+
+    USB_OSD_DEBUG("%s\n", __func__);
+
+    lv_scr_load(screen);
+
+    lv_settings_changed_state(usb_suspend);
+
+    if (usb_suspend) {
+        if (mgr->new_state & STATE_VIDEO) {
+            mgr->adjusted_alpha_mode = AICFB_PIXEL_ALPHA_MODE;
+            mgr->adjusted_alpha_value = 0;
+        } else {
+            mgr->adjusted_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+            mgr->adjusted_alpha_value = 255;
+        }
+    } else {
+        mgr->adjusted_alpha_mode = AICFB_MIXDER_ALPHA_MODE;
+        mgr->adjusted_alpha_value = 220;
+    }
+}
+
+void handle_blank_state(lv_osd_manager_t* mgr)
+{
+    mgr->screen_blank = true;
+    USB_OSD_DEBUG("%s\n", __func__);
+}
+
+void handle_video_state(lv_osd_manager_t* mgr)
+{
+    if (!mgr->usb_suspend || (mgr->current_state & STATE_VIDEO))
+        return;
+
+    lv_obj_t * screen = mgr->screens[VIDEO_SCREEN];
+    lv_scr_load(screen);
+    lv_video_play();
+
+    USB_OSD_DEBUG("%s\n", __func__);
+
+    mgr->adjusted_alpha_mode = AICFB_PIXEL_ALPHA_MODE;
+    mgr->adjusted_alpha_value = 0;
+}
+
+static const struct state_info station[] = {
+    {
+        .osd_state = STATE_USB_RESUME,
+        .handler = handle_usb_resume_state,
+    },
+    {
+        .osd_state = STATE_LOGO,
+        .handler = handle_logo_state,
+    },
+    {
+        .osd_state = STATE_PICTURES,
+        .handler = handle_pictures_state,
+    },
+    {
+        .osd_state = STATE_VIDEO,
+        .handler = handle_video_state,
+    },
+    {
+        .osd_state = STATE_SETTINGS,
+        .handler = handle_settings_state,
+    },
+    {
+        .osd_state = STATE_BLANK,
+        .handler = handle_blank_state,
+    },
+};
+
+static bool is_usb_osd_state_modify(lv_osd_manager_t* mgr)
+{
+    if (mgr->current_state != mgr->new_state)
+        return true;
+
+    if (mgr->current_alpha_mode != mgr->adjusted_alpha_mode ||
+        mgr->current_alpha_value != mgr->adjusted_alpha_value)
+        return true;
+
+    if (mgr->screen_blank)
+        return true;
+
+    return false;
+}
+
+static void usb_osd_set_alpha_mode(struct mpp_fb* fb, unsigned int mode, unsigned int value)
 {
     struct aicfb_alpha_config alpha = {0};
-    lv_obj_t * screen = lv_scr_act();
-
-    if (is_usb_osd_screen_blank()) {
-        mpp_fb_ioctl(g_fb, AICFB_POWEROFF, 0);
-        rt_sem_take(osd_sem, RT_WAITING_FOREVER);
-    }
-
-    /*
-     * Make sure that only the settings menu can displayed when the
-     * usb display thread is working
-     */
-    if (!is_usb_osd_has_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags)) {
-
-        lv_logo_screen_enable(false);
-        lv_pictures_screen_enable(false);
-    }
-
-    /* There are no events to respond to, just return */
-    if ((disp_osd_flags & 0x7F) == 0x0)
-        return;
-
-    if ((screen != settings_screen) &&
-                is_usb_osd_has_flag(DISPLAY_SETTINGS_SCREEN, disp_osd_flags)) {
-        lv_scr_load(settings_screen);
-        lv_obj_clear_flag(settings_screen, LV_OBJ_FLAG_HIDDEN);
-
-        lv_settings_menu_enable(true);
-        lv_pictures_screen_enable(false);
-        lv_logo_screen_enable(false);
-
-        USB_OSD_DEBUG("Switch to settings screen\n");
-        /* alpha blend later */
-        if (is_usb_osd_has_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags)) {
-            if (lv_get_screen_lock_mode() == DISPLAY_VIDEO)
-                usb_osd_add_flag(DISPLAY_MIXDER_ALPHA_LATER, disp_osd_flags);
-            else
-                usb_osd_add_flag(DISPLAY_GLOBAL_ALPHA_LATER, disp_osd_flags);
-        } else {
-            usb_osd_add_flag(DISPLAY_MIXDER_ALPHA_LATER, disp_osd_flags);
-        }
-
-        usb_osd_clear_flag(DISPLAY_SETTINGS_SCREEN, disp_osd_flags);
-        return;
-    }
+    int ret;
 
     alpha.layer_id = AICFB_LAYER_TYPE_UI;
     alpha.enable = 1;
+    alpha.mode = mode;
+    alpha.value = value;
+    ret = mpp_fb_ioctl(fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha);
+    if (ret < 0)
+        printf("set alpha failed\n");
+}
 
-    if (is_usb_osd_has_flag(DISPLAY_LOGO_SCREEN, disp_osd_flags)) {
-        usb_osd_clear_flag(DISPLAY_LOGO_SCREEN, disp_osd_flags);
-        int blank_time = lv_get_screen_blank_tmie_ms();
 
-        if (screen != settings_screen)
-            lv_scr_load(settings_screen);
+static void usb_osd_ui_callback(lv_timer_t* tmr)
+{
+    lv_osd_manager_t* mgr = (lv_osd_manager_t*)tmr->user_data;
+    unsigned int mode, value;
 
-        lv_logo_screen_enable(true);
-        lv_settings_menu_enable(false);
-        lv_pictures_screen_enable(false);
-
-        USB_OSD_DEBUG("Switch to LOGO screen\n");
-
-        if (blank_time != 0) {
-            lv_timer_t * blank_timer = lv_timer_create(usb_osd_blank_screen_callback, blank_time, 0);
-            lv_timer_set_repeat_count(blank_timer, 1);
-        }
-
-        usb_osd_add_flag(DISPLAY_GLOBAL_ALPHA_LATER, disp_osd_flags);
+    if (!is_usb_osd_state_modify(mgr))
         return;
+
+    if (mgr->screen_blank) {
+        mpp_fb_ioctl(mgr->fb, AICFB_POWEROFF, 0);
+        rt_sem_take(mgr->osd_sem, RT_WAITING_FOREVER);
     }
 
-    if (is_usb_osd_has_flag(DISPLAY_PICTURES_SCREEN, disp_osd_flags)) {
-        usb_osd_clear_flag(DISPLAY_PICTURES_SCREEN, disp_osd_flags);
+    USB_OSD_DEBUG("current_state(%d) switch new state(%d)\n",
+                  mgr->current_state, mgr->new_state);
+    USB_OSD_DEBUG("current alpha mode(%d), value(%d)\n",
+                  mgr->current_alpha_mode, mgr->current_alpha_value);
 
-        if (screen != settings_screen)
-            lv_scr_load(settings_screen);
+    if (mgr->current_state != mgr->new_state) {
+        unsigned int state = mgr->current_state ^ mgr->new_state;
 
-        lv_logo_screen_enable(false);
-        lv_settings_menu_enable(false);
-        lv_pictures_screen_enable(true);
-
-        USB_OSD_DEBUG("Switch to pictures screen\n");
-
-        usb_osd_add_flag(DISPLAY_GLOBAL_ALPHA_LATER, disp_osd_flags);
-        return;
-    }
-
-    if (is_usb_osd_has_flag(DISPLAY_VIDEO_SCREEN, disp_osd_flags)) {
-        usb_osd_clear_flag(DISPLAY_VIDEO_SCREEN, disp_osd_flags);
-
-        lv_scr_load(video_screen);
-
-        USB_OSD_DEBUG("Switch to video screen\n");
-
-        usb_osd_add_flag(DISPLAY_PIXEL_ALPHA_LATER, disp_osd_flags);
-        return;
-    }
-
-    /*
-     * Make sure the settings screen has been drawn before configure alpha
-     */
-    if (is_usb_osd_has_flag(DISPLAY_MIXDER_ALPHA_LATER, disp_osd_flags)) {
-        usb_osd_clear_flag(DISPLAY_MIXDER_ALPHA_LATER, disp_osd_flags);
-
-        USB_OSD_DEBUG("enable mixder alpha mode\n");
-
-        alpha.mode = AICFB_MIXDER_ALPHA_MODE;
-        alpha.value = 220;
-        mpp_fb_ioctl(g_fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha);
-        lvgl_get_tp();
-        return;
-    }
-
-    if (is_usb_osd_has_flag(DISPLAY_GLOBAL_ALPHA_LATER, disp_osd_flags)) {
-        usb_osd_clear_flag(DISPLAY_GLOBAL_ALPHA_LATER, disp_osd_flags);
-
-        USB_OSD_DEBUG("enable global alpha mode\n");
-
-        alpha.mode = AICFB_GLOBAL_ALPHA_MODE;
-        alpha.value = 255;
-        mpp_fb_ioctl(g_fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha);
-        return;
-    }
-
-    if (is_usb_osd_has_flag(DISPLAY_PIXEL_ALPHA_LATER, disp_osd_flags)) {
-        usb_osd_clear_flag(DISPLAY_PIXEL_ALPHA_LATER, disp_osd_flags);
-
-        USB_OSD_DEBUG("enable pixel alpha mode and play video\n");
-
-        lv_video_play();
-
-        alpha.mode = AICFB_PIXEL_ALPHA_MODE;
-        alpha.value = 220;
-        mpp_fb_ioctl(g_fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha);
-
-        return;
-    }
-
-    /* show or hide settings menu */
-    if (is_usb_osd_has_flag(DISPLAY_SETTINGS_SCREEN, disp_osd_flags)) {
-        if (!lv_settings_menu_is_enabled()) {
-            if (!is_usb_osd_has_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags)) {
-                alpha.mode = AICFB_MIXDER_ALPHA_MODE;
-                alpha.value = 220;
-                mpp_fb_ioctl(g_fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha);
+        for (int i = 0; i < ARRAY_SIZE(station); i++) {
+            if (state & station[i].osd_state) {
+                station[i].handler(mgr);
             }
-
-            lv_settings_menu_enable(true);
-
-            lvgl_get_tp();
-            USB_OSD_DEBUG("Show settings menu\n");
-        } else {
-            alpha.mode = AICFB_GLOBAL_ALPHA_MODE;
-            alpha.value = is_usb_osd_has_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags) ? 255 : 0;
-            mpp_fb_ioctl(g_fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha);
-
-            lv_settings_menu_enable(false);
-            if (!is_usb_disp_suspend())
-                lvgl_put_tp();
-            USB_OSD_DEBUG("Hide settings menu\n");
         }
 
-        usb_osd_clear_flag(DISPLAY_SETTINGS_SCREEN, disp_osd_flags);
+        mgr->current_state = mgr->new_state;
+    } else {
+        mode = mgr->adjusted_alpha_mode;
+        value = mgr->adjusted_alpha_value;
+
+        usb_osd_set_alpha_mode(mgr->fb, mode, value);
+        mgr->current_alpha_mode = mode;
+        mgr->current_alpha_value = value;
     }
 }
 
@@ -316,30 +256,17 @@ static void usb_osd_ui_theme_set(void)
     lv_disp_set_theme(disp, th);
 }
 
-static void usb_osd_ui_alpha_set(void)
-{
-    struct aicfb_alpha_config alpha = {0};
-    int ret;
-
-    alpha.layer_id = AICFB_LAYER_TYPE_UI;
-    alpha.enable = 1;
-    alpha.mode = AICFB_GLOBAL_ALPHA_MODE;
-    alpha.value = 0;
-    ret = mpp_fb_ioctl(g_fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha);
-    if (ret < 0)
-        printf("set alpha failed\n");
-}
-
 #ifdef LV_USB_OSD_SETTINGS_MENU
 static void gpio_input_irq_handler(void *args)
 {
-    if (is_usb_osd_has_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags) &&
-            is_usb_osd_screen_blank())
-        return;
+    struct osd_manager *mgr = usb_osd_get_ui_manager();
 
-    USB_OSD_DEBUG("%s, %d\n", __func__, __LINE__);
+    if (mgr->current_state & STATE_SETTINGS)
+        mgr->new_state &= ~(STATE_SETTINGS);
+    else
+        mgr->new_state |= STATE_SETTINGS;
 
-    usb_osd_add_flag(DISPLAY_SETTINGS_SCREEN, disp_osd_flags);
+    USB_OSD_DEBUG("%s\n", __func__);
 }
 #endif
 
@@ -363,65 +290,69 @@ static void usb_osd_wakeup_key_register(void)
 #endif
 }
 
+static int usb_osd_mode_to_state(unsigned int lock_mode)
+{
+    unsigned int state = 0;
+
+    if (lock_mode == DISPLAY_LOGO)
+        state |= STATE_LOGO;
+    else if (lock_mode == DISPLAY_PICTURES)
+        state |= STATE_PICTURES;
+    else if (lock_mode == DISPLAY_VIDEO)
+        state |= STATE_VIDEO;
+    else if (lock_mode == BLANK_SCREEN)
+        state |= STATE_BLANK;
+
+    USB_OSD_DEBUG("osd lock mode: %d\n", lock_mode);
+
+    return state;
+}
+
 void usb_disp_suspend_enter(void)
 {
-    int mode = lv_get_screen_lock_mode();
-    int time_ms = lv_get_screen_lock_time_ms();
+    struct osd_manager *mgr = usb_osd_get_ui_manager();
+    unsigned int mode = lv_get_screen_lock_mode();
 
-    usb_osd_add_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags);
-
-    if (time_ms == 0)
+    if (lv_get_screen_lock_time_ms() == 0)
         /* Never Lock Screen */
         return;
 
-    switch (mode) {
-    case DISPLAY_LOGO:
-        usb_osd_add_flag(DISPLAY_LOGO_SCREEN, disp_osd_flags);
-        break;
-    case DISPLAY_PICTURES:
-        usb_osd_add_flag(DISPLAY_PICTURES_SCREEN, disp_osd_flags);
-        break;
-    case DISPLAY_VIDEO:
-        usb_osd_add_flag(DISPLAY_VIDEO_SCREEN, disp_osd_flags);
-        break;
-    case BLANK_SCREEN:
-        usb_osd_modify_blank_status(true);
-        lvgl_put_tp();
-        break;
-    default:
-        printf("Unknown mode: %#x\n", mode);
-        break;
-    }
+    mgr->new_state = STATE_USB_SUSPEND | usb_osd_mode_to_state(mode);
+    mgr->usb_suspend = true;
 
-    USB_OSD_DEBUG("Add video suspend flag\n");
+    if (mgr->new_state & STATE_BLANK)
+        mgr->screen_blank = true;
 
-    if (mode != BLANK_SCREEN)
-        lvgl_get_tp();
+    USB_OSD_DEBUG("usb suspend, osd new_state: %d\n", mgr->new_state);
+
+    lvgl_get_tp();
 }
 
 void usb_disp_suspend_exit(void)
 {
-    struct aicfb_alpha_config alpha = {0};
-
-    usb_osd_clear_flag(DISPLAY_VIDEO_SUSPEND, disp_osd_flags);
-    USB_OSD_DEBUG("Clear video suspend flag\n");
+    struct osd_manager *mgr = usb_osd_get_ui_manager();
 
     lvgl_put_tp();
 
-    alpha.layer_id = AICFB_LAYER_TYPE_UI;
-    alpha.enable = 1;
-    alpha.mode = AICFB_GLOBAL_ALPHA_MODE;
-    alpha.value = 0;
-    mpp_fb_ioctl(g_fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha);
-    mpp_fb_ioctl(g_fb, AICFB_POWERON, 0);
+    usb_osd_set_alpha_mode(mgr->fb, AICFB_GLOBAL_ALPHA_MODE, 0);
+    mpp_fb_ioctl(mgr->fb, AICFB_POWERON, 0);
 
-    if (is_usb_osd_screen_blank()) {
-        usb_osd_modify_blank_status(false);
-        rt_sem_release(osd_sem);
+    if (mgr->screen_blank) {
+        rt_sem_release(mgr->osd_sem);
+        mgr->screen_blank = false;
     }
 
-    if (lv_get_screen_lock_mode() == DISPLAY_VIDEO)
+    if (mgr->current_state & STATE_VIDEO)
         lv_video_stop();
+
+    mgr->new_state = STATE_USB_RESUME;
+    mgr->current_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+    mgr->current_alpha_value = 0;
+    mgr->adjusted_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+    mgr->adjusted_alpha_value = 0;
+    mgr->usb_suspend = false;
+    mgr->screen_blank = false;
+    USB_OSD_DEBUG("%s\n", __func__);
 }
 
 int usb_disp_get_suspend_ms(void)
@@ -432,13 +363,104 @@ int usb_disp_get_suspend_ms(void)
     return suspend_ms;
 }
 
+#ifdef LV_USB_OSD_LOGO_VIDEO
+static void ffmpeg_player_update_cb(lv_timer_t * timer)
+{
+    bool play_end = false;
+    if (!ffmpeg)
+        return;
+
+    lv_ffmpeg_player_set_cmd_ex(ffmpeg, LV_FFMPEG_PLAYER_CMD_PLAY_END_EX, &play_end);
+    if (play_end == true) {
+        USB_OSD_DEBUG("usb disp delete ffmpeg obj\n");
+        lv_obj_del(ffmpeg);
+        ffmpeg = NULL;
+        lv_timer_pause(play_end_timer);
+        lv_timer_del(play_end_timer);
+        play_end_timer = NULL;
+    }
+}
+#endif
+
+static lv_obj_t* create_screen(const char* type)
+{
+    if (rt_strcmp(type, "video") == 0)
+        return lv_video_screen_create();
+    else if (rt_strcmp(type, "settings") == 0)
+        return lv_settings_screen_create();
+
+    return NULL;
+}
+
+bool lv_get_ui_settings_state(void)
+{
+    lv_osd_manager_t* mgr = usb_osd_get_ui_manager();
+
+    return mgr->usb_suspend;
+}
+
+void lv_update_ui_settings_state(void)
+{
+    lv_osd_manager_t* mgr = usb_osd_get_ui_manager();
+
+    if (mgr->current_state & STATE_SETTINGS)
+        mgr->current_state &= ~(STATE_SETTINGS);
+
+    if (mgr->new_state & STATE_SETTINGS)
+        mgr->new_state &= ~(STATE_SETTINGS);
+}
+
+void lv_blank_screen_enable(bool enable)
+{
+    lv_osd_manager_t* mgr = usb_osd_get_ui_manager();
+
+    if (enable)
+        mgr->screen_blank = true;
+    else
+        mgr->screen_blank = false;
+}
+
+bool lv_is_usb_disp_suspend(void)
+{
+    lv_osd_manager_t* mgr = usb_osd_get_ui_manager();
+
+    return mgr->usb_suspend;
+}
+
+static lv_osd_manager_t* ui_manager_get_instance(void)
+{
+    instance = rt_malloc(sizeof(lv_osd_manager_t));
+    rt_memset(instance, 0, sizeof(lv_osd_manager_t));
+
+    instance->fb = mpp_fb_open();
+    instance->osd_sem = rt_sem_create("osdsem", 0, RT_IPC_FLAG_PRIO);
+
+    instance->screens[VIDEO_SCREEN] = create_screen("video");
+    instance->screens[SETTINGS_SCREEN] = create_screen("settings");
+
+    instance->current_state = STATE_USB_RESUME;
+    instance->current_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+    instance->current_alpha_value = 0;
+    instance->adjusted_alpha_mode = AICFB_GLOBAL_ALPHA_MODE;
+    instance->adjusted_alpha_value = 0;
+
+    instance->screen_blank = false;
+
+    return instance;
+}
+
 static void usb_osd_ui_display_logo(void)
 {
+    lv_display_rotation_t rotation = lv_display_get_rotation(NULL);
+    lv_obj_t * logo_screen = lv_scr_act();
 #if defined(LV_USB_OSD_LOGO_IMAGE)
     char logo_image_src[64];
-    snprintf(logo_image_src, sizeof(logo_image_src), LVGL_PATH(%s), USB_OSD_UI_LOGO_IMAGE);
 
-    logo_screen = lv_scr_act();
+    if (rotation == LV_DISPLAY_ROTATION_90 || rotation == LV_DISPLAY_ROTATION_270)
+        snprintf(logo_image_src, sizeof(logo_image_src), LVGL_PATH(%s), USB_OSD_UI_LOGO_ROTATE_IMAGE);
+    else
+        snprintf(logo_image_src, sizeof(logo_image_src), LVGL_PATH(%s), USB_OSD_UI_LOGO_IMAGE);
+
     lv_obj_t * logo_img = lv_img_create(logo_screen);
     lv_img_set_src(logo_img, logo_image_src);
     lv_obj_set_pos(logo_img, 0, 0);
@@ -447,37 +469,38 @@ static void usb_osd_ui_display_logo(void)
     snprintf(logo_video_src, sizeof(logo_video_src), "%s%s",
             USB_OSD_UI_LOGO_VIDEO_PATH, USB_OSD_UI_LOGO_VIDEO);
 
-    logo_screen = lv_scr_act();
+#if defined(LV_DISPLAY_ROTATE_EN)
+    unsigned int lvgl_rotation[] = {LV_DISPLAY_ROTATION_0,
+                                    LV_DISPLAY_ROTATION_270,
+                                    LV_DISPLAY_ROTATION_180,
+                                    LV_DISPLAY_ROTATION_90};
+    rotation = lvgl_rotation[rotation] * 90;
+#elif defined(AIC_FB_ROTATE_EN)
+    rotation = AIC_FB_ROTATE_DEGREE;
+#endif
     ffmpeg = lv_ffmpeg_player_create(logo_screen);
-    lv_obj_set_style_transform_angle(ffmpeg, USB_OSD_UI_LOGO_VIDEO_ROTATE, LV_PART_MAIN);
+    lv_obj_set_style_transform_angle(ffmpeg, rotation, LV_PART_MAIN);
     lv_obj_add_flag(ffmpeg, LV_OBJ_FLAG_HIDDEN);
 
     lv_ffmpeg_player_set_src(ffmpeg, logo_video_src);
     lv_ffmpeg_player_set_cmd_ex(ffmpeg, LV_FFMPEG_PLAYER_CMD_START, NULL);
     lv_ffmpeg_player_set_auto_restart(ffmpeg, false);
+
+    play_end_timer = lv_timer_create(ffmpeg_player_update_cb, 50 , NULL);
+    lv_timer_resume(play_end_timer);
 #endif
 }
 
 void usb_osd_ui_init(void)
 {
-    usb_osd_open_mpp_fb();
-
     usb_osd_ui_theme_set();
-    usb_osd_ui_alpha_set();
+
+    lv_osd_manager_t* mgr = ui_manager_get_instance();
+    usb_osd_set_alpha_mode(mgr->fb, AICFB_GLOBAL_ALPHA_MODE, 0);
     usb_osd_wakeup_key_register();
 
     usb_osd_ui_display_logo();
-
-    osd_sem = rt_sem_create("osdsem", 0, RT_IPC_FLAG_PRIO);
-    if (osd_sem == RT_NULL) {
-        pr_err("create osd semaphore failed\n");
-        return;
-    }
-
-    settings_screen = lv_settings_screen_creat();
-    video_screen = lv_video_screen_creat();
-
-    lv_timer_create(usb_osd_ui_callback, 200, 0);
+    lv_timer_create(usb_osd_ui_callback, 200, mgr);
 }
 
 void ui_init(void)

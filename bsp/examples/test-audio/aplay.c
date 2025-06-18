@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  * Authors:  dwj <weijie.ding@artinchip.com>
@@ -50,19 +50,13 @@ struct wav_info
     struct DATA_BLOCK_DEF  data_block;
 };
 
-__WEAK int uac_set_suspend(uint8_t status)
-{
-    return 0;
-}
-
 int test_wavplay(int argc, char **argv)
 {
     int fd = -1, len, stream = 0, ret = RT_EOK;
     uint8_t *buffer = NULL;
     struct wav_info *info = NULL;
     struct rt_audio_caps caps = {0};
-
-    uac_set_suspend(1);
+    u64 size = 0;
 
     if (argc < 2 || argc > 3)
     {
@@ -168,23 +162,22 @@ int test_wavplay(int argc, char **argv)
     stream = AUDIO_STREAM_REPLAY;
     rt_device_control(snd_dev, AUDIO_CTL_START, (void *)&stream);
 
-    /* Wait Power Amplifier stable */
-    rt_thread_mdelay(200);
+    size = info->data_block.data_size;
 
-    while (1)
+    while (size > 0)
     {
         int length;
+        int to_read = (size > BUFSZ) ? BUFSZ : size;
 
-        length = read(fd, buffer, BUFSZ);
+        length = read(fd, buffer, to_read);
 
         if (length <= 0)
             break;
 
         rt_device_write(snd_dev, 0, buffer, length);
+        size -= length;
     }
-
     rt_device_close(snd_dev);
-    uac_set_suspend(0);
 
 __exit:
 

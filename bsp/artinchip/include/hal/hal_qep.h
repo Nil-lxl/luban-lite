@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -40,7 +40,9 @@ struct aic_qep_data {
     u8 id;
 };
 
+void hal_qep_clear_cnt(u32 ch);
 u32 hal_qep_get_cnt(u32 ch);
+u32 hal_qep_global_stat();
 u32 hal_qep_int_stat(u32 ch);
 void hal_qep_clr_int(u32 ch, u32 stat);
 void hal_qep_set_cnt_ep(u32 i, u32 cnt);

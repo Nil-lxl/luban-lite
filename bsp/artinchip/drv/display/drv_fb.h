@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -46,6 +46,7 @@ enum AIC_COM_TYPE {
 struct panel_dbi_commands {
 	const u8 *buf;
 	size_t len;
+    unsigned int command_flag;
 };
 
 struct spi_cfg {
@@ -64,12 +65,19 @@ struct panel_dbi {
     struct spi_cfg *spi;
 };
 
+struct rgb_spi_command {
+    unsigned int len;
+    unsigned int command_on;
+    unsigned char *buf;
+};
+
 struct panel_rgb {
     unsigned int mode;
     unsigned int format;
     unsigned int clock_phase;
     unsigned int data_order;
     unsigned int data_mirror;
+    struct rgb_spi_command spi_command;
 };
 
 enum lvds_mode {
@@ -116,9 +124,10 @@ struct panel_dsi {
 };
 
 struct aic_panel;
+struct panel_desc;
 
 struct de_funcs {
-    int (*set_mode)(struct aic_panel *panel);
+    int (*set_mode)(struct aic_panel *panel, struct panel_desc *desc, u32 output_bpp, u32 dither_en);
     int (*clk_enable)(void);
     int (*clk_disable)(void);
     int (*timing_enable)(void);
@@ -145,7 +154,8 @@ struct di_funcs {
     int (*clk_disable)(void);
     int (*enable)(void);
     int (*disable)(void);
-    int (*attach_panel)(struct aic_panel *panel);
+    int (*attach_panel)(struct aic_panel *panel, struct panel_desc *desc);
+    int (*get_output_bpp)(void);
     int (*set_videomode)(const struct display_timing *timings, int enable);
     int (*send_cmd)(u32 dt, u32 vc, const u8 *data, u32 len);
     int (*read_cmd)(u32 val);
@@ -181,6 +191,19 @@ struct aic_panel_funcs {
                 struct aic_panel_callbacks *pcallback);
 };
 
+struct panel_desc {
+    const char *name;
+    struct display_timing *timings;
+    struct aic_panel_funcs *funcs;
+
+    union {
+        struct panel_rgb  *rgb;
+        struct panel_lvds *lvds;
+        struct panel_dsi  *dsi;
+        struct panel_dbi  *dbi;
+    };
+};
+
 struct aic_panel {
     const char *name;
     struct aic_panel_funcs *funcs;
@@ -193,6 +216,10 @@ struct aic_panel {
         struct panel_dsi  *dsi;
         struct panel_dbi  *dbi;
     };
+
+    struct panel_desc *desc;
+    unsigned int match_num;
+    unsigned int match_id;
 
     int connector_type;
 };

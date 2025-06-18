@@ -103,7 +103,7 @@ lv_obj_t *widgets_ui_init(void)
     lv_obj_set_pos(exit, -LV_HOR_RES * 0.05, -LV_VER_RES * 0.1);
     lv_obj_set_ext_click_area(exit, LV_HOR_RES * 0.02);
 
-    if (pressed_default.prop_cnt > 1) {
+    if (pressed_default.prop_cnt >= 1) {
         lv_style_reset(&pressed_default);
     } else {
         lv_style_init(&pressed_default);

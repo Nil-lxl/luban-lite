@@ -136,6 +136,17 @@ rt_uint32_t rt_spi_get_transfer_status(struct rt_spi_device        *device)
     return result;
 }
 
+void rt_spi_set_rx_delay_mode(struct rt_spi_device        *device,
+                          rt_uint32_t mode)
+{
+    RT_ASSERT(device != RT_NULL);
+
+    if (device->bus != RT_NULL && device->bus->ops->delaymode != RT_NULL)
+    {
+        device->bus->ops->delaymode(device, mode);
+    }
+}
+
 rt_err_t rt_spi_send_then_send(struct rt_spi_device *device,
                                const void           *send_buf1,
                                rt_size_t             send_length1,

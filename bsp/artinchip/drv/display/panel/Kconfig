@@ -80,12 +80,6 @@ if !AIC_DISP_PQ_TOOL
         help
             MIPI-DBI Type C, SPI_4SDA_RGB666
 
-    config AIC_PANEL_DBI_ST7789V
-        bool "ArtInChip MIPI DBI ST7789V panel"
-        depends on AIC_DISP_MIPI_DBI
-        help
-            MIPI-DBI Type C, SPI_4LINE_RGB565
-
     config AIC_PANEL_DBI_ILI9327
         bool "ArtInChip MIPI DBI ILI9327 panel"
         depends on AIC_DISP_MIPI_DBI
@@ -136,7 +130,88 @@ if !AIC_DISP_PQ_TOOL
 endif
     endchoice
 
-if AIC_SIMPLE_PANEL && !AIC_DISP_PQ_TOOL
+config AIC_PANEL_CUSTOM_RESOLUTION
+    bool "Custom Display Timing"
+    depends on AIC_SIMPLE_PANEL
+    default n
+
+choice
+        prompt "Classic Resolution List"
+        depends on AIC_SIMPLE_PANEL
+        depends on !AIC_PANEL_CUSTOM_RESOLUTION
+        default AIC_PANEL_1024X600_RESOLUTION
+
+    config AIC_PANEL_480X272_RESOLUTION
+        bool "480x272"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_800X480_RESOLUTION
+        bool "800x480"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_1024X600_RESOLUTION
+        bool "1024x600"
+        depends on AIC_DISP_RGB || AIC_DISP_LVDS
+
+    config AIC_PANEL_1920X1080_RESOLUTION
+        bool "1920x1080"
+        depends on AIC_DISP_LVDS
+endchoice
+
+config RGB_PANEL_MATCH_ID
+    int
+    default 0 if AIC_PANEL_1024X600_RESOLUTION
+    default 1 if AIC_PANEL_800X480_RESOLUTION
+    default 2 if AIC_PANEL_480X272_RESOLUTION
+    default 3 if AIC_PANEL_CUSTOM_RESOLUTION
+
+config LVDS_PANEL_MATCH_ID
+    int
+    default 0 if AIC_PANEL_1024X600_RESOLUTION
+    default 1 if AIC_PANEL_1920X1080_RESOLUTION
+    default 2 if AIC_PANEL_CUSTOM_RESOLUTION
+
+choice
+    prompt "ILI9881C Match Table"
+    depends on AIC_PANEL_DSI_ILI9881C
+    default ILI9881C_DEFAULT
+
+    config ILI9881C_DEFAULT
+        bool "default 4 lane 800x1280"
+    config TFT050BP071_DEFAULT
+        bool "tft050bp071 2 lane 720"
+endchoice
+
+config ILI9881C_MATCH_ID
+    int
+    default 0 if ILI9881C_DEFAULT
+    default 1 if TFT050BP071_DEFAULT
+
+choice
+    prompt "ST7789 Match Table"
+    depends on AIC_PANEL_DBI_ST7789
+    default ST7789_P3
+
+    config ST7789_P3
+        bool "P3 I8080 240x320"
+    config ST7789_T3
+        bool "T3 SPI 4LINE 240x320"
+    config ST7789_V3
+        bool "V3 SPI 4LINE 240x320"
+endchoice
+
+config ST7789_MATCH_ID
+    int
+    default 0 if ST7789_P3
+    default 1 if ST7789_T3
+    default 2 if ST7789_V3
+
+config ST7789_PANEL_RESET
+    string "ST7789 display panel reset pin"
+    depends on AIC_PANEL_DBI_ST7789
+    default "PD.23"
+
+if AIC_PANEL_CUSTOM_RESOLUTION && !AIC_DISP_PQ_TOOL
 source "bsp/artinchip/drv/display/panel/Kconfig.timing"
 endif
 

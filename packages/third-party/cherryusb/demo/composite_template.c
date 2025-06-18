@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,7 +14,7 @@
 // #define USBD_VID           0x18D1 // Google
 #define USBD_VID           0x33C3 // Display
 #define USBD_PID           0x0E01
-#define USBD_MAX_POWER     100
+#define USBD_MAX_POWER     250
 #define USBD_LANGID_STRING 1033
 
 /*!< config descriptor size */
@@ -41,8 +41,8 @@
 #define MAX_FUNC_INTF_NUM   4
 
 int usbd_composite_detection(void);
-int usbd_compsite_dev_unload(void);
-int usbd_compsite_dev_load(void);
+int usbd_composite_dev_unload(void);
+int usbd_composite_dev_load(void);
 struct function_intf_t {
     bool is_loaded;
     uint8_t dev_class;
@@ -114,6 +114,47 @@ static struct function_intf_t *g_func_table[MAX_COMPOSITE_DEV] = {
 #endif
 };
 
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+static char *g_func_table1[] = {
+#ifdef LPKG_USING_COMP_DISP_TABLE1
+    "disp",
+#endif
+#ifdef LPKG_USING_COMP_MSC_TABLE1
+    "msc",
+#endif
+#ifdef LPKG_USING_COMP_ADBD_TABLE1
+    "adb",
+#endif
+#ifdef LPKG_USING_COMP_UAC_TABLE1
+    "uac",
+#endif
+#ifdef LPKG_USING_COMP_TOUCH_TABLE1
+    "touch",
+#endif
+    NULL,
+};
+
+static char *g_func_table2[] = {
+#ifdef LPKG_USING_COMP_DISP_TABLE2
+    "disp",
+#endif
+#ifdef LPKG_USING_COMP_MSC_TABLE2
+    "msc",
+#endif
+#ifdef LPKG_USING_COMP_ADBD_TABLE2
+    "adb",
+#endif
+#ifdef LPKG_USING_COMP_UAC_TABLE2
+    "uac",
+#endif
+#ifdef LPKG_USING_COMP_TOUCH_TABLE2
+    "touch",
+#endif
+    NULL,
+};
+
+static char **g_func_tables[] = {g_func_table1, g_func_table2, NULL};
+#endif
 struct usbd_comp_desc_t {
     const uint8_t *dev_desc;
     uint8_t *cfg_desc;
@@ -366,6 +407,9 @@ static int usbd_comp_init(void)
         USB_LOG_ERR("COMP: create dynamic mutex falied.\n");
         return -1;
     }
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+    usbd_composite_func_switch(1);
+#endif
     return 0;
 }
 
@@ -406,7 +450,7 @@ void usbd_comp_func_register(const uint8_t *desc,
         return;
     }
 
-    usbd_compsite_dev_unload();
+    usbd_composite_dev_unload();
 
     // 1. find the class
     index = _find_dev_class(intf_desc->bInterfaceClass, data);
@@ -439,7 +483,7 @@ void usbd_comp_func_register(const uint8_t *desc,
     USB_LOG_DBG("COMP: Class addr: %#lx len: %d\n", (long)c->desc.class_desc[index],
                     c->desc.class_desc_len[index] + 18 + 9);
 _end:
-    usbd_compsite_dev_load();
+    usbd_composite_dev_load();
     rt_mutex_release(c->usbd_comp_mutex);
 
 }
@@ -481,8 +525,8 @@ void usbd_comp_func_release(const uint8_t *desc, void *data)
 
     USB_LOG_INFO("COMP: Release device class: %s\n", c->func_table[index]->class_name);
 
-    usbd_compsite_dev_unload();
-    usbd_compsite_dev_load();
+    usbd_composite_dev_unload();
+    usbd_composite_dev_load();
 _end:
     rt_mutex_release(c->usbd_comp_mutex);
 
@@ -665,7 +709,7 @@ uint8_t *make_comp_desc(uint8_t *dest, struct usbd_comp_desc_t *src)
 void usbd_event_handler(uint8_t event)
 {
     struct usbd_comp_dev_t *c = get_usbdcomp_dev();
-    if (usbd_compsite_is_inited() == false)
+    if (usbd_composite_is_inited() == false)
         return;
 
     for (int i = 0; i < MAX_COMPOSITE_DEV; i++) {
@@ -698,13 +742,13 @@ static void usbd_composite_add_intf(void)
     }
 }
 
-bool usbd_compsite_is_inited(void)
+bool usbd_composite_is_inited(void)
 {
     struct usbd_comp_dev_t *c = get_usbdcomp_dev();
     return c->is_finished;
 }
 
-uint8_t usbd_compsite_set_dev_num(uint8_t num)
+uint8_t usbd_composite_set_dev_num(uint8_t num)
 {
     struct usbd_comp_dev_t *c = get_usbdcomp_dev();
 
@@ -715,14 +759,38 @@ uint8_t usbd_compsite_set_dev_num(uint8_t num)
     return c->max_dev_num;
 }
 
-uint8_t usbd_compsite_get_dev_num(void)
+uint8_t usbd_composite_get_dev_num(void)
 {
     struct usbd_comp_dev_t *c = get_usbdcomp_dev();
 
     return c->max_dev_num;
 }
 
-int usbd_compsite_dev_load(void)
+uint8_t usbd_composite_func_switch(uint8_t index)
+{
+    uint8_t func_cnt = 0;
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+    uint8_t temp = index;
+
+    if (temp == 0) {
+        USB_LOG_WRN("Currently USB device does not support table0"
+                        "and automatically switch to table1.\n");
+        temp = 1;
+    }
+
+    if (temp > sizeof(g_func_tables))
+        return -1;
+
+    while(g_func_tables[temp - 1][func_cnt] != NULL) {
+        func_cnt++;
+    }
+
+    usbd_composite_set_dev_num(func_cnt);
+#endif
+    return func_cnt;
+}
+
+int usbd_composite_dev_load(void)
 {
     struct usbd_comp_dev_t *c = get_usbdcomp_dev();
 
@@ -744,7 +812,7 @@ int usbd_compsite_dev_load(void)
     return 0;
 }
 
-int usbd_compsite_dev_unload(void)
+int usbd_composite_dev_unload(void)
 {
     struct usbd_comp_dev_t *c = get_usbdcomp_dev();
 
@@ -777,7 +845,7 @@ _retry:
 
     rt_mutex_take(c->usbd_comp_mutex, RT_WAITING_FOREVER);
 
-    usbd_compsite_dev_load();
+    usbd_composite_dev_load();
 
     rt_mutex_release(c->usbd_comp_mutex);
 
@@ -813,6 +881,21 @@ static int _list_comp_device_status(void)
     printf("---------------------------------\n");
     printf("composite device status -> %s \n", c->is_finished ? "ok" : "no ready");
     printf("functions number -> %d / %d \n", c->dev_num, c->max_dev_num);
+    return 0;
+}
+
+static int _list_comp_func_tables(void)
+{
+
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+    for (int i = 0; g_func_tables[i] != NULL; i++) {
+        printf("table%d:", i + 1);
+        for (int j = 0; g_func_tables[i][j] != NULL; j++) {
+            printf(" %s", g_func_tables[i][j]);
+        }
+        printf("\n");
+    }
+#endif
     return 0;
 }
 
@@ -854,6 +937,7 @@ static int _list_comp_device(void)
 
     printf("----------------------------------------");
     printf("----------------------------------------\n");
+    _list_comp_func_tables();
     return 0;
 }
 

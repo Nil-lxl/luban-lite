@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -31,7 +31,8 @@
 #define DEFAULT_BUS_TYPE    MEDIA_BUS_BT656
 #define DEFAULT_WIDTH       PAL_WIDTH
 #define DEFAULT_HEIGHT      PAL_HEIGHT
-#define DEFAULT_USE_CVBS    1   /* 0, HDA; 1, CVBS */
+#define DEFAULT_IS_CVBS     1   /* 0, HDA; 1, CVBS */
+#define DEFAULT_IS_INTERLACED
 #define DEFAULT_FRAMERATE   25
 #define DEFAULT_VIN_CH      0   /* 0 or 1 channel */
 
@@ -80,7 +81,7 @@ struct tp2825_dev {
 
     struct mpp_video_fmt fmt;
 
-    /* lock to protect all members below */
+    bool on;
     bool streaming;
 };
 
@@ -1762,11 +1763,6 @@ static void TP28xx_reset_default(int chip, unsigned char ch)
 
 ///////////////////////////////////////////////////////////////
 
-static int tp2825_is_interlaced(void)
-{
-    return tp28xx_byte_read(0, 0x01) & 0x2 ? 0 : 1;
-}
-
 static void tp2802_comm_init(int chip)
 {
     if (TP2825B == id[chip]) {
@@ -1777,7 +1773,7 @@ static void tp2802_comm_init(int chip)
 
         TP2825B_reset_default(chip, VIDEO_PAGE);
 
-        if (DEFAULT_USE_CVBS)
+        if (DEFAULT_IS_CVBS)
             tp2802_set_video_mode(chip, mode, VIDEO_PAGE, STD_TVI);
         else
             tp2802_set_video_mode(chip, mode, VIDEO_PAGE, STD_HDA);
@@ -1801,7 +1797,10 @@ static void tp2802_comm_init(int chip)
 
         TP2825B_reset_default(chip, VIDEO_PAGE);
 
-        tp2802_set_video_mode(chip, mode, VIDEO_PAGE, STD_TVI);
+        if (DEFAULT_IS_CVBS)
+            tp2802_set_video_mode(chip, mode, VIDEO_PAGE, STD_TVI);
+        else
+            tp2802_set_video_mode(chip, mode, VIDEO_PAGE, STD_HDA);
 
 #if (WDT)
         tp28xx_byte_write(chip, 0x26, 0x04);
@@ -1827,7 +1826,10 @@ static void tp2802_comm_init(int chip)
 
         TP2825B_reset_default(chip, VIDEO_PAGE);
 
-        tp2802_set_video_mode(chip, mode, VIDEO_PAGE, STD_TVI);
+        if (DEFAULT_IS_CVBS)
+            tp2802_set_video_mode(chip, mode, VIDEO_PAGE, STD_TVI);
+        else
+            tp2802_set_video_mode(chip, mode, VIDEO_PAGE, STD_HDA);
 
 #if (WDT)
         tp28xx_byte_write(chip, 0x26, 0x04);
@@ -1886,6 +1888,8 @@ static int tp2802_module_init(void)
 //        tp28xx_byte_write(chip, 0x26, 0x04);
         tp2802_comm_init(i);
     }
+
+    LOG_I("Set input video mode: %s\n", DEFAULT_IS_CVBS ? "TVI" : "HDA");
 
 #if (WDT)
     ret = TP2802_watchdog_init();
@@ -2506,28 +2510,35 @@ void TP2802_watchdog_exit(void)
 }
 #endif
 
-static int tp2825_s_stream(struct tp2825_dev *sensor, int enable)
+static bool tp2825_is_open(struct tp2825_dev *sensor)
 {
-    LOG_I("Streaming %s\n", enable ? "On" : "Off");
-    sensor->streaming = enable;
+    return sensor->on;
+}
 
-#if TEST_MODE
-    if (enable) {
-        LOG_I("Enter test mode\n");
-        tp28xx_byte_write(0, 0x2A, 0x3C);
-    } else {
-        LOG_I("Exit test mode\n");
-        tp28xx_byte_write(0, 0x2A, 0x30);
-    }
-#endif
-    return SUCCESS;
+static void tp2825_power_on(struct tp2825_dev *sensor)
+{
+    if (sensor->on)
+        return;
+
+    camera_pin_set_high(sensor->pwdn_pin);
+    LOG_I("Power on");
+    sensor->on = true;
+}
+
+static void tp2825_power_off(struct tp2825_dev *sensor)
+{
+    if (!sensor->on)
+        return;
+
+    camera_pin_set_low(sensor->pwdn_pin);
+    LOG_I("Power off");
+    sensor->on = false;
 }
 
 static rt_err_t tp2825_init(rt_device_t dev)
 {
     struct tp2825_dev *sensor = (struct tp2825_dev *)dev;
     struct mpp_video_fmt *fmt = &sensor->fmt;
-    int ret = 0;
 
     sensor->i2c = camera_i2c_get();
     if (!sensor->i2c)
@@ -2540,12 +2551,6 @@ static rt_err_t tp2825_init(rt_device_t dev)
     if (!sensor->pwdn_pin)
         return -RT_EINVAL;
 
-    camera_pin_set_high(sensor->pwdn_pin);
-
-    ret = tp2802_module_init();
-    if (ret)
-        return -EINVAL;
-
     fmt->code = DEFAULT_MEDIA_CODE;
     fmt->width = DEFAULT_WIDTH;
     fmt->height = DEFAULT_HEIGHT;
@@ -2555,27 +2560,38 @@ static rt_err_t tp2825_init(rt_device_t dev)
                  MEDIA_SIGNAL_HSYNC_ACTIVE_LOW |
                  MEDIA_SIGNAL_PCLK_SAMPLE_FALLING;
 
-    if (tp2825_is_interlaced()) {
-        LOG_I("The input signal is interlace mode\n");
-        fmt->flags |= MEDIA_SIGNAL_INTERLACED_MODE;
-    }
+#ifdef DEFAULT_IS_INTERLACED
+    LOG_I("The input signal is interlace mode\n");
+    fmt->flags |= MEDIA_SIGNAL_INTERLACED_MODE;
+#endif
 
-    LOG_I("Init %s device\n", DRV_NAME);
     return SUCCESS;
 }
 
 static rt_err_t tp2825_open(rt_device_t dev, rt_uint16_t oflag)
 {
-//    struct tp2825_dev *sensor = (struct tp2825_dev *)dev;
+    struct tp2825_dev *sensor = (struct tp2825_dev *)dev;
 
+    if (tp2825_is_open(sensor))
+        return RT_EOK;
+
+    tp2825_power_on(sensor);
+
+    if (tp2802_module_init())
+        return -EINVAL;
+
+    LOG_I("%s inited\n", DRV_NAME);
     return RT_EOK;
 }
 
 static rt_err_t tp2825_close(rt_device_t dev)
 {
-//    struct tp2825_dev *sensor = (struct tp2825_dev *)dev;
+    struct tp2825_dev *sensor = (struct tp2825_dev *)dev;
 
-//    tp2802_module_exit();
+    if (!tp2825_is_open(sensor))
+        return -RT_ERROR;
+
+    tp2825_power_off(sensor);
     return RT_EOK;
 }
 
@@ -2593,16 +2609,32 @@ static int tp2825_get_fmt(rt_device_t dev, struct mpp_video_fmt *cfg)
 
 static int tp2825_start(rt_device_t dev)
 {
-    struct tp2825_dev *sensor = (struct tp2825_dev *)dev;
-
-    return tp2825_s_stream(sensor, 1);
+    return 0;
 }
 
 static int tp2825_stop(rt_device_t dev)
 {
-    struct tp2825_dev *sensor = (struct tp2825_dev *)dev;
+    return 0;
+}
 
-    return tp2825_s_stream(sensor, 0);
+static u8 g_tp_data_ctrl = 0;
+
+static int tp2825_pause(rt_device_t dev)
+{
+    g_tp_data_ctrl = tp28xx_byte_read(0, 0x4e);
+    tp28xx_byte_write(0, 0x4e, 0x0);
+    return 0;
+}
+
+static int tp2825_resume(rt_device_t dev)
+{
+    if (g_tp_data_ctrl) {
+        tp28xx_byte_write(0, 0x4e, g_tp_data_ctrl);
+        return 0;
+    }
+
+    LOG_W("Invalid clock ctrl: 0x%x\n", g_tp_data_ctrl);
+    return -1;
 }
 
 static rt_err_t tp2825_control(rt_device_t dev, int cmd, void *args)
@@ -2612,6 +2644,10 @@ static rt_err_t tp2825_control(rt_device_t dev, int cmd, void *args)
         return tp2825_start(dev);
     case CAMERA_CMD_STOP:
         return tp2825_stop(dev);
+    case CAMERA_CMD_PAUSE:
+        return tp2825_pause(dev);
+    case CAMERA_CMD_RESUME:
+        return tp2825_resume(dev);
     case CAMERA_CMD_GET_FMT:
         return tp2825_get_fmt(dev, (struct mpp_video_fmt *)args);
     default:

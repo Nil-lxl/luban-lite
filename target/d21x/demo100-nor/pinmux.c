@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -304,6 +304,19 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PF.15"},
 #endif
 #endif
+#ifdef AIC_USING_DVP
+    {3, PIN_PULL_DIS, 3, "PE.0"},
+    {3, PIN_PULL_DIS, 3, "PE.1"},
+    {3, PIN_PULL_DIS, 3, "PE.2"},
+    {3, PIN_PULL_DIS, 3, "PE.3"},
+    {3, PIN_PULL_DIS, 3, "PE.4"},
+    {3, PIN_PULL_DIS, 3, "PE.5"},
+    {3, PIN_PULL_DIS, 3, "PE.6"},
+    {3, PIN_PULL_DIS, 3, "PE.7"},
+    {3, PIN_PULL_DIS, 3, "PE.8"},
+    {3, PIN_PULL_DIS, 3, "PE.9"},
+    {3, PIN_PULL_DIS, 3, "PE.10"},
+#endif
 #ifdef AIC_USING_RTP
     {2, PIN_PULL_DIS, 3, "PA.8"},
     {2, PIN_PULL_DIS, 3, "PA.9"},
@@ -348,11 +361,15 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #ifdef AIC_USING_CTP
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_RST_PIN},
+#ifdef AIC_PM_DEMO_TOUCH_WAKEUP
+    {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN, FLAG_WAKEUP_SOURCE},
+#else
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN},
+#endif
 #endif
 #ifdef AIC_USING_PM
 #ifdef AIC_PM_DEMO
-    {1, PIN_PULL_DIS, 3, AIC_PM_POWER_KEY_GPIO, FLAG_WAKEUP_SOURCE},
+    {1, PIN_PULL_UP, 3, AIC_PM_POWER_KEY_GPIO, FLAG_WAKEUP_SOURCE},
 #endif
 #endif
 };

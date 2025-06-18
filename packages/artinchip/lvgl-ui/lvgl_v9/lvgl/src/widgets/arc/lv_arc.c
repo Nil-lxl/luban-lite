@@ -725,6 +725,12 @@ static void lv_arc_draw(lv_event_t * e)
     lv_draw_rect_dsc_t knob_rect_dsc;
     lv_draw_rect_dsc_init(&knob_rect_dsc);
     lv_obj_init_draw_rect_dsc(obj, LV_PART_KNOB, &knob_rect_dsc);
+
+    if(knob_rect_dsc.bg_image_src) {
+        if(!_lv_area_intersect(&layer->_clip_area, &knob_area, &layer->_clip_area))
+            return;
+    }
+
     lv_draw_rect(layer, &knob_rect_dsc, &knob_area);
 }
 
