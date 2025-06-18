@@ -203,6 +203,12 @@ config AIC_LVGL_UI_BUILDER
     select LPKG_USING_FREETYPE
     bool "LVGL Support AiUIBuider"
 
+config AIC_LVGL_APP_UI_DEMO
+    bool "LVGL demo of app ui"
+
+config AIC_LVGL_TEST_DEMO
+    bool "LVGL demo of test"
+
 config AIC_WIDGETS_DEMO
     bool "LVGL aic widgets demos"
 

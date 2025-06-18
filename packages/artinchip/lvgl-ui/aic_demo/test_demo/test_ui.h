@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2022-2024 ArtInChip Technology Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Authors:  Ning Fang <ning.fang@artinchip.com>
+ */
+
+#ifndef GIF_UI_H
+#define GIF_UI_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "lvgl.h"
+#include "aic_ui.h"
+
+void test_ui_init(void);
+void gray_lvl(void);
+
+#ifdef __cplusplus
+} /*extern "C"*/
+#endif
+
+#endif // GIF_UI_H

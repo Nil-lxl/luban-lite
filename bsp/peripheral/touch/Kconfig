@@ -48,7 +48,7 @@ endchoice
 
 config AIC_TOUCH_PANEL_I2C_CHAN
     string "Touch using I2C channel index"
-    default "i2c3"
+    default "i2c2"
     depends on AIC_USING_CTP
 
 config AIC_TOUCH_PANEL_RST_PIN

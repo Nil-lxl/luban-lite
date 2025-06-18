@@ -17,5 +17,18 @@
 			"source": "Git Bash",
 			"args": ["-c \"source ${workspaceFolder}/tools/onestep.sh\""],
 		},
-	}
+	},
+	"files.associations": {
+		"aic_utils.h": "c",
+		"board.h": "c",
+		"panel_com.h": "c",
+		"*.inc": "c",
+		"app_entrance.h": "c",
+		"demo_hub.h": "c",
+		"ranges": "c",
+		"panel_dsi.h": "c",
+		"aic_player.h": "c",
+		"avcodec.h": "c"
+	},
+	"cmake.sourceDirectory": "D:/DevTools/ArtInChip/luban-lite/bsp/peripheral/wireless/asr/crypto/mbedtls-2.28.5/include"
 }

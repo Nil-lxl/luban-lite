@@ -81,7 +81,7 @@
  *         D0          D1          D2          D3
  *         PD26/PD27   PD24/PD25   PD20/PD21   PD18/PD19
  */
-#define LANE_ASSIGNMENTS 0x3210
+#define LANE_ASSIGNMENTS 0x3012
 
 /**
  * data lane polarities, default 0b0000

@@ -81,11 +81,13 @@ static void photo_frame_img_list_init(void)
     lv_memset(g_list, 0, sizeof(img_list));
 
     strncpy(g_list->img_src[0], LVGL_PATH(photo_frame/bg.jpg), 256);
-    strncpy(g_list->img_src[1], LVGL_PATH(photo_frame/picture/lamp_bulb.jpg), 256);
-    strncpy(g_list->img_src[2], LVGL_PATH(photo_frame/picture/farmer.jpg), 256);
-    strncpy(g_list->img_src[3], LVGL_PATH(photo_frame/picture/grass.jpg), 256);
-    strncpy(g_list->img_src[4], LVGL_PATH(photo_frame/picture/sky.jpg), 256);
-    strncpy(g_list->img_src[5], LVGL_PATH(photo_frame/picture/bird.jpg), 256);
+    strncpy(g_list->img_src[1], LVGL_PATH(photo_frame/picture/car.jpg), 256);
+    strncpy(g_list->img_src[2], LVGL_PATH(photo_frame/picture/ice.jpg), 256);
+    strncpy(g_list->img_src[3], LVGL_PATH(photo_frame/picture/xunfei.jpg), 256);
+    strncpy(g_list->img_src[4], LVGL_PATH(photo_frame/picture/machine.jpg), 256);
+    strncpy(g_list->img_src[5], LVGL_PATH(photo_frame/picture/ui.jpg), 256);
+    strncpy(g_list->img_src[6], LVGL_PATH(photo_frame/picture/beach.jpg), 256);
+    
 
     for (int i = 0; i < 20; i++) {
         if (strlen(g_list->img_src[i]) != 0)
