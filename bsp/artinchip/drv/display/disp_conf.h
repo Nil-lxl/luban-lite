@@ -81,6 +81,13 @@
  *         D0          D1          D2          D3
  *         PD26/PD27   PD24/PD25   PD20/PD21   PD18/PD19
  */
+/**
+ * Default Options
+ */
+// #define LANE_ASSIGNMENTS 0x3210
+/**
+ * H078B06 Driver Option
+ */
 #define LANE_ASSIGNMENTS 0x3012
 
 /**

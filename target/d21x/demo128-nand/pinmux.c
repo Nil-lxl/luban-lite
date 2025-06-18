@@ -12,6 +12,8 @@
 #include <aic_utils.h>
 
 struct aic_pinmux aic_pinmux_config[] = {
+
+    {1, PIN_PULL_DIS, 3, "PA.3"},
 #ifdef AIC_USING_UART0
     /* uart0 */
     {5, PIN_PULL_DIS, 3, "PA.0"},

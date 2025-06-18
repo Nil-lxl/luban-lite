@@ -138,7 +138,8 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_DIS, 3, "PB.10"},
     {3, PIN_PULL_DIS, 3, "PB.11"},
 #endif
-#ifdef AIC_USING_SDMC0
+#ifdef AIC_USING_SDMC0  //WIFI
+    {1, PIN_PULL_DIS, 3, "PA.4"}, //WIFI POWER ON
     {2, PIN_PULL_UP, 7, "PB.6"},
     {2, PIN_PULL_UP, 7, "PB.7"},
     {2, PIN_PULL_UP, 7, "PB.8"},
@@ -146,14 +147,14 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_UP, 7, "PB.10"},
     {2, PIN_PULL_UP, 7, "PB.11"},
 #endif
-#ifdef AIC_USING_SDMC1
+#ifdef AIC_USING_SDMC1  //SD CARD
     {2, PIN_PULL_UP, 3, "PC.0"},
     {2, PIN_PULL_UP, 3, "PC.1"},
     {2, PIN_PULL_UP, 3, "PC.2"},
     {2, PIN_PULL_UP, 3, "PC.3"},
     {2, PIN_PULL_UP, 3, "PC.4"},
     {2, PIN_PULL_UP, 3, "PC.5"},
-    {2, PIN_PULL_UP, 3, "PC.6"},
+    // {2, PIN_PULL_UP, 3, "PC.6"},
 #endif
 #ifdef AIC_USING_CAP0
     {3, PIN_PULL_UP, 3, "PC.6"},
