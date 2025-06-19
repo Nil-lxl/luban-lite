@@ -13,7 +13,12 @@
 
 struct aic_pinmux aic_pinmux_config[] = {
 
-    {1, PIN_PULL_DIS, 3, "PA.3"},
+    {1, PIN_PULL_DIS, 3, "PA.3"},   //LCD RESET
+    {1, PIN_PULL_DIS, 3, "PE.16"},  //SPI-SCL
+    {1, PIN_PULL_UP, 3, "PE.17"},  //SPI-CS
+    {1, PIN_PULL_DIS, 3, "PE.18"},  //SPI-SDA
+
+    // {1, PIN_PULL_DIS, 3, "PA.3"},
 #ifdef AIC_USING_UART0
     /* uart0 */
     {5, PIN_PULL_DIS, 3, "PA.0"},
@@ -92,6 +97,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_DIS, 3, "PB.5"},
 #endif
 #ifdef AIC_PRGB_24BIT
+
     {2, PIN_PULL_DIS, 3, "PD.0"},
     {2, PIN_PULL_DIS, 3, "PD.1"},
     {2, PIN_PULL_DIS, 3, "PD.2"},

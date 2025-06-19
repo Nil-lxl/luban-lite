@@ -87,7 +87,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PA.9"}, // SDA
 #endif
 #ifdef AIC_USING_I2C3
-    {4, PIN_PULL_DIS, 3, "PA.10"}, // I2C_SCK
+    {4, PIN_PULL_DIS, 3, "PA.10"}, // I2C_SCK   
     {4, PIN_PULL_DIS, 3, "PA.11"}, // I2C_SDA
 #endif
 #if defined(AIC_USING_QSPI0) && !defined(AIC_SYSCFG_SIP_FLASH_ENABLE)

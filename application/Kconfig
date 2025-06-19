@@ -209,6 +209,9 @@ config AIC_LVGL_APP_UI_DEMO
 config AIC_LVGL_TEST_DEMO
     bool "LVGL demo of test"
 
+config AIC_LVGL_SKETCHPAD_DEMO
+    bool "LVGL demo of sketchpad"
+
 config AIC_WIDGETS_DEMO
     bool "LVGL aic widgets demos"
 

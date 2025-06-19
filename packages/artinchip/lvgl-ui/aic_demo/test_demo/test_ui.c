@@ -22,12 +22,14 @@ static lv_obj_t* touch_scr;
 static lv_obj_t* container;
 static lv_timer_t* timer;
 static uint8_t sum;
+static lv_obj_t* img;
 
 void timer_cb(lv_timer_t* timer){
     switch (sum)
     {
     case 0:
         /* code */
+        lv_obj_add_flag(img,LV_OBJ_FLAG_HIDDEN);
         lv_scr_load_anim(scr,LV_SCR_LOAD_ANIM_NONE,0,0,false);
         lv_obj_clear_flag(container,LV_OBJ_FLAG_HIDDEN);
         lv_obj_set_style_bg_color(scr,lv_color_black(),0);
@@ -47,18 +49,24 @@ void timer_cb(lv_timer_t* timer){
         sum++;
         break;
     case 4:
-        lv_obj_set_style_bg_color(scr,lv_color_white(),0);
+        lv_obj_set_style_bg_color(scr,lv_color_hex(0xff00f0),0);//pink
         sum++;
         break;
     case 5:
-        lv_scr_load_anim(gray_scr,LV_SCR_LOAD_ANIM_NONE,0,0,false);
+        lv_obj_set_style_bg_color(scr,lv_color_white(),0);
         sum++;
         break;
     case 6:
-        lv_scr_load_anim(touch_scr,LV_SCR_LOAD_ANIM_NONE,0,0,false);
-        // sum=0;
+        lv_scr_load_anim(gray_scr,LV_SCR_LOAD_ANIM_NONE,0,0,false);
+        sum++;
         break;
     case 7:
+        lv_obj_clear_flag(img,LV_OBJ_FLAG_HIDDEN);
+        // lv_scr_load_anim(touch_scr,LV_SCR_LOAD_ANIM_NONE,0,0,false);
+        sum=0;
+        break;
+    case 8:
+        // sum=0;
         break;
               
     default:
@@ -98,8 +106,7 @@ static void touch_cb(lv_event_t* e){
 void test_ui_init()
 {
     scr=lv_scr_act();
-    // lv_obj_set_size(scr,400,1280);
-    // lv_obj_set_style_bg_color(scr,lv_palette_lighten(LV_PALETTE_BLUE,3),0);
+
     container=lv_obj_create(scr);
     lv_obj_center(container);
     lv_obj_set_size(container,LCD_HOR_RES-40,LCD_VER_RES-20);
@@ -108,24 +115,27 @@ void test_ui_init()
     lv_obj_set_style_border_width(container,1,0);
     lv_obj_set_style_border_color(container,lv_color_white(),0);
 
+    img=lv_img_create(lv_layer_top());
+    lv_img_set_src(img,LVGL_PATH(images/img480x640.jpg));
+    lv_obj_add_flag(img,LV_OBJ_FLAG_HIDDEN);
+    
     gray_lvl();
     touch_test();
+    timer=lv_timer_create(timer_cb,1000,NULL);
+
     // lv_obj_add_event_cb(scr,touch_cb,LV_EVENT_GESTURE,NULL);
-    timer=lv_timer_create(timer_cb,1500,NULL);
-    if(sum==6){
-        lv_timer_pause(timer);
-    }
+
 }
 
-static lv_obj_t* gray_bar[8];
-const uint32_t gray_color[8]={0x404040,0x505050,0x606060,0x707070,0x808080,0x909090,0xA0A0A0,0xB0B0B0};
+static lv_obj_t* gray_bar[10];
+const uint32_t gray_color[10]={0x303030,0x404040,0x505050,0x606060,0x707070,0x808080,0x909090,0xA0A0A0,0xB0B0B0,0xC0C0C0};
 void gray_lvl(){
     gray_scr=lv_obj_create(NULL);
     lv_obj_set_size(gray_scr,LCD_HOR_RES,LCD_VER_RES);
-    for(int i=0;i<8;i++){
+    for(int i=0;i<10;i++){
         gray_bar[i]=lv_obj_create(gray_scr);
-        lv_obj_set_size(gray_bar[i],LCD_HOR_RES/8,lv_pct(100));
-        lv_obj_set_pos(gray_bar[i],(LCD_HOR_RES/8)*i,0);
+        lv_obj_set_size(gray_bar[i],lv_pct(100),LCD_VER_RES/10);
+        lv_obj_set_pos(gray_bar[i],0,(LCD_VER_RES/10)*i);
         lv_obj_set_style_pad_all(gray_bar[i],0,0);
         lv_obj_set_style_border_width(gray_bar[i],0,0);
         lv_obj_set_style_radius(gray_bar[i],0,0);

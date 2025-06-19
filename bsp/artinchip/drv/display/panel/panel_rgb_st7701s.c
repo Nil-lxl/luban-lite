@@ -7,13 +7,19 @@
 #include "panel_com.h"
 #include <aic_hal.h>
 
-// #define SLEEP_PIN  "PE.1"
+#ifdef AIC_USING_D213ECV_EzUIX1_DEMO
 #define RESET_PIN  "PA.3"
 
 #define CS         "PE.17"
 #define SCL        "PE.16"
 #define SDI        "PE.18"
-
+#endif
+#ifdef AIC_USING_JYX68_RGB01
+#define RESET_PIN  "PB.1"
+#define CS         "PE.13"
+#define SCL        "PE.12"
+#define SDI        "PE.14"
+#endif
 static struct gpio_desc reset_gpio;
 // static struct gpio_desc sleep_gpio;
 
@@ -249,68 +255,6 @@ static int panel_enable(struct aic_panel *panel)
     panel_spi_data_wr(0x3F);
     panel_spi_data_wr(0x1F);
     
-    // panel_spi_cmd_wr(0xFF);
-    // panel_spi_data_wr(0x77);
-    // panel_spi_data_wr(0x01);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_data_wr(0x13);
-    // panel_spi_cmd_wr(0xE8);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_data_wr(0x0E);
-
-    // panel_spi_cmd_wr(0xE8);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_data_wr(0x0C);
-
-    // aic_delay_ms(20);
-
-    // panel_spi_cmd_wr(0xE8);
-    // panel_spi_data_wr(0x40);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_cmd_wr(0xE6);
-    // panel_spi_data_wr(0x16);
-    // panel_spi_data_wr(0x7C);
-    // panel_spi_cmd_wr(0xFF);
-    // panel_spi_data_wr(0x77);
-    // panel_spi_data_wr(0x01);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_cmd_wr(0x36);
-    // panel_spi_data_wr(0x00);
-    // panel_spi_cmd_wr(0x35);
-    // panel_spi_data_wr(0x00);
-
-    // panel_spi_cmd_wr(0x3a);
-    // panel_spi_data_wr(0x77);
-
-#ifdef BIST_MODE
-    panel_spi_cmd_wr (0xFF);
-    panel_spi_data_wr (0x77);
-    panel_spi_data_wr (0x01);
-    panel_spi_data_wr (0x00);
-    panel_spi_data_wr (0x00);
-    panel_spi_data_wr (0x12);
-    panel_spi_cmd_wr (0xD1);
-    panel_spi_data_wr (0x81);
-    panel_spi_data_wr (0x08);
-    panel_spi_data_wr (0x03);
-    panel_spi_data_wr (0x20);
-    panel_spi_data_wr (0x08);
-    panel_spi_data_wr (0x01);
-    panel_spi_data_wr (0xA0);
-    panel_spi_data_wr (0x01);
-    panel_spi_data_wr (0xE0);
-    panel_spi_data_wr (0xA0);
-    panel_spi_data_wr (0x01);
-    panel_spi_data_wr (0xE0);
-    panel_spi_data_wr (0x03);
-    panel_spi_data_wr (0x20);
-    panel_spi_cmd_wr (0xD2);
-    /* 0x08: colorbar, 0X02: red  etc... */
-    panel_spi_data_wr (0x08);
-#endif
 
     panel_spi_cmd_wr(0x11);
     aic_delay_ms(120);
@@ -350,7 +294,7 @@ static struct display_timing st7701s_timing = {
 
 static struct panel_rgb rgb = {
     .mode = PRGB,
-    .format = PRGB_16BIT_HD,
+    .format = PRGB_24BIT,
     .clock_phase = DEGREE_0,
     .data_order = RGB,
     .data_mirror = 0,
