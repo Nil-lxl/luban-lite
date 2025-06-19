@@ -8,11 +8,11 @@
 #include <aic_hal.h>
 
 // #define SLEEP_PIN  "PE.1"
-#define RESET_PIN  "PB.1"
+#define RESET_PIN  "PA.3"
 
-#define CS         "PE.13"
-#define SCL        "PE.12"
-#define SDI        "PE.14"
+#define CS         "PE.17"
+#define SCL        "PE.16"
+#define SDI        "PE.18"
 
 static struct gpio_desc reset_gpio;
 // static struct gpio_desc sleep_gpio;
@@ -42,6 +42,7 @@ static int panel_enable(struct aic_panel *panel)
     panel_spi_data_wr(0x00);
     panel_spi_data_wr(0x00);
     panel_spi_data_wr(0x13);
+
     panel_spi_cmd_wr(0xEF);
     panel_spi_data_wr(0x08);
 
@@ -282,7 +283,7 @@ static int panel_enable(struct aic_panel *panel)
     // panel_spi_data_wr(0x00);
 
     // panel_spi_cmd_wr(0x3a);
-    // panel_spi_data_wr(0x66);
+    // panel_spi_data_wr(0x77);
 
 #ifdef BIST_MODE
     panel_spi_cmd_wr (0xFF);

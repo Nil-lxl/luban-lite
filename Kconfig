@@ -24,6 +24,17 @@ config PRJ_APP
     string "Application name"
     #option env="PRJ_APP"
 
+choice 
+    prompt "Select a board"
+    default n
+    config AIC_USING_D213ECV_EzUIX1_DEMO
+        bool "D213ECV_EzUIX1_DEMO"
+        depends on AIC_CHIP_D21X
+    config AIC_USING_JYX68_RGB01
+        bool "JYX68_RGB01"
+        depends on AIC_CHIP_D13X    
+endchoice    
+
 endmenu
 
 config PLATFORM_LUBANLITE

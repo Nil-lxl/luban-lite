@@ -13,8 +13,8 @@
 #include "lvgl.h"
 #include "test_ui.h"
 
-#define LCD_HOR_RES 1280
-#define LCD_VER_RES 400
+#define LCD_HOR_RES 480
+#define LCD_VER_RES 640 
 
 static lv_obj_t* scr;
 static lv_obj_t* gray_scr;

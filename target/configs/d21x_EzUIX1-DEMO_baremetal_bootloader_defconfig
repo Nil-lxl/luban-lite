@@ -1,6 +1,6 @@
-CONFIG_PRJ_DEFCONFIG_FILENAME="d21x_demo128-nand_baremetal_bootloader_defconfig"
+CONFIG_PRJ_DEFCONFIG_FILENAME="d21x_EzUIX1-DEMO_baremetal_bootloader_defconfig"
 CONFIG_PRJ_CHIP="d21x"
-CONFIG_PRJ_BOARD="demo128-nand"
+CONFIG_PRJ_BOARD="EzUIX1-DEMO"
 CONFIG_PRJ_KERNEL="baremetal"
 CONFIG_PRJ_APP="bootloader"
 CONFIG_PRJ_CUSTOM_LDS="application/baremetal/bootloader/ldscript/d21x_bootloader_gcc.ld"

@@ -126,6 +126,11 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
+    config AIC_PANEL_RGB_H024A13
+        bool "ArtInChip RGB H024A13 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION        
+
     config AIC_PANEL_RGB_H028A19
         bool "ArtInChip RGB H028A19 panel"
         depends on AIC_DISP_RGB
