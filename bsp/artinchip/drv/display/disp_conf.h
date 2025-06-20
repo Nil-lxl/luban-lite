@@ -84,11 +84,11 @@
 /**
  * Default Options
  */
-// #define LANE_ASSIGNMENTS 0x3210
+#define LANE_ASSIGNMENTS 0x3210
 /**
  * H078B06 Driver Option
  */
-#define LANE_ASSIGNMENTS 0x3012
+// #define LANE_ASSIGNMENTS 0x3012
 
 /**
  * data lane polarities, default 0b0000

@@ -44,6 +44,9 @@ choice
 
     config AIC_TOUCH_PANEL_TW31XX
         bool "TW31XX"
+
+    config AIC_TOUCH_PANEL_HY4635
+        bool "HY4635"
 endchoice
 
 config AIC_TOUCH_PANEL_I2C_CHAN
@@ -170,4 +173,5 @@ config AIC_TOUCH_PANEL_NAME
     default "st16xx"    if AIC_TOUCH_PANEL_ST16XX
     default "st77922"   if AIC_TOUCH_PANEL_ST77922
     default "tw31xx"    if AIC_TOUCH_PANEL_TW31XX
+    default "hy4635"    if AIC_TOUCH_PANEL_HY4635
     depends on AIC_USING_CTP

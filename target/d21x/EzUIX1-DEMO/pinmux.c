@@ -99,13 +99,15 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_DIS, 3, "PB.4"},
     {3, PIN_PULL_DIS, 3, "PB.5"},
 #endif
-
+#ifdef AIC_DISP_RGB
+    /* 3-Wire SPI Initialize */
     {1, PIN_PULL_DIS, 3, "PA.3"},   //LCD RESET
     {1, PIN_PULL_DIS, 3, "PE.16"},  //SPI-SCL
     {1, PIN_PULL_UP, 3, "PE.17"},  //SPI-CS
     {1, PIN_PULL_DIS, 3, "PE.18"},  //SPI-SDA
-/* RGB 888 */
+#endif
 #ifdef AIC_PRGB_24BIT
+    /* RGB 888 */
     {2, PIN_PULL_DIS, 4, "PD.0"},   //B
     {2, PIN_PULL_DIS, 4, "PD.1"},
     {2, PIN_PULL_DIS, 4, "PD.2"},
