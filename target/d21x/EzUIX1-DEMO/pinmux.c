@@ -13,11 +13,18 @@
 
 struct aic_pinmux aic_pinmux_config[] = {
 
-    /* KEY ADC */
-    {1, PIN_PULL_UP, 3, "PB.6"},
-    
-    /* WIFI POWER ON */
-    // {2, PIN_PULL_UP, 3, "PB.8"},
+    // /* KEY ADC */
+    // {1, PIN_PULL_UP, 3, "PB.6"},
+    // /* WIFI POWER ON */
+    // {1, PIN_PULL_UP, 3, "PB.8"},
+    // /* BT HOST WAKE */
+    // {1, PIN_PULL_UP, 3, "PB.7"},
+    // /* BT WAKE */
+    // {1, PIN_PULL_UP, 3, "PB.9"},
+    // /* WIFI HOST WAKE */
+    // {1, PIN_PULL_UP, 3, "PB.10"},
+    // /* BT POWER ON*/
+    // {1, PIN_PULL_UP, 3, "PB.11"},
 
     /* BUZZER */
     {1, PIN_PULL_DOWN, 3, "PC.7"},
@@ -37,23 +44,12 @@ struct aic_pinmux aic_pinmux_config[] = {
     {5, PIN_PULL_DIS, 3, "PA.8"},
     {5, PIN_PULL_UP, 3, "PA.9"},
 #endif
-
-#ifdef AIC_USING_SDMC0
-    
-    {2, PIN_PULL_UP, 3, "PB.0"},
-    {2, PIN_PULL_UP, 3, "PB.1"},
-    {2, PIN_PULL_UP, 3, "PB.2"},
-    {2, PIN_PULL_UP, 3, "PB.3"},
-    {2, PIN_PULL_UP, 3, "PB.4"},
-    {2, PIN_PULL_UP, 3, "PB.5"},
-
-
-    {2, PIN_PULL_UP, 3, "PB.7"},
-
-    {2, PIN_PULL_UP, 3, "PB.9"},
-    {2, PIN_PULL_UP, 3, "PB.10"},
-    {2, PIN_PULL_UP, 3, "PB.11"},
+#ifdef AIC_USING_UART3
+    /* uart3 */
+    {5, PIN_PULL_DIS, 3, "PE.14"},
+    {5, PIN_PULL_UP, 3, "PE.15"},
 #endif
+
 #ifdef AIC_USING_SDMC1
 
     /* SD CARD */
