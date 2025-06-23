@@ -3055,7 +3055,7 @@
     #ifdef CONFIG_LV_USE_DEMO_WIDGETS
         #define LV_USE_DEMO_WIDGETS CONFIG_LV_USE_DEMO_WIDGETS
     #else
-        #define LV_USE_DEMO_WIDGETS 0
+        #define LV_USE_DEMO_WIDGETS 1
     #endif
 #endif
 

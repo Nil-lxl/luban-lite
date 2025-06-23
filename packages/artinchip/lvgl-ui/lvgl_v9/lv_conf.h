@@ -44,7 +44,7 @@
 #endif
 
 #define LV_USE_MEM_MONITOR 0
-#define LV_USE_PERF_MONITOR 0
+#define LV_USE_PERF_MONITOR 1
 #define LV_USE_SYSMON   1
 #define LV_INDEV_DEF_READ_PERIOD 10
 
@@ -72,13 +72,13 @@
 #define LV_USE_DEMO_MUSIC 1
 #endif
 
-#if defined(AIC_LVGL_DEMO_BENCHMARK)
+// #if defined(AIC_LVGL_DEMO_BENCHMARK)
 #define LV_USE_DEMO_BENCHMARK 1
 #undef LV_FONT_MONTSERRAT_24
 #define LV_FONT_MONTSERRAT_24 1
 #undef LV_USE_DEMO_WIDGETS
 #define LV_USE_DEMO_WIDGETS 1
-#endif
+// #endif
 
 #if defined(AIC_LVGL_DEMO_WIDGETS)
 #define LV_USE_DEMO_WIDGETS 1

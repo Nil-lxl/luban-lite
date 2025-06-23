@@ -24,7 +24,7 @@ struct frame_buffer_info
     unsigned char *frame_buffer;
 };
 
-struct drwa_line {
+struct line_dsc {
     int x1;
     int y1;
     int x2;
@@ -103,7 +103,7 @@ void draw_wide_pixel(int x, int y, int width, int color,
 }
 
 /* Bresenham line drawing algorithm with line width and frame_buffer boundary checks */
-void draw_line(struct drwa_line *line, struct frame_buffer_info *info)
+void draw_line(struct line_dsc *line, struct frame_buffer_info *info)
 {
     int dx = abs(line->x2 - line->x1), sx = line->x1 < line->x2 ? 1 : -1;
     int dy = -abs(line->y2 - line->y1), sy = line->y1 < line->y2 ? 1 : -1;
@@ -156,13 +156,13 @@ static void draw_line_test(int argc, char **argv)
     info.frame_buffer_width = fb_info.width;
     info.frame_buffer = (uint8_t *)fb_info.framebuffer;
 
-    struct drwa_line line;
+    struct line_dsc line;
     line.x1 = 0;
     line.y1 = 50;
-    line.x2 = 100;
-    line.y2 = 50;
-    line.color = 0xff0000ff;
-    line.width = 100;
+    line.x2 = 200;
+    line.y2 = 200;
+    line.color = 0xffff00ff;
+    line.width = 10;
 
     draw_line(&line, &info);
 
