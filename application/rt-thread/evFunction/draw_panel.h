@@ -24,4 +24,5 @@ struct line_dsc {
 };
 
 void open_panel(void);
-void draw_start(void);
+
+void panel_draw_start(void);

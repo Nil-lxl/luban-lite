@@ -1,0 +1,7 @@
+menu "Custom App Config"
+    config USE_DRAW_LINE_TEST
+        bool "Use touch draw line test"
+        default n
+        depends on AIC_USING_TOUCH
+
+endmenu 

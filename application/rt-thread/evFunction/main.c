@@ -23,8 +23,6 @@ int main(void) {
 #ifdef ULOG_USING_FILTER
     ulog_global_filter_lvl_set(ULOG_OUTPUT_LVL);
 #endif
-
-    // FunctionImp();
     return 0;
 }
 
@@ -32,7 +30,9 @@ int main(void) {
 void FunctionImp(void) {
     LOG_I("--------------Function Implement--------------\n");
 
-    draw_start();
+    #ifdef USE_DRAW_LINE_TEST
+    panel_draw_start();
+    #endif
 
 }
 

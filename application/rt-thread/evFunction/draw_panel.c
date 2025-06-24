@@ -7,10 +7,9 @@ static rt_thread_t touch_read_thread = RT_NULL;
 static rt_sem_t touch_semaphore;
 static rt_device_t touch_device;
 
+static struct rt_touch_info touch_info;
 static struct rt_touch_data *touch_data;
 static struct rt_touch_data *prev_data;
-
-static struct rt_touch_info touch_info;
 
 static struct mpp_fb *fb = RT_NULL;
 static struct aicfb_screeninfo screen_info;
@@ -63,17 +62,18 @@ void touch_read_point(void *param) {
                 if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
                     touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
                     touch_data[i].event == RT_TOUCH_EVENT_UP) {
-                    LOG_I("%d %d %d %d", touch_data[i].track_id,
-                        touch_data[i].x_coordinate,
-                        touch_data[i].y_coordinate,
-                        touch_data[i].event);
-
+                    // LOG_I("%d %d %d %d", touch_data[i].track_id,
+                    //     touch_data[i].x_coordinate,
+                    //     touch_data[i].y_coordinate,
+                    //     touch_data[i].event);
                 }
-            }
-        }
-        rt_memcpy(prev_data, touch_data, sizeof(struct rt_touch_data) * touch_info.point_num);
-        // prev_data=touch_data;
+                rt_thread_delay(1);
 
+            }
+            /* 获取上一次的触摸数据 */
+            rt_memcpy(prev_data, touch_data, sizeof(struct rt_touch_data) * touch_info.point_num);
+
+        }
         rt_device_control(touch_device, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
     }
 }
@@ -96,6 +96,8 @@ void open_panel(void) {
 
 void panel_draw_lines(void *param) {
     open_panel();
+    rt_thread_mdelay(200);
+
     struct frame_buffer_info fb_info = {
         .frame_buffer_format = screen_info.format,
         .frame_buffer_width = screen_info.width,
@@ -104,31 +106,33 @@ void panel_draw_lines(void *param) {
     };
 
     while (1) {
-        struct line_dsc line;
-        if (touch_data[0].event == RT_TOUCH_EVENT_DOWN ||
-            touch_data[0].event == RT_TOUCH_EVENT_MOVE ||
-            touch_data[0].event == RT_TOUCH_EVENT_UP) {
-            if (prev_data->x_coordinate != 0 || prev_data->y_coordinate != 0) {
+        struct line_dsc line[touch_info.point_num];
 
-                line.x1 = touch_data[0].x_coordinate;
-                line.y1 = touch_data[0].y_coordinate;
-                line.x2 = touch_data[0].x_coordinate + 1;
-                line.y2 = touch_data[0].y_coordinate + 1;
-                line.color = 0x00ff00;
-                line.width = 8;
+        for (int i = 0;i < touch_info.point_num;i++) {
+            if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
+                touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
+                touch_data[i].event == RT_TOUCH_EVENT_UP) {
+                if (prev_data[i].x_coordinate != 0 || prev_data[i].y_coordinate != 0) {
 
-                // LOG_W("point1: %d,%d", line.x1, line.y1);
-                // LOG_W("point2: %d,%d", line.x2, line.y2);
-                // draw_line(&line, &fb_info);
+                    line[i].x1 = prev_data[i].x_coordinate;
+                    line[i].y1 = prev_data[i].y_coordinate;
+                    line[i].x2 = touch_data[i].x_coordinate;
+                    line[i].y2 = touch_data[i].y_coordinate;
+                    line[i].width = 5;
 
-                draw_wide_pixel(touch_data[0].x_coordinate, touch_data[0].y_coordinate, 8, 0x00ff00, &fb_info);
+                    line[0].color = 0x00ff00;
+                    line[1].color = 0xff00ff;
+                    line[2].color = 0x2196f3;
+                    line[3].color = 0xf44336;
+                    line[4].color = 0xffc107;
+
+                    // LOG_W("point1: %d,%d", line[i].x1, line[i].y1);
+                    // LOG_W("point2: %d,%d", line[i].x2, line[i].y2);
+                    draw_line(&line[i], &fb_info);
+                }
+                aicos_dcache_clean_range((unsigned long *)screen_info.framebuffer, screen_info.smem_len);
             }
-            // prev_data = touch_data;
-        } else {
-            // prev_data->x_coordinate = 0;
-            // prev_data->y_coordinate = 0;
         }
-
         aicos_dcache_clean_range((unsigned long *)screen_info.framebuffer, screen_info.smem_len);
 
         if (fb) {
@@ -137,7 +141,7 @@ void panel_draw_lines(void *param) {
     }
 }
 
-void draw_start() {
+void panel_draw_start() {
 
     touch_read_thread = rt_thread_create("read_thread", touch_read_point, RT_NULL, 2 * 1024, 20, 5);
     if (touch_read_thread != RT_NULL) {
