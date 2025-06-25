@@ -1,6 +1,14 @@
+#include <rtthread.h>
+#include <rtdevice.h>
+#include "rtdbg.h"
+#include "aic_core.h"
+#include "mpp_fb.h"
+
 #include "draw_panel.h"
 
-#define LOG_TAG "Draw_panel"
+#define LOG_TAG "Draw_Panel"
+
+#define TOUCH_IC_NAME APP_TOUCH_DEVICE
 
 static rt_thread_t draw_thread = RT_NULL;
 static rt_thread_t touch_read_thread = RT_NULL;
@@ -21,7 +29,7 @@ static rt_err_t rx_callback(rt_device_t dev, rt_size_t size) {
     return 0;
 }
 void touch_init(void) {
-    touch_device = rt_device_find("gt911");
+    touch_device = rt_device_find(APP_TOUCH_DEVICE);
     if (touch_device == RT_NULL) {
         LOG_E("touch device not found!");
         return;
@@ -143,17 +151,15 @@ void panel_draw_lines(void *param) {
 
 void panel_draw_start() {
 
-    touch_read_thread = rt_thread_create("read_thread", touch_read_point, RT_NULL, 2 * 1024, 20, 5);
+    touch_read_thread = rt_thread_create("touch_read", touch_read_point, RT_NULL, 2 * 1024, 20, 5);
     if (touch_read_thread != RT_NULL) {
         rt_thread_startup(touch_read_thread);
     }
-    LOG_W("read thread startup");
 
-    draw_thread = rt_thread_create("draw_thread", panel_draw_lines, RT_NULL, 2 * 1024, 21, 5);
+    draw_thread = rt_thread_create("draw_line", panel_draw_lines, RT_NULL, 2 * 1024, 21, 5);
     if (draw_thread != RT_NULL) {
         rt_thread_startup(draw_thread);
     }
-    LOG_W("draw thread startup");
 }
 
 

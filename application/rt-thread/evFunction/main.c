@@ -9,8 +9,10 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include "rtdbg.h"
+#include "aic_core.h"
 
-#include "draw_panel.h"
+#include "touch/draw_panel.h"
+#include "uart/uart_control.h"
 
 #ifdef RT_USING_ULOG
 #include <ulog.h>
@@ -30,8 +32,12 @@ int main(void) {
 void FunctionImp(void) {
     LOG_I("--------------Function Implement--------------\n");
 
-    #ifdef USE_DRAW_LINE_TEST
+    #ifdef APP_USE_DRAW_LINE_TEST
     panel_draw_start();
+    #endif
+
+    #ifdef APP_USE_UART_TEST
+    uart_startup();
     #endif
 
 }

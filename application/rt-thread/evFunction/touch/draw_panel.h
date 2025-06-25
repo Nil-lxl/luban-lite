@@ -1,11 +1,5 @@
 #pragma once
 
-#include <rtthread.h>
-#include <rtdevice.h>
-#include "rtdbg.h"
-#include "aic_core.h"
-#include "mpp_fb.h"
-
 struct frame_buffer_info
 {
     int frame_buffer_format;

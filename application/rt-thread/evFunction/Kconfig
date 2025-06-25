@@ -1,7 +1,56 @@
 menu "Custom App Config"
-    config USE_DRAW_LINE_TEST
+    config APP_USE_DRAW_LINE_TEST
         bool "Use touch draw line test"
         default n
         depends on AIC_USING_TOUCH
+        if APP_USE_DRAW_LINE_TEST
+            choice 
+                prompt  "Select Touch Device"
+                default TOUCH_GT911
+                config TOUCH_GT911
+                    bool "gt911"
+                config TOUCH_FT6336
+                    bool "ft6336"
+            endchoice
+            config APP_TOUCH_DEVICE
+                string
+                default "gt911" if TOUCH_GT911
+                default "ft6336" if TOUCH_FT6336
+        endif
+
+    config APP_USE_UART_TEST
+        bool "Use Uart test"
+        default n
+        if APP_USE_UART_TEST
+            choice
+                prompt "Select UART Device"
+                default USE_UART0
+                config USE_UART0
+                    bool "uart0"
+                    depends on AIC_USING_UART0
+                config USE_UART1
+                    bool "uart1"
+                    depends on AIC_USING_UART1
+                config USE_UART2
+                    bool "uart2"
+                    depends on AIC_USING_UART2
+                config USE_UART3
+                    bool "uart3"
+                    depends on AIC_USING_UART3
+                config USE_UART4
+                    bool "uart4"
+                    depends on AIC_USING_UART4
+            endchoice
+            config APP_USE_UART_DEVICE
+                string 
+                default  "uart0" if USE_UART0
+                default  "uart1" if USE_UART1
+                default  "uart2" if USE_UART2
+                default  "uart3" if USE_UART3
+                default  "uart4" if USE_UART4
+        endif
+
+        
+
 
 endmenu 

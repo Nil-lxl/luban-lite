@@ -4,9 +4,13 @@ from building import *
 
 cwd = GetCurrentDir()
 src = Glob('*.c')
+src += Glob('uart/*.c')
+src += Glob('touch/*.c')
+
 
 CPPPATH = [cwd, ]
 CPPPATH.append(cwd + '.')
+CPPPATH.append(cwd + 'uart/.')
 
 CFLAGS = ' -c -ffunction-sections'
 

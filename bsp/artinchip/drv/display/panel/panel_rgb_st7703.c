@@ -7,12 +7,19 @@
 #include "panel_com.h"
 #include <aic_hal.h>
 
-// #define SLEEP_PIN  "PE.1"
-#define RESET_PIN  "PB.1"
+#ifdef AIC_USING_D213ECV_EzUIX1_DEMO
+#define RESET_PIN  "PA.3"
 
+#define CS         "PE.17"
+#define SCL        "PE.16"
+#define SDI        "PE.18"
+#endif
+#ifdef AIC_USING_JYX68_RGB01
+#define RESET_PIN  "PB.1"
 #define CS         "PE.13"
 #define SCL        "PE.12"
 #define SDI        "PE.14"
+#endif
 
 static struct gpio_desc reset_gpio;
 // static struct gpio_desc sleep_gpio;
@@ -61,7 +68,7 @@ static int panel_enable(struct aic_panel *panel)
     panel_spi_wr_reg(0x27,0x14);
     panel_spi_wr_reg(0x38,0x9C);
     panel_spi_wr_reg(0x39,0xA7);
-    panel_spi_wr_reg(0x3A,0x55);
+    panel_spi_wr_reg(0x3A,0x77);  //24bit
     panel_spi_wr_reg(0x28,0x40);
     panel_spi_wr_reg(0x29,0x01);
     panel_spi_wr_reg(0x2A,0xdf);
@@ -250,7 +257,7 @@ static struct aic_panel_funcs st7703_funcs = {
 };
 
 static struct display_timing st7703_timing = {
-    .pixelclock = 20000000,
+    .pixelclock = 30000000,
     .hactive = 640,
     .hfront_porch = 20,
     .hback_porch = 20,
@@ -263,7 +270,7 @@ static struct display_timing st7703_timing = {
 
 static struct panel_rgb rgb = {
     .mode = PRGB,
-    .format = PRGB_16BIT_HD,
+    .format = PRGB_24BIT,
     .clock_phase = DEGREE_90,
     .data_order = BGR,
     .data_mirror = 0,
