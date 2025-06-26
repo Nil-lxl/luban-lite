@@ -33,6 +33,10 @@ choice
     config AIC_USING_JYX68_RGB01
         bool "JYX68_RGB01"
         depends on AIC_CHIP_D13X    
+    config AIC_USING_JYX68_MIPI01
+        bool "JYX68_MIPI01"
+        depends on AIC_CHIP_D13X    
+
 endchoice    
 
 endmenu

@@ -149,7 +149,7 @@ menuconfig LPKG_USING_LVGL
 if LPKG_USING_LVGL
     choice
         prompt "Select LVGL Version"
-        default LVGL_V_8
+        default LVGL_V_9
 
         config LVGL_V_8
             bool "LVGL V8"
@@ -168,7 +168,7 @@ if LPKG_USING_LVGL
 
     config LPKG_LVGL_THREAD_STACK_SIZE
         int "Stack size of LVGL thread"
-        default 4096
+        default 32768
 
     config LPKG_LVGL_DISP_REFR_PERIOD
         int "Display refresh period (ms)"
@@ -182,9 +182,9 @@ if LPKG_USING_LVGL
         bool "Enable built-in examples"
         default n
 
-    config LPKG_LVGL_USING_DEMOS
+    config LPKG_LVGL_USING_DEMOSy
         bool "Enable built-in demos"
-        default n
+        default y
 
 endif
 

@@ -6,7 +6,10 @@
 
 #include "uart_control.h"
 
+#ifdef APP_USE_UART_TEST
+
 #define LOG_TAG "Uart"
+
 #define UART_DEVICE_NAME APP_USE_UART_DEVICE
 
 static rt_thread_t uart_thread;
@@ -97,3 +100,4 @@ void uart_startup(void) {
     }
 
 }
+#endif

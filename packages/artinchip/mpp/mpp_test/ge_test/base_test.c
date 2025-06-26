@@ -383,8 +383,8 @@ static void ge_rotate(int argc, char **argv)
         {0, 0, 0, 0}
     };
 
-    strncpy(g_src_input, "/sdcard/ge_test/image/base/second.bmp", sizeof(g_src_input) - 1);
-    strncpy(g_bg_input, "/sdcard/ge_test/image/base/clock.bmp", sizeof(g_bg_input) - 1);
+    strncpy(g_src_input, "/sdcard/image/second.bmp", sizeof(g_src_input) - 1);
+    strncpy(g_bg_input, "/sdcard/image/clock.bmp", sizeof(g_bg_input) - 1);
     optind = 0;
     while ((ret = getopt_long(argc, argv, sopts, lopts, NULL)) != -1) {
         switch (ret) {
@@ -444,7 +444,7 @@ static void ge_bitblt(int argc, char **argv)
         {0, 0, 0, 0}
     };
 
-    strncpy(g_src_input, "/sdcard/ge_test/image/base/clock.bmp", sizeof(g_src_input) - 1);
+    strncpy(g_src_input, "/sdcard/image/clock.bmp", sizeof(g_src_input) - 1);
     optind = 0;
     while ((ret = getopt_long(argc, argv, sopts, lopts, NULL)) != -1) {
         switch (ret) {

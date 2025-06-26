@@ -6,8 +6,10 @@
 
 #include "draw_panel.h"
 
+
 #define LOG_TAG "Draw_Panel"
 
+#ifdef APP_USE_DRAW_LINE_TEST
 #define TOUCH_IC_NAME APP_TOUCH_DEVICE
 
 static rt_thread_t draw_thread = RT_NULL;
@@ -162,5 +164,6 @@ void panel_draw_start() {
     }
 }
 
+#endif
 
 

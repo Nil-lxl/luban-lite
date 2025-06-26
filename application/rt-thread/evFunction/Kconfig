@@ -3,6 +3,7 @@ menu "Custom App Config"
         bool "Use touch draw line test"
         default n
         depends on AIC_USING_TOUCH
+        depends on !LPKG_USING_LVGL
         if APP_USE_DRAW_LINE_TEST
             choice 
                 prompt  "Select Touch Device"

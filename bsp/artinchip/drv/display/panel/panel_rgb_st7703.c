@@ -68,7 +68,11 @@ static int panel_enable(struct aic_panel *panel)
     panel_spi_wr_reg(0x27,0x14);
     panel_spi_wr_reg(0x38,0x9C);
     panel_spi_wr_reg(0x39,0xA7);
+#ifdef AIC_USING_D213ECV_EzUIX1_DEMO
     panel_spi_wr_reg(0x3A,0x77);  //24bit
+#else
+    panel_spi_wr_reg(0x3A,0x55);  //16bit
+#endif
     panel_spi_wr_reg(0x28,0x40);
     panel_spi_wr_reg(0x29,0x01);
     panel_spi_wr_reg(0x2A,0xdf);
@@ -270,7 +274,11 @@ static struct display_timing st7703_timing = {
 
 static struct panel_rgb rgb = {
     .mode = PRGB,
+#ifdef AIC_USING_D213ECV_EzUIX1_DEMO
     .format = PRGB_24BIT,
+#else
+    .format = PRGB_16BIT_HD,
+#endif
     .clock_phase = DEGREE_90,
     .data_order = BGR,
     .data_mirror = 0,

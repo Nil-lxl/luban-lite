@@ -13,8 +13,6 @@
 
 struct aic_pinmux aic_pinmux_config[] = {
 
-    // /* KEY ADC */
-    // {1, PIN_PULL_UP, 3, "PB.6"},
     // /* WIFI POWER ON */
     // {1, PIN_PULL_UP, 3, "PB.8"},
     // /* BT HOST WAKE */
@@ -357,7 +355,7 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #ifdef AIC_USING_AUDIO
 #ifdef AIC_AUDIO_PLAYBACK
-    {4, PIN_PULL_DIS, 3, "PE.11"},
+    {4, PIN_PULL_DIS, 3, "PE.11"},  //DSPK1
     {1, PIN_PULL_DIS, 3, AIC_AUDIO_PA_ENABLE_GPIO},
 #endif
 #ifdef AIC_AUDIO_DMIC
