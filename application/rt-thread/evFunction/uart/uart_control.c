@@ -17,7 +17,6 @@ static rt_device_t uart_device;
 
 static struct rt_sem_t *uart_rx_sem;
 
-
 int uart_config(rt_device_t dev) {
     rt_serial_t *uart = container_of(dev, rt_serial_t, parent);
     uart->config.baud_rate = BAUD_RATE_115200;

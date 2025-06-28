@@ -132,12 +132,12 @@ static struct display_timing timing_1920_1080 = {
 
     .hactive      = 1920,
     .hback_porch  = 80,
-    .hfront_porch = 120,
+    .hfront_porch = 100,
     .hsync_len    = 20,
 
     .vactive      = 1080,
-    .vback_porch  = 20,
-    .vfront_porch = 20,
+    .vback_porch  = 10,
+    .vfront_porch = 10,
     .vsync_len    = 10,
 
     .flags        = AIC_DISPLAY_FLAGS,

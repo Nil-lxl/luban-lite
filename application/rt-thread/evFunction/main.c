@@ -13,6 +13,7 @@
 
 #include "touch/draw_panel.h"
 #include "uart/uart_control.h"
+#include "cir/cir_control.h"
 
 #ifdef RT_USING_ULOG
 #include <ulog.h>
@@ -38,6 +39,10 @@ void FunctionImp(void) {
 
     #ifdef APP_USE_UART_TEST
     uart_startup();
+    #endif
+
+    #ifdef APP_USE_CIR_CONTROL
+    cir_control();
     #endif
 
 }

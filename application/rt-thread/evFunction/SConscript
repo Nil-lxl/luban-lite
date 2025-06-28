@@ -6,6 +6,7 @@ cwd = GetCurrentDir()
 src = Glob('*.c')
 src += Glob('uart/*.c')
 src += Glob('touch/*.c')
+src += Glob('cir/*.c')
 
 
 CPPPATH = [cwd, ]

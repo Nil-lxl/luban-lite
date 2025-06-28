@@ -50,6 +50,10 @@ menu "Custom App Config"
                 default  "uart3" if USE_UART3
                 default  "uart4" if USE_UART4
         endif
+    config APP_USE_CIR_CONTROL
+        bool "Use CIR Receive Data"
+        default n
+        depends on AIC_USING_CIR
 
         
 
