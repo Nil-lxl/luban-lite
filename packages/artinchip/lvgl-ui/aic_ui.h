@@ -33,6 +33,11 @@ extern "C" {
 #define LVGL_IMAGE_PATH(y) CONN(LVGL_DIR"image/", y)
 #define LVGL_VIDEO_PATH(y) CONN(LVGL_STORAGE_PATH"/""video/", y)
 
+#define SD_DIR "L:/sdcard/"
+#define SD_PATH(y) CONN(SD_DIR, y)
+#define SD_IMAGE_PATH(y) CONN(SD_DIR"image/", y)
+#define SD_VIDEO_PATH(y) CONN(SD_DIR"video/", y)
+
 /* use fake image to fill color */
 #define FAKE_IMAGE_DECLARE(name) char fake_##name[256];
 #define FAKE_IMAGE_INIT(name, w, h, blend, color) \
@@ -43,26 +48,25 @@ extern "C" {
 #define FAKE_IMAGE_PARSE(fake_name, pwidth, pheight, pblend, pcolor) \
         fake_image_parse(fake_name, pwidth, pheight, pblend, pcolor)
 
-static inline void fake_image_parse(char *fake_name, int *width,
-                                    int *height, int *blend,
-                                    unsigned int *color)
-{
-    char *cur_ptr;
-    char *pos_ptr;
-    cur_ptr = fake_name + 3;
-    *width = strtol(cur_ptr, &pos_ptr, 10);
-    cur_ptr = pos_ptr + 1;
-    *height = strtol(cur_ptr, &pos_ptr, 10);
-    cur_ptr = pos_ptr + 1;
-    *blend = strtol(cur_ptr, &pos_ptr, 10);
-    cur_ptr = pos_ptr + 1;
-    *color = strtoul(cur_ptr, NULL, 16);
-    return;
-}
+    static inline void fake_image_parse(char *fake_name, int *width,
+        int *height, int *blend,
+        unsigned int *color) {
+        char *cur_ptr;
+        char *pos_ptr;
+        cur_ptr = fake_name + 3;
+        *width = strtol(cur_ptr, &pos_ptr, 10);
+        cur_ptr = pos_ptr + 1;
+        *height = strtol(cur_ptr, &pos_ptr, 10);
+        cur_ptr = pos_ptr + 1;
+        *blend = strtol(cur_ptr, &pos_ptr, 10);
+        cur_ptr = pos_ptr + 1;
+        *color = strtoul(cur_ptr, NULL, 16);
+        return;
+    }
 
 #define ui_snprintf(fmt, arg...) snprintf(fmt, 255, ##arg)
 
-void aic_ui_init();
+    void aic_ui_init();
 
 #ifdef __cplusplus
 } /*extern "C"*/

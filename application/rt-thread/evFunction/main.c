@@ -41,7 +41,7 @@ void FunctionImp(void) {
     uart_startup();
     #endif
 
-    #ifdef APP_USE_CIR_CONTROL
+    #ifdef APP_USE_CIR_TEST
     cir_control();
     #endif
 

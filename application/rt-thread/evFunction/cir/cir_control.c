@@ -101,7 +101,7 @@ void cir_control(void) {
     rt_device_set_rx_indicate(cir_dev, cir_rx_cb);
     LOG_I("CIR Device Initialized");
 
-    cir_thread = rt_thread_create("cir_thread", cir_thread_entry, RT_NULL, 2 * 1024, 22, 10);
+    cir_thread = rt_thread_create("cir_thread", cir_thread_entry, RT_NULL, 2 * 1024, 18, 10);
     if (cir_thread != RT_NULL) {
         rt_thread_startup(cir_thread);
     } else {

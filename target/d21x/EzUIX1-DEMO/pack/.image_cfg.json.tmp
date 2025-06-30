@@ -26,7 +26,7 @@
     "image": {
         "info": { // Header information about image
             "platform": "d21x",
-            "product": "demo128_nand",
+            "product": "EzUIX1-DEMO",
             "version": "1.0.0",
             "media": {
                 "type": "spi-nand",

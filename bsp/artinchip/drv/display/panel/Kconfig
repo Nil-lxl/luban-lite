@@ -243,4 +243,19 @@ if AIC_PANEL_CUSTOM_RESOLUTION && !AIC_DISP_PQ_TOOL
 source "bsp/artinchip/drv/display/panel/Kconfig.timing"
 endif
 
+
+config PANEL_HACTIVE_RES
+    int 
+    default 1024 if AIC_PANEL_1024X600_RESOLUTION
+    default 1920 if AIC_PANEL_1920X1080_RESOLUTION
+    default 640 if AIC_PANEL_RGB_ST7703
+    default 720 if AIC_PANEL_RGB_NV3052
+
+config PANEL_VACTIVE_RES
+    int 
+    default 600 if AIC_PANEL_1024X600_RESOLUTION
+    default 1080 if AIC_PANEL_1920X1080_RESOLUTION
+    default 480 if AIC_PANEL_RGB_ST7703
+    default 720 if AIC_PANEL_RGB_NV3052
+    
 endmenu

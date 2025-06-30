@@ -6,21 +6,24 @@
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  */
 
-#ifndef GIF_UI_H
-#define GIF_UI_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
 
 #include "lvgl.h"
 #include "aic_ui.h"
 
+typedef enum {
+    LV_COLOR_WHITE = 0xffffff,
+    LV_COLOR_BLACK = 0x000000,
+    LV_COLOR_RED = 0xff0000,
+    LV_COLOR_GREEN = 0x00ff00,
+    LV_COLOR_BLUE = 0x0000ff,
+    LV_COLOR_PINK = 0xff00f0,
+
+};
+
 void test_ui_init(void);
 void create_gray_lvl(void);
 
-#ifdef __cplusplus
-} /*extern "C"*/
-#endif
+void cir_thread_begin(void);
 
-#endif // GIF_UI_H
+

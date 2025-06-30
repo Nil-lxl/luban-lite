@@ -1,6 +1,6 @@
 menu "Custom App Config"
     config APP_USE_DRAW_LINE_TEST
-        bool "Use touch draw line test"
+        bool "USE DRAW LINE TEST"
         default n
         depends on AIC_USING_TOUCH
         depends on !LPKG_USING_LVGL
@@ -20,7 +20,7 @@ menu "Custom App Config"
         endif
 
     config APP_USE_UART_TEST
-        bool "Use Uart test"
+        bool "USE UART TEST"
         default n
         if APP_USE_UART_TEST
             choice
@@ -50,8 +50,8 @@ menu "Custom App Config"
                 default  "uart3" if USE_UART3
                 default  "uart4" if USE_UART4
         endif
-    config APP_USE_CIR_CONTROL
-        bool "Use CIR Receive Data"
+    config APP_USE_CIR_TEST
+        bool "Use CIR TEST"
         default n
         depends on AIC_USING_CIR
 

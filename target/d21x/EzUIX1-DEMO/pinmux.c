@@ -290,8 +290,8 @@ struct aic_pinmux aic_pinmux_config[] = {
     {7, PIN_PULL_DIS, 3, "PC.5"},
 #endif
 #ifdef AIC_USING_PWM3
-    {7, PIN_PULL_DIS, 3, "PC.6"},
-    {7, PIN_PULL_DIS, 3, "PC.7"},
+    /* Backlight Control*/
+    {5, PIN_PULL_DIS, 3, "PE.19"},
 #endif
 #ifdef AIC_USING_GPAI0
     {2, PIN_PULL_DIS, 3, "PA.0"},
