@@ -37,7 +37,9 @@ static rt_device_t cir_dev;
 static rt_sem_t cir_sem;
 
 static struct rt_device_pwm *pwm_dev;
+#ifdef AIC_PWM_BACKLIGHT
 static int brightness_level = AIC_PWM_BRIGHTNESS_LEVEL;
+#endif
 
 static lv_obj_t *scr;
 static lv_obj_t *gray_scr;
@@ -107,29 +109,31 @@ void timer_cb(lv_timer_t *timer) {
         case 9:
             lv_hide_obj(img3);
             lv_show_obj(player);
-            lv_aic_player_set_auto_restart(player,true);
-            lv_aic_player_set_cmd(player,LV_AIC_PLAYER_CMD_START,NULL);
+            lv_aic_player_set_auto_restart(player, true);
+            lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
             break;
         default:
             break;
     }
 
-    if(sum==9){
+    if (sum == 6) {
         lv_timer_pause(timer);
     }
+#if 1
+    sum = (sum + 1) % 6;
+#else
     sum = (sum + 1) % 10;
-
+#endif
 
 }
-
-
 void test_ui_init() {
     aicos_msleep(1000);//等待sdcard挂载成功
 
+#if 0
     scr = lv_scr_act();
 
-    player=lv_aic_player_create(scr);
-    lv_aic_player_set_src(player,SD_VIDEO_PATH(video2.mp4));
+    player = lv_aic_player_create(scr);
+    lv_aic_player_set_src(player, SD_VIDEO_PATH(video2.mp4));
     lv_obj_center(player);
     lv_hide_obj(player);
 
@@ -153,6 +157,7 @@ void test_ui_init() {
 
     // create_gray_lvl();
     timer = lv_timer_create(timer_cb, 1000, NULL);
+#endif
 }
 
 static lv_obj_t *gray_bar[10];
@@ -176,11 +181,12 @@ void ui_init(void) {
     pwm_dev = (struct rt_device_pwm *)rt_device_find("pwm");
     if (pwm_dev == NULL) {
         LOG_E("PWM Device Not Found");
-        return -RT_ERROR;
+        // return -RT_ERROR;
     }
 
+#ifdef UI_USE_AIC_TEST
     cir_thread_begin();
-
+#endif
     test_ui_init();
 }
 
@@ -234,11 +240,11 @@ void cir_thread_entry(void *param) {
                     LOG_I("NEXT");
                     break;
                 case CIR_CMD_PLAY:
-                    lv_aic_player_set_cmd(player,LV_AIC_PLAYER_CMD_START,NULL);
+                    lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
                     LOG_I("PLAY");
                     break;
                 case CIR_CMD_ZERO:
-                    lv_aic_player_set_cmd(player,LV_AIC_PLAYER_CMD_PAUSE,NULL);
+                    lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_PAUSE, NULL);
                     break;
                 case CIR_CMD_ONE:
                     break;
