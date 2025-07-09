@@ -299,7 +299,7 @@ config LV_COLOR_DEPTH
     depends on LPKG_USING_LVGL
 config LV_CACHE_IMG_NUM
     int "LVGL image cached number"
-    default 2
+    default 32
     depends on LPKG_USING_LVGL
 
 config LV_CACHE_DEF_SIZE

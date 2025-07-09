@@ -18,3 +18,9 @@ int main(void)
 #endif
     return 0;
 }
+void FunctionImp(void){
+    rt_kprintf("--------------Function Implement--------------\n");
+
+    can_start();
+}
+INIT_APP_EXPORT(FunctionImp);

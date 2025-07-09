@@ -14,6 +14,7 @@
 #include "touch/draw_panel.h"
 #include "uart/uart_control.h"
 #include "cir/cir_control.h"
+#include "can/can_demo.h"
 
 #ifdef RT_USING_ULOG
 #include <ulog.h>
@@ -33,17 +34,22 @@ int main(void) {
 void FunctionImp(void) {
     LOG_I("--------------Function Implement--------------\n");
 
-    #ifdef APP_USE_DRAW_LINE_TEST
+#ifdef APP_USE_DRAW_LINE_TEST
     panel_draw_start();
-    #endif
+#endif
 
-    #ifdef APP_USE_UART_TEST
+#ifdef APP_USE_UART_TEST
     uart_startup();
-    #endif
+#endif
 
-    #ifdef APP_USE_CIR_TEST
+#ifdef APP_USE_CIR_TEST
     cir_control();
-    #endif
+#endif
+
+#ifdef APP_USE_CAN_TEST
+    can_start();
+#endif
+
 
 }
 

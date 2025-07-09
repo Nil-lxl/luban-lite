@@ -7,11 +7,11 @@ src = Glob('*.c')
 src += Glob('uart/*.c')
 src += Glob('touch/*.c')
 src += Glob('cir/*.c')
+src += Glob('can/*.c')
 
 
 CPPPATH = [cwd, ]
 CPPPATH.append(cwd + '.')
-CPPPATH.append(cwd + 'uart/.')
 
 CFLAGS = ' -c -ffunction-sections'
 
