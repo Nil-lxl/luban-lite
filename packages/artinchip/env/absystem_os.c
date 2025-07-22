@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -237,7 +237,7 @@ int aic_absystem_mount_fs(unsigned int prio)
     char target[MOUNT_POINT_NAME_MAX] = {0};
     enum boot_device boot_dev = aic_get_boot_device();
 
-    if (boot_dev != BD_SDMC0) {
+    if (boot_dev != BD_SDMC0 && boot_dev != BD_SDMC1) {
         aic_ota_status_update();
 
         if (prio == 0) {

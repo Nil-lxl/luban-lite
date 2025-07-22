@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -124,6 +124,32 @@ void rt_hw_board_init(void)
 #endif
 }
 
+#ifdef AIC_USING_PM
+void rt_pm_board_level_power_off(void)
+{
+    rt_base_t pin;
+
+    pin = rt_pin_get(AIC_BOARD_LEVEL_POWER_PIN);
+    if (pin < 0)
+        return;
+
+    rt_pin_mode(pin, PIN_MODE_OUTPUT);
+    rt_pin_write(pin, 0);
+}
+
+void rt_pm_board_level_power_on(void)
+{
+    rt_base_t pin;
+
+    pin = rt_pin_get(AIC_BOARD_LEVEL_POWER_PIN);
+    if (pin < 0)
+        return;
+
+    rt_pin_mode(pin, PIN_MODE_OUTPUT);
+    rt_pin_write(pin, 1);
+}
+#endif
+
 #elif defined(KERNEL_FREERTOS)
 #elif defined(KERNEL_BAREMETAL)
 #include <aic_tlsf.h>
@@ -177,7 +203,7 @@ const struct dfs_mount_tbl mount_table[] = {
     {"data", "/data", "lfs", 0, 0, 1},
 #endif
 #ifdef AIC_USING_SDMC1
-    {"sd0", "/sdcard", "elm", 0, 0, 0},
+    {"sd1", "/sdcard", "elm", 0, 0, 0},
 #endif
 #if (defined(AIC_USING_USB0_HOST) || defined(AIC_USING_USB0_OTG) || defined(AIC_USING_USB1_HOST))
     {"udisk", "/udisk", "elm", 0, 0, 0xFF},

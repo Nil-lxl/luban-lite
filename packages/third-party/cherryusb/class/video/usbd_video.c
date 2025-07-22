@@ -784,6 +784,6 @@ uint32_t usbd_video_payload_fill(uint8_t *input, uint32_t input_len, uint8_t *ou
         }
     }
     uvc_header[1] ^= 1;
-    *out_len = (input_len + 2 * packets);
+    *out_len = (input_len + 2 * packets); /* all frame headers + total image len*/
     return packets;
 }

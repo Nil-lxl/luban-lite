@@ -93,6 +93,7 @@ struct aic_uart {
 #if defined (AIC_SERIAL_USING_DMA)
     u32 rx_size;
     u32 tx_size;
+    u32 tx_dma_working;
     u8 dma_tx_buf[AIC_UART_TX_FIFO_SIZE] __attribute__((aligned(CACHE_LINE_SIZE)));
     u8 dma_rx_buf[AIC_UART_RX_FIFO_SIZE] __attribute__((aligned(CACHE_LINE_SIZE)));
 #endif
@@ -171,15 +172,19 @@ static void uart_irqhandler(int irq, void * data)
     tx_fifo = uart->tx_fifo;
     switch (status) {
         case AIC_IIR_THR_EMPTY:
+            hal_usart_set_interrupt(uart->handle, USART_INTR_WRITE, 0);
+            if (uart->tx_dma_working)
+                return;
+
             uart->tx_size = ringbuf_len(&(tx_fifo->rb));
             if (uart->tx_size) {
-                hal_usart_set_interrupt(uart->handle, USART_INTR_WRITE, 0);
                 if (uart->tx_size > AIC_UART_TX_FIFO_SIZE)
                     uart->tx_size = AIC_UART_TX_FIFO_SIZE;
 
                 ringbuf_out(&(uart->tx_fifo->rb), uart->dma_tx_buf, uart->tx_size);
                 aicos_dcache_clean_range(uart->dma_tx_buf, ALIGN_UP(AIC_UART_TX_FIFO_SIZE, CACHE_LINE_SIZE));
                 hal_uart_send_by_dma(uart->handle, uart->dma_tx_buf, uart->tx_size);
+                uart->tx_dma_working = 1;
             }
             break;
         case AIC_IIR_RECV_DATA:
@@ -248,6 +253,7 @@ static void uart_dma_callback(aic_usart_priv_t *handle, void *arg)
 
     switch(event) {
     case AIC_UART_TX_INT:
+        uart->tx_dma_working = 0;
         if (ringbuf_len(&(uart->tx_fifo->rb)))
             hal_usart_set_interrupt(handle, USART_INTR_WRITE, 1);
         break;
@@ -678,7 +684,8 @@ int uart_puts(int id, u8 *buf, int len)
 
 int uart_get_cur_baudrate(int id)
 {
-    int baud;
-    baud = hal_usart_get_cur_baudrate(uart_dev[id]);
-    return baud;
+    usart_handle_t handle = NULL;
+
+    handle = hal_usart_initialize(id, NULL, NULL);
+    return hal_usart_get_cur_baudrate(handle);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -102,5 +102,11 @@ int usb_init(void)
     usbd_add_interface(usbd_aicupg_init_intf(&intf0, BULK_OUT_EP, BULK_IN_EP));
     usbd_add_interface(usbd_aicupg_init_intf(&intf1, BULK_OUT_EP, BULK_IN_EP));
     usbd_initialize();
+    return 0;
+}
+
+int usb_deinit(void)
+{
+    usbd_deinitialize();
     return 0;
 }

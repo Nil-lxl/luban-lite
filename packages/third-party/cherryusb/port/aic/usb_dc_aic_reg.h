@@ -204,6 +204,14 @@ typedef struct {
 #define USBDEVFUNC_SFTDISCON            (1 << 1)
 #define USBDEVFUNC_RMTWKUPSIG           (1 << 0)
 
+/* USBDEVFUNC TEST MODE */
+#define TEST_MODE_DISABLE               (0)
+#define TEST_J_MODE                     (1)
+#define TEST_K_MODE                     (2)
+#define TEST_SE0_NAK_MODE               (3)
+#define TEST_PACKET_MODE                (4)
+#define TEST_FORCE_MODE                 (5)
+
 /* USBLINESTS: Enumeration speed */
 #define USB_ENUM_SPEED_SHIFT            1
 #define USB_ENUM_SPEED_MASK             (0x3 << USB_ENUM_SPEED_SHIFT)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -117,6 +117,9 @@ void random_update_cb(lv_timer_t * timer)
     lv_obj_t *colon = lv_obj_get_child(ui_home_time_img_container, 2);
     lv_obj_t *minute_num_0 = lv_obj_get_child(ui_home_time_img_container, 3);
     lv_obj_t *minute_num_1 = lv_obj_get_child(ui_home_time_img_container, 4);
+
+    if (ui_home_seconds >= 24 * 60 * 60)
+        ui_home_seconds = 0;
 
     ui_home_seconds++;
     if (ui_home_seconds % 2) {

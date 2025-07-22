@@ -31,7 +31,7 @@ static struct aic_dsi_comp *g_aic_dsi_comp;
 
 #ifdef AIC_DISP_PQ_TOOL
 AIC_PQ_TOOL_PINMUX_CONFIG(disp_pinmux_config);
-AIC_PQ_TOOL_SET_DISP_PINMUX_FOPS(disp_pinmux_config)
+AIC_PQ_TOOL_SET_DISP_PINMUX_FOPS(disp_pinmux_config);
 #endif
 
 static struct aic_dsi_comp *aic_dsi_request_drvdata(void)
@@ -50,8 +50,8 @@ static int aic_dsi_clk_enable(void)
     u32 pixclk = comp->pixclk;
 
     hal_clk_set_freq(CLK_PLL_FRA2, comp->pll_disp_rate);
-    hal_clk_set_rate(CLK_SCLK, comp->sclk_rate, comp->pll_disp_rate);
-    hal_clk_set_rate(CLK_PIX, pixclk, comp->sclk_rate);
+    hal_clk_set_freq(CLK_SCLK, comp->sclk_rate);
+    hal_clk_set_freq(CLK_PIX, pixclk);
 
     hal_clk_enable(CLK_PLL_FRA2);
     hal_clk_enable(CLK_SCLK);
@@ -90,7 +90,7 @@ static int aic_dsi_enable(void)
     }
 
     dsi_set_clk_div(comp->regs, comp->sclk_rate, lp_rate);
-    dsi_pkg_init(comp->regs);
+    dsi_pkg_init(comp->regs, dsi->mode);
     dsi_phy_init(comp->regs, comp->sclk_rate, dsi->lane_num, dsi->mode);
     dsi_hs_clk(comp->regs, 1);
 
@@ -111,8 +111,6 @@ static int aic_dsi_attach_panel(struct aic_panel *panel, struct panel_desc *desc
 {
     struct aic_dsi_comp *comp = aic_dsi_request_drvdata();
     u32 div[DSI_MAX_LANE_NUM] = {24, 24, 18, 16};
-    u64 pll_disp_rate = 0;
-    int i = 0;
     struct panel_dsi *dsi;
     u32 pixclk;
 
@@ -135,17 +133,12 @@ static int aic_dsi_attach_panel(struct aic_panel *panel, struct panel_desc *desc
     }
     else
     {
+        comp->sclk_rate = 6; /* default RGB888 format 4 lane */
         pr_err("Invalid lane number %d\n", dsi->lane_num);
         return -EINVAL;
     }
 
-    pll_disp_rate = comp->sclk_rate;
-    while (pll_disp_rate < PLL_DISP_FREQ_MIN)
-    {
-        pll_disp_rate = comp->sclk_rate * (2 << i);
-        i++;
-    }
-    comp->pll_disp_rate = pll_disp_rate;
+    comp->pll_disp_rate = comp->sclk_rate;
 
     if (dsi->ln_assign)
         comp->ln_assign = dsi->ln_assign;

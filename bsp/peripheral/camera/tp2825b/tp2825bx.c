@@ -1857,7 +1857,7 @@ static int tp2802_module_init(void)
             return FAILURE;
         }
     */
-    LOG_I("TP2825B driver version %d.%d.%d loaded\n",
+    LOG_I("TP2825B driver version %d.%d.%d loaded",
           (TP2825_VERSION_CODE >> 16) & 0xff,
           (TP2825_VERSION_CODE >>  8) & 0xff,
           TP2825_VERSION_CODE & 0xff);
@@ -1874,13 +1874,13 @@ static int tp2802_module_init(void)
         val += tp28xx_byte_read(i, 0xff);
 
         if (TP2825B == val) {
-            LOG_I("Chip%d: Detected TP2825B\n", i);
+            LOG_I("Chip%d: Detected TP2825B", i);
         } else if (TP2850 == val) {
-            LOG_I("Chip%d: Detected TP2850/TP9950\n", i);
+            LOG_I("Chip%d: Detected TP2850/TP9950", i);
         } else if (TP2860 == val) {
-            LOG_I("Chip%d: Detected TP2860\n", i);
+            LOG_I("Chip%d: Detected TP2860", i);
         } else {
-            LOG_I("Chip%d: Invalid chip %2x\n", i, val);
+            LOG_I("Chip%d: Invalid chip %2x", i, val);
             return FAILURE;
         }
 
@@ -1889,7 +1889,8 @@ static int tp2802_module_init(void)
         tp2802_comm_init(i);
     }
 
-    LOG_I("Set input video mode: %s\n", DEFAULT_IS_CVBS ? "TVI" : "HDA");
+    LOG_I("Set input ch%d video mode: %s", DEFAULT_VIN_CH,
+          DEFAULT_IS_CVBS ? "TVI" : "HDA");
 
 #if (WDT)
     ret = TP2802_watchdog_init();
@@ -2561,7 +2562,7 @@ static rt_err_t tp2825_init(rt_device_t dev)
                  MEDIA_SIGNAL_PCLK_SAMPLE_FALLING;
 
 #ifdef DEFAULT_IS_INTERLACED
-    LOG_I("The input signal is interlace mode\n");
+    LOG_I("The input signal is interlace mode");
     fmt->flags |= MEDIA_SIGNAL_INTERLACED_MODE;
 #endif
 
@@ -2580,7 +2581,7 @@ static rt_err_t tp2825_open(rt_device_t dev, rt_uint16_t oflag)
     if (tp2802_module_init())
         return -EINVAL;
 
-    LOG_I("%s inited\n", DRV_NAME);
+    LOG_I("%s inited", DRV_NAME);
     return RT_EOK;
 }
 
@@ -2609,6 +2610,11 @@ static int tp2825_get_fmt(rt_device_t dev, struct mpp_video_fmt *cfg)
 
 static int tp2825_start(rt_device_t dev)
 {
+#if TEST_MODE
+    LOG_I("Enter test mode");
+    tp28xx_byte_write(0, 0x2A, 0x3C);
+#endif
+
     return 0;
 }
 

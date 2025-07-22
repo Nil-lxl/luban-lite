@@ -32,18 +32,21 @@
 #include "co_list.h"
 #include "fhost_api.h"
 #include "rwnx_config.h"
-#include"aic_plat_net.h"
+#include "aic_plat_net.h"
 #include "aic_plat_types.h"
 #include "rtos_port.h"
 #include <string.h>
+#include "wifi_al.h"
 
 /*
  * DEFINITIONS
  ****************************************************************************************
  */
-#define BROADCAST_STA_IDX_MIN   NX_REMOTE_STA_MAX
+#define FMAC_REMOTE_STA_MAX     aic_wifi_fmac_remote_sta_max_get()
+#define BROADCAST_STA_IDX_MIN   FMAC_REMOTE_STA_MAX
 #define VIF_TO_BCMC_IDX(idx)    (BROADCAST_STA_IDX_MIN + (idx))
 #define STA_MAX                 (NX_REMOTE_STA_MAX + NX_VIRT_DEV_MAX)
+#define FMAC_STA_MAX            (FMAC_REMOTE_STA_MAX + NX_VIRT_DEV_MAX)
 
 #define TRACE_FHOST(fmt, ...)   aic_dbg(fmt, ## __VA_ARGS__)
 
@@ -257,7 +260,7 @@ struct vif_info_tag
 struct fhost_vif_tag
 {
     /// RTOS network interface structure
-    net_if_t net_if;
+    net_if_t *net_if;
     /// MAC address of the VIF
     struct mac_addr mac_addr;
     /// Socket for scan events
@@ -342,6 +345,8 @@ __STATIC_INLINE struct vif_info_tag *fhost_to_mac_vif(uint8_t fhost_vif_idx)
 
     return mac_vif;
 }
+
+int fhost_mac_vif_valid(uint8_t fhost_vif_idx);
 
 /**
  ****************************************************************************************

@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="上下电时序 VCC33_IO 、 VDD11_SYS 和 LDO18 供电无上下电顺序要求。VCC33_IO 上电上升沿时间需大于 150us。 复位源 芯片系统有以下几种复位源，任何一种复位条件成立，会对芯片产生复位： 系统上电复位：在 VCC33_IO 和 VDD11_SYS 上电后产生复位，上电 10 ms 内系统自动放开此复位。 外部引脚复位：引脚 RESETN 输入低电平并持续 2 ms ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-02-21"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="topic_yxg_5f4_m1c"/><meta name="DC.language" content="zh-CN"/><title>上下电时序及复位</title><meta name="wh-path2root" content="../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/product/d12x-pu-pd-reset.dita"/><meta name="wh-out-relpath" content="topics/product/d12x-pu-pd-reset.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="上下电时序 VCC33_IO 、 VDD11_SYS 和 LDO18 供电无上下电顺序要求。VCC33_IO 上电上升沿时间需大于 150us。 复位源 芯片系统有以下几种复位源，任何一种复位条件成立，会对芯片产生复位： 系统上电复位：在 VCC33_IO 和 VDD11_SYS 上电后产生复位，上电 10 ms 内系统自动放开此复位。 外部引脚复位：引脚 RESETN 输入低电平并持续 2 ms ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-02-21"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="topic_yxg_5f4_m1c"/><meta name="DC.language" content="zh-CN"/><title>上下电时序及复位</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/product/d12x-pu-pd-reset.dita"/><meta name="wh-out-relpath" content="topics/product/d12x-pu-pd-reset.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -101,7 +101,7 @@
   <div class="- topic/body body">
     <section class="- topic/section section" id="topic_yxg_5f4_m1c__section_uc5_gg4_m1c" data-ofbid="topic_yxg_5f4_m1c__section_uc5_gg4_m1c"><h2 class="- topic/title title sectiontitle">上下电时序</h2>
       
-      <p class="- topic/p p" data-ofbid="d93937e34__20250409171040">VCC33_IO
+      <p class="- topic/p p" data-ofbid="d94503e34__20250519091514">VCC33_IO
         、
         VDD11_SYS  和 LDO18
         供电无上下电顺序要求。VCC33_IO
@@ -109,18 +109,18 @@
     </section>
     <section class="- topic/section section" id="topic_yxg_5f4_m1c__section_dck_hg4_m1c" data-ofbid="topic_yxg_5f4_m1c__section_dck_hg4_m1c"><h2 class="- topic/title title sectiontitle">复位源</h2>
       
-      <div class="- topic/p p" data-ofbid="d93937e43__20250409171040">芯片系统有以下几种复位源，任何一种复位条件成立，会对芯片产生复位：<ul class="- topic/ul ul" id="topic_yxg_5f4_m1c__ul_tnv_42b_3zb" data-ofbid="topic_yxg_5f4_m1c__ul_tnv_42b_3zb">
-          <li class="- topic/li li" data-ofbid="d93937e47__20250409171040">系统上电复位：在
+      <div class="- topic/p p" data-ofbid="d94503e43__20250519091514">芯片系统有以下几种复位源，任何一种复位条件成立，会对芯片产生复位：<ul class="- topic/ul ul" id="topic_yxg_5f4_m1c__ul_tnv_42b_3zb" data-ofbid="topic_yxg_5f4_m1c__ul_tnv_42b_3zb">
+          <li class="- topic/li li" data-ofbid="d94503e47__20250519091514">系统上电复位：在
             VCC33_IO 和
             VDD11_SYS 上电后产生复位，上电 10 ms
             内系统自动放开此复位。</li>
-          <li class="- topic/li li" data-ofbid="d93937e50__20250409171040">外部引脚复位：引脚 RESETN 输入低电平并持续 2 ms
+          <li class="- topic/li li" data-ofbid="d94503e50__20250519091514">外部引脚复位：引脚 RESETN 输入低电平并持续 2 ms
             以上产生复位。</li>
-          <li class="- topic/li li" data-ofbid="d93937e53__20250409171040">调试器复位：在接收到 JTAG IO 上的 RESET
+          <li class="- topic/li li" data-ofbid="d94503e53__20250519091514">调试器复位：在接收到 JTAG IO 上的 RESET
             命令后立即产生复位。</li>
-          <li class="- topic/li li" data-ofbid="d93937e56__20250409171040">看门狗复位：通过软件使能后，在 WDOG
+          <li class="- topic/li li" data-ofbid="d94503e56__20250519091514">看门狗复位：通过软件使能后，在 WDOG
             超时复位条件满足下立即产生复位。</li>
-          <li class="- topic/li li" data-ofbid="d93937e59__20250409171040">过温复位：通过软件使能后，在 THS 温度超过设定值时立即产生复位
+          <li class="- topic/li li" data-ofbid="d94503e59__20250519091514">过温复位：通过软件使能后，在 THS 温度超过设定值时立即产生复位
             。</li>
         </ul></div>
     </section>
@@ -167,7 +167,7 @@
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

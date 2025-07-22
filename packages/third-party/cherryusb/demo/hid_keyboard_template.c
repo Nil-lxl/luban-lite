@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, sakumisu
+ * Copyright (c) 2022-2025, sakumisu
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -441,20 +441,40 @@ void hid_keyboard_test(void)
 #include <rtthread.h>
 #include <rtdevice.h>
 
+int usbd_hid_keyboard_deinit(void)
+{
+#ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+    usbd_deinitialize();
+#else
+    usbd_comp_func_release(hid_descriptor, "keyboard");
+#endif
+
+    hid_state = HID_STATE_IDLE;
+
+    if (usbd_keyboard_mutex) {
+        usb_osal_mutex_delete(usbd_keyboard_mutex);
+        usbd_keyboard_mutex = NULL;
+    }
+
+    return 0;
+}
+
 int usbd_hid_keyboard_init(void)
 {
     hid_keyboard_init();
     return 0;
 }
-INIT_DEVICE_EXPORT(usbd_hid_keyboard_init);
+USB_INIT_APP_EXPORT(usbd_hid_keyboard_init);
 
 #if defined (RT_USING_FINSH)
 #include <finsh.h>
 
 int test_usbd_hid_keyboard(int argc, char **argv)
 {
+    usbd_send_remote_wakeup();
+
     if (argc > 1) {
-        usbd_keyboard_putnchar(argv[1], sizeof(argv[1]));
+        usbd_keyboard_putnchar(argv[1], strlen(argv[1]));
     } else {
         hid_keyboard_test();
     }

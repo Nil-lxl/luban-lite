@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="xSPI 模块是一个高度灵活和可配置的接口，能够支持多种不同的串行和并行总线协议，包括外部并行总线 Xccela、HyperBus、OPI、 QPI、和 1/ 2/ 4/ 8 线 SPI。xSPI 模块可与外部 PSRAM、Flash 存储设备等元器件实现连接，无需额外的硬件接口或适配器。 功能特性 支持 Xccela 协议 支持 HyperBus 协议 支持 OPI 协议 支持 QPI 协议 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="expandedSerialPeripheralInterfaceXspi"/><meta name="DC.language" content="zh-CN"/><title>eXpanded Serial Peripheral Interface (xSPI)</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/ic/xspi/xspi-module.dita"/><meta name="wh-out-relpath" content="topics/ic/xspi/xspi-module.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="xSPI 模块是一个高度灵活和可配置的接口，能够支持多种不同的串行和并行总线协议，包括外部并行总线 Xccela、HyperBus、OPI、 QPI、和 1/ 2/ 4/ 8 线 SPI。xSPI 模块可与外部 PSRAM、Flash 存储设备等元器件实现连接，无需额外的硬件接口或适配器。 功能特性 支持 Xccela 协议 支持 HyperBus 协议 支持 OPI 协议 支持 QPI 协议 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-01-15"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="expandedSerialPeripheralInterfaceXspi"/><meta name="DC.language" content="zh-CN"/><title>eXpanded Serial Peripheral Interface (xSPI)</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/ic/xspi/xspi-module.dita"/><meta name="wh-out-relpath" content="topics/ic/xspi/xspi-module.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -102,25 +102,25 @@
                     Read time: 1 minute(s)
                 </div>
     <div class="- topic/body concept/conbody body conbody">
-        <p class="- topic/p p" data-ofbid="d140674e30__20250409171046">xSPI 模块是一个高度灵活和可配置的接口，能够支持多种不同的串行和并行总线协议，包括外部并行总线 Xccela、HyperBus、OPI、<span class="- topic/ph ph">QPI、和</span>1/ 2/ 4/ 8 线 SPI。xSPI 模块可与外部 PSRAM、Flash
+        <p class="- topic/p p" data-ofbid="d142438e30__20250519091520">xSPI 模块是一个高度灵活和可配置的接口，能够支持多种不同的串行和并行总线协议，包括外部并行总线 Xccela、HyperBus、OPI、<span class="- topic/ph ph">QPI、和</span>1/ 2/ 4/ 8 线 SPI。xSPI 模块可与外部 PSRAM、Flash
             存储设备等元器件实现连接，无需额外的硬件接口或适配器。</p>
         <section class="- topic/section section" id="expandedSerialPeripheralInterfaceXspi__section_elj_tkb_bzb" data-ofbid="expandedSerialPeripheralInterfaceXspi__section_elj_tkb_bzb"><h2 class="- topic/title title sectiontitle">功能特性</h2>
             
-            <div class="- topic/p p" data-ofbid="d140674e41__20250409171046">
+            <div class="- topic/p p" data-ofbid="d142438e41__20250519091520">
                 <ul class="- topic/ul ul" id="expandedSerialPeripheralInterfaceXspi__ul_onr_qkb_bzb" data-ofbid="expandedSerialPeripheralInterfaceXspi__ul_onr_qkb_bzb">
-                    <li class="- topic/li li" data-ofbid="d140674e45__20250409171046">支持 Xccela 协议</li>
-                    <li class="- topic/li li" data-ofbid="d140674e48__20250409171046">支持 HyperBus 协议</li>
-                    <li class="- topic/li li" data-ofbid="d140674e51__20250409171046">支持 OPI 协议</li>
-                    <li class="- topic/li li" data-ofbid="d140674e54__20250409171046">支持 QPI 协议</li>
-                    <li class="- topic/li li" data-ofbid="d140674e57__20250409171046">支持 1/ 2/ 4/ 8 线 SPI</li>
-                    <li class="- topic/li li" data-ofbid="d140674e61__20250409171046">支持 200 MHz DDR/ SDR 采样</li>
-                    <li class="- topic/li li" data-ofbid="d140674e64__20250409171046">支持 XIP (eXecute In Place)</li>
-                    <li class="- topic/li li" data-ofbid="d140674e67__20250409171046">支持中断以及 DMA</li>
-                    <li class="- topic/li li" data-ofbid="d140674e70__20250409171046">支持两片并行读写数据</li>
-                    <li class="- topic/li li" data-ofbid="d140674e73__20250409171046">支持单片 16 bits 位宽读写数据</li>
-                    <li class="- topic/li li" data-ofbid="d140674e76__20250409171046">支持单片 8 bits 位宽读写数据</li>
-                    <li class="- topic/li li" data-ofbid="d140674e80__20250409171046">具有 16x32 bits TXFIFO 以及 16x32 bits RXFIFO</li>
-                    <li class="- topic/li li" data-ofbid="d140674e83__20250409171046">具有 512 MB 内存映射空间</li>
+                    <li class="- topic/li li" data-ofbid="d142438e45__20250519091520">支持 Xccela 协议</li>
+                    <li class="- topic/li li" data-ofbid="d142438e48__20250519091520">支持 HyperBus 协议</li>
+                    <li class="- topic/li li" data-ofbid="d142438e51__20250519091520">支持 OPI 协议</li>
+                    <li class="- topic/li li" data-ofbid="d142438e54__20250519091520">支持 QPI 协议</li>
+                    <li class="- topic/li li" data-ofbid="d142438e57__20250519091520">支持 1/ 2/ 4/ 8 线 SPI</li>
+                    <li class="- topic/li li" data-ofbid="d142438e61__20250519091520">支持 200 MHz DDR/ SDR 采样</li>
+                    <li class="- topic/li li" data-ofbid="d142438e64__20250519091520">支持 XIP (eXecute In Place)</li>
+                    <li class="- topic/li li" data-ofbid="d142438e67__20250519091520">支持中断以及 DMA</li>
+                    <li class="- topic/li li" data-ofbid="d142438e70__20250519091520">支持两片并行读写数据</li>
+                    <li class="- topic/li li" data-ofbid="d142438e73__20250519091520">支持单片 16 bits 位宽读写数据</li>
+                    <li class="- topic/li li" data-ofbid="d142438e76__20250519091520">支持单片 8 bits 位宽读写数据</li>
+                    <li class="- topic/li li" data-ofbid="d142438e80__20250519091520">具有 16x32 bits TXFIFO 以及 16x32 bits RXFIFO</li>
+                    <li class="- topic/li li" data-ofbid="d142438e83__20250519091520">具有 512 MB 内存映射空间</li>
                 </ul>
             </div>
         </section>
@@ -175,7 +175,7 @@
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

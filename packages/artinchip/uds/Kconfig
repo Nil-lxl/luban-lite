@@ -1,0 +1,4 @@
+config AIC_UDS_INTERFACE
+    bool "Enable UDS interface"
+    default n
+    depends on AIC_CAN_DRV

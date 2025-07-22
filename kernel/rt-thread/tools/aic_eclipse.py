@@ -309,7 +309,7 @@ def TargetEclipse(env, sdk=False, update=False):
     # remove old Option
     for l_opt in l_path.findall('listOptionValue'):
         l_path.remove(l_opt)
-    if env.has_key('LIBS'):
+    if 'LIBS' in env:
         libs = env['LIBS']
     else:
         libs = []
@@ -326,7 +326,7 @@ def TargetEclipse(env, sdk=False, update=False):
     # remove old Option
     for l_opt in l_path.findall('listOptionValue'):
         l_path.remove(l_opt)
-    if env.has_key('LIBPATH'):
+    if 'LIBPATH' in env:
         libpath = env['LIBPATH']
         for src_d in libpath:
             rel_d = os.path.relpath(src_d, aic_root)
@@ -447,7 +447,7 @@ def TargetEclipse(env, sdk=False, update=False):
         print('Copy image file...')
         dirs = []
         for i in range(2):
-            if os.environ.has_key("img{}_srcdir".format(i)):
+            if "img{}_srcdir".format(i) in os.environ:
                 dirs.append(os.environ["img{}_srcdir".format(i)])
         for src_d in dirs:
             des_d = os.path.relpath(src_d, aic_root)
@@ -460,11 +460,11 @@ def TargetEclipse(env, sdk=False, update=False):
                 elif platform.system() == 'Windows':
                     shutil.copytree('\\\\?\\' + src_d, '\\\\?\\' + des_d)
         # post-build
-        if os.environ.has_key("eclipse_sdk_post_build"):
+        if "eclipse_sdk_post_build" in os.environ:
             post_cmd = os.environ["eclipse_sdk_post_build"]
     else:
         # post-build
-        if os.environ.has_key("eclipse_post_build"):
+        if "eclipse_post_build" in os.environ:
             post_cmd = os.environ["eclipse_post_build"]
     l_configuration.attrib['postbuildStep'] = post_cmd
 
@@ -474,18 +474,18 @@ def TargetEclipse(env, sdk=False, update=False):
     pre_cmd = ''
     if sdk:
         # pre-build
-        if os.environ.has_key("eclipse_sdk_pre_build"):
+        if "eclipse_sdk_pre_build" in os.environ:
             pre_cmd = os.environ["eclipse_sdk_pre_build"]
     else:
         # pre-build
-        if os.environ.has_key("eclipse_pre_build"):
+        if "eclipse_pre_build" in os.environ:
             pre_cmd = os.environ["eclipse_pre_build"]
     l_configuration.attrib['prebuildStep'] = pre_cmd
 
     # (2.2.11) user data directory
     prj_chip = os.environ["PRJ_CHIP"]
     prj_board = os.environ["PRJ_BOARD"]
-    if sdk and os.environ.has_key("aic_fs_image_dir"):
+    if sdk and "aic_fs_image_dir" in os.environ:
         print('Copy image data directory...')
         aic_fs_image_dir = os.environ["aic_fs_image_dir"]
         src_d = os.path.join(aic_root, aic_fs_image_dir)

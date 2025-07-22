@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -153,6 +153,9 @@ int mmc_send_cmd(struct aic_sdmc *host, struct aic_sdmc_cmd *cmd,
     mmc_trace_before_send(cmd);
     aic_sdmc_request(host, cmd, data);
     mmc_trace_after_send(cmd);
+
+    if (cmd->err || (data && data->err))
+        hal_sdmc_soft_reset(&host->host);
 
     return cmd->err;
 }
@@ -885,12 +888,24 @@ u32 mmc_read_blocks(struct aic_sdmc *host, void *dst, u32 start, u32 blkcnt)
     }
 
     if (cmd.err || data.err) {
-        printf("read blocks failed, %d, %d, 0x%08x, 0x%08x\n", cmd.err,
-               data.err, data.flags, data.blksize);
+        printf("read blocks failed, cmd.err:%d, data.err:%d, data.flags:0x%08x, data.blksize:0x%08x\n",
+               cmd.err, data.err, data.flags, data.blksize);
         return 0;
     }
 
     return blkcnt;
+}
+
+void mmc_set_rx_phase(void *priv, u32 phase)
+{
+    struct aic_sdmc *host = (struct aic_sdmc *)priv;
+    hal_sdmc_set_phase(&host->host, host->pdata->drv_phase, phase);
+}
+
+void mmc_set_rx_delay(void *priv, u32 delay)
+{
+    struct aic_sdmc *host = (struct aic_sdmc *)priv;
+    hal_sdmc_set_delay(&host->host, 0, delay);
 }
 
 u32 mmc_bread(void *priv, u32 start, u32 blkcnt, u8 *dst)
@@ -955,6 +970,12 @@ u32 mmc_write_blocks(struct aic_sdmc *host, const u8 *src, u32 start, u32 blkcnt
             pr_err("Failed to stop mulit-block write. err -%d\n", -cmd.err);
             return 0;
         }
+    }
+
+    if (cmd.err || data.err) {
+        printf("write blocks failed, cmd.err:%d, data.err:%d, data.flags:0x%08x, data.blksize:0x%08x\n",
+               cmd.err, data.err, data.flags, data.blksize);
+        return 0;
     }
 
     return blkcnt;

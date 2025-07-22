@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Luban-Lite SDK 通过 MPP 中间件，对外提供一套统一的接口来控制显示驱动，屏蔽操作系统内核和裸机方案的差异。 以下是 Luban-Lite SDK 的主要功能和接口说明： 获取图层个数 获取图层能力 获取图层配置数据 更新图层配置数据 支持同时更新多图层配置数据 支持图层 scaler 设置 支持 alpha blending 设置 支持 color key 设置 支持 disp ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/display/display-design_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_data_structure_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_demo.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3703e4209"/><meta name="wh-source-relpath" content="topics/sdk/display/display_interface_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_interface_lite.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Luban-Lite SDK 通过 MPP 中间件，对外提供一套统一的接口来控制显示驱动，屏蔽操作系统内核和裸机方案的差异。 以下是 Luban-Lite SDK 的主要功能和接口说明： 获取图层个数 获取图层能力 获取图层配置数据 更新图层配置数据 支持同时更新多图层配置数据 支持图层 scaler 设置 支持 alpha blending 设置 支持 color key 设置 支持 disp ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/display/display-design_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_data_structure_lite.html"/><meta name="DC.relation" content="../../../topics/sdk/display/display_demo.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-05-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>接口设计</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3752e4270"/><meta name="wh-source-relpath" content="topics/sdk/display/display_interface_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/display/display_interface_lite.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -94,7 +94,7 @@
                         <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
                             <div id="wh_publication_toc_content">
 		                        
-                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3703e2372" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3703e2372-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3703e2372-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3703e2556" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3703e2556-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3703e2556-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3703e3646" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3703e3646-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3703e3646-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d3703e3980" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d3703e3980-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3703e3980-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e3997" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e3997-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d3703e3997-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e4067" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e4067-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide.html" id="id-d3703e4067-link">Display 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e4083" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e4083-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_config_lite.html" id="id-d3703e4083-link">Display 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4125" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_debug_lite.html" id="id-d3703e4125-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4139" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_test_guide_lite.html" id="id-d3703e4139-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="display_design_intro-d3703e4153" class="topicref" data-id="display_design_intro" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action display_design_intro-d3703e4153-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display-design_intro.html" id="display_design_intro-d3703e4153-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e4167" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_sourcecode_and_arch_lite.html" id="id-d3703e4167-link">源码和框架说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4181" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_key_process.html" id="id-d3703e4181-link">关键流程设计</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4195" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_data_structure_lite.html" id="id-d3703e4195-link">数据结构说明</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d3703e4209" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_interface_lite.html" id="id-d3703e4209-link">接口设计</a></div></div></li><li role="treeitem"><div data-tocid="display_demo-d3703e4223" class="topicref" data-id="display_demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_demo.html" id="display_demo-d3703e4223-link">Demo</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d3703e4237" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_panel_port_lite.html" id="id-d3703e4237-link">屏适配指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e4251" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e4251-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_fb_rotation_lite.html" id="id-d3703e4251-link">屏幕旋转</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4279" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_color_property_lite.html" id="id-d3703e4279-link">色彩调整</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4293" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_burn_process.html" id="id-d3703e4293-link">烧录进度条</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e4307" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_blending.html" id="id-d3703e4307-link">Blending</a></div></div></li><li role="treeitem"><div data-tocid="startup-ui-d3703e4321" class="topicref" data-id="startup-ui" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_startup_ui.html" id="startup-ui-d3703e4321-link">开机动画</a></div></div></li><li role="treeitem"><div data-tocid="concept_smb_cl3_pzb-d3703e4336" class="topicref" data-id="concept_smb_cl3_pzb" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_faq_screen.html" id="concept_smb_cl3_pzb-d3703e4336-link">调屏常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d3703e4350" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d3703e4350-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide.html" id="concept_h4d_fwt_tzb-d3703e4350-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d3703e4492" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d3703e4492-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide.html" id="ge-d3703e4492-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d3703e4634" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d3703e4634-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide.html" id="i2s-d3703e4634-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d3703e4760" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d3703e4760-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide.html" id="ve-d3703e4760-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d3703e4832" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d3703e4832-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html" id="mpp-d3703e4832-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d3703e4986" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d3703e4986-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide.html" id="mpp_0-d3703e4986-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5084" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5084-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d3703e5084-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5168" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5168-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d3703e5168-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5253" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5253-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d3703e5253-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d3703e5421" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d3703e5421-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3703e5421-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3703e6676" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3703e6676-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3703e6676-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3752e463" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3752e463-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e480" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3752e480-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e604" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e604-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3752e604-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3752e1004" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3752e1004-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3752e1004-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1848" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1848-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3752e1848-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2022" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2022-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3752e2022-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">主要描述板卡的各项配置，使 SDK 的环境和板卡匹配，并确保 SDK 编译后的固件能够在板子上正常运行。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e2418" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e2418-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3752e2418-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3752e2435" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3752e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3752e2435-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3752e2619" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3752e2619-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3752e2619-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3752e3709" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3752e3709-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3752e3709-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_mcc_32s_nbc-d3752e4043" class="topicref" data-id="concept_mcc_32s_nbc" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_mcc_32s_nbc-d3752e4043-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3752e4043-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e4060" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e4060-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/audio/audio_user_guide.html" id="id-d3752e4060-link">Audio 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e4130" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e4130-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_user_guide.html" id="id-d3752e4130-link">Display 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e4144" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e4144-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_config_lite.html" id="id-d3752e4144-link">Display 配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e4186" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_debug_lite.html" id="id-d3752e4186-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e4200" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_test_guide_lite.html" id="id-d3752e4200-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="display_design_intro-d3752e4214" class="topicref" data-id="display_design_intro" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action display_design_intro-d3752e4214-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display-design_intro.html" id="display_design_intro-d3752e4214-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3752e4228" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_sourcecode_and_arch_lite.html" id="id-d3752e4228-link">源码和框架说明</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e4242" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_key_process.html" id="id-d3752e4242-link">关键流程设计</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e4256" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_data_structure_lite.html" id="id-d3752e4256-link">数据结构说明</a></div></div></li><li role="treeitem" class="active"><div data-tocid="id-d3752e4270" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_interface_lite.html" id="id-d3752e4270-link">接口设计</a></div></div></li><li role="treeitem"><div data-tocid="display_demo-d3752e4284" class="topicref" data-id="display_demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_demo.html" id="display_demo-d3752e4284-link">Demo</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d3752e4298" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_panel_port_lite.html" id="id-d3752e4298-link">屏适配指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e4312" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e4312-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_fb_rotation_lite.html" id="id-d3752e4312-link">屏幕旋转</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e4340" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_color_property_lite.html" id="id-d3752e4340-link">色彩调整</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e4354" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_burn_process.html" id="id-d3752e4354-link">烧录进度条</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e4368" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_blending.html" id="id-d3752e4368-link">Blending</a></div></div></li><li role="treeitem"><div data-tocid="startup-ui-d3752e4382" class="topicref" data-id="startup-ui" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_startup_ui.html" id="startup-ui-d3752e4382-link">开机动画</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="display_common_issues-d3752e4397" class="topicref" data-id="display_common_issues" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action display_common_issues-d3752e4397-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/display/display_faqs.html" id="display_common_issues-d3752e4397-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_h4d_fwt_tzb-d3752e4425" class="topicref" data-id="concept_h4d_fwt_tzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_h4d_fwt_tzb-d3752e4425-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dvp/dvp_user_guide.html" id="concept_h4d_fwt_tzb-d3752e4425-link">DVP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ge-d3752e4567" class="topicref" data-id="ge" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ge-d3752e4567-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ge/ge_user_guide.html" id="ge-d3752e4567-link">GE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2s-d3752e4709" class="topicref" data-id="i2s" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2s-d3752e4709-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2s/i2s_user_guide.html" id="i2s-d3752e4709-link">I2S 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="ve-d3752e4835" class="topicref" data-id="ve" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action ve-d3752e4835-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ve/ve-user-guide.html" id="ve-d3752e4835-link">VE 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp-d3752e4907" class="topicref" data-id="mpp" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp-d3752e4907-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_user_guide.html" id="mpp-d3752e4907-link">MPP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="mpp_0-d3752e5061" class="topicref" data-id="mpp_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action mpp_0-d3752e5061-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_player_user_guide.html" id="mpp_0-d3752e5061-link">MPP 播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e5159" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e5159-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mpp_recorder_user_guide.html" id="id-d3752e5159-link">MPP 录像使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e5243" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e5243-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mpp/mini_audio_player_user_guide.html" id="id-d3752e5243-link">MPP 音频播放器使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e5328" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e5328-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/lvgl/lvgl_introduction.html" id="id-d3752e5328-link">LVGL 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d3752e5544" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d3752e5544-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3752e5544-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3752e6799" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3752e6799-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3752e6799-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
 		                        
                             </div>
                         </nav>
@@ -114,151 +114,151 @@
                         
                         <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
     <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/display/display_interface_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">接口设计</h1>
-    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+    <div class="date inPage">16 May 2025</div><div style="color: gray;">
                     Read time: 6 minute(s)
                 </div>
     <div class="- topic/body body">
-        <p class="- topic/p p" data-ofbid="d30057e29__20250409171032"><span class="- topic/ph ph">Luban-Lite</span> SDK 通过 MPP 中间件，对外提供一套统一的接口来控制显示驱动，屏蔽操作系统内核和裸机方案的差异。</p>
-        <div class="- topic/p p" data-ofbid="d30057e34__20250409171032">以下是 <span class="- topic/ph ph">Luban-Lite</span> SDK 的主要功能和接口说明：<ol class="- topic/ol ol arabic simple" id="id__ol_p45_k2s_2dc" data-ofbid="id__ol_p45_k2s_2dc">
-                <li class="- topic/li li" data-ofbid="d30057e41__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e43__20250409171032">获取图层个数</p>
+        <p class="- topic/p p" data-ofbid="d30573e29__20250519091504"><span class="- topic/ph ph">Luban-Lite</span> SDK 通过 MPP 中间件，对外提供一套统一的接口来控制显示驱动，屏蔽操作系统内核和裸机方案的差异。</p>
+        <div class="- topic/p p" data-ofbid="d30573e34__20250519091504">以下是 <span class="- topic/ph ph">Luban-Lite</span> SDK 的主要功能和接口说明：<ol class="- topic/ol ol arabic simple" id="id__ol_p45_k2s_2dc" data-ofbid="id__ol_p45_k2s_2dc">
+                <li class="- topic/li li" data-ofbid="d30573e41__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e43__20250519091504">获取图层个数</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e47__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e49__20250409171032">获取图层能力</p>
+                <li class="- topic/li li" data-ofbid="d30573e47__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e49__20250519091504">获取图层能力</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e53__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e55__20250409171032">获取图层配置数据</p>
+                <li class="- topic/li li" data-ofbid="d30573e53__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e55__20250519091504">获取图层配置数据</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e59__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e61__20250409171032">更新图层配置数据</p>
+                <li class="- topic/li li" data-ofbid="d30573e59__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e61__20250519091504">更新图层配置数据</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e65__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e67__20250409171032">支持同时更新多图层配置数据</p>
+                <li class="- topic/li li" data-ofbid="d30573e65__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e67__20250519091504">支持同时更新多图层配置数据</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e72__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e74__20250409171032">支持图层 scaler 设置</p>
+                <li class="- topic/li li" data-ofbid="d30573e72__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e74__20250519091504">支持图层 scaler 设置</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e78__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e80__20250409171032">支持 alpha blending 设置</p>
+                <li class="- topic/li li" data-ofbid="d30573e78__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e80__20250519091504">支持 alpha blending 设置</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e84__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e86__20250409171032">支持 color key 设置</p>
+                <li class="- topic/li li" data-ofbid="d30573e84__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e86__20250519091504">支持 color key 设置</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e90__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e92__20250409171032">支持 disp prop 色彩设置</p>
+                <li class="- topic/li li" data-ofbid="d30573e90__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e92__20250519091504">支持 disp prop 色彩设置</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e96__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e98__20250409171032">支持 CCM 色彩矩阵设置</p>
+                <li class="- topic/li li" data-ofbid="d30573e96__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e98__20250519091504">支持 CCM 色彩矩阵设置</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d30057e102__20250409171032">
-                    <p class="- topic/p p" data-ofbid="d30057e104__20250409171032">支持 Gamma 设置</p>
+                <li class="- topic/li li" data-ofbid="d30573e102__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d30573e104__20250519091504">支持 Gamma 设置</p>
                 </li>
             </ol></div>
         <section class="- topic/section section" id="id__section_o45_k2s_2dc" data-ofbid="id__section_o45_k2s_2dc"><h2 class="- topic/title title sectiontitle">MPP 接口</h2>
             
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_q45_k2s_2dc" data-ofbid="id__table_q45_k2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_fb_open</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e130__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_q45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e134__20250409171032">struct mpp_fb *mpp_fb_open(void);</p></th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e130__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_q45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e134__20250519091504">struct mpp_fb *mpp_fb_open(void);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e144__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_q45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e148__20250409171032">获取一个 mpp_fb 句柄</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e144__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_q45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e148__20250519091504">获取一个 mpp_fb 句柄</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e155__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_q45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e159__20250409171032">void</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e155__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_q45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e159__20250519091504">void</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e166__20250409171032">返回值</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e166__20250519091504">返回值</p></td>
                             <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_q45_k2s_2dc__entry__2">
-                                <p class="- topic/p p" data-ofbid="d30057e171__20250409171032">非空：成功</p>
-                                <p class="- topic/p p" data-ofbid="d30057e174__20250409171032">NULL：失败</p>
+                                <p class="- topic/p p" data-ofbid="d30573e171__20250519091504">非空：成功</p>
+                                <p class="- topic/p p" data-ofbid="d30573e174__20250519091504">NULL：失败</p>
                             </td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e182__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_q45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e186__20250409171032">无 </p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_q45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e182__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_q45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e186__20250519091504">无 </p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_r45_k2s_2dc" data-ofbid="id__table_r45_k2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_fb_close</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e209__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e213__20250409171032">void mpp_fb_close(struct mpp_fb *fb);</p></th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e209__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e213__20250519091504">void mpp_fb_close(struct mpp_fb *fb);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e223__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e227__20250409171032">释放 mpp_fb 句柄</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e223__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e227__20250519091504">释放 mpp_fb 句柄</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e234__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e238__20250409171032">fb: mpp_fb 句柄</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e234__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e238__20250519091504">fb: mpp_fb 句柄</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e245__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e249__20250409171032">void</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e245__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e249__20250519091504">void</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e256__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e260__20250409171032">无 </p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_r45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e256__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_r45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e260__20250519091504">无 </p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_s45_k2s_2dc" data-ofbid="id__table_s45_k2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 3</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_fb_probe</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e283__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_s45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e287__20250409171032">int mpp_fb_probe(void);</p></th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e283__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_s45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e287__20250519091504">int mpp_fb_probe(void);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e297__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e301__20250409171032">probe fb</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e297__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e301__20250519091504">probe fb</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e308__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e312__20250409171032">void</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e308__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e312__20250519091504">void</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e319__20250409171032">返回值</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e319__20250519091504">返回值</p></td>
                             <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s45_k2s_2dc__entry__2">
-                                <p class="- topic/p p" data-ofbid="d30057e324__20250409171032">0：成功</p>
-                                <p class="- topic/p p" data-ofbid="d30057e327__20250409171032">&lt;0：失败</p>
+                                <p class="- topic/p p" data-ofbid="d30573e324__20250519091504">0：成功</p>
+                                <p class="- topic/p p" data-ofbid="d30573e327__20250519091504">&lt;0：失败</p>
                             </td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e335__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_s45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e339__20250409171032">多次调用也只会 probe 一次，需要在 mpp_fb_open() 操作前调用 </p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_s45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e335__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_s45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e339__20250519091504">多次调用也只会 probe 一次，需要在 mpp_fb_open() 操作前调用 </p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_t45_k2s_2dc" data-ofbid="id__table_t45_k2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 4</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">mpp_fb_ioctl</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e362__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_t45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e366__20250409171032">int mpp_fb_ioctl(struct mpp_fb *fb, int cmd, void *args);</p></th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e362__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_t45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e366__20250519091504">int mpp_fb_ioctl(struct mpp_fb *fb, int cmd, void *args);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e376__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_t45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e380__20250409171032">ioctl 调用，控制显示驱动</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e376__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_t45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e380__20250519091504">ioctl 调用，控制显示驱动</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e387__20250409171032">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e387__20250519091504">参数定义</p></td>
                             <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_t45_k2s_2dc__entry__2">
-                                <p class="- topic/p p" data-ofbid="d30057e392__20250409171032">fb: MPP FB 文件句柄</p>
-                                <p class="- topic/p p" data-ofbid="d30057e395__20250409171032">CMD: 操作命名</p>
-                                <p class="- topic/p p" data-ofbid="d30057e398__20250409171032">args: ioctl 调用私有数据</p>
+                                <p class="- topic/p p" data-ofbid="d30573e392__20250519091504">fb: MPP FB 文件句柄</p>
+                                <p class="- topic/p p" data-ofbid="d30573e395__20250519091504">CMD: 操作命名</p>
+                                <p class="- topic/p p" data-ofbid="d30573e398__20250519091504">args: ioctl 调用私有数据</p>
                             </td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e406__20250409171032">返回值</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e406__20250519091504">返回值</p></td>
                             <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_t45_k2s_2dc__entry__2">
-                                <p class="- topic/p p" data-ofbid="d30057e411__20250409171032">0：成功</p>
-                                <p class="- topic/p p" data-ofbid="d30057e414__20250409171032">&lt;0：失败</p>
+                                <p class="- topic/p p" data-ofbid="d30573e411__20250519091504">0：成功</p>
+                                <p class="- topic/p p" data-ofbid="d30573e414__20250519091504">&lt;0：失败</p>
                             </td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e422__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_t45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e426__20250409171032">无</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_t45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e422__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_t45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e426__20250519091504">无</p></td>
                         </tr>
                     </tbody></table></div>
         </section>
@@ -266,433 +266,433 @@
             
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_v45_k2s_2dc" data-ofbid="id__table_v45_k2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 5</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_WAIT_FOR_VSYNC</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e455__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e459__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, unsigned int
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e455__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e459__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, unsigned int
                                 *pvalue);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e469__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e473__20250409171032">等待 Vsync 信号</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e469__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e473__20250519091504">等待 Vsync 信号</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e480__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e484__20250409171032">CMD: AICFB_WAIT_FOR_VSYNC pvalue:该值无意义，可为 NULL</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e480__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e484__20250519091504">CMD: AICFB_WAIT_FOR_VSYNC pvalue:该值无意义，可为 NULL</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e491__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e495__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e491__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e495__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e502__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e506__20250409171032">无 </p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_v45_k2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e502__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_v45_k2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e506__20250519091504">无 </p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_xd4_j2s_2dc" data-ofbid="id__table_xd4_j2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 6</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_LAYER_NUM</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e529__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e533__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e529__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e533__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_layer_num *pvalue);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e543__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e547__20250409171032">获取显示图层的个数, 包括 UI 图层个数和 Video 图层</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e543__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e547__20250519091504">获取显示图层的个数, 包括 UI 图层个数和 Video 图层</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e554__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e558__20250409171032">CMD: AICFB_GET_LAYER_NUM player_num: 参考结构体<a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-layer-num">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e554__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e558__20250519091504">CMD: AICFB_GET_LAYER_NUM player_num: 参考结构体<a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-layer-num">struct
                                     aicfb_layer_num</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e569__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e573__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e569__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e573__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e580__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e584__20250409171032">无</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_xd4_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e580__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_xd4_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e584__20250519091504">无</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_uqd_j2s_2dc" data-ofbid="id__table_uqd_j2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 7</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_LAYER_CAPABILITY</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e607__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e611__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e607__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e611__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_layer_capability *player_cap);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e621__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e625__20250409171032">获取当前图层的能力</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e621__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e625__20250519091504">获取当前图层的能力</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e632__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e636__20250409171032">CMD: AICFB_GET_LAYER_CAPABILITY player_cap: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-layer-capability">struct aicfb_layer_capability</a> 定义</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e632__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e636__20250519091504">CMD: AICFB_GET_LAYER_CAPABILITY player_cap: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-layer-capability">struct aicfb_layer_capability</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e647__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e651__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e647__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e651__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e658__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e662__20250409171032">调用接口前要先填写结构体中的 layer_id</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_uqd_j2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e658__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_uqd_j2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e662__20250519091504">调用接口前要先填写结构体中的 layer_id</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_lwq_32s_2dc" data-ofbid="id__table_lwq_32s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 8</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_LAYER_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e685__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e689__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e685__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e689__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_layer_data *player_conf);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e699__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e703__20250409171032">获取图层配置信息</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e699__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e703__20250519091504">获取图层配置信息</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e710__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e714__20250409171032">CMD: AICFB_GET_LAYER_CONFIG player_conf: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-layer-data">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e710__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e714__20250519091504">CMD: AICFB_GET_LAYER_CONFIG player_conf: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-layer-data">struct
                                     aicfb_layer_data</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e725__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e729__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e725__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e729__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e736__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e740__20250409171032"> 调用接口前要先填写结构体中的 layer_id，如果是多矩形窗口要同时填写 rect_win_id </p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_lwq_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e736__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_lwq_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e740__20250519091504"> 调用接口前要先填写结构体中的 layer_id，如果是多矩形窗口要同时填写 rect_win_id </p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_lhd_32s_2dc" data-ofbid="id__table_lhd_32s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 9</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_LAYER_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e764__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_lhd_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e768__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e764__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_lhd_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e768__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_layer_data *player_conf)</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e778__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lhd_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e782__20250409171032">更新图层配置信息</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e778__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lhd_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e782__20250519091504">更新图层配置信息</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e789__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lhd_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e793__20250409171032">CMD: AICFB_UPDATE_LAYER_CONFIG player_ocnf:参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-layer-data">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e789__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lhd_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e793__20250519091504">CMD: AICFB_UPDATE_LAYER_CONFIG player_ocnf:参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-layer-data">struct
                                     aicfb_layer_data</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e804__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lhd_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e808__20250409171032">0: 成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e804__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_lhd_32s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e808__20250519091504">0: 成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e815__20250409171032">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_lhd_32s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e815__20250519091504">注意事项</p></td>
                             <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_lhd_32s_2dc__entry__2">
-                                <p class="- topic/p p" data-ofbid="d30057e820__20250409171032">如果是仅更新图层的部分 config data 信息，</p>
-                                <p class="- topic/p p" data-ofbid="d30057e823__20250409171032">可以先调用接口 AICFB_GET_LAYER_CONFIG，获取当前图层信息，</p>
-                                <p class="- topic/p p" data-ofbid="d30057e826__20250409171032">然后再修改要更新的图像信息，最后再调用此接口更新图层信息</p>
+                                <p class="- topic/p p" data-ofbid="d30573e820__20250519091504">如果是仅更新图层的部分 config data 信息，</p>
+                                <p class="- topic/p p" data-ofbid="d30573e823__20250519091504">可以先调用接口 AICFB_GET_LAYER_CONFIG，获取当前图层信息，</p>
+                                <p class="- topic/p p" data-ofbid="d30573e826__20250519091504">然后再修改要更新的图像信息，最后再调用此接口更新图层信息</p>
                             </td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_zfs_h2s_2dc" data-ofbid="id__table_zfs_h2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 10</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_LAYER_CONFIG_LISTS</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e850__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zfs_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e854__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e850__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zfs_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e854__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_config_lists *player_lists);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e864__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e868__20250409171032">更新图层配置数据列表</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e864__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e868__20250519091504">更新图层配置数据列表</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e875__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e879__20250409171032">CMD: AICFB_UPDATE_LAYER_CONFIG_LISTS aicfb_config_lists
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e875__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e879__20250519091504">CMD: AICFB_UPDATE_LAYER_CONFIG_LISTS aicfb_config_lists
                                 player_lists: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-config-lists">struct
                                     aicfb_config_lists</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e890__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e894__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e890__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zfs_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e894__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e901__20250409171032">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zfs_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e901__20250519091504">注意事项</p></td>
                             <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_zfs_h2s_2dc__entry__2">
-                                <p class="- topic/p p" data-ofbid="d30057e906__20250409171032">通过此接口可以同时更新多个图层或者多个窗口的配置信息</p>
-                                <p class="- topic/p p" data-ofbid="d30057e909__20250409171032">通过此接口调用的好处是相关图层配置的更新可以同时生效</p>
+                                <p class="- topic/p p" data-ofbid="d30573e906__20250519091504">通过此接口可以同时更新多个图层或者多个窗口的配置信息</p>
+                                <p class="- topic/p p" data-ofbid="d30573e909__20250519091504">通过此接口调用的好处是相关图层配置的更新可以同时生效</p>
                             </td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_bhg_h2s_2dc" data-ofbid="id__table_bhg_h2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 11</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_ALPHA_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e933__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e937__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e933__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e937__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_alpha_config *alpha);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e947__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e951__20250409171032">获取当前图层的 Alpha 配置</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e947__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e951__20250519091504">获取当前图层的 Alpha 配置</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e958__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e962__20250409171032">CMD: AICFB_GET_ALPHA_CONFIG alpha: 参结考构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-alpha-config">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e958__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e962__20250519091504">CMD: AICFB_GET_ALPHA_CONFIG alpha: 参结考构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-alpha-config">struct
                                     aicfb_alpha_config</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e973__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e977__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e973__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e977__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e984__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e988__20250409171032">无</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_bhg_h2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e984__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_bhg_h2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e988__20250519091504">无</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_qvv_g2s_2dc" data-ofbid="id__table_qvv_g2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 12</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_ALPHA_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1011__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1015__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1011__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1015__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_alpha_config *alpha);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1025__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1029__20250409171032">更新当前图层的 Alpha 配置</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1025__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1029__20250519091504">更新当前图层的 Alpha 配置</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1036__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1040__20250409171032">CMD: AICFB_UPDATE_ALPHA_CONFIG alpha: 参结考构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-alpha-config">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1036__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1040__20250519091504">CMD: AICFB_UPDATE_ALPHA_CONFIG alpha: 参结考构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-alpha-config">struct
                                     aicfb_alpha_config</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1051__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1055__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1051__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1055__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1062__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1066__20250409171032">无</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_qvv_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1062__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_qvv_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1066__20250519091504">无</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_qtj_g2s_2dc" data-ofbid="id__table_qtj_g2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 13</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_CK_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1089__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1093__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1089__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1093__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_ck_config *player_ck);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1103__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1107__20250409171032">获取当前图层的 CK 配置</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1103__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1107__20250519091504">获取当前图层的 CK 配置</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1114__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1118__20250409171032">CMD: AICFB_GET_CK_CONFIG player_ck: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-ck-config"> &gt;struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1114__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1118__20250519091504">CMD: AICFB_GET_CK_CONFIG player_ck: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-ck-config"> &gt;struct
                                     aicfb_ck_config</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1129__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1133__20250409171032">0：成功 -1：当前图层不支持 color key</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1129__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1133__20250519091504">0：成功 -1：当前图层不支持 color key</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1140__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1144__20250409171032">无</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_qtj_g2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1140__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_qtj_g2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1144__20250519091504">无</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_zdy_f2s_2dc" data-ofbid="id__table_zdy_f2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 14</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_CK_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1167__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1171__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1167__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1171__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_ck_config *player_ck);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1181__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1185__20250409171032">更新当前图层的 CK 配置</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1181__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1185__20250519091504">更新当前图层的 CK 配置</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1192__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1196__20250409171032">CMD: AICFB_SET_CK_CONFIG player_ck: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-ck-config">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1192__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1196__20250519091504">CMD: AICFB_SET_CK_CONFIG player_ck: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-ck-config">struct
                                     aicfb_ck_config</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1207__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1211__20250409171032">0： 成功 -1：当前图层不支持 color key</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1207__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1211__20250519091504">0： 成功 -1：当前图层不支持 color key</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1218__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1222__20250409171032">无</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_zdy_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1218__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_zdy_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1222__20250519091504">无</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_rkm_f2s_2dc" data-ofbid="id__table_rkm_f2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 15</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_CCM_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1246__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1250__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1246__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1250__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_ccm_config *ccm);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1260__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1264__20250409171032">获取 DE 当前的 CCM 色彩矩阵配置</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1260__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1264__20250519091504">获取 DE 当前的 CCM 色彩矩阵配置</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1271__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1275__20250409171032">CMD: AICFB_GET_CCM_CONFIG ccm: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-ccm-config">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1271__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1275__20250519091504">CMD: AICFB_GET_CCM_CONFIG ccm: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-ccm-config">struct
                                     aicfb_ccm_config</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1286__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1290__20250409171032">0： 成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1286__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1290__20250519091504">0： 成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1297__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1301__20250409171032">支持 D13x/D12x 系列</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_rkm_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1297__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_rkm_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1301__20250519091504">支持 D13x/D12x 系列</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_g2c_f2s_2dc" data-ofbid="id__table_g2c_f2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 16</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_CCM_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1324__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1328__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1324__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1328__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_ccm_config *ccm);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1338__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1342__20250409171032">更新 DE 的 CCM 色彩矩阵配置</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1338__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1342__20250519091504">更新 DE 的 CCM 色彩矩阵配置</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1349__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1353__20250409171032">CMD: AICFB_UPDATE_CCM_CONFIG ccm: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-ccm-config"> &gt;struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1349__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1353__20250519091504">CMD: AICFB_UPDATE_CCM_CONFIG ccm: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-ccm-config"> &gt;struct
                                     aicfb_ccm_config</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1364__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1368__20250409171032">0： 成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1364__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1368__20250519091504">0： 成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1375__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1379__20250409171032">支持 D13x/D12x 系列 </p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_g2c_f2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1375__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_g2c_f2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1379__20250519091504">支持 D13x/D12x 系列 </p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_iyq_22s_2dc" data-ofbid="id__table_iyq_22s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 17</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_GAMMA_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1402__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1406__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1402__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1406__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_gamma_config *gamma);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1416__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1420__20250409171032">获取 DE 当前的 Gamma 配置</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1416__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1420__20250519091504">获取 DE 当前的 Gamma 配置</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1427__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1431__20250409171032">CMD: AICFB_GET_GAMMA_CONFIG gamma: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-gamma-config">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1427__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1431__20250519091504">CMD: AICFB_GET_GAMMA_CONFIG gamma: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-gamma-config">struct
                                     aicfb_gamma_config</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1442__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1446__20250409171032">0： 成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1442__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1446__20250519091504">0： 成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1453__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1457__20250409171032">支持 D13x/D12x 系列</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_iyq_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1453__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_iyq_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1457__20250519091504">支持 D13x/D12x 系列</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_s4c_22s_2dc" data-ofbid="id__table_s4c_22s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 18</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_UPDATE_GAMMA_CONFIG</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1480__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1484__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1480__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1484__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_gamma_config *gamma);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1494__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1498__20250409171032">更新 DE 的 Gamma 配置</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1494__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1498__20250519091504">更新 DE 的 Gamma 配置</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1505__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1509__20250409171032">CMD: AICFB_UPDATE_GAMMA_CONFIG gamma: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-gamma-config">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1505__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1509__20250519091504">CMD: AICFB_UPDATE_GAMMA_CONFIG gamma: 参考结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-gamma-config">struct
                                     aicfb_gamma_config</a> 定义</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1520__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1524__20250409171032">0： 成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1520__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1524__20250519091504">0： 成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1531__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1535__20250409171032">支持 D13x/D12x 系列</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_s4c_22s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1531__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_s4c_22s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1535__20250519091504">支持 D13x/D12x 系列</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_i2p_d2s_2dc" data-ofbid="id__table_i2p_d2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 19</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_GET_SCREENINFO</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1558__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1562__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1558__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1562__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, struct
                                 aicfb_screeninfo *pscreen_size);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1572__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1576__20250409171032">获取当前 LCD 外设 和 framebuffer 信息</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1572__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1576__20250519091504">获取当前 LCD 外设 和 framebuffer 信息</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1583__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1587__20250409171032">CMD: AICFB_GET_SCREEN_SIZE pscreen_size: 结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-screeninfo">struct
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1583__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1587__20250519091504">CMD: AICFB_GET_SCREEN_SIZE pscreen_size: 结构体 <a class="- topic/xref xref" href="display_data_structure_lite.html#id__struct-aicfb-screeninfo">struct
                                     aicfb_screeninfo</a></p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1597__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1601__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1597__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1601__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1608__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1612__20250409171032">无</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_i2p_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1608__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_i2p_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1612__20250519091504">无</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_unb_d2s_2dc" data-ofbid="id__table_unb_d2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 20</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_POWERON</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1635__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1639__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, unsigned int
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1635__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1639__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, unsigned int
                                 zero);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1649__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1653__20250409171032">enable LCD 外设</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1649__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1653__20250519091504">enable LCD 外设</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1660__20250409171032">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1660__20250519091504">参数定义</p></td>
                             
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1666__20250409171032">CMD: AICFB_POWERON zero: NULL</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1666__20250519091504">CMD: AICFB_POWERON zero: NULL</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1674__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1678__20250409171032">0：成功 -1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1674__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1678__20250519091504">0：成功 -1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1685__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1689__20250409171032">多次调用只会 enable 一次</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_unb_d2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1685__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_unb_d2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1689__20250519091504">多次调用只会 enable 一次</p></td>
                         </tr>
                     </tbody></table></div>
             <div class="table-container"><table class="- topic/table table frame-all" id="id__table_bfj_c2s_2dc" data-ofbid="id__table_bfj_c2s_2dc" data-cols="2"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 21</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">AICFB_POWEROFF</span></caption><colgroup><col style="width:16.666666666666664%"/><col style="width:83.33333333333334%"/></colgroup><thead class="- topic/thead thead">
                         <tr class="- topic/row">
-                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1713__20250409171032">函数原型</p></th>
-                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_bfj_c2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1717__20250409171032">int mpp_fb_ioctl(int fd, unsigned long cmd, unsigned int
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1713__20250519091504">函数原型</p></th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__table_bfj_c2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1717__20250519091504">int mpp_fb_ioctl(int fd, unsigned long cmd, unsigned int
                                 zero);</p></th>
                         </tr>
                     </thead><tbody class="- topic/tbody tbody">
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1727__20250409171032">功能说明</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1731__20250409171032">disable LCD 外设</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1727__20250519091504">功能说明</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1731__20250519091504">disable LCD 外设</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1738__20250409171032">参数定义</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1742__20250409171032">CMD:
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1738__20250519091504">参数定义</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1742__20250519091504">CMD:
                                 AICFB_POWEROFF zero: NULL</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1751__20250409171032">返回值</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__2">0：成功 <p class="- topic/p p" data-ofbid="d30057e1756__20250409171032">-1：失败</p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1751__20250519091504">返回值</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__table_bfj_c2s_2dc__entry__2">0：成功 <p class="- topic/p p" data-ofbid="d30573e1756__20250519091504">-1：失败</p></td>
                         </tr>
                         <tr class="- topic/row">
-                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30057e1763__20250409171032">注意事项</p></td>
-                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_bfj_c2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30057e1767__20250409171032">无 </p></td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__table_bfj_c2s_2dc__entry__1"><p class="- topic/p p" data-ofbid="d30573e1763__20250519091504">注意事项</p></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__table_bfj_c2s_2dc__entry__2"><p class="- topic/p p" data-ofbid="d30573e1767__20250519091504">无 </p></td>
                         </tr>
                     </tbody></table></div>
         </section>
@@ -739,7 +739,7 @@
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

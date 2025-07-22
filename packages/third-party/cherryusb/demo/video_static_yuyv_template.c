@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, sakumisu
+ * Copyright (c) 2024-2025, sakumisu
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -231,7 +231,7 @@ int video_init(void)
 
     return 0;
 }
-INIT_DEVICE_EXPORT(video_init);
+USB_INIT_APP_EXPORT(video_init);
 
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t packet_buffer[40 * 1024];
 

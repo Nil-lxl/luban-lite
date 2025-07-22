@@ -76,6 +76,7 @@ typedef struct mm_vdec_data {
     MM_BOOL wait_for_empty_frame;
     MM_BOOL pkt_end_flag;
     MM_BOOL first_get_frame_flag;
+    MM_BOOL decode_resume_flag;
 } mm_vdec_data;
 
 static void *mm_vdec_component_thread(void *p_thread_data);
@@ -643,6 +644,18 @@ try_again:
             p_vdec_data->flags |= VDEC_OUTPORT_SEND_ALL_FRAME_FLAG;
         }
         return error;
+    } else {
+        /*pause->execting need to config base time*/
+        if (p_vdec_data->decode_resume_flag) {
+            pthread_mutex_lock(&p_vdec_data->state_lock);
+            p_vdec_data->decode_resume_flag = MM_FALSE;
+            pthread_mutex_unlock(&p_vdec_data->state_lock);
+            if (p_bind_clock->p_bind_comp && p_bind_clock->flag) {
+                mm_vdec_config_timestamp(p_vdec_data, p_frame);
+            } else {
+                mm_vdec_set_media_clock(p_vdec_data, p_frame);
+            }
+        }
     }
 
     /*step4: process video and audio sync strategy*/
@@ -1065,6 +1078,7 @@ static void mm_vdec_state_change_to_pause(mm_vdec_data *p_vdec_data)
         return;
     }
     p_vdec_data->state = MM_STATE_PAUSE;
+    p_vdec_data->decode_resume_flag = MM_FALSE;
     mm_vdec_event_notify(p_vdec_data, MM_EVENT_CMD_COMPLETE,
                          MM_COMMAND_STATE_SET, p_vdec_data->state, NULL);
 }
@@ -1104,6 +1118,7 @@ static void mm_vdec_state_change_to_executing(mm_vdec_data *p_vdec_data)
         return;
     }
     p_vdec_data->state = MM_STATE_EXECUTING;
+    p_vdec_data->decode_resume_flag = MM_TRUE;
     mm_vdec_event_notify(p_vdec_data, MM_EVENT_CMD_COMPLETE,
                          MM_COMMAND_STATE_SET, p_vdec_data->state, NULL);
 }

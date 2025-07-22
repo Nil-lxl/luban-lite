@@ -553,6 +553,9 @@ s32 nand_fwc_data_write(struct fwc_info *fwc, u8 *buf, s32 len)
     } else if (aicupg_get_fwc_attr(fwc) & FWC_ATTR_DEV_BLOCK) {
 #ifdef AIC_NFTL_SUPPORT
         nand_fwc_nftl_write(fwc, buf, len);
+#else
+        priv = (struct aicupg_nand_priv *)fwc->priv;
+        len = nand_fwc_mtd_write(fwc, buf, len);
 #endif
     } else if (aicupg_get_fwc_attr(fwc) & FWC_ATTR_DEV_MTD) {
         priv = (struct aicupg_nand_priv *)fwc->priv;

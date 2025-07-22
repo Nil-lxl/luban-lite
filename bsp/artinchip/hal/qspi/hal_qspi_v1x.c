@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -116,6 +116,8 @@ int hal_qspi_master_init(qspi_master_handle *h, struct qspi_master_config *cfg)
     qspi_hw_interrupt_disable(base, ICR_BIT_ALL_MSK);
     qspi_hw_set_cpol(base, cfg->cpol);
     qspi_hw_set_cpha(base, cfg->cpha);
+    qspi_hw_set_lsb_en(base, cfg->lsb_en);
+    qspi_hw_set_3wire_en(base, cfg->wire3_en);
     qspi_hw_set_cs_polarity(base, cfg->cs_polarity);
     if (cfg->cs_polarity == QSPI_CS_POL_VALID_LOW)
         qspi_hw_set_cs_level(base, QSPI_CS_LEVEL_HIGH);

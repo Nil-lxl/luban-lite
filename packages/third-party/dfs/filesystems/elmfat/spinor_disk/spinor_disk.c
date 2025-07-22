@@ -18,13 +18,72 @@
 /*******************************************************************************
  * Code
  ******************************************************************************/
-DRESULT spinor_disk_write(void *hdisk, const uint8_t *buf, uint32_t sector,
+#ifdef LPKG_USING_LEVELX
+UINT  aic_lx_nor_flash_driver_initialize(LX_NOR_FLASH *nor_flash);
+
+static DRESULT spinor_disk_levelx_read(void *hdisk, uint8_t *buf, uint32_t sector,
+                         uint8_t cnt)
+{
+    struct spinor_blk_device *dev = hdisk;
+    LX_NOR_FLASH *lx_dev;
+    rt_size_t ret = 0;
+
+    if (!dev)
+        return RES_NOTRDY;
+
+    lx_dev = dev->lx_nor_flash;
+
+    if (!lx_dev)
+        return RES_NOTRDY;
+
+    while (cnt) {
+        ret =  lx_nor_flash_sector_read(lx_dev, sector, buf);
+        if (ret) {
+            pr_err("LeveX read sector %lu failed!\n", sector);
+            return -RT_ERROR;
+        }
+
+        cnt--;
+        sector++;
+        buf += dev->info.bytes_per_sector;
+    }
+
+    return RES_OK;
+}
+
+DRESULT spinor_disk_levelx_write(void *hdisk, const uint8_t *buf, uint32_t sector,
                           uint8_t cnt)
 {
-#ifndef AIC_FATFS_ENABLE_WRITE_IN_SPINOR
-    pr_warn("This config only supports read!\n");
+    struct spinor_blk_device *dev = hdisk;
+    LX_NOR_FLASH *lx_dev;
+    rt_size_t ret = 0;
+
+    if (!dev)
+        return RES_NOTRDY;
+
+    lx_dev = dev->lx_nor_flash;
+    if (!lx_dev)
+        return RES_NOTRDY;
+
+    while (cnt) {
+        ret =  lx_nor_flash_sector_write(lx_dev, sector, (void *)buf);
+        if (ret) {
+            pr_err("LeveX write sector %lu failed!\n", sector);
+            return -RT_ERROR;
+        }
+
+        cnt--;
+        sector++;
+        buf += dev->info.bytes_per_sector;
+    }
+
     return RES_OK;
+}
 #else
+#ifdef AIC_FATFS_ENABLE_WRITE_IN_SPINOR
+DRESULT spinor_disk_mtd_write(void *hdisk, const uint8_t *buf, uint32_t sector,
+                          uint8_t cnt)
+{
     struct spinor_blk_device *dev = hdisk;
     struct mtd_dev *mtd;
     rt_size_t phy_pos, pos;
@@ -71,10 +130,10 @@ DRESULT spinor_disk_write(void *hdisk, const uint8_t *buf, uint32_t sector,
     }
 
     return RES_OK;
-#endif
 }
+#endif
 
-DRESULT spinor_disk_read(void *hdisk, uint8_t *buf, uint32_t sector,
+static DRESULT spinor_disk_mtd_read(void *hdisk, uint8_t *buf, uint32_t sector,
                          uint8_t cnt)
 {
     struct spinor_blk_device *dev = hdisk;
@@ -102,6 +161,32 @@ DRESULT spinor_disk_read(void *hdisk, uint8_t *buf, uint32_t sector,
     }
 
     return RES_OK;
+}
+#endif
+
+DRESULT spinor_disk_write(void *hdisk, const uint8_t *buf, uint32_t sector,
+                          uint8_t cnt)
+{
+#ifndef AIC_FATFS_ENABLE_WRITE_IN_SPINOR
+    pr_warn("This config only supports read!\n");
+    return RES_OK;
+#else
+#ifdef LPKG_USING_LEVELX
+    return spinor_disk_levelx_write(hdisk, buf, sector, cnt);
+#else
+    return spinor_disk_mtd_write(hdisk, buf, sector, cnt);
+#endif
+#endif
+}
+
+DRESULT spinor_disk_read(void *hdisk, uint8_t *buf, uint32_t sector,
+                         uint8_t cnt)
+{
+#ifdef LPKG_USING_LEVELX
+    return spinor_disk_levelx_read(hdisk, buf, sector, cnt);
+#else
+    return spinor_disk_mtd_read(hdisk, buf, sector, cnt);
+#endif
 }
 
 DRESULT spinor_disk_ioctl(void *hdisk, uint8_t command, void *buf)
@@ -183,11 +268,30 @@ void *spinor_disk_initialize(const char *device_name)
         free(dev);
         return NULL;
     }
+
 #endif
 
     dev->info.bytes_per_sector = 512;
     dev->info.block_size = dev->info.bytes_per_sector;
     dev->info.sector_count = dev->mtd_device->size / dev->info.bytes_per_sector;
+
+#ifdef LPKG_USING_LEVELX
+    if (dev->mtd_device->attr == PART_ATTR_LEVELX) {
+        lx_nor_flash_initialize();
+        dev->lx_nor_flash = (LX_NOR_FLASH *)malloc(sizeof(LX_NOR_FLASH));
+        memset(dev->lx_nor_flash, 0, sizeof(LX_NOR_FLASH));
+        dev->lx_nor_flash->mtd_device = dev->mtd_device;
+        if(lx_nor_flash_open(dev->lx_nor_flash, dev->mtd_device->name, aic_lx_nor_flash_driver_initialize)) {
+            pr_err("%s: %d lx_nor_flash_open failed\n", __func__, __LINE__);
+            free(dev);
+            return NULL;
+        }
+
+        dev->info.bytes_per_sector = 512;
+        dev->info.block_size = dev->lx_nor_flash->lx_nor_flash_words_per_block;
+        dev->info.sector_count = dev->lx_nor_flash->lx_nor_flash_total_physical_sectors - 64;
+    }
+#endif
 
     return dev;
 }

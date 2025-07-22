@@ -97,39 +97,100 @@ typedef struct mm_video_render_data {
 
 static void *mm_video_render_component_thread(void *p_thread_data);
 
-static s32 mm_video_render_get_component_num(enum mpp_pixel_format format)
-{
-    int component_num = 0;
-    if (format == MPP_FMT_ARGB_8888) {
-        component_num = 1;
-    } else if (format == MPP_FMT_RGBA_8888) {
-        component_num = 1;
-    } else if (format == MPP_FMT_RGB_888) {
-        component_num = 1;
-    } else if (format == MPP_FMT_YUV420P) {
-        component_num = 3;
-    } else if (format == MPP_FMT_NV12 || format == MPP_FMT_NV21) {
-        component_num = 2;
-    } else if (format == MPP_FMT_YUV444P) {
-        component_num = 3;
-    } else if (format == MPP_FMT_YUV422P) {
-        component_num = 3;
-    } else if (format == MPP_FMT_YUV400) {
-        component_num = 1;
-    } else {
-        loge("no sup_port picture foramt %d, default argb8888", format);
-    }
-    return component_num;
-}
 
-static int
-mm_video_render_free_frame_buffer(mm_video_render_data *p_video_render_data,
-                                  struct mpp_frame *p_frame)
+static int mm_video_render_calloc_frame_buffer(struct mpp_frame *p_frame)
 {
     int i = 0;
-    int comp = 0;
+    int comp = 1;
+    int mem_size[3] = {0, 0, 0};
 
-    if (!p_video_render_data || !p_frame) {
+    for (i = 0; i < 3; i++) {
+        p_frame->buf.stride[i] = 0;
+    }
+
+    switch (p_frame->buf.format) {
+        case MPP_FMT_YUV420P:
+            p_frame->buf.stride[0] = p_frame->buf.size.width;
+            p_frame->buf.stride[1] = p_frame->buf.stride[0] >> 1;
+            p_frame->buf.stride[2] = p_frame->buf.stride[0] >> 1;
+            mem_size[0] = p_frame->buf.size.height * p_frame->buf.stride[0];
+            mem_size[1] = mem_size[2] = mem_size[0] >> 2;
+            comp = 3;
+            break;
+
+        case MPP_FMT_YUV444P:
+            p_frame->buf.stride[0] = p_frame->buf.size.width;
+            p_frame->buf.stride[1] = p_frame->buf.stride[0];
+            p_frame->buf.stride[2] = p_frame->buf.stride[0];
+            mem_size[0] = p_frame->buf.size.height * p_frame->buf.stride[0];
+            mem_size[1] = mem_size[2] = mem_size[0];
+            comp = 3;
+            break;
+
+        case MPP_FMT_YUV422P:
+            p_frame->buf.stride[0] = p_frame->buf.size.width;
+            p_frame->buf.stride[1] = p_frame->buf.stride[0] >> 1;
+            p_frame->buf.stride[2] = p_frame->buf.stride[0] >> 1;
+            mem_size[0] = p_frame->buf.size.height * p_frame->buf.stride[0];
+            mem_size[1] = mem_size[2] = mem_size[0] >> 1;
+            comp = 3;
+            break;
+
+        case MPP_FMT_NV12:
+        case MPP_FMT_NV21:
+            p_frame->buf.stride[0] = p_frame->buf.size.width;
+            p_frame->buf.stride[1] = p_frame->buf.stride[0];
+            mem_size[0] = p_frame->buf.size.height * p_frame->buf.stride[0];
+            mem_size[1] = mem_size[0] >> 1;
+            comp = 2;
+            break;
+
+        case MPP_FMT_ABGR_8888:
+        case MPP_FMT_ARGB_8888:
+        case MPP_FMT_RGBA_8888:
+        case MPP_FMT_BGRA_8888:
+            p_frame->buf.stride[0] = p_frame->buf.size.width * 4;
+            mem_size[0] = p_frame->buf.size.height * p_frame->buf.stride[0];
+            break;
+
+        case MPP_FMT_BGR_888:
+        case MPP_FMT_RGB_888:
+            p_frame->buf.stride[0] = p_frame->buf.size.width * 3;
+            mem_size[0] = p_frame->buf.size.height * p_frame->buf.stride[0];
+            break;
+
+        case MPP_FMT_BGR_565:
+        case MPP_FMT_RGB_565:
+            p_frame->buf.stride[0] = p_frame->buf.size.width * 2;
+            mem_size[0] = p_frame->buf.size.height * p_frame->buf.stride[0];
+            break;
+
+        default:
+            loge("unsupport format:%d.", p_frame->buf.format);
+            return -1;
+    }
+
+    for (i = 0; i < comp; i++) {
+        p_frame->buf.phy_addr[i] = mpp_phy_alloc(mem_size[i]);
+        if (p_frame->buf.phy_addr[i] == 0) {
+            loge("rotate frame(%d) alloc failed, need %d bytes", i, mem_size[i]);
+            goto failed;
+        }
+    }
+
+    return 0;
+
+failed:
+    loge("mpp_phy_alloc fail %u-%u-%u\n",p_frame->buf.phy_addr[0],
+            p_frame->buf.phy_addr[1], p_frame->buf.phy_addr[2]);
+    return -1;
+}
+
+static int mm_video_render_free_frame_buffer(struct mpp_frame *p_frame)
+{
+    int i = 0;
+
+    if (!p_frame) {
         return -1;
     }
 
@@ -137,9 +198,7 @@ mm_video_render_free_frame_buffer(mm_video_render_data *p_video_render_data,
         return 0;
     }
 
-    comp = mm_video_render_get_component_num(p_frame->buf.format);
-
-    for (i = 0; i < comp; i++) {
+    for (i = 0; i < 3; i++) {
         if (p_frame->buf.phy_addr[i]) {
             mpp_phy_free(p_frame->buf.phy_addr[i]);
             p_frame->buf.phy_addr[i] = 0;
@@ -185,7 +244,6 @@ static int mm_video_render_set_rotation_frame_info(
 {
     int i = 0;
     int cnt;
-	int buf_size;
 
     cnt = sizeof(p_video_render_data->rotation_frames) /
           sizeof(p_video_render_data->rotation_frames[0]);
@@ -222,157 +280,6 @@ static int mm_video_render_set_rotation_frame_info(
         }
     }
 
-    buf_size = p_video_render_data->rotation_frames[0].buf.size.width *
-               p_video_render_data->rotation_frames[0].buf.size.height;
-
-    for (i = 0; i < cnt; i++) {
-        switch (p_frame->buf.format) {
-            case MPP_FMT_YUV420P:
-                p_video_render_data->rotation_frames[i].buf.stride[0] =
-                    p_video_render_data->rotation_frames[i].buf.size.width;
-                p_video_render_data->rotation_frames[i].buf.stride[1] =
-                    p_video_render_data->rotation_frames[i].buf.stride[0] >> 1;
-                p_video_render_data->rotation_frames[i].buf.stride[2] =
-                    p_video_render_data->rotation_frames[i].buf.stride[0] >> 1;
-
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0 &&
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] == 0 &&
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] == 0) {
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[0] = mpp_phy_alloc(buf_size);
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] = mpp_phy_alloc(buf_size>>2);
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] = mpp_phy_alloc(buf_size>>2);
-                }
-
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0 ||
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] == 0 ||
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] == 0) {
-                    loge("mpp_phy_alloc fail %u-%u-%u\n",p_video_render_data->rotation_frames[i].buf.phy_addr[0],
-                        p_video_render_data->rotation_frames[i].buf.phy_addr[1],
-                        p_video_render_data->rotation_frames[i].buf.phy_addr[2]);
-                    return -1;
-                }
-                break;
-            case MPP_FMT_YUV444P:
-                p_video_render_data->rotation_frames[i].buf.stride[0] =
-                    p_video_render_data->rotation_frames[i].buf.size.width;
-                p_video_render_data->rotation_frames[i].buf.stride[1] =
-                    p_video_render_data->rotation_frames[i].buf.stride[0];
-                p_video_render_data->rotation_frames[i].buf.stride[2] =
-                    p_video_render_data->rotation_frames[i].buf.stride[0];
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0 &&
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] == 0 &&
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] == 0) {
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[0] = mpp_phy_alloc(buf_size);
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] = mpp_phy_alloc(buf_size);
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] = mpp_phy_alloc(buf_size);
-                }
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0 ||
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] == 0 ||
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] == 0) {
-                    loge("mpp_phy_alloc fail %u-%u-%u\n",p_video_render_data->rotation_frames[i].buf.phy_addr[0],
-                        p_video_render_data->rotation_frames[i].buf.phy_addr[1],
-                        p_video_render_data->rotation_frames[i].buf.phy_addr[2]);
-                    return -1;
-                }
-                break;
-            case MPP_FMT_YUV422P:
-                p_video_render_data->rotation_frames[i].buf.stride[0] =
-                    p_video_render_data->rotation_frames[i].buf.size.width;
-                p_video_render_data->rotation_frames[i].buf.stride[1] =
-                    p_video_render_data->rotation_frames[i].buf.stride[0] >> 1;
-                p_video_render_data->rotation_frames[i].buf.stride[2] =
-                    p_video_render_data->rotation_frames[i].buf.stride[0] >> 1;
-                buf_size = p_video_render_data->rotation_frames[i].buf.stride[0] *
-                    p_video_render_data->rotation_frames[i].buf.size.height;
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0 &&
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] == 0 &&
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] == 0) {
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[0] = mpp_phy_alloc(buf_size);
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] = mpp_phy_alloc(buf_size >> 1);
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] = mpp_phy_alloc(buf_size >> 1);
-                }
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0 ||
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] == 0 ||
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] == 0) {
-                    loge("mpp_phy_alloc fail %u-%u-%u\n",p_video_render_data->rotation_frames[i].buf.phy_addr[0],
-                        p_video_render_data->rotation_frames[i].buf.phy_addr[1],
-                        p_video_render_data->rotation_frames[i].buf.phy_addr[2]);
-                    return -1;
-                }
-                break;
-            case MPP_FMT_NV12:
-            case MPP_FMT_NV21:
-                p_video_render_data->rotation_frames[i].buf.stride[0] =
-                    p_video_render_data->rotation_frames[i].buf.size.width;
-                p_video_render_data->rotation_frames[i].buf.stride[1] =
-                    p_video_render_data->rotation_frames[i].buf.stride[0];
-                p_video_render_data->rotation_frames[i].buf.stride[2] = 0;
-
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0 &&
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] == 0) {
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[0] = mpp_phy_alloc(buf_size);
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] = mpp_phy_alloc(buf_size >> 1);
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[2] = 0;
-                }
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0 ||
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[1] == 0) {
-                    loge("mpp_phy_alloc fail %u-%u-%u\n",p_video_render_data->rotation_frames[i].buf.phy_addr[0],
-                        p_video_render_data->rotation_frames[i].buf.phy_addr[1],
-                        p_video_render_data->rotation_frames[i].buf.phy_addr[2]);
-                    return -1;
-                }
-                break;
-            case MPP_FMT_YUV400:
-            case MPP_FMT_ABGR_8888:
-            case MPP_FMT_ARGB_8888:
-            case MPP_FMT_RGBA_8888:
-            case MPP_FMT_BGRA_8888:
-                p_video_render_data->rotation_frames[i].buf.stride[0] =
-                    p_video_render_data->rotation_frames[i].buf.size.width;
-                p_video_render_data->rotation_frames[i].buf.stride[1] = 0;
-                p_video_render_data->rotation_frames[i].buf.stride[2] = 0;
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] <= 0) {
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[0] = mpp_phy_alloc(buf_size*4);
-                }
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0) {
-                    loge("mpp_phy_alloc fail %u\n",p_video_render_data->rotation_frames[i].buf.phy_addr[0]);
-                    return -1;
-                }
-                break;
-
-            case MPP_FMT_BGR_888:
-            case MPP_FMT_RGB_888:
-                p_video_render_data->rotation_frames[i].buf.stride[0] =
-                    p_video_render_data->rotation_frames[i].buf.size.width;
-                p_video_render_data->rotation_frames[i].buf.stride[1] = 0;
-                p_video_render_data->rotation_frames[i].buf.stride[2] = 0;
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0) {
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[0] = mpp_phy_alloc(buf_size*3);
-                }
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0) {
-                    loge("mpp_phy_alloc fail %u\n",p_video_render_data->rotation_frames[i].buf.phy_addr[0]);
-                    return -1;
-                }
-                break;
-            case MPP_FMT_BGR_565:
-            case MPP_FMT_RGB_565:
-                p_video_render_data->rotation_frames[i].buf.stride[0] =
-                    p_video_render_data->rotation_frames[i].buf.size.width;
-                p_video_render_data->rotation_frames[i].buf.stride[1] = 0;
-                p_video_render_data->rotation_frames[i].buf.stride[2] = 0;
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0) {
-                    p_video_render_data->rotation_frames[i].buf.phy_addr[0] = mpp_phy_alloc(buf_size*2);
-                }
-                if (p_video_render_data->rotation_frames[i].buf.phy_addr[0] == 0) {
-                    loge("mpp_phy_alloc fail %u\n",p_video_render_data->rotation_frames[i].buf.phy_addr[0]);
-                    return -1;
-                }
-                break;
-            default:
-                loge("unsup_port format");
-                return -1;
-        }
-    }
     return 0;
 }
 
@@ -382,6 +289,7 @@ mm_video_render_init_rotation_param(mm_video_render_data *p_video_render_data,
 {
     int i = 0;
     int cnt = 0;
+    int ret = 0;
 
     p_video_render_data->init_rotation_param = 0;
 
@@ -405,23 +313,31 @@ mm_video_render_init_rotation_param(mm_video_render_data *p_video_render_data,
         }
     }
 
+    cnt = sizeof(p_video_render_data->rotation_frames) /
+          sizeof(p_video_render_data->rotation_frames[0]);
+
     //set rotation frame info
     if (mm_video_render_set_rotation_frame_info(p_video_render_data, p_frame) != 0) {
-        loge("mm_video_render_set_rotation_frame_info\n");
+        loge("mm_video_render_set_rotation_frame_info failed\n");
         p_video_render_data->init_rotation_param = -1;
         goto _exit;
+    }
+    for (i = 0; i < cnt; i++) {
+        mm_video_render_free_frame_buffer(&p_video_render_data->rotation_frames[i]);
+        ret = mm_video_render_calloc_frame_buffer(&p_video_render_data->rotation_frames[i]);
+        if(ret != 0) {
+            loge("mm_video_render_calloc_frame_buffer i:%d failed\n", i);
+            p_video_render_data->init_rotation_param = -1;
+            goto _exit;
+        }
     }
 
     p_video_render_data->init_rotation_param = 1;
     return 0;
 
 _exit:
-    cnt = sizeof(p_video_render_data->rotation_frames) /
-          sizeof(p_video_render_data->rotation_frames[0]);
-
     for (i = 0; i < cnt; i++) {
-        mm_video_render_free_frame_buffer(
-            p_video_render_data, &p_video_render_data->rotation_frames[i]);
+        mm_video_render_free_frame_buffer(&p_video_render_data->rotation_frames[i]);
     }
 
     if (p_video_render_data->ge_handle) {
@@ -446,8 +362,7 @@ mm_video_render_deinit_rotation_param(mm_video_render_data *p_video_render_data)
           sizeof(p_video_render_data->rotation_frames[0]);
 
     for (i = 0; i < cnt; i++) {
-        mm_video_render_free_frame_buffer(
-            p_video_render_data, &p_video_render_data->rotation_frames[i]);
+        mm_video_render_free_frame_buffer(&p_video_render_data->rotation_frames[i]);
     }
 
     if (p_video_render_data->ge_handle) {

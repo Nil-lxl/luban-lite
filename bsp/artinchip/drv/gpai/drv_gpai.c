@@ -119,47 +119,6 @@ static rt_err_t drv_gpai_irq_callback(struct rt_adc_device *dev,
     return RT_EOK;
 }
 
-#ifdef AIC_GPAI_DRV_DMA
-static rt_err_t drv_gpai_config_dma(struct rt_adc_device *dev, void *dma_info)
-{
-    if (!dma_info)
-        return -RT_EINVAL;
-
-    struct aic_dma_transfer_info *chan_info;
-    chan_info = (struct aic_dma_transfer_info *)dma_info;
-    struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(chan_info->chan_id);
-
-    if (!chan || chan->obtain_data_mode == AIC_GPAI_OBTAIN_DATA_BY_CPU)
-        return -RT_EINVAL;
-
-    chan->dma_rx_info.buf = chan_info->buf;
-    chan->dma_rx_info.buf_size = chan_info->buf_size;
-    chan->dma_rx_info.callback = chan_info->callback;
-    chan->dma_rx_info.callback_param = chan_info->callback_param;
-    hal_gpai_config_dma(chan);
-
-    return RT_EOK;
-}
-
-static rt_err_t drv_gpai_get_dma_data(struct rt_adc_device *dev,
-                                      rt_uint32_t channel)
-{
-    struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(channel);
-
-    hal_gpai_start_dma(chan);
-
-    return RT_EOK;
-}
-
-static rt_err_t drv_gpai_stop_dma(struct rt_adc_device *dev, rt_uint32_t channel)
-{
-    struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(channel);
-
-    hal_gpai_stop_dma(chan);
-
-    return RT_EOK;
-}
-#endif
 
 #ifdef RT_USING_PM
 static int aic_gpai_suspend(const struct rt_device *device, rt_uint8_t mode)
@@ -207,11 +166,6 @@ static const struct rt_adc_ops aic_adc_ops =
 {
     .enabled = drv_gpai_enabled,
     .convert = drv_gpai_convert,
-#ifdef AIC_GPAI_DRV_DMA
-    .config_dma = drv_gpai_config_dma,
-    .get_dma_data = drv_gpai_get_dma_data,
-    .stop_dma = drv_gpai_stop_dma,
-#endif
     .get_resolution = drv_gpai_resolution,
     .get_obtaining_data_mode = drv_gpai_obtain_data_mode,
     .irq_callback = drv_gpai_irq_callback,
@@ -229,9 +183,6 @@ static int drv_gpai_init(void)
 
 #ifndef AIC_GPAI_DRV_POLL
     aicos_request_irq(GPAI_IRQn, aich_gpai_isr, 0, NULL, NULL);
-#endif
-#if defined(AIC_GPAI_DRV_V21)
-    aich_gpai_adc_sel_enable(AIC_GPAI_ADC_ACC);
 #endif
     aich_gpai_enable(1);
     hal_gpai_set_ch_num(aic_gpai_chs_size);

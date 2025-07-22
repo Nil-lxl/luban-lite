@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -24,7 +24,7 @@
 #include <fatfs.h>
 #include <mmc.h>
 #include <hal_syscfg.h>
-#include <upg_uart.h>
+#include <aicupg_for_uart.h>
 #ifdef LPKG_USING_USERID
 #include <userid.h>
 #endif
@@ -115,6 +115,7 @@ static bool uart_force_upgrade_detect(void)
 #define RUNCMD console_run_cmd
 
 extern int usb_init(void);
+extern int usb_deinit(void);
 bool usbd_connect_pc_check(void)
 {
     /*
@@ -122,16 +123,19 @@ bool usbd_connect_pc_check(void)
      */
 #if defined(AICUPG_USB_ENABLE)
     if (usb_init() == 0) {
-        if (usbd_connect_check(500)) {
+        if (usbd_connect_check(1000)) {
+            usb_deinit();
             return true;
         }
     }
+    usb_deinit();
 #endif
 
     return false;
 }
 
 extern int hid_init(void);
+extern int hid_deinit(void);
 bool usbd_hid_connect_pc_check(void)
 {
     /*
@@ -139,10 +143,12 @@ bool usbd_hid_connect_pc_check(void)
      */
 #if defined(AICUPG_HID_ENABLE)
     if (hid_init() == 0) {
-        if (usbd_connect_check(500)) {
+        if (usbd_connect_check(1000)) {
+            hid_deinit();
             return true;
         }
     }
+    hid_deinit();
 #endif
 
     return false;

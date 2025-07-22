@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2020-2025 ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -169,7 +169,8 @@ static int get_gzip_header(unsigned char *src)
 }
 
 int mpp_unzip_uncompressed(void *ctx, enum COMPRESS_TYPE type,
-        unsigned char *src, unsigned int src_len,
+        unsigned char *src_buf, unsigned int src_buf_len,
+        unsigned int data_offset, unsigned int data_len,
         unsigned char *dst, unsigned int dst_len,
         int first_part, int last_part)
 {
@@ -178,11 +179,10 @@ int mpp_unzip_uncompressed(void *ctx, enum COMPRESS_TYPE type,
     unsigned int status;
     int real_uncompress_len;
 
-    printf("src_len: %d, first: %d, last: %d\n", src_len, first_part, last_part);
-
+    //printf("src_len: %d, first: %d, last: %d\n", src_len, first_part, last_part);
     if (first_part) {
         if (type == MPP_GZIP)
-            offset = get_gzip_header(src);
+            offset = get_gzip_header(src_buf);
         else if (type == MPP_ZLIB)
             offset = 2;
         else
@@ -198,20 +198,20 @@ int mpp_unzip_uncompressed(void *ctx, enum COMPRESS_TYPE type,
 
     // enable irq
     write_reg_u32(p->reg_base + VE_IRQ_REG, 1);
-    write_reg_u32(p->reg_base+INPUT_BS_START_ADDR_REG, (unsigned long)src);
-    write_reg_u32(p->reg_base+INPUT_BS_END_ADDR_REG, (unsigned long)src+src_len-1);
-    write_reg_u32(p->reg_base+INPUT_BS_OFFSET_REG, offset*8);
-    write_reg_u32(p->reg_base+INPUT_BS_LENGTH_REG, (src_len-offset)*8);
+    write_reg_u32(p->reg_base+INPUT_BS_START_ADDR_REG, (unsigned long)src_buf);
+    write_reg_u32(p->reg_base+INPUT_BS_END_ADDR_REG, (unsigned long)src_buf+src_buf_len-1);
+    write_reg_u32(p->reg_base+INPUT_BS_OFFSET_REG, (data_offset+offset)*8);
+    write_reg_u32(p->reg_base+INPUT_BS_LENGTH_REG, (data_len-offset)*8);
     write_reg_u32(p->reg_base+INPUT_BS_DATA_VALID_REG, 0x80000000 | (last_part<<1) | first_part);
 
     if (ve_wait(&status) < 0) {
         loge("timeout");
-        goto _exit;
+        return -1;
     }
 
     if (status & PNG_ERROR) {
         loge("decode error, status: %08x", status);
-        goto _exit;
+        return -1;
     }
 
     if (last_part) {
@@ -219,18 +219,17 @@ int mpp_unzip_uncompressed(void *ctx, enum COMPRESS_TYPE type,
             logi("finish");
         } else {
             loge("error, status: %08x", status);
-            goto _exit;
+            return -1;
         }
     } else {
         if (status & PNG_BITREQ) {
             logd("bit request: %08x", status);
         } else {
             loge("error, status: %08x", status);
-            goto _exit;
+            return -1;
         }
     }
 
-_exit:
     real_uncompress_len = read_reg_u32(p->reg_base+OUTPUT_COUNT_REG);
     return real_uncompress_len;
 }

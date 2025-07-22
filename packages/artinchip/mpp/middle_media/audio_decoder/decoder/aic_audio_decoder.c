@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -12,31 +12,38 @@
 
 
 extern struct aic_audio_decoder* create_mp3_decoder();
-#ifdef LPKG_USING_LIBFLAC
+#ifdef AIC_MPP_FLAC_DEC
 extern struct aic_audio_decoder* create_flac_decoder();
 #endif
-#ifdef LPKG_USING_FFMPEG
+#ifdef AIC_MPP_WMA_DEC
 extern struct aic_audio_decoder* create_wma_decoder();
 #endif
-#ifdef LPKG_USING_FAAD2
+#ifdef AIC_MPP_AAC_DEC
 extern struct aic_audio_decoder* create_aac_decoder();
+#endif
+#ifdef AIC_MPP_APE_DEC
+extern struct aic_audio_decoder* create_ape_decoder();
 #endif
 
 struct aic_audio_decoder* aic_audio_decoder_create(enum aic_audio_codec_type type)
 {
 	if(type == MPP_CODEC_AUDIO_DECODER_MP3)
 		return create_mp3_decoder();
-#ifdef LPKG_USING_LIBFLAC
+#ifdef AIC_MPP_FLAC_DEC
 	else if (type == MPP_CODEC_AUDIO_DECODER_FLAC)
 		return create_flac_decoder();
 #endif
-#ifdef LPKG_USING_FFMPEG
+#ifdef AIC_MPP_WMA_DEC
 	else if (type == MPP_CODEC_AUDIO_DECODER_WMA)
 		return create_wma_decoder();
 #endif
-#ifdef LPKG_USING_FAAD2
+#ifdef AIC_MPP_AAC_DEC
 	else if (type == MPP_CODEC_AUDIO_DECODER_AAC)
 		return create_aac_decoder();
+#endif
+#ifdef AIC_MPP_APE_DEC
+	else if (type == MPP_CODEC_AUDIO_DECODER_APE)
+		return create_ape_decoder();
 #endif
 	return NULL;
 }

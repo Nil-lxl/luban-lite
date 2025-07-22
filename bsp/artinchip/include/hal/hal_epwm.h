@@ -13,7 +13,7 @@
 
 #define AIC_EPWM_NAME        "aic-epwm"
 
-#ifdef CONFIG_FPGA_BOARD_ARTINCHIP
+#ifdef FPGA_BOARD_ARTINCHIP
 #define EPWM_CLK_RATE        24000000 /* 24 MHz */
 #else
 #define EPWM_CLK_RATE        200000000 /* 200 MHz */

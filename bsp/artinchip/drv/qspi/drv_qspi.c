@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -36,6 +36,7 @@ struct aic_qspi {
     uint32_t txd_dlymode;
     uint32_t txc_dlymode;
     bool nonblock;
+    struct rt_completion *completion;
 };
 
 static struct aic_qspi qspi_controller[] = {
@@ -234,6 +235,13 @@ static rt_err_t qspi_send_command(struct aic_qspi *qspi,
     return 0;
 }
 
+static rt_uint32_t drv_qspi_send_async(struct aic_qspi *qspi, struct qspi_transfer *t)
+{
+    rt_completion_init(qspi->completion);
+
+    return hal_qspi_master_transfer_async(&qspi->handle, t);
+}
+
 static rt_uint32_t drv_qspi_send(struct aic_qspi *qspi,
                                  struct rt_spi_message *message,
                                  const uint8_t *tx, uint32_t size)
@@ -274,7 +282,7 @@ static rt_uint32_t drv_qspi_send(struct aic_qspi *qspi,
         t.tx_data = (uint8_t *)tx;
         t.data_len = size;
         if (qspi->nonblock)
-            ret = hal_qspi_master_transfer_async(&qspi->handle, &t);
+            ret = drv_qspi_send_async(qspi, &t);
         else
             ret = hal_qspi_master_transfer_sync(&qspi->handle, &t);
         if (ret) {
@@ -391,6 +399,7 @@ static void qspi_master_async_callback(qspi_master_handle *h, void *priv)
 #endif
     rt_sem_release(qspi->xfer_sem);
     hal_qspi_master_set_cs(&qspi->handle, cs_num, false);
+    rt_completion_done(qspi->completion);
 }
 
 static irqreturn_t qspi_irq_handler(int irq_num, void *arg)
@@ -514,10 +523,18 @@ static rt_err_t spi_nonblock_set(struct rt_spi_device *device,
     struct aic_qspi *qspi;
 
     qspi = (struct aic_qspi *)device->bus;
-    if (nonblock == 1)
+    if (nonblock)
         qspi->nonblock = true;
     else
         qspi->nonblock = false;
+
+    if (nonblock) {
+        if (!qspi->completion)
+            qspi->completion = (struct rt_completion *)rt_malloc(sizeof(struct rt_completion));
+
+        if (!qspi->completion)
+            return -RT_ERROR;
+    }
 
     return RT_EOK;
 }
@@ -538,6 +555,20 @@ static void qspi_set_rxdelay_mode(struct rt_spi_device *device, rt_uint32_t mode
     qspi = (struct aic_qspi *)device->bus;
 
     hal_qspi_master_set_rxdelay_mode(&qspi->handle, mode);
+}
+
+static rt_err_t qspi_wait_completion(struct rt_spi_device *device)
+{
+    rt_err_t result = RT_EOK;
+    struct aic_qspi *qspi;
+
+    qspi = (struct aic_qspi *)device->bus;
+
+    result = rt_completion_wait(qspi->completion, 1000);
+    if (result != RT_EOK)
+        pr_err("qspi wait transfer done timeout\n");
+
+    return result;
 }
 
 rt_err_t aic_qspi_bus_attach_device(const char *bus_name,
@@ -584,6 +615,7 @@ static const struct rt_spi_ops aic_qspi_ops = {
     .nonblock = spi_nonblock_set,
     .gstatus = spi_get_transfer_status,
     .delaymode = qspi_set_rxdelay_mode,
+    .wait_completion = qspi_wait_completion,
 };
 
 static int rt_hw_qspi_bus_init(void)

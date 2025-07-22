@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Artinchip Technology Co., Ltd
+ * Copyright (C) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -46,11 +46,17 @@ void dsi_set_clk_div(void *base, ulong mclk, ulong lp_rate)
         DSI_CLK_CFG_TO_DIV(div) | DSI_CLK_CFG_LP_DIV(div));
 }
 
-void dsi_pkg_init(void *base)
+void dsi_pkg_init(void *base, enum dsi_mode mode)
 {
     reg_set_bits(base + DSI_CTL,
         DSI_CTL_PKG_CFG_CRC_RX_EN | DSI_CTL_PKG_CFG_ECC_RX_EN,
         DSI_CTL_PKG_CFG_CRC_RX_EN | DSI_CTL_PKG_CFG_ECC_RX_EN);
+
+    if (mode & DSI_MOD_NO_EOT_PACKET)
+        reg_clr_bit(base + DSI_CTL, DSI_CTL_PKG_CFG_EOTP_TX_EN);
+    else
+        reg_set_bit(base + DSI_CTL, DSI_CTL_PKG_CFG_EOTP_TX_EN);
+
     reg_set_bits(base + DSI_DPI_LPTX_TIME,
         DSI_DPI_LPTX_TIME_OUTVACT_MASK | DSI_DPI_LPTX_TIME_INVACT_MASK,
         DSI_DPI_LPTX_TIME_OUTVACT(64) | DSI_DPI_LPTX_TIME_INVACT(64));
@@ -105,128 +111,35 @@ static void dsi_dphy_cfg_hsfreq(void *base, ulong mclk)
     u32 freq_rdata = mclk / 1000000;
     u32 freq_wdata;
 
-    switch (freq_rdata) {
-    case   80 ...  89:
-        freq_wdata  = 0x00 << 1;
-        break;
-    case   90 ...  99:
-        freq_wdata  = 0x10 << 1;
-        break;
-    case  100 ... 109:
-        freq_wdata  = 0x20 << 1;
-        break;
-    case  110 ... 129:
-        freq_wdata  = 0x01 << 1;
-        break;
-    case  130 ... 139:
-        freq_wdata  = 0x11 << 1;
-        break;
-    case  140 ... 149:
-        freq_wdata  = 0x21 << 1;
-        break;
-    case  150 ... 169:
-        freq_wdata  = 0x02 << 1;
-        break;
-    case  170 ... 179:
-        freq_wdata  = 0x12 << 1;
-        break;
-    case  180 ... 199:
-        freq_wdata  = 0x22 << 1;
-        break;
-    case  200 ... 219:
-        freq_wdata  = 0x03 << 1;
-        break;
-    case  220 ... 239:
-        freq_wdata  = 0x13 << 1;
-        break;
-    case  240 ... 249:
-        freq_wdata  = 0x23 << 1;
-        break;
-    case  250 ... 269:
-        freq_wdata  = 0x04 << 1;
-        break;
-    case  270 ... 299:
-        freq_wdata  = 0x14 << 1;
-        break;
-    case  300 ... 329:
-        freq_wdata  = 0x05 << 1;
-        break;
-    case  330 ... 359:
-        freq_wdata  = 0x15 << 1;
-        break;
-    case  360 ... 399:
-        freq_wdata  = 0x25 << 1;
-        break;
-    case  400 ... 449:
-        freq_wdata  = 0x06 << 1;
-        break;
-    case  450 ... 499:
-        freq_wdata  = 0x16 << 1;
-        break;
-    case  500 ... 549:
-        freq_wdata  = 0x07 << 1;
-        break;
-    case  550 ... 599:
-        freq_wdata  = 0x17 << 1;
-        break;
-    case  600 ... 649:
-        freq_wdata  = 0x08 << 1;
-        break;
-    case  650 ... 699:
-        freq_wdata  = 0x18 << 1;
-        break;
-    case  700 ... 749:
-        freq_wdata  = 0x09 << 1;
-        break;
-    case  750 ... 799:
-        freq_wdata  = 0x19 << 1;
-        break;
-    case  800 ... 849:
-        freq_wdata  = 0x29 << 1;
-        break;
-    case  850 ... 899:
-        freq_wdata  = 0x39 << 1;
-        break;
-    case  900 ... 949:
-        freq_wdata  = 0x0a << 1;
-        break;
-    case  950 ... 999:
-        freq_wdata  = 0x1a << 1;
-        break;
-    case 1000 ... 1049:
-        freq_wdata = 0x2a << 1;
-        break;
-    case 1050 ... 1099:
-        freq_wdata = 0x3a << 1;
-        break;
-    case 1100 ... 1149:
-        freq_wdata = 0x0b << 1;
-        break;
-    case 1150 ... 1199:
-        freq_wdata = 0x1b << 1;
-        break;
-    case 1200 ... 1249:
-        freq_wdata = 0x2b << 1;
-        break;
-    case 1250 ... 1299:
-        freq_wdata = 0x3b << 1;
-        break;
-    case 1300 ... 1349:
-        freq_wdata = 0x0c << 1;
-        break;
-    case 1350 ... 1399:
-        freq_wdata = 0x1c << 1;
-        break;
-    case 1400 ... 1449:
-        freq_wdata = 0x2c << 1;
-        break;
-    case 1450 ... 1499:
-        freq_wdata = 0x3c << 1;
-        break;
-    default:
-        freq_wdata = 0x00;
-        break;
+    static const struct {
+        u32 div;
+        u32 value;
+    } hs_clk_div[] = {
+        { 89,   0x00 }, { 99,   0x10 }, { 109,  0x20 }, { 129,  0x01 },
+        { 139,  0x11 }, { 149,  0x21 }, { 169,  0x02 }, { 179,  0x12 },
+        { 199,  0x22 }, { 219,  0x03 }, { 239,  0x13 }, { 249,  0x23 },
+        { 269,  0x04 }, { 299,  0x14 }, { 329,  0x05 }, { 359,  0x15 },
+        { 399,  0x25 }, { 449,  0x06 }, { 499,  0x16 }, { 549,  0x07 },
+        { 599,  0x17 }, { 649,  0x08 }, { 699,  0x18 }, { 749,  0x09 },
+        { 799,  0x19 }, { 849,  0x29 }, { 899,  0x39 }, { 949,  0x0a },
+        { 999,  0x1a }, { 1049, 0x2a }, { 1099, 0x3a }, { 1149, 0x0b },
+        { 1199, 0x1b }, { 1249, 0x2b }, { 1299, 0x3b }, { 1349, 0x0c },
+        { 1399, 0x1c }, { 1449, 0x2c }, { 1499, 0x3c },
+    };
+
+    u32 i, value = 0;
+
+    for (i = 0; i < ARRAY_SIZE(hs_clk_div); ++i) {
+        if (hs_clk_div[i].div >= freq_rdata) {
+            value = hs_clk_div[i].value;
+#ifdef AIC_DSI_LEGACY_PACKET_CONFIG
+            value = value << 1;
+#endif
+            break;
+        }
     }
+
+    freq_wdata = value;
 
     dsi_dphy_cfg(base, 0x44, &freq_wdata, &freq_rdata);
 }
@@ -402,15 +315,15 @@ void dsi_set_vm(void *base, enum dsi_mode mode, enum dsi_format format,
     reg_set_bits(base + DSI_VID_VACT_LINE,
         DSI_VID_VSA_LINE_MASK,
         DSI_VID_VSA_LINE(timing->vsync_len));
-    reg_set_bits(base + DSI_VID_VACT_LINE,
-        DSI_VID_VACT_TIME_MASK,
-        DSI_VID_VACT_TIME(timing->vactive));
     reg_set_bits(base + DSI_VID_VBLANK_LINE,
         DSI_VID_VBP_TIME_MASK,
         DSI_VID_VBP_TIME(timing->vback_porch));
     reg_set_bits(base + DSI_VID_VBLANK_LINE,
         DSI_VID_VFP_LINE_MASK,
         DSI_VID_VFP_LINE(timing->vfront_porch));
+    reg_set_bits(base + DSI_VID_VACT_LINE,
+        DSI_VID_VACT_TIME_MASK,
+        DSI_VID_VACT_TIME(timing->vactive));
 }
 
 void dsi_cmd_wr(void *base, u32 dt, u32 vc, const u8 *data, u32 len)

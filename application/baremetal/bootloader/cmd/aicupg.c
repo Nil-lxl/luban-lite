@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,7 +21,7 @@
 #include <fatfs.h>
 #include <mmc.h>
 #include <hal_syscfg.h>
-#include <upg_uart.h>
+#include <aicupg_for_uart.h>
 #include <hal_rtc.h>
 #include <wdt.h>
 #include <progress_bar.h>
@@ -139,16 +139,16 @@ static int do_uart_protocol_upg(int intf, char *mode)
             init.mode_bits = INIT_MODE(UPG_MODE_BURN_IMG_FORCE);
         }
     }
-    aicupg_initialize(&init);
 
     stdio_unset_uart(intf);
-    aic_upg_uart_init(intf);
+    aicupg_initialize(&init);
+    aic_uart_upg_init(intf);
     start_tm = aic_get_time_us();
 
     while (1) {
         if (ctrlc())
             break;
-        aic_upg_uart_loop();
+        aic_uart_upg_loop(intf);
         if (need_ckmode) {
             /* Need to check the correct upg mode for Burn UserID
              * and Force Image upgrading
@@ -169,12 +169,14 @@ static int do_uart_protocol_upg(int intf, char *mode)
             }
         }
     }
+    aic_uart_upg_deinit(intf);
 #endif
 
     return ret;
 }
 
 extern int usb_init(void);
+extern int usb_deinit(void);
 static int do_usb_protocol_upg(int intf, char *mode)
 {
     int ret = 0;
@@ -226,12 +228,14 @@ static int do_usb_protocol_upg(int intf, char *mode)
             }
         }
     }
+    usb_deinit();
 #endif
 
     return ret;
 }
 
 extern int hid_init(void);
+extern int hid_deinit(void);
 static int do_hid_protocol_upg(int intf, char *mode)
 {
     int ret = 0;
@@ -283,6 +287,7 @@ static int do_hid_protocol_upg(int intf, char *mode)
             }
         }
     }
+    hid_deinit();
 #endif
 
     return ret;

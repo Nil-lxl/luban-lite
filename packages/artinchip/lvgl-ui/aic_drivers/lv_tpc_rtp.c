@@ -34,10 +34,13 @@
 #define AIC_CONFIG_PATH                 "/data/config"
 #define AIC_POINTERCAL_PATH             "/data/config/rtp_pointercal"
 
-
 #define THREAD_PRIORITY   25
 #define THREAD_STACK_SIZE 4096
 #define THREAD_TIMESLICE  5
+struct rtp_calibrate_point {
+    int x;
+    int y;
+};
 
 static rt_sem_t g_rtp_sem;
 static int g_fb_width = 0;
@@ -52,6 +55,19 @@ static calibration g_cal = {
     .x = { 0 },
     .y = { 0 },
 };
+
+#if AIC_RTP_RECALIBRATE_ENABLE
+static struct rtp_calibrate_point g_calibrate_pos[AIC_POINT_NUM];
+static struct rtp_calibrate_point g_recalibrate_adc_value;
+
+static calibration g_recalibrate = {
+    .x = { 0 },
+    .y = { 0 },
+};
+static int g_recalibrate_point_init = 0;
+static int g_recalibrate_status = 0x1f;
+static int g_recalibrate_count = 0;
+#endif
 
 void lv_rtp_calibrate(rt_device_t rtp_dev, int fb_width, int fb_height);
 void lv_convert_adc_to_coord(rt_device_t rtp_dev, struct rt_touch_data *data);
@@ -93,9 +109,6 @@ static int rtp_get_fb_info(void)
         pr_err("ioctl() failed! errno: -%d\n", -ret);
         return -1;
     }
-
-    pr_info("Screen width: %d, height: %d\n", g_fb_info.width,
-            g_fb_info.height);
 
     g_xres = g_fb_info.width;
     g_yres = g_fb_info.height;
@@ -330,22 +343,22 @@ void lv_rtp_calibrate(rt_device_t rtp_dev, int fb_width, int fb_height)
         memset(data, 0, sizeof(*data));
         memset(&g_cal, 0, sizeof(g_cal));
 
-        rtp_draw_cross(0, "Top left", height, width);
-        rtp_get_valid_point(rtp_dev, 0, data);
+        rtp_draw_cross(RTP_CAL_POINT_DIR_TOP_LEFT, "Top left", height, width);
+        rtp_get_valid_point(rtp_dev, RTP_CAL_POINT_DIR_TOP_LEFT, data);
 
-        rtp_draw_cross(1, "Top right", height, g_xres - width - length);
-        rtp_get_valid_point(rtp_dev, 1, data);
+        rtp_draw_cross(RTP_CAL_POINT_DIR_TOP_RIGHT, "Top right", height, g_xres - width - length);
+        rtp_get_valid_point(rtp_dev, RTP_CAL_POINT_DIR_TOP_RIGHT, data);
 
-        rtp_draw_cross(2, "Bot right", g_yres - height - length,
+        rtp_draw_cross(RTP_CAL_POINT_DIR_BOT_RIGHT, "Bot right", g_yres - height - length,
                        g_xres - width - length);
-        rtp_get_valid_point(rtp_dev, 2, data);
+        rtp_get_valid_point(rtp_dev, RTP_CAL_POINT_DIR_BOT_RIGHT, data);
 
-        rtp_draw_cross(3, "Bot left", g_yres - height - length, width);
-        rtp_get_valid_point(rtp_dev, 3, data);
+        rtp_draw_cross(RTP_CAL_POINT_DIR_BOT_LEFT, "Bot left", g_yres - height - length, width);
+        rtp_get_valid_point(rtp_dev, RTP_CAL_POINT_DIR_BOT_LEFT, data);
 
-        rtp_draw_cross(4, "Center", (g_yres - length) / 2,
+        rtp_draw_cross(RTP_CAL_POINT_DIR_CENTER, "Center", (g_yres - length) / 2,
                        (g_xres - length) / 2);
-        rtp_get_valid_point(rtp_dev, 4, data);
+        rtp_get_valid_point(rtp_dev, RTP_CAL_POINT_DIR_CENTER, data);
 
         memset(g_fb_info.framebuffer, 0, g_fb_info.smem_len);
 
@@ -395,5 +408,178 @@ void lv_convert_adc_to_coord(rt_device_t rtp_dev, struct rt_touch_data *data)
     data->x_coordinate = panel_x;
     data->y_coordinate = panel_y;
 }
+
+#if AIC_RTP_RECALIBRATE_ENABLE
+static inline int calculate_cal_point_x(int offset, int cross_length) {
+    return offset + cross_length / 2;
+}
+static inline int calculate_cal_point_y(int offset, int cross_length) {
+    return offset + cross_length / 2;
+}
+
+static void rtp_init_recalibrate_point(void)
+{
+    int length = AIC_CROSS_LENGTH;
+    int width = AIC_CROSS_WIDTH;
+    int height = AIC_CROSS_HEIGHT;
+
+    rtp_get_fb_info();
+
+    g_calibrate_pos[RTP_CAL_POINT_DIR_TOP_LEFT].x = calculate_cal_point_x(width, length);
+    g_calibrate_pos[RTP_CAL_POINT_DIR_TOP_LEFT].y = calculate_cal_point_y(height, length);
+
+    g_calibrate_pos[RTP_CAL_POINT_DIR_TOP_RIGHT].x = calculate_cal_point_x(g_xres - width - length, length);
+    g_calibrate_pos[RTP_CAL_POINT_DIR_TOP_RIGHT].y = calculate_cal_point_y(height, length);
+
+    g_calibrate_pos[RTP_CAL_POINT_DIR_BOT_RIGHT].x = calculate_cal_point_x(g_xres - width - length, length);
+    g_calibrate_pos[RTP_CAL_POINT_DIR_BOT_RIGHT].y = calculate_cal_point_y(g_yres - height - length, length);
+
+    g_calibrate_pos[RTP_CAL_POINT_DIR_BOT_LEFT].x = calculate_cal_point_x(width, length);
+    g_calibrate_pos[RTP_CAL_POINT_DIR_BOT_LEFT].y = calculate_cal_point_y(g_yres - height - length, length);
+
+    g_calibrate_pos[RTP_CAL_POINT_DIR_CENTER].x = calculate_cal_point_x((g_xres - length) / 2, length);
+    g_calibrate_pos[RTP_CAL_POINT_DIR_CENTER].y = calculate_cal_point_y((g_yres - length) / 2, length);
+
+    g_recalibrate.xfb[RTP_CAL_POINT_DIR_TOP_LEFT] = (width) + (length / 2);
+    g_recalibrate.yfb[RTP_CAL_POINT_DIR_TOP_LEFT] = (height) + (length / 2);
+
+    g_recalibrate.xfb[RTP_CAL_POINT_DIR_TOP_RIGHT] = (g_xres - width - length) + (length / 2);
+    g_recalibrate.yfb[RTP_CAL_POINT_DIR_TOP_RIGHT] = (height) + (length / 2);
+
+    g_recalibrate.xfb[RTP_CAL_POINT_DIR_BOT_RIGHT] = (g_xres - width - length) + (length / 2);
+    g_recalibrate.yfb[RTP_CAL_POINT_DIR_BOT_RIGHT] = (g_yres - height - length) + (length / 2);
+
+    g_recalibrate.xfb[RTP_CAL_POINT_DIR_BOT_LEFT] = (width) + (length / 2);
+    g_recalibrate.yfb[RTP_CAL_POINT_DIR_BOT_LEFT] = (g_yres - height - length) + (length / 2);
+
+    g_recalibrate.xfb[RTP_CAL_POINT_DIR_CENTER] = ((g_xres - length) / 2) + (length / 2);
+    g_recalibrate.yfb[RTP_CAL_POINT_DIR_CENTER] = ((g_yres - length) / 2) + (length / 2);
+
+    g_recalibrate_point_init = 1;
+}
+
+void rtp_init_recalibrate(void)
+{
+    g_recalibrate_count = 0;
+    g_recalibrate_status = 0;
+    memcpy(&g_recalibrate_adc_value, 0, sizeof(rtp_calibrate_point));
+
+    rtp_get_fb_info();
+
+    rtp_init_recalibrate_point();
+}
+
+void rtp_get_calibrate_point(rtp_cal_point_dir_t dir, int *x, int *y)
+{
+    if (dir < RTP_CAL_POINT_DIR_TOP_LEFT || dir > RTP_CAL_POINT_DIR_CENTER)
+        return;
+    if (g_recalibrate_point_init == 0) {
+        rtp_init_recalibrate_point();
+        g_recalibrate_point_init = 1;
+    }
+
+    *x = g_calibrate_pos[dir].x;
+    *y = g_calibrate_pos[dir].y;
+}
+
+int rtp_get_recalibrate_status(void)
+{
+    return g_recalibrate_status;
+}
+
+int rtp_get_cur_recalibrate_adc_value(int *x, int *y)
+{
+    *x = g_recalibrate_adc_value.x;
+    *y = g_recalibrate_adc_value.y;
+}
+
+void rtp_store_recalibrate_data(rt_device_t rtp_dev, struct rt_touch_data *data)
+{
+    int x=0, y=0;
+    u32 tp_x = 0, tp_y = 0;
+    static int sum_x = 0;
+    static int sum_y = 0;
+    static int cnt = 0;
+    static int valid_value = 0;
+
+    if (g_recalibrate_count > RTP_CAL_POINT_DIR_CENTER)
+        return;
+
+    if (g_recalibrate_status & 1 << g_recalibrate_count) {
+        rt_kprintf("save recalibrate point multiple\n");
+    }
+
+    if (data->event == RT_TOUCH_EVENT_DOWN) {
+        if (data->x_coordinate > 0 || data->y_coordinate > 0) {
+            rt_device_control(rtp_dev, RT_TOUCH_CTRL_SET_X_TO_Y, (void *)data);
+            x = data->x_coordinate;
+            y = data->y_coordinate;
+            sum_x += x;
+            sum_y += y;
+            cnt++;
+            valid_value = 1;
+        }
+    } else if (data->event == RT_TOUCH_EVENT_UP) {
+        if (valid_value == 1) {
+            x = sum_x /cnt;
+            y = sum_y /cnt;
+
+            /* ADC value converted to touch panel's coordinate value */
+            tp_x = AIC_RTP_MAX_VAL - x;
+            tp_y = AIC_RTP_MAX_VAL - y;
+            tp_x = (tp_x * g_fb_info.width) / AIC_RTP_MAX_VAL;
+            tp_y = (tp_y * g_fb_info.height) / AIC_RTP_MAX_VAL;
+            g_recalibrate.x[g_recalibrate_count] = tp_x;
+            g_recalibrate.y[g_recalibrate_count] = tp_y;
+
+            if ((g_recalibrate_status & (1 << g_recalibrate_count)) == false) {
+                g_recalibrate_status |= 1 << g_recalibrate_count;
+                g_recalibrate_count++;
+                g_recalibrate_adc_value.x = tp_x;
+                g_recalibrate_adc_value.y = tp_y;
+            }
+        }
+
+        valid_value = 0;
+        cnt = 0;
+        sum_x = 0;
+        sum_y = 0;
+    }
+}
+
+void rtp_update_recalibrate(void)
+{
+    int i = 0;
+    for (i = 0; i < AIC_POINT_NUM; i++) {
+        g_cal.x[i] = g_recalibrate.x[i];
+        g_cal.y[i] = g_recalibrate.y[i];
+        g_cal.xfb[i] = g_recalibrate.xfb[i];
+        g_cal.yfb[i] = g_recalibrate.yfb[i];
+    }
+
+    rtp_perform_calibration();
+}
+
+int rtp_is_recalibrate_all_data_stored(void)
+{
+    if ((g_recalibrate_status & 0x1F) == 0X1F)
+        return 1;
+    return 0;
+}
+
+int rtp_is_recalibrate_dir_data_stored(rtp_cal_point_dir_t dir)
+{
+    if ((g_recalibrate_status & (1 << dir)) == (1 << dir))
+        return 1;
+    return 0;
+}
+
+int rtp_is_recalibrate_started(void)
+{
+    if (g_recalibrate_count <= RTP_CAL_POINT_DIR_CENTER)
+        return 1;
+    return 0;
+}
+#endif
 #endif
 #endif

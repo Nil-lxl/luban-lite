@@ -36,7 +36,7 @@
 extern void lv_port_disp_init(void);
 extern void lv_port_indev_init(void);
 extern void lv_user_gui_init(void);
-extern void lv_wait_sdcard_mounted(void);
+extern void lv_wait_fs_mounted(void);
 
 static struct rt_thread lvgl_thread;
 
@@ -62,7 +62,7 @@ static void lv_rt_log(lv_log_level_t level, const char *buf)
 
 static void lvgl_thread_entry(void *parameter)
 {
-    lv_wait_sdcard_mounted();
+    lv_wait_fs_mounted();
 #if LV_USE_LOG
     lv_log_register_print_cb(lv_rt_log);
 #endif /* LV_USE_LOG */

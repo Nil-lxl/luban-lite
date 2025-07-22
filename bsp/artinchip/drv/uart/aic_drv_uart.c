@@ -269,13 +269,17 @@ void drv_usart_irqhandler(int irq, void * data)
 
         RT_ASSERT(uart != RT_NULL);
         hal_usart_set_interrupt(uart, USART_INTR_READ, 0);
-
         switch (status)
         {
         case AIC_IIR_RECV_DATA:
         case AIC_IIR_CHAR_TIMEOUT:
             g_info[index].rx_size = hal_usart_get_rx_fifo_num(uart);
             hal_uart_rx_dma_config(uart, (uint8_t *)g_info[index].uart_rx_fifo, g_info[index].rx_size);
+            break;
+
+        case AIC_IIR_RECV_LINE:
+            hal_usart_intr_recv_line(index, (aic_usart_priv_t *)g_serial[index].parent.user_data);
+            hal_usart_set_interrupt(uart, USART_INTR_READ, 1);
             break;
 
         default:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -208,6 +208,12 @@ static int procese_nalu(struct h264_dec_ctx *s, unsigned char* buf, int len, int
 			if (ret) {
 				s->error = H264_DECODER_ERROR_PPS;
 			}
+			*use_len = read_bits_count(&s->gb) / 8 +
+				s->sc_byte_offset + s->remove_bytes;
+			break;
+		}
+		case NAL_TYPE_AUD: {
+			read_bits(&s->gb, 8);
 			*use_len = read_bits_count(&s->gb) / 8 +
 				s->sc_byte_offset + s->remove_bytes;
 			break;

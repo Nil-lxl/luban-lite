@@ -122,24 +122,6 @@ if LPKG_USING_CHERRYUSB
             endchoice
         endif
 
-        menuconfig LPKG_CHERRYUSB_DYNAMIC_REGISTRATION_MODE
-            bool
-            prompt "Dynamic registration mode"
-            default n
-            select LPKG_CHERRYUSB_DEVICE_COMPOSITE
-            select LPKG_CHERRYUSB_DEVICE_COMPOSITE_TEMPLATE
-
-        if LPKG_CHERRYUSB_DYNAMIC_REGISTRATION_MODE
-            config LPKG_CHERRYUSB_AIC_DISP_DR
-                bool
-                prompt "Use AIC USB Display dynamic registration"
-                default n
-                select LPKG_USING_COMP_MSC
-                select LPKG_USING_COMP_DISP
-                select LPKG_USING_COMP_UAC
-                select LPKG_USING_COMP_TOUCH
-        endif
-
         if LPKG_CHERRYUSB_DEVICE_CH32
             choice
                 prompt "Select chip with ch32 usb ip to set usb base and irq name,if not set,use default setting"
@@ -191,483 +173,603 @@ if LPKG_USING_CHERRYUSB
             endchoice
         endif
 
-        menuconfig LPKG_CHERRYUSB_DEVICE_CLASS_AIC
-            bool
-            prompt "Enable usb aic device"
-            default n
+        choice
+            prompt "Select aic device type"
+            config LPKG_CHERRYUSB_DEVICE_SINGLE
+                bool "single device"
+            config LPKG_CHERRYUSB_DEVICE_COMPOSITE
+                bool "composite device"
+        endchoice
 
-        if LPKG_CHERRYUSB_DEVICE_CLASS_AIC
-            config LPKG_CHERRYUSB_DEVICE_AICUPG_FOR_USB
-                bool
-                prompt "Use aicupg for usb"
-                default n
+        if LPKG_CHERRYUSB_DEVICE_SINGLE
+            choice
+                prompt "Select aic device class"
+                config LPKG_CHERRYUSB_DEVICE_CLASS_NULL
+                    bool "null"
+                config LPKG_CHERRYUSB_DEVICE_CLASS_AIC_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_CLASS_AIC
+                    bool "aic upgrade device"
+                config LPKG_CHERRYUSB_DEVICE_CDC_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_CDC
+                    bool "CDC ACM device"
+                config LPKG_CHERRYUSB_DEVICE_HID_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_HID
+                    bool "HID device"
+                config LPKG_CHERRYUSB_DEVICE_MSC_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_MSC
+                    bool "MSC device"
+                config LPKG_CHERRYUSB_DEVICE_MTP_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_MTP
+                    bool "MTP device"
+                config LPKG_CHERRYUSB_DEVICE_AUDIO_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_AUDIO
+                    bool "AUDIO device"
+                config LPKG_CHERRYUSB_DEVICE_VIDEO_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_VIDEO
+                    bool "VIDEO device"
+                config LPKG_CHERRYUSB_DEVICE_MIDI_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_MIDI
+                    bool "MIDI device"
+                config LPKG_CHERRYUSB_DEVICE_RNDIS_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_RNDIS
+                    bool "RNDIS device"
+                config LPKG_CHERRYUSB_DEVICE_DFU_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_DFU
+                    bool "DFU device"
+                config LPKG_CHERRYUSB_DEVICE_WINUSB_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_WINUSB
+                    bool "WinUSB device"
+                config LPKG_CHERRYUSB_DEVICE_DISPLAY_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_DISPLAY
+                    bool "display device"
+                config LPKG_CHERRYUSB_DEVICE_VENDER_SINGLE
+                    select LPKG_CHERRYUSB_DEVICE_VENDER
+                    bool "vender device"
+            endchoice
         endif
 
-        menuconfig LPKG_CHERRYUSB_DEVICE_CDC
+        config LPKG_CHERRYUSB_DEVICE_COMPOSITE_TEMPLATE
+            depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE
             bool
-            prompt "Enable usb cdc acm device"
+            default y
+
+        config LPKG_CHERRYUSB_DEVICE_COMPOSITE_SERIALNUMBER
+            depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE
+            bool "Enable composite device's serial number"
             default n
 
-        if LPKG_CHERRYUSB_DEVICE_CDC
-            config LPKG_CHERRYUSB_DEVICE_CDC_TEMPLATE
-                bool
-                prompt "Use cdc acm template"
+        menu "Composite Device function table1"
+            depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE
+            config LPKG_USING_COMP_MSC_TABLE1
+                select LPKG_CHERRYUSB_DEVICE_MSC
+                bool "Using MSC composite"
                 default n
-            config LPKG_CHERRYUSB_DEVICE_CDC_AICUPG
-                bool
-                prompt "Use cdc acm for aicupg"
+            config LPKG_USING_COMP_DISP_TABLE1
+                select LPKG_CHERRYUSB_DEVICE_DISPLAY
+                bool "Using DISP composite"
                 default n
+            config LPKG_USING_COMP_UAC_TABLE1
+                select LPKG_CHERRYUSB_DEVICE_AUDIO
+                select LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
+                bool "Using UAC composite"
+                default n
+            config LPKG_USING_COMP_HID_TABLE1
+                select LPKG_CHERRYUSB_DEVICE_HID
+                bool "Using HID composite"
+                default n
+            config LPKG_USING_COMP_VENDER_TABLE1
+                select LPKG_CHERRYUSB_DEVICE_VENDER
+                select LPKG_CHERRYUSB_DEVICE_VENDER_TEMPLATE
+                bool "Using VENDER composite"
+                default n
+            config LPKG_USING_COMP_VIDEO_TABLE1
+                select LPKG_CHERRYUSB_DEVICE_VIDEO
+                bool "Using VIDEO composite"
+                default n
+            config LPKG_USING_COMP_CDC_TABLE1
+                select LPKG_CHERRYUSB_DEVICE_CDC
+                bool "Using CDC composite"
+                default n
+        endmenu
+
+        menu "Composite Device function table2"
+            depends on LPKG_CHERRYUSB_DYNAMIC_REGISTRATION_MODE
+            config LPKG_USING_COMP_MSC_TABLE2
+                select LPKG_CHERRYUSB_DEVICE_MSC
+                bool "Using MSC composite"
+                default n
+            config LPKG_USING_COMP_DISP_TABLE2
+                select LPKG_CHERRYUSB_DEVICE_DISPLAY
+                select LPKG_CHERRYUSB_DEVICE_DISPLAY_TEMPLATE
+                bool "Using DISP composite"
+                default n
+            config LPKG_USING_COMP_UAC_TABLE2
+                select LPKG_CHERRYUSB_DEVICE_AUDIO
+                select LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
+                bool "Using UAC composite"
+                default n
+            config LPKG_USING_COMP_HID_TABLE2
+                select LPKG_CHERRYUSB_DEVICE_HID
+                bool "Using HID composite"
+                default n
+            config LPKG_USING_COMP_VIDEO_TABLE2
+                select LPKG_CHERRYUSB_DEVICE_VIDEO
+                bool "Using VIDEO composite"
+                default n
+            config LPKG_USING_COMP_CDC_TABLE2
+                select LPKG_CHERRYUSB_DEVICE_CDC
+                bool "Using CDC composite"
+                default n
+        endmenu
+
+        menuconfig LPKG_CHERRYUSB_DYNAMIC_REGISTRATION_MODE
+            depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE
+            bool
+            prompt "Dynamic registration mode"
+            default n
+            select LPKG_CHERRYUSB_DEVICE_COMPOSITE_TEMPLATE
+
+        if LPKG_CHERRYUSB_DYNAMIC_REGISTRATION_MODE
+            config LPKG_CHERRYUSB_AIC_DISP_DR
+                bool
+                prompt "Use AIC USB Display dynamic registration"
+                default n
+                select LPKG_USING_COMP_DISP_TABLE1
+                select LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+                select LPKG_USING_COMP_MSC_TABLE2
+                select LPKG_USING_COMP_DISP_TABLE2
         endif
 
-        menuconfig LPKG_CHERRYUSB_DEVICE_HID
-            bool
-            prompt "Enable usb hid device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_HID
-            config LPKG_CHERRYUSB_DEVICE_AICUPG_FOR_HID
+        if LPKG_CHERRYUSB_DEVICE_CLASS_AIC_SINGLE
+            menuconfig LPKG_CHERRYUSB_DEVICE_CLASS_AIC
                 bool
-                prompt "Use aicupg for hid"
+                prompt "Enable usb aic device"
                 default n
-            config LPKG_CHERRYUSB_DEVICE_HID_MOUSE_TEMPLATE
-                bool "mouse"
+
+            if LPKG_CHERRYUSB_DEVICE_CLASS_AIC
+                config LPKG_CHERRYUSB_DEVICE_AICUPG_FOR_USB
+                    bool
+                    prompt "Use aicupg for usb"
+                    default n
+            endif
+        endif
+
+        if LPKG_CHERRYUSB_DEVICE_CDC_SINGLE || LPKG_USING_COMP_CDC_TABLE1 || LPKG_USING_COMP_CDC_TABLE2
+            menuconfig LPKG_CHERRYUSB_DEVICE_CDC
+                bool
+                prompt "Enable usb cdc acm device"
                 default n
-            config LPKG_CHERRYUSB_DEVICE_HID_KEYBOARD_TEMPLATE
-                bool "keyboard"
+
+            if LPKG_CHERRYUSB_DEVICE_CDC
+                config LPKG_CHERRYUSB_DEVICE_CDC_TEMPLATE
+                    bool
+                    prompt "Use cdc acm template"
+                    default n
+                config LPKG_CHERRYUSB_DEVICE_CDC_AICUPG
+                    bool
+                    prompt "Use cdc acm for aicupg"
+                    default n
+            endif
+        endif
+
+        if LPKG_CHERRYUSB_DEVICE_HID_SINGLE || LPKG_USING_COMP_HID_TABLE1 || LPKG_USING_COMP_HID_TABLE2
+            menuconfig LPKG_CHERRYUSB_DEVICE_HID
+                bool
+                prompt "Enable usb hid device"
                 default n
-            config LPKG_CHERRYUSB_DEVICE_HID_IO_TEMPLATE
-                bool "custom input/output device"
-                default n
-                select LPKG_MPP
-                select AIC_VE_TEST
-            config LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
-                bool "touch"
-                default n
-            config LPKG_CHERRYUSB_DEVICE_HID_REPORT_ID_TEMPLATE
-                bool "multiple report id keyboard"
-                default n
-            config HID_TOUCHSCREEN_MODE
-                depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
-                bool "HID_TOUCHSCREEN_MODE"
-                default y
-            config HID_TOUCHPAD_MODE
-                depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
-                bool "HID_TOUCHPAD_MODE"
-                default n
-            menu "Hid Touch Parameter"
-                depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
-                config HID_TOUCH_INT_MODE
-                    bool "HID_TOUCH_INT_MODE"
+
+            if LPKG_CHERRYUSB_DEVICE_HID
+                config LPKG_CHERRYUSB_DEVICE_AICUPG_FOR_HID
+                    bool
+                    prompt "Use aicupg for hid"
+                    default n
+                config LPKG_CHERRYUSB_DEVICE_HID_MOUSE_TEMPLATE
+                    bool "mouse"
+                    default n
+                config LPKG_CHERRYUSB_DEVICE_HID_KEYBOARD_TEMPLATE
+                    bool "keyboard"
+                    default n
+                config LPKG_CHERRYUSB_DEVICE_HID_IO_TEMPLATE
+                    bool "custom input/output device"
+                    default n
+                    select LPKG_MPP
+                    select AIC_VE_TEST
+                config LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
+                    bool "touch"
+                    default n
+                config LPKG_CHERRYUSB_DEVICE_HID_REPORT_ID_TEMPLATE
+                    bool "multiple report id keyboard"
+                    default n
+                config HID_TOUCHSCREEN_MODE
+                    depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
+                    bool "HID_TOUCHSCREEN_MODE"
                     default y
-                config HID_TOUCH_NAME
-                    string
-                    default AIC_TOUCH_PANEL_NAME
-                config TOUCH_X_PHYSICAL_MAXNUM
-                    int
-                    default AIC_TOUCH_REPORT_X_COORDINATE
-                config TOUCH_Y_PHYSICAL_MAXNUM
-                    int
-                    default AIC_TOUCH_REPORT_Y_COORDINATE
-                config HID_TOUCH_X_FLIP
-                    bool "HID_TOUCH_X_FLIP"
+                config HID_TOUCHPAD_MODE
+                    depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
+                    bool "HID_TOUCHPAD_MODE"
                     default n
-                config HID_TOUCH_Y_FLIP
-                    bool "HID_TOUCH_Y_FLIP"
-                    default n
-                if 0
-                    choice
-                        prompt "select Touch Screen rotation degree"
-                        default AIC_HID_TOUCHROTATE_0
-
-                        config AIC_HID_TOUCHROTATE_0
-                            bool "0"
-
-                        config AIC_HID_TOUCHROTATE_90
-                            bool "90"
-
-                        config AIC_HID_TOUCHROTATE_180
-                            bool "180"
-
-                        config AIC_HID_TOUCHROTATE_270
-                            bool "270"
-                    endchoice
-                    config AIC_HID_ROTATE_DEGREE
-                        int
-                        default 0 if AIC_HID_TOUCHROTATE_0
-                        default 90 if AIC_HID_TOUCHROTATE_90
-                        default 180 if AIC_HID_TOUCHROTATE_180
-                        default 270 if AIC_HID_TOUCHROTATE_270
-                endif
-                    config AIC_HID_ROTATE_DEGREE
-                        int
-                        default 0
-
-
-                config HID_TOUCH_DEBUG
-                    bool "HID_TOUCH_DEBUG"
-                    default n
-            endmenu
-        endif
-
-        menuconfig LPKG_CHERRYUSB_DEVICE_MSC
-            bool
-            prompt "Enable usb msc device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_MSC
-            choice
-                prompt "Use ram or storage template"
-                default LPKG_CHERRYUSB_DEVICE_MSC_STORAGE_TEMPLATE
-                config LPKG_CHERRYUSB_DEVICE_MSC_RAM_TEMPLATE
-                    bool
-                    prompt "msc ram"
-                config LPKG_CHERRYUSB_DEVICE_MSC_STORAGE_TEMPLATE
-                    bool
-                    prompt "msc storage"
-            endchoice
-            menu "MSC Storage Parameter"
-                depends on LPKG_CHERRYUSB_DEVICE_MSC_STORAGE_TEMPLATE
-                if KERNEL_RTTHREAD
-                    config USBDEV_MSC_THREAD
-                        bool "USBDEV_MSC_THREAD"
+                menu "Hid Touch Parameter"
+                    depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
+                    config HID_TOUCH_INT_MODE
+                        bool "HID_TOUCH_INT_MODE"
                         default y
-                    config USBD_MSC_STORAGE_USING_HOTPLUG
-                        bool "USBD_MSC_STORAGE_USING_HOTPLUG"
-                        default y
-                endif
-                config USBDEV_MSC_READ_ONLY
-                        bool "USBDEV_MSC_READ_ONLY"
+                    config HID_TOUCH_NAME
+                        string
+                        default AIC_TOUCH_PANEL_NAME
+                    config TOUCH_X_PHYSICAL_MAXNUM
+                        int
+                        default AIC_TOUCH_REPORT_X_COORDINATE
+                    config TOUCH_Y_PHYSICAL_MAXNUM
+                        int
+                        default AIC_TOUCH_REPORT_Y_COORDINATE
+                    config HID_TOUCH_X_FLIP
+                        bool "HID_TOUCH_X_FLIP"
                         default n
-                config MSC_STORAGE_PATH
-                    string "MSC_STORAGE_PATH"
-                    default "/sdcard"
-                config CONFIG_USBDEV_MSC_MAX_BUFSIZE
-                    int "USBDEV_MSC_MAX_BUFSIZE"
-                    default 204800
-            endmenu
-            choice
-                prompt "Select msc ejected object"
-                default USBDEV_MSC_OBJECT_EJECTED
-                config USBDEV_MSC_MEDIUM_EJECTED
-                    bool "Medium"
-            endchoice
-            config CONFIG_USBDEV_MSC_MANUFACTURER_STRING
-                string "CONFIG_USBDEV_MSC_MANUFACTURER_STRING"
-                default ""
-            config CONFIG_USBDEV_MSC_PRODUCT_STRING
-                string "CONFIG_USBDEV_MSC_PRODUCT_STRING"
-                default ""
-            config CONFIG_USBDEV_MSC_VERSION_STRING
-                string "CONFIG_USBDEV_MSC_VERSION_STRING"
-                default "0.01"
-        endif
-
-        menuconfig LPKG_CHERRYUSB_DEVICE_MTP
-            bool
-            prompt "Enable usb mtp device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_MTP
-            config LPKG_CHERRYUSB_DEVICE_MTP_TEMPLATE
-                bool
-                prompt "Use mtp template"
-                default y
-            menu "MTP Parameter"
-                depends on LPKG_CHERRYUSB_DEVICE_MTP_TEMPLATE
-                if KERNEL_RTTHREAD
-                    config USBDEV_MTP_THREAD
-                        bool "USBDEV_MTP_THREAD"
+                    config HID_TOUCH_Y_FLIP
+                        bool "HID_TOUCH_Y_FLIP"
                         default n
-                endif
-                config ROOT_PATH
-                    string "ROOT_PATH"
-                    default "/sdcard"
+                    if 0
+                        choice
+                            prompt "select Touch Screen rotation degree"
+                            default AIC_HID_TOUCHROTATE_0
 
-                config MTP_OBJECT_HANDLES_MAX_NUM
-                    int "MTP_OBJECT_HANDLES_MAX_NUM"
-                    default 512
-            endmenu
-        endif
+                            config AIC_HID_TOUCHROTATE_0
+                                bool "0"
 
-        menuconfig LPKG_CHERRYUSB_DEVICE_AUDIO
-            bool
-            prompt "Enable usb audio device"
-            default n
+                            config AIC_HID_TOUCHROTATE_90
+                                bool "90"
 
-        if LPKG_CHERRYUSB_DEVICE_AUDIO
+                            config AIC_HID_TOUCHROTATE_180
+                                bool "180"
 
-            menuconfig LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_SPEAKER
-            bool
-            prompt "Use audio speaker&mic template"
-            default n
+                            config AIC_HID_TOUCHROTATE_270
+                                bool "270"
+                        endchoice
+                        config AIC_HID_ROTATE_DEGREE
+                            int
+                            default 0 if AIC_HID_TOUCHROTATE_0
+                            default 90 if AIC_HID_TOUCHROTATE_90
+                            default 180 if AIC_HID_TOUCHROTATE_180
+                            default 270 if AIC_HID_TOUCHROTATE_270
+                    endif
+                        config AIC_HID_ROTATE_DEGREE
+                            int
+                            default 0
 
-            if LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_SPEAKER
-                choice
-                    prompt "select audio speaker&mic template version"
-                    default LPKG_CHERRYUSB_DEVICE_AUDIO_V1_TEMPLATE
-                    config LPKG_CHERRYUSB_DEVICE_AUDIO_V1_TEMPLATE
-                        bool "UAC1.0"
-                    config LPKG_CHERRYUSB_DEVICE_AUDIO_V2_TEMPLATE
-                        bool "UAC2.0"
-                endchoice
-            endif
 
-            menuconfig LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
-            bool
-            prompt "Use audio speaker template"
-            default n
-
-            if LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
-                choice
-                    prompt "Use audio speaker template"
-                    default LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER_V2_TEMPLATE
-                    config LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER_V2_TEMPLATE
-                        bool "UAC2.0"
-                endchoice
+                    config HID_TOUCH_DEBUG
+                        bool "HID_TOUCH_DEBUG"
+                        default n
+                endmenu
             endif
         endif
 
-        menuconfig LPKG_CHERRYUSB_DEVICE_VIDEO
-            bool
-            prompt "Enable usb video device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_VIDEO
-            choice
-                prompt "Use video template"
-                default LPKG_CHERRYUSB_DEVICE_VIDEO_MJPEG_TEMPLATE
-                config LPKG_CHERRYUSB_DEVICE_VIDEO_MJPEG_TEMPLATE
-                    bool "Use video static mjpeg template"
-                config LPKG_CHERRYUSB_DEVICE_VIDEO_YUYV_TEMPLATE
-                    bool "Use video static yuyv template"
-                config LPKG_CHERRYUSB_DEVICE_VIDEO_NV12_TEMPLATE
-                    bool "Use video static nv12 template"
-                config LPKG_CHERRYUSB_DEVICE_VIDEO_DVP_TEMPLATE
-                    bool "Use video dvp sensor template"
-            endchoice
-        endif
-
-        menuconfig LPKG_CHERRYUSB_DEVICE_MIDI
-            bool
-            prompt "Enable usb midi device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_MIDI
-            config LPKG_CHERRYUSB_DEVICE_MIDI_TEMPLATE
+        if LPKG_CHERRYUSB_DEVICE_MSC_SINGLE || LPKG_USING_COMP_MSC_TABLE1 || LPKG_USING_COMP_MSC_TABLE2
+            menuconfig LPKG_CHERRYUSB_DEVICE_MSC
                 bool
-                prompt "Use midi template"
+                prompt "Enable usb msc device"
                 default n
-        endif
 
-        menuconfig LPKG_CHERRYUSB_DEVICE_RNDIS
-            bool
-            prompt "Enable usb rndis device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_RNDIS
-            config LPKG_CHERRYUSB_DEVICE_RNDIS_TEMPLATE
-                bool
-                prompt "Use rndis template"
-                default n
-        endif
-
-        menuconfig LPKG_CHERRYUSB_DEVICE_DFU
-            bool
-            prompt "Enable usb dfu device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_DFU
-            config LPKG_CHERRYUSB_DEVICE_DFU_TEMPLATE
-                bool
-                prompt "Use dfu template"
-                default n
-        endif
-
-        menuconfig LPKG_CHERRYUSB_DEVICE_WINUSB
-            bool
-            prompt "Enable WinUSB device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_WINUSB
-            config LPKG_CHERRYUSB_DEVICE_WINUSB10_TEMPLATE
-                bool
-                prompt "Use WinUSB 1.0 template"
-                default n
-            config LPKG_CHERRYUSB_DEVICE_WINUSB20_TEMPLATE
-                bool
-                prompt "Use WinUSB 2.0 template"
-                default n
-        endif
-
-        menuconfig LPKG_CHERRYUSB_DEVICE_DISPLAY
-            bool
-            prompt "Enable usb display device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_DISPLAY
-            config LPKG_CHERRYUSB_DEVICE_DISPLAY_TEMPLATE
-                bool
-                prompt "Use display template"
-                default n
-                select LPKG_USING_AIC_AUTHORIZATION
-                select AIC_USING_CE
-            if LPKG_CHERRYUSB_DEVICE_DISPLAY_TEMPLATE
+            if LPKG_CHERRYUSB_DEVICE_MSC
                 choice
-                    prompt "select USB coding format"
-                    default LPKG_CHERRYUSB_USB_TRANSFER_AUTO if AIC_VE_DRV_V10
-                    default LPKG_CHERRYUSB_USB_TRANSFER_JPEG if !AIC_VE_DRV_V10
-                    config LPKG_CHERRYUSB_USB_TRANSFER_AUTO
-                        bool "AUTO"
-                    config LPKG_CHERRYUSB_USB_TRANSFER_H264
-                        bool "H264"
-                        depends on AIC_VE_DRV_V10
-                    config LPKG_CHERRYUSB_USB_TRANSFER_JPEG
-                        bool "JPEG"
-                    config LPKG_CHERRYUSB_USB_TRANSFER_RGB565
-                        bool "RGB565"
-                    config LPKG_CHERRYUSB_USB_TRANSFER_ARGB8888
-                        bool "ARGB8888"
+                    prompt "Use ram or storage template"
+                    default LPKG_CHERRYUSB_DEVICE_MSC_STORAGE_TEMPLATE
+                    config LPKG_CHERRYUSB_DEVICE_MSC_RAM_TEMPLATE
+                        bool
+                        prompt "msc ram"
+                    config LPKG_CHERRYUSB_DEVICE_MSC_STORAGE_TEMPLATE
+                        bool
+                        prompt "msc storage"
                 endchoice
+                menu "MSC Storage Parameter"
+                    depends on LPKG_CHERRYUSB_DEVICE_MSC_STORAGE_TEMPLATE
+                    if KERNEL_RTTHREAD
+                        config USBDEV_MSC_THREAD
+                            bool "USBDEV_MSC_THREAD"
+                            default y
+                        config USBD_MSC_STORAGE_USING_HOTPLUG
+                            bool "USBD_MSC_STORAGE_USING_HOTPLUG"
+                            default y
+                    endif
+                    config USBDEV_MSC_READ_ONLY
+                            bool "USBDEV_MSC_READ_ONLY"
+                            default n
+                    config MSC_STORAGE_PATH
+                        string "MSC_STORAGE_PATH"
+                        default "/sdcard"
+                    config CONFIG_USBDEV_MSC_MAX_BUFSIZE
+                        int "USBDEV_MSC_MAX_BUFSIZE"
+                        default 204800
+                endmenu
+                choice
+                    prompt "Select msc ejected object"
+                    default USBDEV_MSC_MEDIUM_EJECTED
+                    config USBDEV_MSC_MEDIUM_EJECTED
+                        bool "Medium"
+                endchoice
+                config CONFIG_USBDEV_MSC_MANUFACTURER_STRING
+                    string "CONFIG_USBDEV_MSC_MANUFACTURER_STRING"
+                    default ""
+                config CONFIG_USBDEV_MSC_PRODUCT_STRING
+                    string "CONFIG_USBDEV_MSC_PRODUCT_STRING"
+                    default ""
+                config CONFIG_USBDEV_MSC_VERSION_STRING
+                    string "CONFIG_USBDEV_MSC_VERSION_STRING"
+                    default "0.01"
+            endif
+        endif
 
-                config AIC_USB_DISP_SW_GPIO_EN
-                    bool "Using gpio switch"
-                    default n
-                if AIC_USB_DISP_SW_GPIO_EN
-                    config AIC_USB_DISP_SW_GPIO_NAME
-                        string "GPIO name"
-                        default "PD.6"
+        if LPKG_CHERRYUSB_DEVICE_MTP_SINGLE
+            menuconfig LPKG_CHERRYUSB_DEVICE_MTP
+                bool
+                prompt "Enable usb mtp device"
+                default n
 
-                    choice
-                        prompt "Select GPIO polarity"
-                        default AIC_USB_DISP_SW_GPIO_ACT_LOW
-                        config AIC_USB_DISP_SW_GPIO_ACT_LOW
-                            bool "0 = On, 1 = Off"
-                        config AIC_USB_DISP_SW_GPIO_ACT_HIGH
-                            bool "1 = On, 0 = Off"
-                    endchoice
-                    config AIC_USB_DISP_SW_GPIO_NAME_POLARITY
-                        int
-                        default 0 if AIC_USB_DISP_SW_GPIO_ACT_LOW
-                        default 1 if AIC_USB_DISP_SW_GPIO_ACT_HIGH
-
-                    choice
-                        prompt "Select switch mode"
-                        default AIC_USB_DISP_SW_GPIO_BACKLIGHT
-                        config AIC_USB_DISP_SW_GPIO_BACKLIGHT
-                            bool "Backlight Switch"
-                        config AIC_USB_DISP_SW_GPIO_USBDISPLAY
-                            bool "USB Display Switch"
-                    endchoice
-                    if AIC_USB_DISP_SW_GPIO_USBDISPLAY
-                        config AIC_USB_DISP_DEF_DIS
-                            bool "Default usb display disable"
+            if LPKG_CHERRYUSB_DEVICE_MTP
+                config LPKG_CHERRYUSB_DEVICE_MTP_TEMPLATE
+                    bool
+                    prompt "Use mtp template"
+                    default y
+                menu "MTP Parameter"
+                    depends on LPKG_CHERRYUSB_DEVICE_MTP_TEMPLATE
+                    if KERNEL_RTTHREAD
+                        config USBDEV_MTP_THREAD
+                            bool "USBDEV_MTP_THREAD"
                             default n
                     endif
+                    config ROOT_PATH
+                        string "ROOT_PATH"
+                        default "/sdcard"
+
+                    config MTP_OBJECT_HANDLES_MAX_NUM
+                        int "MTP_OBJECT_HANDLES_MAX_NUM"
+                        default 512
+                endmenu
+            endif
+        endif
+
+        if LPKG_CHERRYUSB_DEVICE_AUDIO_SINGLE || LPKG_USING_COMP_UAC_TABLE1 || LPKG_USING_COMP_UAC_TABLE2
+            menuconfig LPKG_CHERRYUSB_DEVICE_AUDIO
+                bool
+                prompt "Enable usb audio device"
+                default n
+
+            if LPKG_CHERRYUSB_DEVICE_AUDIO
+
+                menuconfig LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_SPEAKER
+                bool
+                prompt "Use audio speaker&mic template"
+                default n
+
+                if LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_SPEAKER
+                    choice
+                        prompt "select audio speaker&mic template version"
+                        default LPKG_CHERRYUSB_DEVICE_AUDIO_V1_TEMPLATE
+                        config LPKG_CHERRYUSB_DEVICE_AUDIO_V1_TEMPLATE
+                            bool "UAC1.0"
+                        config LPKG_CHERRYUSB_DEVICE_AUDIO_V2_TEMPLATE
+                            bool "UAC2.0"
+                    endchoice
                 endif
 
-                config AIC_USB_DISP_INIT_DELAY_MS
-                    int "Init delay ms"
-                    default 0
+                menuconfig LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
+                bool
+                prompt "Use audio speaker template"
+                default n
 
-                config LPKG_CHERRYUSB_DEVICE_DISPLAY_FPS
+                if LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
+                    choice
+                        prompt "Use audio speaker template"
+                        default LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER_V2_TEMPLATE
+                        config LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER_V2_TEMPLATE
+                            bool "UAC2.0"
+                    endchoice
+                endif
+            endif
+        endif
+
+        if LPKG_CHERRYUSB_DEVICE_VIDEO_SINGLE || LPKG_USING_COMP_VIDEO_TABLE1 || LPKG_USING_COMP_VIDEO_TABLE2
+            menuconfig LPKG_CHERRYUSB_DEVICE_VIDEO
+                bool
+                prompt "Enable usb video device"
+                default n
+
+            if LPKG_CHERRYUSB_DEVICE_VIDEO
+                choice
+                    prompt "Use video template"
+                    default LPKG_CHERRYUSB_DEVICE_VIDEO_MJPEG_TEMPLATE
+                    config LPKG_CHERRYUSB_DEVICE_VIDEO_MJPEG_TEMPLATE
+                        bool "Use video static mjpeg template"
+                    config LPKG_CHERRYUSB_DEVICE_VIDEO_YUYV_TEMPLATE
+                        bool "Use video static yuyv template"
+                    config LPKG_CHERRYUSB_DEVICE_VIDEO_NV12_TEMPLATE
+                        bool "Use video static nv12 template"
+                    config LPKG_CHERRYUSB_DEVICE_VIDEO_DVP_TEMPLATE
+                        bool "Use video dvp sensor template"
+                endchoice
+            endif
+        endif
+
+        if LPKG_CHERRYUSB_DEVICE_MIDI_SINGLE
+            menuconfig LPKG_CHERRYUSB_DEVICE_MIDI
+                bool
+                prompt "Enable usb midi device"
+                default n
+
+            if LPKG_CHERRYUSB_DEVICE_MIDI
+                config LPKG_CHERRYUSB_DEVICE_MIDI_TEMPLATE
                     bool
-                    prompt "Print FPS in-live"
+                    prompt "Use midi template"
                     default n
             endif
         endif
 
-        menuconfig LPKG_CHERRYUSB_DEVICE_VENDER
-            bool
-            prompt "Enable usb vender device"
-            default n
-        if LPKG_CHERRYUSB_DEVICE_VENDER
-            config LPKG_CHERRYUSB_DEVICE_VENDER_TEMPLATE
+        if LPKG_CHERRYUSB_DEVICE_RNDIS_SINGLE
+            menuconfig LPKG_CHERRYUSB_DEVICE_RNDIS
                 bool
-                prompt "Use vender template"
+                prompt "Enable usb rndis device"
                 default n
+
+            if LPKG_CHERRYUSB_DEVICE_RNDIS
+                config LPKG_CHERRYUSB_DEVICE_RNDIS_TEMPLATE
+                    bool
+                    prompt "Use rndis template"
+                    default n
+            endif
         endif
 
-        menuconfig LPKG_CHERRYUSB_DEVICE_COMPOSITE
-            bool
-            prompt "Enable composite device"
-            default n
-
-        if LPKG_CHERRYUSB_DEVICE_COMPOSITE
-            config LPKG_CHERRYUSB_DEVICE_COMPOSITE_TEMPLATE
+        if LPKG_CHERRYUSB_DEVICE_DFU_SINGLE
+            menuconfig LPKG_CHERRYUSB_DEVICE_DFU
                 bool
-                prompt "Use Composite template"
+                prompt "Enable usb dfu device"
                 default n
 
-            menu "Composite Parameter"
-                depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE_TEMPLATE
-                config LPKG_USING_COMP_MSC
-                    bool "USBDEV_MSC_COMPOSITE"
-                    default n
-                config LPKG_USING_COMP_ADBD
-                    bool "USBDEV_ADB_COMPOSITE"
-                    default n
-                config LPKG_USING_COMP_DISP
-                    bool "USBDEV_DISP_COMPOSITE"
-                    default n
-                config LPKG_USING_COMP_UAC
-                    bool "USBDEV_UAC_COMPOSITE"
-                    default n
-                config LPKG_USING_COMP_TOUCH
-                    bool "USBDEV_TOUCH_COMPOSITE"
-                    default n
-                config LPKG_USING_COMP_VENDER
-                    bool "USBDEV_VENDER_COMPOSITE"
-                    default n
-            endmenu
-
-            config LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
+            if LPKG_CHERRYUSB_DEVICE_DFU
+                config LPKG_CHERRYUSB_DEVICE_DFU_TEMPLATE
                     bool
-                    prompt "Use Multiple Composite Device Func Tables"
+                    prompt "Use dfu template"
                     default n
+            endif
+        endif
 
-                menu "Composite Device func table1"
-                    depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
-                    config LPKG_USING_COMP_MSC_TABLE1
-                        bool "Using MSC composite"
-                        default n
-                    config LPKG_USING_COMP_ADBD_TABLE1
-                        bool "Using ADB composite"
-                        default n
-                    config LPKG_USING_COMP_DISP_TABLE1
-                        bool "Using DISP composite"
-                        default n
-                    config LPKG_USING_COMP_UAC_TABLE1
-                        bool "Using UAC composite"
-                        default n
-                    config LPKG_USING_COMP_TOUCH_TABLE1
-                        bool "Using TOUCH composite"
-                        default n
-                    config LPKG_USING_COMP_VENDER_TABLE1
-                        bool "Using VENDER composite"
-                        default n
-                endmenu
+        if LPKG_CHERRYUSB_DEVICE_WINUSB_SINGLE
+            menuconfig LPKG_CHERRYUSB_DEVICE_WINUSB
+                bool
+                prompt "Enable WinUSB device"
+                default n
 
-                menu "Composite Device func table2"
-                    depends on LPKG_CHERRYUSB_DEVICE_COMPOSITE_MULTIPLE_TABLES
-                    config LPKG_USING_COMP_MSC_TABLE2
-                        bool "Using MSC composite"
+            if LPKG_CHERRYUSB_DEVICE_WINUSB
+                config LPKG_CHERRYUSB_DEVICE_WINUSB10_TEMPLATE
+                    bool
+                    prompt "Use WinUSB 1.0 template"
+                    default n
+                config LPKG_CHERRYUSB_DEVICE_WINUSB20_TEMPLATE
+                    bool
+                    prompt "Use WinUSB 2.0 template"
+                    default n
+            endif
+        endif
+
+        if LPKG_CHERRYUSB_DEVICE_DISPLAY_SINGLE || LPKG_USING_COMP_DISP_TABLE1 || LPKG_USING_COMP_DISP_TABLE2
+            menuconfig LPKG_CHERRYUSB_DEVICE_DISPLAY
+                bool
+                prompt "Enable usb display device"
+                default n
+
+            if LPKG_CHERRYUSB_DEVICE_DISPLAY
+                config LPKG_CHERRYUSB_DEVICE_DISPLAY_TEMPLATE
+                    bool
+                    prompt "Use display template"
+                    default n
+                    select LPKG_USING_AIC_AUTHORIZATION
+                    select AIC_USING_CE
+                if LPKG_CHERRYUSB_DEVICE_DISPLAY_TEMPLATE
+                    choice
+                        prompt "select USB coding format"
+                        default LPKG_CHERRYUSB_USB_TRANSFER_AUTO if AIC_VE_DRV_V10
+                        default LPKG_CHERRYUSB_USB_TRANSFER_JPEG if !AIC_VE_DRV_V10
+                        config LPKG_CHERRYUSB_USB_TRANSFER_AUTO
+                            bool "AUTO"
+                        config LPKG_CHERRYUSB_USB_TRANSFER_H264
+                            bool "H264"
+                            depends on AIC_VE_DRV_V10
+                        config LPKG_CHERRYUSB_USB_TRANSFER_JPEG
+                            bool "JPEG"
+                        config LPKG_CHERRYUSB_USB_TRANSFER_RGB565
+                            bool "RGB565"
+                        config LPKG_CHERRYUSB_USB_TRANSFER_ARGB8888
+                            bool "ARGB8888"
+                    endchoice
+
+                    if !LPKG_USING_LVGL
+                        choice
+                            prompt "select USB Display rotation mode"
+                            config AIC_USB_DISP_ROTATION_FULLSCREEN
+                                bool "rotation with fullscreen"
+                            config AIC_USB_DISP_ROTATION_BLACKBARS
+                                bool "rotation with black bars"
+                        endchoice
+                    endif
+
+                    config AIC_USB_DISP_PM_SUSPEND
+                        bool "Using system PM suspend"
                         default n
-                    config LPKG_USING_COMP_ADBD_TABLE2
-                        bool "Using ADB composite"
+                        select RT_USING_PM
+                        select AIC_USING_PM
+                        select AIC_PM_INDEPENDENT_POWER_KEY
+
+                    config AIC_USB_DISP_HIGH_QUALITY_PIC
+                        bool "High quality pic mode"
                         default n
-                    config LPKG_USING_COMP_DISP_TABLE2
-                        bool "Using DISP composite"
+                        depends on LPKG_CHERRYUSB_USB_TRANSFER_JPEG || LPKG_CHERRYUSB_USB_TRANSFER_AUTO
+
+                    if !AIC_USB_DISP_HIGH_QUALITY_PIC
+                        config AIC_USB_DISP_JPEG_QUALITY_LOWTHRESH
+                            int "JPEG encode quality low threshold"
+                            range 0 100
+                            default 0
+                            depends on LPKG_CHERRYUSB_USB_TRANSFER_JPEG || LPKG_CHERRYUSB_USB_TRANSFER_AUTO
+                    endif
+
+                    config AIC_USB_DISP_SW_GPIO_EN
+                        bool "Using gpio switch"
                         default n
-                    config LPKG_USING_COMP_UAC_TABLE2
-                        bool "Using UAC composite"
+                    if AIC_USB_DISP_SW_GPIO_EN
+                        config AIC_USB_DISP_SW_GPIO_NAME
+                            string "GPIO name"
+                            default "PD.6"
+
+                        choice
+                            prompt "Select GPIO polarity"
+                            default AIC_USB_DISP_SW_GPIO_ACT_LOW
+                            config AIC_USB_DISP_SW_GPIO_ACT_LOW
+                                bool "0 = On, 1 = Off"
+                            config AIC_USB_DISP_SW_GPIO_ACT_HIGH
+                                bool "1 = On, 0 = Off"
+                        endchoice
+                        config AIC_USB_DISP_SW_GPIO_NAME_POLARITY
+                            int
+                            default 0 if AIC_USB_DISP_SW_GPIO_ACT_LOW
+                            default 1 if AIC_USB_DISP_SW_GPIO_ACT_HIGH
+
+                        choice
+                            prompt "Select switch mode"
+                            default AIC_USB_DISP_SW_GPIO_BACKLIGHT
+                            config AIC_USB_DISP_SW_GPIO_BACKLIGHT
+                                bool "Backlight Switch"
+                            config AIC_USB_DISP_SW_GPIO_USBDISPLAY
+                                bool "USB Display Switch"
+                        endchoice
+                        if AIC_USB_DISP_SW_GPIO_USBDISPLAY
+                            config AIC_USB_DISP_DEF_DIS
+                                bool "Default usb display disable"
+                                default n
+                        endif
+                    endif
+
+                    config AIC_USB_DISP_INIT_DELAY_MS
+                        int "Init delay ms"
+                        default 0
+
+                    config LPKG_CHERRYUSB_DEVICE_DISPLAY_FPS
+                        bool
+                        prompt "Print FPS in-live"
                         default n
-                    config LPKG_USING_COMP_TOUCH_TABLE2
-                        bool "Using TOUCH composite"
-                        default n
-                    config LPKG_USING_COMP_VENDER_TABLE2
-                        bool "Using VENDER composite"
-                        default n
-                endmenu
+                endif
+            endif
+        endif
+
+        if LPKG_CHERRYUSB_DEVICE_VENDER_SINGLE || LPKG_USING_COMP_VENDER_TABLE1 || LPKG_USING_COMP_VENDER_TABLE2
+            menuconfig LPKG_CHERRYUSB_DEVICE_VENDER
+                bool
+                prompt "Enable usb vender device"
+                default n
+            if LPKG_CHERRYUSB_DEVICE_VENDER
+                config LPKG_CHERRYUSB_DEVICE_VENDER_TEMPLATE
+                    bool
+                    prompt "Use vender template"
+                    default n
+            endif
         endif
     endif
 
@@ -753,10 +855,12 @@ if LPKG_USING_CHERRYUSB
                 prompt "Use msc template"
                 default n
 
-            config LPKG_CHERRYUSB_HOST_AICUPG_FOR_UDISK
-                bool
-                prompt "Use aicupg for udisk"
-                default n
+            if AIC_BOOTLOADER
+                config LPKG_CHERRYUSB_HOST_AICUPG_FOR_UDISK
+                    bool
+                    prompt "Use aicupg for udisk"
+                    default n
+            endif
         endif
 
         config LPKG_CHERRYUSB_HOST_RNDIS
@@ -807,4 +911,8 @@ if LPKG_USING_CHERRYUSB
                 default n
         endif
     endif
+
+    config LPKG_CHERRYUSB_DEVICE_TEST_MODE
+        bool "Enable test mode"
+        default n
 endif

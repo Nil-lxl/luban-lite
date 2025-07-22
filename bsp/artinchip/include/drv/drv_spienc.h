@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,6 +13,8 @@
 
 int drv_spienc_init(void);
 void drv_spienc_set_cfg(u32 spi_bus, u32 addr, u32 cpos, u32 clen);
+void drv_spienc_xip_enable(void);
+void drv_spienc_xip_disable(void);
 void drv_spienc_start(void);
 void drv_spienc_stop(void);
 int drv_spienc_check_empty(void);

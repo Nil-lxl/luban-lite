@@ -14,10 +14,10 @@
 #include <aic_core.h>
 #include <env.h>
 #include <aic_crc32.h>
-
-#ifdef KERNEL_BAREMETAL
 #include <aic_partition.h>
 #include <disk_part.h>
+
+#ifdef KERNEL_BAREMETAL
 #include <mmc.h>
 #endif
 
@@ -44,13 +44,20 @@
 #define O_WRONLY (00000001)
 #define O_RDWR   (00000002)
 
-#define CONFIG_EXTRA_ENV_SETTINGS \
-    "upgrade_available=0\0"       \
-    "bootlimit=5\0"               \
-    "bootcount=0\0"               \
-    "bootdelay=0\0"               \
-    "osAB_next=A\0"               \
-    "osAB_now=A\0"
+#define CONFIG_EXTRA_ENV_SETTINGS      \
+    "osAB_next=A\0"                    \
+    "osAB_now=A\0"                     \
+    "rodataAB_next=A\0"                \
+    "rodataAB_now=A\0"                 \
+    "dataAB_next=A\0"                  \
+    "dataAB_now=A\0"                   \
+    "upgrade_available=0\0"            \
+    "bootlimit=5\0"                    \
+    "bootcount=0\0"                    \
+    "rodata_partname=blk_rodata\0"     \
+    "rodata_partname_r=blk_rodata_r\0" \
+    "data_partname=blk_data\0"         \
+    "data_partname_r=blk_data_r\0"
 
 static char default_environment[] = {
 #ifdef CONFIG_EXTRA_ENV_SETTINGS
@@ -650,23 +657,87 @@ static int bar_spinand_save_env_simple(void *buf, size_t size)
 
 #ifdef AIC_SDMC_DRV
 #ifndef KERNEL_BAREMETAL
-static int rtt_mmc_load_env_simple(void *buf, size_t size)
+static unsigned long mmc_write(struct blk_desc *block_dev, u64 start,
+                               u64 blkcnt, void *buffer)
 {
-    rt_device_t env_current;
-    struct rt_device_blk_geometry get_data;
-    size_t blkcnt = 0;
+    return rt_device_write(block_dev->priv, start, (void *)buffer, blkcnt);
+}
 
-    if (dev_current == 0) {
-        env_current = rt_device_find("mmc0p1");
-    } else if (dev_current == 1) {
-        env_current = rt_device_find("mmc0p2");
-    } else {
-        pr_err("Invalid dev_current:%d\n", dev_current);
+static unsigned long mmc_read(struct blk_desc *block_dev, u64 start, u64 blkcnt,
+                              const void *buffer)
+{
+    return rt_device_read(block_dev->priv, start, (void *)buffer, blkcnt);
+}
+
+static int get_mmc_devname_by_partname(const char *partname, char *devname, int len)
+{
+    rt_device_t dev;
+    rt_int32_t id = 0;
+    struct aic_partition *parts, *part;
+    struct disk_blk_ops ops;
+    struct blk_desc dev_desc;
+    char dname[8] = { 0 };
+
+    id = (bd == BD_SDMC0) ? 0 : 1;
+
+    ops.blk_write = mmc_write;
+    ops.blk_read = mmc_read;
+    aic_disk_part_set_ops(&ops);
+
+    rt_snprintf(dname, sizeof(dname), "mmc%d", id);
+    dev = rt_device_find(dname);
+    if (dev == RT_NULL) {
+        memset(dname, 0, sizeof(dname));
+        rt_snprintf(dname, sizeof(dname), "sd%d", id);
+        dev = rt_device_find(dname);
+        if (dev == RT_NULL) {
+            pr_err("Not found %s dev.\n", dname);
+            return -1;
+        }
+    }
+
+    rt_device_open(dev, RT_DEVICE_FLAG_RDWR);
+    dev_desc.blksz = 512;
+    dev_desc.lba_count = 0;
+    dev_desc.priv = dev;
+    parts = aic_disk_get_parts(&dev_desc);
+    if (parts == RT_NULL) {
+        pr_err("Not found dev %s partition info.\n", dname);
         return -1;
     }
 
+    part = aic_part_get_byname(parts, partname);
+    if (part == RT_NULL) {
+        pr_err("Not found dev %s %s partition info.\n", dname, partname);
+        aic_part_free(parts);
+        rt_device_close(dev);
+        return -1;
+    }
+    rt_snprintf(devname, len, "%sp%d", dname, part->index);
+
+    aic_part_free(parts);
+    rt_device_close(dev);
+
+    return 0;
+}
+
+static int rtt_mmc_load_env_simple(void *buf, size_t size)
+{
+    rt_device_t env_current = RT_NULL;
+    struct rt_device_blk_geometry get_data;
+    size_t blkcnt = 0;
+    char devname[8] = { 0 };
+
+    if (dev_current == 0) {
+        if (!get_mmc_devname_by_partname(AIC_ENV_PART_NAME, devname, 8))
+            env_current = rt_device_find(devname);
+    } else if (dev_current == 1) {
+        if (!get_mmc_devname_by_partname(AIC_ENV_REDUNDAND_PART_NAME, devname, 8))
+            env_current = rt_device_find(devname);
+    }
+
     if (env_current == RT_NULL) {
-        pr_err("Not found dev_current:%d\n", dev_current);
+        pr_err("Not found %s dev_current:%d\n", devname, dev_current);
         return -1;
     }
 
@@ -689,22 +760,22 @@ rtt_mmc_load_env_simple_exit:
 
 static int rtt_mmc_save_env_simple(void *buf, size_t size)
 {
-    rt_device_t env_current;
+    rt_device_t env_current = RT_NULL;
     struct rt_device_blk_geometry get_data;
     unsigned long long p[2] = {0};
     size_t blkcnt = 0;
+    char devname[8] = { 0 };
 
     if (dev_current == 0) {
-        env_current = rt_device_find("mmc0p2");
+        if (!get_mmc_devname_by_partname(AIC_ENV_REDUNDAND_PART_NAME, devname, 8))
+            env_current = rt_device_find(devname);
     } else if (dev_current == 1) {
-        env_current = rt_device_find("mmc0p1");
-    } else {
-        pr_err("Invalid dev_current:%d\n", dev_current);
-        return -1;
+        if (!get_mmc_devname_by_partname(AIC_ENV_PART_NAME, devname, 8))
+            env_current = rt_device_find(devname);
     }
 
     if (env_current == RT_NULL) {
-        pr_err("Not found dev_current:%d\n", dev_current);
+        pr_err("Not found %s dev_current:%d\n", devname, dev_current);
         return -1;
     }
 
@@ -738,8 +809,11 @@ static int bar_mmc_load_env_simple(void *buf, size_t size)
     struct aic_sdmc *host = NULL;
     struct aic_partition *parts = NULL, *part = NULL;
     struct blk_desc dev_desc = {0};
+    int id = 0;
 
-    host = find_mmc_dev_by_index(0);
+    id = (bd == BD_SDMC0) ? 0 : 1;
+
+    host = find_mmc_dev_by_index(id);
     if (host== NULL) {
         pr_err("can't find mmc device!");
         return -1;
@@ -772,8 +846,11 @@ static int bar_mmc_save_env_simple(void *buf, size_t size)
     struct aic_sdmc *host = NULL;
     struct aic_partition *parts = NULL, *part = NULL;
     struct blk_desc dev_desc = {0};
+    int id = 0;
 
-    host = find_mmc_dev_by_index(0);
+    id = (bd == BD_SDMC0) ? 0 : 1;
+
+    host = find_mmc_dev_by_index(id);
     if (host== NULL) {
         pr_err("can't find mmc device!");
         return -1;
@@ -830,6 +907,7 @@ static int flash_env_read(void *buf, size_t size)
 #endif
 #ifdef AIC_SDMC_DRV
         case BD_SDMC0:
+        case BD_SDMC1:
 #ifndef KERNEL_BAREMETAL
             ret = rtt_mmc_load_env_simple(buf, size);
 #else
@@ -903,6 +981,7 @@ static int flash_env_write(void *buf, size_t size)
 #endif
 #ifdef AIC_SDMC_DRV
         case BD_SDMC0:
+        case BD_SDMC1:
 #ifndef KERNEL_BAREMETAL
             ret = rtt_mmc_save_env_simple(buf, size);
 #else

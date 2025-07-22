@@ -16,11 +16,12 @@ if GetDepend('DRIVER_HAL_EN'):
 
 # CMU driver
 if GetDepend('AIC_CMU_DRV'):
-    ver = GetConfigValue('AIC_CMU_DRV_VER')
-    ver = ver.replace('"','')
     if GetDepend('DRIVER_HAL_EN'):
-        src += Glob('hal/cmu/*.c', exclude=['hal/cmu/*def_v*.c'])
-        src += Glob('hal/cmu/*def_v%s.c' % ver)
+        src += Glob('hal/cmu/*.c')
+        if GetDepend('AIC_CMU_FRAMEWORK_V2'):
+            src += Glob('hal/cmu/v2/*.c')
+        else:
+            src += Glob('hal/cmu/v1/*.c')
 
 # GPIO driver
 if GetDepend('AIC_GPIO_DRV'):
@@ -202,6 +203,7 @@ if GetDepend('AIC_PM_DRV'):
 # Display driver
 if GetDepend('AIC_DISPLAY_DRV'):
     src += Glob('drv/display/drv_fb.c')
+    src += Glob('drv/display/drv_fb_helper.c')
 
 # RGB interface driver
 if GetDepend('AIC_DISP_RGB'):
@@ -227,6 +229,7 @@ if GetDepend('AIC_DISP_DE_DRV'):
     src += Glob('drv/display/drv_de_vi_layer.c')
     src += Glob('drv/display/drv_de_ui_layer.c')
     src += Glob('hal/display/aic_hal_de.c')
+    CPPPATH.append(cwd + '/drv/display')
 
 # Panel driver
 if GetDepend('AIC_DISPLAY_DRV'):
@@ -270,6 +273,15 @@ if GetDepend('AIC_PANEL_DSI_JD9365'):
 if GetDepend('AIC_PANEL_DSI_AXS15231B'):
     src += Glob('drv/display/panel/panel_dsi_axs15231b.c')
 
+if GetDepend('AIC_PANEL_DSI_NV3051'):
+    src += Glob('drv/display/panel/panel_dsi_nv3051.c')
+
+if GetDepend('AIC_PANEL_DSI_FL7707'):
+    src += Glob('drv/display/panel/panel_dsi_fl7707.c')
+
+if GetDepend('AIC_PANEL_DSI_FT8201'):
+    src += Glob('drv/display/panel/panel_dsi_ft8201.c')
+
 if GetDepend('AIC_PANEL_DSI_H024B12'):
     src += Glob('drv/display/panel/panel_dsi_h024b12.c')
 
@@ -306,6 +318,9 @@ if GetDepend('AIC_PANEL_DBI_ILI9327'):
 
 if GetDepend('AIC_PANEL_DBI_ST77903'):
     src += Glob('drv/display/panel/panel_dbi_st77903.c')
+
+if GetDepend('AIC_PANEL_DBI_CO5300'):
+    src += Glob('drv/display/panel/panel_dbi_co5300.c')
 #
 # RGB Panel Driver SPI Init
 #
@@ -316,7 +331,7 @@ if GetDepend('AIC_PANEL_RGB_NV3052'):
     src += Glob('drv/display/panel/panel_rgb_nv3052.c')
 
 if GetDepend('AIC_PANEL_RGB_ST7703'):
-    src += Glob('drv/display/panel/panel_rgb_st7703.c')    
+    src += Glob('drv/display/panel/panel_rgb_st7703.c')
 
 if GetDepend('AIC_PANEL_RGB_GC9A01A'):
     src += Glob('drv/display/panel/panel_rgb_gc9a01a.c')
@@ -328,10 +343,10 @@ if GetDepend('AIC_PANEL_RGB_ST77922'):
     src += Glob('drv/display/panel/panel_rgb_st77922.c')
 
 if GetDepend('AIC_PANEL_RGB_H024A13'):
-    src += Glob('drv/display/panel/panel_rgb_h024a13.c')    
+    src += Glob('drv/display/panel/panel_rgb_h024a13.c')
 
 if GetDepend('AIC_PANEL_RGB_H028A19'):
-    src += Glob('drv/display/panel/panel_rgb_h028a19.c')    
+    src += Glob('drv/display/panel/panel_rgb_h028a19.c')
 
 #
 # RGB Panel Driver IIC Init

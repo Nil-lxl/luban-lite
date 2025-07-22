@@ -1,3 +1,103 @@
+# V1.2.1 #
+## 新增 ##
+- USB 副屏：
+  - Windows驱动更新为V1.0.6：支持高画质模式
+  - macOS驱动更新为V0.9.2：支持自动launcher
+  - 增加待机模式的处理
+  - 支持无LVGL时的全屏旋转
+  - 是否上报序列号可配置
+  - HID：支持在第二块屏幕上设置是否使能HID
+- 歌词特效：
+  - 新增两个动画特效
+  - 支持字体随机
+  - 支持泰国字体的处理
+- MPP：
+  - 增加保存FrameBuffer数据的demo
+  - 支持AAC文件的解析
+  - Player：支持独立播放一个wav文件
+  - audio player：支持两路音频动态切换
+  - D13x也支持录像功能
+- LVGL：
+  - 新增Demo：串口接收、input测试、RTP校准（支持重新校准）
+  - 新增控件：Video window控件、swipe控件
+  - 支持编码器作为输入设备
+  - Player：支持缩放显示；支持视频切换
+- USB：Device：HID touch/MSC 增加注销流程
+- FatFS：增强掉电场景的保护处理
+- NFTL：支持烧录器方式
+- hrtimer：支持多通道
+- WiFi：realtek支持基于配置文件完成自动配置
+- 启动：支持预先配置一些GPIO的状态
+- 打包镜像：支持解压、再重新打包
+- test-mmc：增加自动扫描采样相位的功能
+- 新增器件：
+  - Panel：CHIPONE CO5300、NV3051、FL7707、FT8201
+  - NAND：ZB35Q01B
+  - Touch：chsc5xxx、chsc6xxx
+  - Camera：OV9281、TP9951
+  - 编码器：HEC40
+- 新增示例：test-tcp、test-udp、ge fillrect/bitblit/rotation/alpha bend/format convert
+- 新增方案配置：d12x-demo68-mmc
+
+## 优化 ##
+- 歌词特效：
+  - 解决特效切换时的滚动慢问题
+  - 优化居中显示的处理
+  - 增加shake特效的设置
+- MPP：优化H264码流的兼容性
+- USB Host：优化MSC的disconnect处理
+- USB OTG：优化Host切换状态时的处理流程
+- NAND：
+  - 优化block层的多线程并发处理
+  - 优化读性能
+  - 优化ECC、OOB的接口实现
+- SPI：支持异步模式的访问；兼容RT-Thread SPI框架的模式参数
+- mbedtls：优化与不同版本LwIP配合的兼容性
+- 烧写：优化UART的烧写速度；优化NOR的擦写速度
+- PM：优化休眠唤醒的接口和流程，支持power key控制模式
+- aic8800：增加BT接口，并提升稳定性
+- 打包镜像：更新truncate工具，支持更大容量分区
+
+## 修改 ##
+- USB副屏：
+  - OSD：调整“显示”的子菜单布局，包含“旋转”等
+  - 完善第二块屏的初始化流程
+  - 重构复合设备的管理流程
+- LVGL：
+  - V9：D13x 方案中只使用SRAM空间
+  - 简化用户内存的配置方法
+  - demo-hub中默认播放器改为ffmpeg
+  - demo-hub去掉FreeType的支持
+  - player：完善pause的处理流程；修正某些情况下的丢帧问题；完善切换视频源的异常处理
+  - 86box：修正timer的溢出判断
+  - 优化文件系统的mount同步处理
+- MPP：
+  - audio player：修正某些情况下的stop状态同步问题
+  - player：默认采用VE直接填充FrameBuffer的方式
+  - ve：调整Jpeg旋转的参数配置
+  - AAC：完善buf管理的处理
+- OTA：修正检测到有坏块后的处理流程
+- QSPI0：默认IO采用上拉配置
+- SFUD：修正100MHz标准SPI模式的Fast read命令
+- DFS：完善异常情况下的资源释放处理
+- 编译：修正某些情况下的Kconfig重复引用
+- 动态内存：管理策略统一改为best模式
+- D12x：统一采用默认的Efuse配置参数
+- D21x：增加Idle线程栈的大小
+- SDMC：统一SDMC的设备名称规则
+- UART：完善奇偶校验的异常处理
+- CAN：完善某些情况下的异常处理
+- 烧写：修正RAM资源小的情况下的分区CRC计算
+- OTA：完善SDNAND的支持；设置env分区为只读属性
+- WiFi：完善WLAN框架中的异常处理
+- AiPQ：完善Panel多配置情况下的处理
+- Eclipse：改善脚本在Python2环境中的兼容性
+- FreeRTOS：修正free命令的处理
+- TP2825：恢复TEST_MODE的处理代码
+- OneStep：修正list_module命令的处理
+
+
+
 # V1.2.0 #
 ## 新增 ##
 - USB：

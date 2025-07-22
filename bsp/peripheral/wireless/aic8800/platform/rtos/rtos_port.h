@@ -121,7 +121,7 @@ typedef unsigned int    time_t;
 #define RTOS_TASK_NULL             NULL
 
 unsigned long rtos_now(bool isr);
-void rtos_msleep(uint32 time_in_ms);
+void rtos_msleep(uint32_t time_in_ms);
 void rtos_udelay(unsigned int us);
 
 void *rtos_malloc(uint32_t size);
@@ -256,5 +256,12 @@ uint32_t rtos_wait_task_suspend_only(rtos_task_handle ref);
 extern void **rtos_pval_1;
 extern void **rtos_pval_2;
 
-#endif
+typedef void (*osal_dbg_printf_t)(const char *fmt, ...);
 
+typedef struct {
+    osal_dbg_printf_t osal_dbg_printf;
+} osal_porting_ops_t;
+
+extern const osal_porting_ops_t osal_porting_ops;
+
+#endif

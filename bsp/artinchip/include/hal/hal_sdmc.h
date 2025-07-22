@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -237,6 +237,7 @@ void hal_sdmc_get_rsp(struct aic_sdmc_host *host, u32 *buf, u32 all);
 
 void aic_sdmc_set_ext_clk_mux(struct aic_sdmc_host *host, u32 mux);
 void hal_sdmc_set_phase(struct aic_sdmc_host *host, u32 drv, u32 smp);
+void hal_sdmc_set_delay(struct aic_sdmc_host *host, u32 drv, u32 smp);
 void hal_sdmc_set_buswidth(struct aic_sdmc_host *host, u32 buswidth);
 void hal_sdmc_set_ddrmode(struct aic_sdmc_host *host, u32 ddr);
 void hal_sdmc_clk_disable(struct aic_sdmc_host *host);
@@ -245,6 +246,7 @@ void hal_sdmc_sdio_irq_enable(struct aic_sdmc_host *host, u32 en);
 void hal_sdmc_set_div(struct aic_sdmc_host *host, u32 div);
 
 void hal_sdmc_fifo_init(struct aic_sdmc_host *host, u32 *thd);
+void hal_sdmc_soft_reset(struct aic_sdmc_host *host);
 int hal_sdmc_reset(struct aic_sdmc_host *host, u32 value);
 void hal_sdmc_init(struct aic_sdmc_host *host);
 

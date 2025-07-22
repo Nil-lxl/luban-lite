@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -34,30 +34,37 @@ static void config_ve_top_reg(struct jpeg_ctx *s)
 
 static void config_header_info(struct jpeg_ctx *s)
 {
-	uint32_t val = 0;
-	write_reg_u32(s->regs_base + JPG_START_POS_REG, 0);
+    uint32_t val = 0;
+    write_reg_u32(s->regs_base + JPG_START_POS_REG, 0);
 
-	write_reg_u32(s->regs_base + JPG_CTRL_REG, (3 << 12) | (3 << 8) | (3 << 3));
+    write_reg_u32(s->regs_base + JPG_CTRL_REG, (3 << 12) | (3 << 8) | (3 << 3));
 
-	int width_align = (s->width + 15) & (~15);
-	val = s->height | (width_align << 16);
-	write_reg_u32(s->regs_base + JPG_SIZE_REG, val);
+    int width_align = (s->width + 15) & (~15);
+    val = s->height | (width_align << 16);
+    write_reg_u32(s->regs_base + JPG_SIZE_REG, val);
 
-	int total_blks = s->h_count[0] * s->v_count[0] +
-		s->h_count[1] * s->v_count[1] + s->h_count[2] * s->v_count[2];
-	val = s->v_count[2] | (s->h_count[2] << 2) |
-		(s->v_count[1] << 4) | (s->h_count[1] << 6) |
-		(s->v_count[0] << 8) | (s->h_count[0] << 10) |
-		(s->comp_num << 12) | (total_blks << 16);
-	write_reg_u32(s->regs_base + JPG_MCU_INFO_REG, val);
+    int total_blks = s->h_count[0] * s->v_count[0] +
+        s->h_count[1] * s->v_count[1] + s->h_count[2] * s->v_count[2];
+    val = s->v_count[2] | (s->h_count[2] << 2) |
+        (s->v_count[1] << 4) | (s->h_count[1] << 6) |
+        (s->v_count[0] << 8) | (s->h_count[0] << 10) |
+        (s->comp_num << 12) | (total_blks << 16);
+    write_reg_u32(s->regs_base + JPG_MCU_INFO_REG, val);
 
-	val = 12 / total_blks;
-	write_reg_u32(s->regs_base + JPG_HANDLE_NUM_REG, val);
+    val = 12 / total_blks;
+#ifndef AIC_VE_DRV_V10
+    val = val > 4 ? 3 : val -1;
+#endif
+    write_reg_u32(s->regs_base + JPG_HANDLE_NUM_REG, val);
 
-	write_reg_u32(s->regs_base + JPG_UV_REG, s->uv_interleave);
-	write_reg_u32(s->regs_base + JPG_FRAME_IDX_REG, 0);
-	write_reg_u32(s->regs_base + JPG_RST_INTERVAL_REG, 0);
-	write_reg_u32(s->regs_base + JPG_INTRRUPT_EN_REG, 0);
+    write_reg_u32(s->regs_base + JPG_UV_REG, s->uv_interleave);
+    write_reg_u32(s->regs_base + JPG_FRAME_IDX_REG, 0);
+    write_reg_u32(s->regs_base + JPG_RST_INTERVAL_REG, 0);
+#ifdef AIC_VE_DRV_V10
+    write_reg_u32(s->regs_base + JPG_INTRRUPT_EN_REG, 0);
+#else
+    write_reg_u32(s->regs_base + JPG_INTRRUPT_EN_REG, 7);
+#endif
 }
 
 static void config_picture_info_register(struct jpeg_ctx *s)
@@ -85,6 +92,8 @@ static void config_picture_info_register(struct jpeg_ctx *s)
 	write_reg_u32(s->regs_base + PIC_INFO_START_REG + 8, s->phy_addr[0]);
 	write_reg_u32(s->regs_base + PIC_INFO_START_REG + 12, s->phy_addr[1]);
 	write_reg_u32(s->regs_base + PIC_INFO_START_REG + 16, s->phy_addr[2]);
+
+	write_reg_u32(s->regs_base + PIC_INFO_WRITE_END_REG, 0);
 }
 
 /*

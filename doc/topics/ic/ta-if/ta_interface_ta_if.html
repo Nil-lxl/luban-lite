@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="T-Format / A-Format Absolute Encoder Interface (TA-AEI)，简称 TA_IF，即 TA 绝对值编码器接口，主要用作 Master，控制 T-Format/ A-Format 接口的绝对值编码器。Tamgawa 的编码器接口格式对应为 T-Format，Nikon 编码器接口格式对应为 A-Format。 TA_IF ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-08"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ta_interface_ta_if"/><meta name="DC.language" content="zh-CN"/><title>T-Format/ A-Format Absolute Encoder Interface (TA_IF)</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/ic/ta-if/ta_interface_ta_if.dita"/><meta name="wh-out-relpath" content="topics/ic/ta-if/ta_interface_ta_if.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="T-Format / A-Format Absolute Encoder Interface (TA-AEI)，简称 TA_IF，即 TA 绝对值编码器接口，主要用作 Master，控制 T-Format/ A-Format 接口的绝对值编码器。Tamgawa 的编码器接口格式对应为 T-Format，Nikon 编码器接口格式对应为 A-Format。 TA_IF ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-08"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="ta_interface_ta_if"/><meta name="DC.language" content="zh-CN"/><title>T-Format/ A-Format Absolute Encoder Interface (TA_IF)</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/ic/ta-if/ta_interface_ta_if.dita"/><meta name="wh-out-relpath" content="topics/ic/ta-if/ta_interface_ta_if.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -102,28 +102,28 @@
                 </div>
     
     <div class="- topic/body concept/conbody body conbody">
-        <p class="- topic/p p" data-ofbid="d79794e31__20250409171038">T-Format / A-Format Absolute Encoder Interface (TA-AEI)，简称 TA_IF，即 TA 绝对值编码器接口，主要用作
+        <p class="- topic/p p" data-ofbid="d81150e31__20250519091512">T-Format / A-Format Absolute Encoder Interface (TA-AEI)，简称 TA_IF，即 TA 绝对值编码器接口，主要用作
             Master，控制 T-Format/ A-Format 接口的绝对值编码器。Tamgawa 的编码器接口格式对应为 T-Format，Nikon 编码器接口格式对应为
             A-Format。</p>
-        <p class="- topic/p p" data-ofbid="d79794e34__20250409171038">TA_IF
+        <p class="- topic/p p" data-ofbid="d81150e34__20250519091512">TA_IF
             通过特定的通信协议和信号线，将编码器测量到的物理量（如位置和角度）转换为数字信号传输给控制器。控制器接收到信号后，按照既定的规则进行解析，从而得到准确的测量值。</p>
         <section class="- topic/section section" id="ta_interface_ta_if__section_pfq_4kk_qbc" data-ofbid="ta_interface_ta_if__section_pfq_4kk_qbc"><h2 class="- topic/title title sectiontitle">特性说明</h2>
             
             <ul class="- topic/ul ul" id="ta_interface_ta_if__ul_all_hlk_qbc" data-ofbid="ta_interface_ta_if__ul_all_hlk_qbc">
-                <li class="- topic/li li" data-ofbid="d79794e44__20250409171038">支持 T-Format 和 A-Format（A-Format 只支持点对点模式）。</li>
-                <li class="- topic/li li" data-ofbid="d79794e47__20250409171038">波特率支持 2.5 Mbps/ 4 Mbps/ 6.6 Mbps/ 8 Mbps/ 16 Mbps。</li>
-                <li class="- topic/li li" data-ofbid="d79794e50__20250409171038">支持编码器绝对值位置数据解码。</li>
+                <li class="- topic/li li" data-ofbid="d81150e44__20250519091512">支持 T-Format 和 A-Format（A-Format 只支持点对点模式）。</li>
+                <li class="- topic/li li" data-ofbid="d81150e47__20250519091512">波特率支持 2.5 Mbps/ 4 Mbps/ 6.6 Mbps/ 8 Mbps/ 16 Mbps。</li>
+                <li class="- topic/li li" data-ofbid="d81150e50__20250519091512">支持编码器绝对值位置数据解码。</li>
             </ul>
         </section>
         <section class="- topic/section section" id="ta_interface_ta_if__section_igv_qmk_qbc" data-ofbid="ta_interface_ta_if__section_igv_qmk_qbc"><h2 class="- topic/title title sectiontitle">原理框图</h2>
             
-            <div class="- topic/p p" data-ofbid="d79794e60__20250409171038"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ta_interface_ta_if__image_sk2_mnk_qbc" src="../../../images/ta_if/ta_principle.png" width="672"/></div><br/></div>
-            <div class="- topic/p p" data-ofbid="d79794e63__20250409171038">外部接口说明如下：<ul class="- topic/ul ul" id="ta_interface_ta_if__ul_jcl_trw_ryb" data-ofbid="ta_interface_ta_if__ul_jcl_trw_ryb">
-                    <li class="- topic/li li" data-ofbid="d79794e67__20250409171038">
-                        <p class="- topic/p p" data-ofbid="d79794e69__20250409171038">TA-DE：用于驱动外部的 RS485 芯片，自动切换 Dirver 和 Reception 状态。</p>
+            <div class="- topic/p p" data-ofbid="d81150e60__20250519091512"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ta_interface_ta_if__image_sk2_mnk_qbc" src="../../../images/ta_if/ta_principle.png" width="672"/></div><br/></div>
+            <div class="- topic/p p" data-ofbid="d81150e63__20250519091512">外部接口说明如下：<ul class="- topic/ul ul" id="ta_interface_ta_if__ul_jcl_trw_ryb" data-ofbid="ta_interface_ta_if__ul_jcl_trw_ryb">
+                    <li class="- topic/li li" data-ofbid="d81150e67__20250519091512">
+                        <p class="- topic/p p" data-ofbid="d81150e69__20250519091512">TA-DE：用于驱动外部的 RS485 芯片，自动切换 Dirver 和 Reception 状态。</p>
                     </li>
-                    <li class="- topic/li li" data-ofbid="d79794e73__20250409171038">
-                        <p class="- topic/p p" data-ofbid="d79794e75__20250409171038">TA-DIO：输入输出数据信号。</p>
+                    <li class="- topic/li li" data-ofbid="d81150e73__20250519091512">
+                        <p class="- topic/p p" data-ofbid="d81150e75__20250519091512">TA-DIO：输入输出数据信号。</p>
                     </li>
                 </ul></div>
         </section>
@@ -133,22 +133,22 @@
                 
                 <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="ta_interface_ta_if__image_kzf_5rw_ryb" src="../../../images/ta_if/ta_connect_block.svg" width="624"/></div><br/>
             <figcaption data-caption-side="bottom" class="- topic/title title figcapcenter"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">TA_IF 实时控制外设互联</span></figcaption></figure>
-            <p class="- topic/p p" data-ofbid="d79794e94__20250409171038"><strong class="+ topic/ph hi-d/b ph b">TA_IF 输入输出管脚</strong></p>
-            <p class="- topic/p p" data-ofbid="d79794e98__20250409171038">如<a class="- topic/xref xref" href="#ta_interface_ta_if__fig_grn_kcr_5bc">TA_IF 实时控制外设互联</a>所示，TA_IF 的输入输出管脚信号 TA_DE 和 TA_DIO
+            <p class="- topic/p p" data-ofbid="d81150e94__20250519091512"><strong class="+ topic/ph hi-d/b ph b">TA_IF 输入输出管脚</strong></p>
+            <p class="- topic/p p" data-ofbid="d81150e98__20250519091512">如<a class="- topic/xref xref" href="#ta_interface_ta_if__fig_grn_kcr_5bc">TA_IF 实时控制外设互联</a>所示，TA_IF 的输入输出管脚信号 TA_DE 和 TA_DIO
                 复用 ENC_IO_MUX 模块，需通过 SYS_CFG 配置寄存器 ENCODER_CFG 进行选择。其中对应关系为：</p>
             <ul class="- topic/ul ul" id="ta_interface_ta_if__ul_lzf_5rw_ryb" data-ofbid="ta_interface_ta_if__ul_lzf_5rw_ryb">
-                <li class="- topic/li li" data-ofbid="d79794e107__20250409171038">
-                    <p class="- topic/p p" data-ofbid="d79794e109__20250409171038">ENC_IO0 对应 TA_DE。</p>
+                <li class="- topic/li li" data-ofbid="d81150e107__20250519091512">
+                    <p class="- topic/p p" data-ofbid="d81150e109__20250519091512">ENC_IO0 对应 TA_DE。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d79794e113__20250409171038">
-                    <p class="- topic/p p" data-ofbid="d79794e115__20250409171038">ENC_IO1 对应 TA_DIO。</p>
+                <li class="- topic/li li" data-ofbid="d81150e113__20250519091512">
+                    <p class="- topic/p p" data-ofbid="d81150e115__20250519091512">ENC_IO1 对应 TA_DIO。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d79794e119__20250409171038">
-                    <p class="- topic/p p" data-ofbid="d79794e121__20250409171038">ENC_IO2 无对应 TA_IF 模块的信号，无需使用。</p>
+                <li class="- topic/li li" data-ofbid="d81150e119__20250519091512">
+                    <p class="- topic/p p" data-ofbid="d81150e121__20250519091512">ENC_IO2 无对应 TA_IF 模块的信号，无需使用。</p>
                 </li>
             </ul>
-            <p class="- topic/p p" data-ofbid="d79794e127__20250409171038"><strong class="+ topic/ph hi-d/b ph b">TA_IF 位置数据</strong></p>
-            <p class="- topic/p p" data-ofbid="d79794e131__20250409171038">如<a class="- topic/xref xref" href="#ta_interface_ta_if__fig_grn_kcr_5bc">TA_IF 实时控制外设互联</a>所示，TA_IF 的解析所得的位置数据，可以传输到 HCL 以及
+            <p class="- topic/p p" data-ofbid="d81150e127__20250519091512"><strong class="+ topic/ph hi-d/b ph b">TA_IF 位置数据</strong></p>
+            <p class="- topic/p p" data-ofbid="d81150e131__20250519091512">如<a class="- topic/xref xref" href="#ta_interface_ta_if__fig_grn_kcr_5bc">TA_IF 实时控制外设互联</a>所示，TA_IF 的解析所得的位置数据，可以传输到 HCL 以及
                 QOUT 模块，分别用于硬件电流环的电角度计算和 QOUT 的任意分频输出。</p>
         </section>
     </div>
@@ -194,7 +194,7 @@
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

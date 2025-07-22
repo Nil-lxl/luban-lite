@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -40,7 +40,9 @@ struct spinand_blk_device {
     char name[32];
     enum part_attr attr;
     u8 *pagebuf;
-    struct blk_cache blk_cache[BLOCK_CACHE_NUM];
+    struct blk_cache *blk_cache;
+    struct rt_mutex blk_cache_lock;
+    u32 *block_num_cache;
 };
 
 int rt_blk_nand_register_device(const char *name, struct rt_mtd_nand_device *mtd_device);

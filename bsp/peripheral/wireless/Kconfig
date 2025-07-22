@@ -37,6 +37,7 @@ menuconfig AIC_WLAN_AIC8800D40L
     bool "AIC8800 wlan driver"
     default n
     depends on AIC_WIRELESS_LAN
+    select LPKG_USING_MBEDTLS
     if AIC_WLAN_AIC8800D40L
     source "bsp/peripheral/wireless/aic8800/Kconfig.dev"
     ##source "bsp/peripheral/wireless/aic8800/Kconfig.drv"

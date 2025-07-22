@@ -92,7 +92,7 @@ char *llm_generate_response(llm_config_t *config)
                         }
                         strcat(newAllContent, config->content_buffer);
                         allContent = newAllContent;
-                        printf("%s", config->content_buffer);
+                        // printf("%s", config->content_buffer);
                         free(oldAllContent);
 
                         if (config->callback)

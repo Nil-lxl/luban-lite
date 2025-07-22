@@ -24,7 +24,7 @@ static struct aic_rgb_comp *g_aic_rgb_comp;
 
 #ifdef AIC_DISP_PQ_TOOL
 AIC_PQ_TOOL_PINMUX_CONFIG(disp_pinmux_config);
-AIC_PQ_TOOL_SET_DISP_PINMUX_FOPS(disp_pinmux_config)
+AIC_PQ_TOOL_SET_DISP_PINMUX_FOPS(disp_pinmux_config);
 #endif
 
 static struct aic_rgb_comp *aic_rgb_request_drvdata(void)

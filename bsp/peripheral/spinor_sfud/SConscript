@@ -8,7 +8,7 @@ CPPPATH = []
 LOCAL_CFLAGS = ''
 
 if GetDepend('LPKG_USING_SFUD'):
-    src += ['src/sfud.c', 'src/sfud_qe.c']
+    src += ['src/sfud.c', 'src/sfud_qe.c', 'src/sfud_private.c']
     src += ['src/sfud_sfdp.c']
     CPPPATH += [cwd + '/inc']
 

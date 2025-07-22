@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -33,6 +33,7 @@ struct nftl_mtd {
 enum part_attr {
     PART_ATTR_MTD = 0,
     PART_ATTR_NFTL,
+    PART_ATTR_LEVELX,
 };
 
 #define MAX_MTD_NAME 64
@@ -97,6 +98,7 @@ int mtd_map_oob_user_region(struct mtd_dev *mtd, u8 *oobbuf, u8 *buf, int start,
 struct nftl_mtd *build_nftl_list(char *nftlvols);
 void free_nftl_list(struct nftl_mtd *nftl);
 u8 partition_nftl_is_exist(char *mtd_name, struct nftl_mtd *nftl_list);
+u8 partition_levelx_is_exist(char *mtd_name, char *levelx_partstr);
 
 #ifdef __cplusplus
 }

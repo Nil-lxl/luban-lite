@@ -53,6 +53,10 @@ struct osd_settings_manager {
     lv_obj_t * screen;
 
     struct {
+        lv_obj_t * dropdown;
+    } rotate;
+
+    struct {
         lv_obj_t * background;
         lv_obj_t * logo;
         lv_obj_t * pictures;
@@ -136,6 +140,8 @@ void backlight_pwm_config(unsigned int channel, unsigned int level);
 void backlight_slider_event_cb(lv_event_t * e);
 
 void slider_event_cb(lv_event_t * e);
+
+void device_upgrade_event_cb(lv_event_t * e);
 
 #ifdef __cplusplus
 } /* extern "C" */

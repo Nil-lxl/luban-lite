@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -58,8 +58,8 @@ USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t buf[460 * 1024];
 #define VIDEO_PACKET_SIZE (unsigned int)(((MAX_PAYLOAD_SIZE / 1)) | (0x00 << 11))
 #endif
 
-#define WIDTH  (unsigned int)(64)
-#define HEIGHT (unsigned int)(48)
+#define WIDTH  (unsigned int)(640)
+#define HEIGHT (unsigned int)(480)
 
 #define CAM_FPS        (30)
 #define INTERVAL       (unsigned long)(10000000 / CAM_FPS)
@@ -188,18 +188,34 @@ struct uvc_video {
     struct mpp_video_fmt src_fmt;
     struct vin_video_buf binfo;
     usb_osal_sem_t stream_sem;
+    usb_osal_sem_t tx_sem;
 };
 
 static struct uvc_video g_uvc_video = {0};
+static usb_osal_thread_t video_thread = NULL;
 
 /* USB Global variables */
 static volatile bool g_running = false;
 static volatile bool iso_tx_busy = false;
 
+void usbd_video_iso_callback(uint8_t ep, uint32_t nbytes)
+{
+    USB_LOG_DBG("actual in len:%d\r\n", nbytes);
+    iso_tx_busy = false;
+    usb_osal_sem_give(g_uvc_video.tx_sem);
+}
+
+static struct usbd_endpoint video_in_ep = {
+    .ep_cb = usbd_video_iso_callback,
+    .ep_addr = VIDEO_IN_EP
+};
+
+
 /* Sensor video function */
 static int sensor_get_fmt(void)
 {
     int ret = 0;
+    uint32_t frame_size;
     struct mpp_video_fmt f = {0};
 
     ret = mpp_dvp_ioctl(DVP_IN_G_FMT, &f);
@@ -213,6 +229,13 @@ static int sensor_get_fmt(void)
     g_uvc_video.h = g_uvc_video.src_fmt.height;
     USB_LOG_INFO("Camera Sensor format: w %d h %d, code 0x%x, bus 0x%x, colorspace 0x%x\n",
                  f.width, f.height, f.code, f.bus_type, f.colorspace);
+
+    if (f.bus_type == MEDIA_BUS_RAW8_MONO) {
+        USB_LOG_INFO("Set the output format to YUV400\n");
+        g_uvc_video.dst_fmt = MPP_FMT_YUV400;
+        frame_size = g_uvc_video.w * g_uvc_video.h;
+        memset(buf + frame_size, 128, frame_size / 2);
+    }
     return 0;
 }
 
@@ -372,55 +395,51 @@ static void usb_set_fmt(int width, int height, int dst_fmt)
 static int video_usb_set(struct uvc_video *uvc_video, int index)
 {
     struct vin_video_buf *binfo = &uvc_video->binfo;
-    int total_len = 0, i = 0;
+    int image_size = 0, i = 0;
     char *addr = NULL;
-    uint32_t out_len, packets;
-
-    /* calculate total length */
+    uint32_t out_len, remaining_len;
+    uint32_t packets, packet_size;
+    /* calculate total image length */
     for (i = 0; i < VID_BUF_PLANE_NUM; i++)
-        total_len += binfo->planes[index * VID_BUF_PLANE_NUM + i].len;
+        image_size += binfo->planes[index * VID_BUF_PLANE_NUM + i].len;
 
-    /* copy data to buffer */
-    for (i = 0; i < VID_BUF_PLANE_NUM; i++) {
-        addr = (char *)(uintptr_t)binfo->planes[index * VID_BUF_PLANE_NUM + i].buf;
-        USB_LOG_DBG("i:%d, len:%d, buf:0x%x, addr:%p\n",
-                i, binfo->planes[index * VID_BUF_PLANE_NUM + i].len,
-                binfo->planes[index * VID_BUF_PLANE_NUM + i].buf,
+    addr = (char *)(uintptr_t)binfo->planes[index * VID_BUF_PLANE_NUM].buf;
+    USB_LOG_DBG("i:%d, len:%d, buf:0x%x, addr:%p\n",
+                i, binfo->planes[index * VID_BUF_PLANE_NUM].len,
+                binfo->planes[index * VID_BUF_PLANE_NUM].buf,
                 addr);
-        aicos_dcache_invalid_range(addr, binfo->planes[index * VID_BUF_PLANE_NUM + i].len);
-        if (i == 0)
-            memcpy(buf, addr, binfo->planes[index * VID_BUF_PLANE_NUM + i].len);
-        else
-            memcpy(buf + binfo->planes[index * VID_BUF_PLANE_NUM + i - 1].len,
-                   addr, binfo->planes[index * VID_BUF_PLANE_NUM + i].len);
+    aicos_dcache_invalid_range(addr, image_size);
+
+    if (g_uvc_video.dst_fmt == MPP_FMT_YUV400) {
+        image_size += (image_size / 2);
+        memcpy(buf, addr, binfo->planes[index * VID_BUF_PLANE_NUM].len);
+        addr = (char *)(uintptr_t)buf;
     }
 
-    packets = usbd_video_payload_fill((uint8_t *)buf, total_len, packet_buffer, &out_len);
-    USB_LOG_DBG("ep:0x%x, packet:%d len:%d, size:%d, packets:%d\n",
-            VIDEO_IN_EP, MAX_PAYLOAD_SIZE, total_len, out_len, packets);
+    packets = usbd_video_payload_fill((uint8_t *)addr, image_size, packet_buffer, &out_len);
+    remaining_len = out_len;
+
+    USB_LOG_DBG("ep:0x%x, packet:%d image_size:%d, total_size:%ld, packets:%ld\n",
+                video_in_ep.ep_addr, MAX_PAYLOAD_SIZE, image_size, out_len, packets);
 
     for (i = 0; i < packets; i++) {
-        if (i == (packets - 1)) {
-            iso_tx_busy = true;
-            USB_LOG_DBG("last, ep write:%d, l:%d\n", i, out_len - (packets - 1) * MAX_PAYLOAD_SIZE);
-            usbd_ep_start_write(VIDEO_IN_EP, &packet_buffer[i * MAX_PAYLOAD_SIZE], out_len - (packets - 1) * MAX_PAYLOAD_SIZE);
-            while (iso_tx_busy) {
-                if (g_running == 0) {
-                        USB_LOG_DBG("video transfer interrupt close\n");
-                        return -1;
-                }
-            }
-        } else {
-            iso_tx_busy = true;
-            USB_LOG_DBG("ep write:%d, l:%d\n", i, MAX_PAYLOAD_SIZE);
-            usbd_ep_start_write(VIDEO_IN_EP, &packet_buffer[i * MAX_PAYLOAD_SIZE], MAX_PAYLOAD_SIZE);
-            while (iso_tx_busy) {
-                if (g_running == 0) {
-                    USB_LOG_DBG("video transfer interrupt close, \n");
-                    return -1;
-                }
-            }
+        iso_tx_busy = true;
+        packet_size = MIN(MAX_PAYLOAD_SIZE, remaining_len);
+        usbd_ep_start_write(video_in_ep.ep_addr, &packet_buffer[out_len - remaining_len], packet_size);
+
+        USB_LOG_DBG("ep:0x%x, [%d]%#lx (%ld) total_size:%ld, remaining_len:%ld\n",
+                        video_in_ep.ep_addr, i, (uint32_t)&packet_buffer[out_len - remaining_len],
+                        packet_size, out_len, remaining_len);
+
+        if (usb_osal_sem_take(g_uvc_video.tx_sem, 3000)) {
+            USB_LOG_WRN("UVC transmission termination.\n");
         }
+
+        if (g_running == 0) {
+            USB_LOG_DBG("video transfer interrupt close\n");
+            return -1;
+        }
+        remaining_len -= packet_size;
     }
 
     return 0;
@@ -455,12 +474,15 @@ static void usbd_video_pump(void)
 
 static void usbd_video_thread(void *arg)
 {
-    int i = 0;
+    int i = 0, cnt = 0;
 
     while (1) {
         /* wait set_alt 1 to streaming on */
         usb_osal_sem_take(g_uvc_video.stream_sem, USB_OSAL_WAITING_FOREVER);
-        USB_LOG_DBG("Get sem, streaming on\n");
+        USB_LOG_DBG("UVC streaming on [%d]\n", cnt);
+
+        if (cnt)
+            mpp_vin_reinit();
 
         if (sensor_request_buf(&g_uvc_video.binfo) < 0) {
             USB_LOG_ERR("request buf failed\n");
@@ -478,13 +500,12 @@ static void usbd_video_thread(void *arg)
 
         sensor_stop();
         sensor_release_buf(g_uvc_video.binfo.num_buffers);
+        cnt++;
     }
 }
 
 static int camera_init(void)
 {
-    usb_osal_thread_t video_thread = NULL;
-
     memset(&g_uvc_video, 0, sizeof(struct uvc_video));
     g_uvc_video.dst_fmt = SENSOR_FORMAT;
 
@@ -524,6 +545,12 @@ static int camera_init(void)
         return -1;
     }
 
+    g_uvc_video.tx_sem = usb_osal_sem_create(0);
+    if (!g_uvc_video.tx_sem) {
+        USB_LOG_ERR("create dynamic semaphore failed.\n");
+        return -1;
+    }
+
     video_thread = usb_osal_thread_create("usbd_video_thread", 2048, CONFIG_USBHOST_PSC_PRIO + 1, usbd_video_thread, NULL);
     if (video_thread == NULL) {
         USB_LOG_ERR("video_thread create failed\n");
@@ -535,8 +562,11 @@ static int camera_init(void)
     return 0;
 }
 
-/* USB function */
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+void usbd_comp_video_event_handler(uint8_t event)
+#else
 void usbd_event_handler(uint8_t event)
+#endif
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -573,26 +603,68 @@ void usbd_video_open(uint8_t intf)
 void usbd_video_close(uint8_t intf)
 {
     USB_LOG_RAW("CLOSE\r\n");
+    if (iso_tx_busy == true)
+        usb_osal_sem_give(g_uvc_video.tx_sem);
     iso_tx_busy = false;
     g_running = false;
 }
 
-void usbd_video_iso_callback(uint8_t ep, uint32_t nbytes)
-{
-    USB_LOG_DBG("actual in len:%d\r\n", nbytes);
-    iso_tx_busy = false;
-}
-
-static struct usbd_endpoint video_in_ep = {
-    .ep_cb = usbd_video_iso_callback,
-    .ep_addr = VIDEO_IN_EP
-};
-
 struct usbd_interface intf0;
 struct usbd_interface intf1;
 
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+#include "composite_template.h"
+int usbd_comp_video_init(uint8_t *ep_table, void *data)
+{
+    uint32_t max_frame_size = 0;
+
+    video_in_ep.ep_addr = ep_table[0];
+
+    camera_init();
+
+    max_frame_size = g_uvc_video.w * g_uvc_video.h * 2;
+
+    usbd_add_interface(usbd_video_init_intf(&intf0, INTERVAL, max_frame_size, MAX_PAYLOAD_SIZE));
+    usbd_add_interface(usbd_video_init_intf(&intf1, INTERVAL, max_frame_size, MAX_PAYLOAD_SIZE));
+    usbd_add_endpoint(&video_in_ep);
+    return 0;
+}
+#endif
+
+int video_deinit(void)
+{
+#ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+    usbd_deinitialize();
+#else
+    usbd_comp_func_release(video_descriptor, "video");
+#endif
+
+    iso_tx_busy = false;
+    g_running = false;
+
+    if (video_thread) {
+        usb_osal_thread_delete(video_thread);
+        video_thread = NULL;
+    }
+
+    if (g_uvc_video.stream_sem) {
+        usb_osal_sem_delete(g_uvc_video.stream_sem);
+        g_uvc_video.stream_sem = NULL;
+    }
+
+    if (g_uvc_video.tx_sem) {
+        usb_osal_sem_delete(g_uvc_video.tx_sem);
+        g_uvc_video.tx_sem = NULL;
+    }
+
+    mpp_vin_deinit();
+
+    return 0;
+}
+
 int video_init(void)
 {
+#ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     uint32_t max_frame_size = 0;
 
     camera_init();
@@ -605,7 +677,11 @@ int video_init(void)
     usbd_add_endpoint(&video_in_ep);
 
     usbd_initialize();
-
+#else
+    usbd_comp_func_register(video_descriptor,
+                            usbd_comp_video_event_handler,
+                            usbd_comp_video_init, "video");
+#endif
     return 0;
 }
-INIT_COMPONENT_EXPORT(video_init);
+USB_INIT_APP_EXPORT(video_init);

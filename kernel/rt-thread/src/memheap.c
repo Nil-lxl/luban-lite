@@ -969,6 +969,7 @@ int memheaptrace(int argc, char *argv[])
         /* find the specified object */
         if (name != RT_NULL && rt_strncmp(name, mh->parent.name, RT_NAME_MAX) != 0)
             continue;
+#ifndef RT_MEMTRACE_BRIEF_DUMP
         /* memheap dump */
         rt_kprintf("\nmemory heap address:\n");
         rt_kprintf("name    : %s\n", mh->parent.name);
@@ -977,6 +978,7 @@ int memheaptrace(int argc, char *argv[])
         rt_kprintf("max_used: 0x%08x\n", mh->max_used_size);
         rt_kprintf("size    : 0x%08x\n", mh->pool_size);
         rt_kprintf("\n--memory used information --\n");
+#endif
 
         if (mh->locked == RT_FALSE)
         {
@@ -1009,6 +1011,7 @@ int memheaptrace(int argc, char *argv[])
             if (block_size > max_size)
                 max_size = block_size;
 
+#ifndef RT_MEMTRACE_BRIEF_DUMP
             rt_kprintf("[0x%p - ", header_ptr);
             if (block_size < 1024)
                 rt_kprintf("%5d", block_size);
@@ -1022,6 +1025,7 @@ int memheaptrace(int argc, char *argv[])
                 header_ptr->owner_thread_name[1],
                 header_ptr->owner_thread_name[2],
                 header_ptr->owner_thread_name[3]);
+#endif
         }
         if (mh->locked == RT_FALSE)
         {

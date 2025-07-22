@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -174,17 +174,10 @@ s32 syscfg_fpga_de_clk_sel_by_div(u8 sclk, u8 pixclk)
 
 static s32 syscfg_fpga_de_clk_sel(enum fpga_disp_clk type)
 {
-#if !defined(CONFIG_AIC_DISP_V12) && !defined(CONFIG_AIC_DISP_V11)
     u8 sclk_div[] = { 10,  8,  4,  4,  4,  4,  4,  4,  4,  4,  3,  3,   8,
         3,  6,   6,   3,   6,  1,   2,   1,  2,  4,  6};
     u8 pixclk_div[] = {120, 32, 28, 14, 24, 18, 16, 32, 48, 96, 30, 30, 120,
         60, 60, 120,  90, 120, 96, 128, 108, 72, 96, 96};
-#else
-    u8 sclk_div[] = {20,  16,  4,  4,  4,  4,  4,  4,  4,  4,  3,  3,   8,
-        3,  6,   6,   4,   6,  1,   2,   1,  2,  4,  6};
-    u8 pixclk_div[] = {120, 32, 28, 14, 24, 18, 16, 32, 48, 96, 30, 30, 120,
-        60, 60, 120, 120, 120, 96, 128, 108, 72, 96, 96};
-#endif
 
     if (type > 17)
         syscfg_fpga_cfg_vco(3);

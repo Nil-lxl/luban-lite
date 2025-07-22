@@ -59,6 +59,9 @@ typedef enum MM_AUDIO_CODING_TYPE {
     MM_AUDIO_CODING_PCM,        /* Any variant of PCM coding */
     MM_AUDIO_CODING_AAC,        /* Any variant of AAC encoded data */
     MM_AUDIO_CODING_MP3,        /* Any variant of MP3 encoded data */
+    MM_AUDIO_CODING_APE,        /* Any variant of ape encoded data */
+    MM_AUDIO_CODING_FLAC,
+    MM_AUDIO_CODING_WMA,
     MM_AUDIO_CODING_MAX = 0x7FFFFFFF
 } MM_AUDIO_CODING_TYPE;
 
@@ -139,6 +142,13 @@ typedef struct mm_audio_param_port_format {
 
     /* Type of data expected for this port (e.g. PCM, AMR, MP3, etc) */
     MM_AUDIO_CODING_TYPE encoding;
+    u32 channels;
+    u32 bitrate;
+    u32 sample_rate;
+    u32 bits_per_sample;
+    u32 block_align;
+    void  *extradata;
+    u32  extradata_size;
 } mm_audio_param_port_format;
 
 typedef struct ms_audio_port_def {
@@ -171,6 +181,7 @@ typedef struct ms_video_port_def {
     u32 framerate;
     MM_VIDEO_CODING_TYPE compression_format;
     MM_COLOR_FORMAT_TYPE color_format;
+    MM_VIDEO_IN_SOURCE_TYPE vin_type;
 } ms_video_port_def;
 
 typedef struct mm_param_port_def {

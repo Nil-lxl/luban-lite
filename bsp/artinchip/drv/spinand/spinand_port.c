@@ -582,7 +582,7 @@ rt_err_t rt_hw_mtd_spinand_register(const char *device_name, u32 bus_hz)
     spinand->user_data = device;
     spinand->bus = atoi(device_name);
 
-    device->config.parent.mode = RT_SPI_MODE_0;
+    device->config.parent.mode = RT_SPI_MODE_0 | RT_SPI_MSB;
     device->config.parent.data_width = 8;
     device->config.parent.max_hz = bus_hz;
     device->config.ddr_mode = 0;

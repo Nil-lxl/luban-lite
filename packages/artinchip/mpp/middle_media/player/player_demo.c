@@ -43,7 +43,7 @@
 
 #define PLAYER_DEMO_FILE_MAX_NUM 128
 #define PLAYER_DEMO_FILE_PATH_MAX_LEN 256
-#define SUPPORT_FILE_SUFFIX_TYPE_NUM 8
+#define SUPPORT_FILE_SUFFIX_TYPE_NUM 11
 
 struct file_list {
     char *file_path[PLAYER_DEMO_FILE_MAX_NUM];
@@ -61,10 +61,12 @@ struct video_player_ctx {
     int player_end;
     int player_stop;
     struct av_media_info media_info;
+    char audio_file_path[PLAYER_DEMO_FILE_PATH_MAX_LEN];
 };
 
 char *file_suffix[SUPPORT_FILE_SUFFIX_TYPE_NUM] = {".h264", ".264", ".mp4", ".mp3",
-                                                   ".avi", ".mkv", ".ts", ".flv"};
+                                                   ".avi", ".mkv", ".ts", ".flv",
+                                                   ".wma", ".flac", ".aac"};
 struct video_player_ctx  *g_video_player_ctx = NULL;
 
 static void print_help(const char* prog)
@@ -468,6 +470,7 @@ static void hook_of_scheduler(struct rt_thread *from,struct rt_thread *to) {
 static int parse_options(struct video_player_ctx *player_ctx,int cnt,char**options)
 {
     int argc = cnt;
+    int len = 0;
     char **argv = options;
     struct video_player_ctx *ctx = player_ctx;
     int opt;
@@ -483,7 +486,7 @@ static int parse_options(struct video_player_ctx *player_ctx,int cnt,char**optio
     ctx->player_end = 0;
     optind = 0;
     while (1) {
-        opt = getopt(argc, argv, "i:t:l:c:W:H:q:a:r:sh");
+        opt = getopt(argc, argv, "i:t:l:c:w:H:q:a:r:sh");
         if (opt == -1) {
             break;
         }
@@ -505,6 +508,14 @@ static int parse_options(struct video_player_ctx *player_ctx,int cnt,char**optio
             break;
         case 's':
             ctx->seek_loop = 1;
+            break;
+        case 'w':
+            len = strlen(optarg);
+            if (len >= PLAYER_DEMO_FILE_PATH_MAX_LEN) {
+                loge("wav file path is too long");
+                return -1;;
+            }
+            strncpy((char*)ctx->audio_file_path, optarg, PLAYER_DEMO_FILE_PATH_MAX_LEN);
             break;
         case 'h':
             print_help(argv[0]);
@@ -544,7 +555,7 @@ static int process_command(struct video_player_ctx *player_ctx,char cmd)
         ret = do_rotation(ctx);
     } else if (cmd == 'w') {
 #ifdef AIC_MPP_PLAYER_AUDIO_RENDER_SHARE_TEST
-        ret = player_audio_render_share_play();
+        ret = player_audio_render_share_play(ctx->audio_file_path);
 #endif
     }
     return ret;

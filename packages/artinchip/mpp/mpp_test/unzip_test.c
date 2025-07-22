@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -63,7 +63,8 @@ static int unzip(char *file_name)
     void *mpp_unzip_ctx = NULL;
     void *src = NULL;
     void *dst = NULL;
-    int src_len = 32*1024;
+    int data_len = 32*1024;
+    int src_len = data_len*2;
     int dst_len = 1024*1024;
     src = aicos_malloc_align(MEM_CMA, src_len, CACHE_LINE_SIZE);
     if (src == NULL) {
@@ -101,22 +102,27 @@ static int unzip(char *file_name)
     }
 
     int out_len = 0;
-    int loop_times = (file_len + src_len -1)/ src_len;
+    int loop_times = (file_len + data_len -1)/ data_len;
     int read_len;
+    int data_offset;
     for (i=0; i<loop_times; i++) {
-        read_len = read(fd, src, src_len);
+        data_offset = (i%2==0)? 0: data_len;
+        unsigned char* src_addr = (unsigned char*)src + data_offset;
+        read_len = read(fd, src_addr, data_len);
         if (read_len < 0) {
             loge("read data failed");
             ret = -1;
             goto out;
         }
-        aicos_dcache_clean_range(src, read_len);
+        aicos_dcache_clean_range(src_addr, read_len);
 
         out_len = mpp_unzip_uncompressed(mpp_unzip_ctx, MPP_GZIP,
-            src, read_len,
+            src, src_len, data_offset, read_len,
             dst, dst_len, i==0, i==(loop_times-1));
+        if (out_len < 0) {
+            goto out;
+        }
 
-        printf("out_len: %d\n", out_len);
     }
 
     save_output(dst, out_len);

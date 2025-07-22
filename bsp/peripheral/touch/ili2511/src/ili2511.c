@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -118,7 +118,11 @@ static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf,
     }
 
     for (i = 0; i < ILI2511_MAX_TOUCH; i++) {
+#ifdef AIC_TOUCH_PANEL_ILI2511
         if (read_buf[i * ILI2511_POINT_LEN + 1] & 0x80)
+#else
+        if (read_buf[i * ILI2511_POINT_LEN + 1] & 0x40)
+#endif
             touch_num++;
     }
 
@@ -153,8 +157,14 @@ static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf,
             off_set = read_index * ILI2511_POINT_LEN;
             read_id = touch_id[read_index];
             pre_id[read_index] = read_id;
+
+#ifdef AIC_TOUCH_PANEL_ILI2511
             input_x = ((read_buf[off_set + 1] & 0x3f) << 8) | read_buf[off_set + 2];
             input_y = ((read_buf[off_set + 3] & 0x3f) << 8) | read_buf[off_set + 4];
+#else
+            input_x = ((read_buf[off_set + 3] & 0x3f) << 8) | read_buf[off_set + 2];
+            input_y = ((read_buf[off_set + 5] & 0x3f) << 8) | read_buf[off_set + 4];
+#endif
 
             aic_touch_flip(&input_x, &input_y);
             aic_touch_rotate(&input_x, &input_y);

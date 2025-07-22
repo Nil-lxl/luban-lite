@@ -93,7 +93,6 @@ if AICUPG_SUPPORT
     config AICUPG_UART_ENABLE
         bool "Upgrading by UART"
         default n
-        select LPKG_USING_CHERRYUSB
         select AIC_UART_DRV
 
     config AICUPG_USB_ENABLE

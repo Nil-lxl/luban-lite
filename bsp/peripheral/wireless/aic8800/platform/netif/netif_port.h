@@ -35,7 +35,7 @@ void platform_net_buf_rx_free(void *ref);
 // Driver netif base API define
 //-------------------------------------------------------------------
 int net_if_add(net_if_t *net_if, const uint32_t *ipaddr,
-                  const uint32_t *netmask, const uint32_t *gw);
+                  const uint32_t *netmask, const uint32_t *gw, void *state_vif);
 int net_if_get_name(net_if_t *net_if, char *buf, int len);
 int net_if_get_wifi_idx(net_if_t *net_if);
 void net_if_up(net_if_t *net_if);

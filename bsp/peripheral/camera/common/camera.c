@@ -27,6 +27,7 @@ struct rt_i2c_bus_device *camera_i2c_get(void)
         LOG_E("Failed to open %s", name);
         return NULL;
     }
+    LOG_I("Camera use I2C%d", AIC_CAMERA_I2C_CHAN);
 
     return i2c;
 }
@@ -55,10 +56,12 @@ u32 camera_rst_pin_get(void)
     u32 pin = 0;
 
     pin = rt_pin_get(AIC_CAMERA_RST_PIN);
-    if (pin)
+    if (pin) {
         rt_pin_mode(pin, PIN_MODE_OUTPUT);
-    else
-        LOG_E("Failed to get reset PIN\n");
+        LOG_I("Camera use reset PIN: %s", AIC_CAMERA_RST_PIN);
+    } else {
+        LOG_E("Failed to get reset PIN");
+    }
 
     return pin;
 }
@@ -68,10 +71,12 @@ u32 camera_pwdn_pin_get(void)
     u32 pin = 0;
 
     pin = rt_pin_get(AIC_CAMERA_PWDN_PIN);
-    if (pin)
+    if (pin) {
         rt_pin_mode(pin, PIN_MODE_OUTPUT);
-    else
-        LOG_E("Failed to get power down PIN\n");
+        LOG_I("Camera use power down PIN: %s", AIC_CAMERA_PWDN_PIN);
+    } else {
+        LOG_E("Failed to get power down PIN");
+    }
 
     return pin;
 }

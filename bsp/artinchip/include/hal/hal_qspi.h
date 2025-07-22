@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -60,6 +60,8 @@ struct qspi_master_config {
     u8 cpha;
     u32 rx_dlymode;
     u32 tx_dlymode;
+    u32 max_hz;
+    bool slave_en;
 };
 
 struct qspi_master_dma_config {
@@ -81,6 +83,10 @@ struct qspi_slave_config {
     u8 cs_polarity;
     u8 cpol;
     u8 cpha;
+    u32 rx_dlymode;
+    u32 tx_dlymode;
+    u32 max_hz;
+    bool slave_en;
 };
 
 struct qspi_slave_idma_config {
@@ -146,6 +152,7 @@ struct qspi_slave_state {
     u32 async_rx_count; /* Used in Async mode */
     u32 work_mode;
     u32 done_mask;
+    bool bit_mode;
 };
 
 struct qspi_bm_transfer {

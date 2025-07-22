@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -66,8 +66,8 @@ enum Stage {
 
 struct aicupg_trans_info {
     enum Stage stage;
-    __attribute__ ((aligned(CACHE_LINE_SIZE))) struct aic_cbw cbw;
-    __attribute__ ((aligned(CACHE_LINE_SIZE))) struct aic_csw csw;
+    __attribute__ ((aligned(CACHE_LINE_SIZE))) struct aic_cbw *cbw;
+    __attribute__ ((aligned(CACHE_LINE_SIZE))) struct aic_csw *csw;
 
     uint32_t remain;
     uint32_t transfer_len;
@@ -87,15 +87,6 @@ struct aicupg_trans_info {
     uint32_t (*send)(uint8_t *buf, uint32_t len);
     uint32_t (*recv)(uint8_t *buf, uint32_t len);
 };
-
-typedef s32 (*phy_rw_func)(u8 *buf, int len);
-
-struct phy_data_rw {
-    phy_rw_func recv;
-    phy_rw_func send;
-};
-
-s32 trans_layer_rw_proc(struct phy_data_rw *rw, u8 *buffer, u32 len);
 
 int32_t data_trans_layer_out_proc(struct aicupg_trans_info *info);
 int32_t data_trans_layer_in_proc(struct aicupg_trans_info *info);

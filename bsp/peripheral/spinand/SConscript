@@ -59,6 +59,7 @@ if GetDepend('LPKG_USING_SPINAND'):
     src += ['spinand.c']
     src += ['bbt.c']
     src += ['spinand_ooblayout.c']
+    src += ['spinand_bbt.c']
     CPPPATH += [cwd + '/inc']
 
     if rtconfig.PLATFORM in ['gcc', 'armclang']:

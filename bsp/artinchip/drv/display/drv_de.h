@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,6 +8,7 @@
 #define _DRV_DE_H_
 
 #include <aic_hal_de.h>
+#include <aic_drv_de.h>
 
 #define MAX_LAYER_NUM 2
 #define MAX_RECT_NUM 4
@@ -43,6 +44,10 @@ struct aic_de_comp {
     aicos_wqueue_t vsync_queue;
     unsigned int accum_line;
     u32 scaler_active;
+
+    /* INTERRUPT Context */
+    de_vsync_cb cb;
+    void *cb_data;
 };
 
 /**

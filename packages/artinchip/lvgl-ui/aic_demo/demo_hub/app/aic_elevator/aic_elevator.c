@@ -1,6 +1,14 @@
+/*
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Authors:  Zequan Liang <zequan.liang@artinchip.com>
+ */
+
 #include "aic_ui.h"
 #include "lvgl.h"
-#include "aic_lv_ffmpeg.h"
+#include "lv_aic_player.h"
 
 #define RUNNING_DIR_DOWN 0
 #define RUNNING_DIR_UP   1
@@ -46,6 +54,7 @@ extern void fb_dev_layer_only_video(void);
 lv_obj_t *aic_elevator_ui_init(void)
 {
     lv_obj_t *aic_elevator_ui = lv_obj_create(NULL);
+    lv_obj_set_size(aic_elevator_ui, LV_HOR_RES, LV_VER_RES);
     lv_obj_clear_flag(aic_elevator_ui, LV_OBJ_FLAG_SCROLLABLE);
 
 #ifdef AIC_CHIP_D12X
@@ -104,13 +113,16 @@ static void aic_elevator_ui_impl(lv_obj_t *parent)
 
 static void aic_elevator_player_impl(lv_obj_t *parent)
 {
-    lv_obj_t *ffmpeg = lv_ffmpeg_player_create(parent);
-    lv_obj_set_size(ffmpeg, adaptive_width(715), adaptive_height(485));
-    lv_obj_set_pos(ffmpeg, adaptive_width(300), adaptive_height(62));
-    // lv_ffmpeg_player_set_src(ffmpeg, LVGL_PATH_ORI(common/tft_video.mp4));
-    lv_ffmpeg_player_set_src(ffmpeg, LVGL_PATH_ORI(common/elevator_mjpg.mp4));
-    lv_ffmpeg_player_set_auto_restart(ffmpeg, true);
-    lv_ffmpeg_player_set_cmd(ffmpeg, LV_FFMPEG_PLAYER_CMD_START);
+    lv_obj_t *player = lv_aic_player_create(parent);
+    if (LV_HOR_RES == 1024)
+        lv_obj_set_pos(player, adaptive_width(420), adaptive_height(168));
+    else
+        lv_obj_set_pos(player, adaptive_width(150), adaptive_height(8));
+    lv_aic_player_set_src(player, LVGL_PATH_ORI(common/elevator_mjpg.mp4));
+    lv_aic_player_set_auto_restart(player, true);
+    lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
+    lv_aic_player_set_width(player, adaptive_width(715));
+    lv_aic_player_set_height(player, adaptive_height(485));
 }
 
 static void ui_aic_elevator_cb(lv_event_t *e)

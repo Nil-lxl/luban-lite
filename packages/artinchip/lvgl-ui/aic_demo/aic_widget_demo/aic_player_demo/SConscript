@@ -28,7 +28,6 @@ if hactice == 1024:
 else:
     ins_src='assets/480x272/'
 
-print(ins_src)
 install = [(ins_src, ins_dst)]
 
 group = group + DefineGroup('LVGL-port', src, depend = ['AIC_PLAYER_DEMO'], CPPPATH = CPPPATH,

@@ -122,6 +122,7 @@ static size_t xFreeBytesRemaining = 0U;
 static size_t xMinimumEverFreeBytesRemaining = 0U;
 static size_t xNumberOfSuccessfulAllocations = 0;
 static size_t xNumberOfSuccessfulFrees = 0;
+static size_t xTotalHeapSize = 0;
 
 /* Gets set to the top bit of an size_t type.  When this bit in the xBlockSize
  * member of an BlockLink_t structure is set then the block belongs to the
@@ -409,7 +410,7 @@ void vPortDefineHeapRegions( const HeapRegion_t * const pxHeapRegions )
 {
     BlockLink_t * pxFirstFreeBlockInRegion = NULL, * pxPreviousFreeBlock;
     size_t xAlignedHeap;
-    size_t xTotalRegionSize, xTotalHeapSize = 0;
+    size_t xTotalRegionSize = 0;
     BaseType_t xDefinedRegions = 0;
     size_t xAddress;
     const HeapRegion_t * pxHeapRegion;
@@ -593,4 +594,13 @@ void *pvPortRealloc(void *pv, size_t xWantedSize)
     }
 
     return pvReturn;
+}
+
+void vPortGetHeapInfo(uint32_t *total, uint32_t *used, uint32_t *max_used,
+                      uint32_t *free, uint32_t *max_free)
+{
+    *total = xTotalHeapSize;
+    *free = xPortGetFreeHeapSize();
+    *used = xTotalHeapSize - *free;
+    *max_used = xTotalHeapSize - xMinimumEverFreeBytesRemaining;
 }

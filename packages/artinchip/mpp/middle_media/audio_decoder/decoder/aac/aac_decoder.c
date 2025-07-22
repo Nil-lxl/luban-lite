@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -19,6 +19,10 @@
 #include "audio_decoder.h"
 #include "faad.h"
 
+#define ADTS_AAC (0)
+#define LATM_AAC (1)
+#define AAC      (2)
+
 struct aac_audio_decoder
 {
     struct aic_audio_decoder decoder;
@@ -31,6 +35,7 @@ struct aac_audio_decoder
     int bits_per_sample;
     int frame_id;
     int frame_count;
+    int aac_type;
 };
 
 int __aac_decode_init(struct aic_audio_decoder *decoder, struct aic_audio_decode_config *config)
@@ -42,7 +47,7 @@ int __aac_decode_init(struct aic_audio_decoder *decoder, struct aic_audio_decode
     aac_decoder->aac_handle = NeAACDecOpen();
     aac_cfg = NeAACDecGetCurrentConfiguration(aac_decoder->aac_handle);
 
-    logd("defObjectType:%d,defSampleRate:%lu,"\
+    logi("defObjectType:%d,defSampleRate:%lu,"\
          "dontUpSampleImplicitSBR:%d,downMatrix:%d,"\
          "outputFormat:%d,useOldADTSFormat:%d\n"
         ,aac_cfg->defObjectType,aac_cfg->defSampleRate
@@ -66,6 +71,17 @@ int __aac_decode_destroy(struct aic_audio_decoder *decoder)
     return 0;
 }
 
+static int check_aac_type(unsigned char* buf, int len)
+{
+    if (buf[0]==0xff && (buf[1]&0xf0)==0xf0)
+        return ADTS_AAC;
+
+    if ((buf[0]&0xff) == 0x56 && (buf[1]&0xe0) == 0xe0)
+        return LATM_AAC;
+
+    return AAC;
+}
+
 int __aac_decode_frame(struct aic_audio_decoder *decoder)
 {
     s32 ret = 0;
@@ -87,23 +103,39 @@ int __aac_decode_frame(struct aic_audio_decoder *decoder)
 
     if (aac_decoder->aac_handle_init_flag == 0) {
         aac_decoder->curr_packet = audio_pm_dequeue_ready_packet(aac_decoder->decoder.pm);
-        ret = NeAACDecInit2(aac_decoder->aac_handle, aac_decoder->curr_packet->data, aac_decoder->curr_packet->size, &samplerate, &channels);
-        if (ret < 0) {
+
+        aac_decoder->aac_type = check_aac_type(aac_decoder->curr_packet->data, aac_decoder->curr_packet->size);
+        if (aac_decoder->aac_type == AAC) {
+            ret = NeAACDecInit2(aac_decoder->aac_handle, aac_decoder->curr_packet->data,
+                aac_decoder->curr_packet->size, &samplerate, &channels);
             audio_pm_enqueue_empty_packet(aac_decoder->decoder.pm, aac_decoder->curr_packet);
+        } else {
+            ret = NeAACDecInit(aac_decoder->aac_handle, aac_decoder->curr_packet->data,
+                aac_decoder->curr_packet->size, &samplerate, &channels);
+            // we should decode raw data for this packet
+            audio_pm_reclaim_ready_packet(aac_decoder->decoder.pm, aac_decoder->curr_packet);
+        }
+
+        if (ret < 0) {
             loge("NeAACDecInit error\n");
             return DEC_ERR_NOT_SUPPORT;
         }
+
         aac_decoder->aac_handle_init_flag = 1;
-        audio_pm_enqueue_empty_packet(aac_decoder->decoder.pm, aac_decoder->curr_packet);
+
         return DEC_OK;
     }
 
     aac_decoder->curr_packet = audio_pm_dequeue_ready_packet(aac_decoder->decoder.pm);
     memset(&frame_info, 0x00, sizeof(NeAACDecFrameInfo));
-    pcm_data = NeAACDecDecode(aac_decoder->aac_handle, &frame_info, aac_decoder->curr_packet->data, aac_decoder->curr_packet->size);
+    u8* buf = aac_decoder->curr_packet->data;
+    int size = aac_decoder->curr_packet->size;
+
+    pcm_data = NeAACDecDecode(aac_decoder->aac_handle, &frame_info, buf, size);
 
     if (frame_info.error && !aac_decoder->decoder.fm) {
-        loge("decoder  fail !!!\n");
+        loge("decoder  fail, frame_info.error: %d\n", frame_info.error);
+        audio_pm_enqueue_empty_packet(aac_decoder->decoder.pm, aac_decoder->curr_packet);
         return DEC_ERR_NULL_PTR;
     }
 
@@ -113,7 +145,7 @@ int __aac_decode_frame(struct aic_audio_decoder *decoder)
         return DEC_OK;
     }
 
-    logd("channels:%d,error:%d,header_type:%d,"\
+    logi("channels:%d,error:%d,header_type:%d,"\
          "num_back_channels:%d,num_front_channels:%d,num_lfe_channels:%d,num_side_channels:%d,"\
          "object_type:%d,ps:%d,samplerate:%lu,samples:%lu,sbr:%d,"\
          "bytesconsumed:%lu,packet_size:%d,channel_position[0]:%d,channel_position[1]:%d\n"
@@ -164,6 +196,7 @@ int __aac_decode_frame(struct aic_audio_decoder *decoder)
     frame->pts = aac_decoder->curr_packet->pts;
     frame->bits_per_sample = aac_decoder->bits_per_sample;
     frame->id = aac_decoder->frame_id++;
+
     if (frame_info.error == 0) {
         memcpy(frame->data, pcm_data, pcm_data_size);
     } else {
@@ -173,7 +206,7 @@ int __aac_decode_frame(struct aic_audio_decoder *decoder)
 
     if (aac_decoder->curr_packet->flag & PACKET_FLAG_EOS) {
         frame->flag |= PACKET_FLAG_EOS;
-        logd("aac_decoder last packet!!!!\n");
+        printf("aac_decoder last packet!!!!\n");
     }
 
     logd("frame:bits_per_sample:%d，channels:%d,flag:0x%x,"\
@@ -182,7 +215,7 @@ int __aac_decode_frame(struct aic_audio_decoder *decoder)
          frame->pts,frame->sample_rate,frame->id,frame->size);
 
     if (audio_fm_decoder_put_frame(aac_decoder->decoder.fm, frame) != 0) {
-        loge("plese check code,why!!!\n");
+        loge("please check code, why!!!\n");
         return DEC_ERR_NULL_PTR;
     }
     return DEC_OK;
@@ -192,6 +225,7 @@ int __aac_decode_control(struct aic_audio_decoder *decoder, int cmd, void *param
 {
     return 0;
 }
+
 int __aac_decode_reset(struct aic_audio_decoder *decoder)
 {
     struct aac_audio_decoder *aac_decoder = (struct aac_audio_decoder *)decoder;

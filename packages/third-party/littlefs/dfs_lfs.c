@@ -650,22 +650,25 @@ static int _dfs_lfs_open(struct dfs_fd* file)
 
 static int _dfs_lfs_close(struct dfs_fd* file)
 {
-    int result;
+    int result = 0;
     dfs_lfs_fd_t* dfs_lfs_fd;
     RT_ASSERT(file != RT_NULL);
     RT_ASSERT(file->data != RT_NULL);
 
     dfs_lfs_fd = (dfs_lfs_fd_t*)file->data;
 
-    if (file->type == FT_DIRECTORY)
+    if (file->fs && file->fs->data)
     {
-        result = lfs_dir_close(dfs_lfs_fd->lfs, &dfs_lfs_fd->u.dir);
+        /* close if fs is not unmount */
+        if (file->type == FT_DIRECTORY)
+        {
+            result = lfs_dir_close(dfs_lfs_fd->lfs, &dfs_lfs_fd->u.dir);
+        }
+        else
+        {
+            result = lfs_file_close(dfs_lfs_fd->lfs, &dfs_lfs_fd->u.file);
+        }
     }
-    else
-    {
-        result = lfs_file_close(dfs_lfs_fd->lfs, &dfs_lfs_fd->u.file);
-    }
-
     rt_free(dfs_lfs_fd);
 
     return _lfs_result_to_dfs(result);

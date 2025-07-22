@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, sakumisu
+ * Copyright (c) 2022-2025, sakumisu
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -1100,6 +1100,9 @@ struct video_autoexposure_mode {
 #define VIDEO_GUID_I420 0x49, 0x34, 0x32, 0x30, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71
 #define VIDEO_GUID_H264 0x48, 0x32, 0x36, 0x34, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71
 
+#define VIDEO_PIXEL_YUY2 0x10
+#define VIDEO_PIXEL_NV12 0x0c
+
 #define VIDEO_VC_TERMINAL_LEN (13 + 18 + 12 + 9)
 
 /*Length of template descriptor: 81 bytes*/
@@ -1275,7 +1278,7 @@ struct video_autoexposure_mode {
     PP_NARG(__VA_ARGS__), /* bControlSize : Size of the bmaControls field */                                            \
     __VA_ARGS__           /* bmaControls : No VideoStreaming specific controls are supported.*/
 
-#define VIDEO_VS_FORMAT_UNCOMPRESSED_DESCRIPTOR_INIT(bFormatIndex, bNumFrameDescriptors, GUIDFormat)                                                              \
+#define VIDEO_VS_FORMAT_UNCOMPRESSED_DESCRIPTOR_INIT(bFormatIndex, bNumFrameDescriptors, GUIDFormat, bBitsPerPixel)                                                              \
     /*Payload Format(UNCOMPRESSED) Descriptor */                                                                                                                  \
     0x1b,                                                                                                                                                         \
     0x24,                                                                                                                                                         \
@@ -1283,7 +1286,7 @@ struct video_autoexposure_mode {
     bFormatIndex,                                    /* bFormatIndex : First (and only) format descriptor */                                                      \
     bNumFrameDescriptors,                            /* bNumFrameDescriptors : One frame descriptor for this format follows. */                                   \
     GUIDFormat,                                      /* GUID Format YUY2 {32595559-0000-0010-8000-00AA00389B71} */                                                \
-    0x10,                                            /* bBitsPerPixel : Number of bits per pixel used to specify color in the decoded video frame - 16 for yuy2*/ \
+    bBitsPerPixel,                                            /* bBitsPerPixel : Number of bits per pixel used to specify color in the decoded video frame - 16 for yuy2*/ \
     0x01,                                            /* bDefaultFrameIndex : Default frame index is 1. */                                                         \
     0x00,                                            /* bAspectRatioX : Non-interlaced stream not required. */                                                    \
     0x00,                                            /* bAspectRatioY : Non-interlaced stream not required. */                                                    \

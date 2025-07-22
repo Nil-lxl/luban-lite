@@ -950,21 +950,12 @@ void usbd_msc_thread_deinit(void)
         usb_osal_thread_delete(g_usbd_msc.usbd_msc_thread);
     }
     g_usbd_msc.usbd_msc_thread = NULL;
-
-    if (g_usbd_msc.usbd_msc_mq)
-        usb_osal_mq_delete(g_usbd_msc.usbd_msc_mq);
-    g_usbd_msc.usbd_msc_mq = NULL;
     #endif
 }
 
 void usbd_msc_thread_init(void)
 {
     #ifdef CONFIG_USBDEV_MSC_THREAD
-    g_usbd_msc.usbd_msc_mq = usb_osal_mq_create(1);
-    if (g_usbd_msc.usbd_msc_mq == NULL) {
-        return;
-    }
-
     g_usbd_msc.usbd_msc_thread = usb_osal_thread_create("usbd_msc", CONFIG_USBDEV_MSC_STACKSIZE, CONFIG_USBDEV_MSC_PRIO, usbdev_msc_thread, NULL);
     if (g_usbd_msc.usbd_msc_thread == NULL) {
         return;
@@ -987,6 +978,11 @@ struct usbd_interface *usbd_msc_init_intf(struct usbd_interface *intf, const uin
     usbd_add_endpoint(&mass_ep_data[MSD_OUT_EP_IDX]);
     usbd_add_endpoint(&mass_ep_data[MSD_IN_EP_IDX]);
 
+    #ifdef CONFIG_USBDEV_MSC_THREAD
+    if (g_usbd_msc.usbd_msc_mq != NULL)
+        usb_osal_mq_delete(g_usbd_msc.usbd_msc_mq);
+    #endif
+
     memset((uint8_t *)&g_usbd_msc, 0, sizeof(struct usbd_msc_priv));
 
     usbd_msc_get_cap(0, &g_usbd_msc.scsi_blk_nbr, &g_usbd_msc.scsi_blk_size);
@@ -995,6 +991,10 @@ struct usbd_interface *usbd_msc_init_intf(struct usbd_interface *intf, const uin
         USB_LOG_ERR("msc block buffer overflow\r\n");
         return NULL;
     }
+
+    #ifdef CONFIG_USBDEV_MSC_THREAD
+    g_usbd_msc.usbd_msc_mq = usb_osal_mq_create(1);
+    #endif
 
     return intf;
 }

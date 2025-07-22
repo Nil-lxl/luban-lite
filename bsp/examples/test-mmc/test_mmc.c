@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -167,7 +167,7 @@ static int do_mmc_get_info(int argc, char **argv)
     rt_device_control(mmc_dev, RT_DEVICE_CTRL_BLK_GETGEOME, (void *)&get_data);
 
     printf("sector_count:%d bytes_per_sector:%d block_size:%d.\n",
-        get_data.sector_count, get_data.bytes_per_sector, get_data.block_size);
+        (u32)get_data.sector_count, (u32)get_data.bytes_per_sector, (u32)get_data.block_size);
 
     rt_device_close(mmc_dev);
     return 0;

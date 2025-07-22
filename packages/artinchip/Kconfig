@@ -9,5 +9,6 @@ source "packages/artinchip/burn-in/Kconfig"
 source "packages/artinchip/aic-authorization/Kconfig"
 source "packages/artinchip/ipmanager/Kconfig"
 source "packages/artinchip/barcode/Kconfig"
+source "packages/artinchip/uds/Kconfig"
 
 endmenu

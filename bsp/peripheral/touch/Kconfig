@@ -12,6 +12,12 @@ choice
     config AIC_TOUCH_PANEL_C123HAX022
         bool "C123HAX022"
 
+    config AIC_TOUCH_PANEL_CHSC5XXX
+        bool "CHSC5XXX"
+
+    config AIC_TOUCH_PANEL_CHSC6XXX
+        bool "CHSC6XXX"
+
     config AIC_TOUCH_PANEL_CST826
         bool "CST826"
 
@@ -35,6 +41,12 @@ choice
 
     config AIC_TOUCH_PANEL_ILI2511
         bool "ILI2511"
+
+    config AIC_TOUCH_PANEL_ILI21XX
+        bool "ILI21XX"
+
+    config AIC_TOUCH_PANEL_ILI23XX
+        bool "ILI23XX"
 
     config AIC_TOUCH_PANEL_ST16XX
         bool "ST16XX"
@@ -63,6 +75,10 @@ config AIC_TOUCH_PANEL_INT_PIN
     string "Touch irq pin"
     default "PA.9"
     depends on AIC_USING_CTP
+
+config AIC_TOUCH_PANEL_WAKE_UP
+    bool "Touch as wake-up source to wake-up system"
+    depends on AIC_USING_PM
 
 config AIC_TOUCH_X_COORDINATE_RANGE
     int "Touch real x coordinate range"
@@ -162,6 +178,8 @@ config AIC_TOUCH_PANEL_NAME
     default "axs15260"  if AIC_TOUCH_PANEL_AXS15260
     default "c123hax022" if AIC_TOUCH_PANEL_C123HAX022
     default "c145hax01" if AIC_TOUCH_PANEL_C145HAX01
+    default "chsc5xxx"   if AIC_TOUCH_PANEL_CHSC5XXX
+    default "chsc6xxx"   if AIC_TOUCH_PANEL_CHSC6XXX
     default "cst826"    if AIC_TOUCH_PANEL_CST826
     default "cst3240"   if AIC_TOUCH_PANEL_CST3240
     default "ft6336"    if AIC_TOUCH_PANEL_FT6336
@@ -170,6 +188,8 @@ config AIC_TOUCH_PANEL_NAME
     default "gsl3676"   if AIC_TOUCH_PANEL_GSL3676
     default "gt911"     if AIC_TOUCH_PANEL_GT911
     default "ili2511"   if AIC_TOUCH_PANEL_ILI2511
+    default "ili21xx"   if AIC_TOUCH_PANEL_ILI21XX
+    default "ili23xx"   if AIC_TOUCH_PANEL_ILI23XX
     default "st16xx"    if AIC_TOUCH_PANEL_ST16XX
     default "st77922"   if AIC_TOUCH_PANEL_ST77922
     default "tw31xx"    if AIC_TOUCH_PANEL_TW31XX

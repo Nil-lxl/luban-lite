@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -38,6 +38,8 @@ struct aic_qspi {
     uint32_t txd_dlymode;
     uint32_t txc_dlymode;
     bool nonblock;
+    struct rt_completion *completion;
+    bool slave_en;
 };
 
 static struct aic_qspi spi_controller[] = {
@@ -149,6 +151,13 @@ void dump_cmd(uint8_t *data, uint32_t len)
 }
 #endif
 
+static rt_uint32_t drv_spi_send_async(struct aic_qspi *qspi, struct qspi_transfer *t)
+{
+    rt_completion_init(qspi->completion);
+
+    return hal_qspi_master_transfer_async(&qspi->handle, t);
+}
+
 static rt_uint32_t drv_spi_send(struct aic_qspi *qspi,
                                  struct rt_spi_message *message,
                                  const uint8_t *tx, uint32_t size)
@@ -159,7 +168,12 @@ static rt_uint32_t drv_spi_send(struct aic_qspi *qspi,
     t.rx_data = NULL;
     t.tx_data = (uint8_t *)tx;
     t.data_len = size;
-    ret = hal_qspi_master_transfer_sync(&qspi->handle, &t);
+
+    if (qspi->nonblock)
+        ret = drv_spi_send_async(qspi, &t);
+    else
+        ret = hal_qspi_master_transfer_sync(&qspi->handle, &t);
+
     return ret;
 }
 
@@ -227,6 +241,21 @@ static void spi_set_cs_after(struct rt_spi_device *device,
     }
 }
 
+#ifdef AIC_CHIP_D13X
+static rt_uint32_t drv_spi_slave_transfer(struct aic_qspi *qspi,
+    struct rt_spi_message *message)
+{
+    u32 ret = 0;
+    struct qspi_transfer t;
+
+    t.tx_data = (u8 *)message->send_buf;
+    t.rx_data = message->recv_buf;
+    t.data_len = message->length;
+    ret = hal_qspi_slave_transfer_async((qspi_slave_handle *)&qspi->handle, &t);
+    return ret;
+}
+#endif
+
 static rt_uint32_t spi_xfer(struct rt_spi_device *device,
                              struct rt_spi_message *message)
 {
@@ -237,6 +266,16 @@ static rt_uint32_t spi_xfer(struct rt_spi_device *device,
     RT_ASSERT(device->bus != RT_NULL);
 
     qspi = (struct aic_qspi *)device->bus;
+
+#ifdef AIC_CHIP_D13X
+    if (qspi->slave_en) {
+        ret = drv_spi_slave_transfer(qspi, message);
+
+        if (ret)
+            return ret;
+        return message->length;
+    }
+#endif
 
     spi_set_cs_before(device, message);
 
@@ -264,6 +303,7 @@ static void qspi_master_async_callback(qspi_master_handle *h, void *priv)
 #endif
     rt_sem_release(qspi->xfer_sem);
     hal_qspi_master_set_cs(&qspi->handle, cs_num, false);
+    rt_completion_done(qspi->completion);
 }
 
 static irqreturn_t qspi_irq_handler(int irq_num, void *arg)
@@ -276,6 +316,98 @@ static irqreturn_t qspi_irq_handler(int irq_num, void *arg)
 
     return IRQ_HANDLED;
 }
+
+static rt_err_t spi_master_init(struct aic_qspi *qspi, struct qspi_master_config *cfg)
+{
+    rt_err_t ret = RT_EOK;
+
+    ret = hal_qspi_master_init(&qspi->handle, cfg);
+    if (ret) {
+        pr_err("spi init failed.\n");
+        return ret;
+    }
+
+    if (!qspi->inited) {
+#ifdef AIC_DMA_DRV
+        struct qspi_master_dma_config dmacfg;
+        rt_memset(&dmacfg, 0, sizeof(dmacfg));
+        dmacfg.port_id = qspi->dma_port_id;
+
+        ret = hal_qspi_master_dma_config(&qspi->handle, &dmacfg);
+        if (ret) {
+            pr_err("qspi dma config failed.\n");
+            return ret;
+        }
+#endif
+        ret = hal_qspi_master_register_cb(&qspi->handle,
+                                            qspi_master_async_callback, qspi);
+        if (ret) {
+            pr_err("qspi register async callback failed.\n");
+            return ret;
+        }
+        aicos_request_irq(qspi->irq_num, qspi_irq_handler, 0, NULL, (void *)&qspi->handle);
+        aicos_irq_enable(qspi->irq_num);
+    }
+
+    hal_qspi_master_set_bus_freq(&qspi->handle, cfg->max_hz);
+    if (ret) {
+        pr_err("qspi set bus frequency failed.\n");
+        return ret;
+    }
+
+    return ret;
+}
+
+#ifdef AIC_CHIP_D13X
+static void spi_slave_async_callback(qspi_slave_handle *h, void *priv)
+{
+    int status, __attribute__ ((unused)) cnt;
+
+    status = hal_qspi_slave_get_status(h);
+    cnt = 0;
+    if (status == HAL_QSPI_STATUS_OK) {
+        cnt = hal_qspi_slave_transfer_count(h);
+        pr_debug("SPI slave transfer %d bytes done.\n", cnt);
+    } else {
+        pr_err("SPI slave transfer status err: %d.\n", status);
+    }
+}
+
+static irqreturn_t spi_slave_irq_handler(int irq_num, void *arg)
+{
+    qspi_slave_handle *h = arg;
+
+    rt_interrupt_enter();
+    hal_qspi_slave_irq_handler(h);
+    rt_interrupt_leave();
+
+    return IRQ_HANDLED;
+}
+
+static rt_err_t spi_slave_init(struct aic_qspi *qspi, struct qspi_master_config *cfg)
+{
+    rt_err_t ret = RT_EOK;
+    qspi_slave_handle *h = (qspi_slave_handle *)&qspi->handle;
+
+    ret = hal_qspi_slave_init(h, (struct qspi_slave_config *)cfg);
+    if (ret) {
+        pr_err("spi init failed.\n");
+        return ret;
+    }
+
+    if (!qspi->inited) {
+        ret = hal_qspi_slave_register_cb(h, spi_slave_async_callback, NULL);
+        if (ret) {
+            pr_err("spi register async callback failed.\n");
+            return ret;
+        }
+        aicos_request_irq(qspi->irq_num, spi_slave_irq_handler, 0, NULL, (void *)h);
+        aicos_irq_enable(qspi->irq_num);
+    }
+
+    return ret;
+}
+#endif
 
 static rt_err_t spi_configure(struct rt_spi_device *device,
                                struct rt_spi_configuration *configuration)
@@ -309,6 +441,7 @@ static rt_err_t spi_configure(struct rt_spi_device *device,
             bus_hz = HAL_QSPI_MIN_FREQ_HZ;
         if (bus_hz > HAL_QSPI_MAX_FREQ_HZ)
             bus_hz = HAL_QSPI_MAX_FREQ_HZ;
+        cfg.max_hz = bus_hz;
         cfg.clk_in_hz = qspi->clk_in_hz;
         if (cfg.clk_in_hz > HAL_QSPI_MAX_FREQ_HZ)
             cfg.clk_in_hz = HAL_QSPI_MAX_FREQ_HZ;
@@ -334,44 +467,26 @@ static rt_err_t spi_configure(struct rt_spi_device *device,
             cfg.cs_polarity = HAL_QSPI_CS_POL_VALID_HIGH;
         else
             cfg.cs_polarity = HAL_QSPI_CS_POL_VALID_LOW;
+        if (configuration->mode & RT_SPI_3WIRE)
+            cfg.wire3_en = true;
+        else
+            cfg.wire3_en = false;
+
         cfg.rx_dlymode = qspi->rxd_dlymode;
         cfg.tx_dlymode = aic_convert_tx_dlymode(qspi->txc_dlymode, qspi->txd_dlymode);
 
-        ret = hal_qspi_master_init(&qspi->handle, &cfg);
-        if (ret) {
-            pr_err("spi init failed.\n");
-            return ret;
-        }
-
-        if (!qspi->inited) {
-#ifdef AIC_DMA_DRV
-            struct qspi_master_dma_config dmacfg;
-            rt_memset(&dmacfg, 0, sizeof(dmacfg));
-            dmacfg.port_id = qspi->dma_port_id;
-
-            ret = hal_qspi_master_dma_config(&qspi->handle, &dmacfg);
-            if (ret) {
-                pr_err("qspi dma config failed.\n");
-                return ret;
-            }
+        if (configuration->mode & RT_SPI_SLAVE) {
+            cfg.slave_en = true;
+#ifdef AIC_CHIP_D13X    // only d13x support spi slave mode
+            qspi->slave_en = true;
+            ret = spi_slave_init(qspi, &cfg);
+#else
+            ret = spi_master_init(qspi, &cfg);
 #endif
-            ret = hal_qspi_master_register_cb(&qspi->handle,
-                                              qspi_master_async_callback, qspi);
-            if (ret) {
-                pr_err("qspi register async callback failed.\n");
-                return ret;
-            }
-            aicos_request_irq(qspi->irq_num, qspi_irq_handler, 0, NULL,
-                              (void *)&qspi->handle);
-            aicos_irq_enable(qspi->irq_num);
-        }
-        bus_hz = configuration->max_hz;
-        if (bus_hz > HAL_QSPI_MAX_FREQ_HZ)
-            bus_hz = HAL_QSPI_MAX_FREQ_HZ;
-        hal_qspi_master_set_bus_freq(&qspi->handle, bus_hz);
-        if (ret) {
-            pr_err("qspi set bus frequency failed.\n");
-            return ret;
+        } else {
+            cfg.slave_en = false;
+            qspi->slave_en = false;
+            ret = spi_master_init(qspi, &cfg);
         }
     }
     qspi->inited = true;
@@ -384,10 +499,19 @@ static rt_err_t spi_nonblock_set(struct rt_spi_device *device,
     struct aic_qspi *qspi;
 
     qspi = (struct aic_qspi *)device->bus;
-    if (nonblock == 1)
+
+    if (nonblock)
         qspi->nonblock = true;
     else
         qspi->nonblock = false;
+
+    if (nonblock) {
+        if (!qspi->completion)
+            qspi->completion = (struct rt_completion *)rt_malloc(sizeof(struct rt_completion));
+
+        if (!qspi->completion)
+            return -RT_ERROR;
+    }
 
     return RT_EOK;
 }
@@ -399,6 +523,20 @@ static rt_uint32_t spi_get_transfer_status(struct rt_spi_device *device)
     qspi = (struct aic_qspi *)device->bus;
 
     return hal_qspi_master_get_status(&qspi->handle);
+}
+
+static rt_err_t spi_wait_completion(struct rt_spi_device *device)
+{
+    rt_err_t result = RT_EOK;
+    struct aic_qspi *qspi;
+
+    qspi = (struct aic_qspi *)device->bus;
+
+    result = rt_completion_wait(qspi->completion, 1000);
+    if (result != RT_EOK)
+        pr_err("spi wait transfer done timeout\n");
+
+    return result;
 }
 
 rt_err_t aic_spi_bus_attach_device(const char *bus_name,
@@ -427,6 +565,7 @@ static const struct rt_spi_ops aic_spi_ops = {
     .xfer = spi_xfer,
     .nonblock = spi_nonblock_set,
     .gstatus = spi_get_transfer_status,
+    .wait_completion = spi_wait_completion,
 };
 
 static int rt_hw_spi_bus_init(void)

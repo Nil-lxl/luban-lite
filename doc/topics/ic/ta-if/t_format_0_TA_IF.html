@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="CF Command Field (CF) 组成结构如下： 在发送和接收的过程均涉及，CF 由以下部分组成： Start bit：1'b0，固定值。 Sync code：3’b010，固定值。 ID Code：4-bit，发送时可通过寄存器配置，接收时解析接收数据并存入 TSTS 寄存器。 ID Code 奇偶校验位：1-bit，发送时硬件自动根据 Code 判断填入，接收时解析接收数据并存入 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-18"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="t_format_0"/><meta name="DC.language" content="zh-CN"/><title>T-Format 域</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/ic/ta-if/t_format_0_TA_IF.dita"/><meta name="wh-out-relpath" content="topics/ic/ta-if/t_format_0_TA_IF.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="CF Command Field (CF) 组成结构如下： 在发送和接收的过程均涉及，CF 由以下部分组成： Start bit：1'b0，固定值。 Sync code：3’b010，固定值。 ID Code：4-bit，发送时可通过寄存器配置，接收时解析接收数据并存入 TSTS 寄存器。 ID Code 奇偶校验位：1-bit，发送时硬件自动根据 Code 判断填入，接收时解析接收数据并存入 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-12-18"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="t_format_0"/><meta name="DC.language" content="zh-CN"/><title>T-Format 域</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/ic/ta-if/t_format_0_TA_IF.dita"/><meta name="wh-out-relpath" content="topics/ic/ta-if/t_format_0_TA_IF.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -104,240 +104,240 @@
     <div class="- topic/body concept/conbody body conbody">
         <section class="- topic/section section" id="t_format_0__section_rd4_l1j_wbc" data-ofbid="t_format_0__section_rd4_l1j_wbc"><h2 class="- topic/title title sectiontitle">CF</h2>
             
-            <p class="- topic/p p" data-ofbid="d170513e36__20250409171050">Command Field (CF) 组成结构如下：</p>
-            <div class="- topic/p p" data-ofbid="d170513e39__20250409171050">
+            <p class="- topic/p p" data-ofbid="d172624e36__20250519091524">Command Field (CF) 组成结构如下：</p>
+            <div class="- topic/p p" data-ofbid="d172624e39__20250519091524">
                 
                 <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="t_format_0__image_anx_psw_ryb" src="../../../images/ta_if/ta_if_cf.png" width="576"/></div><br/>
             </div>
-            <p class="- topic/p p" data-ofbid="d170513e44__20250409171050">在发送和接收的过程均涉及，CF 由以下部分组成：</p>
+            <p class="- topic/p p" data-ofbid="d172624e44__20250519091524">在发送和接收的过程均涉及，CF 由以下部分组成：</p>
             <ul class="- topic/ul ul" id="t_format_0__ul_bnx_psw_ryb" data-ofbid="t_format_0__ul_bnx_psw_ryb">
-                <li class="- topic/li li" data-ofbid="d170513e49__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e51__20250409171050">Start bit：1'b0，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e49__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e51__20250519091524">Start bit：1'b0，固定值。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e55__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e57__20250409171050">Sync code：3’b010，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e55__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e57__20250519091524">Sync code：3’b010，固定值。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e61__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e63__20250409171050">ID Code：4-bit，发送时可通过寄存器配置，接收时解析接收数据并存入 TSTS 寄存器。</p>
+                <li class="- topic/li li" data-ofbid="d172624e61__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e63__20250519091524">ID Code：4-bit，发送时可通过寄存器配置，接收时解析接收数据并存入 TSTS 寄存器。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e67__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e69__20250409171050">ID Code 奇偶校验位：1-bit，发送时硬件自动根据 Code 判断填入，接收时解析接收数据并存入 TSTS 寄存器。</p>
+                <li class="- topic/li li" data-ofbid="d172624e67__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e69__20250519091524">ID Code 奇偶校验位：1-bit，发送时硬件自动根据 Code 判断填入，接收时解析接收数据并存入 TSTS 寄存器。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e73__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e75__20250409171050">Delimiter：1'b1，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e73__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e75__20250519091524">Delimiter：1'b1，固定值。</p>
                 </li>
             </ul>
-            <p class="- topic/p p" data-ofbid="d170513e81__20250409171050">ID Code
+            <p class="- topic/p p" data-ofbid="d172624e81__20250519091524">ID Code
                 一般对应如下指令表。不同型号的编码器可能不一致，如有需要，参考所用的编码器规格说明。</p>
             
                 <div class="table-container"><table class="- topic/table table frame-all" id="t_format_0__id15" data-ofbid="t_format_0__id15" data-cols="7"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">指令表</span></caption><colgroup><col style="width:20.930232558139537%"/><col style="width:20.930232558139537%"/><col style="width:11.627906976744185%"/><col style="width:11.627906976744185%"/><col style="width:11.627906976744185%"/><col style="width:11.627906976744185%"/><col style="width:11.627906976744185%"/></colgroup><thead class="- topic/thead thead">
                             <tr class="- topic/row">
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__1"><p class="- topic/p p" data-ofbid="d170513e111__20250409171050">-</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__2"><p class="- topic/p p" data-ofbid="d170513e115__20250409171050">-</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__3" colspan="4"><p class="- topic/p p" data-ofbid="d170513e119__20250409171050">Code</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__4"><p class="- topic/p p" data-ofbid="d170513e123__20250409171050">Parity</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__1"><p class="- topic/p p" data-ofbid="d172624e111__20250519091524">-</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__2"><p class="- topic/p p" data-ofbid="d172624e115__20250519091524">-</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__3" colspan="4"><p class="- topic/p p" data-ofbid="d172624e119__20250519091524">Code</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__4"><p class="- topic/p p" data-ofbid="d172624e123__20250519091524">Parity</p></th>
                             </tr>
                             <tr class="- topic/row">
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e130__20250409171050">命令</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e134__20250409171050">Data ID</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e138__20250409171050">cc0</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e142__20250409171050">cc1</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e146__20250409171050">cc2</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e151__20250409171050">cc3</p></th>
-                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e155__20250409171050">cc4</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e130__20250519091524">命令</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e134__20250519091524">Data ID</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e138__20250519091524">cc0</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e142__20250519091524">cc1</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e146__20250519091524">cc2</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e151__20250519091524">cc3</p></th>
+                                <th class="- topic/entry entry colsep-0 rowsep-0" id="t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e155__20250519091524">cc4</p></th>
                             </tr>
                         </thead><tbody class="- topic/tbody tbody">
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e165__20250409171050">读数据命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e169__20250409171050">Data ID 0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e173__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e177__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e181__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e186__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e190__20250409171050">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e165__20250519091524">读数据命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e169__20250519091524">Data ID 0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e173__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e177__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e181__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e186__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e190__20250519091524">0</p></td>
                             </tr>
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e197__20250409171050">读数据命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e201__20250409171050">Data ID 1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e205__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e209__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e213__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e218__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e222__20250409171050">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e197__20250519091524">读数据命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e201__20250519091524">Data ID 1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e205__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e209__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e213__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e218__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e222__20250519091524">1</p></td>
                             </tr>
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e229__20250409171050">读数据命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e233__20250409171050">Data ID 2</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e237__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e241__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e245__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e250__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e254__20250409171050">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e229__20250519091524">读数据命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e233__20250519091524">Data ID 2</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e237__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e241__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e245__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e250__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e254__20250519091524">1</p></td>
                             </tr>
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e261__20250409171050">读数据命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e265__20250409171050">Data ID 3</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e269__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e273__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e277__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e282__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e286__20250409171050">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e261__20250519091524">读数据命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e265__20250519091524">Data ID 3</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e269__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e273__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e277__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e282__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e286__20250519091524">0</p></td>
                             </tr>
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e293__20250409171050">写 EEPROM 命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e297__20250409171050">Data ID 6</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e301__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e305__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e309__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e314__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e318__20250409171050">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e293__20250519091524">写 EEPROM 命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e297__20250519091524">Data ID 6</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e301__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e305__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e309__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e314__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e318__20250519091524">0</p></td>
                             </tr>
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e326__20250409171050">读 EEPROM 命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e330__20250409171050">Data ID D</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e334__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e338__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e342__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e347__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e351__20250409171050">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e326__20250519091524">读 EEPROM 命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e330__20250519091524">Data ID D</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e334__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e338__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e342__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e347__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e351__20250519091524">1</p></td>
                             </tr>
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e358__20250409171050">复位命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e362__20250409171050">Data ID 7</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e366__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e370__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e374__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e379__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e383__20250409171050">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e358__20250519091524">复位命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e362__20250519091524">Data ID 7</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e366__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e370__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e374__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e379__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e383__20250519091524">1</p></td>
                             </tr>
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e390__20250409171050">复位命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e394__20250409171050">Data ID 8</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e398__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e402__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e406__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e411__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e415__20250409171050">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e390__20250519091524">复位命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e394__20250519091524">Data ID 8</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e398__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e402__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e406__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e411__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e415__20250519091524">1</p></td>
                             </tr>
                             <tr class="- topic/row">
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d170513e422__20250409171050">复位命令</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d170513e426__20250409171050">Data ID C</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d170513e430__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d170513e434__20250409171050">0</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d170513e438__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d170513e443__20250409171050">1</p></td>
-                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d170513e447__20250409171050">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__1 t_format_0__id15__entry__5"><p class="- topic/p p" data-ofbid="d172624e422__20250519091524">复位命令</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__2 t_format_0__id15__entry__6"><p class="- topic/p p" data-ofbid="d172624e426__20250519091524">Data ID C</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__7"><p class="- topic/p p" data-ofbid="d172624e430__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__8"><p class="- topic/p p" data-ofbid="d172624e434__20250519091524">0</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__9"><p class="- topic/p p" data-ofbid="d172624e438__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__3 t_format_0__id15__entry__10"><p class="- topic/p p" data-ofbid="d172624e443__20250519091524">1</p></td>
+                                <td class="- topic/entry entry colsep-0 rowsep-0" headers="t_format_0__id15__entry__4 t_format_0__id15__entry__11"><p class="- topic/p p" data-ofbid="d172624e447__20250519091524">0</p></td>
                             </tr>
                         </tbody></table></div>
             
         </section>
         <section class="- topic/section section" id="t_format_0__section_cnx_psw_ryb" data-ofbid="t_format_0__section_cnx_psw_ryb"><h2 class="- topic/title title sectiontitle">SF </h2>
             
-            <p class="- topic/p p" data-ofbid="d170513e460__20250409171050">SF 组成结构如下：</p>
-            <div class="- topic/p p" data-ofbid="d170513e463__20250409171050">
+            <p class="- topic/p p" data-ofbid="d172624e460__20250519091524">SF 组成结构如下：</p>
+            <div class="- topic/p p" data-ofbid="d172624e463__20250519091524">
                 
                 <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="t_format_0__image_enx_psw_ryb" src="../../../images/ta_if/sf.png" width="576"/></div><br/>
             </div>
-            <p class="- topic/p p" data-ofbid="d170513e468__20250409171050">SF，Status Field 为在主机发出获取位置数据命令后，编码器第一个返回的域值，由以下几部分组成：</p>
+            <p class="- topic/p p" data-ofbid="d172624e468__20250519091524">SF，Status Field 为在主机发出获取位置数据命令后，编码器第一个返回的域值，由以下几部分组成：</p>
             <ul class="- topic/ul ul" id="t_format_0__ul_fnx_psw_ryb" data-ofbid="t_format_0__ul_fnx_psw_ryb">
-                <li class="- topic/li li" data-ofbid="d170513e473__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e475__20250409171050">Start bit：1'b0，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e473__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e475__20250519091524">Start bit：1'b0，固定值。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e479__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e481__20250409171050">Information code：4-bit，解析接收数据并存入 TSTS 寄存器。</p>
+                <li class="- topic/li li" data-ofbid="d172624e479__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e481__20250519091524">Information code：4-bit，解析接收数据并存入 TSTS 寄存器。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e485__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e487__20250409171050">Encoder alarm：2-bit，解析接收数据并存入 TSTS 寄存器。</p>
+                <li class="- topic/li li" data-ofbid="d172624e485__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e487__20250519091524">Encoder alarm：2-bit，解析接收数据并存入 TSTS 寄存器。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e491__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e493__20250409171050">Communication alarm：2-bit，解析接收数据并存入 TSTS 寄存器。</p>
+                <li class="- topic/li li" data-ofbid="d172624e491__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e493__20250519091524">Communication alarm：2-bit，解析接收数据并存入 TSTS 寄存器。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e497__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e499__20250409171050">Delimiter：1'b1，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e497__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e499__20250519091524">Delimiter：1'b1，固定值。</p>
                 </li>
             </ul>
         </section>
         <section class="- topic/section section" id="t_format_0__section_gnx_psw_ryb" data-ofbid="t_format_0__section_gnx_psw_ryb"><h2 class="- topic/title title sectiontitle">DFn</h2>
             
-            <p class="- topic/p p" data-ofbid="d170513e510__20250409171050">DFn 组成结构如下：</p>
-            <div class="- topic/p p" data-ofbid="d170513e513__20250409171050">
+            <p class="- topic/p p" data-ofbid="d172624e510__20250519091524">DFn 组成结构如下：</p>
+            <div class="- topic/p p" data-ofbid="d172624e513__20250519091524">
                 
                 <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="t_format_0__image_inx_psw_ryb" src="../../../images/ta_if/ta_if_df.png" width="576"/></div><br/>
             </div>
-            <p class="- topic/p p" data-ofbid="d170513e518__20250409171050">DFn，Data Field 为接收的数据域，最多接收 8x 数据域，由以下部分组成：</p>
+            <p class="- topic/p p" data-ofbid="d172624e518__20250519091524">DFn，Data Field 为接收的数据域，最多接收 8x 数据域，由以下部分组成：</p>
             <ul class="- topic/ul ul" id="t_format_0__ul_jnx_psw_ryb" data-ofbid="t_format_0__ul_jnx_psw_ryb">
-                <li class="- topic/li li" data-ofbid="d170513e523__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e525__20250409171050">Start bit：1'b0，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e523__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e525__20250519091524">Start bit：1'b0，固定值。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e529__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e531__20250409171050">Data：8-bit，解析接收的数据并依次存入 RX_DAT0/ 1 寄存器中。</p>
+                <li class="- topic/li li" data-ofbid="d172624e529__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e531__20250519091524">Data：8-bit，解析接收的数据并依次存入 RX_DAT0/ 1 寄存器中。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e535__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e537__20250409171050">Delimiter：1'b1，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e535__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e537__20250519091524">Delimiter：1'b1，固定值。</p>
                 </li>
             </ul>
         </section>
         <section class="- topic/section section" id="t_format_0__section_knx_psw_ryb" data-ofbid="t_format_0__section_knx_psw_ryb"><h2 class="- topic/title title sectiontitle">CRC</h2>
             
-            <p class="- topic/p p" data-ofbid="d170513e548__20250409171050">CRC 组成结构如下：</p>
-            <div class="- topic/p p" data-ofbid="d170513e551__20250409171050">
+            <p class="- topic/p p" data-ofbid="d172624e548__20250519091524">CRC 组成结构如下：</p>
+            <div class="- topic/p p" data-ofbid="d172624e551__20250519091524">
                 
                 <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="t_format_0__image_mnx_psw_ryb" src="../../../images/ta_if/ta_if_crc.png" width="576"/></div><br/>
             </div>
-            <p class="- topic/p p" data-ofbid="d170513e556__20250409171050">CRC，校验域，是发送或接收的结束域。发送时，CRC 由硬件自动生成，接收时则保存在 TSTS 寄存器中。CRC 校验域由以下的部分组成：</p>
+            <p class="- topic/p p" data-ofbid="d172624e556__20250519091524">CRC，校验域，是发送或接收的结束域。发送时，CRC 由硬件自动生成，接收时则保存在 TSTS 寄存器中。CRC 校验域由以下的部分组成：</p>
             <ul class="- topic/ul ul" id="t_format_0__ul_nnx_psw_ryb" data-ofbid="t_format_0__ul_nnx_psw_ryb">
-                <li class="- topic/li li" data-ofbid="d170513e561__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e563__20250409171050">Start bit：1'b0，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e561__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e563__20250519091524">Start bit：1'b0，固定值。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e567__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e569__20250409171050">CRC code：8-bit，CRC code 生成的多项式是 X<sup class="+ topic/ph hi-d/sup ph sup">8</sup>+1，需要计算 CRC 二进制序列为所有 field
+                <li class="- topic/li li" data-ofbid="d172624e567__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e569__20250519091524">CRC code：8-bit，CRC code 生成的多项式是 X<sup class="+ topic/ph hi-d/sup ph sup">8</sup>+1，需要计算 CRC 二进制序列为所有 field
                         的数据（除去起始位和截止位）。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e576__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e578__20250409171050">Delimiter：1'b1，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e576__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e578__20250519091524">Delimiter：1'b1，固定值。</p>
                 </li>
             </ul>
         </section>
         <section class="- topic/section section" id="t_format_0__section_onx_psw_ryb" data-ofbid="t_format_0__section_onx_psw_ryb"><h2 class="- topic/title title sectiontitle">ADF</h2>
             
-            <p class="- topic/p p" data-ofbid="d170513e589__20250409171050">ADF 组成结构如下：</p>
-            <div class="- topic/p p" data-ofbid="d170513e592__20250409171050">
+            <p class="- topic/p p" data-ofbid="d172624e589__20250519091524">ADF 组成结构如下：</p>
+            <div class="- topic/p p" data-ofbid="d172624e592__20250519091524">
                 
                 <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="t_format_0__image_qnx_psw_ryb" src="../../../images/ta_if/ta_if_adf.png" width="576"/></div><br/>
             </div>
-            <p class="- topic/p p" data-ofbid="d170513e597__20250409171050">ADF，地址域，表示需要操作的 EEPROM 的地址，ADF 域由以下的部分组成：</p>
+            <p class="- topic/p p" data-ofbid="d172624e597__20250519091524">ADF，地址域，表示需要操作的 EEPROM 的地址，ADF 域由以下的部分组成：</p>
             <ul class="- topic/ul ul" id="t_format_0__ul_rnx_psw_ryb" data-ofbid="t_format_0__ul_rnx_psw_ryb">
-                <li class="- topic/li li" data-ofbid="d170513e602__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e604__20250409171050">Start bit：1'b0，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e602__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e604__20250519091524">Start bit：1'b0，固定值。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e608__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e610__20250409171050">Address：7-bit，EEPROM 地址。</p>
+                <li class="- topic/li li" data-ofbid="d172624e608__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e610__20250519091524">Address：7-bit，EEPROM 地址。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e614__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e616__20250409171050">BUSY：1-bit，1'b1 表示 EEPROM 繁忙，未能操作 EEPROM。</p>
+                <li class="- topic/li li" data-ofbid="d172624e614__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e616__20250519091524">BUSY：1-bit，1'b1 表示 EEPROM 繁忙，未能操作 EEPROM。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e620__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e622__20250409171050">Delimiter：1'b1，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e620__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e622__20250519091524">Delimiter：1'b1，固定值。</p>
                 </li>
             </ul>
         </section>
         <section class="- topic/section section" id="t_format_0__section_snx_psw_ryb" data-ofbid="t_format_0__section_snx_psw_ryb"><h2 class="- topic/title title sectiontitle">EDF</h2>
             
-            <p class="- topic/p p" data-ofbid="d170513e634__20250409171050">EDF 组成结构如下：</p>
-            <div class="- topic/p p" data-ofbid="d170513e637__20250409171050">
+            <p class="- topic/p p" data-ofbid="d172624e634__20250519091524">EDF 组成结构如下：</p>
+            <div class="- topic/p p" data-ofbid="d172624e637__20250519091524">
                 
                 <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="t_format_0__image_unx_psw_ryb" src="../../../images/ta_if/ta_if_edf.png" width="576"/></div><br/>
             </div>
-            <p class="- topic/p p" data-ofbid="d170513e642__20250409171050">EDF，EEPROM Data 域，表示 EEPROM 的数据，EDF 域由以下的部分组成：</p>
+            <p class="- topic/p p" data-ofbid="d172624e642__20250519091524">EDF，EEPROM Data 域，表示 EEPROM 的数据，EDF 域由以下的部分组成：</p>
             <ul class="- topic/ul ul" id="t_format_0__ul_vnx_psw_ryb" data-ofbid="t_format_0__ul_vnx_psw_ryb">
-                <li class="- topic/li li" data-ofbid="d170513e647__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e649__20250409171050">Start bit：1'b0，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e647__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e649__20250519091524">Start bit：1'b0，固定值。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e653__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e655__20250409171050">data：8-bit，EEPROM 的数据。</p>
+                <li class="- topic/li li" data-ofbid="d172624e653__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e655__20250519091524">data：8-bit，EEPROM 的数据。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d170513e659__20250409171050">
-                    <p class="- topic/p p" data-ofbid="d170513e661__20250409171050">Delimiter：1'b1，固定值。</p>
+                <li class="- topic/li li" data-ofbid="d172624e659__20250519091524">
+                    <p class="- topic/p p" data-ofbid="d172624e661__20250519091524">Delimiter：1'b1，固定值。</p>
                 </li>
             </ul>
         </section>
@@ -384,7 +384,7 @@
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

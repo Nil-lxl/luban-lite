@@ -3216,15 +3216,15 @@ class Kconfig(object):
                                    "set".format(node.item.name, env_var),
                                    self.filename, self.linenr)
 
-                    # if env_var != node.item.name:
-                    #     self._warn("Kconfiglib expands environment variables "
-                    #                "in strings directly, meaning you do not "
-                    #                "need 'option env=...' \"bounce\" symbols. "
-                    #                "For compatibility with the C tools, "
-                    #                "rename {} to {} (so that the symbol name "
-                    #                "matches the environment variable name)."
-                    #                .format(node.item.name, env_var),
-                    #                self.filename, self.linenr)
+                    if env_var != node.item.name:
+                        self._warn("Kconfiglib expands environment variables "
+                                   "in strings directly, meaning you do not "
+                                   "need 'option env=...' \"bounce\" symbols. "
+                                   "For compatibility with the C tools, "
+                                   "rename {} to {} (so that the symbol name "
+                                   "matches the environment variable name)."
+                                   .format(node.item.name, env_var),
+                                   self.filename, self.linenr)
 
                 elif self._check_token(_T_DEFCONFIG_LIST):
                     if not self.defconfig_list:
@@ -3837,8 +3837,8 @@ class Kconfig(object):
             for node in choice.nodes:
                 if node.prompt:
                     break
-                else:
-                    self._warn(choice.name_and_loc + " defined without a prompt")
+            else:
+                self._warn(choice.name_and_loc + " defined without a prompt")
 
             for default, _ in choice.defaults:
                 if default.__class__ is not Symbol:
@@ -3846,11 +3846,11 @@ class Kconfig(object):
                         "{} has a malformed default {}"
                         .format(choice.name_and_loc, expr_str(default)))
 
-                # if default.choice is not choice:
-                #     self._warn("the default selection {} of {} is not "
-                #                "contained in the choice"
-                #                .format(default.name_and_loc,
-                #                        choice.name_and_loc))
+                if default.choice is not choice:
+                    self._warn("the default selection {} of {} is not "
+                               "contained in the choice"
+                               .format(default.name_and_loc,
+                                       choice.name_and_loc))
 
             for sym in choice.syms:
                 if sym.defaults:
@@ -3870,10 +3870,10 @@ class Kconfig(object):
                             self._warn("the choice symbol {} has no prompt"
                                        .format(sym.name_and_loc))
 
-                    # elif node.prompt:
-                    #     self._warn("the choice symbol {} is defined with a "
-                    #                "prompt outside the choice"
-                    #                .format(sym.name_and_loc))
+                    elif node.prompt:
+                        self._warn("the choice symbol {} is defined with a "
+                                   "prompt outside the choice"
+                                   .format(sym.name_and_loc))
 
     def _parse_error(self, msg):
         raise KconfigError("{}error: couldn't parse '{}': {}".format(

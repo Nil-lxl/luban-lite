@@ -30,6 +30,7 @@
 #include "../inc/sfud.h"
 #include "sfud_qe.h"
 #include <string.h>
+#include "sfud_private.h"
 
 /* send dummy data for read data */
 #define DUMMY_DATA                               0xFF
@@ -238,7 +239,12 @@ sfud_err sfud_qspi_fast_read_enable(sfud_flash *flash, uint8_t data_line_width) 
     /* determine qspi supports which read mode and set read_cmd_format struct */
     switch (data_line_width) {
     case 1:
-        qspi_set_read_cmd_format(flash, SFUD_CMD_READ_DATA, 1, 1, 0, 1);
+#ifdef SFUD_USING_SFDP
+        if (flash->bus_hz > SFUD_MIN_FREQ_FAST_READ)
+            qspi_set_read_cmd_format(flash, SFUD_CMD_FAST_READ, 1, 1, 8, 1);
+        else
+#endif
+            qspi_set_read_cmd_format(flash, SFUD_CMD_READ_DATA, 1, 1, 0, 1);
         break;
     case 2:
         if (read_mode & DUAL_IO) {
@@ -431,6 +437,8 @@ static sfud_err hardware_init(sfud_flash *flash) {
     quad_enable_func qe = flash->quad_enable;
     qe(flash);
 #endif /* SFUD_USING_QSPI */
+
+    flash->get_uid = spi_nor_get_unique_id;
 
     return result;
 }
@@ -1560,3 +1568,33 @@ __exit:
     return result;
 }
 #endif // SFUD_USING_SECURITY_REGISTER
+
+sfud_err sfud_read_unique_id(const sfud_flash *flash, uint8_t *send_bytes, uint8_t id_len, uint8_t *data)
+{
+    sfud_err result = SFUD_SUCCESS;
+    const sfud_spi *spi = &flash->spi;
+    static uint8_t cmd_data[5 + 16];
+
+    SFUD_ASSERT(flash);
+
+    /* must be call this function after initialize OK */
+    SFUD_ASSERT(flash->init_ok);
+    /* lock SPI */
+    if (spi->lock) {
+        spi->lock(spi);
+    }
+
+    memcpy(cmd_data, send_bytes, 5);
+    result = spi->wr(spi, cmd_data, 5, cmd_data + 5, id_len);
+    memcpy(data, &cmd_data[5], 8);
+
+    /* unlock SPI */
+    if (spi->unlock) {
+        spi->unlock(spi);
+    }
+
+    if (!result)
+        return id_len;
+
+    return -1;
+}

@@ -43,7 +43,7 @@ static void read_adc_and_sent_event(lv_timer_t * timer)
 static void btn_change_bg_color_handler(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t *btn = lv_event_get_current_target_obj(e);
+    lv_obj_t *btn = lv_event_get_current_target(e);
 
     if(code == LV_EVENT_PRESSED) {
         lv_obj_set_style_bg_color(btn, lv_color_hex(0x2775D5), 0);

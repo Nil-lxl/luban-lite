@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,9 +16,12 @@
 #define XT26G01C_STATUS_ECC_MASK        (0xF << 4)
 #define XT26G01C_STATUS_ECC_NO_BITFLIPS (0 << 4)
 #define XT26G01C_STATUS_ECC_UNCOR_ERROR (0xF << 4)
+#define XT26G01C_STATUS_ECC_BITS_CORRECTED(a) ((a & XT26G01C_STATUS_ECC_MASK) >> 4)
+
 #define XT26G02D_STATUS_ECC_MASK        GENMASK(5, 4)
 #define XT26G02D_STATUS_ECC_NO_ERROR    (0)
 #define XT26G02D_STATUS_ECC_UNCOR_ERROR BIT(5)
+
 #define XT26G01B_STATUS_ECC_UNCOR_ERROR BIT(7)
 
 int xt26g01c_ecc_get_status(struct aic_spinand *flash, u8 status)
@@ -32,11 +35,13 @@ int xt26g01c_ecc_get_status(struct aic_spinand *flash, u8 status)
             break;
     }
 
-    return status & XT26G01C_STATUS_ECC_MASK;
+    return XT26G01C_STATUS_ECC_BITS_CORRECTED(status);
 }
 
 int xt26g02d_ecc_get_status(struct aic_spinand *flash, u8 status)
 {
+    u8 bits_flip = 0, temp = 0;
+
     switch (status & XT26G02D_STATUS_ECC_MASK) {
         case XT26G02D_STATUS_ECC_NO_ERROR:
             return 0;
@@ -46,7 +51,10 @@ int xt26g02d_ecc_get_status(struct aic_spinand *flash, u8 status)
             break;
     }
 
-    return status & XT26G01C_STATUS_ECC_MASK;
+    temp = status & XT26G01C_STATUS_ECC_MASK;
+    bits_flip = ((temp & 0x30) >> 2) | ((temp & 0xc0) >> 6);
+
+    return bits_flip;
 }
 
 int xt26g11c_ecc_get_status(struct aic_spinand *flash, u8 status)
@@ -78,25 +86,37 @@ int xt26g01b_ecc_get_status(struct aic_spinand *flash, u8 status)
 }
 
 static int xt26g01c_ooblayout_user(struct aic_spinand *flash, int section,
-                            struct aic_oob_region *region)
+                                    struct aic_oob_region *region)
 {
-    if (section > 3)
+    if (section > 1)
       return -SPINAND_ERR;
 
-    region->offset = (16 * section) + 0;
-    region->length = 16;
+    region->offset = 0;
+    region->length = 64;
 
     return 0;
 }
 
 static int xt26g02d_ooblayout_user(struct aic_spinand *flash, int section,
-                            struct aic_oob_region *region)
+                                    struct aic_oob_region *region)
 {
-    if (section > 7)
+    if (section > 1)
       return -SPINAND_ERR;
 
-    region->offset = (16 * section) + 0;
-    region->length = 16;
+    region->offset = 0;
+    region->length = 64;
+
+    return 0;
+}
+
+static int xt26g04d_ooblayout_user(struct aic_spinand *flash, int section,
+                                    struct aic_oob_region *region)
+{
+    if (section > 1)
+        return -SPINAND_ERR;
+
+    region->offset = 0;
+    region->length = 128;
 
     return 0;
 }
@@ -104,12 +124,32 @@ static int xt26g02d_ooblayout_user(struct aic_spinand *flash, int section,
 const struct aic_spinand_info xtx_spinand_table[] = {
     /*devid page_size oob_size block_per_lun pages_per_eraseblock planes_per_lun
     is_die_select*/
-    // todo: the next 1 devices has no datasheet
+    /*XT26G01C device*/
+    { DEVID(0x11), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
+        PLANENUM(1), DIE(0), "XTX 128MB: 2048+128@64@1024", cmd_cfg_table,
+        xt26g01c_ecc_get_status, xt26g01c_ooblayout_user },
+    /*XT26G01D device*/
+    { DEVID(0x31), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
+        PLANENUM(1), DIE(0), "XTX 128MB: 2048+128@64@1024", cmd_cfg_table,
+        xt26g02d_ecc_get_status, xt26g01c_ooblayout_user },
+    /*XT26G04D device */
+    { DEVID(0x33), PAGESIZE(4096), OOBSIZE(256), BPL(2048), PPB(64), PLANENUM(1),
+        DIE(0), "XTX 512MB: 4096+256@64@2048", cmd_cfg_table,
+        xt26g02d_ecc_get_status, xt26g04d_ooblayout_user },
+    /*XT26G02D device */
+    { DEVID(0x32), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64), PLANENUM(1),
+        DIE(0), "XTX 256MB: 2048+128@64@2048", cmd_cfg_table,
+        xt26g02d_ecc_get_status, xt26g02d_ooblayout_user },
     /*XT26G04C device */
     { DEVID(0x13), PAGESIZE(4096), OOBSIZE(256), BPL(2048), PPB(64),
       PLANENUM(1), DIE(0), "XTX 512MB: 4096+256@64@2048", cmd_cfg_table,
-      xt26g01c_ecc_get_status, NULL },
+      xt26g01c_ecc_get_status, xt26g02d_ooblayout_user },
+    /*XT26G02C device*/
+    { DEVID(0x12), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64),
+      PLANENUM(1), DIE(0), "XTX 256MB: 2048+128@64@2048", cmd_cfg_table,
+      xt26g01c_ecc_get_status, xt26g01c_ooblayout_user },
 
+    // todo: the next 2 devices has no datasheet
     /*XT26G01B device*/
     { DEVID(0xF1), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64),
       PLANENUM(1), DIE(0), "XTX 128MB: 2048+64@64@1024", cmd_cfg_table,
@@ -118,26 +158,6 @@ const struct aic_spinand_info xtx_spinand_table[] = {
     { DEVID(0x15), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
       PLANENUM(1), DIE(0), "XTX 128MB: 2048+128@64@1024", cmd_cfg_table,
       xt26g11c_ecc_get_status, xt26g01c_ooblayout_user },
-    /*XT26G01C device*/
-    { DEVID(0x11), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
-      PLANENUM(1), DIE(0), "XTX 128MB: 2048+128@64@1024", cmd_cfg_table,
-      xt26g01c_ecc_get_status, xt26g01c_ooblayout_user },
-    /*XT26G01D device*/
-    { DEVID(0x31), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
-      PLANENUM(1), DIE(0), "XTX 128MB: 2048+128@64@1024", cmd_cfg_table,
-      xt26g01c_ecc_get_status, xt26g01c_ooblayout_user },
-    /*XT26G02D device */
-    { DEVID(0x32), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64), PLANENUM(1),
-      DIE(0), "XTX 256MB: 2048+128@64@2048", cmd_cfg_table,
-      xt26g02d_ecc_get_status, xt26g01c_ooblayout_user },
-    /*XT26G02C device*/
-    { DEVID(0x12), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64),
-      PLANENUM(1), DIE(0), "XTX 256MB: 2048+128@64@2048", cmd_cfg_table,
-      xt26g01c_ecc_get_status, xt26g01c_ooblayout_user },
-    /*XT26G04D device */
-    { DEVID(0x33), PAGESIZE(4096), OOBSIZE(256), BPL(2048), PPB(64), PLANENUM(1),
-      DIE(0), "XTX 512MB: 4096+256@64@2048", cmd_cfg_table,
-      xt26g02d_ecc_get_status, xt26g02d_ooblayout_user },
 };
 
 const struct aic_spinand_info *xtx_spinand_detect(struct aic_spinand *flash)

@@ -161,6 +161,9 @@ static int usbh_bulk_cbw_csw_xfer(struct usbh_msc *msc_class, struct CBW *cbw, s
     /* Send the CBW */
     nbytes = usbh_msc_bulk_out_transfer(msc_class, (uint8_t *)cbw, USB_SIZEOF_MSC_CBW, CONFIG_USBHOST_MSC_TIMEOUT);
     if (nbytes < 0) {
+        if (nbytes == -USB_ERR_INVAL || nbytes == -USB_ERR_NOTCONN)
+            goto __err_exit;
+
         USB_LOG_ERR("cbw transfer error, nbytes:%d\r\n", nbytes);
         usbh_msc_cbw_error_dump(cbw);
         usbh_msc_clear_halt(msc_class, msc_class->bulkout);
@@ -183,6 +186,8 @@ static int usbh_bulk_cbw_csw_xfer(struct usbh_msc *msc_class, struct CBW *cbw, s
         }
 
         if (nbytes < 0) {
+            if (nbytes == -USB_ERR_INVAL || nbytes == -USB_ERR_NOTCONN)
+                goto __err_exit;
             USB_LOG_ERR("msc data transfer error, nbytes:%d\r\n", nbytes);
             usbh_msc_cbw_error_dump(cbw);
             usbh_msc_reset(msc_class);
@@ -199,6 +204,8 @@ static int usbh_bulk_cbw_csw_xfer(struct usbh_msc *msc_class, struct CBW *cbw, s
     memset(csw, 0, USB_SIZEOF_MSC_CSW);
     nbytes = usbh_msc_bulk_in_transfer(msc_class, (uint8_t *)csw, USB_SIZEOF_MSC_CSW, CONFIG_USBHOST_MSC_TIMEOUT);
     if (nbytes < 0) {
+        if (nbytes == -USB_ERR_INVAL || nbytes == -USB_ERR_NOTCONN)
+            goto __err_exit;
         USB_LOG_ERR("csw transfer error, nbytes:%d\r\n", nbytes);
         usbh_msc_cbw_error_dump(cbw);
         usbh_msc_clear_halt(msc_class, msc_class->bulkin);

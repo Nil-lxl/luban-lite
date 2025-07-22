@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -52,14 +52,23 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PA.8"},  // SCK
     {4, PIN_PULL_DIS, 3, "PA.9"},  // SDA
 #endif
-#if defined(AIC_USING_QSPI0) && !defined(AIC_SYSCFG_SIP_FLASH_ENABLE)
+#ifdef AIC_USING_QSPI0
+#ifndef AIC_SYSCFG_SIP_FLASH_ENABLE
     /* qspi0 */
-    {2, PIN_PULL_DIS, 3, "PB.0"},
-    {2, PIN_PULL_DIS, 3, "PB.1"},
-    {2, PIN_PULL_DIS, 3, "PB.2"},
-    {2, PIN_PULL_DIS, 3, "PB.3"},
-    {2, PIN_PULL_DIS, 3, "PB.4"},
-    {2, PIN_PULL_DIS, 3, "PB.5"},
+    {2, PIN_PULL_UP, 3, "PB.0"},
+    {2, PIN_PULL_UP, 3, "PB.1"},
+    {2, PIN_PULL_UP, 3, "PB.2"},
+    {2, PIN_PULL_UP, 3, "PB.3"},
+    {2, PIN_PULL_UP, 3, "PB.4"},
+    {2, PIN_PULL_UP, 3, "PB.5"},
+#else
+    {8, PIN_PULL_UP, 3, "PB.12"},
+    {8, PIN_PULL_UP, 3, "PB.13"},
+    {8, PIN_PULL_UP, 3, "PB.14"},
+    {8, PIN_PULL_UP, 3, "PB.15"},
+    {8, PIN_PULL_UP, 3, "PB.16"},
+    {8, PIN_PULL_UP, 3, "PB.17"},
+#endif
 #endif
 #ifdef AIC_USING_SDMC0
     {2, PIN_PULL_UP, 7, "PB.6"},

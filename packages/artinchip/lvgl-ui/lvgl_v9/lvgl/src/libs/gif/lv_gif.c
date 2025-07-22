@@ -11,6 +11,8 @@
 
 #include "gifdec.h"
 
+#include <aic_core.h>
+
 /*********************
  *      DEFINES
  *********************/
@@ -182,6 +184,11 @@ static void next_frame_task_cb(lv_timer_t * t)
     }
 
     gd_render_frame(gifobj->gif, (uint8_t *)gifobj->imgdsc.data);
+
+    /* gif decode image format = LV_COLOR_FORMAT_ARGB8888, bpp = 32 */
+    uint32_t flush_size = gifobj->imgdsc.header.h * 4 * gifobj->imgdsc.header.w;
+    aicos_dcache_clean_invalid_range((unsigned long *)gifobj->imgdsc.data,
+                                     (unsigned long)ALIGN_UP(flush_size, CACHE_LINE_SIZE));
 
     lv_image_cache_drop(lv_image_get_src(obj));
     lv_obj_invalidate(obj);

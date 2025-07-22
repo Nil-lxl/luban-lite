@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -11,7 +11,7 @@
 
 #include "aic_common.h"
 
-#ifdef CONFIG_FPGA_BOARD_ARTINCHIP
+#ifdef FPGA_BOARD_ARTINCHIP
 #define PWMCS_CLK_RATE      24000000 /* 24 MHz */
 #else
 #define PWMCS_CLK_RATE      200000000 /* 200 MHz */

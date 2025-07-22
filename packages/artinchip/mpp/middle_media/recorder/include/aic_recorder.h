@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -19,8 +19,15 @@ extern "C" {
 
 struct aic_recorder;
 
+enum aic_recorder_vin_type {
+    AIC_RECORDER_VIN_FILE = 0,
+    AIC_RECORDER_VIN_DVP,
+    AIC_RECORDER_VIN_USB,
+};
+
 struct video_encoding_config {
     enum mpp_codec_type codec_type;
+    enum aic_recorder_vin_type  vin_type;
     s32 out_width;
     s32 out_height;
     s32 out_bit_rate;
@@ -67,11 +74,6 @@ enum aic_recorder_event {
     AIC_RECORDER_EVENT_RELEASE_VIDEO_BUFFER // notify app input_frame has used.
 };
 
-enum aic_recorder_vin_type {
-    AIC_RECORDER_VIN_FILE = 0,
-    AIC_RECORDER_VIN_DVP,
-    AIC_RECORDER_VIN_USB,
-};
 
 typedef s32 (*event_handler)(void *app_data, s32 event, s32 data1, s32 data2);
 
@@ -92,8 +94,6 @@ s32 aic_recorder_start(struct aic_recorder *recorder);
 s32 aic_recorder_stop(struct aic_recorder *recorder);
 
 s32 aic_recorder_snapshot(struct aic_recorder *recorder, struct aic_record_snapshot_info *snapshot_info);
-
-s32 aic_recorder_set_vin_type(struct aic_recorder *recorder, enum aic_recorder_vin_type type);
 
 s32 aic_recorder_print_debug_info(struct aic_recorder *recorder);
 

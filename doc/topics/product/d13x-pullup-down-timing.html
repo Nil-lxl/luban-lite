@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="上下电时序 VCC33_IO 、VDD11_SYS 和 LDO18 供电无上下电顺序要求。VCC33_IO 上电上升沿时间需大于 150 us。 复位源 芯片系统有以下复位源，以下任何一种复位条件成立，会对芯片产生复位： 系统上电复位：在 VCC33_IO 和 VDD11_SYS 上电后产生复位，上电 10 ms 内系统自动放开此复位。 RTC 上电复位：在 RTC 上电后（供电来源 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-09-27"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="topic_psl_vh2_qbc"/><meta name="DC.language" content="zh-CN"/><title>上下电时序及复位</title><meta name="wh-path2root" content="../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/product/d13x-pullup-down-timing.dita"/><meta name="wh-out-relpath" content="topics/product/d13x-pullup-down-timing.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="上下电时序 VCC33_IO 、VDD11_SYS 和 LDO18 供电无上下电顺序要求。VCC33_IO 上电上升沿时间需大于 150 us。 复位源 芯片系统有以下复位源，以下任何一种复位条件成立，会对芯片产生复位： 系统上电复位：在 VCC33_IO 和 VDD11_SYS 上电后产生复位，上电 10 ms 内系统自动放开此复位。 RTC 上电复位：在 RTC 上电后（供电来源 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2024-09-27"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="topic_psl_vh2_qbc"/><meta name="DC.language" content="zh-CN"/><title>上下电时序及复位</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../"/><meta name="wh-toc-id" content=""/><meta name="wh-source-relpath" content="topics/product/d13x-pullup-down-timing.dita"/><meta name="wh-out-relpath" content="topics/product/d13x-pullup-down-timing.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -103,24 +103,24 @@
         <section class="- topic/section section" id="topic_psl_vh2_qbc__section_nqw_zzh_31c" data-ofbid="topic_psl_vh2_qbc__section_nqw_zzh_31c"><h2 class="- topic/title title sectiontitle">上下电时序</h2>
             
             
-            <p class="- topic/p p" data-ofbid="d161029e34__20250409171049">VCC33_IO
+            <p class="- topic/p p" data-ofbid="d162748e34__20250519091523">VCC33_IO
                 、VDD11_SYS 和
                 LDO18
                 供电无上下电顺序要求。VCC33_IO 上电上升沿时间需大于 150
                 us。</p>
             
-            <p class="- topic/p p" data-ofbid="d161029e37__20250409171049"></p>
+            <p class="- topic/p p" data-ofbid="d162748e37__20250519091523"></p>
         </section>
         <section class="- topic/section section" id="topic_psl_vh2_qbc__section_oqw_zzh_31c" data-ofbid="topic_psl_vh2_qbc__section_oqw_zzh_31c"><h2 class="- topic/title title sectiontitle">复位源</h2>
             
-            <div class="- topic/p p" data-ofbid="d161029e45__20250409171049">芯片系统有以下复位源，以下任何一种复位条件成立，会对芯片产生复位：<ul class="- topic/ul ul" id="topic_psl_vh2_qbc__ul_qqw_zzh_31c" data-ofbid="topic_psl_vh2_qbc__ul_qqw_zzh_31c">
-                    <li class="- topic/li li" data-ofbid="d161029e49__20250409171049">系统上电复位：在 VCC33_IO 和 VDD11_SYS 上电后产生复位，上电 10 ms 内系统自动放开此复位。</li>
-                    <li class="- topic/li li" data-ofbid="d161029e52__20250409171049">RTC 上电复位：在 RTC 上电后（供电来源 VCC33_IO 和 VCOIN）自动完成复位。</li>
-                    <li class="- topic/li li" data-ofbid="d161029e55__20250409171049">外部引脚复位：引脚 RESETN 输入低电平并持续 2 ms 以上产生复位。</li>
-                    <li class="- topic/li li" data-ofbid="d161029e58__20250409171049">调试器复位：在接收到 JTAG IO 上的 RESET 命令后立即产生复位。</li>
-                    <li class="- topic/li li" data-ofbid="d161029e61__20250409171049">看门狗复位：通过软件使能后，在 WDOG 超时复位条件满足下立即产生复位。</li>
-                    <li class="- topic/li li" data-ofbid="d161029e65__20250409171049">过温复位：通过软件使能后，在 THS 温度超过设定值时立即产生复位。</li>
-                    <li class="- topic/li li" data-ofbid="d161029e68__20250409171049">电压比较复位：通过软件使能后，在 RTC_IO
+            <div class="- topic/p p" data-ofbid="d162748e45__20250519091523">芯片系统有以下复位源，以下任何一种复位条件成立，会对芯片产生复位：<ul class="- topic/ul ul" id="topic_psl_vh2_qbc__ul_qqw_zzh_31c" data-ofbid="topic_psl_vh2_qbc__ul_qqw_zzh_31c">
+                    <li class="- topic/li li" data-ofbid="d162748e49__20250519091523">系统上电复位：在 VCC33_IO 和 VDD11_SYS 上电后产生复位，上电 10 ms 内系统自动放开此复位。</li>
+                    <li class="- topic/li li" data-ofbid="d162748e52__20250519091523">RTC 上电复位：在 RTC 上电后（供电来源 VCC33_IO 和 VCOIN）自动完成复位。</li>
+                    <li class="- topic/li li" data-ofbid="d162748e55__20250519091523">外部引脚复位：引脚 RESETN 输入低电平并持续 2 ms 以上产生复位。</li>
+                    <li class="- topic/li li" data-ofbid="d162748e58__20250519091523">调试器复位：在接收到 JTAG IO 上的 RESET 命令后立即产生复位。</li>
+                    <li class="- topic/li li" data-ofbid="d162748e61__20250519091523">看门狗复位：通过软件使能后，在 WDOG 超时复位条件满足下立即产生复位。</li>
+                    <li class="- topic/li li" data-ofbid="d162748e65__20250519091523">过温复位：通过软件使能后，在 THS 温度超过设定值时立即产生复位。</li>
+                    <li class="- topic/li li" data-ofbid="d162748e68__20250519091523">电压比较复位：通过软件使能后，在 RTC_IO
                         电压比参考电压高（可配置，或比参考电压低）时立即产生复位</li>
                 </ul></div>
         </section>
@@ -167,7 +167,7 @@
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

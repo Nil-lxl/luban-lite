@@ -74,14 +74,23 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PA.8"},  // SCK
     {4, PIN_PULL_DIS, 3, "PA.9"},  // SDA
 #endif
-#if defined(AIC_USING_QSPI0) && !defined(AIC_SYSCFG_SIP_FLASH_ENABLE)
+#ifdef AIC_USING_QSPI0
+#ifndef AIC_SYSCFG_SIP_FLASH_ENABLE
     /* qspi0 */
-    {2, PIN_PULL_DIS, 3, "PB.0"},
-    {2, PIN_PULL_DIS, 3, "PB.1"},
-    {2, PIN_PULL_DIS, 3, "PB.2"},
-    {2, PIN_PULL_DIS, 3, "PB.3"},
-    {2, PIN_PULL_DIS, 3, "PB.4"},
-    {2, PIN_PULL_DIS, 3, "PB.5"},
+    {2, PIN_PULL_UP, 3, "PB.0"},
+    {2, PIN_PULL_UP, 3, "PB.1"},
+    {2, PIN_PULL_UP, 3, "PB.2"},
+    {2, PIN_PULL_UP, 3, "PB.3"},
+    {2, PIN_PULL_UP, 3, "PB.4"},
+    {2, PIN_PULL_UP, 3, "PB.5"},
+#else
+    {8, PIN_PULL_UP, 3, "PB.12"},
+    {8, PIN_PULL_UP, 3, "PB.13"},
+    {8, PIN_PULL_UP, 3, "PB.14"},
+    {8, PIN_PULL_UP, 3, "PB.15"},
+    {8, PIN_PULL_UP, 3, "PB.16"},
+    {8, PIN_PULL_UP, 3, "PB.17"},
+#endif
 #endif
 #ifdef AIC_USING_SDMC0
     {2, PIN_PULL_UP, 7, "PB.6"},
@@ -289,7 +298,7 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #ifdef AIC_USING_CTP
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_RST_PIN},
-#ifdef AIC_PM_DEMO_TOUCH_WAKEUP
+#ifdef AIC_TOUCH_PANEL_WAKE_UP
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN, FLAG_WAKEUP_SOURCE},
 #else
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN},

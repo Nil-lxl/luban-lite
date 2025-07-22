@@ -523,25 +523,29 @@ int rwnx_load_firmware(uint16_t chipid, int mode, u32 **fw_buf)
         #endif /* CONFIG_AIC8800DC_SUPPORT or CONFIG_AIC8800DW_SUPPORT */
     } else if (chipid == PRODUCT_ID_AIC8800D80) {
         #if 1//defined(CONFIG_AIC8800D80_SUPPORT)
-        if (aic_get_chip_id() == CHIP_REV_U01) {
-            if (mode == WIFI_MODE_RFTEST) {
-                #if defined(CONFIG_WIFI_MODE_RFTEST)
-                *fw_buf = (u32 *)fmac_aic8800d80_rf_fw_ptr_get();
-                size = fmac_aic8800d80_rf_fw_size_get();
-                #endif
+        if (mode == WIFI_MODE_RFTEST) {
+            #if defined(CONFIG_WIFI_MODE_RFTEST)
+            *fw_buf = (u32 *)fmac_aic8800d80_u02_rf_fw_ptr_get();
+            size = fmac_aic8800d80_u02_rf_fw_size_get();
+            #endif
+        } else {
+            if (aic_get_chip_mcu_id()) {
+                AIC_LOG_PRINTF("load 8800m40 m2d fw\n\r");
+                *fw_buf = (u32 *)fmac_aic8800m40_fw_ptr_get();
+                size = fmac_aic8800m40_fw_size_get();
             } else {
-                *fw_buf = (u32 *)fmac_aic8800d80_fw_ptr_get();
-                size = fmac_aic8800d80_fw_size_get();
-            }
-        } else if (aic_get_chip_id() == CHIP_REV_U02 || aic_get_chip_id() == CHIP_REV_U03) {
-            if (mode == WIFI_MODE_RFTEST) {
-                #if defined(CONFIG_WIFI_MODE_RFTEST)
-                *fw_buf = (u32 *)fmac_aic8800d80_u02_rf_fw_ptr_get();
-                size = fmac_aic8800d80_u02_rf_fw_size_get();
-                #endif
-            } else {
-                *fw_buf = (u32 *)fmac_aic8800d80_u02_fw_ptr_get();
-                size = fmac_aic8800d80_u02_fw_size_get();
+                if (aic_is_chip_id_h()) {
+                    *fw_buf = (u32 *)fmac_aic8800d80_h_u02_fw_ptr_get();
+                    size = fmac_aic8800d80_h_u02_fw_size_get();
+                } else {
+                    if (aic_get_chip_id() == CHIP_REV_U01) {
+                        *fw_buf = (u32 *)fmac_aic8800d80_fw_ptr_get();
+                        size = fmac_aic8800d80_fw_size_get();
+                    } else if (aic_get_chip_id() == CHIP_REV_U02 || aic_get_chip_id() == CHIP_REV_U03) {
+                        *fw_buf = (u32 *)fmac_aic8800d80_u02_fw_ptr_get();
+                        size = fmac_aic8800d80_u02_fw_size_get();
+                    }
+                }
             }
         }
         #endif /* CONFIG_AIC8800D80_SUPPORT */

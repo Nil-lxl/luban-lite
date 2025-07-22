@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,6 +29,16 @@ static inline void spienc_set_bypass(int status)
 static inline void spienc_select_tweak(int select)
 {
     hal_spienc_select_tweak(select);
+}
+
+static inline void spienc_xip_enable(void)
+{
+    hal_spienc_xip_enable();
+}
+
+static inline void spienc_xip_disable(void)
+{
+    hal_spienc_xip_disable();
 }
 
 static inline void spienc_start(void)

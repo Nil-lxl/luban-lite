@@ -7,6 +7,7 @@
 #ifndef _AIC_TYPES_H_
 #define _AIC_TYPES_H_
 
+#include "plat_port.h"
 #include "aic8800_config.h"
 #include <stdbool.h>
 

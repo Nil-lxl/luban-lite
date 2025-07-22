@@ -13,6 +13,11 @@
 #include "aic_plat_log.h"
 #include "aic_plat_time.h"
 
+#if defined(CONFIG_RTTHEAD_PLAT)
+#include <rtdbg.h>
+#define AIC_PLAT_PRINTF_API         rt_kprintf
+#endif
+
 #define RTOS_AL_INFO_DUMP   0
 #define RTOS_INFO_SHORT     0
 
@@ -28,6 +33,9 @@ static rtos_mutex rtos_mutexRef = NULL;
 #else
 #define AIC_RTOS_MEM_MAX        ((1024+256)*1024)
 #endif
+const osal_porting_ops_t osal_porting_ops = {
+    .osal_dbg_printf    = AIC_PLAT_PRINTF_API,
+};
 
 /*
  * FUNCTIONS
@@ -42,367 +50,6 @@ static rtos_mutex rtos_mutexRef = NULL;
  *
  ****************************************************************************************
  */
-#if 0
-static __INLINE	void OsResInit(OsResSt*st,char*name,void* ref)
-{
-    memset(st,0,sizeof(OsResSt));
-    if(name != NULL)
-        memcpy(st->name,name,strlen(name)>OS_RES_NAME_MAX?OS_RES_NAME_MAX:strlen(name));
-    #if !RTOS_INFO_SHORT
-    else
-    {
-        sprintf(st->name,"%#x",ref);
-    }
-    #endif
-    st->ref = ref;
-}
-
-static void rtos_del_by_type(OsResSt*st)
-{
-    #if RTOS_AL_INFO_DUMP
-    AIC_LOG_PRINTF("[rtos]del:type[%d]:%s ,%#x %#x %#x\n",st->type,st->name,st->ref,st->para0,st->para1);
-    #endif
-
-	switch(st->type)
-	{
-		case RES_TYPE_MUTEX:
-			rt_mutex_delete((rtos_mutex)st->ref);
-		break;
-		case RES_TYPE_SEM:
-			rt_sem_delete((rtos_semaphore)st->ref);
-		break;
-		case RES_TYPE_Q:
-			rt_mq_delete((rtos_queue)st->ref);
-		break;
-		case RES_TYPE_TIME:
-			rt_timer_delete((rtos_timer)st->ref);
-		break;
-		case RES_TYPE_TASK:
-			rt_thread_delete((rtos_task_handle)st->ref);
-		break;
-		case RES_TYPE_MEM:
-
-			if(rtos_remain_cnt < st->para0)
-			{
-				AIC_LOG_PRINTF("[rtos][warning] rtos mem cnt :%d :%d %d\n",rtos_remain_cnt,rtos_free_cnt,rtos_mem_cnt);
-				//AIC_ASSERT_ERR(0);
-			}
-
-			{
-				rtos_remain_cnt -= st->para0;
-				rtos_free_cnt += st->para0;
-			}
-			rt_free(st->ref);
-		break;
-
-		case RES_TYPE_MEM_NET_RX:
-		case RES_TYPE_MEM_NET_TX:
-			//platform_net_buf_rx_free(st->ref);
-			//AIC_LOG_PRINTF("[rtos]rtos free:%#x type:%d\n",st->ref,st->type);
-		break;
-
-		case RES_TYPE_SOCKET:
-			shutdown((int)(st->para0), 2);
-			close((int)(st->para0));
-		break;
-
-		default:break;
-	}
-}
-
-uint32_t rtos_res_mutex_lock(void)
-{
-	#if 0
-    if (rtos_mutexRef == NULL) {
-		rtos_mutexRef = rt_mutex_create("rtos_mutex", RT_IPC_FLAG_PRIO);
-		AIC_ASSERT_ERR(rtos_mutexRef == NULL);
-	}
-
-    return OSAMutexLock(rtos_mutexRef, OSA_SUSPEND);
-    #else
-    return 0;
-    #endif
-}
-
-void rtos_res_mutex_unlock(void)
-{
-    if(rtos_mutexRef)
-        rt_mutex_release(rtos_mutexRef);
-}
-
-static void rtos_res_list_push(OsResSt*res)
-{
-	uint32_t hs = sizeof(OsResList);
-	uint32_t nl;
-	OsResList *p;
-
-	p = malloc(hs);
-
-	if(p == NULL)
-		return;
-
-	nl = strlen(res->name);
-	nl = (nl>OS_RES_NAME_MAX)?OS_RES_NAME_MAX:nl;
-
-	rtos_res_mutex_lock();
-
-	p->res.para0 = res->para0;
-	p->res.para1 = res->para1;
-	p->res.ref = res->ref;
-	p->res.type = res->type;
-	memcpy(p->res.name,res->name,nl);
-	p->res.name[nl] = 0;
-
-	if(res->type == RES_TYPE_MEM)
-	{
-		rtos_remain_cnt += res->para0;
-		rtos_mem_cnt += res->para0;
-	}
-
-	co_list_push_back(&res_list[res->type], &(p->hdr));
-
-	rtos_res_mutex_unlock();
-
-    #if RTOS_AL_INFO_DUMP
-	//AIC_LOG_PRINTF("[rtos]push:type[%d]:%s ,%#x\n",res->type,res->name,res->ref);
-    #endif
-}
-
-static void rtos_res_list_release(void *ref,uint16_t type)
-{
-	uint8_t rtype = type&0xff;
-	uint8_t rpara = (type>>8)&0xff;
-	OsResList *pRes;
-	struct co_list *plist;
-
-    rtos_res_mutex_lock();
-	plist = &res_list[rtype];
-    pRes = (OsResList *)co_list_pick(plist);
-
-    while (pRes)
-	{
-		if(pRes->res.ref)
-		{
-	        if (pRes->res.ref == ref)
-			{
-	            break;
-	        }
-		}
-		else if(pRes->res.para0 == rpara)
-		{
-			break;
-		}
-        pRes = (OsResList *)co_list_next(&(pRes->hdr));
-    }
-
-	if(pRes != NULL)
-	{
-		rtos_del_by_type(&(pRes->res));
-		co_list_extract(plist,&(pRes->hdr));
-		free(pRes);
-	}
-    rtos_res_mutex_unlock();
-
-	if(pRes == NULL)
-	{
-		AIC_LOG_PRINTF("[rtos]rtos res no this ref?:%#x type:%d\r",ref,type);
-	}
-}
-
-static void rtos_res_release_all(void)
-{
-	OsResList *pRes,*pres1;
-	struct co_list *plist;
-	int i = 0;
-
-	rtos_res_mutex_lock();
-
-	for(i=0;i<RES_TYPE_MAX;i++)
-	{
-		plist = &res_list[i];
-		pRes = (OsResList *)co_list_pick(plist);
-
-		while(pRes)
-		{
-			AIC_LOG_PRINTF("[rtos]del:type[%d]:%s ,%#x\n",pRes->res.type,pRes->res.name,pRes->res.ref);
-			rtos_del_by_type(&pRes->res);
-			pres1 = pRes;
-			pRes = (OsResList *)co_list_next(&(pRes->hdr));
-			free((void*)pres1);
-		}
-
-		co_list_init(plist);
-	}
-
-	rtos_res_mutex_unlock();
-
-	*rtos_pval_1 = NULL;
-	*rtos_pval_2 = NULL;
-}
-
-void rtos_remove_all(void)
-{
-	rtos_res_release_all();
-
-	if(rtos_remain_cnt != 0)
-	{
-		AIC_LOG_PRINTF("[rtos][warning] rtos mem cnt :%d :%d %d\n",rtos_remain_cnt,rtos_free_cnt,rtos_mem_cnt);
-	}
-
-	rtos_remain_cnt = 0;
-	rtos_free_cnt = 0;
-	rtos_mem_cnt = 0;
-}
-
-static void rtos_res_list_rellist(void *ref,uint16_t type)
-{
-	uint8_t rtype = type&0x00ff;
-	uint8_t rpara = (type>>8)&0xff;
-	OsResList *pRes;
-	struct co_list *plist;
-
-    rtos_res_mutex_lock();
-	plist = &res_list[rtype];
-    pRes = (OsResList *)co_list_pick(plist);
-
-    while (pRes)
-	{
-		if(pRes->res.ref)
-		{
-	        if (pRes->res.ref == ref)
-			{
-	            break;
-	        }
-		}
-		else if(pRes->res.para0 == rpara)
-		{
-			break;
-		}
-        pRes = (OsResList *)co_list_next(&(pRes->hdr));
-    }
-
-
-	if(pRes != NULL)
-	{
-		if(rtype == RES_TYPE_SOCKET)
-			AIC_LOG_PRINTF("[rtos]del list:type[%d]:%s, %x\n",pRes->res.type,pRes->res.name,pRes->res.ref);
-		co_list_extract(plist,&(pRes->hdr));
-		free(pRes);
-	}
-
-    rtos_res_mutex_unlock();
-}
-
-
-OsResSt*  rtos_res_find_res(void *ref,uint16_t type)
-{
-
-	uint8_t rtype = type&0xff;
-	uint8_t rpara = (type>>8)&0xff;
-	OsResList *pRes;
-	struct co_list *plist;
-
-    rtos_res_mutex_lock();
-	plist = &res_list[rtype];
-    pRes = (OsResList *)co_list_pick(plist);
-
-    while (pRes)
-	{
-		if(pRes->res.ref)
-		{
-	        if (pRes->res.ref == ref)
-			{
-	            break;
-	        }
-		}
-		else if(pRes->res.para0 == rpara)
-		{
-			break;
-		}
-        pRes = (OsResList *)co_list_next(&(pRes->hdr));
-    }
-
-	rtos_res_mutex_unlock();
-
-	if(pRes)
-		return &(pRes->res);
-	else
-	{
-		AIC_LOG_PRINTF("[[rtos]]rtos find none :%#x type:%d\r",ref,type);
-		return NULL;
-	}
-
-}
-
-OsResSt*  rtos_res_find_res_by_para(uint16_t type,uint32_t para)
-{
-
-	uint8_t rtype = type&0xff;
-	uint8_t rpara = (type>>8)&0xff;
-	OsResList *pRes;
-	struct co_list *plist;
-
-    rtos_res_mutex_lock();
-	plist = &res_list[rtype];
-    pRes = (OsResList *)co_list_pick(plist);
-
-    while (pRes)
-	{
-		if(rpara == 0)
-		{
-	        if(pRes->res.para0 == para)
-			{
-	            break;
-	        }
-		}
-		else
-		{
-			if(pRes->res.para1 == para)
-				break;
-		}
-        pRes = (OsResList *)co_list_next(&(pRes->hdr));
-    }
-
-	rtos_res_mutex_unlock();
-
-	if(pRes)
-		return &(pRes->res);
-	else
-	{
-		AIC_LOG_PRINTF("[[rtos]]rtos find none :%#x type:%d\r",para,type);
-		return NULL;
-	}
-
-}
-
-
-
-void rtos_res_list_info_show(void)
-{
-	OsResList *pRes;
-	struct co_list *plist;
-	int i = 0;
-
-	rtos_res_mutex_lock();
-
-	for(i=0;i<RES_TYPE_MAX;i++)
-	{
-		plist = &res_list[i];
-		pRes = (OsResList *)co_list_pick(plist);
-
-		while(pRes)
-		{
-			AIC_LOG_PRINTF("[rtos]type[%d] name:%s,ref:%#x para0:%#x,para1:%#x\n",pRes->res.type,pRes->res.name,pRes->res.ref,pRes->res.para0,pRes->res.para1);
-			pRes = (OsResList *)co_list_next(&(pRes->hdr));
-		}
-
-	}
-
-	rtos_res_mutex_unlock();
-
-	AIC_LOG_PRINTF("[rtos][show] rtos mem cnt :%d %d :%d %d\n",co_list_cnt(&res_list[RES_TYPE_MEM]),rtos_remain_cnt,rtos_free_cnt,rtos_mem_cnt);
-}
-#else
 void rtos_remove_all(void)
 {
     AIC_LOG_PRINTF("[rtos]%s not support!!!\n", __func__);
@@ -412,7 +59,6 @@ void rtos_res_list_info_show(void)
 {
     AIC_LOG_PRINTF("[rtos]%s not support!!!\n", __func__);
 }
-#endif
 
 __STATIC_INLINE uint32_t rtos_ms_to_tick(unsigned long ms)
 {
@@ -431,7 +77,7 @@ unsigned long rtos_now(bool isr)
     return rtos_tick_to_ms(tick);
 }
 
-void rtos_msleep(uint32 time_in_ms)
+void rtos_msleep(uint32_t time_in_ms)
 {
 	rtos_tick_t ticks = rtos_ms_to_tick(time_in_ms);
 
@@ -1132,16 +778,15 @@ int rtos_mutex_unlock(rtos_mutex mutex)
 	return ret;
 }
 
-//extern int	 gettimeofday(struct timeval *tv, void* dummy);
-extern int gettimeofday(struct timeval *tv, struct timezone *tz);
+extern int clock_gettime(clockid_t clockid, struct timespec *tp);
 
 int aic_time_get(enum time_origin_t origin, uint32_t *sec, uint32_t *usec)
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
+    struct timespec tp;
+    clock_gettime(CLOCK_REALTIME, &tp);
 
-    *sec = tv.tv_sec;
-    *usec = tv.tv_usec;
+    *sec = tp.tv_sec;
+    *usec = tp.tv_nsec / 1000;
 
 	//aic_dbg("%s:%d %d",__func__,*sec,*usec);
 

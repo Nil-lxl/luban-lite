@@ -149,7 +149,7 @@ config AIC_UART_DRV_V11
 
 config AIC_UART_DRV_VER
     string
-    default "10" if AIC_UART_DRV_V10
+    default "11" if AIC_UART_DRV_V11
 
 config AIC_UART_DEV_NUM
     int

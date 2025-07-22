@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -402,6 +402,7 @@ static rt_err_t aicmac_rt_control(rt_device_t dev, int cmd, void *args)
 }
 
 static aicmac_rt_t aicmac_device[MAX_ETH_MAC_PORT];
+#ifdef RT_USING_DEVICE_OPS
 static const struct rt_device_ops aicmac_rt_ops = {
     aicmac_rt_init,
     aicmac_rt_open,
@@ -410,6 +411,7 @@ static const struct rt_device_ops aicmac_rt_ops = {
     aicmac_rt_write,
     aicmac_rt_control
 };
+#endif
 /* Register the EMAC device */
 static int aicmac_rt_register(int port, char *name)
 {

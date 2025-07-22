@@ -49,6 +49,9 @@ choice
 
     config AIC_USING_CAMERA_TP9950
         bool "Using camera TP9950"
+
+    config AIC_USING_CAMERA_TP9951
+        bool "Using camera TP9951"
 endchoice
 
 config AIC_CAMERA_I2C_CHAN

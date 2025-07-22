@@ -342,7 +342,7 @@ config AIC_TP_DRV_TEST
 config AIC_WDT_DRV_TEST
     bool "Enable WDT driver test command"
     default n
-    depends on AIC_WDT_DRV
+    depends on AIC_WDT_DRV && !DRIVER_BARE_DRV_EN
 
 config AIC_GPAI_TEST
     bool "Enable GPAI driver test command"
@@ -427,6 +427,14 @@ if LPKG_USING_LWIP
         bool "Enable ethernet loopback test command"
         default n
 
+    config AIC_TCP_LWIP_TEST
+        bool "Enable TCP server loopback test command"
+        default n
+
+    config AIC_UDP_LWIP_TEST
+        bool "Enable UDP unicast/muticast/boardcast loopback test command"
+        default n
+
     endmenu
 
 endif
@@ -503,10 +511,6 @@ menu "Power Management examples"
             default "PD.6" if AIC_CHIP_D21X
             default "PD.15" if AIC_CHIP_D13X
             default "PA.1" if AIC_CHIP_D12X
-
-        config AIC_PM_DEMO_TOUCH_WAKEUP
-            bool "Enable touch wakeup system"
-            default n
 
         config AIC_PM_POWER_TOUCH_TIME_SLEEP
             int "Seconds to enter sleep without touching screen"

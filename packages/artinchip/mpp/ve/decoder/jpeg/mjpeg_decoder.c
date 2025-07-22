@@ -484,7 +484,7 @@ int mjpeg_decode_sos(struct mjpeg_dec_ctx *s,
         cfg.frame_count = 1 + s->extra_frame_num;
         cfg.height = s->scale_height;
         cfg.width = s->scale_width;
-#ifdef LV_DISPLAY_ROTATE_EN
+#if defined(LV_DISPLAY_ROTATE_EN) || defined(AIC_USB_DISP_ROTATION_FULLSCREEN)
         if (ALIGN_64B(s->rm_v_stride[0]) * s->rm_h_stride[0] >
             ALIGN_64B(s->rm_h_stride[0]) * s->rm_v_stride[0] ) {
             cfg.height_align = ALIGN_64B(s->rm_v_stride[0]);

@@ -28,6 +28,7 @@
 #if defined(RT_USING_SAL)
 #include <netdb.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #else
 #include <lwip/netdb.h>
 #include <lwip/sockets.h>

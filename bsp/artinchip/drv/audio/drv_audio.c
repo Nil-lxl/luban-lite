@@ -65,6 +65,38 @@ void drv_audio_buffer_info(struct rt_audio_device *audio,
     info->total_size = pcodec->tx_info.buf_info.buf_len;
 }
 
+void drv_audio_en_pa(void)
+{
+    unsigned int group, pin;
+    unsigned int gpio_pa;
+
+    gpio_pa = hal_gpio_name2pin(AIC_AUDIO_PA_ENABLE_GPIO);
+    group = GPIO_GROUP(gpio_pa);
+    pin = GPIO_GROUP_PIN(gpio_pa);
+    /* Enable PA */
+#ifdef AIC_AUDIO_EN_PIN_HIGH
+    hal_gpio_set_output(group, pin);
+#else
+    hal_gpio_clr_output(group, pin);
+#endif
+}
+
+void drv_audio_dis_pa(void)
+{
+    unsigned int group, pin;
+    unsigned int gpio_pa;
+
+    gpio_pa = hal_gpio_name2pin(AIC_AUDIO_PA_ENABLE_GPIO);
+    group = GPIO_GROUP(gpio_pa);
+    pin = GPIO_GROUP_PIN(gpio_pa);
+    /* Disable PA */
+#ifdef AIC_AUDIO_EN_PIN_HIGH
+    hal_gpio_clr_output(group, pin);
+#else
+    hal_gpio_set_output(group, pin);
+#endif
+}
+
 rt_err_t drv_audio_start(struct rt_audio_device *audio, int stream)
 {
     struct aic_audio *p_snd_dev;
@@ -78,7 +110,6 @@ rt_err_t drv_audio_start(struct rt_audio_device *audio, int stream)
 
     /* Set fade default volume */
     hal_audio_enable_fade(pcodec);
-    hal_audio_set_fade_volume(pcodec, FADE_MAX_CONTROL);
 
     if (!audio->replay->transfer_mode)
         hal_audio_attach_callback(pcodec, drv_audio_callback, NULL);
@@ -483,6 +514,7 @@ int rt_hw_sound_init(void)
 #else
     hal_gpio_set_output(group, pin);
 #endif
+    hal_audio_set_fade_volume(&snd_dev.codec, FADE_MAX_CONTROL);
 
     ret = rt_audio_register(&snd_dev.audio, "sound0",
                             RT_DEVICE_FLAG_WRONLY, &snd_dev);

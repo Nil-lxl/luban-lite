@@ -30,6 +30,8 @@ if GetDepend(['AIC_MPP_PLAYER_INTERFACE']):
     path += [cwd + '/middle_media/base/parser/mkv']
     path += [cwd + '/middle_media/base/parser/ts']
     path += [cwd + '/middle_media/base/parser/flv']
+    path += [cwd + '/middle_media/base/parser/aac']
+    path += [cwd + '/middle_media/base/parser/ape']
 
     #mm
     path += [cwd + '/middle_media/component/src']
@@ -89,6 +91,7 @@ if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AI
     src += Glob('./mpp_test/pic_crop_test.c')
     src += Glob('./mpp_test/jpeg_encode_test.c')
     src += Glob('./mpp_test/unzip_test.c')
+    src += Glob('./mpp_test/dump_fb.c')
 
     if GetDepend(['AIC_VE_DRV_V10']):
         src += Glob('./mpp_test/test_mpp_dec.c')
@@ -96,6 +99,8 @@ if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AI
 if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_GE_TEST']):
     src += Glob('./mpp_test/ge_test/public/*.c')
     src += Glob('./mpp_test/ge_test/*.c')
+    src += Glob('./mpp_test/ge_test/example/*.c')
+    path += ['./mpp_test/ge_test/public']
 
 if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_FB_TEST']) :
     src += Glob('./mpp_test/mpp_fb/*.c')
@@ -144,18 +149,18 @@ if GetDepend(['AIC_MPP_PLAYER_VE_USE_FILL_FB']):
 if GetDepend(['AIC_MPP_PLAYER_AUDIO_RENDER_SHARE_TEST']):
     src += Glob('middle_media/player/test/player_audio_test.c')
 
-if GetDepend(['LPKG_USING_LIBFLAC']):
+if GetDepend(['AIC_MPP_FLAC_DEC']):
     src += Glob('middle_media/audio_decoder/decoder/flac/flac_decoder.c')
-
-if GetDepend(['AIC_MPP_FLAC_DEMUX']):
     src += Glob('middle_media/base/parser/flac/aic_flac_parser.c')
     src += Glob('middle_media/base/parser/flac/flac.c')
 
-if GetDepend(['LPKG_USING_FFMPEG']):
-    src += Glob('middle_media/audio_decoder/decoder/wma/wma_decoder.c')
-
-if GetDepend(['LPKG_USING_FAAD2']):
+if GetDepend(['AIC_MPP_AAC_DEC']):
     src += Glob('middle_media/audio_decoder/decoder/aac/aac_decoder.c')
+    src += Glob('middle_media/base/parser/aac/aic_aac_parser.c')
+
+if GetDepend(['AIC_MPP_APE_DEC']):
+    src += Glob('middle_media/audio_decoder/decoder/ape/ape_decoder.c')
+    src += Glob('middle_media/base/parser/ape/aic_ape_parser.c')
 
 if GetDepend(['AIC_MPP_AVI_DEMUX']):
     src += Glob('middle_media/base/parser/avi/aic_avi_parser.c')
@@ -175,10 +180,10 @@ if GetDepend(['AIC_MPP_FLV_DEMUX']):
     src += Glob('middle_media/base/parser/flv/aic_flv_parser.c')
     src += Glob('middle_media/base/parser/flv/flv.c')
 
-if GetDepend(['AIC_MPP_WMA_DEMUX']):
+if GetDepend(['AIC_MPP_WMA_DEC']):
     src += Glob('middle_media/base/parser/asf/aic_asf_parser.c')
     src += Glob('middle_media/base/parser/asf/asf.c')
-
+    src += Glob('middle_media/audio_decoder/decoder/wma/wma_decoder.c')
 
 if GetDepend(['AIC_MPP_RECORDER_INTERFACE']):
     # base

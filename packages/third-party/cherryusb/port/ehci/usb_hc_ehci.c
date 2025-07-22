@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, sakumisu
+ * Copyright (c) 2022-2025, sakumisu
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -1174,8 +1174,8 @@ int usb_hc_deinit(struct usbh_bus *bus)
     while ((EHCI_HCOR->usbsts & (EHCI_USBSTS_PSS | EHCI_USBSTS_ASS)) || ((EHCI_HCOR->usbsts & EHCI_USBSTS_HALTED) == 0)) {
         usb_osal_msleep(1);
         timeout++;
-        if (timeout > 100) {
-            return -USB_ERR_TIMEOUT;
+        if (timeout > 1000) {
+            USB_LOG_WRN("Wait for the EHCI to stop timeout.\n");
         }
     }
 
@@ -1629,7 +1629,7 @@ static void ehci_scan_periodic_list(struct usbh_bus *bus)
     }
 }
 
-void USBH_IRQHandler(uint32_t irq_num, struct usbh_bus *bus)
+void usbh_irq_handler(uint32_t irq_num, struct usbh_bus *bus)
 {
     uint32_t usbsts;
 

@@ -50,21 +50,33 @@ if !AIC_DISP_PQ_TOOL
         bool "ArtInChip MIPI DSI AXS15231B panel"
         depends on AIC_DISP_MIPI_DSI
 
+    config AIC_PANEL_DSI_NV3051
+        bool "ArtInChip MIPI DSI NV3051 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_FL7707
+        bool "ArtInChip MIPI DSI FL7707 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_FT8201
+        bool "ArtInChip MIPI DSI FT8201 panel"
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_H024B12
         bool "Hotlcd MIPI DSI H024B12 panel"
-        depends on AIC_DISP_MIPI_DSI  
-        
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_H070B13
         bool "Hotlcd MIPI DSI H070B13 panel"
-        depends on AIC_DISP_MIPI_DSI  
+        depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H070A21
         bool "Hotlcd MIPI DSI H070A21 panel"
-        depends on AIC_DISP_MIPI_DSI   
+        depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H078B06
         bool "Hotlcd MIPI DSI H078B06 panel"
-        depends on AIC_DISP_MIPI_DSI    
+        depends on AIC_DISP_MIPI_DSI
 #
 # MIPI-DBI Type B I8080 Panel
 #
@@ -105,6 +117,12 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_MIPI_DBI
         help
             MIPI-DBI Type C, SPI_4LINE_RGB565
+
+    config AIC_PANEL_DBI_CO5300
+        bool "ArtInChip MIPI DBI CO5300 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4DA_RGB888
 #
 # RGB Panel SPI Init
 #
@@ -112,7 +130,7 @@ if !AIC_DISP_PQ_TOOL
         bool "ArtInChip RGB ST7701S panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
-    
+
     config AIC_PANEL_RGB_NV3052
         bool "ArtInChip RGB NV3052 panel"
         depends on AIC_DISP_RGB
@@ -121,7 +139,7 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_RGB_ST7703
         bool "ArtInChip RGB ST7703 panel"
         depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION    
+        select AIC_PANEL_SPI_EMULATION
 
     config AIC_PANEL_RGB_GC9A01A
         bool "ArtInChip RGB GC9A01A panel"
@@ -141,12 +159,12 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_RGB_H024A13
         bool "ArtInChip RGB H024A13 panel"
         depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION        
+        select AIC_PANEL_SPI_EMULATION
 
     config AIC_PANEL_RGB_H028A19
         bool "ArtInChip RGB H028A19 panel"
         depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION    
+        select AIC_PANEL_SPI_EMULATION
 #
 # SRGB Panel
 #
@@ -257,7 +275,7 @@ endif
 
 
 config PANEL_HACTIVE_RES
-    int 
+    int
     default 1024 if AIC_PANEL_1024X600_RESOLUTION
     default 1920 if AIC_PANEL_1920X1080_RESOLUTION
     default 640 if AIC_PANEL_RGB_ST7703
@@ -266,10 +284,10 @@ config PANEL_HACTIVE_RES
     default 800 if AIC_PANEL_DSI_H070B13
     default 280 if AIC_PANEL_DSI_H070A21
     default 400 if AIC_PANEL_DSI_H078B06
-    
+
 
 config PANEL_VACTIVE_RES
-    int 
+    int
     default 600 if AIC_PANEL_1024X600_RESOLUTION
     default 1080 if AIC_PANEL_1920X1080_RESOLUTION
     default 480 if AIC_PANEL_RGB_ST7703
@@ -278,6 +296,6 @@ config PANEL_VACTIVE_RES
     default 1280 if AIC_PANEL_DSI_H070B13
     default 1424 if AIC_PANEL_DSI_H070A21
     default 1280 if AIC_PANEL_DSI_H078B06
-    
-    
+
+
 endmenu

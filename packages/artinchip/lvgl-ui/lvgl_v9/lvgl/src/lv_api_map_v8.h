@@ -245,6 +245,7 @@ static inline void lv_obj_move_background(lv_obj_t * obj)
 #define lv_obj_set_style_bg_img_src              lv_obj_set_style_bg_image_src
 #define lv_obj_set_style_bg_img_recolor          lv_obj_set_style_bg_image_recolor
 #define lv_obj_set_style_bg_img_recolor_opa      lv_obj_set_style_bg_image_recolor_opa
+#define lv_obj_set_style_arc_img_src             lv_obj_set_style_arc_image_src
 
 #define lv_style_set_anim_time                   lv_style_set_anim_duration
 #define lv_style_set_img_opa                     lv_style_set_image_opa

@@ -12,6 +12,8 @@
 #include "usbd_display.h"
 #include "lv_tpc_run.h"
 
+#include <msh.h>
+
 static void lv_set_ui_alpha(lv_settings_mgr_t *mgr, unsigned int mode, unsigned int value);
 
 static inline bool lv_pictures_is_enabled(lv_settings_mgr_t *mgr)
@@ -163,7 +165,7 @@ static void lv_save_config_file(lv_settings_mgr_t *mgr)
 static void lv_settings_hide_menu(lv_settings_mgr_t *mgr)
 {
     /* Filter out a LV_EVENT_CLICKED event */
-    if (mgr->long_press_end == 1){
+    if (mgr->long_press_end == 1) {
         mgr->long_press_end = 0;
         return;
     }
@@ -368,32 +370,63 @@ void backlight_slider_event_cb(lv_event_t * e)
 }
 #endif
 
+static void disp_prop_recovery(lv_settings_mgr_t *mgr, lv_settings_ctx_t *ctx)
+{
+    lv_slider_set_value(mgr->brightness.base, 50, LV_ANIM_OFF);
+    lv_label_set_text(mgr->brightness.label, "50");
+    cJSON_SetIntValue(ctx->brightness.cjson, 50);
+
+    lv_slider_set_value(mgr->contrast.base, 50, LV_ANIM_OFF);
+    lv_label_set_text(mgr->contrast.label, "50");
+    cJSON_SetIntValue(ctx->contrast.cjson, 50);
+
+    lv_slider_set_value(mgr->saturation.base, 50, LV_ANIM_OFF);
+    lv_label_set_text(mgr->saturation.label, "50");
+    cJSON_SetIntValue(ctx->saturation.cjson, 50);
+
+    lv_slider_set_value(mgr->hue.base, 50, LV_ANIM_OFF);
+    lv_label_set_text(mgr->hue.label, "50");
+    cJSON_SetIntValue(ctx->hue.cjson, 50);
+
+    struct aicfb_disp_prop disp_prop = { 50, 50, 50, 50 };
+    mpp_fb_ioctl(mgr->fb, AICFB_SET_DISP_PROP, &disp_prop);
+}
+
+static void backlight_pwm_recovery(lv_settings_mgr_t *mgr, lv_settings_ctx_t *ctx)
+{
+#if defined(KERNEL_RTTHREAD) && defined(AIC_PWM_BACKLIGHT_CHANNEL)
+    char buf[8];
+    u32 value;
+
+    value = 80; /* default value */
+    lv_snprintf(buf, sizeof(buf), "%d", value);
+
+    lv_label_set_text(mgr->backlight.label, buf);
+    cJSON_SetIntValue(ctx->pwm.cjson, value);
+
+    backlight_pwm_config(AIC_PWM_BACKLIGHT_CHANNEL, value);
+#else
+    (void)mgr;
+    (void)ctx;
+#endif
+}
+
+static void disp_rotate_recovery(lv_settings_mgr_t *mgr, lv_settings_ctx_t *ctx)
+{
+    lv_obj_t * dd = mgr->rotate.dropdown;
+
+    lv_dropdown_set_selected(dd, 0);
+    usb_display_set_rotate(0);
+}
+
 void recovery_btn_event_handler(lv_event_t * e)
 {
-    lv_event_code_t code = lv_event_get_code(e);
     lv_settings_mgr_t *mgr = lv_event_get_user_data(e);
     lv_settings_ctx_t *ctx = &mgr->ctx;
 
-    if(code == LV_EVENT_CLICKED) {
-        lv_slider_set_value(mgr->brightness.base, 50, LV_ANIM_OFF);
-        lv_label_set_text(mgr->brightness.label, "50");
-        cJSON_SetIntValue(ctx->brightness.cjson, 50);
-
-        lv_slider_set_value(mgr->contrast.base, 50, LV_ANIM_OFF);
-        lv_label_set_text(mgr->contrast.label, "50");
-        cJSON_SetIntValue(ctx->contrast.cjson, 50);
-
-        lv_slider_set_value(mgr->saturation.base, 50, LV_ANIM_OFF);
-        lv_label_set_text(mgr->saturation.label, "50");
-        cJSON_SetIntValue(ctx->saturation.cjson, 50);
-
-        lv_slider_set_value(mgr->hue.base, 50, LV_ANIM_OFF);
-        lv_label_set_text(mgr->hue.label, "50");
-        cJSON_SetIntValue(ctx->hue.cjson, 50);
-
-        struct aicfb_disp_prop disp_prop = { 50, 50, 50, 50 };
-        mpp_fb_ioctl(mgr->fb, AICFB_SET_DISP_PROP, &disp_prop);
-    }
+    disp_prop_recovery(mgr, ctx);
+    backlight_pwm_recovery(mgr, ctx);
+    disp_rotate_recovery(mgr, ctx);
 }
 
 void screen_lock_mode_dropdown_event_handler(lv_event_t * e)
@@ -499,4 +532,9 @@ void screen_rotate_dropdown_event_handler(lv_event_t * e)
         unsigned int index = lv_dropdown_get_selected(obj);
         usb_display_set_rotate(index * 90);
     }
+}
+
+void device_upgrade_event_cb(lv_event_t * e)
+{
+    msh_exec("aicupg \n", 8);
 }

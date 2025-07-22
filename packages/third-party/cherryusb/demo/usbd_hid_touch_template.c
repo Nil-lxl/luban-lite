@@ -494,6 +494,7 @@ struct hid_touch_t {
 
     // test_action_settings
     // instruct_action_settings
+    uint16_t drop_hid_data;
 
 } g_hid_touch;
 
@@ -922,6 +923,13 @@ static void hid_touch_thread(void *parameter)
 
     while(1) {
         rt_sem_take(hid_touch->sem, RT_WAITING_FOREVER);
+
+        if (hid_touch->drop_hid_data) {
+            continue;
+        }
+
+        usbd_send_remote_wakeup();
+
         if (rt_device_read(hid_touch->dev, 0, hid_touch->data, hid_touch->info.point_num)
                             == hid_touch->info.point_num) {
 
@@ -1054,7 +1062,7 @@ int usbd_comp_touch_init(uint8_t *ep_table, void *data)
 }
 #endif
 
-static void hid_touch_init(void)
+int usbd_hid_touch_init(void)
 {
     /*!< init touch g_touch_report data */
     struct hid_touch_t *hid_touch = get_hid_touch();
@@ -1079,7 +1087,38 @@ static void hid_touch_init(void)
                             usbd_comp_touch_event_handler,
                             usbd_comp_touch_init, "touch");
 #endif
+    return 0;
 }
+
+int usbd_hid_touch_deinit(void)
+{
+    struct hid_touch_t *hid_touch = get_hid_touch();
+
+#ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+    usbd_deinitialize();
+#else
+    usbd_comp_func_release(hid_descriptor, "touch");
+#endif
+
+    if (hid_touch_tid)
+        rt_thread_delete(hid_touch_tid);
+
+    if (hid_touch->sem)
+        rt_sem_delete(hid_touch->sem);
+
+    if (hid_touch->data)
+        rt_free(hid_touch->data);
+
+    if (hid_touch->dev)
+        rt_device_close(hid_touch->dev);
+
+    hid_touch_tid = NULL;
+    hid_touch->sem = NULL;
+    hid_touch->data = NULL;
+    hid_touch->dev = NULL;
+    return 0;
+}
+
 #ifdef HID_TOUCHSCREEN_MODE
 static int _update_touchscreen_physical_maxnum(uint16_t x_max, uint16_t y_max)
 {
@@ -1120,17 +1159,26 @@ void usbd_hid_touch_rotate(unsigned int rotate_angle)
 #endif
 }
 
+void usbd_hid_touch_set_params(int params)
+{
+#ifdef HID_TOUCHSCREEN_MODE
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    bool enable = params & 0x1;
+    int rotate = (params >> 1)& 0x3;
+    if (enable) {
+        hid_touch->drop_hid_data = 0;
+        USB_LOG_INFO("HID_TOUCHSCREEN_MODE rotate %d\n", rotate);
+        usbd_hid_touch_rotate((rotate % 4) * 90);
+    } else {
+        hid_touch->drop_hid_data = 1;
+    }
+
+    rt_sem_release(hid_touch->sem);
+#endif
+}
+
 #if defined(KERNEL_RTTHREAD)
 #include <rtthread.h>
 #include <rtdevice.h>
-
-int usbd_hid_touch_init(void)
-{
-    hid_touch_init();
-    return 0;
-}
-#if !defined(LPKG_CHERRYUSB_DYNAMIC_REGISTRATION_MODE)
-INIT_APP_EXPORT(usbd_hid_touch_init);
-#endif
-
+USB_INIT_APP_EXPORT(usbd_hid_touch_init);
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,7 +15,7 @@
 
 #define HOTPLUG_SDMC 1
 #define SD_CHECK_PIN (rt_pin_get(AIC_SDMC1_HOTPLUG_PIN))
-#define SD_DEVICE    "sd0"
+#define SD_DEVICE    "sd1"
 
 extern void aic_mmcsd_change(u8 id);
 

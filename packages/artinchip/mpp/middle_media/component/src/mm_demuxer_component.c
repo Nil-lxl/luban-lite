@@ -177,8 +177,9 @@ static s32 mm_demuxer_get_parameter(mm_handle h_component, MM_INDEX_TYPE index,
                 error = MM_ERROR_BAD_PARAMETER;
                 break;
             }
-            ((mm_audio_param_port_format *)p_param)->encoding =
-                p_demuxer_data->audio_stream[tmp2].encoding;
+            memcpy((mm_audio_param_port_format *)p_param,
+                    &p_demuxer_data->audio_stream[tmp2],
+                    sizeof(mm_audio_param_port_format));
             break;
         case MM_INDEX_PARAM_VIDEO_PORT_FORMAT: //mm_video_param_port_format
             tmp1 = ((mm_video_param_port_format *)p_param)->port_index;
@@ -208,6 +209,12 @@ mm_demuxer_audio_format_trans(enum aic_audio_codec_type audio_type)
         ret = MM_AUDIO_CODING_MP3;
     } else if (audio_type == MPP_CODEC_AUDIO_DECODER_AAC) {
         ret = MM_AUDIO_CODING_AAC;
+    } else if (audio_type == MPP_CODEC_AUDIO_DECODER_APE) {
+        ret = MM_AUDIO_CODING_APE;
+    } else if (audio_type == MPP_CODEC_AUDIO_DECODER_FLAC) {
+        ret = MM_AUDIO_CODING_FLAC;
+    } else if (audio_type == MPP_CODEC_AUDIO_DECODER_WMA) {
+        ret = MM_AUDIO_CODING_WMA;
     } else {
         loge("unsp_port codec!!!\n");
         ret = MM_AUDIO_CODING_MAX;
@@ -322,6 +329,20 @@ static s32 mm_demuxer_index_param_contenturi(mm_demuxer_data *p_demuxer_data,
         p_aud_stream_num->u32 = 1;
         p_audio_port->format.audio.encoding =
             p_demuxer_data->audio_stream[0].encoding;
+        p_demuxer_data->audio_stream[0].sample_rate =
+           p_demuxer_data->s_media_info.audio_stream.sample_rate;
+        p_demuxer_data->audio_stream[0].channels =
+           p_demuxer_data->s_media_info.audio_stream.nb_channel;
+        p_demuxer_data->audio_stream[0].bitrate =
+           p_demuxer_data->s_media_info.audio_stream.bit_rate;
+        p_demuxer_data->audio_stream[0].bits_per_sample =
+           p_demuxer_data->s_media_info.audio_stream.bits_per_sample;
+        p_demuxer_data->audio_stream[0].block_align =
+           p_demuxer_data->s_media_info.audio_stream.block_align;
+        p_demuxer_data->audio_stream[0].extradata =
+           p_demuxer_data->s_media_info.audio_stream.extra_data;
+        p_demuxer_data->audio_stream[0].extradata_size =
+           p_demuxer_data->s_media_info.audio_stream.extra_data_size;
         *p_aud_stream_idx = 0;
         b_audio_find = MM_TRUE;
     } else {

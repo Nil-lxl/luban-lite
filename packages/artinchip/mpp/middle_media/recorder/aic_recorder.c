@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -105,6 +105,20 @@ static mm_callback component_event_callbacks = {
     .event_handler = component_event_handler,
     .giveback_buffer = component_giveback_buffer,
 };
+
+
+static s32 _set_vin_type(enum aic_recorder_vin_type type)
+{
+    if (type == AIC_RECORDER_VIN_DVP) {
+        return MM_VIDEO_IN_SOURCE_DVP;
+    } else if (type == AIC_RECORDER_VIN_USB) {
+        return MM_VIDEO_IN_SOURCE_USB;
+    } else if (type == AIC_RECORDER_VIN_FILE) {
+        return MM_VIDEO_IN_SOURCE_FILE;
+    }
+
+    return MM_VIDEO_IN_SOURCE_UNKNOWN;
+}
 
 struct aic_recorder *aic_recorder_create(void)
 {
@@ -259,6 +273,7 @@ s32 aic_recorder_init(struct aic_recorder *recorder,
         port_define.format.video.frame_height = recorder->config.video_config.out_height;
         port_define.format.video.framerate = recorder->config.video_config.out_frame_rate;
         port_define.format.video.color_format = MM_COLOR_FORMAT_YUV420P;
+        port_define.format.video.vin_type = _set_vin_type(recorder->config.video_config.vin_type);
         if (MM_ERROR_NONE != mm_set_parameter(recorder->vin_handle,
                                               MM_INDEX_PARAM_PORT_DEFINITION,
                                               &port_define)) {
@@ -446,25 +461,6 @@ s32 aic_recorder_set_input_file_path(struct aic_recorder *recorder, char *video_
     return 0;
 }
 
-
-s32 aic_recorder_set_vin_type(struct aic_recorder *recorder, enum aic_recorder_vin_type type)
-{
-    if (!recorder || !recorder->vin_handle) {
-        loge("recorder or vin_handle is null\n");
-        return -1;
-    }
-
-    mm_param_u32 param;
-    if (type == AIC_RECORDER_VIN_DVP) {
-        param.u32 = MM_VIDEO_IN_SOURCE_DVP;
-    } else if (type == AIC_RECORDER_VIN_USB) {
-        param.u32 = MM_VIDEO_IN_SOURCE_USB;
-    } else {
-        param.u32 = MM_VIDEO_IN_SOURCE_FILE;
-    }
-
-    return mm_set_parameter(recorder->vin_handle, MM_INDEX_PARAM_VIDEO_INPUT_SOURCE, (void *)&param);
-}
 
 s32 aic_recorder_set_max_duration(struct aic_recorder *recorder)
 {

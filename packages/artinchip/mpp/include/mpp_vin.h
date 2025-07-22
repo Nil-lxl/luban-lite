@@ -157,6 +157,7 @@ struct vin_video_buf {
 #define DVP_GET_TIMESTAMP   _IOR('V', 20, int)
 
 int mpp_vin_init(char *camera);
+int mpp_vin_reinit(void);
 void mpp_vin_deinit(void);
 
 /* DVP & Camera ioctrl API, defined int mpp_vin.c */

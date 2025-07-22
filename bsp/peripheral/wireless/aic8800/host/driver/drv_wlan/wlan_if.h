@@ -6,6 +6,13 @@
 #include "co_list.h"
 #include "netif_port.h"
 
+#define WLAN_CONNECT_CFG_NONE                   0x00
+#define WLAN_CONNECT_CFG_DISABLE_AUTO_RECONN    0xDA
+
+#define WLAN_CONNECT_TO_CFG_2_PARAM(cfg,to_ms)  (((cfg) << 24) | ((to_ms) & 0xFFFFFF))
+#define WLAN_CONNECT_PARAM_2_TO_MS(param)       ((uint32_t)(param) & 0xFFFFFF)
+#define WLAN_CONNECT_PARAM_2_CFG(param)         ((uint32_t)(param) >> 24)
+
 extern uint8_t is_fixed_ip;
 extern uint32_t fixed_ip, fixed_gw, fixed_mask;
 
@@ -45,8 +52,10 @@ struct wifi_mac_node {
 	char mac[WIFI_MAC_ADDR_LEN];
 };
 
-/* timeout_ms: 0 -> 10000, -1 -> no timeout, (timeout_ms > 0 && bit0 is 1) -> wep
- * return value: -1:password < 8, -6: dhcp fail
+/**
+ * timeout_ms: 0 -> 10000, -1 -> no timeout, (timeout_ms > 0 && bit0 is 1) -> wep,
+ *             use WLAN_CONNECT_TO_CFG_2_PARAM(WLAN_CONNECT_CFG_DISABLE_AUTO_RECONN,to_ms) to disable auto reconnect
+ * return value: -1:password < 8, -6: dhcp fail, -12: wrong password, -13: other error
  */
 int wlan_start_sta(uint8_t *ssid, uint8_t *pw, int timeout_ms);
 
@@ -93,6 +102,28 @@ void set_ap_allow_sta_inactivity_s(uint8_t s);
 
 void set_sta_connect_chan_num(uint32_t chan_num);
 uint32_t get_sta_connect_chan_freq(void);
+
+/**
+ ****************************************************************************************
+ * @brief * set_sta_connect_bssid :
+ *                          Must set bssid before calling 'wlan_start_sta',
+ *                          if kowns the router's mac address.
+ *
+ * @param[in]  addr:    mac addr of router
+ ****************************************************************************************
+ */
+void set_sta_connect_bssid(uint8_t *addr);
+
+/**
+ ****************************************************************************************
+ * @brief * set_user_sta_reconnect_scan_limit :
+ *                Must set_user_sta_reconnect_scan_limit before calling 'wlan_start_sta',
+ *                          default: 3.
+ *
+ * @param[in]  times for scanning after passive disconnect.
+ ****************************************************************************************
+ */
+void set_user_sta_reconnect_scan_limit(uint8_t value);
 
 void wlan_if_scan_open(void);
 void wlan_if_scan(aic_scan_cb_t scan_cb);

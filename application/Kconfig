@@ -225,6 +225,12 @@ if AIC_WIDGETS_DEMO
 
         config AIC_IMAGE_USAGE_DEMO
            bool "LVGL image usage demo"
+
+        config AIC_LYRICS_DEMO
+           bool "LVGL lyrics demo (only use by ArtInChip)"
+
+        config AIC_SWIPE_V1_DEMO
+           bool "LVGL swipe v1 demo"
     endchoice
 endif
 
@@ -253,6 +259,9 @@ config AIC_LVGL_LAUNCHER_DEMO
 config AIC_LVGL_DASHBOARD_DEMO
     bool "LVGL dashboard demo"
 
+config AIC_LVGL_SERIAL_DEMO
+    bool "LVGL serial demo"
+
 config AIC_LVGL_ELEVATOR_DEMO
     bool "LVGL elevator demo"
 
@@ -262,12 +271,18 @@ config AIC_LVGL_SLIDE_DEMO
 config AIC_LVGL_SIMPLE_PLAYER_DEMO
     bool "LVGL simple player demo"
 
+config AIC_LVGL_INPUT_TEST_DEMO
+    bool "LVGL input test demo"
+
 config AIC_LVGL_GIF_DEMO
     bool "LVGL gif demo"
 
 config AIC_LVGL_MUSIC_DEMO
     bool "LVGL music demos"
     select LPKG_LVGL_USING_DEMOS
+
+config AIC_LVGL_RTP_RECALIBRATE_DEMO
+    bool "LVGL rtp recalibrate demo"
 
 config AIC_LVGL_DEMO_WIDGETS
     bool "LVGL widgets demos"
@@ -345,13 +360,6 @@ config MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE
     default n
     depends on LPKG_USING_LVGL
 
-if !AIC_LVGL_MUSIC_DEMO && !AIC_LVGL_DEMO_WIDGETS && !AIC_LVGL_DEMO_BENCHMARK
-    config LV_USE_CONF_CUSTOM
-        bool "LVGL use custom config"
-        default y
-        depends on LPKG_USING_LVGL
-endif
-
 if MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE
     config MPP_JPEG_DEC_MAX_OUT_WIDTH
         int "Max output width of MPP JPEG decoder"
@@ -361,6 +369,23 @@ if MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE
         int "Max output height of MPP JPEG decoder"
         default 2048
 endif
+
+if !AIC_LVGL_MUSIC_DEMO && !AIC_LVGL_DEMO_WIDGETS && !AIC_LVGL_DEMO_BENCHMARK
+    config LV_USE_CONF_CUSTOM
+        bool "LVGL use custom config"
+        default y
+        depends on LPKG_USING_LVGL
+endif
+
+config LV_MEM_HEAP_ADAPTIVE_SUPPORT
+    bool "LVGL mem heap adaptive support"
+    default n
+    depends on LVGL_V_9
+
+config LV_USE_CMA_HEAP_LOW_LIMIT
+    int "LVGL use cmp heap low limit(Bytes)"
+    default 50000
+    depends on LV_MEM_HEAP_ADAPTIVE_SUPPORT
 
 # Parameters for LVGL meter demo
 if AIC_LVGL_METER_DEMO

@@ -14,10 +14,13 @@
 #include "lvgl.h"
 #include "aic_ui.h"
 #include "camera_ui.h"
+
+#if LVGL_VERSION_MAJOR == 9
 #include "lv_aic_camera.h"
+#endif
 
 static void ui_camera_cb(lv_event_t *e);
-#if defined(AIC_USING_CAMERA) && defined(AIC_DISPLAY_DRV) && defined(AIC_DVP_DRV)
+#if defined(AIC_USING_CAMERA) && defined(AIC_DISPLAY_DRV) && defined(AIC_DVP_DRV) && LVGL_VERSION_MAJOR == 9
 static void start_cb(lv_event_t * e);
 static void stop_cb(lv_event_t * e);
 static void delete_cb(lv_event_t * e);
@@ -38,7 +41,7 @@ lv_obj_t *camera_ui_init(void)
         return camera_ui;
     }
 
-#if defined(AIC_USING_CAMERA) && defined(AIC_DISPLAY_DRV) && defined(AIC_DVP_DRV)
+#if defined(AIC_USING_CAMERA) && defined(AIC_DISPLAY_DRV) && defined(AIC_DVP_DRV) && LVGL_VERSION_MAJOR == 9
     lv_obj_t *camera = lv_aic_camera_create(camera_ui);
     lv_obj_set_style_bg_opa(camera, LV_OPA_100, LV_PART_MAIN); /* set back ground opa to avoid display errors */
     lv_obj_set_style_bg_color(camera, lv_color_hex(0x606060), LV_PART_MAIN);
@@ -96,7 +99,7 @@ static void ui_camera_cb(lv_event_t *e)
     if (code == LV_EVENT_SCREEN_LOADED) {;}
 }
 
-#if defined(AIC_USING_CAMERA) && defined(AIC_DISPLAY_DRV) && defined(AIC_DVP_DRV)
+#if defined(AIC_USING_CAMERA) && defined(AIC_DISPLAY_DRV) && defined(AIC_DVP_DRV) && LVGL_VERSION_MAJOR == 9
 static void start_cb(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);

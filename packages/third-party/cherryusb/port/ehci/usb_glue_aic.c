@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -24,8 +24,8 @@ static void aic_ohci_isr(int vector, void *arg)
 static void aic_ehci_isr(int vector, void *arg)
 {
     struct usbh_bus *bus = (struct usbh_bus *)arg;
-    extern void USBH_IRQHandler(struct usbh_bus *bus);
-    USBH_IRQHandler(bus);
+    extern void usbh_irq_handler(struct usbh_bus *bus);
+    usbh_irq_handler(bus);
 }
 
 typedef struct aic_ehci_config {
@@ -137,6 +137,9 @@ void usb_hc_low_level_deinit(struct usbh_bus *bus)
         return;
 
     aicos_irq_disable(config[i].irq_num);
+#if defined(LPKG_CHERRYUSB_HOST_OHCI)
+    aicos_irq_disable(config[i].irq_num + 1);
+#endif
     hal_reset_assert(config[i].phy_rst_id);
     hal_reset_assert(config[i].rst_id);
     hal_clk_disable(config[i].phy_clk_id);

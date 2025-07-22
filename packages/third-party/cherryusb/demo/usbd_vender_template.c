@@ -213,7 +213,7 @@ int vender_device_init(void)
 #endif
     return 0;
 }
-INIT_DEVICE_EXPORT(vender_device_init);
+USB_INIT_APP_EXPORT(vender_device_init);
 
 static int cmd_test_vender(int argc, char **argv)
 {

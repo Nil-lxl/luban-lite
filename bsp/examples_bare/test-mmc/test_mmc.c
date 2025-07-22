@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -149,6 +149,89 @@ static int do_mmc_write(int argc, char **argv)
     }
 
     mmc_bwrite(host, blkoffset, blkcnt, (void *)p);
+
+    return 0;
+}
+
+static int do_mmc_scan(int argc, char **argv)
+{
+    unsigned long id, blkoffset;
+    struct aic_sdmc *host;
+    char *pe;
+    int ret;
+    u8 w_buf[512] = {0}, r_buf[512] = {0};
+    u8 scan_res[4][32] = {0};
+    int i, j, k;
+
+    if (argc < 3)
+        return -1;
+
+    id = strtoul(argv[1], &pe, 0);
+    blkoffset = strtoul(argv[2], &pe, 0);
+
+    ret = mmc_init(id);
+    if (ret) {
+        printf("sdmc %ld init failed.\n", id);
+        return ret;
+    }
+
+    host = find_mmc_dev_by_index(id);
+    if (host== NULL) {
+        printf("can't find mmc device!");
+        return -1;
+    }
+
+    /* set the write buf and write to the block */
+    srand(aic_get_ticks());
+
+    for (k = 0; k < 512; k++)
+        w_buf[k] = rand() & 0xff;
+
+    ret = mmc_bwrite(host, blkoffset, 1, w_buf);
+    if (ret == 0) {
+        printf("mmc_bwrite error!\n");
+        return -1;
+    }
+    memset(scan_res, 1, sizeof(scan_res));
+
+    /* scan the sample phase and chain */
+    for (i = 0; i < 4; i++) {
+        mmc_set_rx_phase(host, i);
+        for (j = 0; j < 32; j++) {
+            mmc_set_rx_delay(host, j);
+
+            memset(r_buf, 0, sizeof(r_buf));
+
+            ret = mmc_bread(host, blkoffset, 1, r_buf);
+            if (ret == 0) {
+                printf("mmc_bread error!\n");
+                scan_res[i][j] = 0;
+                continue;
+            }
+            for (k = 0; k < 512; k++) {
+                if (w_buf[k] != r_buf[k]) {
+                    printf("r_buf[%d]:expect 0x%02x, actual:0x%02x\n", k, w_buf[k], r_buf[k]);
+                    scan_res[i][j] = 0;
+                    break;
+                }
+            }
+        }
+    }
+
+    /* print the result */
+    printf("     ");
+    for (i = 0; i < 32; i++) {
+        printf("%-3d", i);
+    }
+    printf("\n    ----------------------------------------------------------------"
+        "--------------------------------\n");
+    for (i = 0; i < 4; i++) {
+        printf("%-2d | ", i);
+        for (j = 0; j < 32; j++) {
+            printf("%02x ", scan_res[i][j]);
+        }
+        printf("\n");
+    }
 
     return 0;
 }
@@ -393,6 +476,7 @@ static void do_mmc_help(void)
     printf("mmc erase <id> <blkoffset> <blkcnt>          : Erase data in mmc <id>\n");
     printf("mmc read  <id> <blkoffset> <blkcnt> <addr>   : Read data in mmc <id> to RAM address\n");
     printf("mmc write <id> <blkoffset> <blkcnt> <addr>   : Write data to mmc <id> from RAM address\n");
+    printf("mmc scan  <id> <blkoffset>                   : scan the mmc phase and delay chain \n");
     printf("mmc rpmb dump    <id> <blkoffset> <blkcnt> [addr of auth-key]\n");
     printf("mmc rpmb read    <id> <blkoffset> <blkcnt> <addr> [addr of auth-key]\n");
     printf("mmc rpmb write   <id> <blkoffset> <blkcnt> <addr> <addr of auth-key>\n");
@@ -449,6 +533,9 @@ static int cmd_mmc_do(int argc, char **argv)
         return 0;
     } else if (!strcmp(argv[1], "rpmb")) {
         do_mmc_rpmb(argc - 1, &argv[1]);
+        return 0;
+    } else if (!strcmp(argv[1], "scan")) {
+        do_mmc_scan(argc - 1, &argv[1]);
         return 0;
     }
 

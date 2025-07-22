@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -64,6 +64,7 @@ int hal_qspi_slave_init(qspi_slave_handle *h, struct qspi_slave_config *cfg)
     qspi_hw_set_cpol(base, cfg->cpol);
     qspi_hw_set_cpha(base, cfg->cpha);
     qspi_hw_set_lsb_en(base, cfg->lsb_en);
+    qspi_hw_set_3wire_en(base, cfg->wire3_en);
     qspi_hw_set_cs_polarity(base, cfg->cs_polarity);
     if (cfg->cs_polarity == QSPI_CS_POL_VALID_LOW)
         qspi_hw_set_cs_level(base, QSPI_CS_LEVEL_HIGH);
@@ -240,6 +241,8 @@ void hal_qspi_slave_irq_handler(qspi_slave_handle *h)
     base = qspi_hw_index_to_base(qspi->idx);
     qspi_hw_get_interrupt_status(base, &sts);
 
+    hal_log_debug("status:0x%x\n", sts);
+
     if (sts & ISTS_BIT_TF_OVF)
         qspi->status |= HAL_QSPI_STATUS_TX_OVER_FLOW;
 
@@ -301,7 +304,7 @@ int qspi_slave_transfer_cpu_async(struct qspi_slave_state *qspi,
     qspi_hw_interrupt_disable(base, ICR_BIT_ALL_MSK);
     qspi->status = HAL_QSPI_STATUS_IN_PROGRESS;
     if (t->tx_data && t->rx_data) {
-        if (qspi->bus_width != 1) {
+        if (qspi->bus_width > 1) {
             hal_log_err("Full duplex mode did not support. bus width: %d\n", qspi->bus_width);
             return -1;
         }

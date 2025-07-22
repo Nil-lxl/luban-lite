@@ -4,6 +4,7 @@
 
 menu "RGB interface options"
     depends on AIC_DISP_RGB
+    depends on AIC_SIMPLE_PANEL
 
 choice
     prompt "rgb mode"

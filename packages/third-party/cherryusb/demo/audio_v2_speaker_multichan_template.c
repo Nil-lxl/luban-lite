@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -203,6 +203,8 @@ struct usbd_uac_t {
     struct aic_audio_render *render;
     struct aic_audio_render_attr ao_attr;
     struct aic_audio_render_transfer_buffer transfer_buffer;
+    rt_thread_t usb_audio_tid;
+    rt_mutex_t usbd_uac_mutex;
     bool reconfig_flag;
 };
 
@@ -341,9 +343,6 @@ void usbd_audio_get_sampling_freq_table(uint8_t ep, uint8_t **sampling_freq_tabl
         *sampling_freq_table = (uint8_t *)default_sampling_freq_table;
     }
 }
-
-rt_mutex_t usbd_uac_mutex;
-
 
 int usbd_audio_render_open()
 {
@@ -520,11 +519,11 @@ int usbd_comp_uac_init(uint8_t *ep_table, void *data)
 
 int usbd_audio_v2_init(void)
 {
-    rt_thread_t usb_audio_tid = RT_NULL;
     int ret = 0;
+    struct usbd_uac_t *usbd_audio = &g_usbd_audio;
 
-    usbd_uac_mutex = rt_mutex_create("usbd_uac_mutex", RT_IPC_FLAG_PRIO);
-    if (usbd_uac_mutex == NULL) {
+    usbd_audio->usbd_uac_mutex = rt_mutex_create("usbd_uac_mutex", RT_IPC_FLAG_PRIO);
+    if (usbd_audio->usbd_uac_mutex == NULL) {
         USB_LOG_ERR("COMP: create dynamic mutex falied.\n");
         return -1;
     }
@@ -539,9 +538,9 @@ int usbd_audio_v2_init(void)
         return -1;
     }
 
-    usb_audio_tid = rt_thread_create("uac", uac_thread_entry, RT_NULL, 2048, 10, 50);
-    if (usb_audio_tid != RT_NULL)
-        rt_thread_startup(usb_audio_tid);
+    usbd_audio->usb_audio_tid = rt_thread_create("uac", uac_thread_entry, RT_NULL, 2048, 10, 50);
+    if (usbd_audio->usb_audio_tid != RT_NULL)
+        rt_thread_startup(usbd_audio->usb_audio_tid);
 
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     usbd_desc_register(audio_v2_descriptor);
@@ -552,11 +551,36 @@ int usbd_audio_v2_init(void)
 #else
     usbd_comp_func_register(audio_v2_descriptor,
                             usbd_comp_uac_event_handler,
-                            usbd_comp_uac_init, NULL);
+                            usbd_comp_uac_init, "uac");
 #endif
 
     return 0;
 }
-#if !defined(LPKG_CHERRYUSB_DYNAMIC_REGISTRATION_MODE)
-INIT_APP_EXPORT(usbd_audio_v2_init);
+
+int usbd_audio_v2_deinit(void)
+{
+    struct usbd_uac_t *usbd_audio = &g_usbd_audio;
+
+#ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+    usbd_deinitialize();
+#else
+    usbd_comp_func_release(audio_v2_descriptor, "uac");
 #endif
+    if (usbd_audio->usb_audio_tid)
+        rt_thread_delete(usbd_audio->usb_audio_tid);
+
+    if (usbd_audio->usbd_uac_mutex)
+        rt_mutex_delete(usbd_audio->usbd_uac_mutex);
+
+    rt_mq_detach(&g_uac_mq);
+
+    aic_audio_render_destroy(usbd_audio->render);
+
+    usbd_audio->usb_audio_tid = NULL;
+    usbd_audio->usbd_uac_mutex = NULL;
+    usbd_audio->render = NULL;
+
+    return 0;
+}
+
+USB_INIT_APP_EXPORT(usbd_audio_v2_init);

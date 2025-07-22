@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -685,6 +685,7 @@ s32 aic_sdmc_probe(struct aic_sdmc_pdata *pdata)
     host->host.is_sdio = pdata->is_sdio;
     host->rthost = rthost;
     host->rthost->sd_hotplug = pdata->is_hotplug;
+    rthost->id = pdata->id;
     rthost->private_data = host;
     aic_sdmc_setup_cfg(rthost);
 

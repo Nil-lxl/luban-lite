@@ -55,6 +55,11 @@ struct usbd_core_priv {
 
     /** Currently selected configuration */
     USB_MEM_ALIGNX uint8_t configuration;
+    uint8_t device_address;
+    bool self_powered;
+    bool remote_wakeup_support;
+    bool remote_wakeup_enabled;
+    bool is_suspend;
     uint8_t connected;
     uint8_t speed;
 #ifdef CONFIG_USBDEV_TEST_MODE
@@ -302,6 +307,8 @@ static bool usbd_get_descriptor(uint16_t type_index, uint8_t **data, uint32_t *l
              */
             *len = (p[CONF_DESC_wTotalLength]) |
                    (p[CONF_DESC_wTotalLength + 1] << 8);
+            g_usbd_core.self_powered = (p[7] & USB_CONFIG_SELF_POWERED) ? true : false;
+            g_usbd_core.remote_wakeup_support = (p[7] & USB_CONFIG_REMOTE_WAKEUP) ? true : false;
         } else {
             /* normally length is at offset 0 */
             *len = p[DESC_bLength];
@@ -489,6 +496,12 @@ static bool usbd_std_device_req_handler(struct usb_setup_packet *setup, uint8_t 
             /* bit 0: self-powered */
             /* bit 1: remote wakeup */
             (*data)[0] = 0x00;
+            if (g_usbd_core.self_powered) {
+                (*data)[0] |= USB_GETSTATUS_SELF_POWERED;
+            }
+            if (g_usbd_core.remote_wakeup_enabled) {
+                (*data)[0] |= USB_GETSTATUS_REMOTE_WAKEUP;
+            }
             (*data)[1] = 0x00;
             *len = 2;
             break;
@@ -497,20 +510,23 @@ static bool usbd_std_device_req_handler(struct usb_setup_packet *setup, uint8_t 
         case USB_REQUEST_SET_FEATURE:
             if (value == USB_FEATURE_REMOTE_WAKEUP) {
                 if (setup->bRequest == USB_REQUEST_SET_FEATURE) {
+                    g_usbd_core.remote_wakeup_enabled = true;
                     usbd_event_handler(USBD_EVENT_SET_REMOTE_WAKEUP);
                 } else {
+                    g_usbd_core.remote_wakeup_enabled = false;
                     usbd_event_handler(USBD_EVENT_CLR_REMOTE_WAKEUP);
                 }
             } else if (value == USB_FEATURE_TEST_MODE) {
 #ifdef CONFIG_USBDEV_TEST_MODE
                 g_usbd_core.test_mode = true;
-                usbd_execute_test_mode(setup);
+                usbd_req_test_mode(HI_BYTE(setup->wIndex));
 #endif
             }
             *len = 0;
             break;
 
         case USB_REQUEST_SET_ADDRESS:
+            g_usbd_core.device_address = value;
             usbd_set_address(value);
             *len = 0;
             break;
@@ -535,6 +551,7 @@ static bool usbd_std_device_req_handler(struct usb_setup_packet *setup, uint8_t 
                 ret = false;
             } else {
                 g_usbd_core.configuration = value;
+                g_usbd_core.is_suspend = false;
                 g_usbd_core.connected = true;
                 usbd_class_event_notify_handler(USBD_EVENT_CONFIGURED, NULL);
                 usbd_event_handler(USBD_EVENT_CONFIGURED);
@@ -553,6 +570,67 @@ static bool usbd_std_device_req_handler(struct usb_setup_packet *setup, uint8_t 
     }
 
     return ret;
+}
+
+static bool _parse_hid_desc(uint8_t intf_num, uint8_t **data,  uint32_t *len)
+{
+    uint32_t desc_len = 0;
+    uint32_t current_desc_len = 0;
+    uint8_t cur_iface = 0xFF;
+    const uint8_t *p;
+
+#ifdef CONFIG_USBDEV_ADVANCE_DESC
+    p = g_usbd_core.descriptors->config_descriptor_callback(g_usbd_core.speed);
+#else
+    p = (uint8_t *)g_usbd_core.descriptors;
+#endif
+
+    while (p[DESC_bLength] != 0U) {
+        switch (p[DESC_bDescriptorType]) {
+            case USB_DESCRIPTOR_TYPE_CONFIGURATION:
+                current_desc_len = 0;
+                desc_len = (p[CONF_DESC_wTotalLength]) |
+                            (p[CONF_DESC_wTotalLength + 1] << 8);
+                break;
+            case USB_DESCRIPTOR_TYPE_INTERFACE:
+                cur_iface = p[INTF_DESC_bInterfaceNumber];
+                break;
+            case 0x21:
+                if (cur_iface == intf_num) {
+                    *data = (uint8_t *)p;
+                    //memcpy(*data, p, p[DESC_bLength]);
+                    *len = p[DESC_bLength];
+                    return true;
+                }
+                break;
+            default:
+                break;
+        }
+        /* skip to next descriptor */
+        p += p[DESC_bLength];
+        current_desc_len += p[DESC_bLength];
+        if (current_desc_len >= desc_len && desc_len) {
+            break;
+        }
+    }
+
+    return false;
+}
+
+static bool _parse_hid_desc_report(uint8_t intf_num, uint8_t **data,  uint32_t *len)
+{
+    for (uint8_t i = 0; i < g_usbd_core.intf_offset; i++) {
+        struct usbd_interface *intf = g_usbd_core.intf[i];
+
+        if (intf && (intf->intf_num == intf_num)) {
+            //*data = (uint8_t *)intf->hid_report_descriptor;
+            memcpy(*data, intf->hid_report_descriptor, intf->hid_report_descriptor_len);
+            *len = intf->hid_report_descriptor_len;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -584,20 +662,15 @@ static bool usbd_std_interface_req_handler(struct usb_setup_packet *setup,
             break;
 
         case USB_REQUEST_GET_DESCRIPTOR:
-            if (type == 0x22) { /* HID_DESCRIPTOR_TYPE_HID_REPORT */
-                USB_LOG_INFO("read hid report descriptor\r\n");
-
-                for (uint8_t i = 0; i < g_usbd_core.intf_offset; i++) {
-                    struct usbd_interface *intf = g_usbd_core.intf[i];
-
-                    if (intf && (intf->intf_num == intf_num)) {
-                        //*data = (uint8_t *)intf->hid_report_descriptor;
-                        memcpy(*data, intf->hid_report_descriptor, intf->hid_report_descriptor_len);
-                        *len = intf->hid_report_descriptor_len;
-                        return true;
-                    }
-                }
+            if (type == 0x21) { /* HID_DESCRIPTOR_TYPE_HID */
+                ret = _parse_hid_desc(intf_num, data, len);
+            } else if (type == 0x22) { /* HID_DESCRIPTOR_TYPE_HID_REPORT */
+                ret = _parse_hid_desc_report(intf_num, data, len);
             }
+
+            if (ret == true)
+                return ret;
+
             ret = false;
             break;
         case USB_REQUEST_CLEAR_FEATURE:
@@ -972,17 +1045,22 @@ void usbd_event_disconnect_handler(void)
 
 void usbd_event_resume_handler(void)
 {
+    g_usbd_core.is_suspend = false;
     usbd_event_handler(USBD_EVENT_RESUME);
 }
 
 void usbd_event_suspend_handler(void)
 {
-    usbd_event_handler(USBD_EVENT_SUSPEND);
+    if (g_usbd_core.device_address > 0) {
+        g_usbd_core.is_suspend = true;
+        usbd_event_handler(USBD_EVENT_SUSPEND);
+    }
 }
 
 void usbd_event_reset_handler(void)
 {
     usbd_set_address(0);
+    g_usbd_core.device_address = 0;
     g_usbd_core.configuration = 0;
 
 #ifdef CONFIG_USBDEV_TEST_MODE
@@ -1040,13 +1118,7 @@ void usbd_event_ep0_setup_complete_handler(uint8_t *psetup)
         usbd_ep_set_stall(USB_CONTROL_IN_EP0);
         return;
     }
-#ifdef CONFIG_USBDEV_TEST_MODE
-    /* send status in test mode, so do not execute downward, just return */
-    if (g_usbd_core.test_mode) {
-        g_usbd_core.test_mode = false;
-        return;
-    }
-#endif
+
     /* Send smallest of requested and offered length */
     g_usbd_core.ep0_data_buf_residue = MIN(g_usbd_core.ep0_data_buf_len, setup->wLength);
     if (g_usbd_core.ep0_data_buf_residue > CONFIG_USBDEV_REQUEST_BUFFER_LEN) {
@@ -1226,6 +1298,29 @@ bool usb_device_is_configured(void)
 bool usb_device_is_connected(void)
 {
     return g_usbd_core.connected;
+}
+
+bool usb_device_is_suspend(void)
+{
+    return g_usbd_core.is_suspend;
+}
+
+int usbd_send_remote_wakeup(void)
+{
+    if (g_usbd_core.remote_wakeup_support && g_usbd_core.remote_wakeup_enabled && g_usbd_core.is_suspend) {
+        return usbd_set_remote_wakeup();
+    } else {
+        if (!g_usbd_core.remote_wakeup_support) {
+            USB_LOG_DBG("device does not support remote wakeup\r\n");
+        }
+        if (!g_usbd_core.remote_wakeup_enabled) {
+            USB_LOG_DBG("device remote wakeup is not enabled\r\n");
+        }
+        if (!g_usbd_core.is_suspend) {
+            USB_LOG_DBG("device is not in suspend state\r\n");
+        }
+        return -1;
+    }
 }
 
 bool usbd_connect_check(uint32_t timeout)

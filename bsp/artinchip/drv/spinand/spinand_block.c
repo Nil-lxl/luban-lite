@@ -98,13 +98,18 @@ static u32 spinand_start_page_calculate(rt_device_t dev, rt_off_t pos)
     start_page = pos / SECTORS_PP + mtd_dev->block_start * mtd_dev->pages_per_block;
     block = start_page / mtd_dev->pages_per_block;
 
-    for (block_temp = mtd_dev->block_start; block_temp < mtd_dev->block_end; block_temp++) {
-        if (mtd_dev->ops->get_block_status(mtd_dev, block_temp) == BBT_BLOCK_GOOD)
-            good_blk_cnt++;
+    if (blk_dev->block_num_cache && *(blk_dev->block_num_cache + 1) != 0) {
+        /* Check the block_num_cache has been initialized and use it. */
+        block_temp = *(blk_dev->block_num_cache + (block - mtd_dev->block_start));
+    } else {
+        for (block_temp = mtd_dev->block_start; block_temp < mtd_dev->block_end; block_temp++) {
+            if (mtd_dev->ops->get_block_status(mtd_dev, block_temp) == BBT_BLOCK_GOOD)
+                good_blk_cnt++;
 
-        /* Find the (block)th good block. */
-        if (good_blk_cnt - 1 == block - mtd_dev->block_start)
-            break;
+            /* Find the (block)th good block. */
+            if (good_blk_cnt - 1 == block - mtd_dev->block_start)
+                break;
+        }
     }
 
     start_page += (block_temp - block)*mtd_dev->pages_per_block;
@@ -116,6 +121,11 @@ static void spinand_nonftl_cache_write(struct spinand_blk_device *blk_dev, void 
 {
     u32 cache_cnt = 0;
     u32 cur_pos = pos;
+    rt_err_t result;
+
+    result = rt_mutex_take(&(blk_dev->blk_cache_lock), RT_WAITING_FOREVER);
+    if (result != RT_EOK)
+        return;
 
     pr_debug(" copy_cnt = %d", copy_cnt);
     copy_cnt = copy_cnt > BLOCK_CACHE_NUM ? BLOCK_CACHE_NUM : copy_cnt;
@@ -125,12 +135,20 @@ static void spinand_nonftl_cache_write(struct spinand_blk_device *blk_dev, void 
         blk_dev->blk_cache[cache_cnt].pos = cur_pos++;
         copybuf += BLOCK_CACHE_SIZE;
     }
+
+    /* release lock */
+    rt_mutex_release(&(blk_dev->blk_cache_lock));
 }
 
 static rt_size_t spinand_nonftl_cache_read(struct spinand_blk_device *blk_dev, rt_off_t *pos, void *buffer, rt_size_t size)
 {
     rt_size_t sectors_read = 0;
     u32 cnt = 0;
+    rt_err_t result;
+
+    result = rt_mutex_take(&(blk_dev->blk_cache_lock), RT_WAITING_FOREVER);
+    if (result != RT_EOK)
+        goto no_mutex;
 
     for (cnt = 0; cnt < BLOCK_CACHE_NUM; cnt++) {
         if (blk_dev->blk_cache[cnt].pos == *pos) {
@@ -139,7 +157,7 @@ static rt_size_t spinand_nonftl_cache_read(struct spinand_blk_device *blk_dev, r
     }
 
     if (cnt == BLOCK_CACHE_NUM)
-        return 0;
+        goto done;
     while (cnt < BLOCK_CACHE_NUM) {
         if (blk_dev->blk_cache[cnt].pos == *pos) {
             pr_debug(" copy[%d] pos = %d", cnt, *pos);
@@ -149,12 +167,20 @@ static rt_size_t spinand_nonftl_cache_read(struct spinand_blk_device *blk_dev, r
             sectors_read++;
             buffer += BLOCK_CACHE_SIZE;
             if (sectors_read == size)
-                return size;
+                goto done;
         } else {
             break;
         }
     }
+
+done:
+    /* release lock */
+    rt_mutex_release(&(blk_dev->blk_cache_lock));
+
     return sectors_read;
+
+no_mutex:
+    return 0;
 }
 
 static rt_size_t spinand_read_nonftl_nalign(rt_device_t dev, rt_off_t *pos, void *buffer, rt_size_t size)
@@ -348,6 +374,7 @@ rt_err_t rt_spinand_init_nonftl(rt_device_t dev)
     struct spinand_blk_device *part = (struct spinand_blk_device *)dev;
     struct rt_mtd_nand_device *device = part->mtd_device;
     rt_uint32_t block;
+    u32 *blk_num_ptr, nbytes_temp;
 
     assert(part != RT_NULL);
 
@@ -359,6 +386,29 @@ rt_err_t rt_spinand_init_nonftl(rt_device_t dev)
             device->ops->set_block_status(device, block, BBT_BLOCK_GOOD);
         }
     }
+
+    part->blk_cache = (struct blk_cache *)rt_malloc(sizeof(struct blk_cache) * BLOCK_CACHE_NUM);
+
+    /* initialize mutex lock */
+    rt_mutex_init(&(part->blk_cache_lock), part->name, RT_IPC_FLAG_PRIO);
+
+    /* initialize block_num_cache */
+    nbytes_temp = (device->block_end - device->block_start) * sizeof(u32);
+    part->block_num_cache = (u32 *)rt_malloc(nbytes_temp);
+    if (!part->block_num_cache) {
+        pr_err("malloc buf failed\n");
+        return -1;
+    }
+
+    memset(part->block_num_cache, 0, nbytes_temp);
+    blk_num_ptr = part->block_num_cache;
+    for (block = device->block_start; block < device->block_end; block++) {
+        if (device->ops->get_block_status(device, block) == BBT_BLOCK_GOOD) {
+            *blk_num_ptr = block;
+            blk_num_ptr++;
+        }
+    }
+
     return 0;
 }
 
@@ -522,6 +572,7 @@ int rt_blk_nand_register_device(const char *name,
     rt_sprintf(str, "blk_%s", name);
     memset(blk_dev->name, 0, 32);
     rt_memcpy(blk_dev->name, str, 32);
+
     /* register the device */
     rt_device_register(RT_DEVICE(blk_dev), str,
                        RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);

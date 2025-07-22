@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -509,6 +509,13 @@ sfud_flash *sfud_probe(u32 spi_bus)
     free(partstr);
     p = part;
     while (p) {
+#ifdef IMAGE_CFG_JSON_PARTS_LEVELX
+        if (partition_levelx_is_exist(p->name, IMAGE_CFG_JSON_PARTS_LEVELX))
+            p->attr = PART_ATTR_LEVELX;
+        else
+#endif
+            p->attr = PART_ATTR_MTD;
+
         mtd = malloc(sizeof(*mtd));
         mtd->name = strdup(p->name);
         mtd->start = p->start;
@@ -520,6 +527,7 @@ sfud_flash *sfud_probe(u32 spi_bus)
         mtd->ops.read = sfud_mtd_read;
         mtd->ops.write = sfud_mtd_write;
         mtd->priv = &qspi->attached_flash;
+        mtd->attr = p->attr;
         mtd_add_device(mtd);
         p = p->next;
     }

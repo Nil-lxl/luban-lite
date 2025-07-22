@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 Luban-Lite 系统中，分区的设置和管理是系统正常运行和日常维护的重要方面。本章节介绍 Luban-Lite 系统中分区的特点、规则和分区修改的方法。 按照存储介质的逻辑划分，关于 Luban-Lite 默认分区类型，可查看 分区类型介绍 ： 修改分区 image_cfg.json ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/advanced/sdk-usage.html"/><meta name="DC.relation" content="../../../topics/sdk/bringup/config-storage-os.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/partition_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/partition_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/partition-and-storage-relations.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="User"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>配置分区</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3703e768"/><meta name="wh-source-relpath" content="topics/sdk/advanced/partition_config.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/partition_config.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="在 Luban-Lite 系统中，分区的设置和管理是系统正常运行和日常维护的重要方面。本章节介绍 Luban-Lite 系统中分区的特点、规则和分区修改的方法。 按照存储介质的逻辑划分，关于 Luban-Lite 默认分区类型，可查看 分区类型介绍 ： 修改分区 image_cfg.json ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/advanced/sdk-usage.html"/><meta name="DC.relation" content="../../../topics/sdk/bringup/config-storage-os.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/partition_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/partition_intro.html"/><meta name="DC.relation" content="../../../topics/sdk/advanced/partition-and-storage-relations.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="User"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-05-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>配置分区</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3752e771"/><meta name="wh-source-relpath" content="topics/sdk/advanced/partition_config.dita"/><meta name="wh-out-relpath" content="topics/sdk/advanced/partition_config.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -94,7 +94,7 @@
                         <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
                             <div id="wh_publication_toc_content">
 		                        
-                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e620" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e620-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/commands.html" id="id-d3703e620-link">命令详解 </a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e680" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/architecture.html" id="id-d3703e680-link">设计框架</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e694" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sconstruct.html" id="id-d3703e694-link">SConstruct </a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e708" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/compile.html" id="id-d3703e708-link">编译选项介绍</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="config-storage-d3703e722" class="topicref" data-id="config-storage" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action config-storage-d3703e722-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/config-storage.html" id="config-storage-d3703e722-link">切换存储类型</a></div></div></li><li role="treeitem" aria-expanded="true" class="active"><div data-tocid="id-d3703e768" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e768-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition_config.html" id="id-d3703e768-link">配置分区</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="partition-intro-d3703e782" class="topicref" data-id="partition-intro" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition_intro.html" id="partition-intro-d3703e782-link">分区类型介绍</a></div></div></li><li role="treeitem"><div data-tocid="partition-and-storage-relations-d3703e796" class="topicref" data-id="partition-and-storage-relations" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition-and-storage-relations.html" id="partition-and-storage-relations-d3703e796-link">分区与存储设备的关系</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e812" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e812-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/image_burn_and_config.html" id="id-d3703e812-link">配置烧录镜像</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e910" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/gdb.html" id="id-d3703e910-link">GDB 调试</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e926" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/pinmux.html" id="id-d3703e926-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e942" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/driver.html" id="id-d3703e942-link">添加驱动</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e957" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/app.html" id="id-d3703e957-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e971" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/hellowold.html" id="id-d3703e971-link">hellowold</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e985" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/burnin_test.html" id="id-d3703e985-link">烤机测试</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3752e463" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3752e463-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e480" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3752e480-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e604" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e604-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3752e604-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e623" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e623-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/commands.html" id="id-d3752e623-link">命令详解 </a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e683" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/architecture.html" id="id-d3752e683-link">设计框架</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e697" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sconstruct.html" id="id-d3752e697-link">SConstruct </a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e711" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/compile.html" id="id-d3752e711-link">编译选项介绍</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="config-storage-d3752e725" class="topicref" data-id="config-storage" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action config-storage-d3752e725-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/config-storage.html" id="config-storage-d3752e725-link">切换存储类型</a></div></div></li><li role="treeitem" aria-expanded="true" class="active"><div data-tocid="id-d3752e771" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e771-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition_config.html" id="id-d3752e771-link">配置分区</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="partition-intro-d3752e785" class="topicref" data-id="partition-intro" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition_intro.html" id="partition-intro-d3752e785-link">分区类型介绍</a></div></div></li><li role="treeitem"><div data-tocid="partition-and-storage-relations-d3752e799" class="topicref" data-id="partition-and-storage-relations" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition-and-storage-relations.html" id="partition-and-storage-relations-d3752e799-link">分区与存储设备的关系</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e815" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e815-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/image_burn_and_config.html" id="id-d3752e815-link">配置烧录镜像</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e913" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/gdb.html" id="id-d3752e913-link">GDB 调试</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e929" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/pinmux.html" id="id-d3752e929-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e945" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/driver.html" id="id-d3752e945-link">添加驱动</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e960" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/app.html" id="id-d3752e960-link">添加应用</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e974" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/hellowold.html" id="id-d3752e974-link">hellowold</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e988" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/burnin_test.html" id="id-d3752e988-link">烤机测试</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3752e1004" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3752e1004-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3752e1004-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1848" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1848-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3752e1848-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2022" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2022-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3752e2022-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">主要描述板卡的各项配置，使 SDK 的环境和板卡匹配，并确保 SDK 编译后的固件能够在板子上正常运行。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2418" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2418-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3752e2418-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
 		                        
                             </div>
                         </nav>
@@ -115,55 +115,55 @@
                         <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
     <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/advanced/partition_config.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">配置分区</h1>
     
-    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+    <div class="date inPage">16 May 2025</div><div style="color: gray;">
                     Read time: 6 minute(s)
                 </div>
     
     <div class="- topic/body body">
-        <p class="- topic/p p" data-ofbid="d139029e39__20250409171046">在 <span class="- topic/ph ph">Luban-Lite</span>
+        <p class="- topic/p p" data-ofbid="d140793e39__20250519091520">在 <span class="- topic/ph ph">Luban-Lite</span>
             系统中，分区的设置和管理是系统正常运行和日常维护的重要方面。本章节介绍 <span class="- topic/ph ph">Luban-Lite</span>
             系统中分区的特点、规则和分区修改的方法。</p>
-        <p class="- topic/p p" data-ofbid="d139029e48__20250409171046">按照存储介质的逻辑划分，关于<span class="- topic/ph ph">Luban-Lite</span> 默认分区类型，可查看<a class="- topic/xref xref" href="partition_intro.html">分区类型介绍</a>：</p>
+        <p class="- topic/p p" data-ofbid="d140793e48__20250519091520">按照存储介质的逻辑划分，关于<span class="- topic/ph ph">Luban-Lite</span> 默认分区类型，可查看<a class="- topic/xref xref" href="partition_intro.html">分区类型介绍</a>：</p>
         <section class="- topic/section section" id="id__section_xdj_cnq_gdc" data-ofbid="id__section_xdj_cnq_gdc"><h2 class="- topic/title title sectiontitle">修改分区</h2>
             
-            <p class="- topic/p p" data-ofbid="d139029e63__20250409171046"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+            <p class="- topic/p p" data-ofbid="d140793e63__20250519091520"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
                 文件是设置分区信息以及如何生成烧录镜像文件的配置文件，由于分区和烧录信息是相互关联的，因此在一个文件中进行配置。
                     <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件的保存路径为
                         <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">chip</var>/<var class="+ topic/keyword sw-d/varname keyword varname">board</var>/pack/image_cfg.json</span>。</p>
-            <div class="- topic/p p" data-ofbid="d139029e80__20250409171046">分区数值的书写规则如下：<ul class="- topic/ul ul simple" id="id__ul_hzh_tsy_5cc" data-ofbid="id__ul_hzh_tsy_5cc">
-                    <li class="- topic/li li" data-ofbid="d139029e84__20250409171046">
-                        <p class="- topic/p p" data-ofbid="d139029e86__20250409171046">不带单位，表示字节</p>
+            <div class="- topic/p p" data-ofbid="d140793e80__20250519091520">分区数值的书写规则如下：<ul class="- topic/ul ul simple" id="id__ul_hzh_tsy_5cc" data-ofbid="id__ul_hzh_tsy_5cc">
+                    <li class="- topic/li li" data-ofbid="d140793e84__20250519091520">
+                        <p class="- topic/p p" data-ofbid="d140793e86__20250519091520">不带单位，表示字节</p>
                     </li>
-                    <li class="- topic/li li" data-ofbid="d139029e90__20250409171046">
-                        <p class="- topic/p p" data-ofbid="d139029e92__20250409171046">可以使用单位 k 或者 K</p>
+                    <li class="- topic/li li" data-ofbid="d140793e90__20250519091520">
+                        <p class="- topic/p p" data-ofbid="d140793e92__20250519091520">可以使用单位 k 或者 K</p>
                     </li>
-                    <li class="- topic/li li" data-ofbid="d139029e96__20250409171046">
-                        <p class="- topic/p p" data-ofbid="d139029e98__20250409171046">可以使用单位 m 或者 M</p>
+                    <li class="- topic/li li" data-ofbid="d140793e96__20250519091520">
+                        <p class="- topic/p p" data-ofbid="d140793e98__20250519091520">可以使用单位 m 或者 M</p>
                     </li>
-                    <li class="- topic/li li" data-ofbid="d139029e102__20250409171046">
-                        <p class="- topic/p p" data-ofbid="d139029e104__20250409171046">可以使用单位 g 或者 G</p>
+                    <li class="- topic/li li" data-ofbid="d140793e102__20250519091520">
+                        <p class="- topic/p p" data-ofbid="d140793e104__20250519091520">可以使用单位 g 或者 G</p>
                     </li>
                 </ul></div>
-            <p class="- topic/p p" data-ofbid="d139029e109__20250409171046">输入分区 "size" 值时，需要注意存储介质的对齐要求：</p>
+            <p class="- topic/p p" data-ofbid="d140793e109__20250519091520">输入分区 "size" 值时，需要注意存储介质的对齐要求：</p>
             <ul class="- topic/ul ul simple" id="id__ul_ufy_5sy_5cc" data-ofbid="id__ul_ufy_5sy_5cc">
-                <li class="- topic/li li" data-ofbid="d139029e114__20250409171046">
-                    <p class="- topic/p p" data-ofbid="d139029e116__20250409171046">SPINOR: 与最小擦除块大小对齐，一般为 4K 或者 64K，具体请参考 SPINOR 的数据手册。</p>
+                <li class="- topic/li li" data-ofbid="d140793e114__20250519091520">
+                    <p class="- topic/p p" data-ofbid="d140793e116__20250519091520">SPINOR: 与最小擦除块大小对齐，一般为 4K 或者 64K，具体请参考 SPINOR 的数据手册。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d139029e120__20250409171046">
-                    <p class="- topic/p p" data-ofbid="d139029e122__20250409171046">SPI NAND: 与最小擦除块大小对齐，一般为 128K 或者 256K，具体请参考 SPINAND 的数据手册。</p>
+                <li class="- topic/li li" data-ofbid="d140793e120__20250519091520">
+                    <p class="- topic/p p" data-ofbid="d140793e122__20250519091520">SPI NAND: 与最小擦除块大小对齐，一般为 128K 或者 256K，具体请参考 SPINAND 的数据手册。</p>
                 </li>
-                <li class="- topic/li li" data-ofbid="d139029e126__20250409171046">
-                    <p class="- topic/p p" data-ofbid="d139029e128__20250409171046">eMMC: 需要 512 字节对齐。</p>
+                <li class="- topic/li li" data-ofbid="d140793e126__20250519091520">
+                    <p class="- topic/p p" data-ofbid="d140793e128__20250519091520">eMMC: 需要 512 字节对齐。</p>
                 </li>
             </ul>
-            <div class="- topic/p p" data-ofbid="d139029e134__20250409171046">分区设置步骤和流程如下所示：<ol class="- topic/ol ol" id="id__ul_sf5_3sy_5cc" data-ofbid="id__ul_sf5_3sy_5cc">
-                    <li class="- topic/li li" data-ofbid="d139029e138__20250409171046">在 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
-                                文件中查找对应媒介的分区配置信息。<div class="- topic/p p" data-ofbid="d139029e143__20250409171046"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+            <div class="- topic/p p" data-ofbid="d140793e134__20250519091520">分区设置步骤和流程如下所示：<ol class="- topic/ol ol" id="id__ul_sf5_3sy_5cc" data-ofbid="id__ul_sf5_3sy_5cc">
+                    <li class="- topic/li li" data-ofbid="d140793e138__20250519091520">在 <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+                                文件中查找对应媒介的分区配置信息。<div class="- topic/p p" data-ofbid="d140793e143__20250519091520"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
                             文件是设置分区信息以及配置烧录镜像文件生成方式的配置文件，保存路径为
                                     <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">chip</var>/<var class="+ topic/keyword sw-d/varname keyword varname">board</var>/pack/image_cfg.json</span>。<ul class="- topic/ul ul" id="id__ul_sn5_5yy_5cc" data-ofbid="id__ul_sn5_5yy_5cc">
-                                <li class="- topic/li li" data-ofbid="d139029e158__20250409171046"><var class="+ topic/keyword sw-d/varname keyword varname">chip</var> 为对应芯片型号。</li>
-                                <li class="- topic/li li" data-ofbid="d139029e163__20250409171046"><var class="+ topic/keyword sw-d/varname keyword varname">board</var> 为芯片开发板型号。</li>
-                            </ul></div><div class="- topic/p p" data-ofbid="d139029e168__20250409171046">以下以 SPI NAND 的分区配置为例：<div class="- topic/note note note note_note" id="id__note_d4b_1zy_5cc" data-ofbid="id__note_d4b_1zy_5cc"><span class="note__title">注：</span> 对于 SPI NAND
+                                <li class="- topic/li li" data-ofbid="d140793e158__20250519091520"><var class="+ topic/keyword sw-d/varname keyword varname">chip</var> 为对应芯片型号。</li>
+                                <li class="- topic/li li" data-ofbid="d140793e163__20250519091520"><var class="+ topic/keyword sw-d/varname keyword varname">board</var> 为芯片开发板型号。</li>
+                            </ul></div><div class="- topic/p p" data-ofbid="d140793e168__20250519091520">以下以 SPI NAND 的分区配置为例：<div class="- topic/note note note note_note" id="id__note_d4b_1zy_5cc" data-ofbid="id__note_d4b_1zy_5cc"><span class="note__title">注：</span> 对于 SPI NAND
                                 Flash 的分区配置，需要注意 NFTL
                             分区的配置方法。</div><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_t5q_gty_5cc" data-ofbid="id__codeblock_t5q_gty_5cc"><span class="hl-string">"spi-nand"</span>: {
     <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
@@ -183,7 +183,7 @@
         },
     },
 },</pre></div></li>
-                    <li class="- topic/li li" data-ofbid="d139029e175__20250409171046">根据所需分区尺寸，修改对应的分区 "size" 值，否则可跳过此步。<div class="- topic/p p" data-ofbid="d139029e177__20250409171046">例如，将 "data" 分区中的 "size" 从 40M 修改为 50M
+                    <li class="- topic/li li" data-ofbid="d140793e175__20250519091520">根据所需分区尺寸，修改对应的分区 "size" 值，否则可跳过此步。<div class="- topic/p p" data-ofbid="d140793e177__20250519091520">例如，将 "data" 分区中的 "size" 从 40M 修改为 50M
                             后，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ljq_rty_5cc" data-ofbid="id__codeblock_ljq_rty_5cc"><span class="hl-string">"spi-nand"</span>: {
     <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
     <span class="hl-string">"partitions"</span>: {
@@ -202,7 +202,7 @@
         },
     },
 },</pre></div></li>
-                    <li class="- topic/li li" data-ofbid="d139029e182__20250409171046">如需新增一个分区，在所需位置添加一行配置即可，否则可跳过此步。<div class="- topic/p p" data-ofbid="d139029e184__20250409171046">例如，新增一个 "user"
+                    <li class="- topic/li li" data-ofbid="d140793e182__20250519091520">如需新增一个分区，在所需位置添加一行配置即可，否则可跳过此步。<div class="- topic/p p" data-ofbid="d140793e184__20250519091520">例如，新增一个 "user"
                             分区，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_j4c_pty_5cc" data-ofbid="id__codeblock_j4c_pty_5cc"><span class="hl-string">"spi-nand"</span>: {
     <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
     <span class="hl-string">"partitions"</span>: {
@@ -222,7 +222,7 @@
         },
     },
 },</pre></div></li>
-                    <li class="- topic/li li" data-ofbid="d139029e189__20250409171046">如果新增的分区需要烧录预制内容，在 "target" 段中新增配置。<div class="- topic/note note note note_note" id="id__note_ddm_kyy_5cc" data-ofbid="id__note_ddm_kyy_5cc"><span class="note__title">注：</span> 对于分区表中的分区，如果没有在 "target" 段中设置需要烧录的数据，则在烧录过程中，该分区不会被擦除和修改。</div><div class="- topic/p p" data-ofbid="d139029e193__20250409171046">
+                    <li class="- topic/li li" data-ofbid="d140793e189__20250519091520">如果新增的分区需要烧录预制内容，在 "target" 段中新增配置。<div class="- topic/note note note note_note" id="id__note_ddm_kyy_5cc" data-ofbid="id__note_ddm_kyy_5cc"><span class="note__title">注：</span> 对于分区表中的分区，如果没有在 "target" 段中设置需要烧录的数据，则在烧录过程中，该分区不会被擦除和修改。</div><div class="- topic/p p" data-ofbid="d140793e193__20250519091520">
                             <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_yrb_jyy_5cc" data-ofbid="id__codeblock_yrb_jyy_5cc"><span class="hl-string">"target"</span>: { <em class="hl-comment">// Image components which will be burn to device's partitions</em>
     <span class="hl-string">"spl"</span>: {
         <span class="hl-string">"file"</span>: <span class="hl-string">"bootloader.aic"</span>,
@@ -239,7 +239,7 @@
     },
 },</pre>
                         </div></li>
-                    <li class="- topic/li li" data-ofbid="d139029e199__20250409171046">如需删除一个分区，删除对应的分区配置行即可。<div class="- topic/p p" data-ofbid="d139029e201__20250409171046">例如，删除新增的 "user"
+                    <li class="- topic/li li" data-ofbid="d140793e199__20250519091520">如需删除一个分区，删除对应的分区配置行即可。<div class="- topic/p p" data-ofbid="d140793e201__20250519091520">例如，删除新增的 "user"
                             分区，示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_ups_nyy_5cc" data-ofbid="id__codeblock_ups_nyy_5cc"><span class="hl-string">"spi-nand"</span>: {
     <span class="hl-string">"size"</span>: <span class="hl-string">"128m"</span>, <em class="hl-comment">// Size of SPI NAND</em>
     <span class="hl-string">"partitions"</span>: {
@@ -258,18 +258,18 @@
         },
     },
 },</pre></div><div class="- topic/note note note note_note" id="id__note_ipr_syy_5cc" data-ofbid="id__note_ipr_syy_5cc"><span class="note__title">注：</span> 
-                            <p class="- topic/p p" data-ofbid="d139029e207__20250409171046">检查 <code class="+ topic/ph pr-d/codeph ph codeph">target</code> 段中是否有使用该分区，如果有，则删除相关的配置。</p>
+                            <p class="- topic/p p" data-ofbid="d140793e207__20250519091520">检查 <code class="+ topic/ph pr-d/codeph ph codeph">target</code> 段中是否有使用该分区，如果有，则删除相关的配置。</p>
                         </div></li>
                 </ol></div>
         </section>
         <section class="- topic/section section" id="id__id6" data-ofbid="id__id6"><h2 class="- topic/title title sectiontitle">分区配置示例 </h2>
             
-            <div class="- topic/p p" data-ofbid="d139029e221__20250409171046"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
+            <div class="- topic/p p" data-ofbid="d140793e221__20250519091520"><span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span>
                 文件是设置分区信息以及配置烧录镜像文件生成方式的配置文件。由于分区和烧录信息是相互关联的，因此在一个文件中进行配置。
                     <span class="+ topic/ph sw-d/filepath ph filepath">image_cfg.json</span> 文件的保存路径为
                         <span class="+ topic/ph sw-d/filepath ph filepath">target/<var class="+ topic/keyword sw-d/varname keyword varname">chip</var>/<var class="+ topic/keyword sw-d/varname keyword varname">board</var>/pack/image_cfg.json</span>。<ul class="- topic/ul ul" id="id__ul_eqf_lqy_5cc" data-ofbid="id__ul_eqf_lqy_5cc">
-                    <li class="- topic/li li" data-ofbid="d139029e239__20250409171046"><var class="+ topic/keyword sw-d/varname keyword varname">chip</var> 为对应芯片型号。</li>
-                    <li class="- topic/li li" data-ofbid="d139029e244__20250409171046"><var class="+ topic/keyword sw-d/varname keyword varname">board</var> 为芯片开发板型号。</li>
+                    <li class="- topic/li li" data-ofbid="d140793e239__20250519091520"><var class="+ topic/keyword sw-d/varname keyword varname">chip</var> 为对应芯片型号。</li>
+                    <li class="- topic/li li" data-ofbid="d140793e244__20250519091520"><var class="+ topic/keyword sw-d/varname keyword varname">board</var> 为芯片开发板型号。</li>
                 </ul></div>
         </section>
         <div class="- topic/example example" id="id__example_tvw_yxr_x2c" data-ofbid="id__example_tvw_yxr_x2c"><h2 class="- topic/title title sectiontitle">SPI NOR 的分区配置示例</h2>
@@ -310,12 +310,12 @@
         },
     },
 },
-</pre><div class="- topic/p p" data-ofbid="d139029e270__20250409171046">上述示例中， "data" 分区的配置了如下内容：<ul class="- topic/ul ul" id="id__ul_i5x_fry_5cc" data-ofbid="id__ul_i5x_fry_5cc">
-                        <li class="- topic/li li" data-ofbid="d139029e274__20250409171046">"size"：40 MB</li>
-                        <li class="- topic/li li" data-ofbid="d139029e277__20250409171046">"nftl" 设备：<ul class="- topic/ul ul" id="id__ul_qv2_hry_5cc" data-ofbid="id__ul_qv2_hry_5cc">
-                                <li class="- topic/li li" data-ofbid="d139029e281__20250409171046">"datavol"： 表示 NFTL 设备的一个卷。</li>
+</pre><div class="- topic/p p" data-ofbid="d140793e270__20250519091520">上述示例中， "data" 分区的配置了如下内容：<ul class="- topic/ul ul" id="id__ul_i5x_fry_5cc" data-ofbid="id__ul_i5x_fry_5cc">
+                        <li class="- topic/li li" data-ofbid="d140793e274__20250519091520">"size"：40 MB</li>
+                        <li class="- topic/li li" data-ofbid="d140793e277__20250519091520">"nftl" 设备：<ul class="- topic/ul ul" id="id__ul_qv2_hry_5cc" data-ofbid="id__ul_qv2_hry_5cc">
+                                <li class="- topic/li li" data-ofbid="d140793e281__20250519091520">"datavol"： 表示 NFTL 设备的一个卷。</li>
                             </ul><ul class="- topic/ul ul" id="id__ul_phz_hry_5cc" data-ofbid="id__ul_phz_hry_5cc">
-                                <li class="- topic/li li" data-ofbid="d139029e286__20250409171046">"size"：“-” 表示卷的大小是 NFTL 设备的所有剩余存储空间。<p class="- topic/p p" data-ofbid="d139029e288__20250409171046">NFTL 设备需要使用大约 6 MB
+                                <li class="- topic/li li" data-ofbid="d140793e286__20250519091520">"size"：“-” 表示卷的大小是 NFTL 设备的所有剩余存储空间。<p class="- topic/p p" data-ofbid="d140793e288__20250519091520">NFTL 设备需要使用大约 6 MB
                                         的空间做坏块管理，因此 “datavol” 的可用大小大约为 34 MB。</p></li>
                             </ul></li>
                     </ul></div></div>
@@ -323,7 +323,7 @@
         <div class="- topic/example example" id="id__example_dmk_cyr_x2c" data-ofbid="id__example_dmk_cyr_x2c"><h2 class="- topic/title title sectiontitle">eMMC 的分区配置示例</h2>
             
             <div class="- topic/div div">
-                <div class="- topic/p p" data-ofbid="d139029e301__20250409171046">
+                <div class="- topic/p p" data-ofbid="d140793e301__20250519091520">
                     <div class="- topic/note note note note_note" id="id__note_a1x_sry_5cc" data-ofbid="id__note_a1x_sry_5cc"><span class="note__title">注：</span> 第一个分区的开始位置。eMMC
                         使用 GPT 分区表格式，需要在 eMMC 的开始和末尾都预留 17K 的空间存放 GPT 信息，因此 “spl” 的开始位置为
                         “0x4400”。</div>
@@ -338,7 +338,7 @@
     },
 },
 </pre>
-                <p class="- topic/p p" data-ofbid="d139029e313__20250409171046">每一个分区的配置项中，都有 "offset" 和 "size" 两个配置信息，其中 "offset" 用于配置该分区的开始位置。 如未设置
+                <p class="- topic/p p" data-ofbid="d140793e313__20250519091520">每一个分区的配置项中，都有 "offset" 和 "size" 两个配置信息，其中 "offset" 用于配置该分区的开始位置。 如未设置
                     "offset"，表示该分区紧跟上一个分区之后。</p>
             </div>
         </div>
@@ -385,7 +385,7 @@
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

@@ -88,8 +88,10 @@ static lv_result_t lv_mpp_dec_frame(struct mpp_buf *buf, const char *src, uint32
         }
     } else {
         res = lv_jpeg_decoder_info(src, &header, size, false);
+        type = MPP_CODEC_VIDEO_DECODER_MJPEG;
         if (res != LV_RESULT_OK) {
             res = lv_png_decoder_info(src, &header, size, false);
+            type = MPP_CODEC_VIDEO_DECODER_PNG;
         }
     }
     CHECK_RET(res, LV_RESULT_OK);

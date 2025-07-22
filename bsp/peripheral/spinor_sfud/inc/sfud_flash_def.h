@@ -87,6 +87,17 @@ typedef struct {
 } sfud_qspi_flash_qe_info;
 #endif
 
+typedef struct {
+    uint8_t mf_id;                               /**< manufacturer ID */
+    uint8_t type_id;                             /**< memory type ID */
+    uint8_t capacity_id;                         /**< capacity ID */
+    uint8_t rd_cmd;                              /**< instruction of read Unique ID number */
+    uint8_t byte1;                               /**< the 1st byte was sent to device immediately following the instruction */
+    uint8_t byte2;                               /**< the 2nd byte was sent to device immediately following the instruction */
+    uint8_t byte3;                               /**< the 3rd byte was sent to device immediately following the instruction */
+    uint8_t byte4;                               /**< the 4th byte was sent to device immediately following the instruction */
+    uint8_t id_len;                              /**< the length of Unique ID number, in bytes */
+} sfud_qspi_flash_private_info;
 
 /* SFUD support manufacturer JEDEC ID */
 #define SFUD_MF_ID_CYPRESS                             0x01
@@ -108,6 +119,46 @@ typedef struct {
 #define SFUD_MF_ID_ISSI                                0xD5
 #define SFUD_MF_ID_WINBOND                             0xEF
 #define SFUD_MF_ID_ZETTA                               0xBA
+#define SFUD_MF_ID_BOYA                                0x68
+#define SFUD_MF_ID_XTX                                 0x0B
+#define SFUD_MF_ID_PUYA                                0x85
+
+/*  | name | mf_id | type_id | read—_uid_cmd | addr0 | addr1 | addr2 | addr3 | id_len | */
+#define SFUD_FLASH_PRIVATE_INFO_TABLE                                                              \
+{                                                                                                  \
+    /* BOYA128B */                                                                                 \
+    {SFUD_MF_ID_BOYA, 0x40, 0x18, 0x48, 0x0, 0x0, 0x0, 0x0, 16},                                   \
+    /* BOYA32B */                                                                                  \
+    {SFUD_MF_ID_BOYA, 0x49, 0x19, 0x48, 0x0, 0x0, 0x0, 0x0, 16},                                   \
+    /* XTX128B */                                                                                  \
+    {SFUD_MF_ID_XTX, 0x40, 0x18, 0x5A, 0x0, 0x0, 0x94, 0xff, 16},                                  \
+    /* "GD25Q256B", */                                                                             \
+    {SFUD_MF_ID_GIGADEVICE, 0x40, 0x19, 0x4B, 0xff, 0xff, 0xff, 0xff, 16},                         \
+    /* "GD25Q128B", */                                                                             \
+    {SFUD_MF_ID_GIGADEVICE, 0x40, 0x18, 0x4B, 0x0, 0x0, 0x0, 0xff, 16},                            \
+    /* "GD25Q64B" */                                                                               \
+    {SFUD_MF_ID_GIGADEVICE, 0x40, 0x17, 0x4B, 0x0, 0x0, 0x0, 0xff, 16},                            \
+    /* "GD25Q32B" */                                                                               \
+    {SFUD_MF_ID_GIGADEVICE, 0x40, 0x16, 0x4B, 0x0, 0x0, 0x0, 0xff, 16},                            \
+    /* PUYA256B */                                                                                 \
+    {SFUD_MF_ID_PUYA, 0x20, 0x19, 0x4B, 0xff, 0xff, 0xff, 0xff, 16},                               \
+    /* PUYA128B */                                                                                 \
+    {SFUD_MF_ID_PUYA, 0x20, 0x18, 0x4B, 0xff, 0xff, 0xff, 0xff, 16},                               \
+    /* PUYA64B */                                                                                  \
+    {SFUD_MF_ID_PUYA, 0x20, 0x17, 0x4B, 0xff, 0xff, 0xff, 0xff, 16},                               \
+    /* PUYA32B */                                                                                  \
+    {SFUD_MF_ID_PUYA, 0x20, 0x16, 0x4B, 0xff, 0xff, 0xff, 0xff, 16},                               \
+    /* PUYA16B */                                                                                  \
+    {SFUD_MF_ID_PUYA, 0x20, 0x15, 0x4B, 0xff, 0xff, 0xff, 0xff, 16},                               \
+    /* ZB25VQ128 */                                                                                \
+    {SFUD_MF_ID_ZBIT, 0x40, 0x18, 0x4B, 0x0, 0x0, 0x0, 0xff, 16},                                  \
+    /* ZB25VQ164 */                                                                                \
+    {SFUD_MF_ID_ZBIT, 0x40, 0x17, 0x4B, 0x0, 0x0, 0x0, 0xff, 16},                                  \
+    /* ZB25VQ132 */                                                                                \
+    {SFUD_MF_ID_ZBIT, 0x40, 0x16, 0x4B, 0x0, 0x0, 0x0, 0xff, 16},                                  \
+    /* ZB25VQ116 */                                                                                \
+    {SFUD_MF_ID_ZBIT, 0x40, 0x15, 0x4B, 0x0, 0x0, 0x0, 0xff, 16},                                  \
+}
 
 /* SFUD supported manufacturer information table */
 #define SFUD_MF_TABLE                                     \

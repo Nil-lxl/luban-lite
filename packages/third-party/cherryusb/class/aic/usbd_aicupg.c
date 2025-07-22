@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -74,7 +74,7 @@ static void aicupg_notify_handler(uint8_t event, void *arg)
                 }
             }
             trans_info.stage = AICUPG_READ_CBW;
-            trans_info.recv((uint8_t *)trans_info.trans_pkt_buf, USB_SIZEOF_AIC_CBW);
+            trans_info.recv((uint8_t *)trans_info.cbw, USB_SIZEOF_AIC_CBW);
             break;
 
         default:
@@ -115,6 +115,9 @@ struct usbd_interface *usbd_aicupg_init_intf(struct usbd_interface *intf,
 
     trans_info.send = aicupg_ep_start_write;
     trans_info.recv = aicupg_ep_start_read;
+
+    trans_info.cbw = aicupg_malloc_align(sizeof(struct aic_cbw), CACHE_LINE_SIZE);
+    trans_info.csw = aicupg_malloc_align(sizeof(struct aic_csw), CACHE_LINE_SIZE);
 
     return intf;
 }

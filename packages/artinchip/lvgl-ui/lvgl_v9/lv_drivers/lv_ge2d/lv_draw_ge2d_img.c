@@ -643,6 +643,11 @@ static void ge2d_img_draw_core(lv_draw_unit_t *draw_unit, const lv_draw_image_ds
     bool transformed = draw_dsc->rotation != 0 || scaled ? true : false;
     bool fix_rotated = draw_dsc->rotation == 900 || draw_dsc->rotation == 1800 || draw_dsc->rotation == 2700;
 
+    // mpp buffer already flushed cached, so only flush other type buffer
+    if (decoded->header.flags & LV_IMAGE_FLAGS_MODIFIABLE) {
+        lv_draw_buf_invalidate_cache(decoded, NULL);
+    }
+
     if (!transformed) {
         lv_area_t clipped_coords;
         if (!_lv_area_intersect(&clipped_coords, img_coords, draw_unit->clip_area))

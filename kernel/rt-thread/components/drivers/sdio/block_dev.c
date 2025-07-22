@@ -491,25 +491,35 @@ static struct mmcsd_blk_device * rt_mmcsd_create_blkdev(struct rt_mmcsd_card *ca
     {
         LOG_D("Try to mount %s\n", blk_dev->dev.parent.name);
 #ifdef AIC_AB_SYSTEM_INTERFACE
+        rt_int32_t id = 0;
         char ro_target[32] = { 0 };
         char rw_target[32] = { 0 };
-        enum boot_device boot_dev = aic_get_boot_device();
 
-        if (boot_dev == BD_SDMC0) {
-            //skip the spl/env partition
-            if (strcmp("mmc0p0", blk_dev->dev.parent.name) != 0 &&
-                strcmp("mmc0p1", blk_dev->dev.parent.name) != 0 &&
-                strcmp("mmc0p2", blk_dev->dev.parent.name) != 0) {
+        id = (aic_get_boot_device() == BD_SDMC0) ? 0 : 1;
+        /* Check if the current device is a boot device */
+        if (blk_dev->card->host->id == id) {
+            /* Check if the current device partition is rodata */
+            if (!strncmp("rodata", blk_dev->part.name, 6)) {
                 aic_ota_status_update();
+                /* Try to get the rodata device name or partition name from env */
                 aic_get_rodata_to_mount(ro_target);
-                aic_get_data_to_mount(rw_target);
-                if (strcmp(ro_target, blk_dev->dev.parent.name) == 0) {
-                    if (dfs_mount(ro_target, "/rodata", "elm", 0, 0) == 0)
-                        LOG_I("mount fs[elm] device[%s] to /rodata ok.\n", ro_target);
+                if (!strcmp(ro_target, blk_dev->part.name) ||
+                    !strcmp(ro_target, blk_dev->dev.parent.name)) {
+                    /* Try to mount the rodata device */
+                    if (dfs_mount(blk_dev->dev.parent.name, "/rodata", "elm", 0, 0) == 0)
+                        LOG_I("mount fs[elm] device[%s] to /rodata ok.\n", blk_dev->dev.parent.name);
                 }
-                if (strcmp(rw_target, blk_dev->dev.parent.name) == 0) {
-                    if (dfs_mount(rw_target, "/data", "elm", 0, 0) == 0)
-                        LOG_I("mount fs[elm] device[%s] to /data ok.\n", rw_target);
+            }
+            /* Check if the current device partition is data */
+            if (!strncmp("data", blk_dev->part.name, 4)) {
+                aic_ota_status_update();
+                /* Try to get the data device name or partition name from env */
+                aic_get_data_to_mount(rw_target);
+                if (!strcmp(rw_target, blk_dev->part.name) ||
+                    !strcmp(rw_target, blk_dev->dev.parent.name)) {
+                    /* Try to mount the data device */
+                    if (dfs_mount(blk_dev->dev.parent.name, "/data", "elm", 0, 0) == 0)
+                        LOG_I("mount fs[elm] device[%s] to /data ok.\n", blk_dev->dev.parent.name);
                 }
             }
         }
@@ -582,6 +592,18 @@ rt_int32_t rt_mmcsd_blk_probe(struct rt_mmcsd_card *card)
         /* Initial blk_device link-list. */
         rt_list_init(&card->blk_devices);
 
+        /* Always create the super node, given name is with allocated host id. */
+        if (card->card_type == CARD_TYPE_MMC)
+            rt_snprintf(dname, sizeof(dname), "mmc%d", host_id);
+        else
+            rt_snprintf(dname, sizeof(dname), "sd%d", host_id);
+        blk_dev = rt_mmcsd_create_blkdev(card, (const char*)dname, NULL);
+        if ( blk_dev == RT_NULL )
+        {
+            err = -RT_ENOMEM;
+            goto exit_rt_mmcsd_blk_probe;
+        }
+
         struct aic_partition *parts, *p;
         struct blk_desc dev_desc;
         struct disk_blk_ops ops;
@@ -595,14 +617,15 @@ rt_int32_t rt_mmcsd_blk_probe(struct rt_mmcsd_card *card)
         parts = aic_disk_get_parts(&dev_desc);
         p = parts;
         i = 0;
-        memset(&part, 0, sizeof(part));
         while (p) {
                 /* Given name is with allocated host id and its partition index. */
                 if (card->card_type == CARD_TYPE_MMC)
                     rt_snprintf(dname, sizeof(dname), "mmc%dp%d", host_id, i);
                 else
                     rt_snprintf(dname, sizeof(dname), "sd%dp%d", host_id, i);
+                memset(&part, 0, sizeof(part));
                 part.type = 0;
+                memcpy(part.name, p->name, strlen(p->name));
                 part.offset = p->start / card->card_blksize;
                 part.size = p->size / card->card_blksize;
                 blk_dev = rt_mmcsd_create_blkdev(card, (const char*)dname, &part);
@@ -617,18 +640,6 @@ rt_int32_t rt_mmcsd_blk_probe(struct rt_mmcsd_card *card)
         }
         if (parts)
                 aic_part_free(parts);
-
-        /* Always create the super node, given name is with allocated host id. */
-        if (card->card_type == CARD_TYPE_MMC)
-            rt_snprintf(dname, sizeof(dname), "mmc%d", host_id);
-        else
-            rt_snprintf(dname, sizeof(dname), "sd%d", host_id);
-        blk_dev = rt_mmcsd_create_blkdev(card, (const char*)dname, NULL);
-        if ( blk_dev == RT_NULL )
-        {
-            err = -RT_ENOMEM;
-            goto exit_rt_mmcsd_blk_probe;
-        }
     }
     else
     {

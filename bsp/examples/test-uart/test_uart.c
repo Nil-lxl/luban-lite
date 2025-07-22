@@ -15,7 +15,7 @@
 #include <aic_core.h>
 
 #define TEST_UART_DEBUG 0
-#define TEST_UART_CONFIG 1
+#define TEST_UART_CONFIG 0
 #define TEST_UART_PORT "uart4"
 #define TEST_UART_BUF_LEN 128
 #define TEST_UART_COUNT 10
@@ -81,7 +81,7 @@ static int serial_config_uart(rt_device_t serial)
 {
 #if TEST_UART_CONFIG
     rt_serial_t *uart = container_of(serial, rt_serial_t, parent);
-    uart->config.baud_rate = BAUD_RATE_9600;
+    uart->config.baud_rate = BAUD_RATE_115200;
     uart->config.data_bits = 8;
     uart->config.stop_bits = 1;
     uart->config.parity = PARITY_NONE;

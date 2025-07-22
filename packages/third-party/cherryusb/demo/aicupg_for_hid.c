@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -202,7 +202,7 @@ static void usbd_hid_notify_handler(uint8_t event, void *arg)
                 }
             }
             trans_info.stage = AICUPG_READ_CBW;
-            trans_info.recv((uint8_t *)trans_info.trans_pkt_buf, USB_SIZEOF_AIC_CBW);
+            trans_info.recv((uint8_t *)trans_info.csw, USB_SIZEOF_AIC_CBW);
             break;
 
         default:
@@ -248,6 +248,15 @@ int hid_init(void)
     trans_info.send = usbd_hid_ep_start_write;
     trans_info.recv = usbd_hid_ep_start_read;
 
+    trans_info.cbw = aicupg_malloc_align(HID_OUT_EP_SIZE, CACHE_LINE_SIZE);
+    trans_info.csw = aicupg_malloc_align(HID_IN_EP_SIZE, CACHE_LINE_SIZE);
+
     usbd_initialize();
+    return 0;
+}
+
+int hid_deinit(void)
+{
+    usbd_deinitialize();
     return 0;
 }

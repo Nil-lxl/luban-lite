@@ -46,6 +46,7 @@ typedef struct
 #define HAVE_DIRENT_STRUCTURE
 
 #define DIRENT_NAME_MAX    256
+#define PARTITION_NAME_MAX 144
 
 typedef u8  rt_uint8_t;
 typedef u16 rt_uint16_t;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,19 +22,22 @@
 
 #define HRTIMER_MAX_ELAPSE      (60 * USEC_PER_SEC) // 60 sec
 
-static rt_device_t g_hrtimer_dev[AIC_HRTIMER_CH_NUM] = {RT_NULL};
-static u32 g_debug = 0;
-static u32 g_loop_max = 0;
-static u32 g_loop_cnt = 0;
-static ulong g_start_us = 0;
+#define TIMER_NUM     AIC_HRTIMER_CH_NUM
 
-static const char sopts[] = "m:c:s:u:dh";
+static rt_device_t g_hrtimer_dev[TIMER_NUM] = {RT_NULL};
+static u32 g_debug[TIMER_NUM] = {0};
+static u32 g_loop_max[TIMER_NUM] = {0};
+static u32 g_loop_cnt[TIMER_NUM] = {0};
+static ulong g_start_us[TIMER_NUM] = {0};
+
+static const char sopts[] = "m:c:s:u:f:dh";
 static const struct option lopts[] = {
     {"mode",        required_argument, NULL, 'm'},
     {"channel",     required_argument, NULL, 'c'},
     {"sec",         required_argument, NULL, 's'},
     {"microsecond", required_argument, NULL, 'u'},
-    {"debug",             no_argument, NULL, 'v'},
+    {"frequency",   required_argument, NULL, 'f'},
+    {"debug",             no_argument, NULL, 'd'},
     {"usage",             no_argument, NULL, 'h'},
     {0, 0, 0, 0}
 };
@@ -46,6 +49,7 @@ static void usage(char *program)
     printf("\t -c, --channel\t\tthe number of hrtimer [0, 2] \n");
     printf("\t -s, --second\t\tthe second of timer (must > 0) \n");
     printf("\t -u, --microsecond\tthe microsecond of timer (must > 0) \n");
+    printf("\t -f, --frequency\tthe frequncy of the timer (must > 0)\n");
     printf("\t -d, --debug\t\tshow the timeout log\n");
     printf("\t -h, --usage \n");
     printf("\n");
@@ -58,15 +62,15 @@ static rt_err_t hrtimer_cb(rt_device_t dev, rt_size_t size)
     struct hrtimer_info *info = (struct hrtimer_info *)dev->user_data;
 
 #ifdef ULOG_USING_ISR_LOG
-    if (g_debug)
+    if (g_debug[info->id])
         printf("%d/%d hrtimer%d timeout callback! Elapsed %ld us\n",
-               g_loop_cnt, g_loop_max,
-               info->id, aic_timer_get_us() - g_start_us);
+               g_loop_cnt[info->id], g_loop_max[info->id],
+               info->id, aic_timer_get_us() - g_start_us[info->id]);
 #endif
 
-    g_start_us = aic_timer_get_us();
-    g_loop_cnt++;
-    if ((g_loop_max > 1) && (g_loop_cnt > g_loop_max))
+    g_start_us[info->id] = aic_timer_get_us();
+    g_loop_cnt[info->id]++;
+    if ((g_loop_max[info->id] > 1) && (g_loop_cnt[info->id] > g_loop_max[info->id]))
         rt_device_control(g_hrtimer_dev[info->id], HWTIMER_CTRL_STOP, NULL);
 
     return RT_EOK;
@@ -78,6 +82,8 @@ static void cmd_test_hrtimer(int argc, char *argv[])
     u32 c, ch = 0;
     rt_hwtimerval_t tm = {0};
     rt_hwtimer_mode_t mode = HWTIMER_MODE_ONESHOT;
+    u32 freq= 1000000;
+    bool debug_flag = 0;
 
     optind = 0;
     while ((c = getopt_long(argc, argv, sopts, lopts, NULL)) != -1) {
@@ -103,8 +109,12 @@ static void cmd_test_hrtimer(int argc, char *argv[])
             tm.usec = atoi(optarg);
             continue;
 
+        case 'f':
+            freq = atoi(optarg);
+            continue;
+
         case 'd':
-            g_debug = 1;
+            debug_flag = 1;
             continue;
 
         case 'h':
@@ -117,6 +127,11 @@ static void cmd_test_hrtimer(int argc, char *argv[])
             return;
         }
     }
+
+    if (debug_flag)
+        g_debug[ch] = 1;
+    else
+        g_debug[ch] = 0;
 
     if ((tm.sec == 0) && (tm.usec == 0)) {
         pr_err("Invalid argument\n");
@@ -152,15 +167,22 @@ static void cmd_test_hrtimer(int argc, char *argv[])
         return;
     }
 
+    /* set the timer frequency to freqHz */
+    ret = rt_device_control(g_hrtimer_dev[ch], HWTIMER_CTRL_FREQ_SET, &freq);
+    if (ret != RT_EOK) {
+        pr_err("Failed to set the freq! ret is %d\n", ret);
+        return;
+    }
+
     printf("hrtimer%d: Create a timer of %d.%06d sec, %s mode\n",
            ch, (u32)tm.sec, (u32)tm.usec,
            mode == HWTIMER_MODE_ONESHOT ? "Oneshot" : "Period");
     if (mode != HWTIMER_MODE_ONESHOT) {
-        g_loop_max = HRTIMER_MAX_ELAPSE / (tm.sec * USEC_PER_SEC + tm.usec);
-        printf("\tWill loop %d times\n", g_loop_max);
+        g_loop_max[ch] = HRTIMER_MAX_ELAPSE / (tm.sec * USEC_PER_SEC + tm.usec);
+        printf("\tWill loop %d times\n", g_loop_max[ch]);
     }
-    g_loop_cnt = 0;
-    g_start_us = aic_timer_get_us();
+    g_loop_cnt[ch] = 0;
+    g_start_us[ch] = aic_timer_get_us();
     if (!rt_device_write(g_hrtimer_dev[ch], 0, &tm, sizeof(tm))) {
         pr_err("set timeout value failed\n");
         return;

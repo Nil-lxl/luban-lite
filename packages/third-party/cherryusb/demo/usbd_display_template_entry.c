@@ -20,6 +20,8 @@
 #include "mpp_log.h"
 #include "mpp_ge.h"
 
+#define USB_DISP_ROTATE_FULLSCREEN_MASK       (0x1<<0)
+#define USB_DISP_ROTATE_UI_MASK               (0x1<<1)
 #define PIXEL_ENCODE_RGB565     0x00
 #define PIXEL_ENCODE_ARGB8888   0x01
 #define PIXEL_ENCODE_JPEG       0x10
@@ -38,27 +40,62 @@ uint8_t usbdisp_encode_format = PIXEL_ENCODE_RGB565;
 uint8_t usbdisp_encode_format = PIXEL_ENCODE_ARGB8888;
 #endif
 
+#define YUV_FORMAT_420P         0x00
+#define YUV_FORMAT_444P         0x01
+#ifdef AIC_USB_DISP_HIGH_QUALITY_PIC
+uint8_t usbdisp_cap_yuv_format = YUV_FORMAT_420P | YUV_FORMAT_444P;
+#else
+uint8_t usbdisp_cap_yuv_format = YUV_FORMAT_420P;
+#endif
+uint8_t usbdisp_cur_yuv_format = YUV_FORMAT_420P;
+
+#ifdef AIC_USB_DISP_JPEG_QUALITY_LOWTHRESH
+uint8_t usbdisp_jpeg_quality_lowthresh = AIC_USB_DISP_JPEG_QUALITY_LOWTHRESH;
+#else
+uint8_t usbdisp_jpeg_quality_lowthresh = 0;
+#endif
+
 #ifdef LPKG_CHERRYUSB_DEVICE_DISPLAY_FPS
 uint8_t fps_print = 1;
 #else
 uint8_t fps_print = 0;
 #endif
-
+#ifdef LPKG_USING_LVGL
 #if defined(AIC_FB_ROTATE_EN)
 uint32_t usb_disp_rotate = AIC_FB_ROTATE_DEGREE;
 uint32_t usb_fb_rotate = AIC_FB_ROTATE_DEGREE;
 uint8_t usb_disp_lv_rotate_en = 0;
 uint8_t usb_disp_fb_rotate_en = 1;
+uint8_t usb_disp_rotate_mode = USB_DISP_ROTATE_UI_MASK;
 #elif defined(LV_DISPLAY_ROTATE_EN)
 uint32_t usb_disp_rotate = LV_ROTATE_DEGREE;
 uint32_t usb_fb_rotate = 0;
 uint8_t usb_disp_lv_rotate_en = 1;
 uint8_t usb_disp_fb_rotate_en = 0;
+uint8_t usb_disp_rotate_mode = USB_DISP_ROTATE_UI_MASK | USB_DISP_ROTATE_FULLSCREEN_MASK;
 #else
 uint32_t usb_disp_rotate = 0;
 uint32_t usb_fb_rotate = 0;
 uint8_t usb_disp_lv_rotate_en = 0;
 uint8_t usb_disp_fb_rotate_en = 0;
+uint8_t usb_disp_rotate_mode = USB_DISP_ROTATE_UI_MASK;
+#endif
+#else
+#if defined(AIC_FB_ROTATE_EN)
+uint32_t usb_disp_rotate = AIC_FB_ROTATE_DEGREE;
+uint32_t usb_fb_rotate = AIC_FB_ROTATE_DEGREE;
+uint8_t usb_disp_fb_rotate_en = 1;
+#else
+uint32_t usb_disp_rotate = 0;
+uint32_t usb_fb_rotate = 0;
+uint8_t usb_disp_fb_rotate_en = 0;
+#endif
+uint8_t usb_disp_lv_rotate_en = 0;
+#ifdef AIC_USB_DISP_ROTATION_FULLSCREEN
+uint8_t usb_disp_rotate_mode = USB_DISP_ROTATE_FULLSCREEN_MASK;
+#else
+uint8_t usb_disp_rotate_mode = 0;
+#endif
 #endif
 
 #ifdef AIC_USB_DISP_DEF_DIS
@@ -85,6 +122,49 @@ uint8_t usb_large_transfer = 0;
 uint8_t usb_large_transfer = 1;
 #endif
 uint8_t usb_disp_debug_en = 0;
+
+#if defined(RT_USING_PM) && defined(AIC_USING_PM) && defined(AIC_USB_DISP_PM_SUSPEND)
+uint8_t usb_pm_suspend_en = 1;
+
+void aic_panel_backlight_disable(void);
+void aic_panel_backlight_enable(void);
+#ifdef LPKG_CHERRYUSB_DEVICE_AUDIO
+void drv_audio_en_pa(void);
+void drv_audio_dis_pa(void);
+#endif
+
+void pm_suspend_enter(void)
+{
+    uint8_t cnt = rt_pm_read_mode_cnt(PM_SLEEP_MODE_NONE);
+
+    if (cnt != 1)
+        USB_LOG_INFO("pm_suspend_enter: PM_SLEEP_MODE_NONE cnt = %d.\n", cnt);
+
+    aic_panel_backlight_disable();
+#ifdef LPKG_CHERRYUSB_DEVICE_AUDIO
+    drv_audio_dis_pa();
+#endif
+
+    rt_pm_module_release(PM_POWER_ID, PM_SLEEP_MODE_NONE);
+}
+
+void pm_suspend_exit(void)
+{
+    uint8_t cnt = rt_pm_read_mode_cnt(PM_SLEEP_MODE_NONE);
+
+    rt_pm_module_request(PM_POWER_ID, PM_SLEEP_MODE_NONE);
+#ifdef LPKG_CHERRYUSB_DEVICE_AUDIO
+    drv_audio_en_pa();
+#endif
+    aic_panel_backlight_enable();
+
+    if (cnt != 0) {
+        USB_LOG_INFO("pm_suspend_exit: PM_SLEEP_MODE_NONE cnt = %d.\n", cnt);
+    }
+}
+#else
+uint8_t usb_pm_suspend_en = 0;
+#endif
 
 extern int usb_display_rotate(unsigned int rotate_angle);
 
@@ -196,83 +276,6 @@ MSH_CMD_EXPORT_ALIAS(test_usb_fps, usb_fps, usb display fps);
 MSH_CMD_EXPORT_ALIAS(test_usb_display_dbg, usb_display_dbg, usb display debug info);
 MSH_CMD_EXPORT_ALIAS(test_usb_display_rotate, usb_display_rotate, usb display rotate);
 
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-#include "composite_template.h"
-void usbd_comp_disp_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
-{
-    extern void usbd_display_event_handler(uint8_t event);
-    usbd_display_event_handler(event);
-}
-
-void usb_display_init(void)
-{
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    extern int usbd_comp_disp_init(uint8_t *ep_table, void *data);
-    extern uint8_t graphic_vendor_descriptor[];
-    usbd_comp_func_register(graphic_vendor_descriptor,
-                            usbd_comp_disp_event_handler,
-                            usbd_comp_disp_init, "disp");
-#else
-    extern void usb_nocomp_display_init(void);
-    usb_nocomp_display_init();
-#endif
-}
-
-#if defined(KERNEL_RTTHREAD)
-#include <rtthread.h>
-#include <rtdevice.h>
-#define COMP_USING_DISP_MSC         1
-#define COMP_USING_DISP_UAC_TOUCH   2
-
-void usbd_disp_comp_normal_mode(void *parameter)
-{
-    usbd_composite_func_switch(COMP_USING_DISP_UAC_TOUCH);
-#if defined(LPKG_USING_COMP_MSC) && \
-    defined(LPKG_CHERRYUSB_DEVICE_MSC)
-    extern int msc_usbd_forbid(void);
-    msc_usbd_forbid();
-#endif
-#if defined(LPKG_USING_COMP_TOUCH) && \
-    defined(LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE)
-    extern int usbd_hid_touch_init(void);
-    usbd_hid_touch_init();
-#endif
-#if defined(LPKG_USING_COMP_UAC) && \
-    defined(LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER_V2_TEMPLATE)
-    extern int usbd_audio_v2_init(void);
-    usbd_audio_v2_init();
-#endif
-}
-
-rt_thread_t usbd_comp_disp_tid = NULL;
-int comp_dev_ctl_table(void)
-{
-#if defined(LPKG_CHERRYUSB_AIC_DISP_DR)
-    if (usbd_comp_disp_tid == NULL) {
-        usbd_comp_disp_tid = rt_thread_create("usbd_disp_comp_setup",
-                                    usbd_disp_comp_normal_mode, RT_NULL,
-                                    4096, RT_THREAD_PRIORITY_MAX - 2, 20);
-
-        if (usbd_comp_disp_tid != RT_NULL)
-            rt_thread_startup(usbd_comp_disp_tid);
-        else
-            printf("create usbd_disp_comp_setup thread err!\n");
-    }
-#endif
-
-    return 0;
-}
-
-extern int usbd_usb_display_init(void);
-
-#if !defined(LPKG_CHERRYUSB_DYNAMIC_REGISTRATION_MODE) || \
-    defined(LPKG_CHERRYUSB_AIC_DISP_DR)
-INIT_COMPONENT_EXPORT(usbd_usb_display_init);
-
-#ifdef AIC_USB_DISP_SW_GPIO_EN
 void aic_panel_backlight_enable(void)
 {
 #ifdef AIC_PANEL_ENABLE_GPIO
@@ -297,9 +300,6 @@ void aic_panel_backlight_enable(void)
     struct rt_device_pwm *pwm_dev;
 
     pwm_dev = (struct rt_device_pwm *)rt_device_find("pwm");
-    /* pwm frequency: 1KHz = 1000000ns */
-    rt_pwm_set(pwm_dev, AIC_PWM_BACKLIGHT_CHANNEL,
-            1000000, 10000 * AIC_PWM_BRIGHTNESS_LEVEL);
     rt_pwm_enable(pwm_dev, AIC_PWM_BACKLIGHT_CHANNEL);
 #endif
 }
@@ -330,6 +330,130 @@ void aic_panel_backlight_disable(void)
 #endif
 }
 
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+#include "composite_template.h"
+void usbd_comp_disp_event_handler(uint8_t event)
+#else
+void usbd_event_handler(uint8_t event)
+#endif
+{
+    extern void usbd_display_event_handler(uint8_t event);
+    usbd_display_event_handler(event);
+}
+
+void usb_display_init(void)
+{
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+    extern int usbd_comp_disp_init(uint8_t *ep_table, void *data);
+    extern uint8_t graphic_vendor_descriptor[];
+    usbd_comp_func_register(graphic_vendor_descriptor,
+                            usbd_comp_disp_event_handler,
+                            usbd_comp_disp_init, "disp");
+#else
+    extern void usb_nocomp_display_init(void);
+    usb_nocomp_display_init();
+#endif
+}
+
+#if defined(KERNEL_RTTHREAD)
+extern int usbd_usb_display_init(void);
+extern int usbd_usb_display_deinit(void);
+int usbd_display_deinit(void)
+{
+    return 0;
+
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+    extern uint8_t graphic_vendor_descriptor[];
+    usbd_comp_func_release(graphic_vendor_descriptor, "disp");
+#endif
+    usbd_usb_display_deinit();
+
+    return 0;
+}
+
+int usbd_display_init(void)
+{
+    static int init_flg = 0;
+
+    if (init_flg)
+        return 0;
+    init_flg = 1;
+
+    usbd_usb_display_init();
+
+    return 0;
+}
+
+#if defined(LPKG_CHERRYUSB_AIC_DISP_DR)
+#include <rtthread.h>
+#include <rtdevice.h>
+#define COMP_USING_DISP_UAC_TOUCH   1
+#define COMP_USING_DISP_MSC         2
+rt_thread_t usbd_comp_disp_tid = NULL;
+rt_sem_t usbd_comp_disp_sem = NULL;
+
+void usbd_disp_comp_udisk_mode(void *parameter)
+{
+    if (rt_sem_take(usbd_comp_disp_sem, 2000) != -RT_ETIMEOUT)
+        goto finish;
+
+    usbd_compsite_device_start(COMP_USING_DISP_MSC);
+
+    while(1) {
+        rt_sem_take(usbd_comp_disp_sem, RT_WAITING_FOREVER);
+
+        usbd_compsite_device_start(COMP_USING_DISP_UAC_TOUCH);
+
+        break;
+    }
+
+finish:
+    if (usbd_comp_disp_sem)
+        rt_sem_delete(usbd_comp_disp_sem);
+
+    usbd_comp_disp_sem = NULL;
+}
+
+int disp_configured_event_cb(void)
+{
+    if (COMP_USING_DISP_MSC == usbd_composite_get_cur_func_table())
+        return 0;
+
+    if (usbd_comp_disp_tid == NULL) {
+        usbd_comp_disp_sem = rt_sem_create("disp_driver_sem", 0, RT_IPC_FLAG_FIFO);
+        if (usbd_comp_disp_sem == RT_NULL) {
+            USB_LOG_ERR("create disp semaphore failed.\n");
+            return -1;
+        }
+    }
+
+    if (usbd_comp_disp_tid == NULL) {
+        usbd_comp_disp_tid = rt_thread_create("usbd_disp_udsik_setup",
+                                    usbd_disp_comp_udisk_mode, RT_NULL,
+                                    4096, RT_THREAD_PRIORITY_MAX - 2, 20);
+        if (usbd_comp_disp_tid != RT_NULL)
+            rt_thread_startup(usbd_comp_disp_tid);
+        else
+            printf("create usbd_disp_comp_setup thread err!\n");
+    }
+
+    return 0;
+}
+
+int disp_vendor_handler_cb(void)
+{
+    if (usbd_comp_disp_sem) {
+        rt_sem_release(usbd_comp_disp_sem);
+    }
+
+    return 0;
+}
+#else
+USB_INIT_APP_EXPORT(usbd_usb_display_init);
+#endif
+#endif
+
+#ifdef AIC_USB_DISP_SW_GPIO_EN
 void lcd_sw_key_irq_callback(void *args)
 {
     rt_base_t pin;
@@ -378,19 +502,4 @@ int lcd_sw_key_init(void)
 }
 
 INIT_APP_EXPORT(lcd_sw_key_init);
-#endif
-
-#endif
-
-#if defined(LPKG_CHERRYUSB_AIC_DISP_DR)
-int usbd_disp_comp_udisk_mode(void)
-{
-    usbd_composite_func_switch(COMP_USING_DISP_MSC);
-    extern int usbd_msc_detection(void);
-    usbd_msc_detection();
-
-    return 0;
-}
-INIT_APP_EXPORT(usbd_disp_comp_udisk_mode);
-#endif
 #endif

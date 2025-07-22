@@ -1996,7 +1996,7 @@ static int ov5640_set_power_dvp(struct ov5640_dev *sensor, bool on)
         ov5640_write_reg(sensor, OV5640_REG_POLARITY_CTRL00, 0x20);
         ov5640_write_reg(sensor, OV5640_REG_PAD_OUTPUT_ENABLE01, 0x00);
         ov5640_write_reg(sensor, OV5640_REG_PAD_OUTPUT_ENABLE02, 0x00);
-#ifdef CONFIG_FPGA_BOARD_ARTINCHIP
+#ifdef FPGA_BOARD_ARTINCHIP
         ov5640_write_reg(sensor, OV5640_REG_OUTPUT_DRV_CAP, 0x03);
 #endif
         return 0;

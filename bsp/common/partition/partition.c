@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -117,7 +117,7 @@ struct aic_partition *aic_part_gpt_parse(char *parts)
 }
 
 struct aic_partition *aic_part_get_byname(struct aic_partition *head,
-                                          char *name)
+                                          const char *name)
 {
     struct aic_partition *part = head;
     if (!part) {

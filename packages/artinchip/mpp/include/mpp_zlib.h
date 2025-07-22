@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2020-2025 ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -46,7 +46,8 @@ enum COMPRESS_TYPE {
 void* mpp_unzip_create(void);
 void mpp_unzip_destroy(void *ctx);
 int mpp_unzip_uncompressed(void *ctx, enum COMPRESS_TYPE type,
-        unsigned char *src, unsigned int src_len,
+        unsigned char *src_buf, unsigned int src_buf_len,
+        unsigned int offset, unsigned int data_len,
         unsigned char *dst, unsigned int dst_len,
         int first_part, int last_part);
 

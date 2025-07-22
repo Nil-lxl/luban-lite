@@ -4,6 +4,7 @@
 
 menu "LVDS interface options"
     depends on AIC_DISP_LVDS
+    depends on AIC_SIMPLE_PANEL
 
 choice
     prompt "lvds mode"

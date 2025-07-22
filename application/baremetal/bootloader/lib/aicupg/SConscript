@@ -13,8 +13,8 @@ if GetDepend('AICUPG_SUPPORT'):
     src     += Glob('upg_main.c')
     src     += Glob('data_trans_layer.c')
     if GetDepend('AICUPG_UART_ENABLE'):
-        src     += Glob('upg_uart.c')
-        src     += Glob('trans_rw_data.c')
+        src     += Glob('aicupg_for_uart.c')
+        src     += Glob('uart_proto_layer.c')
     if GetDepend('AICUPG_MMC_ARTINCHIP'):
         src     += Glob('mmc_fwc.c')
     if GetDepend('AICUPG_NAND_ARTINCHIP'):

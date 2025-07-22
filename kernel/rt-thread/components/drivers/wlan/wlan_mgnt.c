@@ -868,7 +868,7 @@ static void rt_wlan_join_scan_callback(int event, struct rt_wlan_buff *buff, voi
             tgt_info->rssi      = info->rssi;
             tgt_info->hidden    = info->hidden;
             /* hwaddr */
-            rt_memcmp(tgt_info->bssid,info->bssid,RT_WLAN_BSSID_MAX_LENGTH);
+            rt_memcpy(tgt_info->bssid,info->bssid,RT_WLAN_BSSID_MAX_LENGTH);
         }
     }
 }
@@ -913,7 +913,8 @@ rt_err_t rt_wlan_connect(const char *ssid, const char *password)
     rt_memcpy(&info.ssid.val[0],ssid,rt_strlen(ssid));
     info.ssid.len = rt_strlen(ssid);
 
-#ifdef RT_WLAN_JOIN_SCAN_BY_MGNT
+#if 1 //def RT_WLAN_JOIN_SCAN_BY_MGNT
+    info.rssi = -100;
     err = rt_wlan_register_event_handler(RT_WLAN_EVT_SCAN_REPORT,rt_wlan_join_scan_callback,&info);
     if(err != RT_EOK)
     {

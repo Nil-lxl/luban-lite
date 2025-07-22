@@ -182,6 +182,9 @@ struct rt_can_ops;
 #define RT_CAN_CMD_SET_CANFD        0x1A
 #define RT_CAN_CMD_SET_BAUD_FD      0x1B
 #define RT_CAN_CMD_SET_BITTIMING    0x1C
+#define RT_CAN_STOP_DMA             0x1E
+#define RT_CAN_CONFIG_DMA_TX        0x20
+#define RT_CAN_CONFIG_DMA_RX        0x21
 
 #define RT_DEVICE_CAN_INT_ERR       0x1000
 

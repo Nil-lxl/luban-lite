@@ -23,8 +23,6 @@
 
 #define MY_CLASS &lv_aic_player_class
 
-#define VIDEO_FRAME_RATE(x) (int)(((1000.0) / (x)))  /*[ms]*/
-
 #define BYTE_ALIGN(x, byte) (((x) + ((byte) - 1))&(~((byte) - 1)))
 
 /**********************
@@ -92,7 +90,7 @@ static uint8_t *player_get_image_date(struct aic_player_ctx_s *aic_ctx);
 static void player_update_image_date(struct aic_player_ctx_s *aic_ctx);
 static int player_auto_get_draw_layer(struct aic_player_ctx_s *aic_ctx);
 static int player_hardware_limit(struct aic_player_ctx_s *aic_ctx, uint32_t rotate, uint32_t scale_x, uint32_t scale_y);
-static int player_get_frame_sync(struct aic_player_ctx_s *aic_ctx, uint32_t timeout);
+static int player_get_frame_sync(struct aic_player_ctx_s * aic_ctx, bool sleep_en);
 static int player_get_frame_async(struct aic_player_ctx_s *aic_ctx);
 static void player_get_frame_sync_entry(void *ptr);
 static int player_put_frame_sync(struct aic_player_ctx_s *aic_ctx);
@@ -148,8 +146,7 @@ lv_res_t lv_aic_player_set_src(lv_obj_t * obj, const char *src)
         if (!player->aic_ctx) {
             goto src_failed;
         }
-
-        player->timer = lv_timer_create(update_video_cb, VIDEO_FRAME_RATE(24), obj);
+        player->timer = lv_timer_create(update_video_cb, 5, obj);
         if (!player->timer) {
             goto src_failed;
         }
@@ -364,7 +361,7 @@ void lv_aic_player_set_auto_restart(lv_obj_t * obj, bool en)
 /**********************
  *   STATIC FUNCTIONS
  **********************/
-static int player_get_frame_sync(struct aic_player_ctx_s * aic_ctx, uint32_t timeout)
+static int player_get_frame_sync(struct aic_player_ctx_s * aic_ctx, bool sleep_en)
 {
     s32 ret = 0;
     struct mpp_frame frame = {0};
@@ -376,26 +373,24 @@ static int player_get_frame_sync(struct aic_player_ctx_s * aic_ctx, uint32_t tim
 
     player_put_frame_sync(aic_ctx);
 
-    uint32_t get_frame_start = lv_tick_get();
     do {
-        ret = aic_player_get_frame(aic_ctx->player, (void *)&frame);
+        ret = aic_player_get_frame(aic_ctx->player, (void *)&frame); /* automatically sync audio and video */
         if (!ret) {
             p_frame = (struct mpp_frame *)_lv_ll_ins_tail(&aic_ctx->frame_ll);
             lv_memcpy(p_frame, &frame, sizeof(struct mpp_frame));
-            LV_LOG_INFO("get frame %d, id = %d", p_frame->buf.phy_addr[0], p_frame->id);
+            LV_LOG_INFO("get frame %p, id = %d", (uint8_t *)(uintptr_t)p_frame->buf.phy_addr[0], p_frame->id);
             if (frame.flags & FRAME_FLAG_EOS)
                 aic_ctx->status = LV_AIC_PLAYER_STATUS_END;
-        } else if (ret == 4 || ret == 3) {
-            if (timeout > 0 && lv_tick_elaps(get_frame_start) >= timeout) {
-                LV_LOG_WARN("get_frame timeout: %d", (int)lv_tick_elaps(get_frame_start));
-                return 0;
+        } else if (ret == DEC_NO_EMPTY_PACKET || ret == DEC_NO_READY_PACKET) {
+            if (sleep_en == false) {
+                return -1;
             }
-            aicos_msleep(3);
+            aicos_msleep(1);
         } else {
             LV_LOG_ERROR("get frame failed, ret = %d", ret);
-            return 0;
+            return -1;
         }
-    } while(ret == 4 || ret == 3);
+    } while(ret == DEC_NO_EMPTY_PACKET || ret == DEC_NO_READY_PACKET);
 
     player_thread_lock(aic_ctx);
     aic_ctx->frame_decoded_buf = (uint8_t *)(uintptr_t)p_frame->buf.phy_addr[0];
@@ -427,7 +422,7 @@ static int player_put_frame_sync(struct aic_player_ctx_s *aic_ctx)
         if (ret)
             LV_LOG_ERROR("put frame failed, ret = %d", ret);
         else
-            LV_LOG_INFO("put frame %d, id = %d", p_frame->buf.phy_addr[0], p_frame->id);
+            LV_LOG_INFO("put frame %p, id = %d", (uint8_t *)(uintptr_t)p_frame->buf.phy_addr[0], p_frame->id);
         _lv_ll_remove(&aic_ctx->frame_ll, p_frame);
         lv_free(p_frame);
     }
@@ -443,7 +438,7 @@ static int player_put_frame_sync_all(struct aic_player_ctx_s * aic_ctx)
         if (ret)
             LV_LOG_ERROR("put frame failed, ret = %d", ret);
         else
-            LV_LOG_INFO("put frame %d, id = %d", p_frame->buf.phy_addr[0], p_frame->id);
+            LV_LOG_INFO("put frame %p, id = %d", (uint8_t *)(uintptr_t)p_frame->buf.phy_addr[0], p_frame->id);
         _lv_ll_remove(&aic_ctx->frame_ll, p_frame);
         lv_free(p_frame);
     }
@@ -494,20 +489,15 @@ static void update_video_cb(lv_timer_t * timer)
         return;
 
     if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_UI_SINGLE_BUF) {
-        player_get_frame_sync(aic_ctx, 24);
+        player_get_frame_sync(aic_ctx, false);
     } else if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF) {
         /* first frame */
         if (_lv_ll_get_len(&aic_ctx->frame_ll) == 0) {
-            player_get_frame_sync(aic_ctx, -1);
+            player_get_frame_sync(aic_ctx, false);
         }
 
-        player_thread_lock(aic_ctx);
-        if (aic_ctx->frame_decoding == true) {
-            player_thread_unlock(aic_ctx);
-            lv_timer_ready(timer);
+        if (aic_ctx->frame_decoding == true)
             return;
-        }
-        player_thread_unlock(aic_ctx);
 
         player_get_frame_async(aic_ctx);
     } else {
@@ -519,6 +509,8 @@ static void update_video_cb(lv_timer_t * timer)
     player_update_image_date(aic_ctx);
     uint8_t * img_data = player_get_image_date(aic_ctx);
     player->image_dst.data = img_data;
+
+    lv_image_cache_drop(lv_image_get_src(obj)); /* clear the cache to make img_dst update automatically */
 }
 
 static int player_event_handle(void *app_data, int event, int data1, int data2)
@@ -574,7 +566,7 @@ static void player_close(struct aic_player_ctx_s *aic_ctx)
             lv_mutex_delete(&aic_ctx->frame_mutex);
         }
 
-        if (aic_ctx->has_keep_last_frame) {
+        if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_VIDEO && aic_ctx->has_keep_last_frame) {
             int enable = 0;
             aic_player_control(aic_ctx->player, AIC_PLAYER_CMD_SET_VIDEO_RENDER_KEEP_LAST_FRAME, &enable);
         }
@@ -651,16 +643,16 @@ static int obtain_align_stride(int width, enum mpp_pixel_format fmt)
 
     switch(fmt) {
         case MPP_FMT_RGB_565:
-            stride = BYTE_ALIGN((width) * 2, 16);
+            stride = BYTE_ALIGN((width) * 2, 32);
             break;
         case MPP_FMT_RGB_888:
-            stride = BYTE_ALIGN((width) * 3, 16);
+            stride = BYTE_ALIGN((width) * 3, 48);
             break;
         case MPP_FMT_ARGB_8888:
-            stride = BYTE_ALIGN((width) * 4, 16);
+            stride = BYTE_ALIGN((width) * 4, 64);
             break;
         case MPP_FMT_XRGB_8888:
-            stride = BYTE_ALIGN((width) * 4, 16);
+            stride = BYTE_ALIGN((width) * 4, 64);
             break;
         default:
             stride = BYTE_ALIGN((width) * 4, 16);
@@ -679,8 +671,8 @@ static int alloc_player_frame_buffer(struct frame_allocator *p, struct mpp_frame
     int stride;
     int alloc_buffer_times = aic_ctx->frame_alloc_buffer_times;
 
-    int media_width = BYTE_ALIGN(aic_ctx->media_info.video_stream.width, 16);
-    int media_height = BYTE_ALIGN(aic_ctx->media_info.video_stream.height, 16);
+    int media_width = aic_ctx->media_info.video_stream.width;
+    int media_height = aic_ctx->media_info.video_stream.height;
     screen_format = aic_ctx->screen_info.format;
     stride = obtain_align_stride(media_width, screen_format);
 
@@ -744,6 +736,7 @@ static int player_image_alloc(struct aic_player_ctx_s *aic_ctx)
         return -1;
     }
 
+    aic_ctx->frame_alloc_buffer_times = 0;
     aic_ctx->allocator.ops = &frame_buffer_alloc_ops;
     ret = aic_player_control(aic_ctx->player, AIC_PLAYER_CMD_SET_VDEC_EXT_FRAME_ALLOCATOR,
                              (void *)aic_ctx);
@@ -786,11 +779,7 @@ static int player_auto_get_draw_layer(struct aic_player_ctx_s *aic_ctx)
         if (lv_strcmp(PRJ_CHIP, "d12x") == 0) {
             draw_layer = LV_AIC_PLAYER_LAYER_UI_SINGLE_BUF;
         } else if ((lv_strcmp(PRJ_CHIP, "d13x") == 0)) {
-#if LV_COLOR_DEPTH == 32
-            draw_layer = LV_AIC_PLAYER_LAYER_VIDEO;
-#else
             draw_layer = LV_AIC_PLAYER_LAYER_UI_SINGLE_BUF;
-#endif
         } else if ((lv_strcmp(PRJ_CHIP, "d21x") == 0)) {
             draw_layer = LV_AIC_PLAYER_LAYER_VIDEO;
         }
@@ -850,7 +839,7 @@ static int lv_player_init_image_resource(lv_obj_t * obj)
     player->image_dst.header.h = height;
     player->image_dst.header.cf = switch_mpp_fmt_to_lv_fmt(screen_format);
     player->image_dst.header.stride = stride;
-    player->image_dst.header.flags = LV_IMAGE_FLAGS_MODIFIABLE | LV_IMAGE_FLAGS_ALLOCATED;
+    player->image_dst.header.flags = 0;
     player->image_dst.header.magic = LV_IMAGE_HEADER_MAGIC;
     player->image_dst.data = img_data;
     player->image_dst.data_size = stride * height;
@@ -941,12 +930,12 @@ static int lv_player_init_image_area(lv_obj_t * obj)
     }
 
     if (disp_rect.x + disp_rect.width > LV_HOR_RES) {
-        LV_LOG_ERROR("display actual area is error, must be within [0,%d], width = %d", (int)LV_VER_RES, (int)disp_rect.width);
+        LV_LOG_ERROR("display actual area is error, must be within [0,%d], x = %d, width = %d", (int)LV_VER_RES, (int)disp_rect.x, (int)disp_rect.width);
         return -1;
     }
 
     if (disp_rect.y + disp_rect.height > LV_VER_RES) {
-        LV_LOG_ERROR("display actual area is error, must be within [0,%d], height = %d", (int)LV_VER_RES, (int)disp_rect.height);
+        LV_LOG_ERROR("display actual area is error, must be within [0,%d], y = %d, height = %d", (int)LV_VER_RES, (int)disp_rect.y, (int)disp_rect.height);
         return -1;
     }
 
@@ -1102,50 +1091,86 @@ void lv_aic_player_set_auto_restart(lv_obj_t * obj, bool en)
 #if defined(AIC_MPP_PLAYER_INTERFACE) || LV_USE_AIC_SIMULATOR == 1
 void lv_aic_player_set_pivot(lv_obj_t * obj, int32_t x, int32_t y)
 {
+    lv_image_set_pivot(obj, x, y);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
-    return lv_image_set_pivot(obj, x, y);
 }
 
 void lv_aic_player_set_rotation(lv_obj_t * obj, int32_t angle)
 {
+    lv_image_set_rotation(obj, angle);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
-    return lv_image_set_rotation(obj, angle);
+}
+
+void lv_aic_player_set_width(lv_obj_t *obj, uint32_t width)
+{
+    lv_aic_player_t * player = (lv_aic_player_t *)obj;
+    struct aic_player_ctx_s *aic_ctx = player->aic_ctx;
+    if (!aic_ctx) {
+        LV_LOG_WARN("player is NULL, please set src first");
+        return;
+    }
+
+    int video_width = aic_ctx->media_info.video_stream.width;
+    uint32_t scale_x = ((double)(width * 1.0) / (double)(video_width * 1.0)) * 256;
+    int16_t errors = ((scale_x * 1.0) * video_width/ 256) - width;
+    if (errors)
+        LV_LOG_WARN("player scaling width has precision errors = %d", errors);
+    lv_image_set_scale_x(obj, scale_x);
+    lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
+}
+
+void lv_aic_player_set_height(lv_obj_t *obj, uint32_t height)
+{
+    lv_aic_player_t * player = (lv_aic_player_t *)obj;
+    struct aic_player_ctx_s *aic_ctx = player->aic_ctx;
+    if (!aic_ctx) {
+        LV_LOG_WARN("player is NULL, please set src first");
+        return;
+    }
+
+    int video_height = aic_ctx->media_info.video_stream.height;
+    uint32_t scale_y = ((double)(height * 1.0) / (double)(video_height * 1.0)) * 256;
+    int16_t errors = ((scale_y * 1.0) * video_height) / 256 - height;
+    if (errors)
+        LV_LOG_WARN("player scaling height has precision errors = %d", errors);
+    lv_image_set_scale_y(obj, scale_y);
+    lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
 }
 
 void lv_aic_player_set_scale(lv_obj_t * obj, uint32_t scale)
 {
+    lv_image_set_scale(obj, scale);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
-    return lv_image_set_scale(obj, scale);
 }
 
 void lv_aic_player_set_scale_x(lv_obj_t * obj, uint32_t scale_x)
 {
+    lv_image_set_scale_x(obj, scale_x);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
-    return lv_image_set_scale_x(obj, scale_x);
 }
 
 void lv_aic_player_set_scale_y(lv_obj_t * obj, uint32_t scale_y)
 {
+    lv_image_set_scale_y(obj, scale_y);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
-    return lv_image_set_scale_y(obj, scale_y);
 }
 
 void lv_aic_player_set_offset_x(lv_obj_t * obj, int32_t x)
 {
+    lv_image_set_offset_x(obj, x);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
-    return lv_image_set_offset_x(obj, x);
 }
 
 void lv_aic_player_set_offset_y(lv_obj_t * obj, int32_t y)
 {
+    lv_image_set_offset_y(obj, y);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
-    return lv_image_set_offset_y(obj, y);
 }
 
 void lv_aic_player_set_inner_align(lv_obj_t * obj, lv_image_align_t align)
 {
+    lv_image_set_inner_align(obj, align);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
-    return lv_image_set_inner_align(obj, align);
 }
 
 void lv_aic_player_get_pivot(lv_obj_t * obj, lv_point_t * pivot)

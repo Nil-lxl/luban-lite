@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,6 +20,7 @@ enum aic_audio_codec_type {
     MPP_CODEC_AUDIO_DECODER_PCM,
     MPP_CODEC_AUDIO_DECODER_FLAC,
     MPP_CODEC_AUDIO_DECODER_WMA,
+    MPP_CODEC_AUDIO_DECODER_APE,
 };
 
 struct aic_audio_frame {

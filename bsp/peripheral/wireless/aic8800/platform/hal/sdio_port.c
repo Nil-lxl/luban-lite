@@ -737,7 +737,7 @@ int aicwf_sdio_probe(struct sdio_func *func)
     sdio_function[FUNC_1] = &func[1];
     sdio_function[FUNC_2] = &func[2];
     #if 1
-    aic_wifi_init(WIFI_MODE_STA, CONFIG_CHIPID_SELECT, NULL);
+    aic_wifi_init(CONFIG_WIFIMODE_SELECT, CONFIG_CHIPID_SELECT, NULL);
     #else
     wifi_driver_init();
     #endif

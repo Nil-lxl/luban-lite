@@ -112,6 +112,10 @@ void lv_aic_player_set_pivot(lv_obj_t * obj, int32_t x, int32_t y);
 
 void lv_aic_player_set_rotation(lv_obj_t * obj, int32_t angle);
 
+void lv_aic_player_set_width(lv_obj_t *obj, uint32_t width);
+
+void lv_aic_player_set_height(lv_obj_t *obj, uint32_t width);
+
 void lv_aic_player_set_scale(lv_obj_t * obj, uint32_t scale_y);
 
 void lv_aic_player_set_scale_x(lv_obj_t * obj, uint32_t scale_x);

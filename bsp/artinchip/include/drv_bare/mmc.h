@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -348,6 +348,9 @@ void sdcard_hotplug_act(void);
 int mmc_block_init(struct aic_sdmc *host);
 int mmc_block_refresh(struct aic_sdmc *host);
 int mmc_block_deinit(struct aic_sdmc *host);
+
+void mmc_set_rx_phase(void *priv, u32 phase);
+void mmc_set_rx_delay(void *priv, u32 delay);
 
 
 int mmc_rpmb_get_counter(struct aic_sdmc *host, unsigned long *pcounter);

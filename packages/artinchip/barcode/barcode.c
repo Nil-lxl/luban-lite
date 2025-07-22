@@ -258,7 +258,7 @@ static void video_layer_set()
     mpp_fb_ioctl(g_fb, AICFB_WAIT_FOR_VSYNC, &layer);
 }
 
-int do_rotate(struct aic_dvp_data *vdata, int index)
+static int do_rotate(struct aic_dvp_data *vdata, int index)
 {
     struct ge_bitblt blt = {0};
     struct mpp_buf  *src = &blt.src_buf;

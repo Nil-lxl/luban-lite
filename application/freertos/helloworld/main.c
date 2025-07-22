@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -105,7 +105,7 @@ static int board_init(void)
     show_banner();
 
 #ifdef AIC_CONSOLE_BARE_DRV
-    tshell = aicos_thread_create("shell", 4096, configMAX_PRIORITIES-20, console_loop_thread, NULL);
+    tshell = aicos_thread_create("shell", 8192, configMAX_PRIORITIES-20, console_loop_thread, NULL);
     if (tshell == NULL) {
         pr_err("Failed to create shell thread\n");
         return -1;

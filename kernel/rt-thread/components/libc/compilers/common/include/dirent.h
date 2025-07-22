@@ -46,6 +46,7 @@ typedef struct
 #define HAVE_DIRENT_STRUCTURE
 
 #define DIRENT_NAME_MAX    256
+#define PARTITION_NAME_MAX 144
 
 struct dirent
 {

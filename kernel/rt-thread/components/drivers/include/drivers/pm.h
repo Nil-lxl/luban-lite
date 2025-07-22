@@ -218,6 +218,7 @@ void rt_pm_device_unregister(struct rt_device *device);
 
 void rt_pm_notify_set(void (*notify)(rt_uint8_t event, rt_uint8_t mode, void *data), void *data);
 void rt_pm_default_set(rt_uint8_t sleep_mode);
+rt_uint8_t rt_pm_read_mode_cnt(rt_uint8_t sleep_mode);
 
 void rt_system_pm_init(const struct rt_pm_ops *ops,
                        rt_uint8_t              timer_mask,

@@ -23,7 +23,7 @@ static struct aic_lvds_comp *g_aic_lvds_comp;
 
 #ifdef AIC_DISP_PQ_TOOL
 AIC_PQ_TOOL_PINMUX_CONFIG(disp_pinmux_config);
-AIC_PQ_TOOL_SET_DISP_PINMUX_FOPS(disp_pinmux_config)
+AIC_PQ_TOOL_SET_DISP_PINMUX_FOPS(disp_pinmux_config);
 #endif
 
 static struct aic_lvds_comp *aic_lvds_request_drvdata(void)

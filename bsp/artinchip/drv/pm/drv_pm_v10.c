@@ -54,6 +54,12 @@ void aic_pm_enter_light_sleep(void)
     hal_clk_disable(CLK_PLL_INT1);
     /* disable PLL_INT0: cpu pll */
     hal_clk_disable(CLK_PLL_INT0);
+    #ifdef AIC_PM_INDEPENDENT_POWER_KEY
+    /* Turn off board level power that can be controlled via GPIO */
+    rt_pm_board_level_power_off();
+    /* deinit all non-wakup pinmux configuration */
+    aic_board_pinmux_deinit();
+    #endif
 
     __WFI();
 
@@ -62,6 +68,12 @@ void aic_pm_enter_light_sleep(void)
     hal_clk_enable(CLK_PLL_INT0);
     /* change cpu frequency to pll */
     hal_clk_set_parent(CLK_CPU, CLK_CPU_SRC1);
+    #ifdef AIC_PM_INDEPENDENT_POWER_KEY
+    /* restore all pinmux configuration */
+    aic_board_pinmux_init();
+    /* Turn on board level power that can be controlled via GPIO */
+    rt_pm_board_level_power_on();
+    #endif
     /* enable PLL_INT1: bus pll */
     hal_clk_enable(CLK_PLL_INT1);
     /* change bus frequency to pll */
@@ -128,6 +140,9 @@ static void aic_sleep(struct rt_pm *pm, uint8_t mode)
     switch (mode)
     {
     case PM_SLEEP_MODE_NONE:
+        #ifdef AIC_PM_INDEPENDENT_POWER_KEY
+        aic_pm_enter_idle();
+        #endif
         break;
 
     case PM_SLEEP_MODE_IDLE:

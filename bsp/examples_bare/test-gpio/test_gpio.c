@@ -41,7 +41,7 @@ static void cmd_gpio_usage(void)
 static void cmd_gpio_irq_callback(void *args)
 {
     u32 value;
-    u32 pin = (u32)args;
+    u32 pin = (u32)(uintptr_t)args;
     u32 g, p;
 
     g = GPIO_GROUP(pin);
@@ -160,7 +160,7 @@ static int cmd_gpio_input_pin_cfg(int argc, char **argv)
     hal_gpio_set_irq_mode(g, p, PIN_IRQ_MODE_EDGE_BOTH);
 
     gpio_irq = AIC_GPIO_TO_IRQ(g * GPIO_GROUP_SIZE + p);
-    drv_irq_register(gpio_irq, cmd_gpio_irq_callback, (void *)pin);
+    drv_irq_register(gpio_irq, cmd_gpio_irq_callback, (void *)(uintptr_t)pin);
     hal_gpio_enable_irq(g, p);
 
     cmd_gpio_get_pin_cfg_status(argc, argv);

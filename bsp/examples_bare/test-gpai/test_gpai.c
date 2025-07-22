@@ -25,10 +25,6 @@ static int g_sample_num = AIC_GPAI_DEFAULT_SAMPLES_NUM;
 static int g_inited = 1;
 static aicos_sem_t g_gpai_sem = NULL;
 
-#ifdef AIC_GPAI_DRV_DMA
-static struct aic_dma_transfer_info g_dma_info;
-static u32 g_adc_buf[CACHE_LINE_SIZE / 4] __attribute__((aligned(CACHE_LINE_SIZE)));
-#endif
 
 static void cmd_gpai_usage(void)
 {
@@ -144,54 +140,6 @@ int adc_check_gpai_by_cpu_mode(int ch, u32 cal_param)
     return -1;
 }
 
-#ifdef AIC_GPAI_DRV_DMA
-static int gpai_dma_get_data(int ch)
-{
-    int i;
-    int *dma_data = (int *)g_dma_info.buf;
-
-    drv_gpai_get_dma_data(ch);
-    aicos_dcache_invalid_range(g_adc_buf, g_dma_info.buf_size);
-
-        for(i = 0; i < g_dma_info.buf_size / sizeof(g_adc_buf[0]); i++) {
-            printf("[%d] %d\n",i, dma_data[i]);
-        }
-
-    return 0;
-}
-
-static void gpai_dma_callback(void *arg)
-{
-    int ch = (int)arg;
-
-    printf("dma callback happened\n");
-    gpai_dma_get_data(ch);
-}
-
-static int gpai_get_adc_by_dma(int ch)
-{
-    int ret;
-
-    drv_gpai_enabled(ch, true);
-
-    g_dma_info.chan_id = ch;
-    g_dma_info.buf = g_adc_buf;
-    g_dma_info.buf_size = sizeof(g_adc_buf);
-    g_dma_info.callback = gpai_dma_callback;
-    g_dma_info.callback_param = (void *)ch;
-
-    ret = drv_gpai_config_dma(&g_dma_info);
-    if (ret) {
-        printf("Failed to config DMA\n");
-        return -1;
-    }
-
-    gpai_dma_get_data(ch);
-    //drv_gpai_stop_dma(ch);// Use this interface at the point where you want to stop DMA
-
-    return 0;
-}
-#endif
 
 static int gpai_get_adc_by_poll(int ch, u32 cal_param)
 {
@@ -252,11 +200,6 @@ static int cmd_gpai_read(int argc, char **argv)
     case AIC_GPAI_OBTAIN_DATA_BY_CPU:
         adc_check_gpai_by_cpu_mode(ch, cal_param);
         break;
-#ifdef AIC_GPAI_DRV_DMA
-    case AIC_GPAI_OBTAIN_DATA_BY_DMA:
-        gpai_get_adc_by_dma(ch);
-        break;
-#endif
     case AIC_GPAI_OBTAIN_DATA_BY_POLL:
         gpai_get_adc_by_poll(ch, cal_param);
         break;

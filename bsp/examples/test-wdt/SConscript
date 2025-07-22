@@ -5,7 +5,7 @@ from building import *
 cwd = GetCurrentDir()
 CPPPATH = []
 src = []
-if GetDepend('AIC_WDT_DRV_TEST'):
+if GetDepend('AIC_WDT_DRV_TEST') and GetDepend('RT_USING_FINSH'):
     src = Glob('*.c')
 
 group = DefineGroup('test-wdt', src, depend = [''], CPPPATH = CPPPATH)

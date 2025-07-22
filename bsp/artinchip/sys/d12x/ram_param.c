@@ -52,12 +52,14 @@ struct _psram_info {
     {0x05, PSRAM_PARALLEL, 0x1000000, {SCKW18_12816O, 0xc59ac59a}},             \
     /* D122BCV2 16M AP12816 */                                                  \
     {0x05, PSRAM_PARALLEL, 0x1000000, {APS12816O, 0xdd8ddd8d}},                 \
+    /* D121BCV 16M AP12816 */                                                   \
+    {0x06, PSRAM_PARALLEL, 0x1000000, {APS12816O, 0xdd8ddd8d}},                 \
     /* D123BAV 4M */                                                            \
-    {0x07, PSRAM_SINGLE, 0x400000, {APS3208K, 0x80c980c9}},          \
+    {0x07, PSRAM_SINGLE, 0x400000, {APS3208K, 0x80c980c9}},                     \
     /* D123BBV 8M */                                                            \
-    {0x08, PSRAM_PARALLEL, 0x800000, {APS3208K, 0x80c980c9}},        \
+    {0x08, PSRAM_PARALLEL, 0x800000, {APS3208K, 0x80c980c9}},                   \
     /* D123BCV 16M */                                                           \
-    {0x09, PSRAM_PARALLEL, 0x1000000, {APS12816O, 0xdd8ddd8d}},      \
+    {0x09, PSRAM_PARALLEL, 0x1000000, {APS12816O, 0xdd8ddd8d}},                 \
     /* TR230 8M */                                                              \
     {0xA1, PSRAM_PARALLEL, 0x800000, {APS3208K, 0x80c980c9}},                   \
     /* JYX58 8M */                                                              \

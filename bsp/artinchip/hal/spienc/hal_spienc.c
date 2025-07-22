@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,6 +22,7 @@
 
 #define SPIE_START_OFF   0
 #define SPIE_SPI_SEL_OFF 12
+#define SPIE_SPI_XIP_OFF 16
 
 #define SPIE_START_MSK   (0x1 << SPIE_START_OFF)
 #define SPIE_SPI_SEL_MSK (0x3 << SPIE_SPI_SEL_OFF)
@@ -146,6 +147,24 @@ void hal_spienc_set_bypass(int status)
 void hal_spienc_select_tweak(int select)
 {
     tweak_sel = select;
+}
+
+void hal_spienc_xip_enable(void)
+{
+    u32 val;
+
+    val = readl(SPI_ENC_BASE + SPIE_REG_CTL);
+    val |= (1 << SPIE_SPI_XIP_OFF);
+    writel(val, (SPI_ENC_BASE + SPIE_REG_CTL));
+}
+
+void hal_spienc_xip_disable(void)
+{
+    u32 val;
+
+    val = readl(SPI_ENC_BASE + SPIE_REG_CTL);
+    val &= ~(1 << SPIE_SPI_XIP_OFF);
+    writel(val, (SPI_ENC_BASE + SPIE_REG_CTL));
 }
 
 void hal_spienc_start(void)

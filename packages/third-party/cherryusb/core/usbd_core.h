@@ -86,6 +86,8 @@ void usbd_add_endpoint(struct usbd_endpoint *ep);
 
 bool usb_device_is_configured(void);
 bool usb_device_is_connected(void);
+bool usb_device_is_suspend(void);
+int usbd_send_remote_wakeup(void);
 
 bool usbd_connect_check(uint32_t timeout);
 
@@ -96,6 +98,12 @@ void usbd_event_handler(uint8_t event);
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef LPKG_CHERRYUSB_DEVICE_SINGLE
+#define USB_INIT_APP_EXPORT(fn)        INIT_APP_EXPORT(fn)
+#else
+#define USB_INIT_APP_EXPORT(fn)
 #endif
 
 #endif /* USBD_CORE_H */

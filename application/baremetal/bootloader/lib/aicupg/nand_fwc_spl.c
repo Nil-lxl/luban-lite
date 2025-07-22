@@ -359,14 +359,9 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
     ulong offset;
     u32 data_size, blkidx, pa, pgidx, slice_size;
     u32 page_per_blk;
-    s32 ret, i, calc_len;
+    s32 ret, i;
 
-    if ((fwc->meta.size - fwc->trans_size) < spl->rx_size)
-        calc_len = fwc->meta.size - fwc->trans_size;
-    else
-        calc_len = spl->rx_size;
-
-    fwc->calc_partition_crc = crc32(fwc->calc_partition_crc, spl->image_buf, calc_len);
+    fwc->calc_partition_crc = crc32(fwc->calc_partition_crc, spl->image_buf, fwc->meta.size);
 
 #ifdef AICUPG_FIRMWARE_SECURITY
     firmware_security_decrypt(spl->image_buf, spl->rx_size);
@@ -411,8 +406,7 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
 
     pa = pt->entry[0].pageaddr[0];
     offset = pa * spl->mtd->writesize;
-    pr_debug("Write page table to blk %d pa 0x%x., off 0x%x\n", blkidx, pa,
-             (u32)offset);
+    pr_debug("Write page table to blk %d pa 0x%x., off 0x%x\n", blkidx, pa, (u32)offset);
 
 #ifdef AIC_USING_SPIENC
     spienc_set_bypass(AIC_SPIENC_BYPASS_ENABLE);
@@ -447,8 +441,7 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
             pa = pt->entry[pgidx % PAGE_TABLE_MAX_ENTRY].pageaddr[1];
 
         offset = pa * spl->mtd->writesize;
-        pr_debug("Write data to blk %d pa 0x%x, offset 0x%x\n", blkidx, pa,
-                 (u32)offset);
+        pr_debug("Write data to blk %d pa 0x%x, offset 0x%x\n", blkidx, pa, (u32)offset);
         ret = mtd_write(spl->mtd, offset, page_data, slice_size);
         if (ret) {
             pr_err("Write SPL page %d failed.\n", pgidx);
@@ -466,8 +459,8 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
         }
 
         if (crc32(0, page_data, slice_size) != crc32(0, rd_page_data, slice_size)) {
-            pr_err("calc_len:%d\n", calc_len);
-            pr_err("crc err at trans len %u\n", fwc->trans_size);
+            pr_err("slice size:%d\n", slice_size);
+            pr_err("crc err at offset %lu\n", offset);
             ret = -1;
             goto out;
         }

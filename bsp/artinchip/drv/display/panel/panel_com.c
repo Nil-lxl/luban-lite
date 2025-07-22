@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -42,6 +42,15 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_DSI_AXS15231B
     &dsi_axs15231b,
+#endif
+#ifdef AIC_PANEL_DSI_NV3051
+    &dsi_nv3051,
+#endif
+#ifdef AIC_PANEL_DSI_FL7707
+    &dsi_fl7707,
+#endif
+#ifdef AIC_PANEL_DSI_FT8201
+    &dsi_ft8201,
 #endif
 #ifdef AIC_PANEL_DSI_H024B12
     &dsi_h024b12,
@@ -112,6 +121,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DBI_ST7789V
     &dbi_st7789v,
 #endif
+#ifdef AIC_PANEL_DBI_CO5300
+    &dbi_co5300,
+#endif
 };
 
 struct aic_panel *aic_find_panel(u32 connector_type)
@@ -174,6 +186,10 @@ void panel_de_timing_disable(struct aic_panel *panel, u32 ms)
 
 void panel_backlight_enable(struct aic_panel *panel, u32 ms)
 {
+#ifdef AIC_PM_INDEPENDENT_POWER_KEY
+    if (panel && panel->independent_pwkey)
+        return;
+#endif
 #ifdef AIC_PANEL_ENABLE_GPIO
     unsigned int g, p;
     long pin;
@@ -208,6 +224,10 @@ void panel_backlight_enable(struct aic_panel *panel, u32 ms)
 
 void panel_backlight_disable(struct aic_panel *panel, u32 ms)
 {
+#ifdef AIC_PM_INDEPENDENT_POWER_KEY
+    if (panel && panel->independent_pwkey)
+        return;
+#endif
 #ifdef AIC_PANEL_ENABLE_GPIO
     unsigned int g, p;
     long pin;

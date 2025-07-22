@@ -163,6 +163,8 @@ int test_wavplay(int argc, char **argv)
     rt_device_control(snd_dev, AUDIO_CTL_START, (void *)&stream);
 
     size = info->data_block.data_size;
+    /* Wait power amplifier stable */
+    rt_thread_mdelay(200);      //This is an experience value
 
     while (size > 0)
     {

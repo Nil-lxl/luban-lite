@@ -86,20 +86,20 @@
    <appContext helpID="spi-flash-enc-function"
                path="topics/sdk/secure/spi_flash_enc_function.html"/>
    <appContext helpID="spienc_function"
-               path="topics/sdk/secure/spienc_function_v1.html"/>
+               path="topics/sdk/secure/spienc_function_v1-V1.html"/>
    <appContext helpID="spienc-generate-efuse"
-               path="topics/sdk/secure/spienc-generate-efuse_v1-1.html"/>
+               path="topics/sdk/secure/spienc-generate-efuse-V1.html"/>
    <appContext helpID="spienc-generate-production-firmware"
-               path="topics/sdk/secure/spienc-generate-production-firmware-1.html"/>
+               path="topics/sdk/secure/spienc-generate-production-firmware-V1.html"/>
    <appContext helpID="spinenc-efuse-and-firmware-combined"
-               path="topics/sdk/secure/spinenc-efuse-and-firmware-combined-1.html"/>
-   <appContext helpID="id" path="topics/sdk/secure/spienc_function_v2.html"/>
+               path="topics/sdk/secure/spinenc-efuse-and-firmware-combined-V1.html"/>
+   <appContext helpID="id" path="topics/sdk/secure/spienc_function_v2-V2.html"/>
    <appContext helpID="spienc-generate-efuse"
-               path="topics/sdk/secure/spienc-generate-efuse_v1-2.html"/>
+               path="topics/sdk/secure/spienc-generate-efuse-V2.html"/>
    <appContext helpID="spienc-generate-production-firmware"
-               path="topics/sdk/secure/spienc-generate-production-firmware-2.html"/>
+               path="topics/sdk/secure/spienc-generate-production-firmware-V2.html"/>
    <appContext helpID="spinenc-efuse-and-firmware-combined"
-               path="topics/sdk/secure/spinenc-efuse-and-firmware-combined-2.html"/>
+               path="topics/sdk/secure/spinenc-efuse-and-firmware-combined-V2.html"/>
    <appContext helpID="mkfs_partition_image"
                path="topics/sdk/app/mkfs_partition_image.html"/>
    <appContext helpID="id" path="topics/sdk/burnsys/burner_offline_lite.html"/>
@@ -144,6 +144,12 @@
    <appContext helpID="wifi-aic8800" path="topics/sdk/peripheral/wifi_aic8800.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/chapter-bringup.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-prepare.html"/>
+   <appContext helpID="bringup-prepare-git-repo"
+               path="topics/sdk/bringup/bringup-prepare-git-repo.html"/>
+   <appContext helpID="bringup-update-config"
+               path="topics/sdk/bringup/bringup-update-config.html"/>
+   <appContext helpID="bringup-generate-firmware"
+               path="topics/sdk/bringup/bringup_generate_firmware.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-soc.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-ram.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-storage.html"/>
@@ -177,6 +183,8 @@
                path="topics/sdk/bringup/lite-bringup-display_背光配置.html"/>
    <appContext helpID="section_rqc_hg4_42c"
                path="topics/sdk/bringup/lite-bringup-display_启动_log.html"/>
+   <appContext helpID="concept_smb_cl3_pzb"
+               path="topics/sdk/display/display_faq_screen.html"/>
    <appContext helpID="id" path="topics/sdk/bringup/lite-bringup-samples.html"/>
    <appContext helpID="id" path="topics/sdk/chapter-advanced-app.html"/>
    <appContext helpID="_0" path="topics/sdk/boot/lite_boot_direct.html"/>
@@ -353,6 +361,8 @@
    <appContext helpID="id" path="topics/sdk/display/display_burn_process.html"/>
    <appContext helpID="id" path="topics/sdk/display/display_blending.html"/>
    <appContext helpID="startup-ui" path="topics/sdk/display/display_startup_ui.html"/>
+   <appContext helpID="display_common_issues"
+               path="topics/sdk/display/display_faqs.html"/>
    <appContext helpID="concept_smb_cl3_pzb"
                path="topics/sdk/display/display_faq_screen.html"/>
    <appContext helpID="concept_h4d_fwt_tzb" path="topics/sdk/dvp/dvp_user_guide.html"/>
@@ -448,6 +458,12 @@
    <appContext helpID="lvgl-demo" path="topics/sdk/lvgl/lvgl-demo.html"/>
    <appContext helpID="id" path="topics/sdk/lvgl/lvgl_add_app.html"/>
    <appContext helpID="id" path="topics/sdk/lvgl/lvgl_special_func.html"/>
+   <appContext helpID="lvgl-performance-tuning"
+               path="topics/sdk/lvgl/lvgl-performance-tuning.html"/>
+   <appContext helpID="lvgl-performance-v8"
+               path="topics/sdk/lvgl/lvgl-performance-v8.html"/>
+   <appContext helpID="lvgl-performance-v9"
+               path="topics/sdk/lvgl/lvgl-performance-v9.html"/>
    <appContext helpID="id" path="topics/sdk/lvgl/lvgl_faq.html"/>
    <appContext helpID="concept_nww_hzh_pzb"
                path="topics/chapter-title/chapter-interface-sdk.html"/>

@@ -18,6 +18,7 @@ enum {
     LLM_TONGYI_QWQ32B,
     LLM_DOUBAO_1_5_256k,
     LLM_DOUBAO_1_5_32k,
+    LLM_TYPE_MAX,
 };
 typedef int llm_type_t;
 

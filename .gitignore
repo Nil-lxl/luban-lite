@@ -13,6 +13,7 @@ partition_table.h
 .cscope/
 output/
 /toolchain/
+/tools/
 build/
 tools/
 patches/
@@ -30,3 +31,4 @@ packages/pkgs.json
 
 /.vscode/
 /.idea/
+

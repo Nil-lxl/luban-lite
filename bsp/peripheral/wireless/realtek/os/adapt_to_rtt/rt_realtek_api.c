@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -12,6 +12,7 @@
 #include <string.h>
 #include <rtthread.h>
 #include "wlan_dev.h"
+#include <dfs_posix.h>
 
 #include "wifi/wifi_conf.h"
 #include "net_stack_intf.h"
@@ -20,6 +21,10 @@
 
 #define MAX_ETH_DRV_SG  16
 #define MAX_ETH_MSG     1518
+
+#ifndef RT_WLAN_PROT_LWIP_PBUF_FORCE
+    #error "RT_WLAN_PROT_LWIP_PBUF_FORCE must be enable from menuconfig"
+#endif
 
 static struct rt_wlan_device *s_wlan_dev = NULL;
 static struct rt_wlan_device *s_ap_dev = NULL;
@@ -43,7 +48,6 @@ rt_err_t aic_realtek_set_mode(struct rt_wlan_device *wlan, rt_wlan_mode_t mode)
                 return -EIO;
             }
             s_current_dev = s_ap_dev;
-            rt_wlan_dev_indicate_event_handle(s_ap_dev, RT_WLAN_DEV_EVT_AP_START, NULL);
         }
     } else if (mode == RT_WLAN_STATION) {
         if (!wifi_is_up(RTW_STA_INTERFACE)) {
@@ -127,11 +131,35 @@ rt_err_t aic_realtek_join(struct rt_wlan_device *wlan, struct rt_sta_info *sta_i
                         sta_info->key.len,
                         0, NULL);
 
-    rt_wlan_dev_indicate_event_handle(s_wlan_dev, RT_WLAN_DEV_EVT_CONNECT, NULL); // todo: is block?
+    if (!ret)
+        rt_wlan_dev_indicate_event_handle(s_wlan_dev, RT_WLAN_DEV_EVT_CONNECT, NULL); // todo: is block?
+    else
+        rt_wlan_dev_indicate_event_handle(s_wlan_dev, RT_WLAN_DEV_EVT_CONNECT_FAIL, NULL);
 
     return ret;
 }
 
+static void indicate_ap_associated(char *buf, int buf_len, int flags, void* handler_user_data)
+{
+    struct rt_wlan_buff buff;
+    struct rt_wlan_info sta_info = {0};
+
+    memcpy(sta_info.bssid, &buf[10], 6);
+    buff.data = &sta_info;
+    buff.len = sizeof(sta_info);
+    rt_wlan_dev_indicate_event_handle(s_ap_dev, RT_WLAN_DEV_EVT_AP_ASSOCIATED, &buff);
+}
+
+static void indicate_ap_disassociated(char *buf, int buf_len, int flags, void* handler_user_data)
+{
+    struct rt_wlan_buff buff;
+    struct rt_wlan_info sta_info = {0};
+
+    memcpy(sta_info.bssid, &buf[0], 6);
+    buff.data = &sta_info;
+    buff.len = sizeof(sta_info);
+    rt_wlan_dev_indicate_event_handle(s_ap_dev, RT_WLAN_DEV_EVT_AP_DISASSOCIATED, &buff);
+}
 
 rt_err_t aic_realtek_softap(struct rt_wlan_device *wlan, struct rt_ap_info *ap_info)
 {
@@ -144,6 +172,9 @@ rt_err_t aic_realtek_softap(struct rt_wlan_device *wlan, struct rt_ap_info *ap_i
             return -EIO;
         }
     }
+
+    wifi_reg_event_handler(WIFI_EVENT_STA_ASSOC, indicate_ap_associated, NULL);
+    wifi_reg_event_handler(WIFI_EVENT_STA_DISASSOC, indicate_ap_disassociated, NULL);
 
     if(wifi_start_ap(ap_info->ssid.val,
                     ap_info->security,
@@ -170,7 +201,8 @@ rt_err_t aic_realtek_disconnect(struct rt_wlan_device *wlan)
 
     if(wext_get_ssid(WLAN0_NAME, (unsigned char *) essid) < 0) {
         pr_info("WIFI disconnected\n");
-        return -1;
+        rt_wlan_dev_indicate_event_handle(s_wlan_dev, RT_WLAN_DEV_EVT_DISCONNECT, NULL);
+        return 0;
     }
 
     if(wifi_disconnect() < 0) {
@@ -204,6 +236,9 @@ rt_err_t aic_realtek_ap_stop(struct rt_wlan_device *wlan)
     if (wifi_is_up(RTW_AP_INTERFACE)) {
         wifi_off();
     }
+
+    wifi_unreg_event_handler(WIFI_EVENT_STA_ASSOC, indicate_ap_associated);
+    wifi_unreg_event_handler(WIFI_EVENT_STA_DISASSOC, indicate_ap_disassociated);
 
     rt_wlan_dev_indicate_event_handle(s_ap_dev, RT_WLAN_DEV_EVT_AP_STOP, NULL);
 
@@ -352,6 +387,74 @@ const struct rt_wlan_dev_ops wlan_ops = {
     .wlan_recv = aic_realtek_recv,
     .wlan_send = aic_realtek_send,
 };
+
+#define WLAN_CFG_FILE "/data/wlan_cfg"
+
+static int read_cfg(void *buff, int len)
+{
+    int fd;
+    int size;
+
+    fd = open(WLAN_CFG_FILE, O_WRONLY | O_CREAT);
+    if (fd < 0) {
+        pr_warn("Can't open file : %s\n", WLAN_CFG_FILE);
+        return -1;
+    }
+
+    size = read(fd, buff, len);
+    close(fd);
+
+    return size;
+}
+
+static int get_len(void)
+{
+    struct stat stat_buf;
+    int ret;
+
+    ret = stat(WLAN_CFG_FILE, &stat_buf);
+    if(ret < 0)
+    {
+        pr_warn("Open file %s fail\n",WLAN_CFG_FILE);
+        return -1;
+    }
+
+    return stat_buf.st_size;
+}
+
+static int write_cfg(void *buff, int len)
+{
+    int fd;
+    int size;
+
+    fd = open(WLAN_CFG_FILE, O_WRONLY | O_CREAT);
+    if (fd < 0) {
+        pr_warn("Can't open file : %s\n", WLAN_CFG_FILE);
+        return -1;
+    }
+
+    size = write(fd, buff, len);
+    close(fd);
+
+    return size;
+}
+
+static const struct rt_wlan_cfg_ops realtek_wlan_cfg_ops = {
+    read_cfg,
+    get_len,
+    write_cfg
+};
+
+int aic_realtek_wifi_cfg(void)
+{
+    rt_wlan_cfg_set_ops(&realtek_wlan_cfg_ops);
+    rt_wlan_cfg_cache_refresh();
+
+    rt_wlan_config_autoreconnect(RTW_TRUE);
+    return 0;
+}
+
+INIT_LATE_APP_EXPORT(aic_realtek_wifi_cfg);
 
 int aic_realtek_wifi_device_reg(void)
 {

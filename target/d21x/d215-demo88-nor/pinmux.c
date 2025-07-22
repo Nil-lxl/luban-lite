@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -74,14 +74,23 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PA.10"}, // SCK
     {4, PIN_PULL_DIS, 3, "PA.11"}, // SDA
 #endif
-#if defined(AIC_USING_QSPI0) && !defined(AIC_SYSCFG_SIP_FLASH_ENABLE)
+#ifdef AIC_USING_QSPI0
+#ifndef AIC_SYSCFG_SIP_FLASH_ENABLE
     /* qspi0 */
-    {3, PIN_PULL_DIS, 3, "PB.0"},
-    {3, PIN_PULL_DIS, 3, "PB.1"},
-    {3, PIN_PULL_DIS, 3, "PB.2"},
-    {3, PIN_PULL_DIS, 3, "PB.3"},
-    {3, PIN_PULL_DIS, 3, "PB.4"},
-    {3, PIN_PULL_DIS, 3, "PB.5"},
+    {3, PIN_PULL_UP, 3, "PB.0"},
+    {3, PIN_PULL_UP, 3, "PB.1"},
+    {3, PIN_PULL_UP, 3, "PB.2"},
+    {3, PIN_PULL_UP, 3, "PB.3"},
+    {3, PIN_PULL_UP, 3, "PB.4"},
+    {3, PIN_PULL_UP, 3, "PB.5"},
+#else
+    {8, PIN_PULL_UP, 3, "PB.12"},
+    {8, PIN_PULL_UP, 3, "PB.13"},
+    {8, PIN_PULL_UP, 3, "PB.14"},
+    {8, PIN_PULL_UP, 3, "PB.15"},
+    {8, PIN_PULL_UP, 3, "PB.16"},
+    {8, PIN_PULL_UP, 3, "PB.17"},
+#endif
 #endif
 #ifdef AIC_PRGB_24BIT
     {2, PIN_PULL_DIS, 3, "PD.0"},
@@ -204,7 +213,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_DIS, 3, "PD.27"},
 #endif
 #ifdef AIC_PANEL_ENABLE_GPIO
-    {1, PIN_PULL_DIS, 3, AIC_PANEL_ENABLE_GPIO},
+    {1, PIN_PULL_DIS, 3, AIC_PANEL_ENABLE_GPIO, FLAG_WAKEUP_SOURCE},
 #endif
 #ifdef AIC_USING_CLK_OUT0
     {6, PIN_PULL_DIS, 3, "PD.21"},
@@ -313,7 +322,17 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #ifdef AIC_USING_CTP
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_RST_PIN},
+#ifdef AIC_PM_DEMO_TOUCH_WAKEUP
+    {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN, FLAG_WAKEUP_SOURCE},
+#else
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN},
+#endif
+#endif
+#ifdef AIC_USING_PM
+    {1, PIN_PULL_DIS, 3, AIC_BOARD_LEVEL_POWER_PIN, FLAG_POWER_PIN},
+#ifdef AIC_PM_DEMO
+    {1, PIN_PULL_UP, 3, AIC_PM_POWER_KEY_GPIO, FLAG_WAKEUP_SOURCE},
+#endif
 #endif
 };
 

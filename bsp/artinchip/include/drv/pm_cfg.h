@@ -38,8 +38,14 @@ enum pm_module_id {
     PM_DE_ID,
     PM_GE_ID,
     PM_VE_ID,
+    PM_USB_HOST_ID,
+    PM_USB_DEV_ID,
     PM_MODULE_MAX_ID, /* enum must! */
 };
+
+#ifdef AIC_PM_INDEPENDENT_POWER_KEY
+#define PM_BUSY_SLEEP_MODE PM_SLEEP_MODE_NONE
+#endif
 
 #ifdef AIC_USING_PM
 void rt_pm_set_pin_wakeup_source(rt_base_t pin);

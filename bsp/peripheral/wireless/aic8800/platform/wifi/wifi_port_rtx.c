@@ -7,7 +7,9 @@
 
 #include "lmac_mac.h"
 #include "wlan_if.h"
+#include "wifi_port.h"
 #include "fhost.h"
+#include "cli_al.h"
 
 struct rt_wlan_device * s_wlan_dev = NULL;
 struct rt_wlan_device * s_ap_dev = NULL;
@@ -161,15 +163,21 @@ rt_err_t aic8800_join(struct rt_wlan_device *wlan, struct rt_sta_info *sta_info)
     int ret;
     rt_uint8_t ssid_str[RT_WLAN_SSID_MAX_LENGTH + 1];
     rt_uint8_t pass_str[RT_WLAN_PASSWORD_MAX_LENGTH + 1];
+    rt_uint8_t *p_bssid;
+    int to_ms = CONFIG_WIFI_STA_CONN_TIMEOUT_MS;
     memcpy(ssid_str, sta_info->ssid.val, sta_info->ssid.len);
     ssid_str[sta_info->ssid.len] = '\0';
     memcpy(pass_str, sta_info->key.val, sta_info->key.len);
     pass_str[sta_info->key.len] = '\0';
     AIC_LOG_PRINTF("%s ssid: %s\n", __func__, ssid_str);
     fhost_get_mac_status_register(aic8800_mac_status_get_callback);
-    ret = wlan_start_sta(ssid_str, pass_str, 0);
+    p_bssid = &sta_info->bssid[0];
+    if (p_bssid[0] || p_bssid[1] || p_bssid[2] || p_bssid[3] || p_bssid[4] || p_bssid[5]) {
+        set_sta_connect_bssid((uint8_t *)p_bssid);
+    }
+    ret = wlan_start_sta(ssid_str, pass_str, WLAN_CONNECT_TO_CFG_2_PARAM(WLAN_CONNECT_CFG_DISABLE_AUTO_RECONN, to_ms));
     AIC_LOG_PRINTF("wlan_start_sta ret=%d\n", ret);
-    return 0;
+    return ret;
 }
 
 
@@ -203,7 +211,7 @@ rt_err_t aic8800_softap(struct rt_wlan_device *wlan, struct rt_ap_info *ap_info)
     ap_cfg.enable_acs = 0;
     ap_cfg.sercurity_type = (ap_info->key.len == 0) ? KEY_NONE : KEY_WPA2;
     ap_cfg.dtim = 1;
-    ap_cfg.sta_num = 32;
+    ap_cfg.sta_num = aic_wifi_fmac_remote_sta_max_get();
     AIC_LOG_PRINTF("Start ap ssid: %s\n", ap_cfg.aic_ap_ssid.array);
     ret = aic_wifi_start_ap(&ap_cfg);
     AIC_LOG_PRINTF("wlan_start_ap ret=%d\n", ret);
@@ -211,7 +219,7 @@ rt_err_t aic8800_softap(struct rt_wlan_device *wlan, struct rt_ap_info *ap_info)
         rt_wlan_dev_indicate_event_handle(s_ap_dev, RT_WLAN_DEV_EVT_AP_START, NULL);
     }
 
-    return 0;
+    return ret;
 }
 
 rt_err_t aic8800_disconnect(struct rt_wlan_device *wlan)
@@ -234,7 +242,7 @@ rt_err_t aic8800_ap_stop(struct rt_wlan_device *wlan)
         AIC_LOG_PRINTF("stop_ap ret=%d\n", ret);
     }
 
-	return 0;
+	return ret;
 }
 
 rt_err_t aic8800_ap_deauth(struct rt_wlan_device *wlan, unsigned char mac[])
@@ -369,7 +377,7 @@ int wifi_device_reg(void)
 
     s_ap_dev = rt_malloc(sizeof(struct rt_wlan_device));
     if (!s_ap_dev){
-        rt_kprintf("ap0 devcie malloc fail!");
+        rt_kprintf("ap0 devcie malloc fail!\n");
         return -1;
     }
     rt_wlan_dev_register(s_ap_dev, "ap0", &wlan_ops, RT_WLAN_FLAG_AP_ONLY, NULL);
@@ -378,3 +386,35 @@ int wifi_device_reg(void)
 }
 
 INIT_COMPONENT_EXPORT(wifi_device_reg);
+
+#define CMD_RX_BUF_SIZE 128
+char cmd_rx_buf[CMD_RX_BUF_SIZE];
+
+int wifi_cli_handler(int argc, char** argv)
+{
+    int len = 0, cur_len = 0;
+    for (uint8_t i = 1; i < argc; i++){
+        cur_len = strlen(argv[i]);
+        if ((len + cur_len + 1) > CMD_RX_BUF_SIZE) {
+            rt_kprintf("too long cmd!\n");
+            break;
+        }
+        rtos_memcpy(&cmd_rx_buf[len], argv[i], cur_len);
+        len += cur_len;
+        if (i < (argc - 1)) {
+            cmd_rx_buf[len] = ' ';
+            len += 1;
+        }
+    }
+    cmd_rx_buf[len] = '\0';
+    aic_cli_run_cmd(cmd_rx_buf);
+    return 0;
+}
+
+rt_err_t wifi_test(int argc, char** argv)
+{
+    int ret;
+    ret = wifi_cli_handler(argc, argv);
+    return ret;
+}
+MSH_CMD_EXPORT(wifi_test, wifi test cmd);

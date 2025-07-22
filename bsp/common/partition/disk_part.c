@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -104,12 +104,12 @@ static int validate_gpt_header(gpt_header *gpt_h, u64 lba, u64 lastlba)
 	 * Check that the first_usable_lba and that the last_usable_lba are
 	 * within the disk.
 	 */
-    if (gpt_h->first_usable_lba > lastlba) {
+    if (lastlba != 0 && gpt_h->first_usable_lba > lastlba) {
         pr_debug("GPT: first_usable_lba incorrect: %llX > %llX\n",
                gpt_h->first_usable_lba, lastlba);
         return -1;
     }
-    if (gpt_h->last_usable_lba > lastlba) {
+    if (lastlba != 0 && gpt_h->last_usable_lba > lastlba) {
         pr_debug("GPT: last_usable_lba incorrect: %llX > %llX\n",
                gpt_h->last_usable_lba, lastlba);
         return -1;
@@ -343,6 +343,7 @@ struct aic_partition *aic_disk_get_mbr_parts(struct blk_desc *dev_desc)
         memset(n, 0, sizeof(*n));
         n->start = pp->start_sect * dev_desc->blksz;
         n->size = (u64)pp->nr_sects * dev_desc->blksz;
+        n->index = i;
 
         if (parts == NULL) {
             parts = n;
@@ -394,6 +395,8 @@ struct aic_partition *aic_disk_get_gpt_parts(struct blk_desc *dev_desc)
         /* The ending LBA is inclusive, to calculate size, add 1 to it */
         n->size = (gpt_pte[i].ending_lba + 1 - gpt_pte[i].starting_lba) *
                   dev_desc->blksz;
+
+        n->index = i;
 
         snprintf((char *)n->name, sizeof(n->name), "%s",
                  print_efiname(&gpt_pte[i]));

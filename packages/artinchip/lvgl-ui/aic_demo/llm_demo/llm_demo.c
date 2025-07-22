@@ -13,8 +13,9 @@
 #include "./module/thread_pool.h"
 
 #define THREADPOOL_MAX 3
-#define WIFI_NAME      NULL
-#define WIFI_PASSWORD  NULL
+#define WIFI_NAME      "xxx"
+#define WIFI_PASSWORD  "xxx"
+
 typedef struct _lv_llm_msg
 {
     int type;
@@ -51,6 +52,9 @@ extern char *llm_generate_response(llm_config_t *config);
 void ui_init(void)
 {
     llm_config_load(LLM_DEEPSEEK_V3, NULL);
+
+    extern void llm_font_create(void);
+    llm_font_create();
 
     lv_obj_t *llm_scr = lv_obj_create(NULL);
     lv_obj_clear_flag(llm_scr, LV_OBJ_FLAG_SCROLLABLE);
@@ -194,8 +198,8 @@ void wifi_config_init(const char *wifi_name, const char *password)
 static void llm_msg_init(void)
 {
     task_req_mq = rt_mq_create("task_req_mq",
-                                1024,
                                 sizeof(lv_llm_msg_t),
+                                128,
                                 RT_IPC_FLAG_FIFO);
     if (!task_req_mq) {
         LV_LOG_ERROR("Failed to create request message queue");
@@ -203,8 +207,8 @@ static void llm_msg_init(void)
     }
 
     ui_resp_mq = rt_mq_create("ui_resp_mq",
-                                1024,
                                 sizeof(lv_llm_msg_t),
+                                128,
                                 RT_IPC_FLAG_FIFO);
     if (!ui_resp_mq) {
         LV_LOG_ERROR("Failed to create response message queue");

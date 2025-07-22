@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,7 +13,7 @@
 
 #define AIC_PWM_NAME        "aic-pwm"
 
-#ifdef CONFIG_FPGA_BOARD_ARTINCHIP
+#ifdef FPGA_BOARD_ARTINCHIP
 #define PWM_CLK_RATE        24000000 /* 24 MHz */
 #else
 #define PWM_CLK_RATE        48000000 /* 48 MHz */

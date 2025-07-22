@@ -504,6 +504,9 @@ uint32_t hal_usart_get_cur_baudrate(usart_handle_t handle)
     dlh = addr->DBG_DLH;
     uart_div = (dlh << 8) | dll;
 
+    if (!cmu_div || !uart_div)
+        return 0;
+
     /* Baudrate = SCLK /（CMU_divisor * 16 * UART_divisor)*/
     baud = parent_clk / (cmu_div * 16 * uart_div);
     baud = hal_usart_get_closest_baudrate(baud);
@@ -688,6 +691,17 @@ static void hal_usart_intr_recv_data(int32_t idx, aic_usart_priv_t *usart_priv)
 */
 void hal_usart_clear_rxfifo(usart_handle_t handle)
 {
+    uint8_t c = 0x0;
+
+    /* Loop mode sends and receives data to clear flag */
+    hal_usart_set_loopback(handle, 1);
+    hal_usart_putchar(handle, c);
+    hal_usart_putchar(handle, c);
+    aic_mdelay(1);
+    hal_uart_getchar(handle);
+    hal_uart_getchar(handle);
+    hal_usart_set_loopback(handle, 0);
+
     int ch = -1;
     while (1)
     {

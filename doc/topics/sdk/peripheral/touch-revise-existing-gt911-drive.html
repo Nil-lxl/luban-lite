@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节以将 GT911 驱动修改为 CST826 驱动为例，描述通过修改已有 CTP 驱动进行 CTP 移植的详细流程。 修改编译路径 打开 bsp/peripheral/touch/SConscript 文件，并将 GT911 文件编译路径描述修改为 CST826 文件编译路径。 示例如下： 修改前，GT911 文件编译路径： if GetDepend( ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-obtain-key-info.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="touch_revise_existing_gt911_drive"/><title>修改已有 CTP 驱动</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="touch_revise_existing_gt911_drive-d3703e1916"/><meta name="wh-source-relpath" content="topics/sdk/peripheral/touch-revise-existing-gt911-drive.dita"/><meta name="wh-out-relpath" content="topics/sdk/peripheral/touch-revise-existing-gt911-drive.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节以将 GT911 驱动修改为 CST826 驱动为例，描述通过修改已有 CTP 驱动进行 CTP 移植的详细流程。 修改编译路径 打开 bsp/peripheral/touch/SConscript 文件，并将 GT911 文件编译路径描述修改为 CST826 文件编译路径。 示例如下： 修改前，GT911 文件编译路径： if GetDepend( ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html"/><meta name="DC.relation" content="../../../topics/sdk/peripheral/touch-obtain-key-info.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-05-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="touch_revise_existing_gt911_drive"/><title>在 gt911 基础上修改新 CTP 驱动</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="touch_revise_existing_gt911_drive-d3752e1923"/><meta name="wh-source-relpath" content="topics/sdk/peripheral/touch-revise-existing-gt911-drive.dita"/><meta name="wh-out-relpath" content="topics/sdk/peripheral/touch-revise-existing-gt911-drive.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -61,7 +61,7 @@
 
                 <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
                     
-                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/peripheral/touch.html">CTP 移植指南</a></div></div></li><li class="active"><div class="topicref" data-id="touch_revise_existing_gt911_drive"><div class="title"><a href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html">修改已有 CTP 驱动</a></div></div></li></ol></div>
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/peripheral/touch.html">CTP 移植指南</a></div></div></li><li class="active"><div class="topicref" data-id="touch_revise_existing_gt911_drive"><div class="title"><a href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html">在 gt911 基础上修改新 CTP 驱动</a></div></div></li></ol></div>
                     
                     
                     
@@ -70,8 +70,8 @@
                         <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
                         <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
   
-<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html" title="驱动文件移植解析" aria-label="上一主题: 驱动文件移植解析" rel="prev"></a></span>  
-<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/peripheral/touch-obtain-key-info.html" title="获取和配置 IC 关键信息" aria-label="下一主题: 获取和配置 IC 关键信息" rel="next"></a></span>  </span></div>
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html" title="驱动文件解析" aria-label="上一主题: 驱动文件解析" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/peripheral/touch-obtain-key-info.html" title="获取和配置触摸 IC 关键信息" aria-label="下一主题: 获取和配置触摸 IC 关键信息" rel="next"></a></span>  </span></div>
                         
                         
                         
@@ -94,7 +94,7 @@
                         <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
                             <div id="wh_publication_toc_content">
 		                        
-                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3703e1860" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/keyadc.html" id="id-d3703e1860-link">按键矩阵</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e1874" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e1874-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch.html" id="id-d3703e1874-link">CTP 移植指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="touch-migrate-ctp-process-d3703e1888" class="topicref" data-id="touch-migrate-ctp-process" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html" id="touch-migrate-ctp-process-d3703e1888-link">新建 CTP 驱动</a></div></div></li><li role="treeitem"><div data-tocid="ctp-drive-migrate-demo-d3703e1902" class="topicref" data-id="ctp-drive-migrate-demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html" id="ctp-drive-migrate-demo-d3703e1902-link">驱动文件移植解析</a></div></div></li><li role="treeitem" class="active"><div data-tocid="touch_revise_existing_gt911_drive-d3703e1916" class="topicref" data-id="touch_revise_existing_gt911_drive" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html" id="touch_revise_existing_gt911_drive-d3703e1916-link">修改已有 CTP 驱动</a></div></div></li><li role="treeitem"><div data-tocid="touch_obtain_key_info-d3703e1930" class="topicref" data-id="touch_obtain_key_info" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-obtain-key-info.html" id="touch_obtain_key_info-d3703e1930-link">获取和配置 IC 关键信息</a></div></div></li><li role="treeitem"><div data-tocid="touch-configure-d3703e1944" class="topicref" data-id="touch-configure" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-configure.html" id="touch-configure-d3703e1944-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="touch_faq-d3703e1958" class="topicref" data-id="touch_faq" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-faq.html" id="touch_faq-d3703e1958-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1972" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1972-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/wifi.html" id="id-d3703e1972-link">无线网络</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3752e463" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3752e463-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e480" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3752e480-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e604" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e604-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3752e604-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3752e1004" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3752e1004-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3752e1004-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e1848" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e1848-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3752e1848-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3752e1867" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/keyadc.html" id="id-d3752e1867-link">按键矩阵</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e1881" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e1881-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch.html" id="id-d3752e1881-link">CTP 移植指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="touch-migrate-ctp-process-d3752e1895" class="topicref" data-id="touch-migrate-ctp-process" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-migrate-ctp-process.html" id="touch-migrate-ctp-process-d3752e1895-link">新建 CTP 驱动</a></div></div></li><li role="treeitem"><div data-tocid="ctp-drive-migrate-demo-d3752e1909" class="topicref" data-id="ctp-drive-migrate-demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/ctp-drive-migrate-demo.html" id="ctp-drive-migrate-demo-d3752e1909-link">驱动文件解析</a></div></div></li><li role="treeitem" class="active"><div data-tocid="touch_revise_existing_gt911_drive-d3752e1923" class="topicref" data-id="touch_revise_existing_gt911_drive" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-revise-existing-gt911-drive.html" id="touch_revise_existing_gt911_drive-d3752e1923-link">在 gt911 基础上修改新 CTP 驱动</a></div></div></li><li role="treeitem"><div data-tocid="touch_obtain_key_info-d3752e1937" class="topicref" data-id="touch_obtain_key_info" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-obtain-key-info.html" id="touch_obtain_key_info-d3752e1937-link">获取和配置触摸 IC 关键信息</a></div></div></li><li role="treeitem"><div data-tocid="touch-configure-d3752e1951" class="topicref" data-id="touch-configure" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-configure.html" id="touch-configure-d3752e1951-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="touch_faq-d3752e1965" class="topicref" data-id="touch_faq" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/touch-faq.html" id="touch_faq-d3752e1965-link">常见问题</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1979" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1979-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/wifi.html" id="id-d3752e1979-link">无线网络</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2022" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2022-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3752e2022-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">主要描述板卡的各项配置，使 SDK 的环境和板卡匹配，并确保 SDK 编译后的固件能够在板子上正常运行。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2418" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2418-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3752e2418-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
 		                        
                             </div>
                         </nav>
@@ -109,31 +109,31 @@
                         
                         
                         <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
-    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/peripheral/touch-revise-existing-gt911-drive.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">修改已有 CTP 驱动</h1>
-    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
-                    Read time: 7 minute(s)
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/peripheral/touch-revise-existing-gt911-drive.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">在 gt911 基础上修改新 CTP 驱动</h1>
+    <div class="date inPage">16 May 2025</div><div style="color: gray;">
+                    Read time: 24 minute(s)
                 </div>
     <div class="- topic/body body">
-        <div class="- topic/p p" data-ofbid="d55816e36__20250409171035">本节以将 GT911 驱动修改为 CST826 驱动为例，描述通过修改已有 CTP 驱动进行 CTP 移植的详细流程。<ol class="- topic/ol ol" id="touch_revise_existing_gt911_drive__ol_xl5_n3w_12c" data-ofbid="touch_revise_existing_gt911_drive__ol_xl5_n3w_12c">
-                <li class="- topic/li li" data-ofbid="d55816e40__20250409171035"><strong class="+ topic/ph hi-d/b ph b">修改编译路径</strong><p class="- topic/p p" data-ofbid="d55816e43__20250409171035">打开 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch/SConscript</span> 文件，并将
-                        GT911 文件编译路径描述修改为 CST826 文件编译路径。</p><div class="- topic/p p" data-ofbid="d55816e48__20250409171035">示例如下：<ul class="- topic/ul ul" id="touch_revise_existing_gt911_drive__ul_nyf_q3w_12c" data-ofbid="touch_revise_existing_gt911_drive__ul_nyf_q3w_12c">
-                            <li class="- topic/li li" data-ofbid="d55816e52__20250409171035">
-                                <div class="- topic/p p" data-ofbid="d55816e54__20250409171035">修改前，GT911
+        <div class="- topic/p p" data-ofbid="d56986e36__20250519091508">本节以将 GT911 驱动修改为 CST826 驱动为例，描述通过修改已有 CTP 驱动进行 CTP 移植的详细流程。<ol class="- topic/ol ol" id="touch_revise_existing_gt911_drive__ol_xl5_n3w_12c" data-ofbid="touch_revise_existing_gt911_drive__ol_xl5_n3w_12c">
+                <li class="- topic/li li" data-ofbid="d56986e40__20250519091508"><strong class="+ topic/ph hi-d/b ph b">修改编译路径</strong><p class="- topic/p p" data-ofbid="d56986e43__20250519091508">打开 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch/SConscript</span> 文件，并将
+                        GT911 文件编译路径描述修改为 CST826 文件编译路径。</p><div class="- topic/p p" data-ofbid="d56986e48__20250519091508">示例如下：<ul class="- topic/ul ul" id="touch_revise_existing_gt911_drive__ul_nyf_q3w_12c" data-ofbid="touch_revise_existing_gt911_drive__ul_nyf_q3w_12c">
+                            <li class="- topic/li li" data-ofbid="d56986e52__20250519091508">
+                                <div class="- topic/p p" data-ofbid="d56986e54__20250519091508">修改前，GT911
                                     文件编译路径：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_m4f_s3w_12c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_m4f_s3w_12c"><strong class="hl-keyword">if</strong> GetDepend(<span class="hl-string">'AIC_TOUCH_PANEL_GT911'</span>):
     CPPPATH.append(cwd + <span class="hl-string">'/gt911/inc'</span>)
     src += Glob(<span class="hl-string">'gt911/src/*.c'</span>)</pre></div>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d55816e60__20250409171035">
-                                <div class="- topic/p p" data-ofbid="d55816e62__20250409171035">修改后，CST826
+                            <li class="- topic/li li" data-ofbid="d56986e60__20250519091508">
+                                <div class="- topic/p p" data-ofbid="d56986e62__20250519091508">修改后，CST826
                                     文件编译路径：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_sxn_t3w_12c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_sxn_t3w_12c"><strong class="hl-keyword">if</strong> GetDepend(<span class="hl-string">'AIC_TOUCH_PANEL_CST826'</span>):
     CPPPATH.append(cwd + <span class="hl-string">'/cst826/inc'</span>)
     src += Glob(<span class="hl-string">'cst826/src/*.c'</span>)</pre></div>
                             </li>
                         </ul></div></li>
-                <li class="- topic/li li" data-ofbid="d55816e69__20250409171035"><strong class="+ topic/ph hi-d/b ph b">修改 menuconfig 设备配置</strong><div class="- topic/p p" data-ofbid="d55816e72__20250409171035">打开 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch/Kconfig</span>
+                <li class="- topic/li li" data-ofbid="d56986e69__20250519091508"><strong class="+ topic/ph hi-d/b ph b">修改 menuconfig 设备配置</strong><div class="- topic/p p" data-ofbid="d56986e72__20250519091508">打开 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch/Kconfig</span>
                         文件，将 GT911 的设备和设备名分别修改为 CST826 的设备和设备名：<ul class="- topic/ul ul" id="touch_revise_existing_gt911_drive__ul_m5c_bjw_12c" data-ofbid="touch_revise_existing_gt911_drive__ul_m5c_bjw_12c">
-                            <li class="- topic/li li" data-ofbid="d55816e79__20250409171035">
-                                <div class="- topic/p p" data-ofbid="d55816e81__20250409171035">修改前：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_ksh_2jw_12c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_ksh_2jw_12c">choice
+                            <li class="- topic/li li" data-ofbid="d56986e79__20250519091508">
+                                <div class="- topic/p p" data-ofbid="d56986e81__20250519091508">修改前：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_ksh_2jw_12c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_ksh_2jw_12c">choice
     prompt <span class="hl-string">"Select CTP device"</span>
     <strong class="hl-keyword">default</strong> AIC_TOUCH_PANEL_GT911
     depends on AIC_USING_CTP
@@ -145,8 +145,8 @@ config AIC_TOUCH_PANEL_NAME
     string
     <strong class="hl-keyword">default</strong> <span class="hl-string">"gt911"</span>     <strong class="hl-keyword">if</strong> AIC_TOUCH_PANEL_GT911        <em class="hl-comment">//设备名</em></pre></div>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d55816e87__20250409171035">
-                                <div class="- topic/p p" data-ofbid="d55816e89__20250409171035">修改后：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_lg2_fjw_12c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_lg2_fjw_12c">choice
+                            <li class="- topic/li li" data-ofbid="d56986e87__20250519091508">
+                                <div class="- topic/p p" data-ofbid="d56986e89__20250519091508">修改后：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_lg2_fjw_12c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_lg2_fjw_12c">choice
     prompt <span class="hl-string">"Select CTP device"</span>
     <strong class="hl-keyword">default</strong> AIC_TOUCH_PANEL_GT911
     depends on AIC_USING_CTP
@@ -159,115 +159,611 @@ config AIC_TOUCH_PANEL_NAME
     <strong class="hl-keyword">default</strong> <span class="hl-string">"cst826"</span>    <strong class="hl-keyword">if</strong> AIC_TOUCH_PANEL_CST826       <em class="hl-comment">//设备名</em></pre></div>
                             </li>
                         </ul></div></li>
-                <li class="- topic/li li" data-ofbid="d55816e96__20250409171035"><strong class="+ topic/ph hi-d/b ph b">修改文件名</strong><div class="- topic/p p" data-ofbid="d55816e99__20250409171035">打开 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch</span> 文件目录，将
+                <li class="- topic/li li" data-ofbid="d56986e96__20250519091508"><strong class="+ topic/ph hi-d/b ph b">修改文件名</strong><div class="- topic/p p" data-ofbid="d56986e99__20250519091508">打开 <span class="+ topic/ph sw-d/filepath ph filepath">bsp/peripheral/touch</span> 文件目录，将
                             <span class="+ topic/ph sw-d/filepath ph filepath">gt911</span>
                             文件夹名称及其源文件名称修改为<span class="+ topic/ph sw-d/filepath ph filepath">cst826</span>：<ul class="- topic/ul ul" id="touch_revise_existing_gt911_drive__ul_zml_4jw_12c" data-ofbid="touch_revise_existing_gt911_drive__ul_zml_4jw_12c">
-                            <li class="- topic/li li" data-ofbid="d55816e112__20250409171035">修改前：<div class="- topic/p p" data-ofbid="d55816e114__20250409171035">
+                            <li class="- topic/li li" data-ofbid="d56986e112__20250519091508">修改前：<div class="- topic/p p" data-ofbid="d56986e114__20250519091508">
                                     <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_revise_existing_gt911_drive__image_dbh_pjw_12c" src="../../../images/ctp/gt911_code.png"/></div><br/>
                                 </div></li>
-                            <li class="- topic/li li" data-ofbid="d55816e119__20250409171035">修改后：<div class="- topic/p p" data-ofbid="d55816e121__20250409171035">
+                            <li class="- topic/li li" data-ofbid="d56986e119__20250519091508">修改后：<div class="- topic/p p" data-ofbid="d56986e121__20250519091508">
                                     <br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="touch_revise_existing_gt911_drive__image_ed4_pjw_12c" src="../../../images/ctp/cst826_code.png"/></div><br/>
                                 </div></li>
                         </ul></div></li>
-                <li class="- topic/li li" data-ofbid="d55816e127__20250409171035">
-                    <p class="- topic/p p" data-ofbid="d55816e129__20250409171035"><strong class="+ topic/ph hi-d/b ph b">修改源代码中的 <span class="+ topic/ph sw-d/filepath ph filepath">gt911.c</span> 文件</strong></p>
-                    <div class="- topic/p p" data-ofbid="d55816e136__20250409171035">源代码修改包含但不限于下列内容：<div class="- topic/note note note note_note" id="touch_revise_existing_gt911_drive__note_mcq_lp1_b2c" data-ofbid="touch_revise_existing_gt911_drive__note_mcq_lp1_b2c"><span class="note__title">注：</span> 关于如何获取下列信息，可查看<a class="- topic/xref xref" href="touch-obtain-key-info.html">获取和配置 IC 关键信息</a>。</div><ol class="- topic/ol ol" type="a" id="touch_revise_existing_gt911_drive__ol_jjz_3p1_b2c" data-ofbid="touch_revise_existing_gt911_drive__ol_jjz_3p1_b2c">
-                            <li class="- topic/li li" data-ofbid="d55816e146__20250409171035"><strong class="+ topic/ph hi-d/b ph b">更改设备名称</strong>：将所有与 GT911 相关的名称改为 CST826。</li>
-                            <li class="- topic/li li" data-ofbid="d55816e151__20250409171035"><strong class="+ topic/ph hi-d/b ph b">更改 I2C 地址</strong>：根据 CST826 的数据手册，更改 I2C 地址。</li>
-                            <li class="- topic/li li" data-ofbid="d55816e156__20250409171035"><strong class="+ topic/ph hi-d/b ph b">更改寄存器配置</strong>：根据 CST826 的数据手册，更改初始化和读取数据的寄存器配置。</li>
-                            <li class="- topic/li li" data-ofbid="d55816e161__20250409171035"><strong class="+ topic/ph hi-d/b ph b">更改 GPIO 引脚配置</strong>：确保 GPIO 引脚配置正确。</li>
-                            <li class="- topic/li li" data-ofbid="d55816e166__20250409171035"><strong class="+ topic/ph hi-d/b ph b">更新头文件和宏定义</strong>：确保所有相关头文件和宏定义都正确。</li>
-                        </ol></div>
-                    <div class="- topic/p p" data-ofbid="d55816e172__20250409171035">修改后的代码示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_rxn_qp1_b2c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_rxn_qp1_b2c">#include &lt;rtthread.h&gt;
-#include <span class="hl-string">"touch.h"</span>
-#include &lt;rthw.h&gt;
+                <li class="- topic/li li" data-ofbid="d56986e127__20250519091508">
+                    <p class="- topic/p p" data-ofbid="d56986e129__20250519091508"><strong class="+ topic/ph hi-d/b ph b">修改源代码 <span class="+ topic/ph sw-d/filepath ph filepath">gt911.c</span> 文件如下</strong></p>
+                    <div class="- topic/p p" data-ofbid="d56986e136__20250519091508">
+                        <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_rxn_qp1_b2c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_rxn_qp1_b2c">#include &lt;rtthread.h&gt;
 #include &lt;rtdevice.h&gt;
+#include &lt;string.h&gt;
+<em class="hl-comment">//#define DBG_TAG "gt911"</em>
+#<span class="hl-directive">define</span> DBG_TAG <span class="hl-string">"cst826"</span>
+#<span class="hl-directive">define</span> DBG_LVL DBG_INFO
+#include &lt;rtdbg.h&gt;
+<em class="hl-comment">//#include "gt911.h"</em>
+#include <span class="hl-string">"cst826.h"</span>
+<em class="hl-comment">//static struct rt_i2c_client gt911_client;</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_i2c_client cst826_client;
 
-#<span class="hl-directive">define</span> CST826_SALVE_ADDR <span class="hl-number">0x5D</span> <em class="hl-comment">// 根据 CST82 数据手册设置正确的 I2C 地址</em>
-#<span class="hl-directive">define</span> CST826_WORK_MODE <span class="hl-number">0x00</span>
-#<span class="hl-directive">define</span> CST826_POINT_NUM <span class="hl-number">0x02</span>
-#<span class="hl-directive">define</span> CST826_X_COORD_H <span class="hl-number">0x03</span>
-#<span class="hl-directive">define</span> CST826_Y_COORD_H <span class="hl-number">0x07</span>
-#<span class="hl-directive">define</span> CST826_WEIGHT <span class="hl-number">0x0B</span>
-#<span class="hl-directive">define</span> CST826_MISC <span class="hl-number">0x0C</span>
-#<span class="hl-directive">define</span> CST826_GESTURE <span class="hl-number">0x0D</span>
-#<span class="hl-directive">define</span> CST826_X_COORD_L <span class="hl-number">0x0E</span>
-#<span class="hl-directive">define</span> CST826_Y_COORD_L <span class="hl-number">0x0F</span>
-#<span class="hl-directive">define</span> CST826_POINT_INFO <span class="hl-number">0x10</span>
+<em class="hl-comment">//下面的数组是 gt911 的部分固件数组注释掉或者直接删除</em>
+<em class="hl-comment">// static rt_uint8_t GT911_CFG_TBL[] = {</em>
+<em class="hl-comment">//     0x6b, 0x00, 0x04, 0x58, 0x02, 0x05, 0x0d, 0x00, 0x01, 0x0f, 0x28, 0x0f,</em>
+<em class="hl-comment">//     0x50, 0x32, 0x03, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</em>
+<em class="hl-comment">//     0x00, 0x00, 0x00, 0x8a, 0x2a, 0x0c, 0x45, 0x47, 0x0c, 0x08, 0x00, 0x00,</em>
+<em class="hl-comment">//     0x00, 0x40, 0x03, 0x2c, 0x00, 0x01, 0x00, 0x00, 0x00, 0x03, 0x64, 0x32,</em>
+<em class="hl-comment">//     0x00, 0x00, 0x00, 0x28, 0x64, 0x94, 0xd5, 0x02, 0x07, 0x00, 0x00, 0x04,</em>
+<em class="hl-comment">//     0x95, 0x2c, 0x00, 0x8b, 0x34, 0x00, 0x82, 0x3f, 0x00, 0x7d, 0x4c, 0x00,</em>
+<em class="hl-comment">//     0x7a, 0x5b, 0x00, 0x7a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</em>
+<em class="hl-comment">//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</em>
+<em class="hl-comment">//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</em>
+<em class="hl-comment">//     0x00, 0x00, 0x00, 0x00, 0x18, 0x16, 0x14, 0x12, 0x10, 0x0e, 0x0c, 0x0a,</em>
+<em class="hl-comment">//     0x08, 0x06, 0x04, 0x02, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</em>
+<em class="hl-comment">//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x18,</em>
+<em class="hl-comment">//     0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x24, 0x13, 0x12, 0x10, 0x0f,</em>
+<em class="hl-comment">//     0x0a, 0x08, 0x06, 0x04, 0x02, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,</em>
+<em class="hl-comment">//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</em>
+<em class="hl-comment">//     0x00, 0x00, 0x00, 0x00, 0x79, 0x01,</em>
+<em class="hl-comment">// };</em>
 
-<strong class="hl-keyword">struct</strong> cst826_info {
-    <strong class="hl-keyword">int</strong> point_num;
-    <strong class="hl-keyword">int</strong> x[<span class="hl-number">5</span>];
-    <strong class="hl-keyword">int</strong> y[<span class="hl-number">5</span>];
-    <strong class="hl-keyword">int</strong> weight[<span class="hl-number">5</span>];
+<em class="hl-comment">/*
+ * I2C 写函数，主要传参有三个：dev,要写入的数据，写入数据的长度
+ * 这个函数适用于所有的 TP，编写的时候只需要更换函数名字，跟 TP 对应上即可
+ */</em>
+<em class="hl-comment">//static rt_err_t gt911_write_reg(struct rt_i2c_client *dev, rt_uint8_t *data, rt_uint8_t len)</em>
+<strong class="hl-keyword">static</strong> rt_err_t cst826_write_reg(<strong class="hl-keyword">struct</strong> rt_i2c_client *dev, rt_uint8_t *data, rt_uint8_t len)
+{
+    <strong class="hl-keyword">struct</strong> rt_i2c_msg msgs;
+
+    msgs.addr = dev-&gt;client_addr;
+    msgs.flags = RT_I2C_WR;
+    msgs.buf = data;
+    msgs.len = len;
+
+    <strong class="hl-keyword">if</strong> (rt_i2c_transfer(dev-&gt;bus, &amp;msgs, <span class="hl-number">1</span>) == <span class="hl-number">1</span>) {
+        <strong class="hl-keyword">return</strong> RT_EOK;
+    } <strong class="hl-keyword">else</strong> {
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+}
+
+<em class="hl-comment">/*
+ * I2C 读函数，主要传参有四个：dev,要读取的寄存器地址，接受数据的 buf，读取的长度
+ * 这个函数适用于所有的 TP，编写的时候只需要更换函数名字，跟 TP 对应上即可
+ */</em>
+<em class="hl-comment">//static rt_err_t gt911_read_regs(struct rt_i2c_client *dev, rt_uint8_t *reg,</em>
+<em class="hl-comment">//                                  rt_uint8_t *data, rt_uint8_t len)</em>
+<strong class="hl-keyword">static</strong> rt_err_t cst826_read_regs(<strong class="hl-keyword">struct</strong> rt_i2c_client *dev, rt_uint8_t *reg,
+                                 rt_uint8_t *data, rt_uint8_t len)
+{
+    <strong class="hl-keyword">struct</strong> rt_i2c_msg msgs[<span class="hl-number">2</span>];
+
+    msgs[<span class="hl-number">0</span>].addr = dev-&gt;client_addr;
+    msgs[<span class="hl-number">0</span>].flags = RT_I2C_WR;
+    msgs[<span class="hl-number">0</span>].buf = reg;
+    <em class="hl-comment">//msgs[0].len = GT911_REGITER_LEN;</em>
+    msgs[<span class="hl-number">0</span>].len = <span class="hl-number">1</span>;        <em class="hl-comment">//这里的 len 只能是 1 或者 2，1 对应 8bit 寄存器，8 对应 16bit 寄存器</em>
+
+    msgs[<span class="hl-number">1</span>].addr = dev-&gt;client_addr;
+    msgs[<span class="hl-number">1</span>].flags = RT_I2C_RD;
+    msgs[<span class="hl-number">1</span>].buf = data;
+    msgs[<span class="hl-number">1</span>].len = len;
+
+    <strong class="hl-keyword">if</strong> (rt_i2c_transfer(dev-&gt;bus, msgs, <span class="hl-number">2</span>) == <span class="hl-number">2</span>) {
+        <strong class="hl-keyword">return</strong> RT_EOK;
+    } <strong class="hl-keyword">else</strong> {
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+}
+
+<em class="hl-comment">/*
+ * 这个函数主要用于获取 TP 的 ID，有些 TP 并没有具体获取 ID 的寄存器公开，可以删除
+ */</em>
+<em class="hl-comment">//static rt_err_t gt911_get_product_id(struct rt_i2c_client *dev,</em>
+<em class="hl-comment">//                                      rt_uint8_t *data, rt_uint8_t len)</em>
+<em class="hl-comment">// {</em>
+<em class="hl-comment">//     rt_uint8_t reg[2];</em>
+
+<em class="hl-comment">//     reg[0] = (rt_uint8_t)(GT911_PRODUCT_ID &gt;&gt; 8);</em>
+<em class="hl-comment">//     reg[1] = (rt_uint8_t)(GT911_PRODUCT_ID &amp; 0xff);</em>
+
+<em class="hl-comment">//     if (gt911_read_regs(dev, reg, data, len) != RT_EOK) {</em>
+<em class="hl-comment">//         LOG_E("read id failed");</em>
+<em class="hl-comment">//         return -RT_ERROR;</em>
+<em class="hl-comment">//     }</em>
+<em class="hl-comment">//     return RT_EOK;</em>
+<em class="hl-comment">// }</em>
+
+<em class="hl-comment">/*
+ * 这个函数主要用于获取 TP 的参数，包括：xy 的坐标范围最大值，触摸点的个数，如果规格书没有相关描述可以删除，用 rt_touch_info 结构体去配置，如果想实现可以参考上一章相同函数编写
+ */</em>
+<em class="hl-comment">//static rt_err_t gt911_get_info(struct rt_i2c_client *dev,</em>
+<em class="hl-comment">//                                struct rt_touch_info *info)</em>
+<em class="hl-comment">// {</em>
+<em class="hl-comment">//     rt_uint8_t reg[2];</em>
+<em class="hl-comment">//     rt_uint8_t out_info[7];</em>
+<em class="hl-comment">//     rt_uint8_t out_len = 7;</em>
+
+<em class="hl-comment">//     reg[0] = (rt_uint8_t)(GT911_CONFIG_REG &gt;&gt; 8);</em>
+<em class="hl-comment">//     reg[1] = (rt_uint8_t)(GT911_CONFIG_REG &amp; 0xFF);</em>
+
+<em class="hl-comment">//     if (gt911_read_regs(dev, reg, out_info, out_len) != RT_EOK) {</em>
+<em class="hl-comment">//         LOG_E("read info failed");</em>
+<em class="hl-comment">//         return -RT_ERROR;</em>
+<em class="hl-comment">//     }</em>
+
+<em class="hl-comment">//     info-&gt;range_x = (out_info[2] &lt;&lt; 8) | out_info[1];</em>
+<em class="hl-comment">//     info-&gt;range_y = (out_info[4] &lt;&lt; 8) | out_info[3];</em>
+<em class="hl-comment">//     info-&gt;point_num = out_info[5] &amp; 0x0f;</em>
+<em class="hl-comment">//     if (info-&gt;point_num &gt; GT911_MAX_TOUCH) {</em>
+<em class="hl-comment">//         info-&gt;point_num = GT911_MAX_TOUCH;</em>
+<em class="hl-comment">//         rt_kprintf("Warning,tp support more than 5 points, limited to 5 points\n");</em>
+<em class="hl-comment">//     }</em>
+
+<em class="hl-comment">//     return RT_EOK;</em>
+<em class="hl-comment">// }</em>
+
+<em class="hl-comment">/*
+ * 这里的静态变量主要是为了存储坐标点的数据，然后作逻辑判断
+ * GT911_MAX_TOUCH 是最大的触摸点个数也就是上面 info-&gt;point_num 定义的 5，所以数组赋值了 5 个-1 作为初始值
+ * CST826M 固件目前支持最大触摸点个数为 2，所以 CST826_MAX_TOUCH 是 2，也没有宽度之类的描述，故删除了 pre_w 数组
+ */</em>
+<em class="hl-comment">//static int16_t pre_x[GT911_MAX_TOUCH] = { -1, -1, -1, -1, -1 };</em>
+<em class="hl-comment">//static int16_t pre_y[GT911_MAX_TOUCH] = { -1, -1, -1, -1, -1 };</em>
+<em class="hl-comment">//static int16_t pre_w[GT911_MAX_TOUCH] = { -1, -1, -1, -1, -1 };</em>
+<em class="hl-comment">//static rt_uint8_t s_tp_dowm[GT911_MAX_TOUCH] = {0};</em>
+<em class="hl-comment">//static struct rt_touch_data *read_data = RT_NULL;</em>
+<strong class="hl-keyword">static</strong> int16_t pre_x[CST826_MAX_TOUCH] = { -<span class="hl-number">1</span>, -<span class="hl-number">1</span> };
+<strong class="hl-keyword">static</strong> int16_t pre_y[CST826_MAX_TOUCH] = { -<span class="hl-number">1</span>, -<span class="hl-number">1</span> };
+<strong class="hl-keyword">static</strong> rt_uint8_t s_tp_dowm[CST826_MAX_TOUCH] = {<span class="hl-number">0</span>};
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_touch_data *read_data = RT_NULL;
+
+<em class="hl-comment">/*
+ * 这个是抬起事件上报函数，修改函数名即可使用
+ * 如果定义上面的静态数组的时候没有定义 pre_w，则下面代码关于 pre_w 的要删除
+ */</em>
+<em class="hl-comment">//static void gt911_touch_up(void *buf, int8_t id)</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> cst826_touch_up(<strong class="hl-keyword">void</strong> *buf, int8_t id)
+{
+    read_data = (<strong class="hl-keyword">struct</strong> rt_touch_data *)buf;
+
+    <strong class="hl-keyword">if</strong> (s_tp_dowm[id] == <span class="hl-number">1</span>) {
+        s_tp_dowm[id] = <span class="hl-number">0</span>;
+        read_data[id].event = RT_TOUCH_EVENT_UP;
+    } <strong class="hl-keyword">else</strong> {
+        read_data[id].event = RT_TOUCH_EVENT_NONE;
+    }
+
+    read_data[id].timestamp = rt_touch_get_ts();
+    <em class="hl-comment">//read_data[id].width = pre_w[id];</em>
+    read_data[id].x_coordinate = pre_x[id];
+    read_data[id].y_coordinate = pre_y[id];
+    read_data[id].track_id = id;
+
+    pre_x[id] = -<span class="hl-number">1</span>; <em class="hl-comment">/* last point is none */</em>
+    pre_y[id] = -<span class="hl-number">1</span>;
+    <em class="hl-comment">//pre_w[id] = -1;</em>
+}
+
+<em class="hl-comment">/*
+ * 这个是移动和按下事件函数，修改函数名即可使用
+ * 如果定义上面的静态数组的时候没有定义 pre_w,则下面代码关于 pre_w 的要删除
+ * 包括函数传参里面的 int16_t w 也要删除
+ */</em>
+<em class="hl-comment">//static void gt911_touch_down(void *buf, int8_t id, int16_t x, int16_t y, int16_t w)</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> cst826_touch_down(<strong class="hl-keyword">void</strong> *buf, int8_t id, int16_t x, int16_t y)
+{
+    read_data = (<strong class="hl-keyword">struct</strong> rt_touch_data *)buf;
+
+    <strong class="hl-keyword">if</strong> (s_tp_dowm[id] == <span class="hl-number">1</span>) {
+        read_data[id].event = RT_TOUCH_EVENT_MOVE;
+    } <strong class="hl-keyword">else</strong> {
+        read_data[id].event = RT_TOUCH_EVENT_DOWN;
+        s_tp_dowm[id] = <span class="hl-number">1</span>;
+    }
+
+    read_data[id].timestamp = rt_touch_get_ts();
+    <em class="hl-comment">//read_data[id].width = w;</em>
+    read_data[id].x_coordinate = x;
+    read_data[id].y_coordinate = y;
+    read_data[id].track_id = id;
+
+    pre_x[id] = x; <em class="hl-comment">/* save last point */</em>
+    pre_y[id] = y;
+    <em class="hl-comment">//pre_w[id] = w;</em>
+}
+
+<em class="hl-comment">//static rt_size_t gt911_read_point(struct rt_touch_device *touch, void *buf, rt_size_t read_num)</em>
+<strong class="hl-keyword">static</strong> rt_size_t cst826_read_point(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">void</strong> *buf, rt_size_t read_num)
+{
+    <em class="hl-comment">//rt_uint8_t point_status = 0;</em>
+    rt_uint8_t touch_num = <span class="hl-number">0</span>;
+    <em class="hl-comment">//rt_uint8_t write_buf[3];</em>
+    <em class="hl-comment">//rt_uint8_t cmd[2];</em>
+    rt_uint8_t reg;     <em class="hl-comment">//这里将 cmd[2]改成 reg 是因为 gt911 是 16bit 寄存器需要分开两个 byte 发送寄存器高低位，cst826 是 8bit 寄存器不需要拆开</em>
+    <em class="hl-comment">//rt_uint8_t read_buf[8 * GT911_MAX_TOUCH] = { 0 };</em>
+    rt_uint8_t read_buf[CST826_POINT_LEN * CST826_MAX_TOUCH + <span class="hl-number">4</span>] = { <span class="hl-number">0</span> };   <em class="hl-comment">//read_buf 的长度取决于要读取多长的数据，长度计算：坐标点数据长度*坐标点个数+其他信息长度</em>
+    rt_uint8_t read_index;
+    int8_t read_id = <span class="hl-number">0</span>;
+    int16_t input_x = <span class="hl-number">0</span>;
+    int16_t input_y = <span class="hl-number">0</span>;
+    <em class="hl-comment">//int16_t input_w = 0;      //cst826 没有宽度相关寄存器描述</em>
+
+    <strong class="hl-keyword">static</strong> rt_uint8_t pre_touch = <span class="hl-number">0</span>;
+    <strong class="hl-keyword">static</strong> int8_t pre_id[GT911_MAX_TOUCH] = { <span class="hl-number">0</span> };
+
+    rt_memset(buf, <span class="hl-number">0</span>, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_data) * read_num);
+
+    <em class="hl-comment">/* point status register */</em>
+    <em class="hl-comment">//cmd[0] = (rt_uint8_t)((GT911_READ_STATUS &gt;&gt; 8) &amp; 0xFF);</em>
+    <em class="hl-comment">//cmd[1] = (rt_uint8_t)(GT911_READ_STATUS &amp; 0xFF);</em>
+
+    <em class="hl-comment">//if (gt911_read_regs(&amp;gt911_client, cmd, &amp;point_status, 1) != RT_EOK) {</em>
+    <em class="hl-comment">//    LOG_D("read point failed\n");</em>
+    <em class="hl-comment">//    read_num = 0;</em>
+    <em class="hl-comment">//    goto exit_;</em>
+    <em class="hl-comment">//}</em>
+
+    reg = CST826_WORK_MODE;
+    <strong class="hl-keyword">if</strong> (cst826_read_regs(&amp;cst826_client, &amp;reg, read_buf, <strong class="hl-keyword">sizeof</strong>(read_buf)) != RT_EOK) {
+        LOG_D(<span class="hl-string">"read point failed\n"</span>);
+        read_num = <span class="hl-number">0</span>;
+        <strong class="hl-keyword">goto</strong> __exit;
+    }
+
+    <em class="hl-comment">//if (point_status == 0) /* no data */</em>
+    <em class="hl-comment">//{</em>
+    <em class="hl-comment">//    read_num = 0;</em>
+    <em class="hl-comment">//    goto exit_;</em>
+    <em class="hl-comment">//}</em>
+
+    <em class="hl-comment">//if ((point_status &amp; 0x80) == 0) /* data is not ready */</em>
+    <em class="hl-comment">//{</em>
+    <em class="hl-comment">//    read_num = 0;</em>
+    <em class="hl-comment">//    goto exit_;</em>
+    <em class="hl-comment">//}</em>
+
+    <em class="hl-comment">//touch_num = point_status &amp; 0x0f; /* get point num */</em>
+
+    <em class="hl-comment">//if (touch_num &gt; GT911_MAX_TOUCH) /* point num is not correct */</em>
+    <em class="hl-comment">//{</em>
+    <em class="hl-comment">//    read_num = 0;</em>
+    <em class="hl-comment">//    goto exit_;</em>
+    <em class="hl-comment">//}</em>
+    touch_num = read_buf[<span class="hl-number">2</span>] &amp; <span class="hl-number">0x0f</span>;         <em class="hl-comment">//这里的获取逻辑如果不了解建议去看第一章关于规格书的阅读</em>
+    <strong class="hl-keyword">if</strong> (touch_num &gt;= <span class="hl-number">2</span>) {
+        touch_num = <span class="hl-number">2</span>;
+    }
+
+
+    <em class="hl-comment">//cmd[0] = (rt_uint8_t)((GT911_POINT1_REG &gt;&gt; 8) &amp; 0xFF);</em>
+    <em class="hl-comment">//cmd[1] = (rt_uint8_t)(GT911_POINT1_REG &amp; 0xFF);</em>
+
+    <em class="hl-comment">/* read point num is touch_num */</em>
+    <em class="hl-comment">//if (gt911_read_regs(&amp;gt911_client, cmd, read_buf,</em>
+    <em class="hl-comment">//                    read_num * GT911_POINT_INFO_NUM) != RT_EOK) {</em>
+    <em class="hl-comment">//    LOG_D("read point failed\n");</em>
+    <em class="hl-comment">//    read_num = 0;</em>
+    <em class="hl-comment">//    goto exit_;</em>
+    <em class="hl-comment">//}</em>
+
+    <em class="hl-comment">/*
+     * 下面是对坐标事件的处理，一般可以直接照抄，根据规格书更换一下信息，后面会把部分规格书信息贴在本章节最后面
+     */</em>
+    <strong class="hl-keyword">if</strong> (pre_touch &gt; touch_num)
+    {
+        <strong class="hl-keyword">for</strong> (read_index = <span class="hl-number">0</span>; read_index &lt; pre_touch; read_index++) {
+            rt_uint8_t j;
+
+            <strong class="hl-keyword">for</strong> (j = <span class="hl-number">0</span>; j &lt; touch_num; j++) <em class="hl-comment">/* this time touch num */</em>
+            {
+                <em class="hl-comment">//read_id = read_buf[j * 8] &amp; 0x0F;</em>
+                read_id = read_buf[<span class="hl-number">5</span> + CST826_POINT_LEN * j] &amp; <span class="hl-number">0xF0</span>;
+
+                <strong class="hl-keyword">if</strong> (pre_id[read_index] == read_id) <em class="hl-comment">/* this id is not free */</em>
+                    <strong class="hl-keyword">break</strong>;
+
+                <strong class="hl-keyword">if</strong> (j &gt;= touch_num - <span class="hl-number">1</span>) {
+                    rt_uint8_t up_id;
+                    up_id = pre_id[read_index];
+                    <em class="hl-comment">//gt911_touch_up(buf, up_id);</em>
+                    cst826_touch_up(buf, up_id);
+                }
+            }
+        }
+    }
+
+    <strong class="hl-keyword">if</strong> (touch_num) <em class="hl-comment">/* point down */</em>
+    {
+        rt_uint8_t off_set;
+
+        <strong class="hl-keyword">for</strong> (read_index = <span class="hl-number">0</span>; read_index &lt; touch_num; read_index++) {
+            <em class="hl-comment">//off_set = read_index * 8;</em>
+            off_set = read_index * CST826_POINT_LEN;
+            <em class="hl-comment">//read_id = read_buf[off_set] &amp; 0x0f;</em>
+            read_id = (read_buf[off_set + <span class="hl-number">5</span>] &amp; <span class="hl-number">0xf0</span>) &gt;&gt; <span class="hl-number">4</span>;
+            pre_id[read_index] = read_id;
+            <em class="hl-comment">//input_x = read_buf[off_set + 1] | (read_buf[off_set + 2] &lt;&lt; 8); /* x */</em>
+            <em class="hl-comment">//input_y = read_buf[off_set + 3] | (read_buf[off_set + 4] &lt;&lt; 8); /* y */</em>
+            <em class="hl-comment">//input_w = read_buf[off_set + 5] | (read_buf[off_set + 6] &lt;&lt; 8); /* size */</em>
+            input_x = ((read_buf[off_set + <span class="hl-number">3</span>] &amp; <span class="hl-number">0x0f</span>) &lt;&lt; <span class="hl-number">8</span>) | read_buf[off_set + <span class="hl-number">4</span>];
+            input_y = ((read_buf[off_set + <span class="hl-number">5</span>] &amp; <span class="hl-number">0x0f</span>) &lt;&lt; <span class="hl-number">8</span>) | read_buf[off_set + <span class="hl-number">6</span>];
+
+            <em class="hl-comment">//gt911_touch_down(buf, read_id, input_x, input_y, input_w);</em>
+            cst826_touch_down(buf, read_id, input_x, input_y);
+        }
+    } <strong class="hl-keyword">else</strong> <strong class="hl-keyword">if</strong> (pre_touch) {
+        <strong class="hl-keyword">for</strong> (read_index = <span class="hl-number">0</span>; read_index &lt; pre_touch; read_index++) {
+            <em class="hl-comment">//gt911_touch_up(buf, pre_id[read_index]);</em>
+            cst826_touch_up(buf, pre_id[read_index]);
+        }
+    }
+
+    pre_touch = touch_num;
+
+exit_:
+    <em class="hl-comment">//write_buf[0] = (rt_uint8_t)((GT911_READ_STATUS &gt;&gt; 8) &amp; 0xFF);</em>
+    <em class="hl-comment">//write_buf[1] = (rt_uint8_t)(GT911_READ_STATUS &amp; 0xFF);</em>
+    <em class="hl-comment">//write_buf[2] = 0x00;</em>
+    <em class="hl-comment">//gt911_write_reg(&amp;gt911_client, write_buf, 3);</em>
+
+    <strong class="hl-keyword">return</strong> read_num;
+}
+<em class="hl-comment">/*
+ * TP 的控制函数，一般来说只需要实现 RT_TOUCH_CTRL_GET_INFO，所以 cst826 只实现了这个 case
+ */</em>
+<em class="hl-comment">//static rt_err_t gt911_control(struct rt_touch_device *touch, int cmd, void *arg)</em>
+<strong class="hl-keyword">static</strong> rt_err_t cst826_control(<strong class="hl-keyword">struct</strong> rt_touch_device *touch, <strong class="hl-keyword">int</strong> cmd, <strong class="hl-keyword">void</strong> *data)
+{
+<em class="hl-comment">//     if (cmd == RT_TOUCH_CTRL_GET_ID) {</em>
+<em class="hl-comment">//         return gt911_get_product_id(&amp;gt911_client, arg, 6);</em>
+<em class="hl-comment">//     }</em>
+
+<em class="hl-comment">//     if (cmd == RT_TOUCH_CTRL_GET_INFO) {</em>
+<em class="hl-comment">//         return gt911_get_info(&amp;gt911_client, arg);</em>
+<em class="hl-comment">//     }</em>
+
+<em class="hl-comment">//     rt_uint8_t buf[4];</em>
+<em class="hl-comment">//     rt_uint8_t i = 0;</em>
+<em class="hl-comment">//     rt_uint8_t *config;</em>
+
+<em class="hl-comment">//     config =</em>
+<em class="hl-comment">//         (rt_uint8_t *)rt_calloc(1, sizeof(GT911_CFG_TBL) + GT911_REGITER_LEN);</em>
+<em class="hl-comment">//     if (config == RT_NULL) {</em>
+<em class="hl-comment">//         LOG_D("malloc config memory failed\n");</em>
+<em class="hl-comment">//         return -RT_ERROR;</em>
+<em class="hl-comment">//     }</em>
+
+<em class="hl-comment">//     config[0] = (rt_uint8_t)((GT911_CONFIG_REG &gt;&gt; 8) &amp; 0xFF);</em>
+<em class="hl-comment">//     config[1] = (rt_uint8_t)(GT911_CONFIG_REG &amp; 0xFF);</em>
+
+<em class="hl-comment">//     memcpy(&amp;config[2], GT911_CFG_TBL, sizeof(GT911_CFG_TBL));</em>
+
+<em class="hl-comment">//     switch (cmd) {</em>
+<em class="hl-comment">//         case RT_TOUCH_CTRL_SET_X_RANGE: {</em>
+<em class="hl-comment">//             rt_uint16_t x_range;</em>
+
+<em class="hl-comment">//             x_range = *(rt_uint16_t *)arg;</em>
+<em class="hl-comment">//             config[4] = (rt_uint8_t)(x_range &gt;&gt; 8);</em>
+<em class="hl-comment">//             config[3] = (rt_uint8_t)(x_range &amp; 0xff);</em>
+
+<em class="hl-comment">//             GT911_CFG_TBL[2] = config[4];</em>
+<em class="hl-comment">//             GT911_CFG_TBL[1] = config[3];</em>
+<em class="hl-comment">//             break;</em>
+<em class="hl-comment">//         }</em>
+<em class="hl-comment">//         case RT_TOUCH_CTRL_SET_Y_RANGE: {</em>
+<em class="hl-comment">//             rt_uint16_t y_range;</em>
+
+<em class="hl-comment">//             y_range = *(rt_uint16_t *)arg;</em>
+<em class="hl-comment">//             config[6] = (rt_uint8_t)(y_range &gt;&gt; 8);</em>
+<em class="hl-comment">//             config[5] = (rt_uint8_t)(y_range &amp; 0xff);</em>
+
+<em class="hl-comment">//             GT911_CFG_TBL[4] = config[6];</em>
+<em class="hl-comment">//             GT911_CFG_TBL[3] = config[5];</em>
+<em class="hl-comment">//             break;</em>
+<em class="hl-comment">//         }</em>
+<em class="hl-comment">//         case RT_TOUCH_CTRL_SET_X_TO_Y: {</em>
+<em class="hl-comment">//             config[8] ^= (1 &lt;&lt; 3);</em>
+<em class="hl-comment">//             break;</em>
+<em class="hl-comment">//         }</em>
+<em class="hl-comment">//         case RT_TOUCH_CTRL_SET_MODE: {</em>
+<em class="hl-comment">//             rt_uint16_t trig_type;</em>
+<em class="hl-comment">//             trig_type = *(rt_uint16_t *)arg;</em>
+
+<em class="hl-comment">//             switch (trig_type) {</em>
+<em class="hl-comment">//                 case RT_DEVICE_FLAG_INT_RX:</em>
+<em class="hl-comment">//                     config[8] &amp;= 0xFC;</em>
+<em class="hl-comment">//                     break;</em>
+<em class="hl-comment">//                 case RT_DEVICE_FLAG_RDONLY:</em>
+<em class="hl-comment">//                     config[8] &amp;= 0xFC;</em>
+<em class="hl-comment">//                     config[8] |= 0x02;</em>
+<em class="hl-comment">//                     break;</em>
+<em class="hl-comment">//                 default:</em>
+<em class="hl-comment">//                     break;</em>
+<em class="hl-comment">//             }</em>
+<em class="hl-comment">//             break;</em>
+<em class="hl-comment">//         }</em>
+<em class="hl-comment">//         default: {</em>
+<em class="hl-comment">//             break;</em>
+<em class="hl-comment">//         }</em>
+<em class="hl-comment">//     }</em>
+    <strong class="hl-keyword">switch</strong>(cmd)
+    {
+    <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_GET_ID:
+        <strong class="hl-keyword">break</strong>;
+    <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_GET_INFO:
+        info = (<strong class="hl-keyword">struct</strong> rt_touch_info *)data;
+        <strong class="hl-keyword">if</strong> (info == RT_NULL)
+            <strong class="hl-keyword">return</strong> -RT_EINVAL;
+
+        info-&gt;point_num = touch-&gt;info.point_num;
+        info-&gt;range_x = touch-&gt;info.range_x;
+        info-&gt;range_y = touch-&gt;info.range_y;
+        info-&gt;type = touch-&gt;info.type;
+        info-&gt;vendor = touch-&gt;info.vendor;
+        <strong class="hl-keyword">break</strong>;
+    <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_SET_MODE:
+    <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_SET_X_RANGE:
+    <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_SET_Y_RANGE:
+    <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_SET_X_TO_Y:
+    <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_DISABLE_INT:
+    <strong class="hl-keyword">case</strong> RT_TOUCH_CTRL_ENABLE_INT:
+    <strong class="hl-keyword">default</strong>:
+        <strong class="hl-keyword">break</strong>;
+    }
+
+<em class="hl-comment">//     if (gt911_write_reg(&amp;gt911_client, config,</em>
+<em class="hl-comment">//                         sizeof(GT911_CFG_TBL) + GT911_ADDR_LEN) != RT_EOK) {</em>
+<em class="hl-comment">//         LOG_D("send config failed");</em>
+<em class="hl-comment">//         return -1;</em>
+<em class="hl-comment">//     }</em>
+
+<em class="hl-comment">//     buf[0] = (rt_uint8_t)((GT911_CHECK_SUM &gt;&gt; 8) &amp; 0xFF);</em>
+<em class="hl-comment">//     buf[1] = (rt_uint8_t)(GT911_CHECK_SUM &amp; 0xFF);</em>
+<em class="hl-comment">//     buf[2] = 0;</em>
+
+<em class="hl-comment">//     for (i = GT911_ADDR_LEN; i &lt; sizeof(GT911_CFG_TBL) + GT911_ADDR_LEN; i++) {</em>
+<em class="hl-comment">//         buf[GT911_ADDR_LEN] += config[i];</em>
+<em class="hl-comment">//     }</em>
+
+<em class="hl-comment">//     buf[2] = (~buf[2]) + 1;</em>
+<em class="hl-comment">//     buf[3] = 1;</em>
+
+<em class="hl-comment">//     gt911_write_reg(&amp;gt911_client, buf, 4);</em>
+<em class="hl-comment">//     rt_free(config);</em>
+
+     <strong class="hl-keyword">return</strong> RT_EOK;
+}
+
+<em class="hl-comment">//static struct rt_touch_ops gt911_touch_ops = {</em>
+<em class="hl-comment">//    .touch_readpoint = gt911_read_point,</em>
+<em class="hl-comment">//    .touch_control = gt911_control,</em>
+<em class="hl-comment">//};</em>
+
+<em class="hl-comment">/*
+ * rt_touch_ops，主要是完成对读坐标和控制 TP 的函数注册
+ */</em>
+<strong class="hl-keyword">const</strong> <strong class="hl-keyword">struct</strong> rt_touch_ops cst826_touch_ops =
+{
+    .touch_readpoint = cst826_read_point,
+    .touch_control = cst826_control,
 };
 
-<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> cst826_info info;
-<strong class="hl-keyword">static</strong> <strong class="hl-keyword">struct</strong> rt_i2c_bus_device *cst826_bus;
-
-<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> cst826_read_point(<strong class="hl-keyword">struct</strong> rt_i2c_bus_device *bus, <strong class="hl-keyword">struct</strong> cst826_info *info)
+<em class="hl-comment">/*
+ * rt_touch_info 结构体是和 get_info 那个函数作用一致，无法从寄存器获取 TP 参数时可以通过这个结构体手动配置
+ */</em>
+<strong class="hl-keyword">struct</strong> rt_touch_info cst826_info =
 {
-    <strong class="hl-keyword">int</strong> ret = -<span class="hl-number">1</span>;
-    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> buf[<span class="hl-number">64</span>];
-    <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">char</strong> read_buf[<span class="hl-number">4</span>];
-    <strong class="hl-keyword">int</strong> i;
+    RT_TOUCH_TYPE_CAPACITANCE,
+    RT_TOUCH_VENDOR_UNKNOWN,
+    <span class="hl-number">2</span>,
+    (rt_int32_t)AIC_TOUCH_PANEL_CST826_X_RANGE,
+    (rt_int32_t)AIC_TOUCH_PANEL_CST826_Y_RANGE,
+};
 
-    buf[<span class="hl-number">0</span>] = CST826_POINT_INFO;
-    <strong class="hl-keyword">if</strong> (rt_i2c_master_send(bus, CST826_SALVE_ADDR, RT_I2C_WRITE, buf, <span class="hl-number">1</span>) != <span class="hl-number">1</span>) {
-        LOG_E(<span class="hl-string">"send config failed"</span>);
+<em class="hl-comment">/*
+ * 这个函数主要实现对 TP 的初始操作
+ */</em>
+<em class="hl-comment">//static int rt_hw_gt911_init(const char *name, struct rt_touch_config *cfg)</em>
+<strong class="hl-keyword">int</strong> cst826_hw_init(<strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *name, <strong class="hl-keyword">struct</strong> rt_touch_config *cfg)
+{
+    <strong class="hl-keyword">struct</strong> rt_touch_device *touch_device = RT_NULL;
+
+    touch_device =
+        (<strong class="hl-keyword">struct</strong> rt_touch_device *)rt_malloc(<strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
+    <strong class="hl-keyword">if</strong> (touch_device == RT_NULL) {
+        LOG_E(<span class="hl-string">"touch device malloc fail"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
+    }
+    rt_memset((<strong class="hl-keyword">void</strong> *)touch_device, <span class="hl-number">0</span>, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
+
+    <em class="hl-comment">/* hw init*/</em>
+    <em class="hl-comment">// rst output 0</em>
+    <em class="hl-comment">//rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);</em>
+    <em class="hl-comment">//rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_LOW);</em>
+    <em class="hl-comment">//rt_thread_delay(10);</em>
+    <em class="hl-comment">// irq output 0</em>
+    <em class="hl-comment">//rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_OUTPUT);</em>
+    <em class="hl-comment">//rt_pin_write(cfg-&gt;irq_pin.pin, PIN_LOW);</em>
+    <em class="hl-comment">//rt_thread_delay(2);</em>
+    <em class="hl-comment">// rst output 1</em>
+    <em class="hl-comment">//rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);</em>
+    <em class="hl-comment">//rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_HIGH);</em>
+    <em class="hl-comment">//rt_thread_delay(5);</em>
+    <em class="hl-comment">// rst input</em>
+    <em class="hl-comment">//rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_INPUT);</em>
+    <em class="hl-comment">//irq output 0</em>
+    <em class="hl-comment">//rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_OUTPUT);</em>
+    <em class="hl-comment">//rt_pin_write(cfg-&gt;irq_pin.pin, PIN_LOW);</em>
+    <em class="hl-comment">//rt_thread_delay(50);</em>
+    <em class="hl-comment">//rt_pin_mode(cfg-&gt;irq_pin.pin, PIN_MODE_INPUT);</em>
+
+    <em class="hl-comment">//这里时 TP 初始化时的上电时序，要根据规格书来进行配置</em>
+    rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);
+    rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_HIGH);
+    rt_thread_delay(<span class="hl-number">10</span>);
+
+    rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);
+    rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_LOW);
+    rt_thread_delay(<span class="hl-number">10</span>);
+
+    rt_pin_mode(*(rt_uint8_t *)cfg-&gt;user_data, PIN_MODE_OUTPUT);
+    rt_pin_write(*(rt_uint8_t *)cfg-&gt;user_data, PIN_HIGH);
+    rt_thread_delay(<span class="hl-number">100</span>);
+
+
+    <em class="hl-comment">//gt911_client.bus = (struct rt_i2c_bus_device *)rt_device_find(cfg-&gt;dev_name);</em>
+    <em class="hl-comment">//if (gt911_client.bus == RT_NULL) {</em>
+    <em class="hl-comment">//    LOG_E("Can't find %s device", cfg-&gt;dev_name);</em>
+    <em class="hl-comment">//    return -RT_ERROR;</em>
+    <em class="hl-comment">//}</em>
+    cst826_client.bus = (<strong class="hl-keyword">struct</strong> rt_i2c_bus_device *)rt_device_find(cfg-&gt;dev_name);
+    <strong class="hl-keyword">if</strong> (cst826_client.bus == RT_NULL) {
+        LOG_E(<span class="hl-string">"Can't find %s device"</span>, cfg-&gt;dev_name);
         <strong class="hl-keyword">return</strong> -RT_ERROR;
     }
 
-    <strong class="hl-keyword">if</strong> (rt_i2c_master_recv(bus, CST826_SALVE_ADDR, RT_I2C_READ, buf, <span class="hl-number">5</span>) != <span class="hl-number">5</span>) {
-        LOG_E(<span class="hl-string">"read point info failed"</span>);
+    <strong class="hl-keyword">if</strong> (rt_device_open((rt_device_t)gt911_client.bus, RT_DEVICE_FLAG_RDWR) !=
+        RT_EOK) {
+        LOG_E(<span class="hl-string">"open %s device failed"</span>, cfg-&gt;dev_name);
         <strong class="hl-keyword">return</strong> -RT_ERROR;
     }
 
-    <strong class="hl-keyword">if</strong> (buf[<span class="hl-number">0</span>] &amp; <span class="hl-number">0x80</span>) {
-        LOG_E(<span class="hl-string">"no touch"</span>);
-        <strong class="hl-keyword">return</strong> -RT_EOK;
+    <em class="hl-comment">//gt911_client.client_addr = GT911_ADDRESS_HIGH;</em>
+    cst826_client.client_addr = CST826_SALVE_ADDR;
+    <em class="hl-comment">/* register touch device */</em>
+    touch_device-&gt;info = cst826_info;       <em class="hl-comment">//这里就是手动配置 TP 信息赋值的地方，如果这里有赋值就不需要实现 get_info 这个函数</em>
+    <em class="hl-comment">//touch_device-&gt;info.type = RT_TOUCH_TYPE_CAPACITANCE;</em>
+    <em class="hl-comment">//touch_device-&gt;info.vendor = RT_TOUCH_VENDOR_GT;</em>
+    rt_memcpy(&amp;touch_device-&gt;config, cfg, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_config));
+    <em class="hl-comment">//touch_device-&gt;ops = &amp;gt911_touch_ops;</em>
+    touch_device-&gt;ops = &amp;cst826_touch_ops;
+
+    <strong class="hl-keyword">if</strong> (RT_EOK != rt_hw_touch_register(touch_device, name, RT_DEVICE_FLAG_INT_RX, RT_NULL)) {
+        <em class="hl-comment">//LOG_E("touch device gt911 init failed !!!");</em>
+        LOG_E(<span class="hl-string">"touch device cst826 init failed !!!"</span>);
+        <strong class="hl-keyword">return</strong> -RT_ERROR;
     }
 
-    info-&gt;point_num = buf[<span class="hl-number">0</span>] &amp; <span class="hl-number">0x0F</span>;
-    <strong class="hl-keyword">for</strong> (i = <span class="hl-number">0</span>; i &lt; info-&gt;point_num; i++) {
-        buf[<span class="hl-number">0</span>] = CST826_X_COORD_H + <span class="hl-number">5</span> * i;
-        <strong class="hl-keyword">if</strong> (rt_i2c_master_send(bus, CST826_SALVE_ADDR, RT_I2C_WRITE, buf, <span class="hl-number">1</span>) != <span class="hl-number">1</span>) {
-            LOG_E(<span class="hl-string">"send config failed"</span>);
-            <strong class="hl-keyword">return</strong> -RT_ERROR;
-        }
-
-        <strong class="hl-keyword">if</strong> (rt_i2c_master_recv(bus, CST826_SALVE_ADDR, RT_I2C_READ, read_buf, <span class="hl-number">4</span>) != <span class="hl-number">4</span>) {
-            LOG_E(<span class="hl-string">"read point coord failed"</span>);
-            <strong class="hl-keyword">return</strong> -RT_ERROR;
-        }
-
-        info-&gt;x[i] = (read_buf[<span class="hl-number">0</span>] &lt;&lt; <span class="hl-number">8</span>) | read_buf[<span class="hl-number">1</span>];
-        info-&gt;y[i] = (read_buf[<span class="hl-number">2</span>] &lt;&lt; <span class="hl-number">8</span>) | read_buf[<span class="hl-number">3</span>];
-        info-&gt;weight[i] = <span class="hl-number">1</span>; <em class="hl-comment">// Placeholder for weight, as CST826 may not support it</em>
-    }
-
+    <em class="hl-comment">//LOG_I("touch device gt911 init success");</em>
+    LOG_I(<span class="hl-string">"touch device cst826 init success"</span>);
     <strong class="hl-keyword">return</strong> RT_EOK;
 }
 
-<strong class="hl-keyword">static</strong> <strong class="hl-keyword">void</strong> cst826_touch_device_register(<strong class="hl-keyword">struct</strong> rt_touch_device *touch_device, <strong class="hl-keyword">const</strong> <strong class="hl-keyword">char</strong> *name)
-{
-    <strong class="hl-keyword">if</strong> (rt_hw_touch_register(touch_device, name, RT_DEVICE_FLAG_INT_RX, RT_NULL) != RT_EOK) {
-        LOG_E(<span class="hl-string">"touch device cst826 register failed !!!"</span>);
-    } <strong class="hl-keyword">else</strong> {
-        LOG_I(<span class="hl-string">"touch device cst826 register success"</span>);
-    }
-}
-
+<em class="hl-comment">/*
+ * 这个函数主要实现对 GPIO 的初始化，这个函数只需修改函数名即可复用
+ */</em>
+<em class="hl-comment">//static int rt_gt911_gpio_cfg()</em>
 <strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> cst826_gpio_cfg()
 {
     <strong class="hl-keyword">unsigned</strong> <strong class="hl-keyword">int</strong> g, p;
     <strong class="hl-keyword">long</strong> pin;
 
+    <em class="hl-comment">// RST</em>
     pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
     g = GPIO_GROUP(pin);
     p = GPIO_GROUP_PIN(pin);
     hal_gpio_direction_input(g, p);
 
+    <em class="hl-comment">// INT</em>
     pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
     g = GPIO_GROUP(pin);
     p = GPIO_GROUP_PIN(pin);
@@ -277,30 +773,16 @@ config AIC_TOUCH_PANEL_NAME
     <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
 }
 
-<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> cst826_hw_init(<strong class="hl-keyword">struct</strong> rt_touch_config *cfg)
-{
-    <strong class="hl-keyword">struct</strong> rt_touch_device *touch_device;
-
-    touch_device = (<strong class="hl-keyword">struct</strong> rt_touch_device *)rt_malloc(<strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
-    <strong class="hl-keyword">if</strong> (touch_device == RT_NULL) {
-        LOG_E(<span class="hl-string">"touch device malloc fail"</span>);
-        <strong class="hl-keyword">return</strong> -RT_ENOMEM;
-    }
-    rt_memset((<strong class="hl-keyword">void</strong> *)touch_device, <span class="hl-number">0x00</span>, <strong class="hl-keyword">sizeof</strong>(<strong class="hl-keyword">struct</strong> rt_touch_device));
-
-    touch_device-&gt;info = cst826_info;     <em class="hl-comment">// 如果不需要手动获取信息，可以在这里赋值手动填写的信息</em>
-    touch_device-&gt;ops = &amp;cst826_touch_ops;
-
-    cst826_touch_device_register(touch_device, AIC_TOUCH_PANEL_NAME);
-
-    <strong class="hl-keyword">return</strong> RT_EOK;
-}
-
-<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> cst826_port(<strong class="hl-keyword">void</strong>)
+<em class="hl-comment">/*
+ * 这个函数主要注册整个设备，改个名字和里面的函数调用名即可复用,
+ */</em>
+<em class="hl-comment">//static int rt_hw_gt911_port(void)</em>
+<strong class="hl-keyword">static</strong> <strong class="hl-keyword">int</strong> rt_hw_cst826_port(<strong class="hl-keyword">void</strong>)
 {
     <strong class="hl-keyword">struct</strong> rt_touch_config cfg;
     rt_uint8_t rst_pin;
 
+    <em class="hl-comment">//rt_gt911_gpio_cfg();</em>
     cst826_gpio_cfg();
 
     rst_pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
@@ -312,113 +794,20 @@ config AIC_TOUCH_PANEL_NAME
     rt_pm_set_pin_wakeup_source(cfg.irq_pin.pin);
 #endif
 
-    cst826_hw_init(&amp;cfg);
+    rt_hw_gt911_init(AIC_TOUCH_PANEL_NAME, &amp;cfg);
 
     <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
 }
-INIT_DEVICE_EXPORT(cst826_port);
-</pre></div>
-                    <div class="- topic/note note tip note_tip" id="touch_revise_existing_gt911_drive__note_pqm_sp1_b2c" data-ofbid="touch_revise_existing_gt911_drive__note_pqm_sp1_b2c"><span class="note__title">提示：</span> 
-                        <ul class="- topic/ul ul" id="touch_revise_existing_gt911_drive__ol_f4h_tp1_b2c" data-ofbid="touch_revise_existing_gt911_drive__ol_f4h_tp1_b2c">
-                            <li class="- topic/li li" data-ofbid="d55816e181__20250409171035"><strong class="+ topic/ph hi-d/b ph b">寄存器配置</strong>：根据 CST826 的数据手册确认每个寄存器的地址和功能，并相应地调整代码中的寄存器配置。</li>
-                            <li class="- topic/li li" data-ofbid="d55816e186__20250409171035"><strong class="+ topic/ph hi-d/b ph b">触摸点数</strong>：如果 CST826 支持多点触控，确保<code class="+ topic/ph pr-d/codeph ph codeph">info-&gt;point_num</code>
-                                    和<code class="+ topic/ph pr-d/codeph ph codeph">info-&gt;x</code>、<code class="+ topic/ph pr-d/codeph ph codeph">info-&gt;y</code>、<code class="+ topic/ph pr-d/codeph ph codeph">info-&gt;weight</code>
-                                数组的大小足够大以存储所有可能的触摸点。</li>
-                            <li class="- topic/li li" data-ofbid="d55816e203__20250409171035"><strong class="+ topic/ph hi-d/b ph b">权重（Weight）</strong>：如果 CST826
-                                    不支持触摸点的权重，可以将<code class="+ topic/ph pr-d/codeph ph codeph">info-&gt;weight</code> 设置为固定值或忽略该字段。</li>
-                        </ul>
+
+<em class="hl-comment">//INIT_DEVICE_EXPORT(rt_hw_gt911_port);</em>
+INIT_DEVICE_EXPORT(rt_hw_cst826_port);
+</pre>
                     </div>
                 </li>
-                <li class="- topic/li li" data-ofbid="d55816e214__20250409171035">
-                    <p class="- topic/p p" data-ofbid="d55816e216__20250409171035"><strong class="+ topic/ph hi-d/b ph b">修改源代码中的 <span class="+ topic/ph sw-d/filepath ph filepath">.h</span> 文件</strong></p>
-                    <div class="- topic/p p" data-ofbid="d55816e223__20250409171035">根据 CST826 规格书，确保所有相关的宏定义和寄存器地址正确无误。<div class="table-container"><table class="- topic/table table frame-all" id="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c" data-ofbid="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c" data-cols="5"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title"><span class="+ topic/ph sw-d/filepath ph filepath">.h</span> 文件修改示例说明</span></caption><colgroup><col style="width:13.717421124828533%"/><col style="width:27.434842249657066%"/><col style="width:16.59807956104252%"/><col style="width:27.023319615912207%"/><col style="width:15.22633744855967%"/></colgroup><thead class="- topic/thead thead">
-                                    <tr class="- topic/row">
-                                        <th class="- topic/entry entry colsep-1 rowsep-1" id="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__1" rowspan="2"><p class="- topic/p p" data-ofbid="d55816e250__20250409171035">功能</p></th>
-                                        <th class="- topic/entry entry colsep-1 rowsep-1" id="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2" colspan="2"><p class="- topic/p p" data-ofbid="d55816e254__20250409171035">GT911</p></th>
-                                        <th class="- topic/entry entry colsep-0 rowsep-1" id="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3" colspan="2"><p class="- topic/p p" data-ofbid="d55816e258__20250409171035">CST826</p></th>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <th class="- topic/entry entry colsep-1 rowsep-1" id="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4"><p class="- topic/p p" data-ofbid="d55816e265__20250409171035">参数</p></th>
-                                        <th class="- topic/entry entry colsep-1 rowsep-1" id="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e269__20250409171035">配置</p></th>
-                                        <th class="- topic/entry entry colsep-1 rowsep-1" id="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e273__20250409171035">参数</p></th>
-                                        <th class="- topic/entry entry colsep-0 rowsep-1" id="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e277__20250409171035">配置</p></th>
-                                    </tr>
-                                </thead><tbody class="- topic/tbody tbody">
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__1 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7" colspan="5"><p class="- topic/p p" data-ofbid="d55816e287__20250409171035">寄存器</p></td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__1" rowspan="2">
-                                            <p class="- topic/p p" data-ofbid="d55816e295__20250409171035">设置 I<sup class="+ topic/ph hi-d/sup ph sup">2</sup>C 地址</p>
-                                        </td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4"><p class="- topic/p p" data-ofbid="d55816e303__20250409171035">GT911_ADDRESS_HIGH</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e307__20250409171035">0x5D</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e311__20250409171035">CST826_SALVE_ADDR</p></td>
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e315__20250409171035">0x15</p></td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4"><p class="- topic/p p" data-ofbid="d55816e322__20250409171035">GT911_ADDRESS_LOW</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e326__20250409171035">0x14</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e330__20250409171035">-</p></td>
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e334__20250409171035">-</p></td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__1" rowspan="3">
-                                            <p class="- topic/p p" data-ofbid="d55816e342__20250409171035">配置和控制触摸控制器</p>
-                                        </td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4"><p class="- topic/p p" data-ofbid="d55816e347__20250409171035">GT911_COMMAND_REG</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e351__20250409171035">0x8040</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e355__20250409171035">CST826_WORK_MODE</p></td>
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e359__20250409171035">0x00</p></td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4"><p class="- topic/p p" data-ofbid="d55816e366__20250409171035">GT911_CONFIG_REG</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e370__20250409171035">0x8047</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e374__20250409171035">CST826_PROX_STATE</p></td>
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e378__20250409171035">0x01</p></td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4"><p class="- topic/p p" data-ofbid="d55816e386__20250409171035">GT911_MOD_SWT_REG</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e390__20250409171035">0x804D</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e394__20250409171035">CST826_TOUCH_NUM</p></td>
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e398__20250409171035">0x02</p></td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__1">
-                                            <p class="- topic/p p" data-ofbid="d55816e406__20250409171035">读取触摸点的信息</p>
-                                        </td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4">
-                                            <p class="- topic/p p" data-ofbid="d55816e412__20250409171035">T911_POINT1_REG 到 GT911_POINT5_REG</p>
-                                        </td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e417__20250409171035">分别为从 0x814F 到 0x816F 的值</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e421__20250409171035">CST826_TOUCH1_XH 到 CST826_TOUCH1_AREA </p></td>
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e425__20250409171035">分别为从 0x02 到 0x08 的值</p></td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__1 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7" colspan="5">
-                                            <p class="- topic/p p" data-ofbid="d55816e433__20250409171035">宏定义</p>
-                                        </td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__1">
-                                            <p class="- topic/p p" data-ofbid="d55816e442__20250409171035">最大支持的触摸点数</p>
-                                        </td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4"><p class="- topic/p p" data-ofbid="d55816e447__20250409171035">GT911_MAX_TOUCH</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e451__20250409171035">5</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e455__20250409171035">CST826_MAX_TOUCH </p></td>
-                                        <td class="- topic/entry entry colsep-0 rowsep-1" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e459__20250409171035">2</p></td>
-                                    </tr>
-                                    <tr class="- topic/row">
-                                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__1"><p class="- topic/p p" data-ofbid="d55816e466__20250409171035">每个触摸点的信息长度</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__4"><p class="- topic/p p" data-ofbid="d55816e470__20250409171035">GT911_POINT_INFO_NUM</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__2 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__5"><p class="- topic/p p" data-ofbid="d55816e474__20250409171035">8</p></td>
-                                        <td class="- topic/entry entry colsep-1 rowsep-0" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__6"><p class="- topic/p p" data-ofbid="d55816e478__20250409171035">CST826_POINT_LEN </p></td>
-                                        <td class="- topic/entry entry colsep-0 rowsep-0" headers="touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__3 touch_revise_existing_gt911_drive__table_g4k_tq1_b2c__entry__7"><p class="- topic/p p" data-ofbid="d55816e482__20250409171035">6</p></td>
-                                    </tr>
-                                </tbody></table></div><ul class="- topic/ul ul" id="touch_revise_existing_gt911_drive__ul_aph_hq1_b2c" data-ofbid="touch_revise_existing_gt911_drive__ul_aph_hq1_b2c">
-                            <li class="- topic/li li" data-ofbid="d55816e490__20250409171035">
-                                <p class="- topic/p p" data-ofbid="d55816e492__20250409171035">GT911 寄存器地址和功能修改前的代码示例如下：</p>
-                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_zsr_lq1_b2c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_zsr_lq1_b2c">#ifndef __GT911_H__
+                <li class="- topic/li li" data-ofbid="d56986e143__20250519091508">
+                    <p class="- topic/p p" data-ofbid="d56986e145__20250519091508"><strong class="+ topic/ph hi-d/b ph b">修改源代码<span class="+ topic/ph sw-d/filepath ph filepath">gt911.h</span> 文件如下</strong></p>
+                    <p class="- topic/p p" data-ofbid="d56986e152__20250519091508">修改前：</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_fd3_nhq_w2c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_fd3_nhq_w2c">#ifndef __GT911_H__
 #<span class="hl-directive">define</span> __GT911_H__
 
 #include <span class="hl-string">"drivers/touch.h"</span>
@@ -450,10 +839,8 @@ INIT_DEVICE_EXPORT(cst826_port);
 #<span class="hl-directive">define</span> GT911_CHECK_SUM <span class="hl-number">0x80FF</span>
 
 #endif <em class="hl-comment">/* gt911.h */</em></pre>
-                            </li>
-                            <li class="- topic/li li" data-ofbid="d55816e499__20250409171035">
-                                <div class="- topic/p p" data-ofbid="d55816e501__20250409171035">CST826
-                                    寄存器地址和功能修改后的代码示例：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_tgp_mq1_b2c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_tgp_mq1_b2c">#ifndef __CST826_H__
+                    <p class="- topic/p p" data-ofbid="d56986e158__20250519091508">修改后：</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="touch_revise_existing_gt911_drive__codeblock_ffv_4hq_w2c" data-ofbid="touch_revise_existing_gt911_drive__codeblock_ffv_4hq_w2c">#ifndef __CST826_H__
 #<span class="hl-directive">define</span> __CST826_H__
 
 #include &lt;aic_hal_gpio.h&gt;
@@ -489,9 +876,7 @@ INIT_DEVICE_EXPORT(cst826_port);
 #<span class="hl-directive">define</span> AIC_TOUCH_PANEL_CST826_X_RANGE  <span class="hl-number">480</span>
 #<span class="hl-directive">define</span> AIC_TOUCH_PANEL_CST826_Y_RANGE  <span class="hl-number">272</span>
 
-#endif</pre></div>
-                            </li>
-                        </ul></div>
+#endif</pre>
                 </li>
             </ol></div>
     </div>
@@ -529,7 +914,7 @@ INIT_DEVICE_EXPORT(cst826_port);
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

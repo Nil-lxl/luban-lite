@@ -8,6 +8,9 @@
 #include <rtthread.h>
 #include "rtdevice.h"
 #include <aic_core.h>
+#ifdef AIC_PM_INDEPENDENT_POWER_KEY
+#include <drv_fb.h>
+#endif
 
 static struct rt_lptimer lptimer;
 
@@ -31,11 +34,17 @@ static void pm_timer_timeout(void *parameter)
 
     if (sleep_mode == PM_SLEEP_MODE_NONE)
     {
+        #ifdef AIC_PM_INDEPENDENT_POWER_KEY
+        panel_backlight_disable(0, 0);
+        #endif
         rt_pm_module_release(PM_POWER_ID, PM_SLEEP_MODE_NONE);
     }
     else
     {
         rt_pm_module_request(PM_POWER_ID, PM_SLEEP_MODE_NONE);
+        #ifdef AIC_PM_INDEPENDENT_POWER_KEY
+        panel_backlight_enable(0, 0);
+        #endif
     }
 }
 

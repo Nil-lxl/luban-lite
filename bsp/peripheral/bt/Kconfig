@@ -1,9 +1,9 @@
-menuconfig AIC_BT_BT8858A
-    bool "Using BT8858A driver"
+menuconfig AIC_USING_BT
+    bool "Using Bluetooth"
     default n
     select RT_USING_TIMER_SOFT
 
-    #if AIC_BT_BT8858A
-    #source "bsp/peripheral/bt/bt8858a/Kconfig"
-    #endif
+if AIC_USING_BT
+    source "bsp/peripheral/bt/bt8858a/Kconfig"
+endif
 

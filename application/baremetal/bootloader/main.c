@@ -79,6 +79,7 @@ static void aic_board_heap_init(enum boot_device bd)
 
 static int board_init(enum boot_device bd)
 {
+    int brate;
     int cons_uart;
 
     /* target/<chip>/<board>/board.c */
@@ -99,7 +100,11 @@ static int board_init(enum boot_device bd)
     boot_time_trace("Heap init done");
 
     cons_uart = AIC_BOOTLOADER_CONSOLE_UART;
+    brate = uart_get_cur_baudrate(cons_uart);
     uart_init(cons_uart);
+    uart_reset(cons_uart);
+    if (brate > 0)
+        uart_config_update(cons_uart, brate);
     stdio_set_uart(cons_uart);
     boot_time_trace("Console UART ready");
 

@@ -23,7 +23,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-s32 player_audio_render_share_play();
+s32 player_audio_render_share_play(char *file_path);
 
 #ifdef __cplusplus
 #if __cplusplus

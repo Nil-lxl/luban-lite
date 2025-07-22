@@ -193,6 +193,7 @@ sfud_err sfud_read_cr(const sfud_flash *flash, uint8_t *status);
 sfud_err sfud_read_secur(const sfud_flash *flash, uint8_t reg, uint8_t *data);
 sfud_err sfud_erase_secur(const sfud_flash *flash, uint8_t reg);
 sfud_err sfud_write_secur(const sfud_flash *flash, uint8_t reg, size_t size, const uint8_t *data);
+sfud_err sfud_read_unique_id(const sfud_flash *flash, uint8_t *send_bytes, uint8_t id_len, uint8_t *data);
 
 #ifdef __cplusplus
 }

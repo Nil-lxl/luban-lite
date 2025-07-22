@@ -66,7 +66,9 @@ static int wsa_init_done = 0;
 
 #include <sys/types.h>
 #include <sys/socket.h>
-// #include <sys/select.h>
+#ifdef RT_USING_SAL
+#include <sys/select.h>
+#endif
 #if RT_VER_NUM >= 0x40004
 #include <sys/ioctl.h>
 #include <sys/errno.h>

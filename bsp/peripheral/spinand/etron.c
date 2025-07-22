@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -44,11 +44,11 @@ static int em73c_ooblayout_user(struct aic_spinand *flash, int section,
 static int em73d_ooblayout_user(struct aic_spinand *flash, int section,
                             struct aic_oob_region *region)
 {
-    if (section > 3)
+    if (section > 1)
       return -SPINAND_ERR;
 
-    region->offset = (18 * section) + 0;
-    region->length = 18;
+    region->offset = 0;
+    region->length = 72;
 
     return 0;
 }

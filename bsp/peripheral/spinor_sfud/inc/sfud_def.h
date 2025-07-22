@@ -205,6 +205,14 @@ extern void sfud_log_info(const char *format, ...);
 #define SFUD_WRITE_MAX_PAGE_SIZE                        256
 #endif
 
+#ifndef SFUD_CMD_FAST_READ
+#define SFUD_CMD_FAST_READ                             0x0B
+#endif
+
+#ifndef SFUD_MIN_FREQ_FAST_READ
+#define SFUD_MIN_FREQ_FAST_READ                        55000000
+#endif
+
 /* send dummy data for read data */
 #ifndef SFUD_DUMMY_DATA
 #define SFUD_DUMMY_DATA                                0xFF
@@ -367,10 +375,11 @@ typedef struct {
     uint32_t init_hz;                            /** Reading SFDP, bus frequency should be <=50MHz, this is requirement from SPEC */
     uint32_t bus_hz;                             /** Working bus frequency */
 #endif
-
+    void *get_uid;
 } sfud_flash, *sfud_flash_t;
 
 typedef void (*quad_enable_func)(sfud_flash *flash);
+typedef int (*get_uid_func)(sfud_flash *flash, uint8_t *data);
 #ifdef __cplusplus
 }
 #endif

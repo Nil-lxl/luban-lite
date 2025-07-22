@@ -34,6 +34,13 @@ int usb_dc_deinit(void);
 int usbd_set_address(const uint8_t addr);
 
 /**
+ * @brief Set remote wakeup feature
+ *
+ * @return On success will return 0, and others indicate fail.
+ */
+int usbd_set_remote_wakeup(void);
+
+/**
  * @brief Get USB device speed
  *
  * @param[in] port port index
@@ -180,6 +187,7 @@ void usbd_event_ep_in_complete_handler(uint8_t ep, uint32_t nbytes);
  */
 void usbd_event_ep_out_complete_handler(uint8_t ep, uint32_t nbytes);
 
+void usbd_req_test_mode(uint8_t test_mode);
 #ifdef __cplusplus
 }
 #endif

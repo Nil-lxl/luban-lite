@@ -39,6 +39,78 @@ rt_device_t nand_dev;
 
 rt_device_t mmc_dev;
 u32 block_size;
+char devname[8] = { 0 };
+
+#include <aic_partition.h>
+#include <disk_part.h>
+static unsigned long mmc_write(struct blk_desc *block_dev, u64 start,
+                               u64 blkcnt, void *buffer)
+{
+    return rt_device_write(block_dev->priv, start, (void *)buffer, blkcnt);
+}
+
+static unsigned long mmc_read(struct blk_desc *block_dev, u64 start, u64 blkcnt,
+                              const void *buffer)
+{
+    return rt_device_read(block_dev->priv, start, (void *)buffer, blkcnt);
+}
+
+static int get_mmc_devname_by_partname(const char *partname, char *devname, int len)
+{
+    rt_device_t dev;
+    rt_int32_t id = 0;
+    struct aic_partition *parts, *part;
+    struct disk_blk_ops ops;
+    struct blk_desc dev_desc;
+    char dname[8] = { 0 };
+
+    if (!strncmp("mmc", partname, 3) || !strncmp("sd", partname, 2)) {
+        strcpy(devname, partname);
+        return 0;
+    }
+
+    id = (aic_get_boot_device() == BD_SDMC0) ? 0 : 1;
+
+    ops.blk_write = mmc_write;
+    ops.blk_read = mmc_read;
+    aic_disk_part_set_ops(&ops);
+
+    rt_snprintf(dname, sizeof(dname), "mmc%d", id);
+    dev = rt_device_find(dname);
+    if (dev == RT_NULL) {
+        memset(dname, 0, sizeof(dname));
+        rt_snprintf(dname, sizeof(dname), "sd%d", id);
+        dev = rt_device_find(dname);
+        if (dev == RT_NULL) {
+            pr_err("Not found %s dev.\n", dname);
+            return -1;
+        }
+    }
+
+    rt_device_open(dev, RT_DEVICE_FLAG_RDWR);
+    dev_desc.blksz = 512;
+    dev_desc.lba_count = 0;
+    dev_desc.priv = dev;
+    parts = aic_disk_get_parts(&dev_desc);
+    if (parts == RT_NULL) {
+        pr_err("Not found dev %s partition info.\n", dname);
+        return -1;
+    }
+
+    part = aic_part_get_byname(parts, partname);
+    if (part == RT_NULL) {
+        pr_err("Not found dev %s %s partition info.\n", dname, partname);
+        aic_part_free(parts);
+        rt_device_close(dev);
+        return -1;
+    }
+    rt_snprintf(devname, len, "%sp%d", dname, part->index);
+
+    aic_part_free(parts);
+    rt_device_close(dev);
+
+    return 0;
+}
 
 int aic_ota_find_part(char *partname)
 {
@@ -78,10 +150,13 @@ int aic_ota_find_part(char *partname)
             break;
 #endif
         case BD_SDMC0:
-            mmc_dev = rt_device_find(partname);
-            if (mmc_dev == RT_NULL) {
-                LOG_E("can't find %s device!", partname);
-                return RT_ERROR;
+        case BD_SDMC1:
+            if (!get_mmc_devname_by_partname(partname, devname, 8)) {
+                mmc_dev = rt_device_find(devname);
+                if (mmc_dev == RT_NULL) {
+                    LOG_E("can't find %s device!", devname);
+                    return RT_ERROR;
+                }
             }
             break;
         default:
@@ -222,7 +297,8 @@ int aic_ota_mmc_erase_part(void)
 
     p[0] = 0;//offset is 0
     p[1] = get_data.sector_count;
-    block_size = get_data.block_size;
+    block_size = 512;
+
 
     ret = rt_device_control(mmc_dev, RT_DEVICE_CTRL_BLK_ERASE, (void *)p);
     if (ret != RT_EOK) {
@@ -272,6 +348,7 @@ int aic_ota_erase_part(void)
             break;
 #endif
         case BD_SDMC0:
+        case BD_SDMC1:
             ret = aic_ota_mmc_erase_part();
             break;
         default:
@@ -310,6 +387,7 @@ int aic_ota_part_write(uint32_t addr, const uint8_t *buf, size_t size)
             break;
 #endif
         case BD_SDMC0:
+        case BD_SDMC1:
             ret = aic_ota_mmc_write(addr, buf, size);
             if (ret < 0) {
                 LOG_E(

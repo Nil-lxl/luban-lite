@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -85,6 +85,7 @@
 #endif
 
 static struct aic_pwm_arg g_pwm_args[AIC_PWM_CH_NUM] = {{0}};
+static bool g_pwm_init_flag = 0;
 
 static inline void pwm_writel(u32 val, int reg)
 {
@@ -472,6 +473,10 @@ int hal_pwm_init(void)
     int i, ret = 0;
     int clock_rate;
 
+    if (g_pwm_init_flag == 1) {
+        hal_log_info("PWM already initialized.\n");
+        return 0;
+    }
     ret = hal_clk_set_freq(CLK_PWM, PWM_CLK_RATE);
     if (ret < 0) {
         hal_log_err("Failed to set PWM clk %d\n", PWM_CLK_RATE);
@@ -505,6 +510,8 @@ int hal_pwm_init(void)
         g_pwm_args[i].tb_clk_rate = PWM_DEFAULT_TB_CLK_RATE;
         g_pwm_args[i].clk_rate = clock_rate;
     }
+
+    g_pwm_init_flag = 1;
 
     return 0;
 }

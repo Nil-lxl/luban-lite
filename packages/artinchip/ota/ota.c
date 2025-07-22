@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -339,7 +339,8 @@ char *ota_upgrade_get_partname(char *file_name)
         LOG_I("rodataAB_now = %s", now);
         if (strncmp(now, "A", 1) == 0) {
             LOG_I("Upgrade B rodatafs");
-            if (boot_dev == BD_SDMC0)
+            if ((boot_dev == BD_SDMC0 || boot_dev == BD_SDMC1) &&
+                (!strncmp("mmc", finfo.device[i], 3) || !strncmp("sd", finfo.device[i], 2)))
                 increment_last_digit(finfo.device[i]);
             else
                 strncat(finfo.device[i], "_r", sizeof(finfo.device[i]) - strlen(finfo.device[i]) - 1);
@@ -357,7 +358,8 @@ char *ota_upgrade_get_partname(char *file_name)
         LOG_I("dataAB_now = %s", now);
         if (strncmp(now, "A", 1) == 0) {
             LOG_I("Upgrade B datafs");
-            if (boot_dev == BD_SDMC0)
+            if ((boot_dev == BD_SDMC0 || boot_dev == BD_SDMC1) &&
+                (!strncmp("mmc", finfo.device[i], 3) || !strncmp("sd", finfo.device[i], 2)))
                 increment_last_digit(finfo.device[i]);
             else
                 strncat(finfo.device[i], "_r", sizeof(finfo.device[i]) - strlen(finfo.device[i]) - 1);
@@ -375,8 +377,9 @@ char *ota_upgrade_get_partname(char *file_name)
         LOG_I("osAB_now = %s", now);
         if (strncmp(now, "A", 1) == 0) {
             LOG_I("Upgrade B system");
-            if (boot_dev == BD_SDMC0)
-                increment_last_digit(finfo.device[i]);
+            if ((boot_dev == BD_SDMC0 || boot_dev == BD_SDMC1) &&
+                (!strncmp("mmc", finfo.device[i], 3) || !strncmp("sd", finfo.device[i], 2)))
+                    increment_last_digit(finfo.device[i]);
             else
                 strncat(finfo.device[i], "_r", sizeof(finfo.device[i]) - strlen(finfo.device[i]) - 1);
 

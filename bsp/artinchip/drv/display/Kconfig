@@ -77,6 +77,15 @@ if AIC_DISP_RGB && !AIC_DISP_PQ_TOOL
 source "bsp/artinchip/drv/display/Kconfig.rgb"
 endif
 
+if AIC_DISP_MIPI_DSI
+config AIC_DSI_LEGACY_PACKET_CONFIG
+    bool "enable MIPI-DSI legacy packet config"
+    default n
+    help
+      Choose this option if you have a need for the legacy luban-lite
+      sdk version support. If in doubt, say "N".
+endif
+
 choice
     prompt "select framebuffer format"
     default AICFB_ARGB8888

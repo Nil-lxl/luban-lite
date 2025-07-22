@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,6 +14,9 @@
 #include <rtconfig.h>
 #include "diskio.h"
 #include "mtd.h"
+#ifdef LPKG_USING_LEVELX
+#include "lx_api.h"
+#endif
 
 #if defined(__cplusplus)
 extern "C" {
@@ -25,6 +28,9 @@ struct spinor_blk_device {
 #ifdef AIC_FATFS_ENABLE_WRITE_IN_SPINOR
     uint32_t length;
     uint8_t *buf;
+#ifdef LPKG_USING_LEVELX
+    LX_NOR_FLASH    *lx_nor_flash;
+#endif
 #endif
 };
 

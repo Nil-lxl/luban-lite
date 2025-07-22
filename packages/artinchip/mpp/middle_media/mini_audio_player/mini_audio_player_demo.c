@@ -21,17 +21,151 @@
 #include <shell.h>
 #include <artinchip_fb.h>
 #include "mini_audio_player.h"
+#include "aic_audio_render_manager.h"
+#include "aic_parser.h"
 #include "mpp_log.h"
 
 #ifdef LPKG_USING_CPU_USAGE
 #include "cpu_usage.h"
 #endif
 
-#define AUDIO_PLAYER_DEMO_FILE_MAX_NUM 128
-#define AUDIO_PLAYER_DEMO_FILE_PATH_MAX_LEN 256
+#define AUDIO_PLAYER_FILE_MAX_NUM 128
+#define AUDIO_PLAYER_FILE_PATH_MAX_LEN 256
+
+unsigned char g_file_path[AUDIO_PLAYER_FILE_PATH_MAX_LEN] = {0};
+#define MINI_AUDIO_PLAYER_WAVE_BUFF_SIZE (8*1024)
+
+static void audio_play(struct aic_parser *parser, struct aic_audio_render *render)
+{
+    int ret;
+    struct aic_parser_packet packet;
+    int wav_buff_size = MINI_AUDIO_PLAYER_WAVE_BUFF_SIZE;
+    unsigned char *wav_buff = aicos_malloc(MEM_DEFAULT, wav_buff_size);
+    if (wav_buff == NULL) {
+        loge("aicos_malloc error\n");
+        goto out;
+    }
+
+    while (1) {
+        memset(&packet, 0, sizeof(struct aic_parser_packet));
+        ret = aic_parser_peek(parser, &packet);
+        if (ret == PARSER_EOS) {
+            break;
+        }
+        if (packet.size > wav_buff_size) {
+            loge("pkt size[%d] larger than wav_buf_size[%d]\n", packet.size, wav_buff_size);
+            break;
+        }
+        packet.data = wav_buff;
+        aic_parser_read(parser, &packet);
+        aic_audio_render_rend(render, packet.data, packet.size);
+        usleep(1000);
+    }
+
+out:
+    if (wav_buff)
+        free(wav_buff);
+}
+
+static int set_render_param(struct aic_parser *parser, struct aic_audio_render *render)
+{
+    int value;
+    struct aic_audio_render_attr attr;
+    struct aic_parser_av_media_info media_info;
+    if (aic_parser_get_media_info(parser, &media_info)) {
+        loge("aic_parser_get_media_info fail\n");
+        return -1;
+    }
+
+    value = AUDIO_RENDER_SCENE_HIGHEST_PRIORITY;
+    if (aic_audio_render_control(render,
+                                 AUDIO_RENDER_CMD_SET_SCENE_PRIORITY,
+                                 &value)) {
+        loge("aic_audio_render_control set priority failed\n");
+        return -1;
+    }
+
+    if (aic_audio_render_control(render,
+                                 AUDIO_RENDER_CMD_CLEAR_CACHE,
+                                 NULL)) {
+        loge("aic_audio_render_control clear cache failed\n");
+        return -1;
+    }
+
+    attr.bits_per_sample = media_info.audio_stream.bits_per_sample;
+    attr.channels = media_info.audio_stream.nb_channel;
+    attr.sample_rate = media_info.audio_stream.sample_rate;
+    /*Set warnning tone audio params*/
+    if (aic_audio_render_control(render,
+                                AUDIO_RENDER_CMD_SET_ATTR,
+                                &attr)) {
+        loge("aic_audio_render_control set new attribute failed\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+static int play_wav(unsigned char *file_path)
+{
+    s32 ret = 0;
+    struct aic_audio_render_attr ao_attr;
+    struct aic_audio_render *render = NULL;
+    struct audio_render_create_params create_params;
+    struct aic_parser *parser = NULL;
+
+    aic_parser_create(file_path, &parser);
+    if (parser == NULL) {
+        loge("parser create failed");
+        goto exit;
+    }
+    if (aic_parser_init(parser)) {
+        loge("aic_parser_init fail\n");
+        goto exit;
+    }
+
+    create_params.dev_id = 0;
+    create_params.scene_type = AUDIO_RENDER_SCENE_WARNING_TONE;
+    if (aic_audio_render_create(&render, &create_params)) {
+        loge("aic_audio_render_create failed\n");
+        goto exit;
+    }
+
+    if (aic_audio_render_init(render)) {
+        loge("aic_audio_render_init failed\n");
+        ret = -1;
+        goto exit;
+    }
+
+    if (aic_audio_render_control(render,
+                                AUDIO_RENDER_CMD_GET_ATTR,
+                                &ao_attr)) {
+        loge("aic_audio_render_control set new attribute failed\n");
+        return -1;
+    }
+
+    set_render_param(parser, render);
+
+    audio_play(parser, render);
+
+exit:
+    /*Play warnning tone over, change to the last audio attribute*/
+    if (aic_audio_render_control(render,
+                                AUDIO_RENDER_CMD_SET_ATTR,
+                                &ao_attr))  {
+        loge("aic_audio_render_control set the last attribute failed\n");
+    }
+
+    if (render)
+        aic_audio_render_destroy(render);
+    if (parser)
+        aic_parser_destroy(parser);
+
+    return ret;
+}
 
 struct audio_file_list {
-    char *file_path[AUDIO_PLAYER_DEMO_FILE_MAX_NUM];
+    char *file_path[AUDIO_PLAYER_FILE_MAX_NUM];
     int file_num;
 };
 
@@ -44,6 +178,7 @@ static void print_help(const char* prog)
         "\t-t                             directory of test files\n"
         "\t-l                             loop time\n"
         "\t-f                             set loop flag\n"
+        "\t-w                             set wav file\n"
         "\t-h                             help\n\n"
         "---------------------------------------------------------------------------------------\n"
         "-------------------------------control key while playing-------------------------------\n"
@@ -86,7 +221,7 @@ static int read_dir(char* path, struct audio_file_list *files)
         file_path_len += 1; // '/'
         file_path_len += strlen(dir_file->d_name);
         printf("file_path_len:%d\n",file_path_len);
-        if (file_path_len > AUDIO_PLAYER_DEMO_FILE_PATH_MAX_LEN-1) {
+        if (file_path_len > AUDIO_PLAYER_FILE_PATH_MAX_LEN-1) {
             printf("%s too long \n",dir_file->d_name);
             continue;
         }
@@ -97,7 +232,7 @@ static int read_dir(char* path, struct audio_file_list *files)
         strcat(files->file_path[files->file_num], dir_file->d_name);
         printf("i: %d, filename: %s\n", files->file_num, files->file_path[files->file_num]);
         files->file_num ++;
-        if (files->file_num >= AUDIO_PLAYER_DEMO_FILE_MAX_NUM)
+        if (files->file_num >= AUDIO_PLAYER_FILE_MAX_NUM)
             break;
     }
     closedir(dir);
@@ -109,7 +244,7 @@ static int read_file(char* path, struct audio_file_list *files)
     int file_path_len;
     file_path_len = strlen(path);
     printf("file_path_len:%d\n",file_path_len);
-    if (file_path_len > AUDIO_PLAYER_DEMO_FILE_PATH_MAX_LEN-1) {
+    if (file_path_len > AUDIO_PLAYER_FILE_PATH_MAX_LEN-1) {
         printf("file_path_len too long \n");
         return -1;
     }
@@ -175,6 +310,7 @@ static void audio_player_demo(int argc, char **argv)
     struct mini_audio_player *player = NULL;
     struct audio_file_list  files = {0};
     char state_name[3][8] = {"stop", "playing", "pause"};
+    int len = 0;
 
     uart_dev = rt_device_find(RT_CONSOLE_DEVICE_NAME);
     if (uart_dev == NULL) {
@@ -184,7 +320,7 @@ static void audio_player_demo(int argc, char **argv)
 
     optind = 0;
     while (1) {
-        opt = getopt(argc, argv, "i:t:l:fh");
+        opt = getopt(argc, argv, "i:t:l:w:fh");
         if (opt == -1) {
             break;
         }
@@ -198,6 +334,14 @@ static void audio_player_demo(int argc, char **argv)
         case 'f':
             loop_flag = 1;
             break;
+        case 'w':
+            len = strlen(optarg);
+            if (len >= AUDIO_PLAYER_FILE_PATH_MAX_LEN) {
+                loge("wav file path > 256");
+                return;
+            }
+
+            strncpy((char*)g_file_path, optarg, AUDIO_PLAYER_FILE_PATH_MAX_LEN);
         case 't':
             read_dir(optarg, &files);
             break;
@@ -247,6 +391,9 @@ static void audio_player_demo(int argc, char **argv)
                     } else if (ch == 'r') {// resume
                         printf("resume \n");
                         mini_audio_player_resume(player);
+                    } else if (ch == 'w') {
+                        printf("wav play \n");
+                        play_wav(g_file_path);
                     } else if (ch == 'e') {// exit app
                         printf("exit app \n");
                         goto _exit;

@@ -154,7 +154,7 @@ rt_inline int _can_int_tx(struct rt_can_device *can, const struct rt_can_msg *da
 
         no = ((unsigned long)tx_tosnd - (unsigned long)tx_fifo->buffer) / sizeof(struct rt_can_sndbxinx_list);
         tx_tosnd->result = RT_CAN_SND_RESULT_WAIT;
-        if ((can->ops->sendmsg(can, data, no) != RT_EOK) || (rt_completion_wait(&(tx_tosnd->completion), 100) != RT_EOK))
+        if (can->ops->sendmsg(can, data, no) != RT_EOK)
         {
             /* send failed. */
             level = rt_hw_interrupt_disable();
@@ -165,6 +165,7 @@ rt_inline int _can_int_tx(struct rt_can_device *can, const struct rt_can_msg *da
         }
 
         can->status.sndchange = 1;
+        rt_completion_wait(&(tx_tosnd->completion), RT_WAITING_FOREVER);
 
         level = rt_hw_interrupt_disable();
         result = tx_tosnd->result;

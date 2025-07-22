@@ -78,6 +78,7 @@ struct rt_touch_info
 
 struct rt_touch_config
 {
+    rt_uint8_t                  rst_pin;
 #ifdef RT_TOUCH_PIN_IRQ
     struct rt_device_pin_mode   irq_pin;       /* Interrupt pin, The purpose of this pin is to notification read data */
 #endif

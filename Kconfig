@@ -54,7 +54,6 @@ config PKGS_DIR
 	help
         packages directory for RT-Thread online packages
 
-
 if ! AIC_BOOTLOADER
 source "application/Kconfig"
 endif

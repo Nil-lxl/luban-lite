@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,8 +10,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#ifndef AIC_CMU_FRAMEWORK_V2
 #include "aic_hal_clk_cmu.h"
+#else
+#include "aic_hal_clk_cmu_v2.h"
+#endif
 #include "aic_clk_id.h"
 
 int hal_clk_enable(uint32_t clk_id);

@@ -365,7 +365,9 @@ int vin_vb_init(struct vb_queue *q, const struct vb_ops *ops)
     INIT_LIST_HEAD(&q->queued_list);
     INIT_LIST_HEAD(&q->done_list);
 
-    q->done = aicos_sem_create(0);
+    if (!q->done)
+        q->done = aicos_sem_create(0);
+
     g_vb_ops = ops;
     return 0;
 }

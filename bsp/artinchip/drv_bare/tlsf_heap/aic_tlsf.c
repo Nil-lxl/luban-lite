@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -43,7 +43,7 @@ static heap_def_t heap_def[MAX_MEM_REGION] = {
     },
 #else
     {
-        .name = "null",
+        .name = "sys",
         .type = 0xFFFF,
         .start = (size_t)(0xFFFFFFFF),
         .end = (size_t)(0xFFFFFFFF),
@@ -179,6 +179,10 @@ void aic_tlsf_free_sethook(void (*hook)(void *ptr))
 #ifdef AIC_CONSOLE_BARE_DRV
 #include <console.h>
 
+#if defined(KERNEL_FREERTOS)
+void vPortGetHeapInfo(u32 *total, u32 *used, u32 *max_used, u32 *free, u32 *max_free);
+#endif
+
 static int cmd_mem_free(int argc, char *argv[])
 {
     u32 i = 0;
@@ -188,12 +192,23 @@ static int cmd_mem_free(int argc, char *argv[])
     u32 max_used = 0;
     u32 max_free = 0;
 
-    printf("memheap    pool size  used size  max used   free size  max free\n\n");
-    printf("---------- ---------- ---------- ---------- ---------- ----------\n\n");
+    printf("Heap name  Total      Used       Max used   Free       Max free\n");
+    printf("---------- ---------- ---------- ---------- ---------- ----------\n");
     for (i=0; i < MAX_MEM_REGION; i++) {
-        aic_tlsf_mem_info(i, &total_m, &used_m, &max_used, &free_m, &max_free);
+#if defined(KERNEL_FREERTOS)
+        if (i == 0)
+            vPortGetHeapInfo(&total_m, &used_m, &max_used, &free_m, &max_free);
+        else
+#endif
+            aic_tlsf_mem_info(i, &total_m, &used_m, &max_used, &free_m, &max_free);
+
         printf("%-10s %-10d %-10d %-10d %-10d %-10d\n",
                 heap_def[i].name, total_m, used_m, max_used, free_m, max_free);
+        total_m = 0;
+        used_m = 0;
+        free_m = 0;
+        max_free = 0;
+        max_used = 0;
     }
 
     return 0;
@@ -478,11 +493,15 @@ void aic_tlsf_mem_info(u32 mem_type, u32 *total, u32 *used,
     pool_list_t *pool_node;
 
     if (mem_type >= MAX_MEM_REGION) {
-        pr_err("%s: mem_type = %d err.\n", __func__, mem_type);
+        pr_err("Invalid memory type %d\n", mem_type);
         return;
     }
 
     h = &tlsf_heap[mem_type];
+    if (!h->pool_list.pool) {
+        pr_err("No memory heap for %d!\n", mem_type);
+        return;
+    }
     h->total_mem = 0;
     h->used_mem = 0;
     h->free_mem = 0;

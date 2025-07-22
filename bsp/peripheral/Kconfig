@@ -45,6 +45,28 @@ if AIC_USING_EXTERNAL_RTC
 endif
 
 #--------------------------------------------
+# Encoder driver option
+#--------------------------------------------
+
+menuconfig AIC_USING_ENCODER
+    bool "External encoder Driver Option"
+
+if AIC_USING_ENCODER
+    source "bsp/peripheral/encoder/Kconfig"
+endif
+
+#--------------------------------------------
+# Gyro driver option
+#--------------------------------------------
+
+menuconfig AIC_USING_GYRO
+    bool "External gyro Driver Option"
+
+if AIC_USING_GYRO
+    source "bsp/peripheral/gyro/Kconfig"
+endif
+
+#--------------------------------------------
 # Audio Codec driver option
 #--------------------------------------------
 

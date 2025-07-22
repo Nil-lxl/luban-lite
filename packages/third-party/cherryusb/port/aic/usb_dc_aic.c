@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -7,6 +7,10 @@
 #include <rtconfig.h>
 #include "usbd_core.h"
 #include "usb_dc_aic_reg.h"
+
+#ifdef RT_USING_PM
+#include <rtthread.h>
+#endif
 
 // clang-format off
 #ifndef   __UNALIGNED_UINT32_WRITE
@@ -82,6 +86,7 @@ extern uint32_t usbd_clk;
     struct usb_endpoint_descriptor in_ep_desc[USB_NUM_BIDIR_ENDPOINTS];
     uint32_t p_txfifo_map; /* map which periodic_txfifo is used */
     uint32_t np_txfifo_map; /* map no-periodic_txfifo is used */
+    uint8_t test_mode;
 } g_aic_udc;
 
 #define AIC_EP0_SETUP           1
@@ -177,17 +182,23 @@ static void aic_udc_obuf_free(struct aic_ep_state *ep)
 
 static void aic_set_dma_nextep(void)
 {
-    uint32_t i;
-    uint32_t inepcfg = 0;
+    uint32_t i, j;
+    uint32_t inepcfg = 0, next = 0;
 
     /* dma to set the next-endpoint pointer. */
     for (i = 0; i < USB_NUM_BIDIR_ENDPOINTS; i++) {
-        uint32_t next = ((i + 1) % USB_NUM_BIDIR_ENDPOINTS) << DEPCTL_NEXT_EP_BIT;
+        for (j = i + 1; j < USB_NUM_BIDIR_ENDPOINTS; j++) {
+            if ((g_aic_udc.np_txfifo_map & (1 << j)) == 0U)
+                continue;
+            next = (j << DEPCTL_NEXT_EP_BIT);
+            break;
+        }
 
         inepcfg = readl(&AIC_UDC_REG->inepcfg[i]);
         inepcfg &= ~DEPCTL_NEXT_EP_MASK;
         inepcfg |= next;
         writel(inepcfg, &AIC_UDC_REG->inepcfg[i]);
+        next = 0;
     }
 }
 
@@ -667,7 +678,7 @@ int usb_dc_init(void)
     /* Enable interrupts matching to the Device mode ONLY */
     tmpreg = INT_RESET | INT_ENUMDONE |
              INT_OUT_EP | INT_IN_EP |
-             INT_INCOMP_ISO_IN_INT | INT_INCOMP_ISO_OUT_INT | INT_SUSPEND;
+             INT_INCOMP_ISO_IN_INT | INT_INCOMP_ISO_OUT_INT | INT_SUSPEND | INT_RESUME;
     writel(tmpreg, &AIC_UDC_REG->usbintmsk);
 
 #ifdef CONFIG_USB_AIC_DMA_ENABLE
@@ -742,6 +753,20 @@ int usbd_set_address(const uint8_t addr)
     tmpreg &= ~(DEVICE_ADDRESS_MASK);
     tmpreg |= ((uint32_t)addr << 4) & DEVICE_ADDRESS_MASK;
     writel(tmpreg, &AIC_UDC_REG->usbdevconf);
+
+    return 0;
+}
+
+int usbd_set_remote_wakeup(void)
+{
+    uint32_t tmpreg = 0;
+
+    tmpreg |= USBDEVFUNC_RMTWKUPSIG;
+    writel(tmpreg, &AIC_UDC_REG->usbdevfunc);
+    aicos_mdelay(7);
+    tmpreg &= ~USBDEVFUNC_RMTWKUPSIG;
+    writel(tmpreg, &AIC_UDC_REG->usbdevfunc);
+    aicos_mdelay(7);
 
     return 0;
 }
@@ -835,7 +860,7 @@ int usbd_ep_open(const struct usb_endpoint_descriptor *ep)
         } else {
             g_aic_udc.np_txfifo_map |= (1 << ep_idx);
         }
-
+        aic_set_dma_nextep();
         epcfg = readl(&AIC_UDC_REG->inepcfg[ep_idx]);
         epcfg |= (ep_mps & DEPCTL_MPS_MASK) |
                  ((uint32_t)USB_GET_ENDPOINT_TYPE(ep->bmAttributes) << 18) |
@@ -1412,6 +1437,49 @@ int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
     return usbd_ep_start_read_raw(ep, data, data_len, 1);
 }
 
+#ifdef CONFIG_USBDEV_TEST_MODE
+
+void usbd_req_test_mode(uint8_t test_mode)
+{
+    g_aic_udc.test_mode = test_mode;
+}
+
+void usbd_execute_test_mode(uint8_t test_mode)
+{
+    uint32_t regval;
+    uint32_t test_mode_val;
+
+    switch (test_mode) {
+        case TEST_SE0_NAK_MODE:
+            test_mode_val = TEST_SE0_NAK_MODE;
+            USB_LOG_INFO("TEST_SE0_NAK_MODE\n");
+            break;
+        case TEST_J_MODE:
+            test_mode_val = TEST_J_MODE;
+            USB_LOG_INFO("TEST_J_MODE\n");
+            break;
+        case TEST_K_MODE:
+            test_mode_val = TEST_K_MODE;
+            USB_LOG_INFO("TEST_K_MODE\n");
+            break;
+        case TEST_PACKET_MODE:
+            test_mode_val = TEST_PACKET_MODE;
+            USB_LOG_INFO("TEST_PACKET_MODE\n");
+            break;
+        case TEST_FORCE_MODE:
+            test_mode_val = TEST_FORCE_MODE;
+            USB_LOG_INFO("TEST_FORCE_MODE\n");
+            break;
+        default:
+            return;
+        }
+
+        regval = readl(&AIC_UDC_REG->usbdevfunc);
+        regval |= test_mode_val << USBDEVFUNC_TSTCTL_SHIFT;
+        writel(regval, &AIC_UDC_REG->usbdevfunc);
+}
+#endif
+
 void USBD_IRQHandler(void)
 {
     uint32_t gint_status, ep_idx, ep_intr, epint, daintmask, tmpreg, tmpreg01;
@@ -1421,6 +1489,11 @@ void USBD_IRQHandler(void)
     if (gint_status == 0) {
         return;
     }
+
+#if defined(RT_USING_PM) && defined(AIC_USING_PM) && defined(AIC_USB_DISP_PM_SUSPEND)
+    #define USB_DEV_SUSPEND_DELAY_MS 2000
+    rt_pm_module_delay_sleep(PM_USB_DEV_ID, rt_tick_from_millisecond(USB_DEV_SUSPEND_DELAY_MS));
+#endif
 
 #ifndef CONFIG_USB_AIC_DMA_ENABLE
     uint32_t temp;
@@ -1563,6 +1636,13 @@ void USBD_IRQHandler(void)
                             g_aic_udc.in_ep[ep_idx].xfer_len = 0;
                             usbd_event_ep_in_complete_handler(0x80, g_aic_udc.in_ep[ep_idx].actual_xfer_len);
                         }
+#ifdef CONFIG_USBDEV_TEST_MODE
+                        if (g_aic_udc.test_mode) {
+                            usbd_execute_test_mode(g_aic_udc.test_mode);
+                            g_aic_udc.test_mode = 0;
+                            return;
+                        }
+#endif
                     } else {
                         tmpreg = readl(&AIC_UDC_REG->ineptsfsiz[ep_idx]);
                         g_aic_udc.in_ep[ep_idx].actual_xfer_len = g_aic_udc.in_ep[ep_idx].xfer_len - (tmpreg & DXEPTSIZ_XFER_SIZE_MASK);

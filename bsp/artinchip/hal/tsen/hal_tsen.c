@@ -273,8 +273,8 @@ int hal_tsen_env_temp_cali(u8 sign_mask, u8 val)
         return val & (sign_mask - 1);
 
 }
+
 #ifdef AIC_SID_DRV
-#if defined(AIC_TSEN_DRV_V10) || defined(AIC_TSEN_DRV_V20)
 void hal_tsen_single_point_cali(struct aic_tsen_ch *chan)
 {
     u32 ths0_adc_val = 0;
@@ -320,7 +320,6 @@ void hal_tsen_single_point_cali(struct aic_tsen_ch *chan)
 
     return;
 }
-#endif
 
 #ifdef AIC_TSEN_DRV_V10
 void hal_tsen_single_point_cali_for_correct(struct aic_tsen_ch *chan)
@@ -435,9 +434,7 @@ void hal_tsen_double_point_cali(struct aic_tsen_ch *chan)
                             ths_env_temp_low, ths_env_temp_high, chan);
 }
 #endif
-#endif
 
-#ifdef AIC_SID_DRV
 void hal_tsen_curve_fitting(struct aic_tsen_ch *chan)
 {
     int cp_version;
@@ -464,7 +461,7 @@ void hal_tsen_curve_fitting(struct aic_tsen_ch *chan)
 
     return;
 }
-#endif
+#endif // end of AIC_SID_DRV
 
 u32 tsen_sec2itv(u32 pclk, u32 sec)
 {

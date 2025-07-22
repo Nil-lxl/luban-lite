@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -26,7 +26,7 @@
 #define AICFB_LAYER_MAX_NUM 2
 #define FB_DEV "/dev/fb0"
 
-static const char sopts[] = "nsflLaAkKedi:w:h:m:v:bu";
+static const char sopts[] = "nsflLaAkKedi:w:h:m:v:bru";
 static const struct option lopts[] = {
     {"get_layer_num",       no_argument, NULL, 'n'},
     {"get_screen_size",     no_argument, NULL, 's'},
@@ -45,6 +45,7 @@ static const struct option lopts[] = {
     {"mode",          required_argument, NULL, 'm'},
     {"value",         required_argument, NULL, 'v'},
     {"colorblock",          no_argument, NULL, 'b'},
+    {"repeat",              no_argument, NULL, 'r'},
     {"usage",               no_argument, NULL, 'u'},
     {0, 0, 0, 0}
 };
@@ -73,6 +74,7 @@ static void usage(char *program)
     printf("\t -m, --mode\t\tneed an integer argument [0, 2]\n");
     printf("\t -v, --value\t\tneed an integer argument [0, 255]\n");
     printf("\t -b, --colorblock\tshow a color-block image\n");
+    printf("\t -r, --repeat\ttest vsync repeatedly\n");
     printf("\t -u, --usage \n");
     printf("\n");
     printf("Example: %s -l\n", program);
@@ -392,6 +394,26 @@ int show_color_block(int fd)
     return 0;
 }
 
+static int test_vsync_repeat(void)
+{
+        int ret, i = 0;
+        u64 start, end;
+
+        do {
+                start = aic_get_time_us();
+                ret = mpp_fb_ioctl(g_fb, AICFB_WAIT_FOR_VSYNC, NULL);
+                if (ret) {
+                        printf("error: wait for sync timeout, DE not working\n");
+                        break;
+                }
+                end = aic_get_time_us();
+
+                printf("wait vsync time %lld us\n", end - start);
+        } while (i++ < 5);
+
+        return ret;
+}
+
 static int cmd_test_fb(int argc, char **argv)
 {
     int dev_fd = -1;
@@ -454,6 +476,9 @@ static int cmd_test_fb(int argc, char **argv)
             continue;
         case 'b':
             show_color_block(dev_fd);
+            goto end;
+        case 'r':
+            ret = test_vsync_repeat();
             goto end;
         case 'u':
             usage(argv[0]);

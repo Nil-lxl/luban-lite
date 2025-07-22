@@ -93,24 +93,26 @@ s32 file_stream_open(const char* uri,struct aic_stream **stream, int flags)
 		goto exit;
 	}
 
-	file_stream->file_size = lseek(file_stream->fd, 0, SEEK_END);
-	if (file_stream->file_size <= 0) {
-		loge("uri:%s file_size is illegality!!!!!\n",uri);
-		ret = -2;
-		goto exit;
-	}
-	lseek(file_stream->fd, 0, SEEK_SET);
-	if (flags == O_RDONLY && file_stream->file_size > EN_CLTBL_FILE_SIZE) {
-		file_stream->cltbl = (uint32_t *)mpp_alloc(AIC_CLTBL_SIZE * sizeof(uint32_t));
-		if (file_stream->cltbl == NULL) {
-			loge("mpp_alloc fail !!!!!\n");
-			ret = -1;
+	if (flags == O_RDONLY) {
+		file_stream->file_size = lseek(file_stream->fd, 0, SEEK_END);
+		if (file_stream->file_size <= 0) {
+			loge("uri:%s file_size is illegality!!!!!\n",uri);
+			ret = -2;
 			goto exit;
 		}
-		memset(file_stream->cltbl, 0x00, AIC_CLTBL_SIZE * sizeof(uint32_t));
+		lseek(file_stream->fd, 0, SEEK_SET);
+		if (file_stream->file_size > EN_CLTBL_FILE_SIZE) {
+			file_stream->cltbl = (uint32_t *)mpp_alloc(AIC_CLTBL_SIZE * sizeof(uint32_t));
+			if (file_stream->cltbl == NULL) {
+				loge("mpp_alloc fail !!!!!\n");
+				ret = -1;
+				goto exit;
+			}
+			memset(file_stream->cltbl, 0x00, AIC_CLTBL_SIZE * sizeof(uint32_t));
 
-		file_stream->cltbl[0] = AIC_CLTBL_SIZE;
-		fcntl(file_stream->fd, 0x52540001U, file_stream->cltbl);
+			file_stream->cltbl[0] = AIC_CLTBL_SIZE;
+			fcntl(file_stream->fd, 0x52540001U, file_stream->cltbl);
+		}
 	}
 
 	file_stream->base.read = file_stream_read;

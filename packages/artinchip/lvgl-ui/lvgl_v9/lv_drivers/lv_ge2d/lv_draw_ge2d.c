@@ -138,6 +138,17 @@ void lv_draw_ge2d_rotate(const void *src_buf, void *dest_buf, int32_t src_width,
     return;
 }
 
+#if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_G73X)
+static bool inline lv_draw_ge2d_buf_address_valid(lv_draw_buf_t *draw_buf)
+{
+    if ((uint32_t)(long)draw_buf->data < (uint32_t)0x40000000) {
+        return false;
+    } else {
+        return true;
+    }
+}
+#endif
+
 static bool ge2d_draw_img_supported(const lv_draw_image_dsc_t *draw_dsc)
 {
     bool recolor = (draw_dsc->recolor_opa > LV_OPA_MIN);
@@ -145,6 +156,17 @@ static bool ge2d_draw_img_supported(const lv_draw_image_dsc_t *draw_dsc)
 
     if (recolor)
         return false;
+
+    if (lv_image_src_get_type(draw_dsc->src) >= LV_IMAGE_SRC_SYMBOL)
+        return false;
+
+#if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_G73X)
+    if (lv_image_src_get_type(draw_dsc->src) == LV_IMAGE_SRC_VARIABLE) {
+        if (!lv_draw_ge2d_buf_address_valid((lv_draw_buf_t *)draw_dsc->src)) {
+            return false;
+        }
+    }
+#endif
 
     if (draw_dsc->header.w * draw_dsc->header.h < LV_GE2D_FILL_OPA_SIZE_LIMIT) {
         if (lv_image_src_get_type(draw_dsc->src) == LV_IMAGE_SRC_FILE) {
@@ -188,7 +210,15 @@ static int32_t ge2d_evaluate(lv_draw_unit_t *u, lv_draw_task_t *t)
     switch(t->type) {
         case LV_DRAW_TASK_TYPE_FILL: {
                 const lv_draw_fill_dsc_t * draw_dsc = (lv_draw_fill_dsc_t *) t->draw_dsc;
+                lv_draw_buf_t *dest_buf = draw_dsc->base.layer->draw_buf;
 
+                if (!dest_buf)
+                    return 0;
+
+#if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_G73X)
+                if (!lv_draw_ge2d_buf_address_valid(dest_buf))
+                    return 0;
+#endif
                 if ((draw_dsc->radius != 0) || (draw_dsc->grad.dir != (lv_grad_dir_t)LV_GRAD_DIR_NONE))
                     return 0;
 
@@ -207,6 +237,10 @@ static int32_t ge2d_evaluate(lv_draw_unit_t *u, lv_draw_task_t *t)
                 if (!dest_buf)
                     return 0;
 
+#if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_G73X)
+                if (!lv_draw_ge2d_buf_address_valid(dest_buf))
+                    return 0;
+#endif
                 if (!ge2d_src_fmt_supported(layer->color_format))
                     return 0;
 
@@ -227,6 +261,11 @@ static int32_t ge2d_evaluate(lv_draw_unit_t *u, lv_draw_task_t *t)
                 if (!dest_buf)
                     return 0;
 
+#if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_G73X)
+                if (!lv_draw_ge2d_buf_address_valid(dest_buf)) {
+                    return 0;
+                }
+#endif
                 if (!ge2d_src_fmt_supported(draw_dsc->header.cf))
                     return 0;
 

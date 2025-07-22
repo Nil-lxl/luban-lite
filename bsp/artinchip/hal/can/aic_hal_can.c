@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -301,13 +301,10 @@ static void hal_can_bus_error_msg(can_handle *phandle)
     for (i = 0; i < ARRAY_SIZE(bus_err_dir); i++) {
         if (errdir == bus_err_dir[i].code) {
             hal_log_debug("%s, ", bus_err_dir[i].msg);
-            if (i) {
+            if (i)
                 phandle->status.recverrcnt++;
-            } else {
+            else
                 phandle->status.snderrcnt++;
-                if (phandle->callback)
-                    phandle->callback(phandle, (void *)CAN_EVENT_TX_FAIL);
-            }
             break;
         }
     }
@@ -368,10 +365,6 @@ static void hal_can_arblost_msg(can_handle *phandle)
 static void hal_can_error_handle(can_handle *phandle, u32 err_status)
 {
     u32 can_status;
-    u8 errcode;
-
-    errcode = readb(phandle->can_base + CAN_ERRCODE_REG) &
-              CAN_ERRCODE_SEGCODE_MASK;
 
     can_status = readl(phandle->can_base + CAN_STAT_REG);
     phandle->status.rxerr = readl(phandle->can_base + CAN_RXERR_REG);
@@ -414,14 +407,6 @@ static void hal_can_error_handle(can_handle *phandle, u32 err_status)
 
     if (phandle->status.current_state == BUS_OFF)
         hal_can_mode_release(phandle, CAN_MODE_RST);
-
-    if (phandle->status.txerr > CAN_ERRP_THRESHOLD &&
-        errcode == CAN_ERRCODE_ACK_SLOT)
-    {
-        writel(CAN_MCR_ABORTREQ, phandle->can_base + CAN_MCR_REG);
-        hal_can_set_mode(phandle, CAN_MODE_RST);
-        hal_can_mode_release(phandle, CAN_MODE_RST);
-    }
 }
 
 int hal_can_attach_callback(can_handle *phandle, void *callback, void *arg)
@@ -530,7 +515,7 @@ void hal_can_receive_frame(can_handle *phandle, can_msg_t * msg)
 
 irqreturn_t hal_can_isr_handler(int irq_num, void *arg)
 {
-    u32 int_status;
+    u32 int_status, can_status;
     can_handle *phandle = (can_handle *)arg;
 
     int_status = readl(phandle->can_base + CAN_INTR_REG);
@@ -540,9 +525,14 @@ irqreturn_t hal_can_isr_handler(int irq_num, void *arg)
         hal_can_error_handle(phandle, int_status);
 
     if (int_status & CAN_INTR_TX) {
-        phandle->status.sndpkgcnt++;
-        if (phandle->callback)
-            phandle->callback(phandle, (void *)CAN_EVENT_TX_DONE);
+        can_status = readl(phandle->can_base + CAN_STAT_REG);
+        if ((can_status & CAN_STAT_TXB) && (can_status & CAN_STAT_TXC)) {
+            phandle->status.sndpkgcnt++;
+            if (phandle->callback)
+                phandle->callback(phandle, (void *)CAN_EVENT_TX_DONE);
+        } else if (phandle->callback) {
+                phandle->callback(phandle, (void *)CAN_EVENT_TX_FAIL);
+        }
     }
 
     if ((int_status & CAN_INTR_RX) && !(int_status & CAN_INTR_OVF)) {

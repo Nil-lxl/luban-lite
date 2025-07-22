@@ -464,7 +464,11 @@ int dfs_elm_close(struct dfs_fd *file)
         fd = (FIL *)(file->data);
         RT_ASSERT(fd != RT_NULL);
 
-        result = f_close(fd);
+        if (file->fs && file->fs->data)
+        {
+            /* close file if fs is not unmount */
+            result = f_close(fd);
+        }
         if (result == FR_OK)
         {
             /* release memory */

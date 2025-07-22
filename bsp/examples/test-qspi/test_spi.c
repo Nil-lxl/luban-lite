@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -89,6 +89,8 @@ static int test_spi_attach(int argc, char **argv)
     return result;
 }
 
+#define AIC_SPI_MODE_MASK    (RT_SPI_CPHA | RT_SPI_CPOL | RT_SPI_MSB | RT_SPI_SLAVE | RT_SPI_3WIRE)
+
 static int test_spi_init(int argc, char **argv)
 {
     struct rt_spi_configuration spi_cfg;
@@ -116,6 +118,7 @@ static int test_spi_init(int argc, char **argv)
     }
     rt_memset(&spi_cfg, 0, sizeof(spi_cfg));
     spi_cfg.mode = atol(argv[2]);
+    spi_cfg.mode &= AIC_SPI_MODE_MASK;
     spi_cfg.max_hz = atol(argv[3]);
     ret = rt_spi_configure(g_spi, &spi_cfg);
     if (ret < 0) {
@@ -164,7 +167,7 @@ static void test_spi_send_recv(int argc, char **argv)
         printf("Low memory!\n");
         return;
     } else {
-        printf("send len %ld, recv len %ld\n", send_len, recv_len);
+        printf("send len %lu, recv len %lu\n", send_len, recv_len);
     }
 
     rt_spi_take_bus((struct rt_spi_device *)g_spi);
@@ -217,7 +220,7 @@ static void test_spi_send(int argc, char **argv)
         printf("Low memory!\n");
         return;
     } else {
-        printf("data len %ld\n", data_len);
+        printf("data len %lu\n", data_len);
     }
 
     rt_spi_take_bus((struct rt_spi_device *)g_spi);
@@ -266,7 +269,7 @@ static void test_spi_treansfer(int argc, char **argv)
         printf("Low memory!\n");
         return;
     } else {
-        printf("data len %ld\n", data_len);
+        printf("data len %lu\n", data_len);
     }
 
     rt_spi_take_bus((struct rt_spi_device *)g_spi);

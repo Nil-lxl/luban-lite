@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -49,6 +49,7 @@ typedef struct mm_adec_data {
     struct aic_audio_decoder *p_decoder;
     struct aic_audio_decode_config decoder_config;
     enum aic_audio_codec_type code_type;
+    mm_audio_param_port_format audio_format;
 
     pthread_t thread_id;
     pthread_t decode_thread_id;
@@ -67,6 +68,8 @@ typedef struct mm_adec_data {
     MM_BOOL flags;
 } mm_adec_data;
 
+static void mm_adec_event_notify(mm_adec_data *p_adec_data, MM_EVENT_TYPE event,
+                                 u32 data1, u32 data2, void *p_event_data);
 static void *mm_adec_component_thread(void *p_thread_data);
 
 static s32 mm_adec_send_command(mm_handle h_component, MM_COMMAND_TYPE cmd,
@@ -156,15 +159,79 @@ static s32 mm_adec_audio_format_trans(enum aic_audio_codec_type *p_desType,
     }
     if (*p_srcType == MM_AUDIO_CODING_MP3) {
         *p_desType = MPP_CODEC_AUDIO_DECODER_MP3;
-#ifdef LPKG_USING_FAAD2
+#ifdef AIC_MPP_AAC_DEC
     } else if (*p_srcType == MM_AUDIO_CODING_AAC) {
         *p_desType = MPP_CODEC_AUDIO_DECODER_AAC;
+#endif
+#ifdef AIC_MPP_APE_DEC
+    } else if (*p_srcType == MM_AUDIO_CODING_APE) {
+        *p_desType = MPP_CODEC_AUDIO_DECODER_APE;
+#endif
+#ifdef AIC_MPP_FLAC_DEC
+    } else if (*p_srcType == MM_AUDIO_CODING_FLAC) {
+        *p_desType = MPP_CODEC_AUDIO_DECODER_FLAC;
+#endif
+#ifdef AIC_MPP_WMA_DEC
+    } else if (*p_srcType == MM_AUDIO_CODING_WMA) {
+        *p_desType = MPP_CODEC_AUDIO_DECODER_WMA;
 #endif
     } else {
         loge("unsupport codec %d!!!!\n", *p_srcType);
         ret = MM_ERROR_UNSUPPORT;
     }
     return ret;
+}
+
+
+static s32 mm_adec_init_decoder(mm_adec_data *p_adec_data)
+{
+    s32 ret = MM_ERROR_NONE;
+    struct aic_audio_decode_params decode_params;
+
+    if (!p_adec_data)
+        return MM_ERROR_NULL_POINTER;
+
+    if (p_adec_data->p_decoder != NULL)
+        return MM_ERROR_NONE;
+
+
+    p_adec_data->p_decoder = aic_audio_decoder_create(p_adec_data->code_type);
+    if (p_adec_data->p_decoder == NULL) {
+        loge("mpp_decoder_create fail!!!!\n ");
+        return MM_ERROR_NULL_POINTER;
+    }
+
+    logi("aic_audio_decoder_create %d ok!\n", p_adec_data->code_type);
+
+    ret = aic_audio_decoder_init(p_adec_data->p_decoder,
+                                    &p_adec_data->decoder_config);
+    if (ret) {
+        loge("mpp_decoder_init %d failed\n", p_adec_data->code_type);
+        aic_audio_decoder_destroy(p_adec_data->p_decoder);
+        p_adec_data->p_decoder = NULL;
+        loge("MM_ERROR_INCORRECT_STATE_TRANSITION\n");
+        return MM_ERROR_BAD_PARAMETER;
+    }
+
+    if (MPP_CODEC_AUDIO_DECODER_WMA == p_adec_data->code_type) {
+        decode_params.sample_rate = p_adec_data->audio_format.sample_rate;
+        decode_params.bit_rate = p_adec_data->audio_format.bitrate;
+        decode_params.bits_per_sample = p_adec_data->audio_format.bits_per_sample;
+        decode_params.channels = p_adec_data->audio_format.channels;
+        decode_params.block_align = p_adec_data->audio_format.block_align;
+        decode_params.extradata = p_adec_data->audio_format.extradata;
+        decode_params.extradata_size = p_adec_data->audio_format.extradata_size;
+
+        ret = aic_audio_decoder_control(p_adec_data->p_decoder,
+                                        MPP_DEC_INIT_CMD_SET_PARAMS,
+                                        &decode_params);
+        if (ret) {
+            loge("aic_audio_decoder_control set params fail %d\n", ret);
+            return MM_ERROR_BAD_PARAMETER;
+        }
+    }
+
+    return MM_ERROR_NONE;
 }
 
 static s32 mm_adec_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
@@ -186,8 +253,8 @@ static s32 mm_adec_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
             if (index == ADEC_PORT_IN_INDEX) {
                 p_adec_data->in_port_def.format.audio.encoding =
                     port_format->encoding;
-                logi("encoding:%d\n",
-                     p_adec_data->in_port_def.format.audio.encoding);
+                memcpy(&p_adec_data->audio_format, port_format,
+                    sizeof(mm_audio_param_port_format));
                 if (mm_adec_audio_format_trans(&codec_type,
                                                &port_format->encoding) != 0) {
                     error = MM_ERROR_UNSUPPORT;
@@ -417,7 +484,7 @@ static int adc_thread_attr_init(pthread_attr_t *attr)
         return EINVAL;
     }
     pthread_attr_init(attr);
-#ifdef LPKG_USING_FAAD2
+#ifdef AIC_MPP_AAC_DEC
     attr->stacksize = 64 * 1024;
 #else
     attr->stacksize = 32 * 1024;
@@ -582,35 +649,13 @@ static void mm_adec_state_change_to_loaded(mm_adec_data *p_adec_data)
 
 static void mm_adec_state_change_to_idle(mm_adec_data *p_adec_data)
 {
-    int ret;
     if (p_adec_data->state == MM_STATE_LOADED) {
-        //create decoder
-        if (p_adec_data->p_decoder == NULL) {
-            p_adec_data->p_decoder =
-                aic_audio_decoder_create(p_adec_data->code_type);
-            if (p_adec_data->p_decoder == NULL) {
-                loge("mpp_decoder_create fail!!!!\n ");
-                mm_adec_event_notify(p_adec_data, MM_EVENT_ERROR,
-                                     MM_ERROR_INCORRECT_STATE_TRANSITION,
-                                     p_adec_data->state, NULL);
-                loge("MM_ERROR_INCORRECT_STATE_TRANSITION\n");
-                return;
-            }
-            logi("aic_audio_decoder_create %d ok!\n", p_adec_data->code_type);
-
-            ret = aic_audio_decoder_init(p_adec_data->p_decoder,
-                                         &p_adec_data->decoder_config);
-            if (ret) {
-                loge("mpp_decoder_init %d failed\n", p_adec_data->code_type);
-                aic_audio_decoder_destroy(p_adec_data->p_decoder);
-                p_adec_data->p_decoder = NULL;
-                mm_adec_event_notify(p_adec_data, MM_EVENT_ERROR,
-                                     MM_ERROR_INCORRECT_STATE_TRANSITION,
-                                     p_adec_data->state, NULL);
-                loge("MM_ERROR_INCORRECT_STATE_TRANSITION\n");
-                return;
-            }
-            logi("aic_audio_decoder_init ok!\n ");
+        if(mm_adec_init_decoder(p_adec_data)) {
+            mm_adec_event_notify(p_adec_data, MM_EVENT_ERROR,
+                                 MM_ERROR_INCORRECT_STATE_TRANSITION,
+                                 p_adec_data->state, NULL);
+            loge("MM_ERROR_INCORRECT_STATE_TRANSITION\n");
+            return;
         }
     } else if (p_adec_data->state == MM_STATE_PAUSE) {
     } else if (p_adec_data->state == MM_STATE_EXECUTING) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -268,5 +268,27 @@ void mtd_parts_free(struct mtd_partition *head)
         n = p->next;
         free(p);
         p = n;
+    }
+}
+
+u8 partition_levelx_is_exist(char *mtd_name, char *levelx_partstr)
+{
+    if (mtd_name == NULL || levelx_partstr == NULL) {
+        return 0;
+    }
+
+    size_t pattern_len = strlen(mtd_name) + 3;
+    char *pattern = (char *)malloc(pattern_len);
+    if (pattern == NULL) {
+        return 0;
+    }
+    snprintf(pattern, pattern_len, "(%s)", mtd_name);
+
+    if (strstr(levelx_partstr, pattern) != NULL) {
+        free(pattern);
+        return 1;
+    } else {
+        free(pattern);
+        return 0;
     }
 }

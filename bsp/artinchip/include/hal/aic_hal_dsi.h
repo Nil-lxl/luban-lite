@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Artinchip Technology Co., Ltd
+ * Copyright (c) 2023-2025, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -18,6 +18,7 @@ enum dsi_mode {
     DSI_MOD_CMD_MODE         = BIT(3),
 
     DSI_CLOCK_NON_CONTINUOUS = BIT(4),
+    DSI_MOD_NO_EOT_PACKET    = BIT(5),
 };
 
 enum dsi_format {
@@ -319,7 +320,7 @@ void dsi_set_lane_polrs(void *base, u32 ln_polrs);
 void dsi_set_data_clk_polrs(void *base, u32 dc_inv);
 
 void dsi_set_clk_div(void *base, ulong mclk, ulong lp_rate);
-void dsi_pkg_init(void *base);
+void dsi_pkg_init(void *base, enum dsi_mode mode);
 void dsi_phy_init(void *base, ulong mclk, u32 lane, enum dsi_mode mode);
 void dsi_hs_clk(void *base, u32 enable);
 void dsi_set_vm(void *base, enum dsi_mode mode, enum dsi_format format,

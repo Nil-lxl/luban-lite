@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -1031,14 +1031,14 @@ static s32 set_uart_args_cmd_read_output_data(struct upg_cmd *cmd, u8 *buf, s32 
     return siz;
 }
 
-extern void aic_upg_uart_baudrate_update(int baudrate);
+extern void aic_uart_upg_baudrate_update(int baudrate);
 static void set_uart_args_cmd_end(struct upg_cmd *cmd)
 {
     pr_debug("%s\n", __func__);
     if (cmd->state == CMD_STATE_END) {
 #ifdef AICUPG_UART_ENABLE
         int baudrate = (uintptr_t)cmd->priv;
-        aic_upg_uart_baudrate_update(baudrate);
+        aic_uart_upg_baudrate_update(baudrate);
 #endif
         cmd->priv = 0;
         cmd_state_set_next(cmd, CMD_STATE_IDLE);

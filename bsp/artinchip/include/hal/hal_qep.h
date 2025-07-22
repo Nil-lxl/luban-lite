@@ -11,7 +11,7 @@
 
 #include "aic_common.h"
 
-#ifdef CONFIG_FPGA_BOARD_ARTINCHIP
+#ifdef FPGA_BOARD_ARTINCHIP
 #define QEP_CLK_RATE      24000000 /* 24 MHz */
 #else
 #define QEP_CLK_RATE      200000000 /* 200 MHz */

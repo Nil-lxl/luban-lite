@@ -40,8 +40,11 @@ static irqreturn_t aic_de_handler(int irq, void *ctx)
     status = de_timing_interrupt_status(comp->regs);
     de_timing_interrupt_clean_status(comp->regs, status);
 
-    if (status & TIMING_INIT_V_BLANK_FLAG)
+    if (status & TIMING_INIT_V_BLANK_FLAG) {
         aicos_wqueue_wakeup(comp->vsync_queue);
+        if (comp->cb)
+            comp->cb(comp->cb_data);
+    }
 
     if (comp->scaler_active & SCALER0_CTRL_ACTIVE) {
         comp->scaler_active = comp->scaler_active & 0xF;
@@ -54,6 +57,29 @@ static irqreturn_t aic_de_handler(int irq, void *ctx)
         pr_err("ERROR: DE UNDERFLOW\n");
 
     return IRQ_HANDLED;
+}
+
+void de_register_vsync_cb(de_vsync_cb cb, void *data)
+{
+    struct aic_de_comp *comp = aic_de_request_drvdata();
+    size_t flag;
+
+    flag = aicos_enter_critical_section();
+    /* INTERRUPT Context */
+    comp->cb = cb;
+    comp->cb_data = data;
+    aicos_leave_critical_section(flag);
+}
+
+void de_unregister_vsync_cb(void)
+{
+    struct aic_de_comp *comp = aic_de_request_drvdata();
+    size_t flag;
+
+    flag = aicos_enter_critical_section();
+    comp->cb = NULL;
+    comp->cb_data = NULL;
+    aicos_leave_critical_section(flag);
 }
 
 static inline bool is_valid_layer_id(struct aic_de_comp *comp, u32 layer_id)

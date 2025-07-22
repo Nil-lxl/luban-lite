@@ -13,6 +13,9 @@
 #include <aic_drv.h>
 #include <string.h>
 #include <aic_osal.h>
+#if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
+#include <drv_fb.h>
+#endif
 
 #define BUTTON_FLAG         (1 << 0)
 #define TOUCH_FLAG          (1 << 1)
@@ -45,6 +48,9 @@ static void pm_thread(void *parameter)
                     ((e & TOUCH_FLAG) && !touch_int_occurred))
                 {
                     rt_pm_module_request(PM_POWER_ID, PM_SLEEP_MODE_NONE);
+                    #if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
+                    panel_backlight_enable(0, 0);
+                    #endif
                     rt_timer_start(touch_timer);
                     if (e & TOUCH_FLAG)
                         touch_int_occurred = 1;
@@ -56,6 +62,9 @@ static void pm_thread(void *parameter)
                 /* current mode is NONE mode */
                 if ((e & BUTTON_FLAG) || (e & TOUCH_TIMEOUT))
                 {
+                    #if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
+                    panel_backlight_disable(0, 0);
+                    #endif
                     /* request sleep */
                     rt_pm_module_release(PM_POWER_ID, PM_SLEEP_MODE_NONE);
                     rt_timer_stop(touch_timer);

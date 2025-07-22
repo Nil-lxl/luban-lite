@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -107,6 +107,9 @@ extern "C" {
 #define TCFG_BIT_TXDLY_EN_OFS           (14)
 #define TCFG_BIT_TXDLY_EN_MSK           (1UL << 14)
 #define TCFG_BIT_TXDLY_EN_VAL(v)        (((v) << TCFG_BIT_TXDLY_EN_OFS) & TCFG_BIT_TXDLY_EN_MSK)
+#define TCFG_BIT_3WIERE_EN_OFS          (25)
+#define TCFG_BIT_3WIERE_EN_MSK          (1UL << 25)
+#define TCFG_BIT_3WIERE_EN_VAL(v)       (((v) << TCFG_BIT_3WIERE_EN_OFS) & TCFG_BIT_3WIERE_EN_MSK)
 #define TCFG_BIT_SLV_OEN_OFS            (26)
 #define TCFG_BIT_SLV_OEN_MSK            (1UL << 26)
 #define TCFG_BIT_SLV_OEN_VAL(v)         (((v) << TCFG_BIT_SLV_OEN_OFS) & TCFG_BIT_SLV_OEN_MSK)
@@ -563,6 +566,20 @@ static inline u32 qspi_hw_get_lsb_en(u32 base)
 {
     u32 val = readl(QSPI_REG_TCFG(base));
     return ((val & TCFG_BIT_LSB_EN_MSK) >> TCFG_BIT_LSB_EN_OFS);
+}
+
+static inline void qspi_hw_set_3wire_en(u32 base, u32 en)
+{
+    u32 val = readl(QSPI_REG_TCFG(base));
+    val &= ~(TCFG_BIT_3WIERE_EN_MSK);
+    val |= TCFG_BIT_3WIERE_EN_VAL(en);
+    writel(val, QSPI_REG_TCFG(base));
+}
+
+static inline u32 qspi_hw_get_3wire_en(u32 base)
+{
+    u32 val = readl(QSPI_REG_TCFG(base));
+    return ((val & TCFG_BIT_3WIERE_EN_MSK) >> TCFG_BIT_3WIERE_EN_OFS);
 }
 
 #define QSPI_CS_LEVEL_LOW  0

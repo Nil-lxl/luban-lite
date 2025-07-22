@@ -278,6 +278,56 @@ const static struct rt_device_ops rt_touch_ops =
 };
 #endif
 
+#ifdef RT_USING_PM
+static int aic_touch_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    rt_touch_t touch;
+    RT_ASSERT(device != RT_NULL);
+    touch = (rt_touch_t)device;
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        touch->ops->touch_control(touch, RT_TOUCH_CTRL_POWER_OFF, NULL);
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_touch_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    rt_touch_t touch;
+    RT_ASSERT(device != RT_NULL);
+    touch = (rt_touch_t)device;
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        touch->ops->touch_control(touch, RT_TOUCH_CTRL_POWER_ON, NULL);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_touch_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_touch_suspend, aic_touch_resume)
+    NULL,
+};
+#endif
+
 /*
  * touch register
  */
@@ -314,6 +364,16 @@ int rt_hw_touch_register(rt_touch_t touch,
         LOG_E("rt_touch register err code: %d", result);
         return result;
     }
+
+
+
+#ifdef RT_USING_PM
+#ifdef AIC_TOUCH_PANEL_WAKE_UP
+    rt_pm_set_pin_wakeup_source(touch->config.irq_pin.pin);
+    rt_device_wakeup_enable(device, RT_TRUE);
+#endif
+    rt_pm_device_register(device, &aic_touch_pm_ops);
+#endif
 
     LOG_I("rt_touch init success");
 

@@ -468,15 +468,8 @@ static void config_jpeg_picture_info_register(struct mjpeg_dec_ctx *s)
 
 	frame_format.cbcr_interleaved = s->uv_interleave;
 
-#ifdef AIC_VE_DRV_V10
+
 	frame_format.stride = s->curr_frame->mpp_frame.buf.stride[0];
-#else
-	if(MPP_ROTATION_GET(s->decoder.rotmir_flag) == MPP_ROTATION_270 ||
-		MPP_ROTATION_GET(s->decoder.rotmir_flag) == MPP_ROTATION_90)
-		frame_format.stride = s->curr_frame->mpp_frame.buf.size.height;
-	else
-		frame_format.stride = s->curr_frame->mpp_frame.buf.stride[0];
-#endif
 
 	if (s->pix_fmt == MPP_FMT_YUV420P || s->pix_fmt == MPP_FMT_NV12 || s->pix_fmt == MPP_FMT_NV21) {
 		frame_format.color_mode = 0;

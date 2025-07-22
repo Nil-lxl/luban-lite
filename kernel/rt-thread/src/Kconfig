@@ -382,6 +382,12 @@ menu "Memory Management"
             to check memory block to find which thread has wrongly modified
             memory.
 
+    if RT_USING_MEMTRACE
+        config RT_MEMTRACE_BRIEF_DUMP
+            bool "Enable memory trace brief dump"
+            default n
+    endif
+
     config RT_USING_HEAP_ISR
         bool "Using heap in ISR"
         default n

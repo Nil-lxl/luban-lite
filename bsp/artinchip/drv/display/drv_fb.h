@@ -2,6 +2,8 @@
  * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * Authors: huahui.mai@artinchip.com
  */
 
 #ifndef _DRV_FB_H_
@@ -41,6 +43,31 @@ enum AIC_COM_TYPE {
     AIC_LVDS_COM = 0x02,  /* lvds component */
     AIC_MIPI_COM = 0x03,  /* mipi dsi component */
     AIC_DBI_COM  = 0x04,  /* mipi dbi component */
+};
+
+#define AICFB_ON    1
+#define AICFB_OFF   0
+
+struct aicfb_info
+{
+    struct platform_driver *de;
+    struct platform_driver *di;
+    struct aic_panel *panel;
+    struct panel_desc *desc;
+
+#if defined(KERNEL_RTTHREAD)
+    struct rt_device device;
+#endif
+
+    bool power_on;
+    u32 fb_rotate;
+
+    void *fb_start;
+    u32 width;
+    u32 height;
+    u32 stride;
+    size_t fb_size;
+    u32 bits_per_pixel;
 };
 
 struct panel_dbi_commands {
@@ -222,6 +249,9 @@ struct aic_panel {
     unsigned int match_id;
 
     int connector_type;
+    #ifdef AIC_PM_INDEPENDENT_POWER_KEY
+    unsigned char independent_pwkey;
+    #endif
 };
 
 static inline void aic_delay_ms(u32 ms)
@@ -240,5 +270,7 @@ extern struct platform_driver artinchip_dsi_driver;
 extern struct platform_driver artinchip_dbi_driver;
 extern struct platform_driver artinchip_de_driver;
 
+void panel_backlight_enable(struct aic_panel *panel, u32 ms);
+void panel_backlight_disable(struct aic_panel *panel, u32 ms);
 #endif /* _DRV_FB_H_ */
 

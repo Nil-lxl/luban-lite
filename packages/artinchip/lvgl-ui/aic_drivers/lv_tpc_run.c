@@ -71,6 +71,14 @@ static void touch_entry(void *parameter) /* touch panel control entry */
                 {
                     rt_uint16_t  u16X, u16Y;
 #ifdef AIC_USING_RTP
+#if AIC_RTP_RECALIBRATE_ENABLE
+                    if (rtp_is_recalibrate_started()) {
+                        rtp_store_recalibrate_data(dev, read_data);
+                        if (rtp_is_recalibrate_all_data_stored()) {
+                            rtp_update_recalibrate();
+                        }
+                    }
+#endif
                     rtp_check_event_type(read_data[i].event, read_data[i].pressure);
                     extern void lv_convert_adc_to_coord(rt_device_t rtp_dev, struct rt_touch_data *data);
                     lv_convert_adc_to_coord(dev, &read_data[i]);
@@ -109,6 +117,9 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
         return -1;
     }
 
+#ifdef AIC_LVGL_USB_OSD_DEMO
+    rt_device_close(dev);
+#endif
     if (rt_device_open(dev, RT_DEVICE_FLAG_INT_RX) != RT_EOK)
     {
         rt_kprintf("Failed to open dev %s\n", name);
@@ -116,6 +127,10 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
     }
 
 #ifdef AIC_USING_RTP
+#ifdef RT_TOUCH_PIN_IRQ
+    rt_kprintf("Using RTP requires turning off RT_TOUCH_PIN_IRQ\n");
+    return -1;
+#endif
     extern void lv_rtp_calibrate(rt_device_t rtp_dev, int fb_width, int fb_height);
     lv_rtp_calibrate(dev, x, y);
 #endif
@@ -131,8 +146,9 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
         return -1;
     }
 
+#ifndef AIC_LVGL_USB_OSD_DEMO
     rt_device_set_rx_indicate(dev, rx_callback);
-
+#endif
     touch_thread = rt_thread_create("touch",
                                      touch_entry,
                                      RT_NULL,
@@ -146,6 +162,7 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
     return 0;
 }
 
+#ifdef AIC_USING_TOUCH
 static rt_err_t (*bak_callback)(rt_device_t, rt_size_t);
 
 void lvgl_get_tp(void)
@@ -169,4 +186,5 @@ void lvgl_put_tp(void)
         bak_callback = NULL;
     }
 }
+#endif /* AIC_USING_TOUCH */
 #endif

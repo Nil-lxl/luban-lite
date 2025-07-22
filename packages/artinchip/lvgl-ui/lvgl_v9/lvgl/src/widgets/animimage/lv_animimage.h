@@ -38,7 +38,7 @@ typedef struct {
     lv_anim_t anim;
     /*picture sequence */
     const void ** dsc;
-    int8_t  pic_count;
+    int32_t  pic_count;
 } lv_animimg_t;
 
 /*Image parts*/

@@ -1,15 +1,17 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date              Notes
  * 2024-06-24        the first version
+ * 2025-06-18        fix the issue where some ICs cannot read properly
  */
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <string.h>
+#include "touch_common.h"
 #include "tw31xx.h"
 #define DBG_TAG "tw31xx"
 #define DBG_LVL DBG_INFO
@@ -103,6 +105,14 @@ static rt_size_t tw31xx_read_point(struct rt_touch_device *touch, void *buf,
     tw31xx_read_regs(&tw31xx_client, reg, read_buf, sizeof(read_buf));
 
     if (read_buf[0] == TW31XX_EVENT_ABS) {
+        rt_uint8_t dynamic_flag = 0;
+        rt_uint8_t osd_flag = 0;
+        int16_t input_x = 0;
+        int16_t input_y = 0;
+
+        rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_FLAG, &dynamic_flag);
+        rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_OSD_FLAG, &osd_flag);
+
         reg[0] = (rt_uint8_t)(TW31XX_REG_POINT >> 8);
         reg[1] = (rt_uint8_t)(TW31XX_REG_POINT & 0xff);
         tw31xx_read_regs(&tw31xx_client, reg, read_buf, 4);
@@ -123,8 +133,22 @@ static rt_size_t tw31xx_read_point(struct rt_touch_device *touch, void *buf,
             temp_data->event = RT_TOUCH_EVENT_NONE;
         }
 
-        temp_data->y_coordinate = tp_buf & 0x1fff;
-        temp_data->x_coordinate = (tp_buf >> 13) & 0x1fff;
+        input_x = (tp_buf >> 13) & 0x1fff;
+        input_y = tp_buf & 0x1fff;
+        if (!dynamic_flag) {
+            if (!osd_flag) {
+                aic_touch_flip(&input_x, &input_y);
+                aic_touch_rotate(&input_x, &input_y);
+                aic_touch_scale(&input_x, &input_y);
+                aic_touch_crop(&input_x, &input_y);
+            }
+        } else {
+            if (!osd_flag)
+                aic_touch_dynamic_rotate(touch, &input_x, &input_y);
+        }
+
+        temp_data->x_coordinate = input_x;
+        temp_data->y_coordinate = input_y;
     } else {
         goto __exit;
     }
@@ -133,6 +157,15 @@ __exit:
     tw31xx_i2c_done();
     return read_num;
 }
+
+struct rt_touch_info tw31xx_info =
+{
+    RT_TOUCH_TYPE_CAPACITANCE,
+    RT_TOUCH_VENDOR_UNKNOWN,
+    1,
+    (rt_int32_t)AIC_TOUCH_X_COORDINATE_RANGE,
+    (rt_int32_t)AIC_TOUCH_Y_COORDINATE_RANGE,
+};
 
 static rt_err_t tw31xx_control(struct rt_touch_device *touch, int cmd, void *arg)
 {
@@ -145,7 +178,12 @@ static rt_err_t tw31xx_control(struct rt_touch_device *touch, int cmd, void *arg
         break;
     case RT_TOUCH_CTRL_GET_INFO:
         info = (struct rt_touch_info *)arg;
-        info->point_num = 1;
+        if (info == RT_NULL)
+            return -RT_EINVAL;
+
+        info->point_num = touch->info.point_num;
+        info->range_x = touch->info.range_x;
+        info->range_y = touch->info.range_y;
         info->type = touch->info.type;
         info->vendor = touch->info.vendor;
 
@@ -174,6 +212,25 @@ static struct rt_touch_ops tw31xx_touch_ops = {
     .touch_control = tw31xx_control,
 };
 
+void tw31xx_get_init_event(void)
+{
+    rt_uint8_t retry = 50;
+
+    rt_uint8_t reg[2] = {0};
+    rt_uint8_t read_buf[2] = {0};
+    reg[0] = (rt_uint8_t)(TW31XX_REG_EVENT >> 8);
+    reg[1] = (rt_uint8_t)(TW31XX_REG_EVENT & 0xff);
+
+    do {
+        tw31xx_read_regs(&tw31xx_client, reg, read_buf, 1);
+        if (read_buf[0] == TW31XX_EVENT_GES) {
+            tw31xx_i2c_done();
+            break;
+        }
+        rt_thread_mdelay(10);
+    } while (retry--);
+}
+
 static int tw31xx_hw_init(const char *name, struct rt_touch_config *cfg)
 {
     struct rt_touch_device *touch_device = RT_NULL;
@@ -185,17 +242,8 @@ static int tw31xx_hw_init(const char *name, struct rt_touch_config *cfg)
         return -RT_ERROR;
     }
     rt_memset((void *)touch_device, 0, sizeof(struct rt_touch_device));
-    //rst output 1
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_LOW);
-    //irq output 1
-    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
-    rt_pin_write(cfg->irq_pin.pin, PIN_HIGH);
-    rt_thread_mdelay(100);
-    //rst output 1
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
-    rt_thread_mdelay(100);
+    //irq input
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_INPUT_PULLUP);
     //rst output 0
     rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
     rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_LOW);
@@ -221,37 +269,10 @@ static int tw31xx_hw_init(const char *name, struct rt_touch_config *cfg)
 
     tw31xx_client.client_addr = TW31XX_ADDR;
 
-    /* get init even */
-    rt_uint8_t reg[2];
-    rt_uint8_t read_buf[2] = {0};
-    reg[0] = (rt_uint8_t)(TW31XX_REG_EVENT >> 8);
-    reg[1] = (rt_uint8_t)(TW31XX_REG_EVENT & 0xff);
-
-    tw31xx_read_regs(&tw31xx_client, reg, read_buf, 1);
-    if (read_buf[0] == TW31XX_EVENT_GES) {
-        tw31xx_i2c_done();
-    }
-
-    //rst output 1
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
-    rt_thread_mdelay(100);
-    //rst output 0
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_LOW);
-    rt_thread_mdelay(100);
-    //rst output 1
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
-    rt_thread_mdelay(100);
-    //irq input
-    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_INPUT_PULLUP);
-    // rst input
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_INPUT);
+    tw31xx_get_init_event();
 
     /* register touch device */
-    touch_device->info.type = RT_TOUCH_TYPE_CAPACITANCE;
-    touch_device->info.vendor = RT_TOUCH_VENDOR_UNKNOWN;
+    touch_device->info = tw31xx_info;
     rt_memcpy(&touch_device->config, cfg, sizeof(struct rt_touch_config));
     touch_device->ops = &tw31xx_touch_ops;
 
@@ -264,33 +285,10 @@ static int tw31xx_hw_init(const char *name, struct rt_touch_config *cfg)
     return RT_EOK;
 }
 
-static int tw31xx_gpio_cfg()
-{
-    unsigned int g, p;
-    long pin;
-
-    // RST
-    pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-    hal_gpio_direction_input(g, p);
-
-    // INT
-    pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-    hal_gpio_direction_input(g, p);
-    hal_gpio_set_irq_mode(g, p, 0);
-
-    return 0;
-}
-
 static int rt_hw_tw31xx_init(void)
 {
-    struct rt_touch_config cfg;
-    rt_uint8_t rst_pin;
-
-    tw31xx_gpio_cfg();
+    struct rt_touch_config cfg = {0};
+    rt_uint8_t rst_pin = 0;
 
     rst_pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
     cfg.dev_name = AIC_TOUCH_PANEL_I2C_CHAN;
@@ -298,7 +296,7 @@ static int rt_hw_tw31xx_init(void)
     cfg.irq_pin.mode = PIN_MODE_INPUT_PULLUP;
     cfg.user_data = &rst_pin;
 
-    tw31xx_hw_init("tw31xx", &cfg);
+    tw31xx_hw_init(AIC_TOUCH_PANEL_NAME, &cfg);
 
     return 0;
 }

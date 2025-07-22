@@ -141,12 +141,13 @@ int net_if_get_ip(net_if_t *net_if, uint32_t *ip, uint32_t *mask, uint32_t *gw)
 }
 #endif
 
-int net_if_add(net_if_t *net_if, const uint32_t *ipaddr, const uint32_t *netmask, const uint32_t *gw)
+int net_if_add(net_if_t *net_if, const uint32_t *ipaddr, const uint32_t *netmask, const uint32_t *gw, void *state_vif)
 {
     err_t status = ERR_OK;
 
 	aic_dbg("net_if_add %s return %d\n", net_if->name, status);
 	net_if->num  = netif_dev.netif_num++;
+    net_if->state = state_vif;
 
     return (status == ERR_OK ? 0 : -1);
 }
@@ -192,7 +193,7 @@ int net_init(void)
 	}
 
     #ifdef CONFIG_RX_WAIT_LWIP
-    if (rtos_semaphore_create(&netifdev->fhost_rx_lwip_sema, "fhost_rx_lwip_sema", NET_RX_LWIP_CNT, 0)) {
+    if (rtos_semaphore_create(&netifdev->fhost_rx_lwip_sema, "FhostRxLwipSema", NET_RX_LWIP_CNT, 0)) {
         AIC_ASSERT_ERR(0);
     }
     #endif /* CONFIG_RX_WAIT_LWIP */

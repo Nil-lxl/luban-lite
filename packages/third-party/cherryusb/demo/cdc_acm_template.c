@@ -1,10 +1,15 @@
+/*
+ * Copyright (c) 2022-2025, sakumisu
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 #include "usbd_core.h"
 #include "usbd_cdc.h"
 
 /*!< endpoint address */
-#define CDC_IN_EP  0x81
+#define CDC_IN_EP  0x82
 #define CDC_OUT_EP 0x02
-#define CDC_INT_EP 0x83
+#define CDC_INT_EP 0x81
 
 #define USBD_VID           0x33C3
 #define USBD_PID           0x7788
@@ -99,21 +104,42 @@ static const uint8_t cdc_descriptor[] = {
     0x00
 };
 
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t read_buffer[2048];
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t write_buffer[2048];
+#define READ_BUF_SIZE   2048
+#define WRITE_BUF_SIZE   2048
+static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t read_buffer[READ_BUF_SIZE];
+static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t write_buffer[WRITE_BUF_SIZE];
 
 volatile bool ep_tx_busy_flag = false;
-
+volatile uint8_t dtr_enable = 0;
 #ifdef CONFIG_USB_HS
 #define CDC_MAX_MPS 512
 #else
 #define CDC_MAX_MPS 64
 #endif
 
+extern void usbd_cdc_acm_bulk_out(uint8_t ep, uint32_t nbytes);
+extern void usbd_cdc_acm_bulk_in(uint8_t ep, uint32_t nbytes);
+/*!< endpoint call back */
+struct usbd_endpoint cdc_out_ep = {
+    .ep_addr = CDC_OUT_EP,
+    .ep_cb = usbd_cdc_acm_bulk_out
+};
+
+struct usbd_endpoint cdc_in_ep = {
+    .ep_addr = CDC_IN_EP,
+    .ep_cb = usbd_cdc_acm_bulk_in
+};
+
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+void usbd_comp_acm_event_handler(uint8_t event)
+#else
 void usbd_event_handler(uint8_t event)
+#endif
 {
     switch (event) {
         case USBD_EVENT_RESET:
+            dtr_enable = 0;
+            ep_tx_busy_flag = false;
             break;
         case USBD_EVENT_CONNECTED:
             break;
@@ -125,7 +151,7 @@ void usbd_event_handler(uint8_t event)
             break;
         case USBD_EVENT_CONFIGURED:
             /* setup first out ep read transfer */
-            usbd_ep_start_read(CDC_OUT_EP, read_buffer, 2048);
+            usbd_ep_start_read(cdc_out_ep.ep_addr, read_buffer, READ_BUF_SIZE);
             break;
         case USBD_EVENT_SET_REMOTE_WAKEUP:
             break;
@@ -140,49 +166,80 @@ void usbd_event_handler(uint8_t event)
 void usbd_cdc_acm_bulk_out(uint8_t ep, uint32_t nbytes)
 {
     memcpy(write_buffer, read_buffer, nbytes);
-    usbd_ep_start_write(CDC_IN_EP, write_buffer, nbytes);
+    if (ep_tx_busy_flag == false) {
+        usbd_ep_start_write(cdc_in_ep.ep_addr, write_buffer, nbytes);
+        ep_tx_busy_flag = true;
+    }
 
     /* setup next out ep read transfer */
-    usbd_ep_start_read(CDC_OUT_EP, read_buffer, 2048);
+    usbd_ep_start_read(cdc_out_ep.ep_addr, read_buffer, READ_BUF_SIZE);
 }
 
 void usbd_cdc_acm_bulk_in(uint8_t ep, uint32_t nbytes)
 {
 
+    if ((nbytes % CDC_MAX_MPS) == 0 && nbytes) {
+        /* send zlp */
+        usbd_ep_start_write(cdc_in_ep.ep_addr, NULL, 0);
+    } else {
+        ep_tx_busy_flag = false;
+    }
 }
-
-/*!< endpoint call back */
-struct usbd_endpoint cdc_out_ep = {
-    .ep_addr = CDC_OUT_EP,
-    .ep_cb = usbd_cdc_acm_bulk_out
-};
-
-struct usbd_endpoint cdc_in_ep = {
-    .ep_addr = CDC_IN_EP,
-    .ep_cb = usbd_cdc_acm_bulk_in
-};
 
 static struct usbd_interface intf0;
 static struct usbd_interface intf1;
+
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+#include "composite_template.h"
+int usbd_comp_acm_init(uint8_t *ep_table, void *data)
+{
+    cdc_out_ep.ep_addr = ep_table[1];
+    cdc_in_ep.ep_addr = ep_table[2];
+
+    usbd_add_interface(usbd_cdc_acm_init_intf(&intf0));
+    usbd_add_interface(usbd_cdc_acm_init_intf(&intf1));
+    usbd_add_endpoint(&cdc_out_ep);
+    usbd_add_endpoint(&cdc_in_ep);
+    return 0;
+}
+#endif
+
+int cdc_acm_deinit(void)
+{
+#ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
+    usbd_deinitialize();
+#else
+    usbd_comp_func_release(cdc_descriptor, "cdc_acm");
+#endif
+
+    dtr_enable = 0;
+    ep_tx_busy_flag = false;
+
+    return 0;
+}
 
 int cdc_acm_init(void)
 {
     const uint8_t data[10] = { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30 };
 
     memcpy(&write_buffer[0], data, 10);
-    memset(&write_buffer[10], 'a', 2038);
+    memset(&write_buffer[10], 'a', WRITE_BUF_SIZE - 10);
 
+#ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     usbd_desc_register(cdc_descriptor);
     usbd_add_interface(usbd_cdc_acm_init_intf(&intf0));
     usbd_add_interface(usbd_cdc_acm_init_intf(&intf1));
     usbd_add_endpoint(&cdc_out_ep);
     usbd_add_endpoint(&cdc_in_ep);
     usbd_initialize();
+#else
+    usbd_comp_func_register(cdc_descriptor,
+                            usbd_comp_acm_event_handler,
+                            usbd_comp_acm_init, "cdc_acm");
+#endif
     return 0;
 }
-INIT_DEVICE_EXPORT(cdc_acm_init);
-
-volatile uint8_t dtr_enable = 0;
+USB_INIT_APP_EXPORT(cdc_acm_init);
 
 void usbd_cdc_acm_set_dtr(uint8_t intf, bool dtr)
 {

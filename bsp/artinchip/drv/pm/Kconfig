@@ -20,4 +20,8 @@ menu "PM configure"
         string "PM board level power switch"
         default ""
 
+    config AIC_PM_INDEPENDENT_POWER_KEY
+        bool "Independent power key control"
+        default n
+
 endmenu

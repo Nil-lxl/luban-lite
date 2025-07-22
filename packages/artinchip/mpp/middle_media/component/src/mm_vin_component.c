@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -18,13 +18,9 @@
 #include <inttypes.h>
 
 #include "aic_message.h"
-#include "mpp_vin_dev.h"
-#include "mpp_vin.h"
 #include "mpp_list.h"
 #include "mpp_log.h"
 #include "mpp_mem.h"
-
-
 #include "mpp_vin.h"
 #ifdef AIC_USING_CAMERA
 #include "drv_camera.h"
@@ -370,6 +366,7 @@ static s32 mm_vin_set_parameter(mm_handle h_component, MM_INDEX_TYPE index, void
         p_vin_data->frame.buf.size.width = port->format.video.frame_width;
         p_vin_data->frame.buf.size.height = port->format.video.frame_height;
         p_vin_data->framerate = port->format.video.framerate;
+        p_vin_data->vin_source_type = port->format.video.vin_type;
         if (port->format.video.color_format == MM_COLOR_FORMAT_YUV420P) {
             p_vin_data->frame.buf.format = MPP_FMT_YUV420P;
         } else {
@@ -381,10 +378,6 @@ static s32 mm_vin_set_parameter(mm_handle h_component, MM_INDEX_TYPE index, void
 
     case MM_INDEX_PARAM_CONTENT_URI:
         ret = mm_vin_index_param_contenturi(p_vin_data, (mm_param_content_uri *)p_param);
-        break;
-
-    case MM_INDEX_PARAM_VIDEO_INPUT_SOURCE:
-        p_vin_data->vin_source_type = ((mm_param_u32 *)p_param)->u32;
         break;
 
     case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
@@ -484,7 +477,13 @@ static s32 mm_vin_giveback_buffer(mm_handle h_component, mm_buffer *p_buffer)
     mm_vin_data *p_vin_data;
     mm_vin_frame *p_frame_node;
 
+    if (!h_component) {
+        return MM_ERROR_NULL_POINTER;
+    }
     p_vin_data = (mm_vin_data *)(((mm_component *)h_component)->p_comp_private);
+    if (!p_vin_data) {
+        return MM_ERROR_NULL_POINTER;
+    }
 
     pthread_mutex_lock(&p_vin_data->vin_lock);
     if (mpp_list_empty(&p_vin_data->vin_processing_list)) {
@@ -492,6 +491,7 @@ static s32 mm_vin_giveback_buffer(mm_handle h_component, mm_buffer *p_buffer)
         pthread_mutex_unlock(&p_vin_data->vin_lock);
         return MM_ERROR_MB_ERRORS_IN_FRAME;
     }
+    pthread_mutex_unlock(&p_vin_data->vin_lock);
     p_frame_node = mpp_list_first_entry(&p_vin_data->vin_processing_list,
                                         struct mm_vin_frame, list);
     if (p_vin_data->vin_dvp_init) {
@@ -500,9 +500,10 @@ static s32 mm_vin_giveback_buffer(mm_handle h_component, mm_buffer *p_buffer)
             return -1;
         }
     }
-
+    pthread_mutex_lock(&p_vin_data->vin_lock);
     mpp_list_del(&p_frame_node->list);
     mpp_list_add_tail(&p_frame_node->list, &p_vin_data->vin_idle_list);
+    pthread_mutex_unlock(&p_vin_data->vin_lock);
 
     mm_vin_send_command(h_component, MM_COMMAND_NOPS, 0, NULL);
     p_vin_data->giveback_frame_ok_num++;
@@ -510,7 +511,6 @@ static s32 mm_vin_giveback_buffer(mm_handle h_component, mm_buffer *p_buffer)
         p_vin_data->wait_vin_empty_flag = 0;
         pthread_cond_signal(&p_vin_data->vin_empty_cond);
     }
-    pthread_mutex_unlock(&p_vin_data->vin_lock);
 
 
     return MM_ERROR_NONE;
@@ -871,6 +871,8 @@ static s32 mm_vin_component_capture_dvp_frame(mm_vin_data *p_vin_data, mm_vin_fr
     s32 i = 0;
     s32 index = 0;
     s32 frame_duration = p_vin_data->framerate > 0 ? (1000 / p_vin_data->framerate) : 40;
+    u64 cur_time = aic_get_time_ms();
+    static u64 last_time = 0;
     struct vin_video_buf *p_binfo = &p_vin_data->dvp_data.binfo;
 
     ret = mpp_dvp_ioctl(DVP_DQ_BUF, (void *)&index);
@@ -878,6 +880,11 @@ static s32 mm_vin_component_capture_dvp_frame(mm_vin_data *p_vin_data, mm_vin_fr
         logd("ioctl(DVP_DQ_BUF) failed! err -%d\n", -ret);
         return MM_ERROR_READ_FAILED;
     }
+    if (cur_time - last_time > 80) {
+        printf("dvp get frame time diff %llu ms, index:%d\n",
+            cur_time - last_time, index);
+    }
+    last_time = cur_time;
 
     p_frame_node->frame_index = index;
     p_frame_node->frame.buf.buf_type = MPP_PHY_ADDR;
@@ -911,17 +918,16 @@ static s32 mm_vin_component_capture_file_frame(mm_vin_data *p_vin_data, mm_vin_f
     s32 i = 0;
     s32 ret = 0;
     s32 frame_duration = p_vin_data->framerate > 0 ? (1000 / p_vin_data->framerate) : 40;
-    pthread_mutex_lock(&p_vin_data->vin_lock);
+
     for (i = 0; i < 3; i++) {
         ret = fread(p_frame_node->vir_addr[i], 1, p_frame_node->size[i], p_vin_data->p_vin_fp);
         if (ret < p_frame_node->size[i]) {
             p_frame_node->frame.flags = FRAME_FLAG_EOS;
             p_vin_data->eos = 1;
-            pthread_mutex_unlock(&p_vin_data->vin_lock);
             return MM_ERROR_NONE;
         }
     }
-    pthread_mutex_unlock(&p_vin_data->vin_lock);
+
     p_frame_node->frame.pts = p_vin_data->caputure_frame_ok_num * frame_duration;
     p_vin_data->caputure_frame_ok_num++;
 
@@ -930,7 +936,7 @@ static s32 mm_vin_component_capture_file_frame(mm_vin_data *p_vin_data, mm_vin_f
 
 static void mm_vin_component_count_print(mm_vin_data *p_vin_data)
 {
-    logi("[%s:%d]caputure_frame_ok_num:%u,caputure_frame_fail_num:%u,"
+    printf("[%s:%d]caputure_frame_ok_num:%u,caputure_frame_fail_num:%u,"
            "send_frame_ok_num:%u,send_frame_fail_num:%u,"
            "giveback_frame_ok_num:%u,giveback_frame_fail_num:%u\n",
            __FUNCTION__, __LINE__,
@@ -986,17 +992,20 @@ static void *mm_vin_component_thread(void *p_thread_data)
             /*send frame to venc component*/
             buffer.p_buffer = (u8 *)&p_frame_node->frame;
             buffer.data_type = MM_BUFFER_DATA_FRAME;
+            pthread_mutex_unlock(&p_vin_data->vin_lock);
             ret = mm_send_buffer(p_vin_data->out_port_bind.p_bind_comp, &buffer);
             if (ret != 0) {
-                logw("mm_send_buffer ret");
+                logw("mm_send_buffer ret %d", ret);
                 p_vin_data->send_frame_fail_num++;
-                pthread_mutex_unlock(&p_vin_data->vin_lock);
+                usleep(5000);
                 goto _AIC_MSG_GET_;
+            } else {
+                p_vin_data->send_frame_ok_num++;
+                pthread_mutex_lock(&p_vin_data->vin_lock);
+                mpp_list_del(&p_frame_node->list);
+                mpp_list_add_tail(&p_frame_node->list, &p_vin_data->vin_processing_list);
+                pthread_mutex_unlock(&p_vin_data->vin_lock);
             }
-            p_vin_data->send_frame_ok_num++;
-            mpp_list_del(&p_frame_node->list);
-            mpp_list_add_tail(&p_frame_node->list, &p_vin_data->vin_processing_list);
-            pthread_mutex_unlock(&p_vin_data->vin_lock);
         }
 
         /*get free node*/
@@ -1028,9 +1037,8 @@ static void *mm_vin_component_thread(void *p_thread_data)
         mpp_list_add_tail(&p_frame_node->list, &p_vin_data->vin_ready_list);
         pthread_mutex_unlock(&p_vin_data->vin_lock);
 
-        usleep(20000);
+        usleep(5000);
     }
 _EXIT:
-    mm_vin_component_count_print(p_vin_data);
     return (void *)MM_ERROR_NONE;
 }

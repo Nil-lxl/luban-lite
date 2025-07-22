@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,7 +17,7 @@ struct aic_tsen_ch aic_tsen_chs[] = {
         .hta_enable = 0,
         .lta_enable = 0,
         .otp_enable = 0,
-#ifndef CONFIG_FPGA_BOARD_ARTINCHIP
+#ifndef FPGA_BOARD_ARTINCHIP
         .slope  = -1134,
         .offset = 2439001,
 #endif
@@ -33,7 +33,7 @@ struct aic_tsen_ch aic_tsen_chs[] = {
         .hta_enable = 0,
         .lta_enable = 0,
         .otp_enable = 0,
-#ifndef CONFIG_FPGA_BOARD_ARTINCHIP
+#ifndef FPGA_BOARD_ARTINCHIP
         .slope  = -1139,
         .offset = 2450566,
 #endif

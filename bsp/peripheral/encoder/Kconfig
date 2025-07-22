@@ -1,0 +1,23 @@
+choice
+    prompt "Select encoder device"
+    default AIC_ENCODER_HEC40
+    depends on AIC_USING_ENCODER
+
+    config AIC_ENCODER_HEC40
+        bool "HEC40"
+endchoice
+
+config AIC_ENCODER_PIN_A
+        string "Encoder A-end pin"
+        default "PA.8"
+        depends on AIC_USING_ENCODER
+
+config AIC_ENCODER_PIN_B
+        string "Encoder B-end pin"
+        default "PA.9"
+        depends on AIC_USING_ENCODER
+
+config AIC_ENCODER_NAME
+    string
+    default "hec40"  if AIC_ENCODER_HEC40
+    depends on AIC_USING_ENCODER

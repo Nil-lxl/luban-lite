@@ -1,8 +1,16 @@
+/*
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Authors:  Zequan Liang <zequan.liang@artinchip.com>
+ */
+
 #include "aic_ui.h"
 #include "lvgl.h"
 #include "media_list.h"
-#include "aic_lv_ffmpeg.h"
 #include "../app_entrance.h"
+#include "lv_aic_player.h"
 
 #define BYTE_ALIGN(x, byte) (((x) + ((byte) - 1))&(~((byte) - 1)))
 
@@ -14,18 +22,13 @@
 #define PLAY_MODE_CIRCLE_ONE 2
 
 typedef struct _easy_player {
-    lv_obj_t *ffmpeg;
+    lv_obj_t *obj;
     media_list_t *list;
     media_info_t cur_info;
     int cur_pos;
     int mode;
     int play_status;
 } easy_player_t;
-
-extern int check_lvgl_de_config(void);
-extern void fb_dev_layer_set(void);
-extern void fb_dev_layer_reset(void);
-extern void fb_dev_layer_only_video(void);
 
 extern lv_obj_t *nonto_sans_label_comp(lv_obj_t *parent, uint16_t weight);
 extern lv_obj_t *com_imgbtn_switch_comp(lv_obj_t *parent, void *img_src_0, void *img_src_1);
@@ -69,15 +72,10 @@ lv_obj_t *aic_video_ui_init(void)
     return aic_video_ui;
 #endif
 
-    if (check_lvgl_de_config() == -1) {
-        LV_LOG_INFO("Please check defined AICFB_ARGB8888 and LV_COLOR_DEPTH is 32 or\n");
-        LV_LOG_INFO("check defined AICFB_RGB565 and LV_COLOR_DEPTH is 16\n");
-        return aic_video_ui;
-    }
-    fb_dev_layer_set();
-
-    player.ffmpeg = lv_ffmpeg_player_create(aic_video_ui);
-    lv_obj_set_size(player.ffmpeg, LV_HOR_RES, LV_VER_RES);
+    player.obj = lv_aic_player_create(aic_video_ui);
+#if LV_COLOR_DEPTH == 16
+    lv_aic_player_set_draw_layer(player.obj, LV_AIC_PLAYER_LAYER_UI_SINGLE_BUF);
+#endif
     player.list = media_list_create();
     media_list_init();
     media_list_get_info(player.list, &player.cur_info, MEDIA_TYPE_POS_OLDEST);
@@ -88,15 +86,19 @@ lv_obj_t *aic_video_ui_init(void)
 
     lv_obj_add_event_cb(aic_video_ui, ui_aic_video_cb, LV_EVENT_ALL, &player);
 
-    /* Enable LV_FFMPEG_PLAYED_CMD_KEEP_LAST_FRAME_EX when playing multiple video sources
+    /* Enable LV_AIC_PLAYER_CMD_KEEP_LAST_FRAME_EX when playing multiple video sources
        to avoid black screens during source switching, though it will increase memory usage.
        Alternatively, add a loading icon to indicate to users that a switch is in progress,
        which can mitigate the impact of black screens on viewing experience.
        Need to set before setting src. */
-    //lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYED_CMD_KEEP_LAST_FRAME_EX, NULL);
+    //lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_KEEP_LAST_FRAME_EX, NULL);
 
-    lv_ffmpeg_player_set_src(player.ffmpeg, player.cur_info.source);
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_START, NULL);
+    lv_aic_player_set_src(player.obj, player.cur_info.source);
+    lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_START, NULL);
+
+    lv_obj_center(player.obj);
+    lv_aic_player_set_width(player.obj, LV_HOR_RES);
+    lv_aic_player_set_height(player.obj, LV_VER_RES);
 
     return aic_video_ui;
 }
@@ -108,7 +110,6 @@ static void ui_aic_video_cb(lv_event_t *e)
     if (code == LV_EVENT_SCREEN_UNLOAD_START) {
         lv_timer_del(play_time_timer);
         media_list_destroy(player.list);
-        fb_dev_layer_reset();
     }
     if (code == LV_EVENT_DELETE) {;}
     if (code == LV_EVENT_SCREEN_LOADED) {;}
@@ -197,7 +198,8 @@ static void aic_video_ui_impl(lv_obj_t *parent)
     lv_img_set_src(play_control_last, LVGL_PATH(aic_video/last.png));
     lv_obj_set_pos(play_control_last, adaptive_width(380), adaptive_height(60));
 
-    lv_obj_t *home = com_imgbtn_comp(control_container, LVGL_PATH(aic_video/home.png), NULL);
+    lv_obj_t *home = NULL;
+    home = com_imgbtn_comp(control_container, LVGL_PATH(aic_video/home.png), NULL);
     lv_obj_set_pos(home, adaptive_width(20), adaptive_height(14));
 
     lv_obj_add_event_cb(control_container, show_control_cb, LV_EVENT_ALL, NULL);
@@ -214,8 +216,8 @@ static void get_media_info_from_src(const char *src_path, media_info_t *info)
 {
     struct av_media_info av_media;
 
-    lv_ffmpeg_player_set_src(player.ffmpeg, src_path);
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_GET_MEDIA_INFO_EX, &av_media);
+    lv_aic_player_set_src(player.obj, src_path);
+    lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_GET_MEDIA_INFO, &av_media);
 
     info->duration_ms = av_media.duration / 1000;
     info->file_size_bytes = av_media.file_size;
@@ -238,11 +240,11 @@ static void show_control_cb(lv_event_t *e)
         for (int i = 0; i < child_cnt; i++) {
             child = lv_obj_get_child(container, i);
             if (show) {
-                fb_dev_layer_set();
                 lv_obj_clear_flag(child, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_invalidate(player.obj);
             } else {
-                fb_dev_layer_only_video();
                 lv_obj_add_flag(child, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_invalidate(player.obj);
             }
         }
     }
@@ -258,14 +260,14 @@ static void play_mode_cb(lv_event_t *e)
         player.mode = player.mode > PLAY_MODE_CIRCLE_ONE ? PLAY_MODE_CIRCLE : player.mode;
         if (player.mode == PLAY_MODE_CIRCLE) {
             lv_img_set_src(play_mode, LVGL_PATH(aic_video/loop.png));
-            lv_ffmpeg_player_set_auto_restart(player.ffmpeg, false);
+            lv_aic_player_set_auto_restart(player.obj, false);
         } else if (player.mode == PLAY_MODE_RANDOM) {
             lv_img_set_src(play_mode, LVGL_PATH(aic_video/random.png));
             media_list_set_randomly(player.list);
-            lv_ffmpeg_player_set_auto_restart(player.ffmpeg, false);
+            lv_aic_player_set_auto_restart(player.obj, false);
         } else {
             lv_img_set_src(play_mode, LVGL_PATH(aic_video/single_loop.png));
-            lv_ffmpeg_player_set_auto_restart(player.ffmpeg, true);
+            lv_aic_player_set_auto_restart(player.obj, true);
         }
     }
 }
@@ -277,10 +279,10 @@ static void play_continue_pause_cb(lv_event_t *e)
     if (code == LV_EVENT_CLICKED) {
         if (player.play_status == 0) {
             lv_timer_resume(play_time_timer);
-            lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_RESUME, NULL);
+            lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_RESUME, NULL);
         } else {
             lv_timer_pause(play_time_timer);
-            lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_PAUSE, NULL);
+            lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_PAUSE, NULL);
         }
         player.play_status = player.play_status == 1 ? 0 : 1;
     }
@@ -296,10 +298,10 @@ static void updata_ui_info(char *last_src)
     lv_label_set_text_fmt(pass_time, "%02d:%02d", 0 ,0);
     lv_label_set_text_fmt(duration, "%02ld:%02ld", GET_MINUTES(player.cur_info.duration_ms), GET_SECONDS(player.cur_info.duration_ms));
     if (strcmp(last_src, player.cur_info.source) == 0) {
-        lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_SET_PLAY_TIME_EX, &seek_time);
+        lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_SET_PLAY_TIME, &seek_time);
     } else {
-        lv_ffmpeg_player_set_src(player.ffmpeg, player.cur_info.source);
-        lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_START, NULL);
+        lv_aic_player_set_src(player.obj, player.cur_info.source);
+        lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_PLAY_END, NULL);
     }
 }
 
@@ -348,7 +350,7 @@ static void play_time_update_cb(lv_timer_t * timer)
     long escap_time = 0;
     bool play_end = false;
 
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_PLAY_END_EX, &play_end);
+    lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_PLAY_END, &play_end);
     if (play_end == true && (player.mode != PLAY_MODE_CIRCLE_ONE)) {
 #if LVGL_VERSION_MAJOR == 8
         lv_event_send(play_control_next, LV_EVENT_CLICKED, NULL); /* play next */
@@ -358,7 +360,7 @@ static void play_time_update_cb(lv_timer_t * timer)
         return;
     }
 
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_GET_PLAY_TIME_EX, &escap_time);
+    lv_aic_player_set_cmd(player.obj, LV_AIC_PLAYER_CMD_GET_PLAY_TIME, &escap_time);
 
     escap_time = escap_time / 1000;
     lv_bar_set_value(progress, escap_time, LV_ANIM_ON);

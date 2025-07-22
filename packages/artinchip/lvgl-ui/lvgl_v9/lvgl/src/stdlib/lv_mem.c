@@ -58,6 +58,26 @@ lv_result_t lv_mem_test_core(void);
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+#if defined(KERNEL_RTTHREAD) && defined(RT_USING_MEMTRACE) && defined(RT_USING_FINSH)
+#include <rtdef.h>
+#include <rtthread.h>
+extern int msh_exec(char *cmd, rt_size_t length);
+int rtt_cmd_exec(char *command)
+{
+    static char cmd[256] = {0};
+
+    strncpy(cmd, command, sizeof(cmd) - 1);
+    cmd[sizeof(cmd) - 1] = '\0';
+    return msh_exec(cmd, strlen(cmd));
+}
+
+static void rtt_memheaptrace_debug(void)
+{
+    rtt_cmd_exec("memheaptrace");
+    rt_kprintf("lvgl thread mdelay 9999999 ms\n");
+    rt_thread_mdelay(9999999);
+}
+#endif
 
 void * lv_malloc(size_t size)
 {
@@ -70,7 +90,10 @@ void * lv_malloc(size_t size)
     void * alloc = lv_malloc_core(size);
 
     if(alloc == NULL) {
-        LV_LOG_INFO("couldn't allocate memory (%lu bytes)", (unsigned long)size);
+        LV_LOG_ERROR("couldn't allocate memory (%lu bytes)", (unsigned long)size);
+#if defined(KERNEL_RTTHREAD) && defined(RT_USING_MEMTRACE) && defined(RT_USING_FINSH)
+        rtt_memheaptrace_debug();
+#endif
 #if LV_LOG_LEVEL <= LV_LOG_LEVEL_INFO
         lv_mem_monitor_t mon;
         lv_mem_monitor(&mon);
@@ -99,7 +122,10 @@ void * lv_malloc_zeroed(size_t size)
 
     void * alloc = lv_malloc_core(size);
     if(alloc == NULL) {
-        LV_LOG_INFO("couldn't allocate memory (%lu bytes)", (unsigned long)size);
+        LV_LOG_ERROR("couldn't allocate memory (%lu bytes)", (unsigned long)size);
+#if defined(KERNEL_RTTHREAD) && defined(RT_USING_MEMTRACE) && defined(RT_USING_FINSH)
+        rtt_memheaptrace_debug();
+#endif
 #if LV_LOG_LEVEL <= LV_LOG_LEVEL_INFO
         lv_mem_monitor_t mon;
         lv_mem_monitor(&mon);
@@ -140,6 +166,9 @@ void * lv_realloc(void * data_p, size_t new_size)
 
     if(new_p == NULL) {
         LV_LOG_ERROR("couldn't reallocate memory");
+#if defined(KERNEL_RTTHREAD) && defined(RT_USING_MEMTRACE) && defined(RT_USING_FINSH)
+        rtt_memheaptrace_debug();
+#endif
         return NULL;
     }
 

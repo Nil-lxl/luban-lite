@@ -19,6 +19,14 @@
 #define CONFIG_CHIPID_SELECT   PRODUCT_ID_AIC8800D80
 #endif
 
+#ifdef CONFIG_AIC8800_NORMAL_MODE
+#define CONFIG_WIFIMODE_SELECT WIFI_MODE_STA
+#else
+#define CONFIG_WIFIMODE_SELECT WIFI_MODE_RFTEST
+#endif
+
+#define CONFIG_WIFI_STA_CONN_TIMEOUT_MS (15000)
+
 #ifndef os_strcmp
 #define os_strcmp(s1, s2) strcmp((s1), (s2))
 #endif

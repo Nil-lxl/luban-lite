@@ -18,6 +18,10 @@
 #include <stdlib.h>
 #include <aic_io.h>
 
+#ifdef PM_ENABLE_DEBUG
+#include <aic_osal.h>
+#endif
+
 #ifdef RT_USING_PM
 
 /* tickless threshold time */
@@ -399,6 +403,37 @@ RT_WEAK rt_uint8_t pm_get_sleep_threshold_mode(rt_uint8_t cur_mode, rt_tick_t ti
     return cur_mode;
 }
 
+#ifdef PM_ENABLE_DEBUG
+void pm_dump_wakeup_source(void)
+{
+    uint32_t i;
+    uint32_t pending;
+    uint32_t enable;
+
+#ifdef ARCH_RISCV32
+    for (i = 0; i < MAX_IRQn; i++)
+    {
+        pending = csi_vic_get_pending_irq(i);
+        enable = csi_vic_get_enabled_irq(i);
+        if (pending && enable)
+        {
+            rt_kprintf("The wakeup source interrupt ID: %d\n", i);
+        }
+    }
+#elif defined(ARCH_RISCV64)
+    for (i = 0; i < MAX_IRQn; i++)
+    {
+        pending = csi_plic_get_pending_irq(PLIC_BASE, i);
+        enable = csi_plic_get_enabled_irq(PLIC_BASE, i);
+        if (pending && enable)
+        {
+            rt_kprintf("The wakeup source interrupt ID: %d\n", i);
+        }
+    }
+#endif
+}
+#endif
+
 /**
  * This function changes the power sleep mode base on the result of selection
  */
@@ -453,6 +488,7 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
 #else
         _pm_device_suspend(pm->sleep_mode);
 #endif
+
         /* Tickless*/
         if (pm->timer_mask & (0x01 << pm->sleep_mode))
         {
@@ -488,6 +524,10 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
                 rt_tick_set(rt_tick_get() + delta_tick);
             }
         }
+
+        #ifdef PM_ENABLE_DEBUG
+        pm_dump_wakeup_source();
+        #endif
 
         /* resume all device */
         _pm_device_resume(pm->sleep_mode);
@@ -920,6 +960,16 @@ void rt_pm_notify_set(void (*notify)(rt_uint8_t event, rt_uint8_t mode, void *da
 void rt_pm_default_set(rt_uint8_t sleep_mode)
 {
     _pm_default_deepsleep = sleep_mode;
+}
+
+rt_uint8_t rt_pm_read_mode_cnt(rt_uint8_t sleep_mode)
+{
+    if (sleep_mode >= PM_SLEEP_MODE_MAX)
+    {
+        return 0;
+    }
+
+    return _pm.modes[sleep_mode];
 }
 
 /**

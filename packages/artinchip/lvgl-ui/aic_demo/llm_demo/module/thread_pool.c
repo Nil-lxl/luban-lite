@@ -34,9 +34,9 @@ thread_pool_t *thread_pool_create(int thread_count)
     if (!pool) return NULL;
 
     pool->task_mq = rt_mq_create("tpool_mq",
-                               2048,
-                               sizeof(thread_pool_task_t),
-                               RT_IPC_FLAG_FIFO);
+                                sizeof(thread_pool_task_t),
+                                128,
+                                RT_IPC_FLAG_FIFO);
     if (!pool->task_mq) {
         return NULL;
     }

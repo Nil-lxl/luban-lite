@@ -11,6 +11,13 @@
 #include "../stdlib/lv_string.h"
 #include "../core/lv_global.h"
 
+#ifdef LV_MEM_HEAP_ADAPTIVE_SUPPORT
+#include "aic_core.h"
+#ifndef LV_USE_CMA_HEAP_LOW_LIMIT
+#define LV_USE_CMA_HEAP_LOW_LIMIT (1024 * 48)
+#endif // LV_USE_CMA_HEAP_LOW_LIMIT
+#endif // LV_MEM_HEAP_ADAPTIVE_SUPPORT
+
 /*********************
  *      DEFINES
  *********************/
@@ -227,6 +234,13 @@ lv_draw_buf_t * lv_draw_buf_create(uint32_t w, uint32_t h, lv_color_format_t cf,
     draw_buf->data = lv_draw_buf_align(buf, cf);
     draw_buf->unaligned_data = buf;
     draw_buf->data_size = size;
+
+#ifdef LV_MEM_HEAP_ADAPTIVE_SUPPORT
+    if (size >= LV_USE_CMA_HEAP_LOW_LIMIT) {
+        draw_buf->header.flags |= LV_IMAGE_FLAGS_USER2;
+    }
+#endif // LV_MEM_HEAP_ADAPTIVE_SUPPORT
+
     return draw_buf;
 }
 
@@ -277,7 +291,15 @@ void lv_draw_buf_destroy(lv_draw_buf_t * buf)
     if(buf == NULL) return;
 
     if(buf->header.flags & LV_IMAGE_FLAGS_ALLOCATED) {
+#ifndef LV_MEM_HEAP_ADAPTIVE_SUPPORT
         draw_buf_free(buf->unaligned_data);
+#else
+        if (buf->header.flags & LV_IMAGE_FLAGS_USER2) {
+            aicos_free(MEM_CMA, (void*)buf->unaligned_data);
+        } else {
+            draw_buf_free(buf->unaligned_data);
+        }
+#endif // LV_MEM_HEAP_ADAPTIVE_SUPPORT
         lv_free(buf);
     }
     else {
@@ -462,7 +484,15 @@ static void * buf_malloc(size_t size_bytes, lv_color_format_t color_format)
 
     /*Allocate larger memory to be sure it can be aligned as needed*/
     size_bytes += LV_DRAW_BUF_ALIGN - 1;
+#ifndef LV_MEM_HEAP_ADAPTIVE_SUPPORT
     return lv_malloc(size_bytes);
+#else
+    if (size_bytes >= LV_USE_CMA_HEAP_LOW_LIMIT) {
+        return (void *)aicos_malloc_try_cma(size_bytes);
+    } else {
+        return lv_malloc(size_bytes);
+    }
+#endif // LV_MEM_HEAP_ADAPTIVE_SUPPORT
 }
 
 static void buf_free(void * buf)

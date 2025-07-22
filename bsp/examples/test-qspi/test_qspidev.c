@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -188,7 +188,7 @@ static void test_qspi_sendhex(int argc, char **argv)
         data_len = argc - 5;
     }
     data = RT_NULL;
-    printf("data len %ld\n", data_len);
+    printf("data len %lu\n", data_len);
     if (data_len) {
         align_len = roundup(data_len, CACHE_LINE_SIZE);
         data = aicos_malloc_align(0, align_len, CACHE_LINE_SIZE);
@@ -260,7 +260,7 @@ static void test_qspi_sendlen(int argc, char **argv)
         printf("Low memory!\n");
         return;
     } else {
-        printf("data len %ld\n", data_len);
+        printf("data len %lu\n", data_len);
         rt_memset(&msg, 0, sizeof(msg));
     }
     msg.instruction.content = cmd;
@@ -271,6 +271,13 @@ static void test_qspi_sendlen(int argc, char **argv)
         msg.qspi_data_lines = pl[2] - '0';
         msg.parent.send_buf = (void *)data;
         msg.parent.length = data_len;
+
+        u8 *temp = data;
+        int k;
+        for (k = 0; k < data_len; k++) {
+            *temp = k & 0xff;
+            temp++;
+        }
     }
     msg.parent.cs_take = 1;
     msg.parent.cs_release = 1;

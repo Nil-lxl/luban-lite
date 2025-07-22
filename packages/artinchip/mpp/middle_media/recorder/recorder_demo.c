@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -33,7 +33,7 @@
 #define RECORDER_DEMO_DEFAULT_RECORD_TIME 0x7FFFFFFF
 
 /*You can only choose thread trace or cpu trace*/
-#define RECORD_THREAD_TRACE_INFO
+//#define RECORD_THREAD_TRACE_INFO
 //#define RECORD_CPU_TRACE_INFO
 
 
@@ -435,6 +435,7 @@ static void *test_recorder_thread(void *arg)
         clock_gettime(CLOCK_REALTIME, &cur_time);
         if (recorder_cxt->record_time <= (cur_time.tv_sec - start_time.tv_sec)) {
             g_recorder_flag = 1;
+            printf("recorder end time coming, stop recorder.\n");
             break;
         }
         show_cpu_usage();
@@ -503,13 +504,12 @@ int recorder_demo_test(int argc, char *argv[])
         loge("aic_recorder_set_event_callback error");
         goto _EXIT;
     }
-
+    recorder_cxt->config.video_config.vin_type = recorder_cxt->vin_source_type;
     if (aic_recorder_init(recorder_cxt->recorder, &recorder_cxt->config)) {
         loge("aic_recorder_init error");
         goto _EXIT;
     }
 
-    aic_recorder_set_vin_type(recorder_cxt->recorder, recorder_cxt->vin_source_type);
     aic_recorder_set_input_file_path(recorder_cxt->recorder, recorder_cxt->video_in_file_path, NULL);
 
     if (aic_recorder_start(recorder_cxt->recorder)) {

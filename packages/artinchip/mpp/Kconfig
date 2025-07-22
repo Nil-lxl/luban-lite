@@ -26,29 +26,43 @@ config AIC_MPP_AVI_DEMUX
     depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
 
 config AIC_MPP_MKV_DEMUX
-	bool "Enable mkv demuxer"
-	default n
+    bool "Enable mkv demux"
+    default n
     depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
 
 config AIC_MPP_TS_DEMUX
-	bool "Enable ts demuxer"
-	default n
+    bool "Enable ts demux"
+    default n
     depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
 
 config AIC_MPP_FLV_DEMUX
-	bool "Enable flv demuxer"
-	default n
+    bool "Enable flv demux"
+    default n
     depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
 
-config AIC_MPP_FLAC_DEMUX
-    bool "Enable flac demux"
+config AIC_MPP_WMA_DEC
+    bool "Enable wma decoder"
     default n
-    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE && LPKG_USING_LIBFLAC
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+    select LPKG_USING_FFMPEG
 
-config AIC_MPP_WMA_DEMUX
-    bool "Enable wma demux"
+config AIC_MPP_AAC_DEC
+    bool "Enable aac decoder"
     default n
-    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE && LPKG_USING_FFMPEG
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+    select LPKG_USING_FAAD2
+
+config AIC_MPP_FLAC_DEC
+    bool "Enable flac decoder"
+    default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+    select LPKG_USING_LIBFLAC
+
+config AIC_MPP_APE_DEC
+    bool "Enable ape decoder"
+    default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+    select LPKG_USING_LIBAPE
 
 config AIC_MPP_RECORDER_INTERFACE
     bool "Enable recorder interface and demo"

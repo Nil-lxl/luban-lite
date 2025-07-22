@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -30,7 +30,7 @@
 #define VENC_CAPTURE_PATH_LEN  128
 #define VENC_PACKET_ONE_TIME_CREATE_NUM 16
 #define VENC_PACKET_NUM_MAX 64
-#define VENC_FRAME_ONE_TIME_CREATE_NUM 3
+#define VENC_FRAME_ONE_TIME_CREATE_NUM 4
 #define VENC_FRAME_NUM_MAX 32
 
 typedef struct mm_venc_in_frame {
@@ -131,7 +131,7 @@ static s32 mm_venc_buffer_init(mm_venc_data *p_venc_data)
     s32 width = p_venc_data->video_stream.width;
     s32 height = p_venc_data->video_stream.height;
     s32 quality = p_venc_data->encoder_config.quality;
-    s32 size = width * height * 4 / 5 * quality / 100;
+    s32 size = (width * height / 3) * quality / 100;
 
     for (i = 0; i < VENC_FRAME_ONE_TIME_CREATE_NUM; i++) {
         mm_venc_out_packet *p_pkt_node =
@@ -190,11 +190,12 @@ static s32 mm_venc_get_parameter(mm_handle h_component, MM_INDEX_TYPE index, voi
     switch (index) {
     case MM_INDEX_PARAM_PORT_DEFINITION: {
         mm_param_port_def *port = (mm_param_port_def *)p_param;
-        if (port->port_index == VDEC_PORT_IN_INDEX) {
+        if (port->port_index == VENC_PORT_IN_INDEX) {
             memcpy(port, &p_venc_data->in_port_def, sizeof(mm_param_port_def));
-        } else if (port->port_index == VDEC_PORT_OUT_INDEX) {
+        } else if (port->port_index == VENC_PORT_OUT_INDEX) {
             memcpy(port, &p_venc_data->out_port_def, sizeof(mm_param_port_def));
         } else {
+            loge("error port_index:%d.\n", port->port_index);
             error = MM_ERROR_BAD_PARAMETER;
         }
         break;
@@ -350,7 +351,7 @@ static s32 mm_venc_send_buffer(mm_handle h_component, mm_buffer *p_buffer)
 
     pthread_mutex_lock(&p_venc_data->state_lock);
     if (p_venc_data->state != MM_STATE_EXECUTING) {
-        loge("component is not in MM_STATE_EXECUTING,it is in [%d]!!!\n",
+        logw("component is not in MM_STATE_EXECUTING,it is in [%d]!!!\n",
              p_venc_data->state);
         pthread_mutex_unlock(&p_venc_data->state_lock);
         return MM_ERROR_INVALID_STATE;
@@ -921,6 +922,7 @@ static void *mm_venc_component_thread(void *p_thread_data)
 {
     s32 ret = MM_ERROR_NONE;
     s32 cmd = MM_COMMAND_UNKNOWN;
+    s32 try_get_pkt_cnt = 0;
     mm_venc_data *p_venc_data = (mm_venc_data *)p_thread_data;
 
     mm_venc_in_frame *p_frame_node = NULL;
@@ -969,15 +971,26 @@ static void *mm_venc_component_thread(void *p_thread_data)
             aic_msg_wait_new_msg(&p_venc_data->msg, 0);
             continue;
         }
-
+        try_get_pkt_cnt = 0;
         while (!mm_venc_list_empty(&p_venc_data->in_ready_frame, p_venc_data->in_frame_lock)) {
             if (mm_venc_list_empty(&p_venc_data->out_empty_pkt, p_venc_data->out_pkt_lock)) {
-                mm_send_command(p_venc_data->out_port_bind.p_bind_comp, MM_COMMAND_NOPS, 0, NULL);
-                aic_msg_wait_new_msg(&p_venc_data->msg, 0);
+                /*If we get empty pkt failed three times, then give back cur ready frame*/
+                if (try_get_pkt_cnt++ > 3) {
+                    p_frame_node = mpp_list_first_entry(&p_venc_data->in_ready_frame, mm_venc_in_frame, list);
+                    pthread_mutex_lock(&p_venc_data->in_frame_lock);
+                    mpp_list_del(&p_frame_node->list);
+                    mpp_list_add_tail(&p_frame_node->list, &p_venc_data->in_processed_frame);
+                    pthread_mutex_unlock(&p_venc_data->in_frame_lock);
+                    goto _AIC_MSG_GET_;
+                } else {
+                    mm_send_command(p_venc_data->out_port_bind.p_bind_comp, MM_COMMAND_NOPS, 0, NULL);
+                    aic_msg_wait_new_msg(&p_venc_data->msg, 10000);
+                    continue;
+                }
             }
             p_frame_node = mpp_list_first_entry(&p_venc_data->in_ready_frame, mm_venc_in_frame, list);
             p_pkt_node = mpp_list_first_entry(&p_venc_data->out_empty_pkt, mm_venc_out_packet, list);
-            if (p_pkt_node->phy_addr == 0) {
+            if (!p_pkt_node || p_pkt_node->phy_addr == 0) {
                 logw("Empty packet, then drop one frame!!!");
                 venc_buffer.p_buffer = (u8 *)&p_frame_node->frame;
                 ret = mm_giveback_buffer(p_venc_data->in_port_bind.p_bind_comp, &venc_buffer);
@@ -992,7 +1005,7 @@ static void *mm_venc_component_thread(void *p_thread_data)
                 mpp_list_add_tail(&p_frame_node->list, &p_venc_data->in_empty_frame);
                 pthread_mutex_unlock(&p_venc_data->in_frame_lock);
                 mm_send_command(p_venc_data->out_port_bind.p_bind_comp, MM_COMMAND_NOPS, 0, NULL);
-                aic_msg_wait_new_msg(&p_venc_data->msg, 0);
+                aic_msg_wait_new_msg(&p_venc_data->msg, 5000);
                 goto _AIC_MSG_GET_;
             }
 
@@ -1009,6 +1022,7 @@ static void *mm_venc_component_thread(void *p_thread_data)
             p_pkt_node->packet.size = packet.len;
             p_pkt_node->packet.pts = p_frame_node->frame.pts;
             p_pkt_node->packet.dts = p_frame_node->frame.pts;
+            p_pkt_node->packet.type = MPP_MEDIA_TYPE_VIDEO;
             p_pkt_node->packet.data = (void *)(unsigned long)p_pkt_node->phy_addr;
             venc_buffer.p_buffer = (u8 *)&p_pkt_node->packet;
             venc_buffer.output_port_index = MUX_PORT_VIDEO_INDEX;
@@ -1038,9 +1052,6 @@ static void *mm_venc_component_thread(void *p_thread_data)
         }
     }
 _EXIT:
-    mm_venc_component_count_print(p_venc_data);
-
-    printf("mm_venc_component_thread exit\n");
 
     return (void *)MM_ERROR_NONE;
 }

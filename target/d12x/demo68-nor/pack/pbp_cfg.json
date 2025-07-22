@@ -279,5 +279,14 @@
 				// "jtag_ck_pin_cfg_val": "0x338",
 			},
 		},
+		// "regcfg": {
+		// 	"count": "4",
+		// 	"regs": [ // Array of reg setting, delay time unit is us
+		// 		{ "reg" : "0x40700000", "val": "0xA", "dly": "1" },
+		// 		{ "reg" : "0x40700004", "val": "0xB", "dly": "1" },
+		// 		{ "reg" : "0x40700008", "val": "0xC", "dly": "1" },
+		// 		{ "reg" : "0x4070000C", "val": "0xD", "dly": "1" },
+		// 	],
+		// },
 	},
 }

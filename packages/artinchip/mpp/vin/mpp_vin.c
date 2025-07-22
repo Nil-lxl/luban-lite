@@ -72,6 +72,19 @@ int mpp_vin_init(char *camera)
     return 0;
 }
 
+int mpp_vin_reinit(void) //if AIC_USING_DVP
+{
+    if (!g_camera_dev || !g_mpp_dvp_buf) {
+        pr_err("Must call mpp_vin_init() first!\n");
+        return -1;
+    }
+
+    if (aic_dvp_vb_init())
+        return -1;
+
+    return 0;
+}
+
 void mpp_vin_deinit(void)
 {
     if (g_camera_dev) {

@@ -59,7 +59,12 @@
             "env": {
                 "file": "env.bin",
                 "attr": ["mtd", "optional"],
-                "part": ["env","env_r"]
+                "part": ["env"]
+            },
+            "env_r": {
+                "file": "env.bin",
+                "attr": ["mtd", "optional"],
+                "part": ["env_r"]
             },
             "os": {
                 "file": "d12x_os.itb",

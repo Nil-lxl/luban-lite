@@ -24,9 +24,6 @@ static lv_obj_t *wifi_img;
 
 lv_obj_t *chat_ui_create(lv_obj_t *parent)
 {
-    extern void llm_font_create(void);
-    llm_font_create();
-
     lv_obj_t *chat_obj = lv_obj_create(parent);
     lv_obj_remove_style_all(chat_obj);
     lv_obj_clear_flag(chat_obj, LV_OBJ_FLAG_SCROLL_CHAIN);

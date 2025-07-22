@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -37,7 +37,7 @@
 
 #define BATCH_EVENT         0x01
 #define HW_RUNNING_EVENT    0x02
-#define BATCH_NUM_EVENT     0x03
+#define BATCH_NUM_EVENT     0x04
 
 #ifdef AIC_GE_DRV_V11
 #define GE_CLOCK   (150000000)

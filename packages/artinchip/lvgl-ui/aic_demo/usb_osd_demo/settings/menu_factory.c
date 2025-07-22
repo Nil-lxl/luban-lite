@@ -132,14 +132,11 @@ static lv_obj_t * create_slider(lv_obj_t * parent,
     }
 
     if (label) {
-        lv_obj_t * label_obj = lv_menu_cont_create(parent);
-        *label = lv_label_create(label_obj);
+        *label = lv_label_create(obj);
 
         lv_snprintf(srt, sizeof(srt), "%d", val);
         lv_label_set_text(*label, srt);
-
-        lv_obj_set_flex_flow(label_obj, LV_FLEX_FLOW_COLUMN);
-        lv_obj_set_flex_align(label_obj, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+        lv_obj_set_width(*label, 25);
     }
 
     return slider;
@@ -156,7 +153,7 @@ static lv_obj_t * create_switch(lv_obj_t * parent,
     return sw;
 }
 
-static lv_obj_t * creat_screen_lock_mode_dropdown(lv_obj_t * parent, lv_settings_mgr_t *mgr)
+static lv_obj_t * create_screen_lock_mode_dropdown(lv_obj_t * parent, lv_settings_mgr_t *mgr)
 {
     lv_settings_ctx_t *ctx = &mgr->ctx;
 
@@ -175,7 +172,7 @@ static lv_obj_t * creat_screen_lock_mode_dropdown(lv_obj_t * parent, lv_settings
     return dd;
 }
 
-static lv_obj_t * creat_screen_lock_delay_dropdown(lv_obj_t * parent, lv_settings_mgr_t *mgr)
+static lv_obj_t * create_screen_lock_delay_dropdown(lv_obj_t * parent, lv_settings_mgr_t *mgr)
 {
     unsigned int lock_delay[] = {     15 * 1000,     30 * 1000,  1 * 60 * 1000,
                                   2 * 60 * 1000, 5 * 60 * 1000, 10 * 60 * 1000,
@@ -202,9 +199,9 @@ static lv_obj_t * creat_screen_lock_delay_dropdown(lv_obj_t * parent, lv_setting
     return dd;
 }
 
-static lv_obj_t * creat_screen_blank_delay_dropdown(lv_obj_t * parent, lv_settings_mgr_t *mgr)
+static lv_obj_t * create_screen_blank_delay_dropdown(lv_obj_t * parent, lv_settings_mgr_t *mgr)
 {
-    unsigned int blank_delay[] = {  5 * 60 * 1000, 10 * 60 * 1000, 15 * 60 * 1000,
+    unsigned int blank_delay[] = { 5 * 60 * 1000, 10 * 60 * 1000, 15 * 60 * 1000,
                                   30 * 60 * 1000, 0 };
     lv_settings_ctx_t *ctx = &mgr->ctx;
     int i;
@@ -226,7 +223,7 @@ static lv_obj_t * creat_screen_blank_delay_dropdown(lv_obj_t * parent, lv_settin
     return dd;
 }
 
-static lv_obj_t * creat_screen_rotate_dropdown(lv_obj_t * parent)
+static lv_obj_t * create_screen_rotate_dropdown(lv_obj_t * parent)
 {
     /*Create a normal drop down list*/
     unsigned int lvgl_rotation[] = {LV_DISPLAY_ROTATION_0,
@@ -266,6 +263,13 @@ void lv_settings_menu_init(lv_obj_t * parent, struct osd_settings_manager *mgr)
     lv_obj_t * cont;
     lv_obj_t * section;
 
+    /* device sub update page */
+    lv_obj_t * sub_device_upgrade_page = lv_menu_page_create(menu, NULL);
+    lv_obj_set_style_pad_hor(sub_device_upgrade_page, lv_obj_get_style_pad_left(lv_menu_get_main_header(menu), 0), 0);
+    section = lv_menu_section_create(sub_device_upgrade_page);
+    cont = create_switch(section, NULL, "device upgrade enable", false);
+    lv_obj_add_event_cb(cont, device_upgrade_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+
     /* device sub page */
     lv_obj_t * sub_device_page = lv_menu_page_create(menu, NULL);
     lv_obj_set_style_pad_hor(sub_device_page, lv_obj_get_style_pad_left(lv_menu_get_main_header(menu), 0), 0);
@@ -276,6 +280,8 @@ void lv_settings_menu_init(lv_obj_t * parent, struct osd_settings_manager *mgr)
     cont = create_text(section, NULL, "Resolution: 1024 * 600", LV_MENU_ITEM_BUILDER_VARIANT_1);
     cont = create_text(section, NULL,
                        "Copyright (C) 2024 ArtinChip Technology Co., Ltd.", LV_MENU_ITEM_BUILDER_VARIANT_1);
+    cont = create_text(section, LV_SYMBOL_RIGHT, "device upgrade", LV_MENU_ITEM_BUILDER_VARIANT_1);
+    lv_menu_set_load_page_event(menu, cont, sub_device_upgrade_page);
 
     /* sound sub page */
     lv_obj_t * sub_sound_page = lv_menu_page_create(menu, NULL);
@@ -285,31 +291,28 @@ void lv_settings_menu_init(lv_obj_t * parent, struct osd_settings_manager *mgr)
     create_switch(section, LV_SYMBOL_AUDIO, "Sound", false);
     create_slider(section, LV_SYMBOL_SETTINGS, "Media", 0, 100, 50, NULL);
 
-    /* image sub page */
-    lv_obj_t * sub_image_page = lv_menu_page_create(menu, NULL);
-    lv_obj_set_style_pad_hor(sub_image_page, lv_obj_get_style_pad_left(lv_menu_get_main_header(menu), 0), 0);
-    lv_menu_separator_create(sub_image_page);
-    section = lv_menu_section_create(sub_image_page);
-
-    /* display sub page recovery button */
-    lv_obj_t * recovery_btn = lv_btn_create(section);
-    lv_obj_add_event_cb(recovery_btn, recovery_btn_event_handler, LV_EVENT_ALL, mgr);
-    lv_obj_center(recovery_btn);
-
-    static lv_style_t style;
-    lv_style_init(&style);
-    lv_style_set_bg_opa(&style, LV_OPA_50);
-    lv_style_set_bg_color(&style, lv_palette_main(LV_PALETTE_BLUE));
-    lv_obj_add_style(recovery_btn, &style, 0);
-
-    lv_obj_t * label = lv_label_create(recovery_btn);
-    lv_label_set_text(label, "recovery");
-    lv_obj_center(label);
+    /* display sub page */
+    lv_obj_t * sub_display_page = lv_menu_page_create(menu, NULL);
+    lv_obj_set_style_pad_hor(sub_display_page, lv_obj_get_style_pad_left(lv_menu_get_main_header(menu), 0), 0);
+    lv_menu_separator_create(sub_display_page);
+    section = lv_menu_section_create(sub_display_page);
 
     unsigned int default_value;
     struct slider_obj *slider;
 
+    cont = create_text(section, NULL, "Rotate degree", LV_MENU_ITEM_BUILDER_VARIANT_1);
+    mgr->rotate.dropdown = create_screen_rotate_dropdown(cont);
+
     /* display sub page slider */
+#if defined(KERNEL_RTTHREAD) && defined(AIC_PWM_BACKLIGHT_CHANNEL)
+    /* backlight sub page slider */
+    slider = &mgr->backlight;
+    default_value = ctx->pwm.value;
+    slider->base = create_slider(section, LV_SYMBOL_SETTINGS, "PWM-Backlight", 10, 100, default_value, &slider->label);
+    lv_obj_add_event_cb(slider->base, backlight_slider_event_cb, LV_EVENT_VALUE_CHANGED, mgr);
+    backlight_pwm_config(AIC_PWM_BACKLIGHT_CHANNEL, default_value);
+#endif
+
     slider = &mgr->brightness;
     default_value = ctx->brightness.value;
     slider->base = create_slider(section, LV_SYMBOL_SETTINGS, "Brightness", 0, 100, default_value, &slider->label);
@@ -332,6 +335,21 @@ void lv_settings_menu_init(lv_obj_t * parent, struct osd_settings_manager *mgr)
 
     lv_config_disp_property(mgr);
 
+    /* display sub page recovery button */
+    lv_obj_t * recovery_btn = lv_btn_create(section);
+    lv_obj_add_event_cb(recovery_btn, recovery_btn_event_handler, LV_EVENT_CLICKED, mgr);
+    lv_obj_center(recovery_btn);
+
+    static lv_style_t style;
+    lv_style_init(&style);
+    lv_style_set_bg_opa(&style, LV_OPA_50);
+    lv_style_set_bg_color(&style, lv_palette_main(LV_PALETTE_BLUE));
+    lv_obj_add_style(recovery_btn, &style, 0);
+
+    lv_obj_t * label = lv_label_create(recovery_btn);
+    lv_label_set_text(label, "recovery");
+    lv_obj_center(label);
+
     /* lock sub page */
     lv_obj_t * sub_lock_page = lv_menu_page_create(menu, NULL);
     lv_obj_set_style_pad_hor(sub_lock_page, lv_obj_get_style_pad_left(lv_menu_get_main_header(menu), 0), 0);
@@ -339,60 +357,31 @@ void lv_settings_menu_init(lv_obj_t * parent, struct osd_settings_manager *mgr)
     section = lv_menu_section_create(sub_lock_page);
 
     cont = create_text(section, NULL, "Screen Lock Delay", LV_MENU_ITEM_BUILDER_VARIANT_1);
-    creat_screen_lock_delay_dropdown(cont, mgr);
+    create_screen_lock_delay_dropdown(cont, mgr);
     mgr->lock.lock_time_ms = ctx->lock_time.value;
 
     cont = create_text(section, NULL, "Screen Lock Mode", LV_MENU_ITEM_BUILDER_VARIANT_1);
-    creat_screen_lock_mode_dropdown(cont, mgr);
+    create_screen_lock_mode_dropdown(cont, mgr);
     mgr->lock.new_mode = ctx->lock_mode.value;
     mgr->lock.old_mode = ctx->lock_mode.value;
 
     cont = create_text(section, NULL, "Screen Blank After Lock", LV_MENU_ITEM_BUILDER_VARIANT_1);
-    creat_screen_blank_delay_dropdown(cont, mgr);
+    create_screen_blank_delay_dropdown(cont, mgr);
     mgr->lock.blank_option = cont;
     mgr->lock.blank_time_ms = ctx->blank_time.value;
-
-    /* rotate sub page */
-    lv_obj_t * rotate_page = lv_menu_page_create(menu, NULL);
-    lv_obj_set_style_pad_hor(rotate_page, lv_obj_get_style_pad_left(lv_menu_get_main_header(menu), 0), 0);
-    lv_menu_separator_create(rotate_page);
-    section = lv_menu_section_create(rotate_page);
-    cont = create_text(section, NULL, "Rotate degree", LV_MENU_ITEM_BUILDER_VARIANT_1);
-    creat_screen_rotate_dropdown(cont);
-
-#if defined(KERNEL_RTTHREAD) && defined(AIC_PWM_BACKLIGHT_CHANNEL)
-    /* backlight sub page */
-    lv_obj_t * sub_backlight_page = lv_menu_page_create(menu, NULL);
-    lv_obj_set_style_pad_hor(sub_backlight_page, lv_obj_get_style_pad_left(lv_menu_get_main_header(menu), 0), 0);
-    lv_menu_separator_create(sub_backlight_page);
-    section = lv_menu_section_create(sub_backlight_page);
-
-    /* backlight sub page slider */
-    slider = &mgr->backlight;
-    default_value = ctx->pwm.value;
-    slider->base = create_slider(section, LV_SYMBOL_SETTINGS, "PWM-Backlight", 10, 100, default_value, &slider->label);
-    lv_obj_add_event_cb(slider->base, backlight_slider_event_cb, LV_EVENT_VALUE_CHANGED, mgr);
-    backlight_pwm_config(AIC_PWM_BACKLIGHT_CHANNEL, default_value);
-#endif
 
     /* Create a root page */
     lv_obj_t * root_page = lv_menu_page_create(menu, "OSD");
     lv_obj_set_style_pad_hor(root_page, lv_obj_get_style_pad_left(lv_menu_get_main_header(menu), 0), 0);
     section = lv_menu_section_create(root_page);
-    cont = create_text(section, LV_SYMBOL_SETTINGS, "Device", LV_MENU_ITEM_BUILDER_VARIANT_1);
-    lv_menu_set_load_page_event(menu, cont, sub_device_page);
-    cont = create_text(section, LV_SYMBOL_SETTINGS, "Image", LV_MENU_ITEM_BUILDER_VARIANT_1);
-    lv_menu_set_load_page_event(menu, cont, sub_image_page);
+    cont = create_text(section, LV_SYMBOL_SETTINGS, "Display", LV_MENU_ITEM_BUILDER_VARIANT_1);
+    lv_menu_set_load_page_event(menu, cont, sub_display_page);
     cont = create_text(section, LV_SYMBOL_POWER, "Lockscreen", LV_MENU_ITEM_BUILDER_VARIANT_1);
     lv_menu_set_load_page_event(menu, cont, sub_lock_page);
     cont = create_text(section, LV_SYMBOL_AUDIO, "Sound", LV_MENU_ITEM_BUILDER_VARIANT_1);
     lv_menu_set_load_page_event(menu, cont, sub_sound_page);
-    cont = create_text(section, LV_SYMBOL_SETTINGS, "Rotate", LV_MENU_ITEM_BUILDER_VARIANT_1);
-    lv_menu_set_load_page_event(menu, cont, rotate_page);
-#if defined(KERNEL_RTTHREAD) && defined(AIC_PWM_BACKLIGHT_CHANNEL)
-    cont = create_text(section, LV_SYMBOL_SETTINGS, "Backlight", LV_MENU_ITEM_BUILDER_VARIANT_1);
-    lv_menu_set_load_page_event(menu, cont, sub_backlight_page);
-#endif
+    cont = create_text(section, LV_SYMBOL_SETTINGS, "Device", LV_MENU_ITEM_BUILDER_VARIANT_1);
+    lv_menu_set_load_page_event(menu, cont, sub_device_page);
 
     lv_menu_set_sidebar_page(menu, root_page);
 

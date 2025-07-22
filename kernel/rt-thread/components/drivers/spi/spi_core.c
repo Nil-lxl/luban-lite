@@ -147,6 +147,27 @@ void rt_spi_set_rx_delay_mode(struct rt_spi_device        *device,
     }
 }
 
+rt_err_t rt_spi_wait_completion(struct rt_spi_device *device)
+{
+    rt_err_t result = -RT_EINVAL;
+
+    RT_ASSERT(device != RT_NULL);
+
+    if (device->bus != RT_NULL)
+    {
+        result = rt_mutex_take(&(device->bus->lock), RT_WAITING_FOREVER);
+        if (result == RT_EOK)
+        {
+            result = device->bus->ops->wait_completion(device);
+
+            /* release lock */
+            rt_mutex_release(&(device->bus->lock));
+        }
+    }
+
+    return result;
+}
+
 rt_err_t rt_spi_send_then_send(struct rt_spi_device *device,
                                const void           *send_buf1,
                                rt_size_t             send_length1,

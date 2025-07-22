@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -41,11 +41,11 @@ static int mt29f1g01_ecc_get_status(struct aic_spinand *flash, u8 status)
 static int mt29f1g_ooblayout_user(struct aic_spinand *flash, int section,
                             struct aic_oob_region *region)
 {
-    if (section > 3)
+    if (section > 1)
       return -SPINAND_ERR;
 
-    region->offset = (8 * section) + 32;
-    region->length = 8;
+    region->offset = 32;
+    region->length = 32;
 
     return 0;
 }

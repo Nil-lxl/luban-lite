@@ -715,7 +715,8 @@ int usbh_hub_connect_check(void)
 
 void usbh_hub_thread_wakeup(struct usbh_hub *hub)
 {
-    usb_osal_mq_send(hub->bus->hub_mq, (uintptr_t)hub);
+    if (hub->bus->hub_mq)
+        usb_osal_mq_send(hub->bus->hub_mq, (uintptr_t)hub);
 }
 
 int usbh_hub_initialize(struct usbh_bus *bus)

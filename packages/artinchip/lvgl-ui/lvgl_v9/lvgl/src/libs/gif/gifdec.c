@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include <aic_core.h>
+
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
 
@@ -114,9 +116,13 @@ static gd_GIF * gif_open(gd_GIF * gif_base)
     f_gif_read(gif_base, &aspect, 1);
     /* Create gd_GIF Structure. */
 #if LV_GIF_CACHE_DECODE_DATA
-    gif = lv_malloc(sizeof(gd_GIF) + 5 * width * height + LZW_CACHE_SIZE);
+    gif = (gd_GIF *)aicos_malloc_try_cma(sizeof(gd_GIF) + 5 * width * height + LZW_CACHE_SIZE);
+    aicos_dcache_clean_invalid_range((ulong *)gif,
+                                     (ulong)ALIGN_UP(sizeof(gd_GIF) + 5 * width * height + LZW_CACHE_SIZE, CACHE_LINE_SIZE));
     #else
-    gif = lv_malloc(sizeof(gd_GIF) + 5 * width * height);
+    gif = (gd_GIF *)aicos_malloc_try_cma(sizeof(gd_GIF) + 5 * width * height);
+    aicos_dcache_clean_invalid_range((ulong *)gif,
+                                     (ulong)ALIGN_UP(sizeof(gd_GIF) + 5 * width * height, CACHE_LINE_SIZE));
     #endif
     if(!gif) goto fail;
     memcpy(gif, gif_base, sizeof(gd_GIF));

@@ -60,6 +60,7 @@ struct dfs_filesystem
 struct dfs_partition
 {
     uint8_t type;        /* file system type */
+    char name[PARTITION_NAME_MAX]; /* partition name */
     off_t  offset;       /* partition start offset */
     size_t size;         /* partition size */
     rt_sem_t lock;

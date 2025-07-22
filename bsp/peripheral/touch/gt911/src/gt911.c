@@ -131,55 +131,69 @@ static rt_err_t gt911_get_info(struct rt_i2c_client *dev, struct rt_touch_device
 
     return RT_EOK;
 }
-#if 0
-static rt_err_t gt911_soft_reset(struct rt_i2c_client *dev)
+
+static void gt911_gpio_init(struct rt_touch_config *cfg)
 {
-    rt_uint8_t buf[3];
+    // rst output 0
+    rt_pin_mode(cfg->rst_pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->rst_pin, PIN_LOW);
+    rt_thread_delay(10);
+
+    // irq output 0
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
+
+    rt_thread_delay(2);
+    // rst output 1
+    rt_pin_mode(cfg->rst_pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->rst_pin, PIN_HIGH);
+
+    rt_thread_delay(5);
+    // rst input
+    rt_pin_mode(cfg->rst_pin, PIN_MODE_INPUT);
+
+    //irq output 0
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
+
+    rt_thread_delay(50);
+
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_INPUT);
+}
+
+static rt_err_t gt911_power_down(struct rt_touch_device *touch)
+{
+    rt_uint8_t buf[3] = {0};
+
+    rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_DISABLE_INT, RT_NULL);
+    /* Pull down irq pin */
+    rt_pin_mode(touch->config.irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(touch->config.irq_pin.pin, PIN_LOW);
+    rt_thread_mdelay(10);
 
     buf[0] = (rt_uint8_t)(GT911_COMMAND_REG >> 8);
     buf[1] = (rt_uint8_t)(GT911_COMMAND_REG & 0xFF);
-    buf[2] = 0x02;
+    buf[2] = 0x05;
 
-    if (gt911_write_reg(dev, buf, 3) != RT_EOK) {
-        LOG_E("soft reset failed");
+    if (gt911_write_reg(&gt911_client, buf, 3) != RT_EOK) {
+        LOG_E("Gt911 enter sleep mode failed\n");
         return -RT_ERROR;
     }
 
     return RT_EOK;
 }
 
-static rt_err_t gt911_soft_reset_finish(struct rt_i2c_client *dev)
+static rt_err_t gt911_power_up(struct rt_touch_device *touch)
 {
-    rt_uint8_t buf[3];
-
-    buf[0] = (rt_uint8_t)(GT911_COMMAND_REG >> 8);
-    buf[1] = (rt_uint8_t)(GT911_COMMAND_REG & 0xFF);
-    buf[2] = 0x00;
-
-    if (gt911_write_reg(dev, buf, 3) != RT_EOK) {
-        LOG_E("soft reset failed");
-        return -RT_ERROR;
-    }
+    /* Pull up irq pin */
+    rt_pin_mode(touch->config.irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(touch->config.irq_pin.pin, PIN_HIGH);
+    rt_thread_mdelay(10);
+    rt_pin_mode(touch->config.irq_pin.pin, PIN_MODE_INPUT);
+    rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
 
     return RT_EOK;
 }
-
-static rt_err_t gt911_set_irq_pin_int(struct rt_i2c_client *dev)
-{
-    rt_uint8_t buf[3];
-
-    buf[0] = (rt_uint8_t)(GT911_MOD_SWT_REG >> 8);
-    buf[1] = (rt_uint8_t)(GT911_MOD_SWT_REG & 0xFF);
-    buf[2] = 0x01;
-
-    if (gt911_write_reg(dev, buf, 3) != RT_EOK) {
-        LOG_E("set up failed");
-        return -RT_ERROR;
-    }
-
-    return RT_EOK;
-}
-#endif
 
 static int16_t pre_x[GT911_MAX_TOUCH] = { -1, -1, -1, -1, -1 };
 static int16_t pre_y[GT911_MAX_TOUCH] = { -1, -1, -1, -1, -1 };
@@ -365,22 +379,13 @@ exit_:
     return read_num;
 }
 
-static rt_err_t gt911_control(struct rt_touch_device *touch, int cmd, void *arg)
+static rt_err_t gt911_modify_firmware(struct rt_touch_device *touch, int cmd, void *arg)
 {
-    if (cmd == RT_TOUCH_CTRL_GET_ID) {
-        return gt911_get_product_id(&gt911_client, arg, 6);
-    }
-
-    if (cmd == RT_TOUCH_CTRL_GET_INFO) {
-        return gt911_get_info(&gt911_client, touch, arg);
-    }
-
-    rt_uint8_t buf[4];
+    rt_uint8_t buf[4] = {0};
     rt_uint8_t i = 0;
     rt_uint8_t *config;
 
-    config =
-        (rt_uint8_t *)rt_calloc(1, sizeof(GT911_CFG_TBL) + GT911_REGITER_LEN);
+    config = (rt_uint8_t *)rt_calloc(1, sizeof(GT911_CFG_TBL) + GT911_REGITER_LEN);
     if (config == RT_NULL) {
         LOG_D("malloc config memory failed\n");
         return -RT_ERROR;
@@ -450,15 +455,33 @@ static rt_err_t gt911_control(struct rt_touch_device *touch, int cmd, void *arg)
     buf[1] = (rt_uint8_t)(GT911_CHECK_SUM & 0xFF);
     buf[2] = 0;
 
-    for (i = GT911_ADDR_LEN; i < sizeof(GT911_CFG_TBL) + GT911_ADDR_LEN; i++) {
+    for (i = GT911_ADDR_LEN; i < sizeof(GT911_CFG_TBL) + GT911_ADDR_LEN; i++)
         buf[GT911_ADDR_LEN] += config[i];
-    }
 
     buf[2] = (~buf[2]) + 1;
     buf[3] = 1;
 
     gt911_write_reg(&gt911_client, buf, 4);
     rt_free(config);
+
+    return RT_EOK;
+}
+
+static rt_err_t gt911_control(struct rt_touch_device *touch, int cmd, void *arg)
+{
+    if (cmd == RT_TOUCH_CTRL_GET_ID)
+        return gt911_get_product_id(&gt911_client, arg, 6);
+
+    if (cmd == RT_TOUCH_CTRL_GET_INFO)
+        return gt911_get_info(&gt911_client, touch, arg);
+
+    if (cmd == RT_TOUCH_CTRL_POWER_OFF)
+        return gt911_power_down(touch);
+
+    if (cmd == RT_TOUCH_CTRL_POWER_ON)
+        return gt911_power_up(touch);
+
+    gt911_modify_firmware(touch, cmd , arg);
 
     return RT_EOK;
 }
@@ -480,35 +503,9 @@ static int rt_hw_gt911_init(const char *name, struct rt_touch_config *cfg)
     }
     rt_memset((void *)touch_device, 0, sizeof(struct rt_touch_device));
 
-    /* hw init*/
-    // rst output 0
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_LOW);
-    rt_thread_delay(10);
+    gt911_gpio_init(cfg);
 
-    // irq output 0
-    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
-    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
-
-    rt_thread_delay(2);
-    // rst output 1
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
-
-    rt_thread_delay(5);
-    // rst input
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_INPUT);
-
-    //irq output 0
-    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
-    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
-
-    rt_thread_delay(50);
-
-    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_INPUT);
-
-    gt911_client.bus =
-        (struct rt_i2c_bus_device *)rt_device_find(cfg->dev_name);
+    gt911_client.bus = (struct rt_i2c_bus_device *)rt_device_find(cfg->dev_name);
 
     if (gt911_client.bus == RT_NULL) {
         LOG_E("Can't find %s device", cfg->dev_name);
@@ -538,42 +535,13 @@ static int rt_hw_gt911_init(const char *name, struct rt_touch_config *cfg)
     return RT_EOK;
 }
 
-static int rt_gt911_gpio_cfg()
-{
-    unsigned int g, p;
-    long pin;
-
-    // RST
-    pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-    hal_gpio_direction_input(g, p);
-
-    // INT
-    pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-    hal_gpio_direction_input(g, p);
-    hal_gpio_set_irq_mode(g, p, 0);
-
-    return 0;
-}
-
 static int rt_hw_gt911_port(void)
 {
-    struct rt_touch_config cfg;
-    rt_uint8_t rst_pin;
-
-    rt_gt911_gpio_cfg();
-
-    rst_pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
+    struct rt_touch_config cfg = {0};
     cfg.dev_name = AIC_TOUCH_PANEL_I2C_CHAN;
     cfg.irq_pin.pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
     cfg.irq_pin.mode = PIN_MODE_INPUT;
-    cfg.user_data = &rst_pin;
-#ifdef AIC_PM_DEMO_TOUCH_WAKEUP
-    rt_pm_set_pin_wakeup_source(cfg.irq_pin.pin);
-#endif
+    cfg.rst_pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
 
     rt_hw_gt911_init("gt911", &cfg);
 

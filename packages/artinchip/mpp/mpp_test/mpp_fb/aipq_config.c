@@ -788,6 +788,7 @@ static int aipq_config_test(int argc, char **argv)
                         pr_err("Malloc spi_cfg buf failed!\n");
                         return -1;
                     }
+                    memset(dbi.spi, 0, sizeof(struct spi_cfg));
                     config.data = &dbi;
                     break;
                 default:

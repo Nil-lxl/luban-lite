@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2022-2025, sakumisu
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 #include "usbd_core.h"
 #include "usbd_hid.h"
 
@@ -268,6 +273,9 @@ void hid_mouse_init(void)
 void hid_mouse_test(void)
 {
     int counter = 0;
+
+    usbd_send_remote_wakeup();
+
     while (counter < 1000) {
         /*!< move mouse pointer */
         mouse_cfg.x += 40;

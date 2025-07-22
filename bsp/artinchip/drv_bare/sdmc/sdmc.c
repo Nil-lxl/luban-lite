@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -70,6 +70,7 @@ static int aic_sdmc_data_transfer(struct aic_sdmc *host,
                    size * 4, total,
                    host->fifo_mode ? "FIFO" : "IDMA",
                    data->flags == MMC_DATA_READ ? "Read" : "Write", mask);
+            data->err = -1;
             ret = -EINVAL;
             break;
         }
@@ -100,6 +101,7 @@ static int aic_sdmc_data_transfer(struct aic_sdmc *host,
                     timeout, size * 4, total,
                     host->fifo_mode ? "FIFO" : "IDMA",
                     data->flags == MMC_DATA_READ ? "Read" : "Write", mask);
+            data->err = -1;
             ret = -1;//RT_ETIMEOUT;
             break;
         }

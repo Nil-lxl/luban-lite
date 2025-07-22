@@ -13,7 +13,8 @@
 #define CHECK_CONDITION_RETURN_VOID(confition, ...) \
     if (confition)  { __VA_ARGS__; return; }
 
-static bool del_player = false;
+static bool g_del_player = false;
+static bool g_playing = false;
 
 static void print_del(void)
 {
@@ -27,7 +28,7 @@ static void scale_player_cb(lv_event_t *e)
     lv_obj_t * slider = lv_event_get_current_target(e);
 
     if (code == LV_EVENT_VALUE_CHANGED) {
-        CHECK_CONDITION_RETURN_VOID(del_player, print_del());
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
         int32_t value = lv_slider_get_value(slider);
         lv_aic_player_set_scale(player, value);
     }
@@ -40,7 +41,7 @@ static void rotate_player_cb(lv_event_t *e)
     lv_obj_t * slider = lv_event_get_current_target(e);
 
     if (code == LV_EVENT_VALUE_CHANGED) {
-        CHECK_CONDITION_RETURN_VOID(del_player, print_del());
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
         int32_t value = lv_slider_get_value(slider);
         lv_aic_player_set_rotation(player, value);
     }
@@ -52,8 +53,9 @@ static void start_button_handler(lv_event_t *e)
     lv_obj_t * player = lv_event_get_user_data(e);
 
     if (code == LV_EVENT_CLICKED) {
-        CHECK_CONDITION_RETURN_VOID(del_player, print_del());
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
         lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
+        g_playing = true;
     }
 }
 
@@ -63,8 +65,9 @@ static void pause_button_handler(lv_event_t *e)
     lv_obj_t * player= lv_event_get_user_data(e);
 
     if (code == LV_EVENT_CLICKED) {
-        CHECK_CONDITION_RETURN_VOID(del_player, print_del());
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
         lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_PAUSE, NULL);
+        g_playing = false;
     }
 }
 
@@ -74,7 +77,7 @@ static void resume_button_handler(lv_event_t *e)
     lv_obj_t * player= lv_event_get_user_data(e);
 
     if (code == LV_EVENT_CLICKED) {
-        CHECK_CONDITION_RETURN_VOID(del_player, print_del());
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
         lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_RESUME, NULL);
     }
 }
@@ -85,7 +88,7 @@ static void seek_button_handler(lv_event_t *e)
     lv_obj_t * player= lv_event_get_user_data(e);
 
     if (code == LV_EVENT_CLICKED) {
-        CHECK_CONDITION_RETURN_VOID(del_player, print_del());
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
         u64 seek = 0;
         lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_SET_PLAY_TIME, &seek);
     }
@@ -98,7 +101,7 @@ static void auto_restart_button_handler(lv_event_t *e)
     lv_obj_t * btn = lv_event_get_current_target(e);
 
     if (code == LV_EVENT_CLICKED) {
-        CHECK_CONDITION_RETURN_VOID(del_player, print_del());
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
         lv_aic_player_set_auto_restart(player, true);
         lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_bg_color(btn, lv_color_black(), 0);
@@ -111,9 +114,27 @@ static void del_button_handler(lv_event_t *e)
     lv_obj_t * player= lv_event_get_user_data(e);
 
     if (code == LV_EVENT_CLICKED) {
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
         lv_obj_del(player);
-        del_player = true;
-        CHECK_CONDITION_RETURN_VOID(del_player, print_del());
+        g_del_player = true;
+    }
+}
+
+static void next_button_handler(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * player= lv_event_get_user_data(e);
+    static int cur_video = 0;
+
+    if (code == LV_EVENT_CLICKED) {
+        CHECK_CONDITION_RETURN_VOID(g_del_player, print_del());
+        if (cur_video == 0)
+            lv_aic_player_set_src(player, LVGL_PATH(cartoon_mjpeg.mp4));
+        else
+            lv_aic_player_set_src(player, LVGL_PATH(elevator_mjpeg.mp4));
+        if (g_playing)
+            lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
+        cur_video = cur_video == 0 ? 1 :0;
     }
 }
 
@@ -159,8 +180,9 @@ static lv_obj_t *common_btn(lv_obj_t *parent, char *desc, lv_event_cb_t event_cb
 void aic_player_demo()
 {
     lv_obj_t *player = lv_aic_player_create(lv_scr_act());
-    lv_aic_player_set_src(player, LVGL_PATH(elevator_mjpg.mp4));
+    lv_aic_player_set_src(player, LVGL_PATH(elevator_mjpeg.mp4));
     lv_obj_center(player);
+    lv_obj_set_pos(player, 0, 0);
 
     lv_obj_set_style_bg_color(player, lv_color_hex(0x0), 0);
     lv_obj_add_flag(player, LV_OBJ_FLAG_CLICKABLE);
@@ -196,6 +218,7 @@ void aic_player_demo()
     common_btn(btn_container, "Seek", seek_button_handler, player);
     common_btn(btn_container, "Auto Restart", auto_restart_button_handler, player);
     common_btn(btn_container, "del", del_button_handler, player);
+    common_btn(btn_container, "next", next_button_handler, player);
 
     lv_obj_t *label = lv_label_create(lv_scr_act());
     lv_label_set_text(label, "Video Test");

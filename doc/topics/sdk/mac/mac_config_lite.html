@@ -1,12 +1,12 @@
 <!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
-    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="以太网配置 内核配置主要是通过 scons --menuconfig 命令进行 以太网的功能配置， 配置完成后的项目存储在 target/configs/xxx_defconfig 文件中。 MAC 参数配置 内核中要使用以太网功能，首先需要配置 MAC 的属性参数。MAC 的参数随着板卡的不同而不同 以下是展开后 MAC 的所有的配置选项及其介绍 注： 为防止配置错误，实际的 MAC ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_debug_lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-04-09"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>参数配置</title><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3703e6606"/><meta name="wh-source-relpath" content="topics/sdk/mac/mac_config_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/mac/mac_config_lite.html"/>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="以太网配置 内核配置主要是通过 scons --menuconfig 命令进行 以太网的功能配置， 配置完成后的项目存储在 target/configs/xxx_defconfig 文件中。 MAC 参数配置 内核中要使用以太网功能，首先需要配置 MAC 的属性参数。MAC 的参数随着板卡的不同而不同 以下是展开后 MAC 的所有的配置选项及其介绍 注： 为防止配置错误，实际的 MAC ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_user_guide.html"/><meta name="DC.relation" content="../../../topics/sdk/mac/mac_debug_lite.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-05-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>参数配置</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3752e6729"/><meta name="wh-source-relpath" content="topics/sdk/mac/mac_config_lite.dita"/><meta name="wh-out-relpath" content="topics/sdk/mac/mac_config_lite.html"/>
 
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
     <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
 
-    <script src="../../../webhelp/app/options/properties.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
     <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
-    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250409170918"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
     <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
     <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
 <link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
@@ -94,7 +94,7 @@
                         <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
                             <div id="wh_publication_toc_content">
 		                        
-                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3703e457" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3703e457-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e479" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e479-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3703e479-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e601" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e601-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3703e601-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3703e1001" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3703e1001-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3703e1001-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e1841" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e1841-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3703e1841-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e2015" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e2015-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3703e2015-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">在硬件上电后快速初始化系统，为操作系统的启动准备好必要的硬件环境。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e2355" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e2355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3703e2355-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3703e2372" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3703e2372-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3703e2372-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3703e2556" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3703e2556-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3703e2556-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3703e3646" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3703e3646-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3703e3646-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d3703e3980" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d3703e3980-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3703e3980-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_nww_hzh_pzb-d3703e5421" class="topicref" data-id="concept_nww_hzh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_nww_hzh_pzb-d3703e5421-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3703e5421-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="can-d3703e5441" class="topicref" data-id="can" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-d3703e5441-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/can/can_user_guide.html" id="can-d3703e5441-link">CAN 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5525" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5525-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cap/cap_user_guide.html" id="id-d3703e5525-link">CAP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5595" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5595-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/qep/qep_user_guide.html" id="id-d3703e5595-link">QEP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cir-d3703e5679" class="topicref" data-id="cir" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cir-d3703e5679-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_user_guide.html" id="cir-d3703e5679-link">CIR 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="gpai-user-guide-d3703e5805" class="topicref" data-id="gpai-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action gpai-user-guide-d3703e5805-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpai/gpai_user_guide.html" id="gpai-user-guide-d3703e5805-link">GPAI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e5889" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e5889-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpio/gpio_user_guide.html" id="id-d3703e5889-link">GPIO 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c_user_guide-d3703e5973" class="topicref" data-id="i2c_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c_user_guide-d3703e5973-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2c/i2c_user_guide.html" id="i2c_user_guide-d3703e5973-link">I2C 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e6085" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e6085-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/psadc/psadc_user_guide.html" id="id-d3703e6085-link">PSADC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3703e6169" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3703e6169-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pwm/pwm_user_guide.html" id="id-d3703e6169-link">PWM 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="rtp-user-guide-d3703e6253" class="topicref" data-id="rtp-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action rtp-user-guide-d3703e6253-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtp/rtp_user_guide.html" id="rtp-user-guide-d3703e6253-link">RTP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-d3703e6352" class="topicref" data-id="spi" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-d3703e6352-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_user_guide.html" id="spi-d3703e6352-link"><span class="ph">Q</span>SPI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="uart_user_guide-d3703e6438" class="topicref" data-id="uart_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart_user_guide-d3703e6438-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_user_guide.html" id="uart_user_guide-d3703e6438-link">UART 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_user_guide-d3703e6522" class="topicref" data-id="usb_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_user_guide-d3703e6522-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb_user_guide.html" id="usb_user_guide-d3703e6522-link">USB 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3703e6592" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3703e6592-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_user_guide.html" id="id-d3703e6592-link">MAC 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="id-d3703e6606" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_config_lite.html" id="id-d3703e6606-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e6620" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_debug_lite.html" id="id-d3703e6620-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="mac_test_guide-d3703e6634" class="topicref" data-id="mac_test_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_test.html" id="mac_test_guide-d3703e6634-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d3703e6648" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_design_lite.html" id="id-d3703e6648-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="mac_common_issues-d3703e6662" class="topicref" data-id="mac_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_faq.html" id="mac_common_issues-d3703e6662-link">常见问题</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3703e6676" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3703e6676-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3703e6676-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3752e463" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3752e463-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e480" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3752e480-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e604" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e604-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3752e604-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3752e1004" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3752e1004-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3752e1004-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1848" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1848-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3752e1848-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2022" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2022-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3752e2022-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">主要描述板卡的各项配置，使 SDK 的环境和板卡匹配，并确保 SDK 编译后的固件能够在板子上正常运行。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e2418" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e2418-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3752e2418-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3752e2435" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3752e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3752e2435-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-system-d3752e2619" class="topicref" data-id="chapter-system" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-system-d3752e2619-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3752e2619-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3752e3709" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3752e3709-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3752e3709-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d3752e4043" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d3752e4043-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3752e4043-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_nww_hzh_pzb-d3752e5544" class="topicref" data-id="concept_nww_hzh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_nww_hzh_pzb-d3752e5544-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3752e5544-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="can-d3752e5564" class="topicref" data-id="can" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-d3752e5564-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/can/can_user_guide.html" id="can-d3752e5564-link">CAN 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e5648" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e5648-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cap/cap_user_guide.html" id="id-d3752e5648-link">CAP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e5718" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e5718-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/qep/qep_user_guide.html" id="id-d3752e5718-link">QEP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cir-d3752e5802" class="topicref" data-id="cir" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cir-d3752e5802-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cir/cir_user_guide.html" id="cir-d3752e5802-link">CIR 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="gpai-user-guide-d3752e5928" class="topicref" data-id="gpai-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action gpai-user-guide-d3752e5928-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpai/gpai_user_guide.html" id="gpai-user-guide-d3752e5928-link">GPAI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e6012" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e6012-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/gpio/gpio_user_guide.html" id="id-d3752e6012-link">GPIO 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c_user_guide-d3752e6096" class="topicref" data-id="i2c_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c_user_guide-d3752e6096-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/i2c/i2c_user_guide.html" id="i2c_user_guide-d3752e6096-link">I2C 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e6208" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e6208-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/psadc/psadc_user_guide.html" id="id-d3752e6208-link">PSADC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e6292" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e6292-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pwm/pwm_user_guide.html" id="id-d3752e6292-link">PWM 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="rtp-user-guide-d3752e6376" class="topicref" data-id="rtp-user-guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action rtp-user-guide-d3752e6376-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtp/rtp_user_guide.html" id="rtp-user-guide-d3752e6376-link">RTP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-d3752e6475" class="topicref" data-id="spi" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-d3752e6475-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/spi/spi_user_guide.html" id="spi-d3752e6475-link"><span class="ph">Q</span>SPI 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="uart_user_guide-d3752e6561" class="topicref" data-id="uart_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart_user_guide-d3752e6561-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/uart/uart_user_guide.html" id="uart_user_guide-d3752e6561-link">UART 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_user_guide-d3752e6645" class="topicref" data-id="usb_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_user_guide-d3752e6645-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/usb_user_guide.html" id="usb_user_guide-d3752e6645-link">USB 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e6715" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e6715-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_user_guide.html" id="id-d3752e6715-link">MAC 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="id-d3752e6729" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_config_lite.html" id="id-d3752e6729-link">参数配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e6743" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_debug_lite.html" id="id-d3752e6743-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="mac_test_guide-d3752e6757" class="topicref" data-id="mac_test_guide" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_test.html" id="mac_test_guide-d3752e6757-link">测试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e6771" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_design_lite.html" id="id-d3752e6771-link">设计说明</a></div></div></li><li role="treeitem"><div data-tocid="mac_common_issues-d3752e6785" class="topicref" data-id="mac_common_issues" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mac/mac_faq.html" id="mac_common_issues-d3752e6785-link">常见问题</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3752e6799" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3752e6799-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3752e6799-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
 		                        
                             </div>
                         </nav>
@@ -114,21 +114,21 @@
                         
                         <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
     <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/mac/mac_config_lite.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">参数配置</h1>
-    <div class="date inPage">9 Apr 2025</div><div style="color: gray;">
+    <div class="date inPage">16 May 2025</div><div style="color: gray;">
                     Read time: 13 minute(s)
                 </div>
     <div class="- topic/body body">
                     <section class="- topic/section section" id="id__ref-to-lite-mac-cfg" data-ofbid="id__ref-to-lite-mac-cfg"><h2 class="- topic/title title sectiontitle">以太网配置</h2>
             
-            <p class="- topic/p p" data-ofbid="d73738e33__20250409171037">内核配置主要是通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 命令进行 以太网的功能配置， 配置完成后的项目存储在
+            <p class="- topic/p p" data-ofbid="d74924e33__20250519091511">内核配置主要是通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 命令进行 以太网的功能配置， 配置完成后的项目存储在
                     <span class="+ topic/ph sw-d/filepath ph filepath">target/configs/xxx_defconfig</span> 文件中。</p>
             <ul class="- topic/ul ul" id="id__ul_ehm_kys_4dc" data-ofbid="id__ul_ehm_kys_4dc">
-                <li class="- topic/li li" data-ofbid="d73738e44__20250409171037">
+                <li class="- topic/li li" data-ofbid="d74924e44__20250519091511">
                     <div class="- topic/div div section" id="id__mac">
                         <strong class="+ topic/ph hi-d/b ph b">MAC 参数配置</strong>
-                        <p class="- topic/p p" data-ofbid="d73738e51__20250409171037">内核中要使用以太网功能，首先需要配置 MAC 的属性参数。MAC 的参数随着板卡的不同而不同 以下是展开后 MAC
+                        <p class="- topic/p p" data-ofbid="d74924e51__20250519091511">内核中要使用以太网功能，首先需要配置 MAC 的属性参数。MAC 的参数随着板卡的不同而不同 以下是展开后 MAC
                             的所有的配置选项及其介绍</p><div class="- topic/note note note note_note" id="id__note_eql_qn3_ddc" data-ofbid="id__note_eql_qn3_ddc"><span class="note__title">注：</span> 
-                            <div class="- topic/p p" data-ofbid="d73738e55__20250409171037">为防止配置错误，实际的 MAC
+                            <div class="- topic/p p" data-ofbid="d74924e55__20250519091511">为防止配置错误，实际的 MAC
                                 配置有一套依赖规则，不会同时出现以下全部的配置选项<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_nvz_yjn_fdc" data-ofbid="id__codeblock_nvz_yjn_fdc">Board options ---&gt;
     [*] Using Gmac0
         gmac0 parameter ---&gt;
@@ -152,32 +152,32 @@
         (<span class="hl-number">25000000</span>) Clk CLK_OUT2 frequence
         [ ] Enable CLK_OUT3</pre></div>
                         </div><ul class="- topic/ul ul simple" id="id__ul_of4_kys_4dc" data-ofbid="id__ul_of4_kys_4dc">
-                            <li class="- topic/li li" data-ofbid="d73738e62__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e62__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_pf4_kys_4dc" data-ofbid="id__dl_pf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e68__20250409171037">gmac0 PHY reset GPIO</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e68__20250519091511">gmac0 PHY reset GPIO</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e73__20250409171037">外部 PHY 芯片的复位脚相连接的 IO 引脚，根据板卡设计决定</p>
+                                            <p class="- topic/p p" data-ofbid="d74924e73__20250519091511">外部 PHY 芯片的复位脚相连接的 IO 引脚，根据板卡设计决定</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e80__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e80__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_qf4_kys_4dc" data-ofbid="id__dl_qf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e86__20250409171037">Select gmac0 bus</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e86__20250519091511">Select gmac0 bus</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e91__20250409171037">选择 MAC 与 PHY 相连接的接口类型，根据板卡决定是 RGMII 还是 RMII</p>
+                                            <p class="- topic/p p" data-ofbid="d74924e91__20250519091511">选择 MAC 与 PHY 相连接的接口类型，根据板卡决定是 RGMII 还是 RMII</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e98__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e98__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_rf4_kys_4dc" data-ofbid="id__dl_rf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e104__20250409171037">Select PHY clk</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e104__20250519091511">Select PHY clk</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e109__20250409171037">选择 MAC 使用的总线参考时钟类型是 external clk (外部时钟)还是 internal
+                                            <p class="- topic/p p" data-ofbid="d74924e109__20250519091511">选择 MAC 使用的总线参考时钟类型是 external clk (外部时钟)还是 internal
                                                 clk (内部时钟)。这个配置需要根据电路设计决定。如果 MAC 的时钟参考时钟是来自 PHY 芯片
                                                 (即 GMAC_CLKIN 引脚接到 PHY 芯片)则这里选择 external clk，否则选择
                                                 internal clk</p>
@@ -185,121 +185,121 @@
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e116__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e116__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_sf4_kys_4dc" data-ofbid="id__dl_sf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e122__20250409171037">gmac0 rx delay</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e122__20250519091511">gmac0 rx delay</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e127__20250409171037">gmac0 的接收时延，适用于 RGMII 接口模式下， MAC 匹配 PHY 芯片的数据建立时间和保留时
+                                            <p class="- topic/p p" data-ofbid="d74924e127__20250519091511">gmac0 的接收时延，适用于 RGMII 接口模式下， MAC 匹配 PHY 芯片的数据建立时间和保留时
                                                 间(单位：0.17 ns)， 需要根据外部使用的 PHY 芯片调整。一般情况下，设置为 12 ，即
                                                 2.04 ns</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e134__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e134__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_tf4_kys_4dc" data-ofbid="id__dl_tf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e140__20250409171037">gmac0 tx delay</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e140__20250519091511">gmac0 tx delay</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e145__20250409171037">gmac0 的发送时延，适用于 RGMII 接口模式下，MAC 匹配 PHY 芯片的数据建立时间和保留时间
+                                            <p class="- topic/p p" data-ofbid="d74924e145__20250519091511">gmac0 的发送时延，适用于 RGMII 接口模式下，MAC 匹配 PHY 芯片的数据建立时间和保留时间
                                                 (单位：0.17 ns)，需要根据外部使用的 PHY 芯片调整。一般情况下，可设置为 12，即 2.04
                                                 ns</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e153__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e153__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_uf4_kys_4dc" data-ofbid="id__dl_uf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e159__20250409171037">gmac0 IPv4 addr</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e159__20250519091511">gmac0 IPv4 addr</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e164__20250409171037">当前网卡的初始静态 IP 地址，如打开 DHCP 功能，此处设置无效</p>
+                                            <p class="- topic/p p" data-ofbid="d74924e164__20250519091511">当前网卡的初始静态 IP 地址，如打开 DHCP 功能，此处设置无效</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e171__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e171__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_vf4_kys_4dc" data-ofbid="id__dl_vf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e177__20250409171037">gmac0 Gateway</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e177__20250519091511">gmac0 Gateway</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e182__20250409171037">当前网卡的初始静态网关地址，如打开 DHCP 功能，此处设置无效</p>
+                                            <p class="- topic/p p" data-ofbid="d74924e182__20250519091511">当前网卡的初始静态网关地址，如打开 DHCP 功能，此处设置无效</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e189__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e189__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_wf4_kys_4dc" data-ofbid="id__dl_wf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e195__20250409171037">gmac0 Subnet Mask</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e195__20250519091511">gmac0 Subnet Mask</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e200__20250409171037">当前网卡初始静态子网掩码，如打开 DHCP 功能，此处设置无效</p>
+                                            <p class="- topic/p p" data-ofbid="d74924e200__20250519091511">当前网卡初始静态子网掩码，如打开 DHCP 功能，此处设置无效</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e207__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e207__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_xf4_kys_4dc" data-ofbid="id__dl_xf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e213__20250409171037">gmac0 MAC address use chip-id</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e213__20250519091511">gmac0 MAC address use chip-id</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e218__20250409171037">使用芯片的 chip-id 作为 MAC 地址，使能此选项后会使用 chip-id 的低六位经过加密后作为
+                                            <p class="- topic/p p" data-ofbid="d74924e218__20250519091511">使用芯片的 chip-id 作为 MAC 地址，使能此选项后会使用 chip-id 的低六位经过加密后作为
                                                 MAC 地址。这样的好处是同一系列产品的 MAC 地址基本不会重复。</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e225__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e225__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_yf4_kys_4dc" data-ofbid="id__dl_yf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e231__20250409171037">gmac0 MAC addr</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e231__20250519091511">gmac0 MAC addr</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e236__20250409171037">gmac0 默认 MAC 地址，当不使能
+                                            <p class="- topic/p p" data-ofbid="d74924e236__20250519091511">gmac0 默认 MAC 地址，当不使能
                                                   <span class="+ topic/ph ui-d/uicontrol ph uicontrol">gmac0 MAC address use chip-id</span>
                                                 时，即用户需要自定义 MAC 地址时可以在这里配置用户自己的 MAC 地址。</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e246__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e246__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_zf4_kys_4dc" data-ofbid="id__dl_zf4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e252__20250409171037">gmac0 PHY MDIO addr</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e252__20250519091511">gmac0 PHY MDIO addr</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e257__20250409171037">PHY 在 总线上的挂载地址，PHY 芯片地址一般取决于 PHY
+                                            <p class="- topic/p p" data-ofbid="d74924e257__20250519091511">PHY 在 总线上的挂载地址，PHY 芯片地址一般取决于 PHY
                                                 芯片外部电路设计，请根据板卡设计决定</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e265__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e265__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_ag4_kys_4dc" data-ofbid="id__dl_ag4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e271__20250409171037">Clocks Options</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e271__20250519091511">Clocks Options</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e276__20250409171037">如果 PHY 的工作时钟由主控芯片的 CLK_OUTx 提供，则需要在这里使能 CLK_OUT。
+                                            <p class="- topic/p p" data-ofbid="d74924e276__20250519091511">如果 PHY 的工作时钟由主控芯片的 CLK_OUTx 提供，则需要在这里使能 CLK_OUT。
                                                 具体使能哪一个 CLK_OUT，取决于硬件设计</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e283__20250409171037">
+                            <li class="- topic/li li" data-ofbid="d74924e283__20250519091511">
                                 <dl class="- topic/dl dl simple" id="id__dl_bg4_kys_4dc" data-ofbid="id__dl_bg4_kys_4dc">
                                     
-                                        <dt class="- topic/dt dt dlterm" data-ofbid="d73738e289__20250409171037">Clk CLK_OUT2 frequence</dt>
+                                        <dt class="- topic/dt dt dlterm" data-ofbid="d74924e289__20250519091511">Clk CLK_OUT2 frequence</dt>
                                         <dd class="- topic/dd dd">
-                                            <p class="- topic/p p" data-ofbid="d73738e294__20250409171037">CLK_OUTx 的输出时钟频率，对于常用的 PHY 芯片，一般是 25 MHz</p>
+                                            <p class="- topic/p p" data-ofbid="d74924e294__20250519091511">CLK_OUTx 的输出时钟频率，对于常用的 PHY 芯片，一般是 25 MHz</p>
                                         </dd>
                                     
                                 </dl>
                             </li>
                         </ul></div>
                 </li>
-                <li class="- topic/li li" data-ofbid="d73738e303__20250409171037">
+                <li class="- topic/li li" data-ofbid="d74924e303__20250519091511">
                     <div class="- topic/div div section" id="id__lwip">
                         <strong class="+ topic/ph hi-d/b ph b">LwIP 协议配置</strong>
-                        <div class="- topic/p p" data-ofbid="d73738e310__20250409171037"><span class="- topic/ph ph">Luban-Lite</span> 内置 LwIP2.1.3 协议栈，用户可以根据自身需求通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons
+                        <div class="- topic/p p" data-ofbid="d74924e310__20250519091511"><span class="- topic/ph ph">Luban-Lite</span> 内置 LwIP2.1.3 协议栈，用户可以根据自身需求通过 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons
                                 --menuconfig</span> 进行裁剪。 <span class="- topic/ph ph">Luban-Lite</span>
                             提供的可裁剪属性如下，如有其它特别需求，可自行配置
                                 <span class="+ topic/ph sw-d/filepath ph filepath">packages/third-party/lwip/lwipopts.h</span>
@@ -342,15 +342,15 @@
                 (<span class="hl-number">192.168</span>.<span class="hl-number">1.1</span>) DHCP server IP addresss
                 (<span class="hl-number">2</span>)     Start address of DHCP allocation(Last byte)
                 (<span class="hl-number">254</span>)   End address of DHCP allocation(Last byte)
-            [ ] Enable lwIP Debugging Options  ----</pre></div><dl class="- topic/dl dl" data-ofbid="d73738e325__20250409171037">
+            [ ] Enable lwIP Debugging Options  ----</pre></div><dl class="- topic/dl dl" data-ofbid="d74924e325__20250519091511">
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e329__20250409171037">IPv6 protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e329__20250519091511">IPv6 protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e334__20250409171037">LwIP 支持 IPV6 协议</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e334__20250519091511">LwIP 支持 IPV6 协议</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e341__20250409171037">lwIP Example</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e341__20250519091511">lwIP Example</dt>
                                 <dd class="- topic/dd dd">SDK 提供的初始化以太网示例，示例程序源码在
                                         <span class="+ topic/ph sw-d/filepath ph filepath">packages/third-party/lwip/contrib/examples/example_app/</span>
                                     目录下的
@@ -359,15 +359,15 @@
                                     的初始化程序</dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e360__20250409171037">IPv6 protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e360__20250519091511">IPv6 protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e365__20250409171037">LwIP 支持 IPV6 协议</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e365__20250519091511">LwIP 支持 IPV6 协议</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e372__20250409171037">lwIP Example</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e372__20250519091511">lwIP Example</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e377__20250409171037">SDK 提供的初始化以太网示例，示例程序源码在
+                                    <p class="- topic/p p" data-ofbid="d74924e377__20250519091511">SDK 提供的初始化以太网示例，示例程序源码在
                                             <span class="+ topic/ph sw-d/filepath ph filepath">packages/third-party/lwip/contrib/examples/example_app/</span>
                                         目录下的
                                             <span class="+ topic/ph sw-d/filepath ph filepath">test.c</span>、<span class="+ topic/ph sw-d/filepath ph filepath">netif_start.c</span>
@@ -376,203 +376,203 @@
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e396__20250409171037">Using net tools</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e396__20250519091511">Using net tools</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e401__20250409171037">使用网络调试命令，ifconfig, dhcpc …</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e401__20250519091511">使用网络调试命令，ifconfig, dhcpc …</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e409__20250409171037">IGMP protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e409__20250519091511">IGMP protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e414__20250409171037">以太网支持 IGMP 协议，使用组播功能时打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e414__20250519091511">以太网支持 IGMP 协议，使用组播功能时打开</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e421__20250409171037">ICMP protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e421__20250519091511">ICMP protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e426__20250409171037">以太网支持 ICMP 协议，使用 ping 命令时打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e426__20250519091511">以太网支持 ICMP 协议，使用 ping 命令时打开</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e433__20250409171037">SNMP protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e433__20250519091511">SNMP protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e438__20250409171037">以太网支持 SNMP 协议，需要时打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e438__20250519091511">以太网支持 SNMP 协议，需要时打开</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e445__20250409171037">Enable DNS for name resolution</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e445__20250519091511">Enable DNS for name resolution</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e450__20250409171037">支持 DNS 用户端功能，需要时打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e450__20250519091511">支持 DNS 用户端功能，需要时打开</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e457__20250409171037">Enable alloc IP address through DHCP</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e457__20250519091511">Enable alloc IP address through DHCP</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e462__20250409171037"> 支持 DHCP 用户端功能，需要时打开。如果打开 DHCP 选项，默认 IP 地址会失效，如果 IP 申请失败，则此时
+                                    <p class="- topic/p p" data-ofbid="d74924e462__20250519091511"> 支持 DHCP 用户端功能，需要时打开。如果打开 DHCP 选项，默认 IP 地址会失效，如果 IP 申请失败，则此时
                                         IP 地址为 0.0.0.0</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e469__20250409171037">UDP protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e469__20250519091511">UDP protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e474__20250409171037">支持 UDP 协议，默认打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e474__20250519091511">支持 UDP 协议，默认打开</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e482__20250409171037">TCP protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e482__20250519091511">TCP protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e487__20250409171037">支持 TCP 协议，默认打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e487__20250519091511">支持 TCP 协议，默认打开</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e494__20250409171037">RAW protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e494__20250519091511">RAW protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e499__20250409171037">支持原始套接字接口，如需要编写基于 RAW 套接字的程序时，需要打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e499__20250519091511">支持原始套接字接口，如需要编写基于 RAW 套接字的程序时，需要打开</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e506__20250409171037">PPP protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e506__20250519091511">PPP protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e511__20250409171037">支持 PPP 协议，需要时打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e511__20250519091511">支持 PPP 协议，需要时打开</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e518__20250409171037">the number of struct netconns</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e518__20250519091511">the number of struct netconns</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e523__20250409171037">struct netconns 接口的数量，默认为 8 个，可根据需求自行修改</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e523__20250519091511">struct netconns 接口的数量，默认为 8 个，可根据需求自行修改</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e530__20250409171037">the number of PBUF</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e530__20250519091511">the number of PBUF</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e535__20250409171037">pbuf 结构的数量，如果需要发送较多的 ROM 类型消息，可自行修改</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e535__20250519091511">pbuf 结构的数量，如果需要发送较多的 ROM 类型消息，可自行修改</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e542__20250409171037">the size of lwIP’s dynamic memory</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e542__20250519091511">the size of lwIP’s dynamic memory</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e547__20250409171037">LwIP 堆空间大小，与数据发送有关，不建议修改</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e547__20250519091511">LwIP 堆空间大小，与数据发送有关，不建议修改</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e555__20250409171037">the number of raw connection</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e555__20250519091511">the number of raw connection</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e560__20250409171037">RAW 控制块数量，根据需求修改</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e560__20250519091511">RAW 控制块数量，根据需求修改</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e567__20250409171037">the number of UDP socket</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e567__20250519091511">the number of UDP socket</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e572__20250409171037">UDP 控制块数量，根据需求修改</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e572__20250519091511">UDP 控制块数量，根据需求修改</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e579__20250409171037">the number of TCP socket</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e579__20250519091511">the number of TCP socket</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e584__20250409171037">TCP 控制块数量，根据需求修改</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e584__20250519091511">TCP 控制块数量，根据需求修改</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e591__20250409171037">the number of TCP segment</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e591__20250519091511">the number of TCP segment</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e596__20250409171037">TCP 等待队列的个数，这个值应该不小于 TCP 的发送队列的个数</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e596__20250519091511">TCP 等待队列的个数，这个值应该不小于 TCP 的发送队列的个数</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e603__20250409171037">the size of send buffer</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e603__20250519091511">the size of send buffer</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e608__20250409171037">TCP 发送缓存大小，如无特别需求，请保持默认值</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e608__20250519091511">TCP 发送缓存大小，如无特别需求，请保持默认值</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e615__20250409171037">the size of TCP send window</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e615__20250519091511">the size of TCP send window</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e620__20250409171037">TCP 滑动窗口大小，如无特别需求，请保持默认值</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e620__20250519091511">TCP 滑动窗口大小，如无特别需求，请保持默认值</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e628__20250409171037">the priority level value of lwIP thread</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e628__20250519091511">the priority level value of lwIP thread</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e633__20250409171037">LwIP 协议栈任务优先级，为防止网络丢包，建议保持较高优先级</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e633__20250519091511">LwIP 协议栈任务优先级，为防止网络丢包，建议保持较高优先级</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e640__20250409171037">the number of mail in the lwIP thread mailbox</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e640__20250519091511">the number of mail in the lwIP thread mailbox</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e645__20250409171037">消息邮箱数量，如无特别需求，不建议修改此数量</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e645__20250519091511">消息邮箱数量，如无特别需求，不建议修改此数量</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e652__20250409171037">the stack size of lwIP thread</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e652__20250519091511">the stack size of lwIP thread</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e657__20250409171037">LwIP 协议栈任务的栈空间大小，如没有添加基于 RAW 接口的应用程序，不建议修改任务栈。
+                                    <p class="- topic/p p" data-ofbid="d74924e657__20250519091511">LwIP 协议栈任务的栈空间大小，如没有添加基于 RAW 接口的应用程序，不建议修改任务栈。
                                         否则，应该加大协议栈任务的栈空间</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e664__20250409171037">Enable IP reassembly and frag</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e664__20250519091511">Enable IP reassembly and frag</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e669__20250409171037">使能 IP 包的分片重装功能</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e669__20250519091511">使能 IP 包的分片重装功能</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e676__20250409171037">Enable lwIP statistics</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e676__20250519091511">Enable lwIP statistics</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e681__20250409171037">使能 LwIP 统计信息</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e681__20250519091511">使能 LwIP 统计信息</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e688__20250409171037">Enable tx hardware generate checksum</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e688__20250519091511">Enable tx hardware generate checksum</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e693__20250409171037">使能发送时自动生成硬件校验和</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e693__20250519091511">使能发送时自动生成硬件校验和</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e701__20250409171037">Enable rx hardware check checksum</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e701__20250519091511">Enable rx hardware check checksum</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e706__20250409171037">使能接收时硬件检查校验和</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e706__20250519091511">使能接收时硬件检查校验和</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e713__20250409171037">Enable ping features —-</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e713__20250519091511">Enable ping features —-</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e718__20250409171037">ping 命令支持，使能此选项后，可在终端中使用 ping 命令</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e718__20250519091511">ping 命令支持，使能此选项后，可在终端中使用 ping 命令</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e725__20250409171037">Using MQTT protocol</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e725__20250519091511">Using MQTT protocol</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e730__20250409171037">支持 MQTT 协议</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e730__20250519091511">支持 MQTT 协议</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e737__20250409171037">USing DHCP server</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e737__20250519091511">USing DHCP server</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e742__20250409171037">使用 dhcp server 服务。使能此选项后可以使用 dhcpd 命令开启 dhcp 服务端</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e742__20250519091511">使用 dhcp server 服务。使能此选项后可以使用 dhcpd 命令开启 dhcp 服务端</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e749__20250409171037">DHCP server IP addresss</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e749__20250519091511">DHCP server IP addresss</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e754__20250409171037">做 dhcp 服务端时的 IP 地址</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e754__20250519091511">做 dhcp 服务端时的 IP 地址</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e761__20250409171037">Start address of DHCP allocation(Last byte)</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e761__20250519091511">Start address of DHCP allocation(Last byte)</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e766__20250409171037">dhcp 服务端分配给用户端的起始 ip 地址的低八位</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e766__20250519091511">dhcp 服务端分配给用户端的起始 ip 地址的低八位</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e774__20250409171037">End address of DHCP allocation(Last byte)</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e774__20250519091511">End address of DHCP allocation(Last byte)</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e779__20250409171037">dhcp 服务端分配给用户端的结束 ip 地址的低八位</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e779__20250519091511">dhcp 服务端分配给用户端的结束 ip 地址的低八位</p>
                                 </dd>
                             
                             
-                                <dt class="- topic/dt dt dlterm" data-ofbid="d73738e786__20250409171037">Enable lwIP Debugging Options —-</dt>
+                                <dt class="- topic/dt dt dlterm" data-ofbid="d74924e786__20250519091511">Enable lwIP Debugging Options —-</dt>
                                 <dd class="- topic/dd dd">
-                                    <p class="- topic/p p" data-ofbid="d73738e791__20250409171037">LwIP 调试信息选项，可根据自身需求进行打开</p>
+                                    <p class="- topic/p p" data-ofbid="d74924e791__20250519091511">LwIP 调试信息选项，可根据自身需求进行打开</p>
                                 </dd>
                             
                         </dl>
@@ -582,14 +582,14 @@
         </section>
         <section class="- topic/section section" id="id__section_twf_bkn_fdc" data-ofbid="id__section_twf_bkn_fdc"><h2 class="- topic/title title sectiontitle">时钟</h2>
             
-                    <p class="- topic/p p" data-ofbid="d73738e806__20250409171037">MAC 和 PHY 的协同工作共牵涉到四组时钟， <span class="- topic/ph ph">Luban-Lite</span> 已将时钟部分处理完整，不需要用户除 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons
+                    <p class="- topic/p p" data-ofbid="d74924e806__20250519091511">MAC 和 PHY 的协同工作共牵涉到四组时钟， <span class="- topic/ph ph">Luban-Lite</span> 已将时钟部分处理完整，不需要用户除 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons
                             --menuconfig</span> 配置 MAC 使用 <span class="+ topic/keyword pr-d/parmname keyword parmname">external clk</span> 或
                         <span class="+ topic/keyword pr-d/parmname keyword parmname">internal clk</span> 之外的其它任何修改</p>
             <ul class="- topic/ul ul" id="id__ul_zvb_lys_4dc" data-ofbid="id__ul_zvb_lys_4dc">
-                <li class="- topic/li li" data-ofbid="d73738e823__20250409171037">
+                <li class="- topic/li li" data-ofbid="d74924e823__20250519091511">
                     <div class="- topic/div div section" id="id__id4">
                         <strong class="+ topic/ph hi-d/b ph b">MAC 工作时钟</strong>
-                        <div class="- topic/p p" data-ofbid="d73738e830__20250409171037">MAC 的内部工作时钟通过 PLL 分频获得，为 50M， 工作时钟不会因为方案的不同而不同，为一固定值 配置代码在
+                        <div class="- topic/p p" data-ofbid="d74924e830__20250519091511">MAC 的内部工作时钟通过 PLL 分频获得，为 50M， 工作时钟不会因为方案的不同而不同，为一固定值 配置代码在
                                 <span class="+ topic/ph sw-d/filepath ph filepath">packages/third-party/lwip/contrib/ports/drv/aic/aic_mac_ll.c</span>
                             中。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_lxy_qxn_fdc" data-ofbid="id__codeblock_lxy_qxn_fdc"><strong class="hl-keyword">void</strong> aicmac_low_level_init(uint32_t port, bool en)
 {
@@ -608,10 +608,10 @@
 }</pre></div>
                     </div>
                 </li>
-                <li class="- topic/li li" data-ofbid="d73738e840__20250409171037">
+                <li class="- topic/li li" data-ofbid="d74924e840__20250519091511">
                     <div class="- topic/div div section" id="id__mdc">
                         <strong class="+ topic/ph hi-d/b ph b">MDC 时钟</strong>
-                        <div class="- topic/p p" data-ofbid="d73738e847__20250409171037">MDC 时钟是 MDIO 的工作时钟，是 MAC 和 PHY 进行配置的工作时钟，双方在使用初期会有一个协 商，一般是 MAC 通知
+                        <div class="- topic/p p" data-ofbid="d74924e847__20250519091511">MDC 时钟是 MDIO 的工作时钟，是 MAC 和 PHY 进行配置的工作时钟，双方在使用初期会有一个协 商，一般是 MAC 通知
                             PHY，该时钟为 MAC 通过模块的内部工作时钟处理生成，也不会因为方案的 不同而不同，为一固定值。MDIO 时钟初始化在
                                 <span class="+ topic/ph sw-d/filepath ph filepath">packages/third-party/lwip/contrib/ports/drv/aic/aicmac.c</span>
                             文件的 <span class="+ topic/keyword pr-d/apiname keyword apiname">aicmac_init</span>
@@ -640,15 +640,15 @@
     writel(tmpreg, MAC(port, mdioctl));
     ...
     ...
-}</pre></div><p class="- topic/p p" data-ofbid="d73738e857__20250409171037">MDC 时钟配置错误，则 MAC 和 PHY 的通信不通，呈现的现象是 MAC 无法发现 PHY
+}</pre></div><p class="- topic/p p" data-ofbid="d74924e857__20250519091511">MDC 时钟配置错误，则 MAC 和 PHY 的通信不通，呈现的现象是 MAC 无法发现 PHY
                             设备</p>
                     </div>
                 </li>
-                <li class="- topic/li li" data-ofbid="d73738e862__20250409171037">
+                <li class="- topic/li li" data-ofbid="d74924e862__20250519091511">
                     <div class="- topic/div div section" id="id__phy">
                         <strong class="+ topic/ph hi-d/b ph b">PHY 工作时钟</strong>
-                        <p class="- topic/p p" data-ofbid="d73738e869__20250409171037">一般 PHY 的工作时钟是 25M， 一般的设计是外挂一个晶振提供时钟给 PHY 模组， AIC
-                            不同型号芯片都对外提供几组时钟(CLK_OUT)，也可以使用该时钟供给 PHY 模块工作。</p><div class="- topic/p p" data-ofbid="d73738e871__20250409171037">该时钟 (CLK_OUT) 使能在
+                        <p class="- topic/p p" data-ofbid="d74924e869__20250519091511">一般 PHY 的工作时钟是 25M， 一般的设计是外挂一个晶振提供时钟给 PHY 模组， AIC
+                            不同型号芯片都对外提供几组时钟(CLK_OUT)，也可以使用该时钟供给 PHY 模块工作。</p><div class="- topic/p p" data-ofbid="d74924e871__20250519091511">该时钟 (CLK_OUT) 使能在
                                 <span class="+ topic/ph sw-d/filepath ph filepath">target/soc name/board name/sys_clk.c</span>
                             中配置。如果需要可以打开<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_brh_kyn_fdc" data-ofbid="id__codeblock_brh_kyn_fdc"><strong class="hl-keyword">struct</strong> aic_sysclk aic_sysclk_config[] = {
     ...
@@ -680,17 +680,17 @@
     hal_clk_enable_deassertrst_iter(CLK_GTC);
 }</pre></div></div>
                 </li>
-                <li class="- topic/li li" data-ofbid="d73738e880__20250409171037">
+                <li class="- topic/li li" data-ofbid="d74924e880__20250519091511">
                     <div class="- topic/div div section" id="id__mdata">
                         <strong class="+ topic/ph hi-d/b ph b">MDATA 时钟</strong>
-                        <p class="- topic/p p" data-ofbid="d73738e887__20250409171037">MDATA 时钟 为 MAC 和 PHY 进行数据传输的时钟，对于百兆和千兆有不同的使用方式 </p><ul class="- topic/ul ul simple" id="id__ul_yd3_bkn_fdc" data-ofbid="id__ul_yd3_bkn_fdc">
-                            <li class="- topic/li li" data-ofbid="d73738e891__20250409171037">
-                                <p class="- topic/p p" data-ofbid="d73738e893__20250409171037">百兆网络：可以是 MAC 供给 PHY， 也可以是 PHY 供给 MAC</p>
+                        <p class="- topic/p p" data-ofbid="d74924e887__20250519091511">MDATA 时钟 为 MAC 和 PHY 进行数据传输的时钟，对于百兆和千兆有不同的使用方式 </p><ul class="- topic/ul ul simple" id="id__ul_yd3_bkn_fdc" data-ofbid="id__ul_yd3_bkn_fdc">
+                            <li class="- topic/li li" data-ofbid="d74924e891__20250519091511">
+                                <p class="- topic/p p" data-ofbid="d74924e893__20250519091511">百兆网络：可以是 MAC 供给 PHY， 也可以是 PHY 供给 MAC</p>
                             </li>
-                            <li class="- topic/li li" data-ofbid="d73738e897__20250409171037">
-                                <p class="- topic/p p" data-ofbid="d73738e899__20250409171037">千兆网络：只能是 MAC 供给 PHY，RGMII0-TXCK 端口</p>
+                            <li class="- topic/li li" data-ofbid="d74924e897__20250519091511">
+                                <p class="- topic/p p" data-ofbid="d74924e899__20250519091511">千兆网络：只能是 MAC 供给 PHY，RGMII0-TXCK 端口</p>
                             </li>
-                        </ul><div class="- topic/p p" data-ofbid="d73738e903__20250409171037">代码中会根据 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 中的配置来决定 MAC
+                        </ul><div class="- topic/p p" data-ofbid="d74924e903__20250519091511">代码中会根据 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">scons --menuconfig</span> 中的配置来决定 MAC
                             使用的时钟来源是内部时钟还是外部时钟<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_zk2_lyn_fdc" data-ofbid="id__codeblock_zk2_lyn_fdc"><strong class="hl-keyword">static</strong> s32 syscfg_gmac_init(u32 ch)
 {
     #ifdef AIC_SYSCFG_DRV_V10
@@ -743,10 +743,10 @@
     <strong class="hl-keyword">return</strong> <span class="hl-number">0</span>;
 }</pre></div></div>
                 </li>
-                <li class="- topic/li li" data-ofbid="d73738e912__20250409171037">
+                <li class="- topic/li li" data-ofbid="d74924e912__20250519091511">
                     <div class="- topic/div div section" id="id__pinmux">
                         <strong class="+ topic/ph hi-d/b ph b">pinmux 配置</strong>
-                        <div class="- topic/p p" data-ofbid="d73738e919__20250409171037">在 <span class="+ topic/ph sw-d/filepath ph filepath">target/soc name/board name/pinmux.c</span> 中设置 MAC 端口的
+                        <div class="- topic/p p" data-ofbid="d74924e919__20250519091511">在 <span class="+ topic/ph sw-d/filepath ph filepath">target/soc name/board name/pinmux.c</span> 中设置 MAC 端口的
                             pinmux，
                             需要根据开发板板的不同进行不同的设置<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_s2s_lyn_fdc" data-ofbid="id__codeblock_s2s_lyn_fdc">#ifdef AIC_USING_GMAC0
     <em class="hl-comment">/* gmac0 */</em>
@@ -761,7 +761,7 @@
     {<span class="hl-number">6</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PE.9"</span>},
     <em class="hl-comment">/* phy0 reset GPIO */</em>
     {<span class="hl-number">1</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PE.6"</span>},
-#endif</pre></div><div class="- topic/p p" data-ofbid="d73738e926__20250409171037">如果 PHY 工作时钟是由主控芯片的 CLK_OUT 提供，则还需要配置 CLK_OUT
+#endif</pre></div><div class="- topic/p p" data-ofbid="d74924e926__20250519091511">如果 PHY 工作时钟是由主控芯片的 CLK_OUT 提供，则还需要配置 CLK_OUT
                             引脚的
                             pinmux：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="id__codeblock_skh_myn_fdc" data-ofbid="id__codeblock_skh_myn_fdc">#ifdef AIC_USING_CLK_OUT0
     {<span class="hl-number">6</span>, PIN_PULL_DIS, <span class="hl-number">3</span>, <span class="hl-string">"PD.21"</span>},
@@ -823,7 +823,7 @@
   </div>
   <div>
     <div class="generation_time">
-      Update Time: 2025-04-09
+      Update Time: 2025-05-19
     </div>        
   </div> 
   

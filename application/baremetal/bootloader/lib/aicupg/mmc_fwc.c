@@ -95,6 +95,7 @@ void mmc_fwc_start(struct fwc_info *fwc)
         pr_err("malloc mmc priv failed.\n");
         goto out;
     }
+    memset(priv, 0, sizeof(struct aicupg_mmc_priv));
 
     priv->host = find_mmc_dev_by_index(mmc_id);
     if (priv->host == NULL) {

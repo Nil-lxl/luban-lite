@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -27,6 +27,7 @@
     "  spinor regwrite reg val\n"             \
     "  spinor statuswrite [reg] [val] <volatile>\n"             \
     "  spinor regread  reg\n"                 \
+    "  spinor uidread\n"                      \
     "e.g.: \n"                                \
     "  spinor read 0x40000000 0 256\n"        \
     "  spinor statuswrite 0x05 0x60 non-volatile\n" \
@@ -70,6 +71,8 @@ static int do_spinor_init(int argc, char *argv[])
     }
 
     printf("probe spinor flash success.\n");
+
+    printf("Flash ID: 0x%02x%02x%02x\n", flash->chip.mf_id, flash->chip.type_id, flash->chip.capacity_id);
 
     g_spinor_flash = flash;
     return 0;
@@ -283,6 +286,30 @@ static int do_spinor_reg_read(int argc, char *argv[])
     return err;
 }
 
+static int do_spinor_uid_read(int argc, char *argv[])
+{
+    sfud_err len;
+    sfud_flash *flash;
+    uint8_t data[64];
+
+
+    flash = g_spinor_flash;
+    if (flash == NULL) {
+        printf("spinor init first.\n");
+        return 0;
+    }
+
+    get_uid_func get_uid = flash->get_uid;
+    len = get_uid(flash, data);
+
+    if (!len)
+        printf("Read unique ID failure.\n");
+
+    hexdump((void *)data, len, 1);
+
+    return len;
+}
+
 #ifdef SFUD_USING_SECURITY_REGISTER
 static int do_spinor_secureg_read(int argc, char *argv[])
 {
@@ -447,7 +474,7 @@ static int do_spinor_se(int argc, char *argv[])
  */
 static int do_spinor(int argc, char *argv[])
 {
-    if (argc < 3) {
+    if (argc < 2) {
         spinor_help();
         return 0;
     }
@@ -474,6 +501,8 @@ static int do_spinor(int argc, char *argv[])
     else if (!strncmp(argv[1], "se", 2))
         return do_spinor_se(argc - 1, &argv[1]);
 #endif
+    else if (!strncmp(argv[1], "uidread", 7))
+        return do_spinor_uid_read(argc - 1, &argv[1]);
 
     spinor_help();
     return 0;

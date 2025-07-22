@@ -21,7 +21,7 @@ aic_nvram_info_t aic_nvram_info = {
         .ofdm1024qam_5g   = 9
     },
     .txpwr_ofst = {
-        .enable       = 1,
+        .enable       = 0,
         .chan_1_4     = 0,
         .chan_5_9     = 0,
         .chan_10_13   = 0,
@@ -37,7 +37,7 @@ aic_nvram_info_t aic_nvram_info = {
     },
 };
 
-//8800DCDW userconfig
+//8800DCDW & 8800D40/D80 userconfig
 aic_userconfig_info_t aic_userconfig_info = {
     .txpwr_lvl = {
         .enable           = 1,
@@ -51,6 +51,7 @@ aic_userconfig_info_t aic_userconfig_info = {
         .ofdm256qam_5g    = 13,
         .ofdm1024qam_5g   = 13
     },
+    // txpwr_lvl_v2 for 8800DCDW
     .txpwr_lvl_v2 = {
         .enable             = 1,
         .pwrlvl_11b_11ag_2g4 =
@@ -63,6 +64,7 @@ aic_userconfig_info_t aic_userconfig_info = {
             //MCS0, MCS1, MCS2, MCS3, MCS4, MCS5, MCS6, MCS7, MCS8, MCS9, MCS10,MCS11
             { 20,   20,   20,   20,   18,   18,   16,   16,   16,   16,   15,   15},
     },
+    // txpwr_lvl_v3 for 8800D40/D80
 #if 0
     .txpwr_lvl_v3 = {
         .enable             = 1,
@@ -97,7 +99,7 @@ aic_userconfig_info_t aic_userconfig_info = {
         .pwrlvl_11ax_2g4 =
             //MCS0, MCS1, MCS2, MCS3, MCS4, MCS5, MCS6, MCS7, MCS8, MCS9, MCS10,MCS11
             { 21,   21,   21,   21,   17,   17,   16,   16,   15,   15,   14,   14},
-         .pwrlvl_11a_5g =
+        .pwrlvl_11a_5g =
             //NA,   NA,   NA,   NA,   6M,   9M,   12M,  18M,  24M,  36M,  48M,  54M
             { 0x80, 0x80, 0x80, 0x80, 18,   18,   18,   18,   16,   16,   15,   15},
         .pwrlvl_11n_11ac_5g =
@@ -108,6 +110,7 @@ aic_userconfig_info_t aic_userconfig_info = {
             { 18,   18,   18,   18,   16,   16,   14,   14,   13,   13,   12,   12},
     },
 #endif
+    // txpwr_ofst for 8800DCDW
 #if 0
     .txpwr_ofst = {
         .enable       = 1,
@@ -131,6 +134,7 @@ aic_userconfig_info_t aic_userconfig_info = {
         .chan_142_165 = 0,
     },
 #endif
+    // txpwr_ofst2x for 8800D40/D80
     .txpwr_ofst2x = {
         .enable       = 0,
         .pwrofst2x_tbl_2g4 =

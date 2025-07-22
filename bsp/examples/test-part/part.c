@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Artinchip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -63,6 +63,7 @@ static int cmd_part_list(char *name)
 
     rt_device_open(mmc_dev, RT_DEVICE_FLAG_RDWR);
     dev_desc.blksz = 512;
+    dev_desc.lba_count = 0;
     dev_desc.priv = mmc_dev;
 
     parts = aic_disk_get_parts(&dev_desc);
