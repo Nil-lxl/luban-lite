@@ -8,10 +8,9 @@
 #include "panel_dsi.h"
 #include <aic_hal.h>
 
-#ifdef AIC_USING_D213ECV_EzUIX1_DEMO
+#if defined AIC_USING_D213ECV_EzUIX1_DEMO
 #define H070A21_RESET_PIN    "PA.3"
-#endif
-#ifdef AIC_USING_JYX68_MIPI01
+#elif defined AIC_USING_JYX68_MIPI01
 #define H070A21_RESET_PIN    "PD.17"
 #endif
 

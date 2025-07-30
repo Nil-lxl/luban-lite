@@ -12,6 +12,18 @@
 #ifdef APP_USE_DRAW_LINE_TEST
 #define TOUCH_IC_NAME APP_TOUCH_DEVICE
 
+#define UI_BG_COLOR         0x18a000a8
+#define UI_FG_CTRL          0x18a000b0
+#define DE_CONFIG_UPDATE    0x18a00008
+
+#define BG_BLUE_MASK        GENMASK(7, 0)
+#define BG_GREEN_MASK       GENMASK(15, 8)
+#define BG_RED_MASK         GENMASK(23, 16)
+
+#define PIXELS_BLUE(x)      (((x) & 0xff) << 0)
+#define PIXELS_GREEN(x)     (((x) & 0xff) << 8)
+#define PIXELS_RED(x)       (((x) & 0xff) << 16)
+
 static rt_thread_t draw_thread = RT_NULL;
 static rt_thread_t touch_read_thread = RT_NULL;
 static rt_sem_t touch_semaphore;
@@ -29,6 +41,87 @@ static rt_err_t rx_callback(rt_device_t dev, rt_size_t size) {
     rt_sem_release(touch_semaphore);
     rt_device_control(dev, RT_TOUCH_CTRL_DISABLE_INT, RT_NULL);
     return 0;
+}
+
+void open_panel(void) {
+    int ret = 0;
+    fb = mpp_fb_open();
+    if (!fb) {
+        LOG_E("mpp_fb open error!\n");
+        return -1;
+    }
+    ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &screen_info);
+    if (ret < 0) {
+        LOG_E("mpp fb ioctl failed!error:%d\n", ret);
+        return -1;
+    }
+    memset(screen_info.framebuffer, 0, screen_info.height * screen_info.stride);
+    LOG_I("Screen width: %d, height: %d\n", screen_info.width, screen_info.height);
+
+}
+static void bg_update_bits(unsigned int mask, unsigned int value) {
+    void *base = (void *)UI_BG_COLOR;
+    void *update = (void *)DE_CONFIG_UPDATE;
+    unsigned int tmp, orig;
+
+    orig = readl(base);
+
+    tmp = orig & ~mask;
+    tmp |= value & mask;
+
+    writel(tmp, base);
+    writel(1, update);
+}
+static void fg_color_disable(void) {
+    void *base = (void *)UI_FG_CTRL;
+    void *update = (void *)DE_CONFIG_UPDATE;
+
+    writel(0, base);
+    writel(1, update);
+}
+void set_bg_color(void) {
+    struct aicfb_layer_data layer = { 0 };
+    uint8_t red, green, blue;
+
+    bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
+    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(0));
+    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
+    fg_color_disable();
+    rt_thread_mdelay(500);
+
+    bg_update_bits(BG_RED_MASK, PIXELS_RED(0));
+    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
+    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
+    rt_thread_mdelay(500);
+
+    bg_update_bits(BG_RED_MASK, PIXELS_RED(0));
+    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(0));
+    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(255));
+    rt_thread_mdelay(500);
+
+    bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
+    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
+    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
+    rt_thread_mdelay(500);
+
+    bg_update_bits(BG_RED_MASK, PIXELS_RED(204));
+    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(108));
+    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(231));
+    rt_thread_mdelay(500);
+
+    bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
+    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
+    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(255));
+    rt_thread_mdelay(500);
+
+    /* enable fg color */
+    layer.layer_id = AICFB_LAYER_TYPE_UI;
+    layer.rect_id = 0;
+    mpp_fb_ioctl(fb, AICFB_GET_LAYER_CONFIG, &layer);
+
+    layer.enable = 1;
+    mpp_fb_ioctl(fb, AICFB_UPDATE_LAYER_CONFIG, &layer);
+
 }
 void touch_init(void) {
     touch_device = rt_device_find(APP_TOUCH_DEVICE);
@@ -87,26 +180,10 @@ void touch_read_point(void *param) {
         rt_device_control(touch_device, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
     }
 }
-void open_panel(void) {
-    int ret = 0;
-    fb = mpp_fb_open();
-    if (!fb) {
-        LOG_E("mpp_fb_open error!\n");
-        return -1;
-    }
-    ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &screen_info);
-    if (ret < 0) {
-        LOG_E("mpp fb ioctl failed!error:%d\n", ret);
-        return -1;
-    }
-    memset(screen_info.framebuffer, 0, screen_info.height * screen_info.stride);
-    LOG_I("Screen width: %d, height: %d\n", screen_info.width, screen_info.height);
 
-}
 
 void panel_draw_lines(void *param) {
-    open_panel();
-    rt_thread_mdelay(200);
+    rt_thread_mdelay(100);
 
     struct frame_buffer_info fb_info = {
         .frame_buffer_format = screen_info.format,
@@ -152,6 +229,9 @@ void panel_draw_lines(void *param) {
 }
 
 void panel_draw_start() {
+    open_panel();
+
+    set_bg_color();
 
     touch_read_thread = rt_thread_create("touch_read", touch_read_point, RT_NULL, 2 * 1024, 20, 5);
     if (touch_read_thread != RT_NULL) {

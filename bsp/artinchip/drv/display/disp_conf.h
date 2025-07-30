@@ -84,11 +84,13 @@
 /**
  * Default Options
  */
+// #define LANE_ASSIGNMENTS 0x3210
+
+#if defined AIC_USING_JYX68_MIPI01
+#define LANE_ASSIGNMENTS 0x3012
+#else 
 #define LANE_ASSIGNMENTS 0x3210
-/**
- * H078B06 Driver Option
- */
-// #define LANE_ASSIGNMENTS 0x3012
+#endif
 
 /**
  * data lane polarities, default 0b0000

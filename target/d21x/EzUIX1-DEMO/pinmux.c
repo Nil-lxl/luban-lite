@@ -24,7 +24,6 @@ struct aic_pinmux aic_pinmux_config[] = {
     // /* BT POWER ON*/
     // {1, PIN_PULL_UP, 3, "PB.11"},
 
-
     /* BUZZER */
     {1, PIN_PULL_DOWN, 3, "PC.7"},
 

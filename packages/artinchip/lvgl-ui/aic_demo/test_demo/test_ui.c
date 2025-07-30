@@ -139,7 +139,7 @@ void test_ui_init() {
 
     container = lv_obj_create(scr);
     lv_obj_center(container);
-    lv_obj_set_size(container, LCD_HOR_RES - 40, LCD_VER_RES - 20);
+    lv_obj_set_size(container, LCD_HOR_RES, LCD_VER_RES);
     lv_obj_set_style_radius(container, 0, 0);
     lv_obj_set_style_bg_color(container, lv_color_black(), 0);
     lv_obj_set_style_border_width(container, 1, 0);
