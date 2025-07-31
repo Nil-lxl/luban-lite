@@ -27,8 +27,11 @@ config PRJ_APP
 choice 
     prompt "Select a board"
     default n
-    config AIC_USING_D213ECV_EzUIX1_DEMO
-        bool "D213ECV_EzUIX1_DEMO"
+    config AIC_USING_D213ECV_EzUIX1_DEMO_V0
+        bool "D213ECV_EzUIX1_DEMO_V0"
+        depends on AIC_CHIP_D21X
+    config AIC_USING_D213ECV_EzUIX1_DEMO_V1
+        bool "D213ECV_EzUIX1_DEMO_V1"
         depends on AIC_CHIP_D21X
     config AIC_USING_JYX68_RGB01
         bool "JYX68_RGB01"

@@ -21,7 +21,7 @@
 #endif
 
 #define LOG_TAG "MAIN"
-#define BUZZER_PIN "PC.7"
+#define BACKLIGHT_PIN "PC.7"
 
 int main(void) {
 #ifdef ULOG_USING_FILTER
@@ -30,6 +30,7 @@ int main(void) {
     return 0;
 }
 
+void set_backlight(int level);
 
 void FunctionImp(void) {
     LOG_I("--------------Function Implement--------------\n");
@@ -49,22 +50,19 @@ void FunctionImp(void) {
 #ifdef APP_USE_CAN_TEST
     can_start();
 #endif
-
-
+    
+    set_backlight(1);
 }
 
 INIT_APP_EXPORT(FunctionImp);
 
 
-void set_buzzer(int level) {
-    u32 buzzer_pin = rt_pin_get(BUZZER_PIN);
-    rt_pin_mode(buzzer_pin, PIN_MODE_OUTPUT);
+void set_backlight(int level) {
+    u32 backlight_pin = rt_pin_get(BACKLIGHT_PIN);
+    rt_pin_mode(backlight_pin, PIN_MODE_OUTPUT);
     if (level == 1) {
-        rt_pin_write(buzzer_pin, PIN_HIGH);
-        LOG_I("蜂鸣器打开\n");
-
+        rt_pin_write(backlight_pin, PIN_HIGH);
     } else if (level == 0) {
-        rt_pin_write(buzzer_pin, PIN_LOW);
-        LOG_I("蜂鸣器关闭\n");
+        rt_pin_write(backlight_pin, PIN_LOW);
     }
 }
