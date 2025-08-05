@@ -270,11 +270,17 @@ if GetDepend('AIC_PANEL_DSI_JD9365'):
 if GetDepend('AIC_PANEL_DSI_AXS15231B'):
     src += Glob('drv/display/panel/panel_dsi_axs15231b.c')
 
-if GetDepend('AIC_PANEL_DSI_H078B06'):
-    src += Glob('drv/display/panel/panel_dsi_h078b06.c')
+if GetDepend('AIC_PANEL_DSI_H024B12'):
+    src += Glob('drv/display/panel/panel_dsi_h024b12.c')
+
+if GetDepend('AIC_PANEL_DSI_H070B13'):
+    src += Glob('drv/display/panel/panel_dsi_h070b13.c')
 
 if GetDepend('AIC_PANEL_DSI_H070A21'):
     src += Glob('drv/display/panel/panel_dsi_h070a21.c')
+
+if GetDepend('AIC_PANEL_DSI_H078B06'):
+    src += Glob('drv/display/panel/panel_dsi_h078b06.c')
 #
 # MIPI-DBI Panel Driver
 #

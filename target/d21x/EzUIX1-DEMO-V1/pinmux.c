@@ -13,8 +13,6 @@
 
 struct aic_pinmux aic_pinmux_config[] = {
 
-    // /* WIFI POWER ON */
-    // {1, PIN_PULL_UP, 3, "PB.8"},
     // /* BT HOST WAKE */
     // {1, PIN_PULL_UP, 3, "PB.7"},
     // /* BT WAKE */
@@ -228,7 +226,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_DIS, 3, "PD.27"},
 #endif
 #ifdef AIC_DISP_MIPI_DSI
-    // {1, PIN_PULL_DIS, 3, "PA.3"},   //LCD RESET
+    {1, PIN_PULL_DIS, 3, "PB.6"},   //LCD RESET
     {4, PIN_PULL_DIS, 3, "PD.18"},
     {4, PIN_PULL_DIS, 3, "PD.19"},
     {4, PIN_PULL_DIS, 3, "PD.20"},
@@ -407,7 +405,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PE.19"},
 #endif
 #ifdef AIC_WIRELESS_LAN
-    {1, PIN_PULL_DIS, 3, "PD.1"},  // PWR
+    {1, PIN_PULL_DIS, 3, "PB.8"},  //WIFI PWR
 #endif
 
 #ifdef AIC_USING_CTP

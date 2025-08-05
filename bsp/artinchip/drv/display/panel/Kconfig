@@ -49,14 +49,22 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DSI_AXS15231B
         bool "ArtInChip MIPI DSI AXS15231B panel"
         depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H024B12
+        bool "Hotlcd MIPI DSI H024B12 panel"
+        depends on AIC_DISP_MIPI_DSI  
         
-    config AIC_PANEL_DSI_H078B06
-        bool "Hotlcd MIPI DSI H078B06 panel"
-        depends on AIC_DISP_MIPI_DSI    
+    config AIC_PANEL_DSI_H070B13
+        bool "Hotlcd MIPI DSI H070B13 panel"
+        depends on AIC_DISP_MIPI_DSI  
 
     config AIC_PANEL_DSI_H070A21
         bool "Hotlcd MIPI DSI H070A21 panel"
         depends on AIC_DISP_MIPI_DSI   
+
+    config AIC_PANEL_DSI_H078B06
+        bool "Hotlcd MIPI DSI H078B06 panel"
+        depends on AIC_DISP_MIPI_DSI    
 #
 # MIPI-DBI Type B I8080 Panel
 #
@@ -254,8 +262,11 @@ config PANEL_HACTIVE_RES
     default 1920 if AIC_PANEL_1920X1080_RESOLUTION
     default 640 if AIC_PANEL_RGB_ST7703
     default 720 if AIC_PANEL_RGB_NV3052
-    default 400 if AIC_PANEL_DSI_H078B06
+    default 240 if AIC_PANEL_DSI_H024B12
+    default 800 if AIC_PANEL_DSI_H070B13
     default 280 if AIC_PANEL_DSI_H070A21
+    default 400 if AIC_PANEL_DSI_H078B06
+    
 
 config PANEL_VACTIVE_RES
     int 
@@ -263,7 +274,10 @@ config PANEL_VACTIVE_RES
     default 1080 if AIC_PANEL_1920X1080_RESOLUTION
     default 480 if AIC_PANEL_RGB_ST7703
     default 720 if AIC_PANEL_RGB_NV3052
-    default 1280 if AIC_PANEL_DSI_H078B06
+    default 320 if AIC_PANEL_DSI_H024B12
+    default 1280 if AIC_PANEL_DSI_H070B13
     default 1424 if AIC_PANEL_DSI_H070A21
+    default 1280 if AIC_PANEL_DSI_H078B06
+    
     
 endmenu

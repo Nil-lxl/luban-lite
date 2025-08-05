@@ -33,8 +33,10 @@ extern struct aic_panel dsi_ili9881c;
 extern struct aic_panel dsi_hx8394;
 extern struct aic_panel dsi_jd9365;
 extern struct aic_panel dsi_axs15231b;
-extern struct aic_panel dsi_h078b06;
+extern struct aic_panel dsi_h024b12;
+extern struct aic_panel dsi_h070b13;
 extern struct aic_panel dsi_h070a21;
+extern struct aic_panel dsi_h078b06;
 
 /*
  * MIPI-DBI Type B I8080 Panel

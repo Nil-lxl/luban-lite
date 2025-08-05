@@ -126,8 +126,29 @@ void timer_cb(lv_timer_t *timer) {
 #endif
 
 }
+rt_thread_t img_thread;
+void img_thread_begin(void *param) {
+    img1 = lv_img_create(lv_layer_top());
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(img240x320_block.jpg));
+    // rt_thread_mdelay(3000);
+    rt_thread_mdelay(60 * 60 * 1000);//1 hour
+
+
+    lv_obj_del(img1);
+    lv_obj_set_style_bg_color(scr, lv_color_hex(0x707070), 0);
+    // rt_thread_mdelay(5000);
+    rt_thread_mdelay(5 * 60 * 1000);//5 minute
+
+    rt_hw_cpu_reset();
+
+}
 void test_ui_init() {
     aicos_msleep(1000);//等待sdcard挂载成功
+
+    scr = lv_scr_act();
+
+    img_thread = rt_thread_create("block", img_thread_begin, NULL, 4096, 10, 5);
+    rt_thread_startup(img_thread);
 
 #if 0
     scr = lv_scr_act();
