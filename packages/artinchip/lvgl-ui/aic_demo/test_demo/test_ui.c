@@ -126,31 +126,10 @@ void timer_cb(lv_timer_t *timer) {
 #endif
 
 }
-rt_thread_t img_thread;
-void img_thread_begin(void *param) {
-    img1 = lv_img_create(lv_layer_top());
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(img240x320_block.jpg));
-    // rt_thread_mdelay(3000);
-    rt_thread_mdelay(60 * 60 * 1000);//1 hour
-
-
-    lv_obj_del(img1);
-    lv_obj_set_style_bg_color(scr, lv_color_hex(0x707070), 0);
-    // rt_thread_mdelay(5000);
-    rt_thread_mdelay(5 * 60 * 1000);//5 minute
-
-    rt_hw_cpu_reset();
-
-}
 void test_ui_init() {
     aicos_msleep(1000);//等待sdcard挂载成功
 
-    scr = lv_scr_act();
-
-    img_thread = rt_thread_create("block", img_thread_begin, NULL, 4096, 10, 5);
-    rt_thread_startup(img_thread);
-
-#if 0
+#if 1
     scr = lv_scr_act();
 
     player = lv_aic_player_create(scr);
@@ -166,15 +145,15 @@ void test_ui_init() {
     lv_obj_set_style_border_width(container, 1, 0);
     lv_obj_set_style_border_color(container, lv_color_white(), 0);
 
-    img1 = lv_img_create(scr);
-    lv_img_set_src(img1, SD_IMAGE_PATH(img1920x1080_4.jpg));
-    img2 = lv_img_create(scr);
-    lv_img_set_src(img2, SD_IMAGE_PATH(img1920x1080_5.jpg));
-    img3 = lv_img_create(scr);
-    lv_img_set_src(img3, SD_IMAGE_PATH(img1920x1080_6.jpg));
-    lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
+    // img1 = lv_img_create(scr);
+    // lv_img_set_src(img1, SD_IMAGE_PATH(img1920x1080_4.jpg));
+    // img2 = lv_img_create(scr);
+    // lv_img_set_src(img2, SD_IMAGE_PATH(img1920x1080_5.jpg));
+    // img3 = lv_img_create(scr);
+    // lv_img_set_src(img3, SD_IMAGE_PATH(img1920x1080_6.jpg));
+    // lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
+    // lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
+    // lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
 
     // create_gray_lvl();
     timer = lv_timer_create(timer_cb, 1000, NULL);

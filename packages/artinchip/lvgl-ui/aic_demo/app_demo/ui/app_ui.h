@@ -1,9 +1,4 @@
-/*
- * Copyright (C) 2022-2023 ArtinChip Technology Co., Ltd.
- */
-
-#ifndef TEST_UI_H
-#define TEST_UI_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,4 +10,3 @@ void app_ui_init();
 } /*extern "C"*/
 #endif
 
-#endif //TEST_UI_H

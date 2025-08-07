@@ -6,12 +6,10 @@ group = []
 src = Glob('*.c')
 # 增加源码路径
 src += Glob('./ui/*.c')
-src += Glob('./thread/*.c')
 
 CPPPATH = [cwd]
 # 增加头文件路径
 CPPPATH.append(cwd + './ui')
-CPPPATH.append(cwd + './thread')
 
 list = os.listdir(cwd)
 for d in list:
