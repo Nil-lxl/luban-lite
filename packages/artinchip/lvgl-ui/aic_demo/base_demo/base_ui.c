@@ -21,7 +21,7 @@
 #endif
 
 #ifdef AIC_MPP_PLAYER_INTERFACE
-#define VIDEO_PLAYER
+// #define VIDEO_PLAYER
 #endif
 
 //#define FILE_LIST
@@ -54,6 +54,9 @@ LV_IMG_DECLARE(play_press);
 LV_IMG_DECLARE(pre_normal);
 LV_IMG_DECLARE(pre_press);
 #endif
+
+#include "lv_aic_player.h"
+static lv_obj_t* video_player;
 
 #ifdef VIDEO_PLAYER
 #include "aic_player.h"
@@ -1001,9 +1004,9 @@ void base_ui_init()
 
     if (!only_two_tap) {
         lv_obj_t * main_tab2 = lv_tabview_add_tab(main_tabview, "main page 2");
-#ifdef VIDEO_PLAYER
+
         lv_obj_t * main_tab3 = lv_tabview_add_tab(main_tabview, "main page 3");
-#endif
+
         lv_obj_set_style_bg_opa(main_tab2, LV_OPA_0, 0);
         lv_obj_set_size(main_tab2, 1024, 600);
         lv_obj_set_pos(main_tab2, 0, 0);
@@ -1052,6 +1055,12 @@ void base_ui_init()
         lv_img_set_src(sub_image12, LVGL_IMAGE_PATH(cook_5.jpg));
         lv_obj_set_pos(sub_image12, 696, 100);
         lv_obj_add_event_cb(tab_sub, sub_tapview_event, LV_EVENT_ALL, NULL);
+
+        video_player=lv_aic_player_create(main_tab3);
+        lv_aic_player_set_src(video_player,LVGL_VIDEO_PATH(video.mp4));
+        lv_obj_center(video_player);
+        lv_aic_player_set_cmd(video_player, LV_AIC_PLAYER_CMD_START, NULL);
+        lv_aic_player_set_auto_restart(video_player, true);
 #ifdef VIDEO_PLAYER
         fd_dev = mpp_fb_open();
         create_player(main_tab3);

@@ -116,10 +116,10 @@ void timer_cb(lv_timer_t *timer) {
             break;
     }
 
-    if (sum == 6) {
+    if (sum == 9) {
         lv_timer_pause(timer);
     }
-#if 1
+#if 0
     sum = (sum + 1) % 6;
 #else
     sum = (sum + 1) % 10;
@@ -133,7 +133,7 @@ void test_ui_init() {
     scr = lv_scr_act();
 
     player = lv_aic_player_create(scr);
-    lv_aic_player_set_src(player, SD_VIDEO_PATH(video2.mp4));
+    lv_aic_player_set_src(player, SD_VIDEO_PATH(cartoon.mp4));
     lv_obj_center(player);
     lv_hide_obj(player);
 
@@ -145,15 +145,15 @@ void test_ui_init() {
     lv_obj_set_style_border_width(container, 1, 0);
     lv_obj_set_style_border_color(container, lv_color_white(), 0);
 
-    // img1 = lv_img_create(scr);
-    // lv_img_set_src(img1, SD_IMAGE_PATH(img1920x1080_4.jpg));
-    // img2 = lv_img_create(scr);
-    // lv_img_set_src(img2, SD_IMAGE_PATH(img1920x1080_5.jpg));
-    // img3 = lv_img_create(scr);
-    // lv_img_set_src(img3, SD_IMAGE_PATH(img1920x1080_6.jpg));
-    // lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
-    // lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
-    // lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
+    img1 = lv_img_create(scr);
+    lv_img_set_src(img1, SD_IMAGE_PATH(img1920x1080_4.jpg));
+    img2 = lv_img_create(scr);
+    lv_img_set_src(img2, SD_IMAGE_PATH(img1920x1080_5.jpg));
+    img3 = lv_img_create(scr);
+    lv_img_set_src(img3, SD_IMAGE_PATH(img1920x1080_6.jpg));
+    lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
 
     // create_gray_lvl();
     timer = lv_timer_create(timer_cb, 1000, NULL);

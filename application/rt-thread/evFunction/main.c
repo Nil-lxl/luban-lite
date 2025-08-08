@@ -50,8 +50,10 @@ void FunctionImp(void) {
 #ifdef APP_USE_CAN_TEST
     can_start();
 #endif
-    
+
+#if defined AIC_USING_D213ECV_EzUIX1_DEMO_V1
     set_backlight(1);
+#endif 
 }
 
 INIT_APP_EXPORT(FunctionImp);
