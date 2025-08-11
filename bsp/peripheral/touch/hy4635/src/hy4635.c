@@ -20,27 +20,6 @@
 #include <rtdbg.h>
 
 static struct rt_i2c_client hy4635_client;
-
-/* hardware section */
-static rt_uint8_t HY4635_CFG_TBL[] = {
-    0x6b, 0x00, 0x04, 0x58, 0x02, 0x05, 0x0d, 0x00, 0x01, 0x0f, 0x28, 0x0f,
-    0x50, 0x32, 0x03, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x8a, 0x2a, 0x0c, 0x45, 0x47, 0x0c, 0x08, 0x00, 0x00,
-    0x00, 0x40, 0x03, 0x2c, 0x00, 0x01, 0x00, 0x00, 0x00, 0x03, 0x64, 0x32,
-    0x00, 0x00, 0x00, 0x28, 0x64, 0x94, 0xd5, 0x02, 0x07, 0x00, 0x00, 0x04,
-    0x95, 0x2c, 0x00, 0x8b, 0x34, 0x00, 0x82, 0x3f, 0x00, 0x7d, 0x4c, 0x00,
-    0x7a, 0x5b, 0x00, 0x7a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x18, 0x16, 0x14, 0x12, 0x10, 0x0e, 0x0c, 0x0a,
-    0x08, 0x06, 0x04, 0x02, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x18,
-    0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x24, 0x13, 0x12, 0x10, 0x0f,
-    0x0a, 0x08, 0x06, 0x04, 0x02, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x79, 0x01,
-};
-
 static rt_err_t hy4635_write_reg(struct rt_i2c_client *dev, rt_uint8_t *data,
     rt_uint8_t len) {
     struct rt_i2c_msg msgs;
@@ -111,7 +90,7 @@ static rt_err_t hy4635_get_info(struct rt_i2c_client *dev, struct rt_touch_devic
     // info->range_x = (out_info[2] << 8) | out_info[1];
     // info->range_y = (out_info[4] << 8) | out_info[3];
 
-    rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE, &angle);
+    // rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE, &angle);
     // if (angle == 90 || angle == 270) {
     //     info->range_x = (rt_int16_t)AIC_TOUCH_Y_COORDINATE_RANGE;
     //     info->range_y = (rt_int16_t)AIC_TOUCH_X_COORDINATE_RANGE;
@@ -223,97 +202,79 @@ static void hy4635_touch_down(void *buf, int8_t id, int16_t x, int16_t y) {
     // pre_w[id] = w;
 }
 
-static rt_size_t hy4635_read_point(struct rt_touch_device *touch, void *buf,
-    rt_size_t read_num) {
-// rt_uint8_t point_status = 0;
+static rt_size_t hy4635_read_point(struct rt_touch_device *touch, void *buf, rt_size_t read_num) {
+    rt_uint8_t point_status = 0;
+    rt_uint8_t point_id = 0;
     rt_uint8_t touch_num = 0;
-    // rt_uint8_t write_buf[3];
+    rt_uint8_t write_buf[2];
     // rt_uint8_t cmd[2];
     rt_uint8_t reg;
     // rt_uint8_t read_buf[8 * HY4635_MAX_TOUCH] = { 0 };
     rt_uint8_t read_buf[6 * HY4635_MAX_TOUCH + 3] = { 0 };
-    rt_uint8_t read_index;
+
     int8_t read_id = 0;
     int16_t input_x = 0;
     int16_t input_y = 0;
     // int16_t input_w = 0;
 
-    static rt_uint8_t pre_touch = 0;
+    static rt_uint8_t prev_touch = 0;
     static int8_t pre_id[HY4635_MAX_TOUCH] = { 0 };
 
     rt_memset(buf, 0, sizeof(struct rt_touch_data) * read_num);
 
     reg = HY4635_WORK_MODE;
-    if (hy4635_read_regs(&hy4635_client, &reg, read_buf, sizeof(read_buf)) != RT_EOK) {
-        LOG_E("hy4635 read work mode failed");
-        read_num = 0;
-        goto __exit;
-    }
+    write_buf[0] = 0x00;
+    write_buf[1] = 0x00;
+    hy4635_write_reg(&hy4635_client, write_buf, 2);
 
-    touch_num = read_buf[2] & 0x0f;
-    if (touch_num >= 2) {
-        touch_num = 2;
-    }
+    // if (hy4635_read_regs(&hy4635_client, &reg, read_buf, sizeof(read_buf)) != RT_EOK) {
+    //     LOG_E("hy4635 read work mode failed");
+    //     read_num = 0;
+    // }
+    reg = 0x02;
+    hy4635_read_regs(&hy4635_client, &reg, &point_status, 1);
+    touch_num = point_status;
+    LOG_I("TOUCH Num:%d", touch_num);
 
+    // touch_num = read_buf[2] & 0x0f;
+    // if (touch_num >= 2) {
+    //     touch_num = 2;
+    // }
 
-__exit:
-/* point status register */
-// cmd[0] = (rt_uint8_t)((HY4635_READ_STATUS >> 8) & 0xFF);
-// cmd[1] = (rt_uint8_t)(HY4635_READ_STATUS & 0xFF);
+    reg = 0x03;
+    hy4635_read_regs(&hy4635_client, &reg, read_buf, sizeof(read_buf));
+    int point_event = read_buf[0] >> 6;
+    int read_y_high = (read_buf[0] & 0x6f) << 8;
 
-// if (hy4635_read_regs(&hy4635_client, cmd, &point_status, 1) != RT_EOK) {
-//     LOG_D("read point failed\n");
-//     read_num = 0;
-//     goto exit_;
-// }
+    reg = 0x04;
+    hy4635_read_regs(&hy4635_client, &reg, read_buf, sizeof(read_buf));
+    int read_y_low = read_buf[0];
+    int read_y = read_y_high | read_y_low;
 
-
-// if (point_status == 0) /* no data */
-// {
-//     read_num = 0;
-//     goto exit_;
-// }
-
-// if ((point_status & 0x80) == 0) /* data is not ready */
-// {
-//     read_num = 0;
-//     goto exit_;
-// }
-
-// touch_num = point_status & 0x0f; /* get point num */
-
-// if (touch_num > HY4635_MAX_TOUCH) /* point num is not correct */
-// {
-//     read_num = 0;
-//     goto exit_;
-// }
     reg = 0x05;
-    // cmd[0] = (rt_uint8_t)((HY4635_POINT1_REG >> 8) & 0xFF);
-    // cmd[1] = (rt_uint8_t)(HY4635_POINT1_REG & 0xFF);
+    hy4635_read_regs(&hy4635_client, &reg, read_buf, sizeof(read_buf));
+    point_id = read_buf[0] >> 4;
+    int read_x_high = (read_buf[0] & 0x4f) << 8;
 
-    /* read point num is touch_num */
-    if (hy4635_read_regs(&hy4635_client, &reg, read_buf,
-        read_num * HY4635_POINT_INFO_NUM) != RT_EOK) {
-        LOG_D("read point failed\n");
-        read_num = 0;
-        goto exit_;
-    }
+    reg = 0x06;
+    hy4635_read_regs(&hy4635_client, &reg, read_buf, sizeof(read_buf));
+    int read_x_low = read_buf[0];
+    int read_x = read_x_high | read_x_low;
 
-    if (pre_touch > touch_num) /* point up */
+
+    if (prev_touch > touch_num) /* point up */
     {
-        for (read_index = 0; read_index < pre_touch; read_index++) {
-            rt_uint8_t j;
+        for (int i = 0; i < prev_touch; i++) {
 
-            for (j = 0; j < touch_num; j++) /* this time touch num */
+            for (int j = 0; j < touch_num; j++) /* this time touch num */
             {
-                read_id = read_buf[j * 8 + 5] & 0x0F;
+                read_id = point_id;
 
-                if (pre_id[read_index] == read_id) /* this id is not free */
+                if (pre_id[i] == read_id) /* this id is not free */
                     break;
 
                 if (j >= touch_num - 1) {
-                    rt_uint8_t up_id;
-                    up_id = pre_id[read_index];
+                    rt_uint8_t up_id = pre_id[i];
                     hy4635_touch_up(buf, up_id);
                 }
             }
@@ -329,12 +290,14 @@ __exit:
         // rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_FLAG, &dynamic_flag);
         // rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_OSD_FLAG, &osd_flag);
 
-        for (read_index = 0; read_index < touch_num; read_index++) {
-            off_set = read_index * 8;
+        for (int i = 0; i < touch_num; i++) {
+            off_set = i * 8;
             read_id = (read_buf[off_set + 5] & 0x0f) >> 4;
-            pre_id[read_index] = read_id;
-            input_x = read_buf[off_set + 1] | (read_buf[off_set + 2] << 8); /* x */
-            input_y = read_buf[off_set + 3] | (read_buf[off_set + 4] << 8); /* y */
+            pre_id[i] = read_id;
+            input_x = read_x;
+            input_y = read_y;
+            // input_x = read_buf[off_set + 1] | (read_buf[off_set + 2] << 8); /* x */
+            // input_y = read_buf[off_set + 3] | (read_buf[off_set + 4] << 8); /* y */
             // input_w = read_buf[off_set + 5] | (read_buf[off_set + 6] << 8); /* size */
 
             // if (!dynamic_flag) {    // static rotate(osd || video)
@@ -352,19 +315,13 @@ __exit:
 
             hy4635_touch_down(buf, read_id, input_x, input_y);
         }
-    } else if (pre_touch) {
-        for (read_index = 0; read_index < pre_touch; read_index++) {
-            hy4635_touch_up(buf, pre_id[read_index]);
+    } else if (prev_touch) {
+        for (int i = 0; i < prev_touch; i++) {
+            hy4635_touch_up(buf, pre_id[i]);
         }
     }
 
-    pre_touch = touch_num;
-
-exit_:
-    // write_buf[0] = (rt_uint8_t)((HY4635_READ_STATUS >> 8) & 0xFF);
-    // write_buf[1] = (rt_uint8_t)(HY4635_READ_STATUS & 0xFF);
-    // write_buf[2] = 0x00;
-    // hy4635_write_reg(&hy4635_client, write_buf, 3);
+    prev_touch = touch_num;
 
     return read_num;
 }
@@ -387,91 +344,11 @@ static rt_err_t hy4635_control(struct rt_touch_device *touch, int cmd, void *dat
         // break;
         return hy4635_get_info(&hy4635_client, touch, data);
     }
-
-    // rt_uint8_t buf[4];
-    // rt_uint8_t i = 0;
-    // rt_uint8_t *config;
-
-    // config =
-    //     (rt_uint8_t *)rt_calloc(1, sizeof(HY4635_CFG_TBL) + HY4635_REGITER_LEN);
-    // if (config == RT_NULL) {
-    //     LOG_D("malloc config memory failed\n");
-    //     return -RT_ERROR;
-    // }
-
-    // config[0] = (rt_uint8_t)((HY4635_CONFIG_REG >> 8) & 0xFF);
-    // config[1] = (rt_uint8_t)(HY4635_CONFIG_REG & 0xFF);
-
-    // memcpy(&config[2], HY4635_CFG_TBL, sizeof(HY4635_CFG_TBL));
-
-    // switch (cmd) {
-    //     case RT_TOUCH_CTRL_SET_X_RANGE: {
-    //         rt_uint16_t x_range;
-
-    //         x_range = *(rt_uint16_t *)arg;
-    //         config[4] = (rt_uint8_t)(x_range >> 8);
-    //         config[3] = (rt_uint8_t)(x_range & 0xff);
-
-    //         HY4635_CFG_TBL[2] = config[4];
-    //         HY4635_CFG_TBL[1] = config[3];
-    //         break;
-    //     }
-    //     case RT_TOUCH_CTRL_SET_Y_RANGE: {
-    //         rt_uint16_t y_range;
-
-    //         y_range = *(rt_uint16_t *)arg;
-    //         config[6] = (rt_uint8_t)(y_range >> 8);
-    //         config[5] = (rt_uint8_t)(y_range & 0xff);
-
-    //         HY4635_CFG_TBL[4] = config[6];
-    //         HY4635_CFG_TBL[3] = config[5];
-    //         break;
-    //     }
-    //     case RT_TOUCH_CTRL_SET_X_TO_Y: {
-    //         config[8] ^= (1 << 3);
-    //         break;
-    //     }
-    //     case RT_TOUCH_CTRL_SET_MODE: {
-    //         rt_uint16_t trig_type;
-    //         trig_type = *(rt_uint16_t *)arg;
-
-    //         switch (trig_type) {
-    //             case RT_DEVICE_FLAG_INT_RX:
-    //                 config[8] &= 0xFC;
-    //                 break;
-    //             case RT_DEVICE_FLAG_RDONLY:
-    //                 config[8] &= 0xFC;
-    //                 config[8] |= 0x02;
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //         break;
-    //     }
-    //     default: {
-    //         break;
-    //     }
-    // }
-
-    // if (hy4635_write_reg(&hy4635_client, config,
-    //                     sizeof(HY4635_CFG_TBL) + HY4635_ADDR_LEN) != RT_EOK) {
-    //     LOG_D("send config failed");
-    //     return -1;
-    // }
-
-    // buf[0] = (rt_uint8_t)((HY4635_CHECK_SUM >> 8) & 0xFF);
-    // buf[1] = (rt_uint8_t)(HY4635_CHECK_SUM & 0xFF);
-    // buf[2] = 0;
-
-    // for (i = HY4635_ADDR_LEN; i < sizeof(HY4635_CFG_TBL) + HY4635_ADDR_LEN; i++) {
-    //     buf[HY4635_ADDR_LEN] += config[i];
-    // }
-
-    // buf[2] = (~buf[2]) + 1;
-    // buf[3] = 1;
-
-    // hy4635_write_reg(&hy4635_client, buf, 4);
-    // rt_free(config);
+    // rt_uint8_t reg = 0x02;
+    // rt_uint8_t point_status = 0;
+    // hy4635_read_regs(&hy4635_client, &reg, &point_status, 1);
+    // int touch_num = point_status;
+    // LOG_I("TOUCH Num:%d", touch_num);
 
     return RT_EOK;
 }
@@ -498,27 +375,26 @@ static int rt_hw_hy4635_init(const char *name, struct rt_touch_config *cfg) {
     rt_thread_delay(10);
 
 
-    // rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
-    // rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
 
-    // rt_thread_delay(2);
+    rt_thread_delay(2);
 
     rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
     rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
     rt_thread_delay(10);
 
-
-    // rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    // rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
+    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
+    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
     rt_thread_delay(1000);
 
-    // rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
-    // rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
 
 
     rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_INPUT);
 
-    hy4635_client.bus =(struct rt_i2c_bus_device *)rt_device_find(cfg->dev_name);
+    hy4635_client.bus = (struct rt_i2c_bus_device *)rt_device_find(cfg->dev_name);
 
     if (hy4635_client.bus == RT_NULL) {
         LOG_E("Can't find %s device", cfg->dev_name);
