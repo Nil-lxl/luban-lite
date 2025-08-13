@@ -5,6 +5,7 @@ CONFIG_PRJ_KERNEL="baremetal"
 CONFIG_PRJ_APP="bootloader"
 CONFIG_PRJ_CUSTOM_LDS="application/baremetal/bootloader/ldscript/d21x_bootloader_gcc.ld"
 CONFIG_AIC_USING_UART0=y
+CONFIG_AIC_USING_UART1=y
 # CONFIG_AIC_USING_USB1 is not set
 CONFIG_AIC_USING_QSPI0=y
 CONFIG_AIC_QSPI0_DEVICE_SPINAND=y

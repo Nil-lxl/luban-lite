@@ -99,7 +99,7 @@ struct aic_pinmux aic_pinmux_config[] = {
 
     {1, PIN_PULL_DIS, 3, "PE.18"},  //SPI-SDA
 #endif
-#ifdef AIC_PRGB_24BIT
+#ifdef AIC_DISP_RGB
     /* RGB 888 */
     {2, PIN_PULL_DIS, 4, "PD.0"},   //B
     {2, PIN_PULL_DIS, 4, "PD.1"},
