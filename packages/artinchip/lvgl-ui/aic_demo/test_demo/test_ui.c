@@ -58,7 +58,7 @@ rt_err_t cir_rx_cb(rt_device_t dev, rt_size_t size) {
     return RT_EOK;
 }
 
-void lv_set_bg_color(int color_hex) {
+static void lv_set_bg_color(int color_hex) {
     lv_obj_set_style_bg_color(scr, lv_color_hex(color_hex), 0);
 }
 
@@ -119,17 +119,19 @@ void timer_cb(lv_timer_t *timer) {
     if (sum == 9) {
         lv_timer_pause(timer);
     }
-#if 0
+#if 1
     sum = (sum + 1) % 6;
 #else
     sum = (sum + 1) % 10;
 #endif
 
 }
+extern void test_control(void);
 void test_ui_init() {
     aicos_msleep(1000);//等待sdcard挂载成功
 
-#if 1
+    test_control();//test
+#if 0
     scr = lv_scr_act();
 
     player = lv_aic_player_create(scr);

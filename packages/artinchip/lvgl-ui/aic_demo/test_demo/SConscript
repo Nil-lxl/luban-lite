@@ -7,6 +7,7 @@ src = []
 CPPPATH = [cwd]
 
 src += Glob('./test_ui.c')
+src += Glob('./host_cmd.c')
 
 list = os.listdir(cwd)
 for d in list:
