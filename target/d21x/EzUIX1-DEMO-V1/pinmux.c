@@ -13,15 +13,6 @@
 
 struct aic_pinmux aic_pinmux_config[] = {
 
-    // /* BT HOST WAKE */
-    // {1, PIN_PULL_UP, 3, "PB.7"},
-    // /* BT WAKE */
-    // {1, PIN_PULL_UP, 3, "PB.9"},
-    // /* WIFI HOST WAKE */
-    // {1, PIN_PULL_UP, 3, "PB.10"},
-    // /* BT POWER ON*/
-    // {1, PIN_PULL_UP, 3, "PB.11"},
-
     /* PANEL ON*/
     // {1, PIN_PULL_UP, 3, "PA.3"},
 
@@ -58,7 +49,6 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_UP, 3, "PC.6"},
 #endif
 #ifdef AIC_USING_SDMC2
-    /* WIFI */
     {2, PIN_PULL_UP, 3, "PF.0"},
     {2, PIN_PULL_UP, 3, "PF.1"},
     {2, PIN_PULL_UP, 3, "PF.2"},
@@ -66,6 +56,14 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_UP, 3, "PF.4"},
     {2, PIN_PULL_UP, 3, "PF.5"},
 #endif
+#ifdef AIC_WIRELESS_LAN
+    /* WIFI */
+    {1, PIN_PULL_DIS, 3, "PB.7"},    //BT HOST WAKE 
+    {1, PIN_PULL_DIS, 3, "PB.8"},    //Wifi Power On
+    {1, PIN_PULL_DIS, 3, "PB.9"},    //BT WAKE 
+    {1, PIN_PULL_DIS, 3, "PB.10"},   //WIFI HOST WAKE
+    {1, PIN_PULL_DIS, 3, "PB.11"},   //BT POWER ON
+#endif 
 #ifdef AIC_USING_I2C0
     {4, PIN_PULL_DIS, 3, "PD.6"}, // SCK
     {4, PIN_PULL_DIS, 3, "PD.7"}, // SDA
@@ -403,9 +401,6 @@ struct aic_pinmux aic_pinmux_config[] = {
 #ifdef AIC_USING_CAN1
     {4, PIN_PULL_DIS, 3, "PE.18"},
     {4, PIN_PULL_DIS, 3, "PE.19"},
-#endif
-#ifdef AIC_WIRELESS_LAN
-    {1, PIN_PULL_DIS, 3, "PB.8"},  //WIFI PWR
 #endif
 
 #ifdef AIC_USING_CTP
