@@ -15,6 +15,7 @@
 #include "uart/uart_control.h"
 #include "cir/cir_control.h"
 #include "can/can_demo.h"
+#include "http_req/http_request.h"
 
 #ifdef RT_USING_ULOG
 #include <ulog.h>
@@ -33,7 +34,11 @@ int main(void) {
 void set_backlight(int level);
 
 void FunctionImp(void) {
+    // rt_thread_mdelay(1000);
     LOG_I("--------------Function Implement--------------\n");
+#if defined AIC_USING_D213ECV_EzUIX1_DEMO_V1
+    set_backlight(1);
+#endif 
 
 #ifdef APP_USE_DRAW_LINE_TEST
     panel_draw_start();
@@ -51,9 +56,8 @@ void FunctionImp(void) {
     can_start();
 #endif
 
-#if defined AIC_USING_D213ECV_EzUIX1_DEMO_V1
-    set_backlight(1);
-#endif 
+    // http_request_demo();
+
 }
 
 INIT_APP_EXPORT(FunctionImp);

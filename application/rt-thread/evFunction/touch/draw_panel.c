@@ -192,6 +192,36 @@ void panel_draw_lines(void *param) {
         .frame_buffer = (uint8_t *)screen_info.framebuffer,
     };
 
+    #if 1   //show display border
+    struct line_dsc border[4];
+
+    border[0].x1 = 0;
+    border[0].x2 = screen_info.width;
+    border[0].y1 = 0;
+    border[0].y2 = 0;
+
+    border[1].x1 = 0;
+    border[1].x2 = 0;
+    border[1].y1 = 0;
+    border[1].y2 = screen_info.height;
+
+    border[2].x1 = 0;
+    border[2].x2 = screen_info.width;
+    border[2].y1 = screen_info.height;
+    border[2].y2 = screen_info.height;
+
+    border[3].x1 = screen_info.width;
+    border[3].x2 = screen_info.width;
+    border[3].y1 = 0;
+    border[3].y2 = screen_info.height;
+
+    for (int i = 0;i < 4;i++) {
+        border[i].color = 0xffffff;
+        border[i].width = 5;
+        draw_line(&border[i], &fb_info);
+    }
+    #endif
+
     while (1) {
         struct line_dsc line[touch_info.point_num];
 

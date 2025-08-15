@@ -9,7 +9,6 @@ src += Glob('touch/*.c')
 src += Glob('cir/*.c')
 src += Glob('can/*.c')
 
-
 CPPPATH = [cwd, ]
 CPPPATH.append(cwd + '.')
 

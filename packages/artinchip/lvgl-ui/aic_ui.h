@@ -38,6 +38,11 @@ extern "C" {
 #define SD_IMAGE_PATH(y) CONN(SD_DIR"image/", y)
 #define SD_VIDEO_PATH(y) CONN(SD_DIR"video/", y)
 
+#define UDISK_DIR "L:/udisk/"
+#define UDISK_PATH(y) CONN(UDISK_DIR, y)
+#define UDISK_IMAGE_PATH(y) CONN(UDISK_DIR"image/", y)
+#define UDISK_VIDEO_PATH(y) CONN(UDISK_DIR"video/", y)
+
 /* use fake image to fill color */
 #define FAKE_IMAGE_DECLARE(name) char fake_##name[256];
 #define FAKE_IMAGE_INIT(name, w, h, blend, color) \
