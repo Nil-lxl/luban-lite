@@ -30,7 +30,7 @@ void test_control(void) {
     // lv_obj_set_style_bg_color(scr, lv_color_hex(0x00ffff), 0);
 
     lv_timer_t *timer;
-    timer = lv_timer_create(show_color_timer, 2 * 60 * 1000, NULL);
+    timer = lv_timer_create(show_color_timer, 20 * 60 * 1000, NULL);
 }
 void show_color_timer(lv_timer_t *timer) {
     switch (sum) {
