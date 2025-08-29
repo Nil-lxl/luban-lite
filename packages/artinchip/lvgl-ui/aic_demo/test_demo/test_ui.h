@@ -26,4 +26,5 @@ void create_gray_lvl(void);
 
 void cir_thread_begin(void);
 
+void keyadc_thread_begin(void);
 

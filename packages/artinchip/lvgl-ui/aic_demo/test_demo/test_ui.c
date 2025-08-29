@@ -10,17 +10,24 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "lvgl.h"
-#include "test_ui.h"
+
 #include <rtthread.h>
 #include <rtdevice.h>
 #include "rtdbg.h"
 #include "aic_core.h"
 #include "rtdef.h"
 #include "drv_cir.h"
+
+#include "lvgl.h"
+#include "test_ui.h"
 #include "lv_aic_player.h"
+#include "keyadc.h"
 
 #define LOG_TAG "LV_TEST"
+
+#define TEST_DEMO_USE_DEFAULT_CONTROL   0
+#define TEST_DEMO_USE_KEYADC_CONTROL    1
+#define TEST_DEMO_USE_CIR_CONTROL       0
 
 #ifdef AIC_PANEL_CUSTOM_RESOLUTION
 #define LCD_HOR_RES PANEL_HACTIVE
@@ -30,7 +37,11 @@
 #define LCD_VER_RES PANEL_VACTIVE_RES
 #endif
 
-#define BACKLIGHT_PWM_CHANNEL 3
+#define KEYADC_CHANNEL          7
+#define KEYADC_SCALE            50
+
+#define BACKLIGHT_PWM_CHANNEL   3
+#define UI_MAX_COUNT            5
 
 static rt_thread_t cir_thread;
 static rt_device_t cir_dev;
@@ -45,13 +56,13 @@ static lv_obj_t *scr;
 static lv_obj_t *gray_scr;
 static lv_obj_t *container;
 static lv_timer_t *timer;
-static uint8_t sum = 0;
+
 static lv_obj_t *img1;
 static lv_obj_t *img2;
 static lv_obj_t *img3;
-
 static lv_obj_t *player;
-static rt_thread_t test_thread;
+
+static uint8_t count = 1;
 
 rt_err_t cir_rx_cb(rt_device_t dev, rt_size_t size) {
     rt_sem_release(cir_sem);
@@ -73,7 +84,7 @@ void lv_show_obj(lv_obj_t *obj) {
 }
 
 void timer_cb(lv_timer_t *timer) {
-    switch (sum) {
+    switch (count) {
         case 0:
             // lv_hide_obj(img3);
             lv_show_obj(container);
@@ -116,22 +127,20 @@ void timer_cb(lv_timer_t *timer) {
             break;
     }
 
-    if (sum == 9) {
+#if TEST_DEMO_USE_DEFAULT_CONTROL
+    if (count == 9) {
         lv_timer_pause(timer);
     }
-#if 1
-    sum = (sum + 1) % 6;
-#else
-    sum = (sum + 1) % 10;
+    count = (count + 1) % UI_MAX_COUNT + 1;
 #endif
-
 }
+
 extern void test_control(void);
 void test_ui_init() {
     aicos_msleep(1000);//等待sdcard挂载成功
 
-    test_control();//test
-#if 0
+    // test_control();//test
+#if 1
     scr = lv_scr_act();
 
     player = lv_aic_player_create(scr);
@@ -158,7 +167,11 @@ void test_ui_init() {
     lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
 
     // create_gray_lvl();
+#if TEST_DEMO_USE_DEFAULT_CONTROL
     timer = lv_timer_create(timer_cb, 1000, NULL);
+#else 
+    timer = lv_timer_create(timer_cb, 200, NULL);
+#endif
 #endif
 }
 
@@ -186,8 +199,10 @@ void ui_init(void) {
         // return -RT_ERROR;
     }
 
-#ifdef UI_USE_AIC_TEST
+#if TEST_DEMO_USE_CIR_CONTROL
     cir_thread_begin();
+#elif TEST_DEMO_USE_KEYADC_CONTROL
+    keyadc_thread_begin();
 #endif
     test_ui_init();
 }
@@ -298,4 +313,58 @@ void cir_thread_begin(void) {
     } else {
         LOG_E("CIR Thread Create Failed");
     }
+}
+
+void keyadc_thread_entry(void *param) {
+    int key_flag;
+    int channel = KEYADC_CHANNEL;
+    int scale = KEYADC_SCALE;
+    keyadc_device_enable(channel);
+    while (1) {
+        key_flag = keyadc_get_flag(channel, scale);
+        switch (key_flag) {
+            case KEY_UP:
+                brightness_level += 10;
+                if (brightness_level > 100) {
+                    brightness_level = 100;
+                }
+                rt_pwm_set(pwm_dev, BACKLIGHT_PWM_CHANNEL, 1000000, 10000 * brightness_level);
+                rt_pwm_enable(pwm_dev, BACKLIGHT_PWM_CHANNEL);
+                rt_kprintf("KEY UP");
+                break;
+            case KEY_DOWN:
+                brightness_level -= 10;
+                if (brightness_level < 10) {
+                    brightness_level = 10;
+                }
+                rt_pwm_set(pwm_dev, BACKLIGHT_PWM_CHANNEL, 1000000, 10000 * brightness_level);
+                rt_pwm_enable(pwm_dev, BACKLIGHT_PWM_CHANNEL);
+                rt_kprintf("KEY DOWN");
+                break;
+            case KEY_LEFT:
+                count--;
+                if (count < 0) {
+                    count = UI_MAX_COUNT;
+                }
+                rt_kprintf("KEY LEFT");
+                break;
+            case KEY_RIGHT:
+                count++;
+                if (count > UI_MAX_COUNT) {
+                    count = 0;
+                }
+                rt_kprintf("KEY RIGHT");
+                break;
+            default:
+                break;
+        }
+    }
+
+}
+void keyadc_thread_begin(void) {
+    rt_thread_t keyadc_thread = rt_thread_create("keyadc_thread", keyadc_thread_entry, RT_NULL, 4 * 1024, 22, 10);
+    if (keyadc_thread != RT_NULL) {
+        rt_thread_startup(keyadc_thread);
+    }
+
 }

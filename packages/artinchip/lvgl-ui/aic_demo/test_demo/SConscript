@@ -9,6 +9,11 @@ CPPPATH = [cwd]
 src += Glob('./test_ui.c')
 src += Glob('./host_cmd.c')
 
+if GetDepend(['TEST_DEMO_USE_KEYADC_CONTROL']):
+    src += Glob('./test_ui_keyadc.c')
+else:
+    src += Glob('./test_ui.c')
+
 list = os.listdir(cwd)
 for d in list:
     path = os.path.join(cwd, d)
