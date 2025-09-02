@@ -41,7 +41,7 @@
 #define KEYADC_SCALE            50
 
 #define BACKLIGHT_PWM_CHANNEL   3
-#define UI_MAX_COUNT            5
+#define UI_MAX_COUNT            6
 
 static rt_thread_t cir_thread;
 static rt_device_t cir_dev;
@@ -62,7 +62,7 @@ static lv_obj_t *img2;
 static lv_obj_t *img3;
 static lv_obj_t *player;
 
-static uint8_t count = 1;
+static int count = 0;
 
 rt_err_t cir_rx_cb(rt_device_t dev, rt_size_t size) {
     rt_sem_release(cir_sem);
@@ -86,7 +86,7 @@ void lv_show_obj(lv_obj_t *obj) {
 void timer_cb(lv_timer_t *timer) {
     switch (count) {
         case 0:
-            // lv_hide_obj(img3);
+            lv_hide_obj(img1);
             lv_show_obj(container);
             lv_set_bg_color(LV_COLOR_BLACK);
             break;
@@ -104,6 +104,8 @@ void timer_cb(lv_timer_t *timer) {
             lv_set_bg_color(LV_COLOR_PINK);
             break;
         case 5:
+            lv_hide_obj(img1);
+            lv_hide_obj(container);
             lv_set_bg_color(LV_COLOR_WHITE);
             break;
         case 6:
@@ -157,7 +159,7 @@ void test_ui_init() {
     lv_obj_set_style_border_color(container, lv_color_white(), 0);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, SD_IMAGE_PATH(img1920x1080_4.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit1280x800.jpg));
     img2 = lv_img_create(scr);
     lv_img_set_src(img2, SD_IMAGE_PATH(img1920x1080_5.jpg));
     img3 = lv_img_create(scr);
@@ -170,7 +172,7 @@ void test_ui_init() {
 #if TEST_DEMO_USE_DEFAULT_CONTROL
     timer = lv_timer_create(timer_cb, 1000, NULL);
 #else 
-    timer = lv_timer_create(timer_cb, 200, NULL);
+    timer = lv_timer_create(timer_cb, 300, NULL);
 #endif
 #endif
 }
@@ -198,13 +200,14 @@ void ui_init(void) {
         LOG_E("PWM Device Not Found");
         // return -RT_ERROR;
     }
+    
+    test_ui_init();
 
 #if TEST_DEMO_USE_CIR_CONTROL
     cir_thread_begin();
 #elif TEST_DEMO_USE_KEYADC_CONTROL
     keyadc_thread_begin();
 #endif
-    test_ui_init();
 }
 
 void cir_thread_entry(void *param) {
@@ -328,7 +331,7 @@ void keyadc_thread_entry(void *param) {
                 if (brightness_level > 100) {
                     brightness_level = 100;
                 }
-                rt_pwm_set(pwm_dev, BACKLIGHT_PWM_CHANNEL, 1000000, 10000 * brightness_level);
+                rt_pwm_set(pwm_dev, BACKLIGHT_PWM_CHANNEL, 40000, 400 * brightness_level);
                 rt_pwm_enable(pwm_dev, BACKLIGHT_PWM_CHANNEL);
                 rt_kprintf("KEY UP");
                 break;
@@ -337,7 +340,7 @@ void keyadc_thread_entry(void *param) {
                 if (brightness_level < 10) {
                     brightness_level = 10;
                 }
-                rt_pwm_set(pwm_dev, BACKLIGHT_PWM_CHANNEL, 1000000, 10000 * brightness_level);
+                rt_pwm_set(pwm_dev, BACKLIGHT_PWM_CHANNEL, 40000, 400 * brightness_level);
                 rt_pwm_enable(pwm_dev, BACKLIGHT_PWM_CHANNEL);
                 rt_kprintf("KEY DOWN");
                 break;

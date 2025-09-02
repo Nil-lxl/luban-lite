@@ -97,6 +97,10 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_MIPI_DBI
         help
             MIPI-DBI Type B, I8080_RGB565_8BIT
+
+    config AIC_PANEL_DBI_H040A12
+        bool "ArtInChip MIPI DBI H040A12 panel"
+        depends on AIC_DISP_MIPI_DBI
 #
 # MIPI-DBI Type C SPI Panel
 #
@@ -276,8 +280,10 @@ endif
 
 config PANEL_HACTIVE_RES
     int
+    default 320
     default 1024 if AIC_PANEL_1024X600_RESOLUTION
     default 1920 if AIC_PANEL_1920X1080_RESOLUTION
+    default 320 if AIC_PANEL_DBI_H040A12
     default 640 if AIC_PANEL_RGB_ST7703
     default 720 if AIC_PANEL_RGB_NV3052
     default 240 if AIC_PANEL_DSI_H024B12
@@ -288,8 +294,10 @@ config PANEL_HACTIVE_RES
 
 config PANEL_VACTIVE_RES
     int
+    default 320
     default 600 if AIC_PANEL_1024X600_RESOLUTION
     default 1080 if AIC_PANEL_1920X1080_RESOLUTION
+    default 320 if AIC_PANEL_DBI_H040A12
     default 480 if AIC_PANEL_RGB_ST7703
     default 720 if AIC_PANEL_RGB_NV3052
     default 320 if AIC_PANEL_DSI_H024B12

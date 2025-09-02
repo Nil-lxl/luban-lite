@@ -17,8 +17,8 @@
 #define FT6336_POINT_LEN            6
 
 /* FT6336 Have Two Address */
-// #define FT6336_SALVE_ADDR           0x38
-#define FT6336_SALVE_ADDR           0x48
+#define FT6336_SALVE_ADDR           0x38
+// #define FT6336_SALVE_ADDR           0x48
 
 /* FT6336 REG */
 #define FT6336_DEVICE_MODE          0x00

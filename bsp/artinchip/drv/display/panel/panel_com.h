@@ -47,6 +47,7 @@ extern struct aic_panel dsi_h078b06;
 extern struct aic_panel dbi_ili9488;
 extern struct aic_panel dbi_ili9486l;
 extern struct aic_panel dbi_st7789;
+extern struct aic_panel dbi_h040a12;
 
 /*
  * MIPI-DBI Type C SPI Panel

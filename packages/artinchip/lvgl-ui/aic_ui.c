@@ -17,8 +17,7 @@
 
 #ifdef AIC_USE_TOUCH_MONKEY_TEST
 #if LV_USE_MONKEY
-static void use_touch_monkey_test(void)
-{
+static void use_touch_monkey_test(void) {
     /*Create encoder monkey test*/
     lv_monkey_config_t config;
     lv_monkey_config_init(&config);
@@ -27,10 +26,10 @@ static void use_touch_monkey_test(void)
     config.period_range.max = AIC_USE_TOUCH_MONKEY_TEST_PERIOD_RANG_MAX;
     config.input_range.min = AIC_USE_TOUCH_MONKEY_TEST_INPUT_RANG_MAX;
     config.input_range.max = AIC_USE_TOUCH_MONKEY_TEST_PERIOD_RANG_MAX;
-    lv_monkey_t * monkey = lv_monkey_create(&config);
+    lv_monkey_t *monkey = lv_monkey_create(&config);
 
     /*Set the default group*/
-    lv_group_t * group = lv_group_create();
+    lv_group_t *group = lv_group_create();
     lv_indev_set_group(lv_monkey_get_indev(monkey), group);
     lv_group_set_default(group);
 
@@ -40,16 +39,14 @@ static void use_touch_monkey_test(void)
 #endif
 #endif
 
-static void lvgl_data_check(void)
-{
+static void lvgl_data_check(void) {
 #if defined(KERNEL_RTTHREAD)
     DIR *dirp = NULL;
     int loops = 0;
 
-    while ((dirp = opendir(LVGL_STORAGE_PATH)) == NULL)
-    {
+    while ((dirp = opendir(LVGL_STORAGE_PATH)) == NULL) {
         loops++;
-        aicos_msleep(1*10);
+        aicos_msleep(1 * 10);
         if (loops > 20)
             break;
     }
@@ -62,11 +59,17 @@ static void lvgl_data_check(void)
 
 
 #ifdef AIC_LVGL_DEMO
-void aic_ui_init()
-{
+void aic_ui_init() {
     lvgl_data_check();
+
+#ifdef AIC_LVGL_DEMO_WIDGETS
+    lv_demo_widgets();
+#elif defined AIC_LVGL_DEMO_BENCHMARK
+    lv_demo_benchmark();
+#else
     extern void ui_init(void);
     ui_init();
+#endif
 
 #ifdef AIC_USE_TOUCH_MONKEY_TEST
     use_touch_monkey_test();

@@ -182,7 +182,7 @@ if LPKG_USING_LVGL
         bool "Enable built-in examples"
         default n
 
-    config LPKG_LVGL_USING_DEMOSy
+    config LPKG_LVGL_USING_DEMOS
         bool "Enable built-in demos"
         default y
 
