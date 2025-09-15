@@ -25,8 +25,8 @@
 
 #define LOG_TAG "LV_TEST"
 
-#define TEST_DEMO_USE_DEFAULT_CONTROL   0
-#define TEST_DEMO_USE_KEYADC_CONTROL    1
+#define TEST_DEMO_USE_DEFAULT_CONTROL   1
+#define TEST_DEMO_USE_KEYADC_CONTROL    0
 #define TEST_DEMO_USE_CIR_CONTROL       0
 
 #ifdef AIC_PANEL_CUSTOM_RESOLUTION
@@ -86,7 +86,7 @@ void lv_show_obj(lv_obj_t *obj) {
 void timer_cb(lv_timer_t *timer) {
     switch (count) {
         case 0:
-            lv_hide_obj(img1);
+            // lv_hide_obj(img1);
             lv_show_obj(container);
             lv_set_bg_color(LV_COLOR_BLACK);
             break;
@@ -104,9 +104,9 @@ void timer_cb(lv_timer_t *timer) {
             lv_set_bg_color(LV_COLOR_PINK);
             break;
         case 5:
-            lv_hide_obj(img1);
-            lv_hide_obj(container);
-            lv_set_bg_color(LV_COLOR_WHITE);
+            // lv_hide_obj(img1);
+            // lv_hide_obj(container);
+            lv_set_bg_color(LV_COLOR_YELLOW);
             break;
         case 6:
             lv_show_obj(img1);
@@ -121,9 +121,10 @@ void timer_cb(lv_timer_t *timer) {
             break;
         case 9:
             lv_hide_obj(img3);
-            lv_show_obj(player);
-            lv_aic_player_set_auto_restart(player, true);
-            lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
+            lv_set_bg_color(LV_COLOR_WHITE);
+            // lv_show_obj(player);
+            // lv_aic_player_set_auto_restart(player, true);
+            // lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
             break;
         default:
             break;
@@ -133,7 +134,7 @@ void timer_cb(lv_timer_t *timer) {
     if (count == 9) {
         lv_timer_pause(timer);
     }
-    count = (count + 1) % UI_MAX_COUNT + 1;
+    count = (count + 1) % 10;
 #endif
 }
 
@@ -145,10 +146,10 @@ void test_ui_init() {
 #if 1
     scr = lv_scr_act();
 
-    player = lv_aic_player_create(scr);
-    lv_aic_player_set_src(player, SD_VIDEO_PATH(cartoon.mp4));
-    lv_obj_center(player);
-    lv_hide_obj(player);
+    // player = lv_aic_player_create(scr);
+    // lv_aic_player_set_src(player, SD_VIDEO_PATH(cartoon.mp4));
+    // lv_obj_center(player);
+    // lv_hide_obj(player);
 
     container = lv_obj_create(scr);
     lv_obj_center(container);
@@ -159,11 +160,11 @@ void test_ui_init() {
     lv_obj_set_style_border_color(container, lv_color_white(), 0);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit1280x800.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(img400x1280_1.jpg));
     img2 = lv_img_create(scr);
-    lv_img_set_src(img2, SD_IMAGE_PATH(img1920x1080_5.jpg));
+    lv_img_set_src(img2, LVGL_IMAGE_PATH(img400x1280_2.jpg));
     img3 = lv_img_create(scr);
-    lv_img_set_src(img3, SD_IMAGE_PATH(img1920x1080_6.jpg));
+    lv_img_set_src(img3, LVGL_IMAGE_PATH(img400x1280_3.jpg));
     lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
@@ -174,6 +175,7 @@ void test_ui_init() {
 #else 
     timer = lv_timer_create(timer_cb, 300, NULL);
 #endif
+
 #endif
 }
 
@@ -200,7 +202,7 @@ void ui_init(void) {
         LOG_E("PWM Device Not Found");
         // return -RT_ERROR;
     }
-    
+
     test_ui_init();
 
 #if TEST_DEMO_USE_CIR_CONTROL
@@ -210,6 +212,7 @@ void ui_init(void) {
 #endif
 }
 
+#if TEST_DEMO_USE_CIR_CONTROL
 void cir_thread_entry(void *param) {
     uint32_t read_buf = 0;
     rt_size_t size;
@@ -276,6 +279,7 @@ void cir_thread_entry(void *param) {
     }
 }
 
+
 void cir_thread_begin(void) {
     int ret = 0;
     cir_config_t cir_config = {
@@ -317,7 +321,9 @@ void cir_thread_begin(void) {
         LOG_E("CIR Thread Create Failed");
     }
 }
+#endif
 
+#if TEST_DEMO_USE_KEYADC_CONTROL
 void keyadc_thread_entry(void *param) {
     int key_flag;
     int channel = KEYADC_CHANNEL;
@@ -371,3 +377,4 @@ void keyadc_thread_begin(void) {
     }
 
 }
+#endif 

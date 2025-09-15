@@ -280,7 +280,6 @@ endif
 
 config PANEL_HACTIVE_RES
     int
-    default 320
     default 1024 if AIC_PANEL_1024X600_RESOLUTION
     default 1920 if AIC_PANEL_1920X1080_RESOLUTION
     default 320 if AIC_PANEL_DBI_H040A12
@@ -294,7 +293,6 @@ config PANEL_HACTIVE_RES
 
 config PANEL_VACTIVE_RES
     int
-    default 320
     default 600 if AIC_PANEL_1024X600_RESOLUTION
     default 1080 if AIC_PANEL_1920X1080_RESOLUTION
     default 320 if AIC_PANEL_DBI_H040A12

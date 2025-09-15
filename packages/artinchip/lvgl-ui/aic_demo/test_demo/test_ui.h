@@ -17,7 +17,8 @@ typedef enum {
     LV_COLOR_RED = 0xff0000,
     LV_COLOR_GREEN = 0x00ff00,
     LV_COLOR_BLUE = 0x0000ff,
-    LV_COLOR_PINK = 0xff00f0,
+    LV_COLOR_PINK = 0xff00ff,
+    LV_COLOR_YELLOW = 0xffff00,
 
 };
 
