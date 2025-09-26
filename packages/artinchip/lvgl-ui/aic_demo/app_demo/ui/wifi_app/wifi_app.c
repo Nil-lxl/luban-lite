@@ -9,7 +9,10 @@
 #include "lv_port_disp.h"
 #include "aic_ui.h"
 #include "app_ui.h"
+
+#ifdef AIC_WIRELESS_LAN
 #include "wifi_interactive_mode.h"
+#endif
 
 lv_obj_t *app_wifi_init() {
     lv_obj_t *wifi_ui = lv_obj_create(NULL);

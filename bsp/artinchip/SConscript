@@ -302,6 +302,9 @@ if GetDepend('AIC_PANEL_DBI_ST7789'):
 if GetDepend('AIC_PANEL_DBI_H040A12'):
     src += Glob('drv/display/panel/panel_dbi_h040a12.c')
 
+if GetDepend('AIC_PANEL_DBI_H040A27'):
+    src += Glob('drv/display/panel/panel_dbi_h040a27.c')
+
 #
 # MIPI-DBI Type B I8080 Panel Driver
 #
@@ -350,6 +353,9 @@ if GetDepend('AIC_PANEL_RGB_H024A13'):
 
 if GetDepend('AIC_PANEL_RGB_H028A19'):
     src += Glob('drv/display/panel/panel_rgb_h028a19.c')
+
+if GetDepend('AIC_PANEL_RGB_H050A12'):
+    src += Glob('drv/display/panel/panel_rgb_h050a12.c')
 
 #
 # RGB Panel Driver IIC Init

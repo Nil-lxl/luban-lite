@@ -67,8 +67,8 @@ static void hy4635_touch_up(void *buf, int8_t id) {
 
     read_data[id].timestamp = rt_touch_get_ts();
     //交换触摸XY坐标
-    read_data[id].x_coordinate = pre_y[id];
-    read_data[id].y_coordinate = pre_x[id];
+    read_data[id].x_coordinate = pre_x[id];
+    read_data[id].y_coordinate = pre_y[id];
     read_data[id].track_id = id;
 
     pre_x[id] = -1; /* last point is none */
@@ -87,17 +87,17 @@ static void hy4635_touch_down(void *buf, int8_t id, int16_t x, int16_t y) {
 
     read_data[id].timestamp = rt_touch_get_ts();
     //交换触摸XY坐标
-    read_data[id].x_coordinate = y;
-    read_data[id].y_coordinate = x;
+    read_data[id].x_coordinate = x;
+    read_data[id].y_coordinate = y;
     read_data[id].track_id = id;
 
-    pre_x[id] = y; /* save last point */
-    pre_y[id] = x;
+    pre_x[id] = x; /* save last point */
+    pre_y[id] = y;
 }
 
 static void hy4635_read_point(struct rt_touch_device *touch, void *buf, rt_size_t read_num) {
     rt_uint8_t touch_num = 0;
-    rt_uint8_t reg, recombine_id;
+    rt_uint8_t reg;
     rt_uint8_t touch_status;
     rt_uint8_t read_buf[6 * HY4635_MAX_TOUCH] = { 0 };
     rt_uint8_t read_index, touch_id[HY4635_MAX_TOUCH] = { 0 };
@@ -129,15 +129,15 @@ static void hy4635_read_point(struct rt_touch_device *touch, void *buf, rt_size_
     //获取第一个触点坐标
     reg = HY4635_TOUCH1_XH;
     if (hy4635_read_reg(&hy4635_client, &reg, read_buf, sizeof(read_buf)) == RT_EOK) {
-        LOG_D("read touch data success");
+        LOG_D("read touch data :");
     } else {
         LOG_E("read touch data failed");
         read_num = 0;
         return read_num;
     }
 
-    for (recombine_id = 0; recombine_id < touch_num; recombine_id++)
-        touch_id[recombine_id] = recombine_id;
+    for (int i = 0; i < touch_num; i++)
+        touch_id[i] = i;
 
     if (pre_touch > touch_num) {
         for (read_index = 0; read_index < pre_touch; read_index++) {

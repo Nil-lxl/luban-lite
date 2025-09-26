@@ -12,11 +12,15 @@ menu "Custom App Config"
                     bool "gt911"
                 config TOUCH_FT6336
                     bool "ft6336"
+                config TOUCH_HY4635
+                    bool "hy4635"
             endchoice
             config APP_TOUCH_DEVICE
                 string
                 default "gt911" if TOUCH_GT911
                 default "ft6336" if TOUCH_FT6336
+                default "hy4635" if TOUCH_HY4635
+
         endif
 
     config APP_USE_UART_TEST

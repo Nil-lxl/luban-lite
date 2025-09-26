@@ -31,7 +31,7 @@ lv_obj_t *app_player_init() {
     // lv_obj_add_event_cb(play_btn, play_cb, LV_EVENT_CLICKED, NULL);
 
     player = lv_aic_player_create(player_ui);
-    lv_aic_player_set_src(player, UDISK_VIDEO_PATH(output2.mp4));
+    lv_aic_player_set_src(player, SD_VIDEO_PATH(scale.mp4));
     lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
 
     lv_obj_center(player);

@@ -25,13 +25,10 @@
 #endif
 
 static struct gpio_desc reset_gpio;
-// static struct gpio_desc sleep_gpio;
 
 static void panel_gpio_init(void) {
     panel_get_gpio(&reset_gpio, RESET_PIN);
-    // panel_get_gpio(&sleep_gpio, SLEEP_PIN);
 
-    // panel_gpio_set_value(&sleep_gpio, 1);
     aic_delay_ms(1);
     panel_gpio_set_value(&reset_gpio, 0);
     aic_delay_ms(10);

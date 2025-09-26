@@ -9,13 +9,17 @@
 #include "lv_port_disp.h"
 #include "aic_ui.h"
 #include "app_ui.h"
-#include "wifi_interactive_mode.h"
 /**
  * Create a button with a label and react on click event.
  */
 
+#ifdef AIC_PANEL_CUSTOM_RESOLUTION
 #define LCD_HOR_RES PANEL_HACTIVE
 #define LCD_VER_RES PANEL_VACTIVE
+#else
+#define LCD_HOR_RES PANEL_HACTIVE_RES
+#define LCD_VER_RES PANEL_VACTIVE_RES
+#endif
 
 #define APP_NUM 8
 
@@ -29,7 +33,7 @@ static lv_obj_t *app_page[APP_NUM];
 static lv_obj_t *back_home_btn;
 
 static char current_scr[64];
-const char *app_name[] = { "app1", "app2", "app3", "app4", "app5", "app6", "app7", "app8" };
+const char *app_name[] = { "WIFI", "VIDEO", "app3", "app4", "app5", "app6", "app7", "app8" };
 
 lv_obj_t *app_home_init(void) {
     lv_obj_t *ui_home = lv_obj_create(NULL);
@@ -88,7 +92,7 @@ void show_home_btn(void) {
     lv_obj_clear_flag(back_home_btn, LV_OBJ_FLAG_HIDDEN);   //显示home按钮
 }
 
-void application_entrance(app_ui_index_t index, bool auto_del) {
+void application_entrance(app_index_t index, bool auto_del) {
     lv_obj_t *scr = NULL;
     switch (index) {
         case APP_HOME:
@@ -133,7 +137,7 @@ void app_ui_init() {
     application_entrance(APP_HOME, false);          //默认加载主界面
 
 }
-app_ui_index_t app_running(void) {
+app_index_t app_running(void) {
 
 }
 

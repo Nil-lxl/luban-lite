@@ -100,7 +100,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {1, PIN_PULL_UP, 3, "PE.17"},  //SPI-CS
     {1, PIN_PULL_DIS, 3, "PE.18"},  //SPI-SDA
 #endif
-#ifdef AIC_PRGB_24BIT
+#ifdef AIC_DISP_RGB
     /* RGB 888 */
     {2, PIN_PULL_DIS, 4, "PD.0"},   //B
     {2, PIN_PULL_DIS, 4, "PD.1"},
@@ -238,6 +238,31 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PD.25"},
     {4, PIN_PULL_DIS, 3, "PD.26"},
     {4, PIN_PULL_DIS, 3, "PD.27"},
+#endif
+#ifdef AIC_DISP_MIPI_DBI
+    {1, PIN_PULL_DIS, 3, "PA.3"},   //LCD RESET
+
+    {2, PIN_PULL_DIS, 3, "PD.8"},
+    {2, PIN_PULL_DIS, 3, "PD.9"},
+    {2, PIN_PULL_DIS, 3, "PD.10"},
+    {2, PIN_PULL_DIS, 3, "PD.11"},
+    {2, PIN_PULL_DIS, 3, "PD.12"},
+    {2, PIN_PULL_DIS, 3, "PD.13"},
+    {2, PIN_PULL_DIS, 3, "PD.14"},
+    {2, PIN_PULL_DIS, 3, "PD.15"},
+    
+    {2, PIN_PULL_DIS, 3, "PD.16"},
+    {2, PIN_PULL_DIS, 3, "PD.17"},
+    {2, PIN_PULL_DIS, 3, "PD.18"},
+    {2, PIN_PULL_DIS, 3, "PD.19"},
+    {2, PIN_PULL_DIS, 3, "PD.20"},
+    {2, PIN_PULL_DIS, 3, "PD.21"},
+    {2, PIN_PULL_DIS, 3, "PD.22"},
+    {2, PIN_PULL_DIS, 3, "PD.23"},
+    {2, PIN_PULL_DIS, 3, "PD.24"},  //WR
+    {2, PIN_PULL_DIS, 3, "PD.25"},  //RD
+    {2, PIN_PULL_DIS, 3, "PD.26"},  //CS
+    {2, PIN_PULL_DIS, 3, "PD.27"},  //DC/RS
 #endif
 #ifdef AIC_PANEL_ENABLE_GPIO
     {1, PIN_PULL_DIS, 3, AIC_PANEL_ENABLE_GPIO},
@@ -406,7 +431,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PE.19"},
 #endif
 #ifdef AIC_WIRELESS_LAN
-    {1, PIN_PULL_DIS, 3, "PD.1"},  // PWR
+    {1, PIN_PULL_DIS, 3, "PA.7"},  // PWR
 #endif
 
 #ifdef AIC_USING_CTP

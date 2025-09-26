@@ -101,6 +101,10 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DBI_H040A12
         bool "ArtInChip MIPI DBI H040A12 panel"
         depends on AIC_DISP_MIPI_DBI
+    
+    config AIC_PANEL_DBI_H040A27
+        bool "ArtInChip MIPI DBI H040A27 panel"
+        depends on AIC_DISP_MIPI_DBI
 #
 # MIPI-DBI Type C SPI Panel
 #
@@ -167,6 +171,11 @@ if !AIC_DISP_PQ_TOOL
 
     config AIC_PANEL_RGB_H028A19
         bool "ArtInChip RGB H028A19 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H050A12
+        bool "ArtInChip RGB H050A12 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 #
@@ -283,8 +292,10 @@ config PANEL_HACTIVE_RES
     default 1024 if AIC_PANEL_1024X600_RESOLUTION
     default 1920 if AIC_PANEL_1920X1080_RESOLUTION
     default 320 if AIC_PANEL_DBI_H040A12
+    default 320 if AIC_PANEL_DBI_H040A27
     default 640 if AIC_PANEL_RGB_ST7703
     default 720 if AIC_PANEL_RGB_NV3052
+    default 480 if AIC_PANEL_RGB_H050A12
     default 240 if AIC_PANEL_DSI_H024B12
     default 800 if AIC_PANEL_DSI_H070B13
     default 280 if AIC_PANEL_DSI_H070A21
@@ -296,8 +307,10 @@ config PANEL_VACTIVE_RES
     default 600 if AIC_PANEL_1024X600_RESOLUTION
     default 1080 if AIC_PANEL_1920X1080_RESOLUTION
     default 320 if AIC_PANEL_DBI_H040A12
+    default 480 if AIC_PANEL_DBI_H040A27
     default 480 if AIC_PANEL_RGB_ST7703
     default 720 if AIC_PANEL_RGB_NV3052
+    default 854 if AIC_PANEL_RGB_H050A12
     default 320 if AIC_PANEL_DSI_H024B12
     default 1280 if AIC_PANEL_DSI_H070B13
     default 1424 if AIC_PANEL_DSI_H070A21

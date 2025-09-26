@@ -165,10 +165,10 @@ void touch_read_point(void *param) {
                 if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
                     touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
                     touch_data[i].event == RT_TOUCH_EVENT_UP) {
-                    // LOG_I("%d %d %d %d", touch_data[i].track_id,
-                    //     touch_data[i].x_coordinate,
-                    //     touch_data[i].y_coordinate,
-                    //     touch_data[i].event);
+                    LOG_I("%d %d %d %d", touch_data[i].track_id,
+                        touch_data[i].x_coordinate,
+                        touch_data[i].y_coordinate,
+                        touch_data[i].event);
                 }
                 rt_thread_delay(1);
 
