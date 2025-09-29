@@ -27,7 +27,7 @@ static const u8 h040a27_commands[] = {
     0xF0, 1,  0x69,
     0x00, 1,  120,
 
-    0x21, 0,
+    0x21, 0,  //h040a27 enable
     0x11, 0,
     0x00, 1,  120,
     0x29, 0,
@@ -57,8 +57,8 @@ static struct display_timing h040a27_timing = {
 };
 
 static struct panel_dbi dbi = {
-    .type = SPI,
-    .format = SPI_3LINE_RGB565,
+    .type = I8080,
+    .format = I8080_RGB565_16BIT,
     .commands = {
         .buf = h040a27_commands,
         .len = ARRAY_SIZE(h040a27_commands),

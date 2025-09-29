@@ -165,10 +165,10 @@ void touch_read_point(void *param) {
                 if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
                     touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
                     touch_data[i].event == RT_TOUCH_EVENT_UP) {
-                    LOG_I("%d %d %d %d", touch_data[i].track_id,
-                        touch_data[i].x_coordinate,
-                        touch_data[i].y_coordinate,
-                        touch_data[i].event);
+                    // LOG_I("%d %d %d %d", touch_data[i].track_id,
+                    //     touch_data[i].x_coordinate,
+                    //     touch_data[i].y_coordinate,
+                    //     touch_data[i].event);
                 }
                 rt_thread_delay(1);
 
@@ -192,7 +192,7 @@ void panel_draw_lines(void *param) {
         .frame_buffer = (uint8_t *)screen_info.framebuffer,
     };
 
-    #if 1   //show display border
+#if 1   //show display border
     struct line_dsc border[4];
 
     border[0].x1 = 0;
@@ -220,7 +220,7 @@ void panel_draw_lines(void *param) {
         border[i].width = 5;
         draw_line(&border[i], &fb_info);
     }
-    #endif
+#endif
 
     while (1) {
         struct line_dsc line[touch_info.point_num];

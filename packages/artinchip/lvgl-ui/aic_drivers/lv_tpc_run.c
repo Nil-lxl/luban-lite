@@ -28,21 +28,20 @@ static struct rt_touch_data *read_data;
 static struct rt_touch_info info;
 
 #ifdef AIC_TOUCH_PANEL_GT911
-static void touch_panel_gt911_read_info(void)
-{
+static void touch_panel_gt911_read_info(void) {
     void *id;
     id = rt_malloc(sizeof(rt_uint8_t) * 8);
     rt_device_control(dev, RT_TOUCH_CTRL_GET_ID, id);
-    rt_uint8_t * read_id = (rt_uint8_t *)id;
+    rt_uint8_t *read_id = (rt_uint8_t *)id;
     rt_kprintf("id = GT%d%d%d \n", read_id[0] - '0', read_id[1] - '0', read_id[2] - '0');
 
     /* if possible you can set your x y coordinate */
     //rt_device_control(dev, RT_TOUCH_CTRL_SET_X_RANGE, &x);
     //rt_device_control(dev, RT_TOUCH_CTRL_SET_Y_RANGE, &y);
     rt_device_control(dev, RT_TOUCH_CTRL_GET_INFO, id);
-    rt_kprintf("range_x = %d \n", (*(struct rt_touch_info*)id).range_x);
-    rt_kprintf("range_y = %d \n", (*(struct rt_touch_info*)id).range_y);
-    rt_kprintf("point_num = %d \n", (*(struct rt_touch_info*)id).point_num);
+    rt_kprintf("range_x = %d \n", (*(struct rt_touch_info *)id).range_x);
+    rt_kprintf("range_y = %d \n", (*(struct rt_touch_info *)id).range_y);
+    rt_kprintf("point_num = %d \n", (*(struct rt_touch_info *)id).point_num);
     rt_free(id);
 }
 #endif
@@ -57,19 +56,17 @@ static void touch_entry(void *parameter) /* touch panel control entry */
 
     read_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * info.point_num);
 
-    while (1)
-    {
+    while (1) {
         rt_sem_take(touch_sem, RT_WAITING_FOREVER);
-        int num = rt_device_read(dev, 0, read_data, info.point_num);
-        if (num > 0)
-        {
-            for (rt_uint8_t i = 0; i < num; i++)
-            {
-                if (read_data[i].event == RT_TOUCH_EVENT_DOWN
-                        || read_data[i].event == RT_TOUCH_EVENT_UP
-                        || read_data[i].event == RT_TOUCH_EVENT_MOVE)
-                {
-                    rt_uint16_t  u16X, u16Y;
+        if ((rt_device_read(dev, 0, read_data, info.point_num)) > 0) {
+            for (rt_uint8_t i = 0; i < info.point_num; i++) {
+                if (read_data[i].event == RT_TOUCH_EVENT_DOWN ||
+                    read_data[i].event == RT_TOUCH_EVENT_MOVE ||
+                    read_data[i].event == RT_TOUCH_EVENT_UP) {
+                    LOG_I("%d %d %d %d", read_data[i].track_id,
+                        read_data[i].x_coordinate,
+                        read_data[i].y_coordinate,
+                        read_data[i].event);
 #ifdef AIC_USING_RTP
 #if AIC_RTP_RECALIBRATE_ENABLE
                     if (rtp_is_recalibrate_started()) {
@@ -83,21 +80,17 @@ static void touch_entry(void *parameter) /* touch panel control entry */
                     extern void lv_convert_adc_to_coord(rt_device_t rtp_dev, struct rt_touch_data *data);
                     lv_convert_adc_to_coord(dev, &read_data[i]);
 #endif
-                    u16X = read_data[i].x_coordinate;
-                    u16Y = read_data[i].y_coordinate;
-
-                    // rt_kprintf("[%d] %d %d\n", read_data[i].event, u16X, u16Y);
-                    aic_touch_inputevent_cb(u16X, u16Y, read_data[i].event);
+                    // rt_kprintf("event:[%d] %d %d\n", read_data[i].event, u16X, u16Y);
+                    aic_touch_inputevent_cb(read_data[i].x_coordinate, read_data[i].y_coordinate, read_data[i].event);
                 }
             }
         }
-        //aicos_msleep(10);
+        aicos_msleep(1);
         rt_device_control(dev, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
     }
 }
 
-static rt_err_t rx_callback(rt_device_t dev, rt_size_t size)
-{
+static rt_err_t rx_callback(rt_device_t dev, rt_size_t size) {
     if (touch_sem)
         rt_sem_release(touch_sem);
     rt_device_control(dev, RT_TOUCH_CTRL_DISABLE_INT, RT_NULL);
@@ -108,11 +101,9 @@ static rt_err_t rx_callback(rt_device_t dev, rt_size_t size)
     return 0;
 }
 
-int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
-{
+int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y) {
     dev = rt_device_find(name);
-    if (dev == RT_NULL)
-    {
+    if (dev == RT_NULL) {
         rt_kprintf("can't find device:%s\n", name);
         return -1;
     }
@@ -120,8 +111,7 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
 #ifdef AIC_LVGL_USB_OSD_DEMO
     rt_device_close(dev);
 #endif
-    if (rt_device_open(dev, RT_DEVICE_FLAG_INT_RX) != RT_EOK)
-    {
+    if (rt_device_open(dev, RT_DEVICE_FLAG_INT_RX) != RT_EOK) {
         rt_kprintf("Failed to open dev %s\n", name);
         return -1;
     }
@@ -140,8 +130,7 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
 #endif
 
     touch_sem = rt_sem_create("touch_sem", 0, RT_IPC_FLAG_FIFO);
-    if (touch_sem == RT_NULL)
-    {
+    if (touch_sem == RT_NULL) {
         rt_kprintf("create touch semaphore failed.\n");
         return -1;
     }
@@ -150,11 +139,11 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
     rt_device_set_rx_indicate(dev, rx_callback);
 #endif
     touch_thread = rt_thread_create("touch",
-                                     touch_entry,
-                                     RT_NULL,
-                                     THREAD_STACK_SIZE,
-                                     THREAD_PRIORITY,
-                                     THREAD_TIMESLICE);
+        touch_entry,
+        RT_NULL,
+        THREAD_STACK_SIZE,
+        THREAD_PRIORITY,
+        THREAD_TIMESLICE);
 
     if (touch_thread != RT_NULL)
         rt_thread_startup(touch_thread);
@@ -165,8 +154,7 @@ int tpc_run(const char *name, rt_uint16_t x, rt_uint16_t y)
 #ifdef AIC_USING_TOUCH
 static rt_err_t (*bak_callback)(rt_device_t, rt_size_t);
 
-void lvgl_get_tp(void)
-{
+void lvgl_get_tp(void) {
     if (bak_callback == NULL) {
         bak_callback = dev->rx_indicate;
 #ifdef LV_DISPLAY_ROTATE_EN
@@ -177,8 +165,7 @@ void lvgl_get_tp(void)
     }
 }
 
-void lvgl_put_tp(void)
-{
+void lvgl_put_tp(void) {
     rt_uint8_t flag = 0;
     if (bak_callback != NULL) {
         rt_device_control(dev, RT_TOUCH_CTRL_SET_OSD_FLAG, &flag);

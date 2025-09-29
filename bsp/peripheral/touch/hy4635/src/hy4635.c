@@ -66,7 +66,7 @@ static void hy4635_touch_up(void *buf, int8_t id) {
     }
 
     read_data[id].timestamp = rt_touch_get_ts();
-    //交换触摸XY坐标
+
     read_data[id].x_coordinate = pre_x[id];
     read_data[id].y_coordinate = pre_y[id];
     read_data[id].track_id = id;
@@ -86,7 +86,7 @@ static void hy4635_touch_down(void *buf, int8_t id, int16_t x, int16_t y) {
     }
 
     read_data[id].timestamp = rt_touch_get_ts();
-    //交换触摸XY坐标
+
     read_data[id].x_coordinate = x;
     read_data[id].y_coordinate = y;
     read_data[id].track_id = id;
@@ -100,12 +100,9 @@ static void hy4635_read_point(struct rt_touch_device *touch, void *buf, rt_size_
     rt_uint8_t reg;
     rt_uint8_t touch_status;
     rt_uint8_t read_buf[6 * HY4635_MAX_TOUCH] = { 0 };
-    rt_uint8_t read_index, touch_id[HY4635_MAX_TOUCH] = { 0 };
     int8_t read_id = 0;
     int16_t input_x = 0;
     int16_t input_y = 0;
-    static rt_uint8_t pre_touch = 0;
-    static int8_t pre_id[HY4635_MAX_TOUCH] = { 0 };
 
     rt_memset(buf, 0, sizeof(struct rt_touch_data) * read_num);
 
@@ -123,7 +120,7 @@ static void hy4635_read_point(struct rt_touch_device *touch, void *buf, rt_size_
     touch_num = touch_status & 0x0f;
     if (touch_num == 0) {
         read_num = 0;
-        return read_num;
+        // return read_num;
     }
 
     //获取第一个触点坐标
@@ -136,37 +133,16 @@ static void hy4635_read_point(struct rt_touch_device *touch, void *buf, rt_size_
         return read_num;
     }
 
-    for (int i = 0; i < touch_num; i++)
-        touch_id[i] = i;
-
-    if (pre_touch > touch_num) {
-        for (read_index = 0; read_index < pre_touch; read_index++) {
-            rt_uint8_t j;
-
-            for (j = 0; j < touch_num; j++) {
-                read_id = touch_id[read_index];
-
-                if (pre_id[read_index] == read_id)
-                    break;
-
-                if (j >= touch_num - 1) {
-                    rt_uint8_t up_id;
-                    up_id = pre_id[read_index];
-                    hy4635_touch_up(buf, up_id);
-                }
-            }
-        }
-    }
-
     if (touch_num) {
         rt_uint8_t off_set;
+        rt_uint8_t point_state;
 
-        for (read_index = 0; read_index < touch_num; read_index++) {
-            off_set = read_index * 6;
-            read_id = touch_id[read_index];
-            pre_id[read_index] = read_id;
-            input_x = ((read_buf[off_set] & 0xf) << 8) | read_buf[off_set + 1];
-            input_y = ((read_buf[off_set + 2] & 0xf) << 8) | read_buf[off_set + 3];
+        for (rt_uint8_t i = 0; i < touch_num; i++) {
+            off_set = i * 6;
+            read_id = (read_buf[i * 6 + 2] & 0xf0) >> 4;
+            point_state = (read_buf[off_set] & 0xf0) >> 6;  //1:up 2:down
+            input_y = ((read_buf[off_set] & 0xf) << 8) | read_buf[off_set + 1];
+            input_x = ((read_buf[off_set + 2] & 0xf) << 8) | read_buf[off_set + 3];
 
             aic_touch_flip(&input_x, &input_y);
             aic_touch_rotate(&input_x, &input_y);
@@ -174,15 +150,19 @@ static void hy4635_read_point(struct rt_touch_device *touch, void *buf, rt_size_
             if (!aic_touch_crop(&input_x, &input_y))
                 continue;
 
-            hy4635_touch_down(buf, read_id, input_x, input_y);
+            if (point_state == 1) {
+                hy4635_touch_up(buf, read_id);
+            }
+            if (point_state == 2) {
+                hy4635_touch_down(buf, read_id, input_x, input_y);
+            }
         }
-    } else if (pre_touch) {
-        for (read_index = 0; read_index < pre_touch; read_index++) {
-            hy4635_touch_up(buf, pre_id[read_index]);
+    } else {
+        for (rt_uint8_t i = 0; i < HY4635_MAX_TOUCH; i++) {
+            read_id = (read_buf[i * 6 + 2] & 0xf0) >> 4;
+            hy4635_touch_up(buf, read_id);
         }
     }
-
-    pre_touch = touch_num;
 
 }
 
@@ -280,6 +260,16 @@ void hy4635_hw_init(const char *name, struct rt_touch_config *cfg) {
         LOG_E("hy4635 write reg dev_mode failed");
         return -RT_ERROR;
     }
+
+    cmd[0] = HY4635_TOUCH_THRESHOLD;
+    cmd[1] = 0x0C;
+    if (hy4635_write_reg(&hy4635_client, cmd, 2) != RT_EOK)
+        return -RT_ERROR;
+
+    cmd[0] = HY4635_REPORT_SPEED;
+    cmd[1] = 0x64;
+    if (hy4635_write_reg(&hy4635_client, cmd, 2) != RT_EOK)
+        return -RT_ERROR;
 
     /* register touch device */
     touch_device->info = hy4635_info;

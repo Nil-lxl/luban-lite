@@ -15,3 +15,7 @@
 #define HY4635_TOUCH1_YH        0x05
 #define HY4635_TOUCH1_YL        0x06
 
+#define HY4635_TOUCH_THRESHOLD  0x80        //触摸阈值=(DATA*10)
+#define HY4635_REPORT_SPEED     0x88        //报点率
+
+
