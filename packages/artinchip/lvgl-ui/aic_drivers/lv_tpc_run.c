@@ -63,10 +63,10 @@ static void touch_entry(void *parameter) /* touch panel control entry */
                 if (read_data[i].event == RT_TOUCH_EVENT_DOWN ||
                     read_data[i].event == RT_TOUCH_EVENT_MOVE ||
                     read_data[i].event == RT_TOUCH_EVENT_UP) {
-                    LOG_I("%d %d %d %d", read_data[i].track_id,
-                        read_data[i].x_coordinate,
-                        read_data[i].y_coordinate,
-                        read_data[i].event);
+                    // LOG_I("%d %d %d %d", read_data[i].track_id,
+                    //     read_data[i].x_coordinate,
+                    //     read_data[i].y_coordinate,
+                    //     read_data[i].event);
 #ifdef AIC_USING_RTP
 #if AIC_RTP_RECALIBRATE_ENABLE
                     if (rtp_is_recalibrate_started()) {

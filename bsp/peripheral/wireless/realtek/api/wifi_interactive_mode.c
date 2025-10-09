@@ -1619,10 +1619,12 @@ void app_wifi_on(void) {
 		pr_info("ERROR: Wifi on failed!\n");
 	}
 }
+
 void app_wifi_off(void) {
 	cmd_wifi_p2p_stop(0, NULL);
 	// wifi_off();
 }
+
 void app_wifi_scan(void) {
 	if (wifi_scan_networks(app_scan_result_handler, NULL) != RTW_SUCCESS) {
 		LOG_E("ERROR: wifi scan failed\n");

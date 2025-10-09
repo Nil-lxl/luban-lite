@@ -55,9 +55,6 @@ void FunctionImp(void) {
 #ifdef APP_USE_CAN_TEST
     can_start();
 #endif
-
-    // http_request_demo();
-
 }
 
 INIT_APP_EXPORT(FunctionImp);

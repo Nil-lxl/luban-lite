@@ -5,7 +5,6 @@ cwd = GetCurrentDir()
 group = []
 src = []
 CPPPATH = [cwd]
-# 增加源码路径
 src += Glob('*.c')
 
 list = os.listdir(cwd)

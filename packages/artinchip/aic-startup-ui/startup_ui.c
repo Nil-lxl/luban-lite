@@ -31,8 +31,8 @@
 #define SCREEN_MAX_WIDTH  1024
 #define SCREEN_MAX_HEIGHT 600
 
-#define IMAGE_MAX_WIDTH   500
-#define IMAGE_MAX_HEIGHT  160
+#define IMAGE_MAX_WIDTH   1024
+#define IMAGE_MAX_HEIGHT  600
 
 #define WIDTH_SCALE(x)     ((x) * IMAGE_MAX_WIDTH / SCREEN_MAX_WIDTH)
 #define HEIGHT_SCALE(y)    ((y) * IMAGE_MAX_HEIGHT / SCREEN_MAX_HEIGHT)
@@ -57,9 +57,9 @@
 #define IMAGE_CATALOG   "/data/lvgl_data"
 #define IMAGE_PATH_ROOT "/data/lvgl_data/logo.png"
 #else
-#define IMAGE_EXTENSION ".jpg"
-#define IMAGE_CATALOG   "/data"
-#define IMAGE_PATH_ROOT "/data/image"
+#define IMAGE_EXTENSION ".png"
+#define IMAGE_CATALOG   "/rodata/logo"
+#define IMAGE_PATH_ROOT "/rodata/logo/logo.png"
 #endif
 
 #if defined (AIC_CHIP_D13X) || defined (AIC_CHIP_D12X)
@@ -370,6 +370,7 @@ static int count_images(const char *directoryPath)
     }
 
     closedir(dir);
+    LOG_I("imageCount: %d", imageCount);
     return imageCount;
 }
 
@@ -379,7 +380,8 @@ static void construct_imagepath(char *outputBuffer, int image_number)
     (void)image_number;
     snprintf(outputBuffer, PATH_MAX, "%s", IMAGE_PATH_ROOT);
 #else
-    snprintf(outputBuffer, PATH_MAX, "%s%d%s", IMAGE_PATH_ROOT, image_number, IMAGE_EXTENSION);
+    snprintf(outputBuffer, PATH_MAX, "%s", IMAGE_PATH_ROOT);
+    // snprintf(outputBuffer, PATH_MAX, "%s%d%s", IMAGE_PATH_ROOT, image_number, IMAGE_EXTENSION);
 #endif
 }
 

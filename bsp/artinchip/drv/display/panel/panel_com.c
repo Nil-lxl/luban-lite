@@ -224,8 +224,7 @@ void panel_backlight_enable(struct aic_panel *panel, u32 ms)
 
 #ifndef AIC_PWM_BACKLIGHT_BYPASS
     /* pwm frequency: 1KHz = 1000000ns */
-    rt_pwm_set(pwm_dev, AIC_PWM_BACKLIGHT_CHANNEL,
-            1000000, 10000 * AIC_PWM_BRIGHTNESS_LEVEL);
+    rt_pwm_set(pwm_dev, AIC_PWM_BACKLIGHT_CHANNEL, 10000, 100 * AIC_PWM_BRIGHTNESS_LEVEL);
 #endif
     rt_pwm_enable(pwm_dev, AIC_PWM_BACKLIGHT_CHANNEL);
 #endif

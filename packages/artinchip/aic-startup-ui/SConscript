@@ -12,7 +12,7 @@ if GetDepend('AIC_STARTUP_UI_SHOW'):
     src = Glob('*.c')
 
 if GetDepend('AIC_STARTUP_UI_SHOW'):
-    install=[('assets/', 'data/')]
+    install=[('assets/', 'rodata/logo/')]
 
 group = DefineGroup('startup-ui', src, depend = ['AIC_STARTUP_UI_SHOW'], CPPPATH = CPPPATH, INSTALL=install)
 

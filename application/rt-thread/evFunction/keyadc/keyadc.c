@@ -15,7 +15,7 @@
 static rt_adc_device_t gpai_device;
 static rt_thread_t keyadc_thread;
 
-static int keyadc_voltage[] = { 435, 1110, 1960, 2595 };
+static int keyadc_voltage[] = { 300, 800, 1424, 1887 };
 static int keyadc_flag[] = { 1, 2, 3, 4 };
 
 
