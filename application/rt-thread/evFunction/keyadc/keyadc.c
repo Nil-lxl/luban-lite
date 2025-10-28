@@ -15,7 +15,7 @@
 static rt_adc_device_t gpai_device;
 static rt_thread_t keyadc_thread;
 
-static int keyadc_voltage[] = { 300, 800, 1424, 1887 };
+static int keyadc_voltage[] = { 380, 1040, 1870, 2490 };
 static int keyadc_flag[] = { 1, 2, 3, 4 };
 
 
@@ -37,6 +37,7 @@ key_flag_t keyadc_get_flag(int channel, int scale) {
     while (1) {
         adc_value = rt_adc_read(gpai_device, channel);
         for (int i = 0;i < sizeof(keyadc_voltage) / sizeof(keyadc_voltage[0]);i++) {
+            // rt_kprintf("adc_value:%d\n",adc_value);
             if ((keyadc_voltage[i] - scale <= adc_value) && (adc_value <= keyadc_voltage[i] + scale)) {
                 rt_thread_mdelay(300);
                 return keyadc_flag[i];

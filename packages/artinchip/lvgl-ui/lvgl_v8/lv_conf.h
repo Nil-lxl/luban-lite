@@ -113,6 +113,10 @@
 #if LV_USE_DEMO_MUSIC == 1
 #define LV_FONT_MONTSERRAT_12       1
 #define LV_FONT_MONTSERRAT_16       1
+#define LV_FONT_MONTSERRAT_18       1
+#define LV_FONT_MONTSERRAT_20       1
+#define LV_FONT_MONTSERRAT_22       1
+#define LV_FONT_MONTSERRAT_24       1
 #endif /* LV_USE_DEMO_MUSIC */
 
 #define LV_USE_FREETYPE 0

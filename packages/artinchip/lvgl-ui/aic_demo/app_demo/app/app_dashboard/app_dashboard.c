@@ -42,14 +42,13 @@ static lv_obj_t *img_trip_km = NULL;
 
 static lv_obj_t *obj_list[17] = { NULL };
 
-static lv_timer_t* point_timer;
-static lv_timer_t* fps_timer;
-static lv_timer_t* speed_timer;
-static lv_timer_t* trip_timer;
-static lv_timer_t* signal_timer;
+static lv_timer_t *point_timer;
+static lv_timer_t *fps_timer;
+static lv_timer_t *speed_timer;
+static lv_timer_t *trip_timer;
+static lv_timer_t *signal_timer;
 
-static void point_callback(lv_timer_t *tmr)
-{
+static void point_callback(lv_timer_t *tmr){
     lv_arc_set_end_angle(arc, cur_degree);
     if (direct == 0) {
         cur_degree++;
@@ -68,8 +67,7 @@ static void point_callback(lv_timer_t *tmr)
     return;
 }
 
-static void fps_callback(lv_timer_t *tmr)
-{
+static void fps_callback(lv_timer_t *tmr){
     char data_str[128];
 #ifdef KERNEL_RTTHREAD
     float value;
@@ -95,8 +93,7 @@ static void fps_callback(lv_timer_t *tmr)
     return;
 }
 
-static void speed_callback(lv_timer_t *tmr)
-{
+static void speed_callback(lv_timer_t *tmr){
     char data_str[128];
     int speed_num = ((cur_degree  << 8) / end_degree * max_speed) >> 8;
 
@@ -116,8 +113,7 @@ static void speed_callback(lv_timer_t *tmr)
     }
 }
 
-static void trip_callback(lv_timer_t *tmr)
-{
+static void trip_callback(lv_timer_t *tmr){
     char data_str[128];
     int num[4];
     int cur;
@@ -148,8 +144,7 @@ static void trip_callback(lv_timer_t *tmr)
     lv_img_set_src(img_trip_3, data_str);
 }
 
-static void obj_set_clear_hidden_flag(lv_obj_t *obj)
-{
+static void obj_set_clear_hidden_flag(lv_obj_t *obj){
     if (lv_obj_has_flag(obj, LV_OBJ_FLAG_HIDDEN)) {
         lv_obj_clear_flag(obj, LV_OBJ_FLAG_HIDDEN);
     } else {
@@ -157,8 +152,7 @@ static void obj_set_clear_hidden_flag(lv_obj_t *obj)
     }
 }
 
-static void signal_callback(lv_timer_t *tmr)
-{
+static void signal_callback(lv_timer_t *tmr) {
     static int index = 0;
     static int mode = 0;
     (void)tmr;
@@ -194,7 +188,7 @@ lv_obj_t *app_dashboard_init() {
     lv_obj_set_style_bg_color(dashboard_ui, lv_color_hex(0x000000), 0);
 
     lv_obj_t *background = lv_img_create(dashboard_ui);
-    lv_img_set_src(background, DASHBOARD_PATH(bg/normal.jpg));
+    lv_img_set_src(background, DASHBOARD_PATH(bg/sport.jpg));
     lv_obj_center(background);
 
     bg_fps = lv_label_create(dashboard_ui);
@@ -230,7 +224,7 @@ lv_obj_t *app_dashboard_init() {
     lv_style_set_arc_color(&style_fp, lv_palette_main(LV_PALETTE_RED));
     lv_style_set_arc_rounded(&style_fp, 0);
     lv_style_set_arc_width(&style_fp, 80);
-    lv_style_set_arc_img_src(&style_fp, DASHBOARD_PATH(point/normal.png));
+    lv_style_set_arc_img_src(&style_fp, DASHBOARD_PATH(point/sport.png));
 
     arc = lv_arc_create(dashboard_ui);
     lv_obj_set_size(arc, 540, 540);

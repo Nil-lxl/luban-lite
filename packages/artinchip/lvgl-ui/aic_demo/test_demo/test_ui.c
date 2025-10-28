@@ -86,7 +86,7 @@ void lv_show_obj(lv_obj_t *obj) {
 void timer_cb(lv_timer_t *timer) {
     switch (count) {
         case 0:
-            // lv_hide_obj(img1);
+            lv_hide_obj(img1);
             lv_show_obj(container);
             lv_set_bg_color(LV_COLOR_BLACK);
             break;
@@ -104,9 +104,9 @@ void timer_cb(lv_timer_t *timer) {
             lv_set_bg_color(LV_COLOR_PINK);
             break;
         case 5:
-            // lv_hide_obj(img1);
-            // lv_hide_obj(container);
-            lv_set_bg_color(LV_COLOR_YELLOW);
+            lv_hide_obj(img1);
+            lv_hide_obj(container);
+            lv_set_bg_color(LV_COLOR_WHITE);
             break;
         case 6:
             lv_show_obj(img1);
@@ -160,9 +160,9 @@ void test_ui_init() {
     lv_obj_set_style_border_color(container, lv_color_white(), 0);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(img400x1280_1.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(img1280x480.jpg));
     img2 = lv_img_create(scr);
-    lv_img_set_src(img2, LVGL_IMAGE_PATH(img400x1280_2.jpg));
+    lv_img_set_src(img2, LVGL_IMAGE_PATH(img480x1280_2.jpg));
     img3 = lv_img_create(scr);
     lv_img_set_src(img3, LVGL_IMAGE_PATH(img400x1280_3.jpg));
     lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);

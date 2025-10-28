@@ -23,16 +23,15 @@
 #endif
 
 #define APP_NUM 8
+#define SYMBOL_MARGIN -40
 
 static lv_obj_t *app_home_init();
 
-static lv_obj_t *player;
 static lv_obj_t *app_list[APP_NUM];  //app list
-static lv_obj_t *app_page[APP_NUM];
 static lv_obj_t *back_home_btn;
 
 static char current_scr[64];
-const char *app_name[] = { "Dashboard", "Wi-Fi", "Video", "Weather", "Picture", "Cpu", "app7", "app8" };
+const char *app_name[] = { "Dashboard", "Wi-Fi", "Video", "Weather", "Picture", "Music", "app7", "System" };
 
 lv_obj_t *app_home_init(void) {
     static lv_style_t flex_bar_style;
@@ -45,6 +44,27 @@ lv_obj_t *app_home_init(void) {
 
     lv_obj_t *ui_home = lv_obj_create(NULL);
     lv_obj_set_style_bg_img_src(ui_home, LVGL_IMAGE_PATH(main_bg.jpg), 0);
+
+    lv_obj_t *battery_icon = lv_label_create(ui_home);
+    lv_obj_t *wifi_icon = lv_label_create(ui_home);
+    lv_obj_t *ble_icon = lv_label_create(ui_home);
+
+    lv_label_set_text(battery_icon, LV_SYMBOL_BATTERY_FULL);
+    // lv_obj_set_style_text_color(battery_icon,lv_color_white(),0);
+    lv_obj_set_style_text_font(battery_icon, &lv_font_montserrat_24, 0);
+
+    lv_label_set_text(wifi_icon, LV_SYMBOL_WIFI);
+    // lv_obj_set_style_text_color(wifi_icon,lv_color_white(),0);
+    lv_obj_set_style_text_font(wifi_icon, &lv_font_montserrat_24, 0);
+
+    lv_label_set_text(ble_icon, LV_SYMBOL_BLUETOOTH);
+    lv_obj_set_style_text_color(ble_icon, lv_color_hex(0x0060ff), 0);
+    lv_obj_set_style_text_font(ble_icon, &lv_font_montserrat_24, 0);
+
+    int margin = SYMBOL_MARGIN;
+    lv_obj_align(battery_icon, LV_ALIGN_TOP_RIGHT, -10, 0);
+    lv_obj_align(wifi_icon, LV_ALIGN_TOP_RIGHT, margin - 10, 0);
+    lv_obj_align(ble_icon, LV_ALIGN_TOP_RIGHT, margin * 2 - 10, 0);
 
     lv_obj_t *container = lv_obj_create(ui_home);
     lv_obj_align(container, LV_ALIGN_CENTER, 0, 0);
@@ -74,14 +94,20 @@ lv_obj_t *app_home_init(void) {
     lv_obj_add_event_cb(app_list[0], app_dashboard_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(app_list[1], app_wifi_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(app_list[2], app_player_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(app_list[3], app_weather_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(app_list[4], app_image_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(app_list[5], app_music_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(app_list[7], app_system_cb, LV_EVENT_CLICKED, NULL);
+
 
     lv_obj_set_style_bg_img_src(app_list[0], LVGL_IMAGE_PATH(dashboard.png), 0);
     lv_obj_set_style_bg_img_src(app_list[1], LVGL_IMAGE_PATH(internet.png), 0);
     lv_obj_set_style_bg_img_src(app_list[2], LVGL_IMAGE_PATH(video.png), 0);
     lv_obj_set_style_bg_img_src(app_list[3], LVGL_IMAGE_PATH(weather.png), 0);
     lv_obj_set_style_bg_img_src(app_list[4], LVGL_IMAGE_PATH(picture.png), 0);
-    lv_obj_set_style_bg_img_src(app_list[5], LVGL_IMAGE_PATH(cpu.png), 0);
+    lv_obj_set_style_bg_img_src(app_list[5], LVGL_IMAGE_PATH(music.png), 0);
+    lv_obj_set_style_bg_img_src(app_list[6], LVGL_IMAGE_PATH(cpu.png), 0);
+    lv_obj_set_style_bg_img_src(app_list[7], LVGL_IMAGE_PATH(system.png), 0);
 
     return ui_home;
 }
@@ -103,10 +129,28 @@ static void app_player_cb(lv_event_t *e) {
         application_entrance(APP_PLAYER, true);
     }
 }
+static void app_weather_cb(lv_event_t *e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    if (code == LV_EVENT_CLICKED) {
+        application_entrance(APP_WEATHER, true);
+    }
+}
 static void app_image_cb(lv_event_t *e) {
     lv_event_code_t code = lv_event_get_code(e);
     if (code == LV_EVENT_CLICKED) {
         application_entrance(APP_IMAGE, true);
+    }
+}
+static void app_music_cb(lv_event_t *e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    if (code == LV_EVENT_CLICKED) {
+        application_entrance(APP_MUSIC, true);
+    }
+}
+static void app_system_cb(lv_event_t *e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    if (code == LV_EVENT_CLICKED) {
+        application_entrance(APP_SYSTEM, true);
     }
 }
 static void back_home_cb(lv_event_t *e) {
@@ -146,10 +190,25 @@ void application_entrance(app_index_t index, bool auto_del) {
             scr = app_player_init();
             strncpy(current_scr, "app_player", sizeof(current_scr));
             break;
+        case APP_WEATHER:
+            show_home_btn();
+            scr = app_weather_init();
+            strncpy(current_scr, "app_weather", sizeof(current_scr));
+            break;
         case APP_IMAGE:
             show_home_btn();
             scr = app_image_init();
             strncpy(current_scr, "app_image", sizeof(current_scr));
+            break;
+        case APP_MUSIC:
+            show_home_btn();
+            scr = app_music_init();
+            strncpy(current_scr, "app_music", sizeof(current_scr));
+            break;
+        case APP_SYSTEM:
+            show_home_btn();
+            scr = app_system_init();
+            strncpy(current_scr, "app_system", sizeof(current_scr));
             break;
         default:
             break;

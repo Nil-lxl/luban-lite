@@ -285,6 +285,9 @@ if GetDepend('AIC_PANEL_DSI_FT8201'):
 if GetDepend('AIC_PANEL_DSI_H024B12'):
     src += Glob('drv/display/panel/panel_dsi_h024b12.c')
 
+if GetDepend('AIC_PANEL_DSI_H050A20'):
+    src += Glob('drv/display/panel/panel_dsi_h050a20.c')
+
 if GetDepend('AIC_PANEL_DSI_H070B13'):
     src += Glob('drv/display/panel/panel_dsi_h070b13.c')
 
@@ -356,6 +359,9 @@ if GetDepend('AIC_PANEL_RGB_H028A19'):
 
 if GetDepend('AIC_PANEL_RGB_H050A12'):
     src += Glob('drv/display/panel/panel_rgb_h050a12.c')
+
+if GetDepend('AIC_PANEL_RGB_H068A04'):
+    src += Glob('drv/display/panel/panel_rgb_h068a04.c')
 
 #
 # RGB Panel Driver IIC Init

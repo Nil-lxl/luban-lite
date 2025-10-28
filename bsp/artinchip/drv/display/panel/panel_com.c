@@ -55,6 +55,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DSI_H024B12
     &dsi_h024b12,
 #endif
+#ifdef AIC_PANEL_DSI_H050A20
+    &dsi_h050a20,
+#endif
 #ifdef AIC_PANEL_DSI_H070B13
     &dsi_h070b13,
 #endif
@@ -118,6 +121,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_RGB_H050A12
     &rgb_h050a12,
 #endif
+#ifdef AIC_PANEL_RGB_H068A04
+    &rgb_h068a04,
+#endif 
 #ifdef AIC_PANEL_SRGB_HX8238
     &srgb_hx8238,
 #endif

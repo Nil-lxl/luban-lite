@@ -66,6 +66,10 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd MIPI DSI H024B12 panel"
         depends on AIC_DISP_MIPI_DSI
 
+    config AIC_PANEL_DSI_H050A20
+        bool "Hotlcd MIPI DSI H050A20 panel"
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_H070B13
         bool "Hotlcd MIPI DSI H070B13 panel"
         depends on AIC_DISP_MIPI_DSI
@@ -99,11 +103,11 @@ if !AIC_DISP_PQ_TOOL
             MIPI-DBI Type B, I8080_RGB565_8BIT
 
     config AIC_PANEL_DBI_H040A12
-        bool "ArtInChip MIPI DBI H040A12 panel"
+        bool "Hotlcd MIPI DBI H040A12 panel"
         depends on AIC_DISP_MIPI_DBI
     
     config AIC_PANEL_DBI_H040A27
-        bool "ArtInChip MIPI DBI H040A27 panel"
+        bool "Hotlcd MIPI DBI H040A27 panel"
         depends on AIC_DISP_MIPI_DBI
 #
 # MIPI-DBI Type C SPI Panel
@@ -165,17 +169,22 @@ if !AIC_DISP_PQ_TOOL
         select AIC_PANEL_SPI_EMULATION
 
     config AIC_PANEL_RGB_H024A13
-        bool "ArtInChip RGB H024A13 panel"
+        bool "Hotlcd RGB H024A13 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
     config AIC_PANEL_RGB_H028A19
-        bool "ArtInChip RGB H028A19 panel"
+        bool "Hotlcd RGB H028A19 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
     config AIC_PANEL_RGB_H050A12
         bool "ArtInChip RGB H050A12 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+        
+    config AIC_PANEL_RGB_H068A04
+        bool "Hotlcd RGB H068A04 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 #
@@ -296,7 +305,9 @@ config PANEL_HACTIVE_RES
     default 640 if AIC_PANEL_RGB_ST7703
     default 720 if AIC_PANEL_RGB_NV3052
     default 480 if AIC_PANEL_RGB_H050A12
+    default 480 if AIC_PANEL_RGB_H068A04
     default 240 if AIC_PANEL_DSI_H024B12
+    default 720 if AIC_PANEL_DSI_H050A20
     default 800 if AIC_PANEL_DSI_H070B13
     default 280 if AIC_PANEL_DSI_H070A21
     default 400 if AIC_PANEL_DSI_H078B06
@@ -311,7 +322,9 @@ config PANEL_VACTIVE_RES
     default 480 if AIC_PANEL_RGB_ST7703
     default 720 if AIC_PANEL_RGB_NV3052
     default 854 if AIC_PANEL_RGB_H050A12
+    default 1280 if AIC_PANEL_RGB_H068A04
     default 320 if AIC_PANEL_DSI_H024B12
+    default 1280 if AIC_PANEL_DSI_H050A20
     default 1280 if AIC_PANEL_DSI_H070B13
     default 1424 if AIC_PANEL_DSI_H070A21
     default 1280 if AIC_PANEL_DSI_H078B06

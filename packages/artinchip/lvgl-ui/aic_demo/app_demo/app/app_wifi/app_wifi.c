@@ -14,9 +14,11 @@
 #include "wifi_interactive_mode.h"
 #endif
 
+static lv_obj_t *wifi_ui;
+
 lv_obj_t *app_wifi_init() {
-    lv_obj_t *wifi_ui = lv_obj_create(NULL);
-    lv_obj_set_style_bg_color(wifi_ui, lv_color_hex(0xffff00), 0);
+    wifi_ui = lv_obj_create(NULL);
+    // lv_obj_set_style_bg_color(wifi_ui, lv_color_hex(0xffff00), 0);
 
     return wifi_ui;
 }
