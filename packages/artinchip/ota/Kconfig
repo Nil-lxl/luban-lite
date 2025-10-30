@@ -1,0 +1,24 @@
+menuconfig LPKG_USING_OTA_DOWNLOADER
+    bool "aic-ota"
+    default n
+
+if LPKG_USING_OTA_DOWNLOADER
+
+    config OTA_DOWNLOADER_DEBUG
+        bool "Enable OTA downloader debug"
+        default n
+
+    config AIC_OTA_INTERFACE
+        bool "Enable OTA interface"
+        select AIC_ENV_INTERFACE
+        select AIC_AB_SYSTEM_INTERFACE
+        default y
+
+    config OTA_DATA_DIRECT
+        bool "Use single data partition"
+        default n
+
+    config OTA_RODATA_DIRECT
+        bool "Use single rodata partition"
+        default n
+endif

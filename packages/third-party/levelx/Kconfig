@@ -1,0 +1,12 @@
+
+# Kconfig file for package LevelX
+menuconfig LPKG_USING_LEVELX
+    bool "LevelX: A high-performance embedded file layer"
+    default n
+
+if LPKG_USING_LEVELX
+        config AIC_LX_SECTOR_MAPPING_CACHE_SIZE
+            int "lx nor sector mapping cache size"
+            default 256
+
+endif

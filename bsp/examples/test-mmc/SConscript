@@ -1,0 +1,13 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('KERNEL_RTTHREAD') and GetDepend('AIC_MMC_TEST'):
+    src += Glob('test_mmc.c')
+
+group = DefineGroup('test-mmc', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

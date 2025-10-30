@@ -1,0 +1,10 @@
+#-----------------------------
+# asr wlan devices local parameter
+#-----------------------------
+
+menu "asr wlan Parameter"
+
+    config AIC_DEV_ASR_RST_GPIO
+        string "asr wlan0 reset on gpio"
+
+endmenu

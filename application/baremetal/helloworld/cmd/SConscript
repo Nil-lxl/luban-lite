@@ -1,0 +1,16 @@
+# RT-Thread building script for component
+
+from building import *
+
+Import('rtconfig')
+
+cwd     = GetCurrentDir()
+src     = Glob('reset.c')
+src     += Glob('mem.c')
+
+CPPPATH = [cwd]
+ASFLAGS = ''
+
+group = DefineGroup('BLCMD', src, depend = [''], CPPPATH = CPPPATH, ASFLAGS = ASFLAGS)
+
+Return('group')

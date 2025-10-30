@@ -1,0 +1,25 @@
+from building import *
+
+cwd = GetCurrentDir()
+
+src = Glob('./bitmath.c')
+src += Glob('./fixed.c')
+src += Glob('./float.c')
+src += Glob('./format.c')
+src += Glob('./lpc.c')
+src += Glob('./md5.c')
+src += Glob('./memory.c')
+src += Glob('./crc.c')
+src += Glob('./cpu.c')
+src += Glob('./bitreader.c')
+src += Glob('./stream_decoder.c')
+
+if GetDepend('LPKG_LIBFLAC_DECODER_DEMO'):
+    src += Glob('./test_decoder.c')
+
+
+CPPPATH = [cwd]
+group = DefineGroup('libFLAC', src, depend = ['LPKG_USING_LIBFLAC'], CPPPATH = CPPPATH)
+
+Return('group')
+

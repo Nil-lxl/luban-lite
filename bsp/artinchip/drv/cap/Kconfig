@@ -1,0 +1,72 @@
+#-----------------------------
+# CAP devices local parameter
+#-----------------------------
+
+# CAP0 parameter
+
+menu "CAP0 Parameter"
+    depends on AIC_USING_CAP0
+
+    config AIC_CAP0_FLT_SEL
+        int "CAP0 filter seclect"
+        range 0 15
+        default 0
+endmenu
+
+# CAP1 parameter
+
+menu "CAP1 Parameter"
+    depends on AIC_USING_CAP1
+
+    config AIC_CAP1_FLT_SEL
+        int "CAP1 filter seclect"
+        range 0 15
+        default 0
+endmenu
+
+# CAP2 parameter
+
+menu "CAP2 Parameter"
+    depends on AIC_USING_CAP2
+
+    config AIC_CAP2_FLT_SEL
+        int "CAP2 filter seclect"
+        range 0 15
+        default 0
+endmenu
+
+# CAP3 parameter
+
+menu "CAP3 Parameter"
+    depends on AIC_USING_CAP3
+
+    config AIC_CAP3_FLT_SEL
+        int "CAP3 filter seclect"
+        range 0 15
+        default 0
+endmenu
+
+# CAP4 parameter
+
+menu "CAP4 Parameter"
+    depends on AIC_USING_CAP4
+
+    config AIC_CAP4_FLT_SEL
+        int "CAP4 filter seclect"
+        range 0 15
+        default 0
+endmenu
+
+# CAP5 parameter
+
+menu "CAP5 Parameter"
+    depends on AIC_USING_CAP5
+
+    config AIC_CAP5_FLT_SEL
+        int "CAP5 filter seclect"
+        range 0 15
+        default 0
+endmenu
+
+# common parameter
+

@@ -1,0 +1,21 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+
+src = []
+if GetDepend('KERNEL_BAREMETAL') and GetDepend('AIC_SPINAND_DRV_TEST'):
+    src += Glob('spinand.c')
+    src += Glob('spinand_benchmark.c')
+    src += Glob('spinand_bbt_cmd.c')
+
+if GetDepend('KERNEL_BAREMETAL') and GetDepend('AIC_EXAMPLE') and GetDepend('AIC_SPINAND_DRV_TEST'):
+    src += Glob('spinand_nftl_example.c')
+    src += Glob('spinand_bbt_example.c')
+    src += Glob('spinand_example.c')
+
+group = DefineGroup('test-spinand', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

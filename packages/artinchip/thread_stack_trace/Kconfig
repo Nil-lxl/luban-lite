@@ -1,0 +1,4 @@
+config AIC_USING_THREAD_STACK_TRACE
+    bool "ArtInChip thread stack trace back"
+    default y
+    depends on RT_USING_FINSH

@@ -1,0 +1,14 @@
+config AIC_PSADC_DRV_POLL
+    default n
+    bool "Enable poll mode"
+
+choice
+    prompt "Select trigger source"
+        default AIC_PSADC_TRIG_BY_SOFT
+
+    config AIC_PSADC_TRIG_BY_SOFT
+        bool "Trigger by software"
+
+    config AIC_PSADC_TRIG_BY_EPWM
+        bool "Trigger by EPWM"
+endchoice

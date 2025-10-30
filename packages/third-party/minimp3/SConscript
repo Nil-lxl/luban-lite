@@ -1,0 +1,11 @@
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+#src += Glob('./minimp3_test.c')
+
+CPPPATH = [cwd]
+
+group = DefineGroup('libminimp3', src, depend = ['LPKG_USING_MINIMP3'], CPPPATH = CPPPATH)
+
+Return('group')

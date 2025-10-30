@@ -1,0 +1,12 @@
+
+menuconfig LPKG_USING_LIBFLAC
+    bool "FLAC: Free Lossless Audio Codec."
+    default n
+
+if LPKG_USING_LIBFLAC
+
+    config LPKG_LIBFLAC_DECODER_DEMO
+        bool "libFLAC decoder demo."
+        default n
+
+endif

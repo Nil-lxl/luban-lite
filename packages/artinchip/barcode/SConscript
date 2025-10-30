@@ -1,0 +1,17 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+
+LIBS = ['decoder.a']
+LIBPATH = [cwd + "/lib/"]
+
+if GetDepend('AIC_USING_BARCODE_DEMO'):
+    src = Glob('*.c')
+
+group = DefineGroup('aic_barcode_demo', src, depend = ['AIC_USING_BARCODE_DEMO'], CPPPATH = CPPPATH, LIBS=LIBS, LIBPATH=LIBPATH)
+
+Return('group')

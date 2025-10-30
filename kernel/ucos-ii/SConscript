@@ -1,0 +1,21 @@
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+path = [cwd + '/Source']
+path += [cwd + '/Cfg/Template']
+
+path += [cwd + '/Ports/RISC-V/RV64/GCC']
+
+src = Glob('*.c')
+src += Glob('Source/ucos_ii.c')
+src += Glob('Ports/entry.c')
+
+src += Glob('Ports/RISC-V/RV64/GCC/*.c')
+src += Glob('Ports/RISC-V/RV64/GCC/*.S')
+
+myccflags = (' -w')
+
+group = DefineGroup('ucos-ii', src, depend = ['KERNEL_UCOS_II'], CPPPATH = path, LOCAL_CFLAGS=myccflags)
+
+Return('group')

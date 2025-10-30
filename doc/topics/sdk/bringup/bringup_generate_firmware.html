@@ -1,0 +1,451 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="每一块开发板可以对应一个工程，工程的代码存放于 target/ic/ 目录下。 关于代码结构的详细说明，可查看 准备代码 。 在进行工程编译前，可以使用已有的工程，也可以建一个给开发板使用的独立工程。 选择已有工程 遵照以下优先级顺序选择一个合适的工程，减少修改配置的工作量： 主控: D21x、D13x、D21x 系统：RT-Thread、FreeRTOS ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/bringup/lite-bringup-prepare.html"/><meta name="DC.relation" content="../../../topics/sdk/bringup/bringup-update-config.html"/><meta name="DC.relation" content="../../../topics/sdk/bringup/lite-bringup-soc.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-05-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="bringup-generate-firmware"/><title>生成固件</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="bringup-generate-firmware-d3752e2081"/><meta name="wh-source-relpath" content="topics/sdk/bringup/bringup_generate_firmware.dita"/><meta name="wh-out-relpath" content="topics/sdk/bringup/bringup_generate_firmware.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
+
+    <body id="bringup-generate-firmware" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html">BringUp</a><div class="wh-tooltip"><p class="shortdesc">主要描述板卡的各项配置，使 SDK 的环境和板卡匹配，并确保 SDK 编译后的固件能够在板子上正常运行。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-prepare.html">准备工作</a></div></div></li><li class="active"><div class="topicref" data-id="bringup-generate-firmware"><div class="title"><a href="../../../topics/sdk/bringup/bringup_generate_firmware.html">生成固件</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/bringup/bringup-update-config.html" title="修改配置文件" aria-label="上一主题: 修改配置文件" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/bringup/lite-bringup-soc.html" title="引脚配置" aria-label="下一主题: 引脚配置" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3752e463" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3752e463-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e480" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3752e480-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e604" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e604-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3752e604-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3752e1004" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3752e1004-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3752e1004-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1848" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1848-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3752e1848-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e2022" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e2022-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3752e2022-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">主要描述板卡的各项配置，使 SDK 的环境和板卡匹配，并确保 SDK 编译后的固件能够在板子上正常运行。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e2039" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e2039-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-prepare.html" id="id-d3752e2039-link">准备工作</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="bringup-prepare-git-repo-d3752e2053" class="topicref" data-id="bringup-prepare-git-repo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/bringup-prepare-git-repo.html" id="bringup-prepare-git-repo-d3752e2053-link">创建 Git 仓库</a></div></div></li><li role="treeitem"><div data-tocid="bringup-update-config-d3752e2067" class="topicref" data-id="bringup-update-config" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/bringup-update-config.html" id="bringup-update-config-d3752e2067-link">修改配置文件</a></div></div></li><li role="treeitem" class="active"><div data-tocid="bringup-generate-firmware-d3752e2081" class="topicref" data-id="bringup-generate-firmware" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/bringup_generate_firmware.html" id="bringup-generate-firmware-d3752e2081-link">生成固件</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="id-d3752e2097" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-soc.html" id="id-d3752e2097-link">引脚配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e2111" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-ram.html" id="id-d3752e2111-link">内存配置</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2125" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2125-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-storage.html" id="id-d3752e2125-link">存储配置</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2233" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2233-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/partition_config_2.html" id="id-d3752e2233-link">配置分区</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e2277" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-console.html" id="id-d3752e2277-link">调试配置</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2291" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2291-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-display.html" id="id-d3752e2291-link">屏幕配置</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e2403" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/lite-bringup-samples.html" id="id-d3752e2403-link">示例程序</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2418" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2418-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3752e2418-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/bringup/bringup_generate_firmware.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">生成固件</h1>
+    <div class="date inPage">16 May 2025</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div>
+    <div class="- topic/body body">
+        <p class="- topic/p p" data-ofbid="d32858e28__20250519091504">每一块开发板可以对应一个工程，工程的代码存放于 <span class="+ topic/ph sw-d/filepath ph filepath">target/ic/</span> 目录下。 关于代码结构的详细说明，可查看<a class="- topic/xref xref" href="../env/sourcecode.html">准备代码</a>。</p>
+        <p class="- topic/p p" data-ofbid="d32858e38__20250519091504">在进行工程编译前，可以使用已有的工程，也可以建一个给开发板使用的独立工程。</p>
+        <section class="- topic/section section" id="bringup-generate-firmware__section_sxv_mwm_1fc" data-ofbid="bringup-generate-firmware__section_sxv_mwm_1fc"><h2 class="- topic/title title sectiontitle">选择已有工程</h2>
+            
+            <div class="- topic/p p" data-ofbid="d32858e46__20250519091504">遵照以下优先级顺序选择一个合适的工程，减少修改配置的工作量：<ul class="- topic/ul ul" id="bringup-generate-firmware__ul_anl_prv_1dc" data-ofbid="bringup-generate-firmware__ul_anl_prv_1dc">
+                    <li class="- topic/li li" data-ofbid="d32858e50__20250519091504">
+                        <p class="- topic/p p" data-ofbid="d32858e52__20250519091504">主控: D21x、D13x、D21x</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d32858e56__20250519091504">
+                        <p class="- topic/p p" data-ofbid="d32858e58__20250519091504">系统：RT-Thread、FreeRTOS</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d32858e62__20250519091504">
+                        <p class="- topic/p p" data-ofbid="d32858e64__20250519091504">存储：SPINAND、SPINOR、eMMC</p>
+                    </li>
+                    
+                    
+                </ul></div>
+            
+            <div class="table-container"><table class="- topic/table table docutils align-default frame-all" id="bringup-generate-firmware__table_bnl_prv_1dc" data-ofbid="bringup-generate-firmware__table_bnl_prv_1dc" data-cols="7"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">工程文件优先级顺序</span></caption><colgroup><col style="width:14.164305949008499%"/><col style="width:14.164305949008499%"/><col style="width:14.164305949008499%"/><col style="width:14.164305949008499%"/><col style="width:14.164305949008499%"/><col style="width:14.589235127478753%"/><col style="width:14.589235127478753%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="bringup-generate-firmware__table_bnl_prv_1dc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d32858e97__20250519091504">工程名称</p>
+                            </th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="bringup-generate-firmware__table_bnl_prv_1dc__entry__2">
+                                <p class="- topic/p p" data-ofbid="d32858e103__20250519091504">存储</p>
+                            </th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="bringup-generate-firmware__table_bnl_prv_1dc__entry__3">
+                                <p class="- topic/p p" data-ofbid="d32858e109__20250519091504">封装</p>
+                            </th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="bringup-generate-firmware__table_bnl_prv_1dc__entry__4">
+                                <p class="- topic/p p" data-ofbid="d32858e115__20250519091504">Memory</p>
+                            </th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="bringup-generate-firmware__table_bnl_prv_1dc__entry__5">
+                                <p class="- topic/p p" data-ofbid="d32858e121__20250519091504">屏幕</p>
+                            </th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="bringup-generate-firmware__table_bnl_prv_1dc__entry__6" colspan="2">
+                                <p class="- topic/p p" data-ofbid="d32858e128__20250519091504">其它功能</p>
+                            </th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d32858e140__20250519091504">d12x_demo68-nand</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__2">
+                                <p class="- topic/p p" data-ofbid="d32858e146__20250519091504">SPINAND</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__3">
+                                <p class="- topic/p p" data-ofbid="d32858e152__20250519091504">QFN68</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__4">
+                                <p class="- topic/p p" data-ofbid="d32858e158__20250519091504">PSRAM</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__5">
+                                <p class="- topic/p p" data-ofbid="d32858e164__20250519091504">RGB888</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__6" colspan="2">
+                                <p class="- topic/p p" data-ofbid="d32858e171__20250519091504">RS485, RS232, UART, SDIO WIFI, TFCARD</p>
+                            </td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d32858e180__20250519091504">d12x_demo68-nor</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__2">
+                                <p class="- topic/p p" data-ofbid="d32858e186__20250519091504">SPINOR</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__3">
+                                <p class="- topic/p p" data-ofbid="d32858e192__20250519091504">QFN68</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__4">
+                                <p class="- topic/p p" data-ofbid="d32858e198__20250519091504">PSRAM</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__5">
+                                <p class="- topic/p p" data-ofbid="d32858e204__20250519091504">RGB</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__6" colspan="2">
+                                <p class="- topic/p p" data-ofbid="d32858e211__20250519091504">RS485, RS232, UART, SDIO WIFI, TFCARD</p>
+                            </td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d32858e220__20250519091504">d12x_hmi-nor</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__2">
+                                <p class="- topic/p p" data-ofbid="d32858e226__20250519091504">SPINOR</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__3">
+                                <p class="- topic/p p" data-ofbid="d32858e232__20250519091504">QFN68</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__4">
+                                <p class="- topic/p p" data-ofbid="d32858e238__20250519091504">PSRAM</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__5">
+                                <p class="- topic/p p" data-ofbid="d32858e244__20250519091504">RGB</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__6" colspan="2">
+                                <p class="- topic/p p" data-ofbid="d32858e251__20250519091504">JART, TFCARD</p>
+                            </td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d32858e260__20250519091504">d13x_demo88-nand</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__2">
+                                <p class="- topic/p p" data-ofbid="d32858e266__20250519091504">SPINAND</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__3">
+                                <p class="- topic/p p" data-ofbid="d32858e272__20250519091504">QFN88</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__4">
+                                <p class="- topic/p p" data-ofbid="d32858e278__20250519091504">PSRAM</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__5">
+                                <p class="- topic/p p" data-ofbid="d32858e284__20250519091504">LVDS</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__6" colspan="2">
+                                <p class="- topic/p p" data-ofbid="d32858e291__20250519091504">RTP/CTP, UART, RTC, SDCARD, DMIC</p>
+                            </td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d32858e300__20250519091504">d13x_kunlunpi88-nor</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__2">
+                                <p class="- topic/p p" data-ofbid="d32858e306__20250519091504">SPINOR</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__3">
+                                <p class="- topic/p p" data-ofbid="d32858e312__20250519091504">QFN88</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__4">
+                                <p class="- topic/p p" data-ofbid="d32858e318__20250519091504">PSRAM</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__5">
+                                <p class="- topic/p p" data-ofbid="d32858e324__20250519091504">RGB565</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__6" colspan="2">
+                                <p class="- topic/p p" data-ofbid="d32858e331__20250519091504">CTP, SDCARD, DVP, RS485</p>
+                            </td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d32858e341__20250519091504">d21x_demo128-nand</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__2">
+                                <p class="- topic/p p" data-ofbid="d32858e347__20250519091504">SPI NAND</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__3">
+                                <p class="- topic/p p" data-ofbid="d32858e353__20250519091504">QFN128</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__4">
+                                <p class="- topic/p p" data-ofbid="d32858e359__20250519091504">128M ddr3</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__5">
+                                <p class="- topic/p p" data-ofbid="d32858e365__20250519091504">LVDS</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__6" colspan="2">
+                                <p class="- topic/p p" data-ofbid="d32858e372__20250519091504">CTP, MAC, CAN, SDCARD, USB</p>
+                            </td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__1">
+                                <p class="- topic/p p" data-ofbid="d32858e381__20250519091504">g73x_demo100-nor</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__2">
+                                <p class="- topic/p p" data-ofbid="d32858e387__20250519091504">SPINOR</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__3">
+                                <p class="- topic/p p" data-ofbid="d32858e393__20250519091504">QFN100</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__4">
+                                <p class="- topic/p p" data-ofbid="d32858e399__20250519091504">SRAM</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__5">
+                                <p class="- topic/p p" data-ofbid="d32858e405__20250519091504">QSPI</p>
+                            </td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="bringup-generate-firmware__table_bnl_prv_1dc__entry__6" colspan="2">
+                                <p class="- topic/p p" data-ofbid="d32858e412__20250519091504">CTP, 2xGMAC, SDCARD, WiFi, 2xUSB, RS485</p>
+                            </td>
+                        </tr>
+                    </tbody></table></div>
+        </section>
+        <section class="- topic/section section" id="bringup-generate-firmware__section_e4g_4wm_1fc" data-ofbid="bringup-generate-firmware__section_e4g_4wm_1fc"><h2 class="- topic/title title sectiontitle">建立新工程</h2>
+            
+            
+            <ol class="- topic/ol ol" id="bringup-generate-firmware__ol_ofs_vwm_1fc" data-ofbid="bringup-generate-firmware__ol_ofs_vwm_1fc">
+                <li class="- topic/li li" data-ofbid="d32858e428__20250519091504">使用 <span class="+ topic/keyword sw-d/cmdname keyword cmdname">add-board</span> 命令创建新板子对应的工程。该命令会参考某一个已经存在的工程建立一个全新命名的工程，
+                    参考工程的选择依然需要按照存储、屏幕和封装的优先级进行。<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__pre_cnl_prv_1dc" data-ofbid="bringup-generate-firmware__pre_cnl_prv_1dc">scons --add-board</pre></li>
+                <li class="- topic/li li" data-ofbid="d32858e436__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d32858e438__20250519091504">从芯片列表中选择板子使用的芯片，例如选择 2: D21x：</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_q4m_z4r_5dc" data-ofbid="bringup-generate-firmware__codeblock_q4m_z4r_5dc">Chip list:
+  <span class="hl-number">0</span>: d12x
+  <span class="hl-number">1</span>: d13x
+  <span class="hl-number">2</span>: d21x
+  <span class="hl-number">3</span>: g73x
+Select chip <strong class="hl-keyword">for</strong> new board(number): <span class="hl-number">2</span> 
+d21x</pre>
+                </li>
+                <li class="- topic/li li" data-ofbid="d32858e445__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d32858e447__20250519091504">根据 SDK 已有板级配置选择需要参考的配置。</p>
+                    <p class="- topic/p p" data-ofbid="d32858e450__20250519091504">参考已有配置时，按照芯片型号、存储的类型、Pin 脚数量进行选择。</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_jcj_hcs_z2c" data-ofbid="bringup-generate-firmware__codeblock_jcj_hcs_z2c">Reference defconfig:(Create new board base on selected defconfig):
+  <span class="hl-number">0</span>: d21x_d215-demo88-nand_rt-thread_helloworld_defconfig
+  <span class="hl-number">1</span>: d21x_d215-demo88-nor_rt-thread_helloworld_defconfig
+  <span class="hl-number">2</span>: d21x_demo100-nor_rt-thread_helloworld_defconfig
+  <span class="hl-number">3</span>: d21x_demo128-nand_rt-thread_helloworld_defconfig
+Select reference defconfig <strong class="hl-keyword">for</strong> new board(number): <span class="hl-number">3</span>  
+d21x_demo128-nand_rt-thread_helloworld_defconfig</pre>
+                </li>
+                <li class="- topic/li li" data-ofbid="d32858e457__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d32858e459__20250519091504">输入板级配置的名称，使用中划线隔开词语，且添加 flash 类型，比如 nand/nor。</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_d13_lcs_z2c" data-ofbid="bringup-generate-firmware__codeblock_d13_lcs_z2c">Input new board<span class="hl-string">'s name: custom-board-nand 
+</span>custom-board-nand</pre>
+                </li>
+                <li class="- topic/li li" data-ofbid="d32858e466__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d32858e468__20250519091504">点击回车使用默认的应用名称，也可以输入其他名字后点击回车。</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_ih4_tcs_z2c" data-ofbid="bringup-generate-firmware__codeblock_ih4_tcs_z2c">Input new app<span class="hl-string">'s name: (default helloworld)  
+</span>helloworld</pre>
+                </li>
+                <li class="- topic/li li" data-ofbid="d32858e476__20250519091504">
+                    <p class="- topic/p p" data-ofbid="d32858e478__20250519091504">输入厂商名称，串口调试终端可以看到厂商名称：</p>
+                    <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_mjf_ycs_z2c" data-ofbid="bringup-generate-firmware__codeblock_mjf_ycs_z2c">Input manufacturer<span class="hl-string">'s name: custom
+</span>custom   
+
+Copy D:\<span class="hl-number">03</span>_code\luban-lite_v1r1r1\luban-lite\target\configs\d21x_demo128-nand_rt-thread_helloworld_defconfig to D:\<span class="hl-number">03</span>_code\luban-lite_v1r1r1\luban-lite\target\configs\d21x_custom-board-nand_rt-thread_helloworld_defconfig
+Copy D:\<span class="hl-number">03</span>_code\luban-lite_v1r1r1\luban-lite\target\configs\d21x_demo128-nand_baremetal_bootloader_defconfig to D:\<span class="hl-number">03</span>_code\luban-lite_v1r1r1\luban-lite\target\configs\d21x_custom-board-nand_baremetal_bootloader_defconfig
+Copy D:\<span class="hl-number">03</span>_code\luban-lite_v1r1r1\luban-lite\target\d21x\demo128-nand to D:\<span class="hl-number">03</span>_code\luban-lite_v1r1r1\luban-lite\target\d21x\custom-board-nand
+Add board custom-board-nand <strong class="hl-keyword">for</strong> custom succeed!</pre>
+                </li>
+                <li class="- topic/li li" data-ofbid="d32858e485__20250519091504">
+                    <div class="- topic/p p" data-ofbid="d32858e487__20250519091504">选择合适的工程后，可以使用以下命令编译工程：<ul class="- topic/ul ul" id="bringup-generate-firmware__ul_pb3_dhp_rdc" data-ofbid="bringup-generate-firmware__ul_pb3_dhp_rdc">
+                            <li class="- topic/li li" data-ofbid="d32858e491__20250519091504">
+                                <p class="- topic/p p" data-ofbid="d32858e493__20250519091504">列出当前所有的工程默认配置：</p>
+                                <pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__pre_dnl_prv_1dc" data-ofbid="bringup-generate-firmware__pre_dnl_prv_1dc">list</pre>
+                                <div class="- topic/p p" data-ofbid="d32858e499__20250519091504">输出结果示例如下：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_gqp_v5n_y2c" data-ofbid="bringup-generate-firmware__codeblock_gqp_v5n_y2c">list
+scons: Reading SConscript files ...
+Built-in configs:
+  <span class="hl-number">0.</span> d12x_demo68-nand_rt-thread_helloworld
+  <span class="hl-number">1.</span> d12x_demo68-nor_rt-thread_helloworld
+  <span class="hl-number">2.</span> d12x_hmi-nor_rt-thread_helloworld
+  <span class="hl-number">3.</span> d13x_demo68-nor_rt-thread_helloworld
+  <span class="hl-number">4.</span> d13x_demo88-nand_rt-thread_helloworld
+  <span class="hl-number">5.</span> d13x_demo88-nor_rt-thread_helloworld
+  <span class="hl-number">6.</span> d13x_hspi100-nor_rt-thread_helloworld
+  <span class="hl-number">7.</span> d13x_kunlunpi88-nor_rt-thread_helloworld
+  <span class="hl-number">8.</span> d21x_custom-board-nand_rt-thread_helloworld   <em class="hl-comment">//新生成的配置</em>
+  <span class="hl-number">9.</span> d21x_d215-demo88-nand_rt-thread_helloworld
+ <span class="hl-number">10.</span> d21x_d215-demo88-nor_rt-thread_helloworld
+ <span class="hl-number">11.</span> d21x_demo100-nor_rt-thread_helloworld
+ <span class="hl-number">12.</span> d21x_demo128-nand_rt-thread_helloworld
+ <span class="hl-number">13.</span> g73x_demo100-nor_rt-thread_helloworld
+ <span class="hl-number">14.</span> g73x_demo68-nor_rt-thread_helloworld
+ <span class="hl-number">15.</span> g73x_scan_rt-thread_helloworld</pre></div>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d32858e507__20250519091504">
+                                <div class="- topic/p p" data-ofbid="d32858e509__20250519091504">加载应用其中一条工程配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_gcv_chp_rdc" data-ofbid="bringup-generate-firmware__codeblock_gcv_chp_rdc">lunch &lt;配置编号&gt;</pre></div>
+                                <div class="- topic/p p" data-ofbid="d32858e514__20250519091504">比如应用第八个配置：<pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_s4l_y5n_y2c" data-ofbid="bringup-generate-firmware__codeblock_s4l_y5n_y2c">lunch <span class="hl-number">8</span></pre><pre class="+ topic/pre pr-d/codeblock pre codeblock language-c" id="bringup-generate-firmware__codeblock_fkl_j4r_bfc" data-ofbid="bringup-generate-firmware__codeblock_fkl_j4r_bfc">scons: Reading SConscript files ...
+Load config from target\configs\d21x_custom-board-nand_rt-thread_helloworld_defconfig</pre></div>
+                            </li>
+                        </ul></div>
+                </li>
+            </ol>
+            
+            <p class="- topic/p p" data-ofbid="d32858e525__20250519091504">准备工作完成后即可顺利编译出固件。</p>
+        </section>
+    </div>
+</article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#bringup-generate-firmware__section_sxv_mwm_1fc" data-tocid="bringup-generate-firmware__section_sxv_mwm_1fc">选择已有工程</a></div></li><li class="section-item"><div class="section-title"><a href="#bringup-generate-firmware__section_e4g_4wm_1fc" data-tocid="bringup-generate-firmware__section_e4g_4wm_1fc">建立新工程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style>
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    </style>
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-05-19
+    </div>        
+  </div> 
+  
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

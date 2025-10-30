@@ -1,0 +1,150 @@
+menuconfig LPKG_USING_LLMCHAT
+    bool "Large Language Models for RT-Thread"
+    default n
+
+if LPKG_USING_LLMCHAT
+
+    menuconfig LPKG_LLM_API_KEY_SELECT
+        bool "Select LLM API Key"
+        default n
+        help
+            Choose predefined API keys for LLM service
+
+    if LPKG_LLM_API_KEY_SELECT
+        choice
+            prompt "API Key Options"
+            default LPKG_LLM_API_KEY_OPTION1
+
+            config LPKG_LLM_API_KEY_OPTION1
+                bool "Deepseek"
+
+            config LPKG_LLM_API_KEY_OPTION2
+                bool "DouBao"
+
+            config LPKG_LLM_API_KEY_OPTION3
+                bool "Qwen"
+
+            config LPKG_LLM_API_KEY_INPUT
+                bool "Input API key"
+
+        endchoice
+
+        if LPKG_LLM_API_KEY_INPUT
+            config LPKG_LLM_API_KEY_INPUT_PRIVATE
+                string "Input the api Key"
+                default ""
+                help
+                    Enter your API key here
+        endif
+
+        config LPKG_LLM_API_KEY
+            string
+            default "sk-59c5a6f506fa4c01b87f91c983497197"   if LPKG_LLM_API_KEY_OPTION1
+            default "e888522a-1771-42c2-b3b5-b6d27d456dc5"  if LPKG_LLM_API_KEY_OPTION2
+            default "sk-xheizvzayhbxgqvycgfhfteaqbzndofkvlggvmxflyhxeepl"   if LPKG_LLM_API_KEY_OPTION3
+            default LPKG_LLM_API_KEY_INPUT_PRIVATE if LPKG_LLM_API_KEY_INPUT
+    endif
+
+    menuconfig LPKG_LLM_MODEL_SELECT
+        bool "Select LLM Model"
+        default n
+        help
+            Choose available language models
+
+    if LPKG_LLM_MODEL_SELECT
+        choice
+            prompt "Model Options"
+            default LPKG_LLM_MODEL_OPTION1
+
+            config LPKG_LLM_MODEL_OPTION1
+                bool "Deepseek V3"
+
+            config LPKG_LLM_MODEL_OPTION2
+                bool "DouBao-1.5 Pro"
+
+            config LPKG_LLM_MODEL_OPTION3
+                bool "Qwen2.5"
+
+            config LPKG_LLM_MODEL_INPUT
+                bool "Input Model Name"
+
+        endchoice
+
+        if LPKG_LLM_MODEL_INPUT
+            config LPKG_LLM_MODEL_INPUT_PRIVATE
+                string "Input the model name"
+                default ""
+                help
+                    Enter your model name here
+        endif
+
+        config LPKG_LLM_MODEL_NAME
+            string
+            default "deepseek-chat"              if LPKG_LLM_MODEL_OPTION1
+            default "doubao-1-5-pro-256k-250115" if LPKG_LLM_MODEL_OPTION2
+            default "Qwen/Qwen2.5-7B-Instruct"   if LPKG_LLM_MODEL_OPTION3
+            default LPKG_LLM_MODEL_INPUT_PRIVATE if LPKG_LLM_MODEL_INPUT
+    endif
+
+    menuconfig LPKG_LLM_API_URL_SELECT
+        bool "Select API Endpoint"
+        default n
+        help
+            Choose API service endpoint
+
+    if LPKG_LLM_API_URL_SELECT
+        choice
+            prompt "API URL Options"
+            default LPKG_LLM_API_URL_OPTION1
+
+            config LPKG_LLM_API_URL_OPTION1
+                bool "DeepSeek API URL"
+
+            config LPKG_LLM_API_URL_OPTION2
+                bool "DouBao API URL"
+
+            config LPKG_LLM_API_URL_OPTION3
+                bool "QWEN API URL"
+
+            config LPKG_LLM_API_URL_INPUT
+                bool "Input the api url"
+
+        endchoice
+
+        if LPKG_LLM_API_URL_INPUT
+            config LPKG_LLM_API_URL_INPUT_PRIVATE
+                string "Input the api url"
+                default ""
+                help
+                    Enter your api url here
+        endif
+
+        config LPKG_LLM_DEEPSEEK_API_URL
+            string
+            default "https://api.deepseek.com/chat/completions" if LPKG_LLM_API_URL_OPTION1
+            default "https://ark.cn-beijing.volces.com/api/v3/chat/completions" if LPKG_LLM_API_URL_OPTION2
+            default "https://api.siliconflow.cn/v1/chat/completions" if LPKG_LLM_API_URL_OPTION3
+            default LPKG_LLM_API_URL_INPUT_PRIVATE if LPKG_LLM_API_URL_INPUT
+    endif
+
+    config LPKG_LLM_THREAD_STACK_SIZE
+        int "LLM THREAD SIZE"
+        default "10240"
+
+    config LPKG_LLM_CMD_BUFFER_SIZE
+        int "LLM CMD INPUT BUFFER SIZE"
+        default "256"
+
+    config LPKG_WEB_SORKET_BUFSZ
+        int "LLM CMD SESSION BUFFER SIZE"
+        default "4096"
+
+    config LPKG_LLMCHAT_STREAM
+        bool "Enable llmchat http stream"
+        default n
+
+    config LPKG_LLMCHAT_DBG
+        bool "Enable llmchat debug"
+        default n
+
+endif

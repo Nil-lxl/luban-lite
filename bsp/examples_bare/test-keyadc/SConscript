@@ -1,0 +1,13 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('KERNEL_BAREMETAL') and GetDepend('AIC_KEYADC_TEST'):
+    src += Glob('test_keyadc.c')
+
+group = DefineGroup('test-keyadc', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

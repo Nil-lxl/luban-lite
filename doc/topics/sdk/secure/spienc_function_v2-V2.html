@@ -1,0 +1,337 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍了 SPI Flash 防抄板方案 V2 的详细配置说明，以 D12x 开发板为例。 本方案通过使用 D12x 的 SPIENC 总线加密功能来实现防抄板，结合实际使用的需求，提供对应的软件方案。 SPIENC 总线加密 SPIENC 总线加密功能是一个芯片硬件支持的安全功能。芯片使能了 SPIENC 后，内部的 SPIENC 模块对 SPI ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="../../../topics/sdk/secure/spi_flash_enc_function.html"/><meta name="DC.relation" content="../../../topics/sdk/secure/spinenc-efuse-and-firmware-combined-V1.html"/><meta name="DC.relation" content="../../../topics/sdk/secure/spienc-generate-efuse-V2.html"/><meta name="DC.relation" content="../../../topics/sdk/secure/spienc-generate-efuse-V2.html"/><meta name="DC.relation" content="../../../topics/sdk/secure/spienc-generate-production-firmware-V2.html"/><meta name="DC.relation" content="../../../topics/sdk/secure/spinenc-efuse-and-firmware-combined-V2.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.creator" content="yan.wang"/><meta name="DC.date.modified" content="2025-05-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="id"/><meta name="DC.language" content="zh-CN"/><title>方案 V2</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="id-d3752e1567"/><meta name="wh-source-relpath" content="topics/sdk/secure/spienc_function_v2.dita"/><meta name="wh-out-relpath" content="topics/sdk/secure/spienc_function_v2-V2.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
+
+    <body id="id" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="concept_rcx_czh_pzb"><div class="title"><a href="../../../topics/sdk/chapter-app.html">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html">安全方案</a></div></div></li><li><div class="topicref" data-id="spi-flash-enc-function"><div class="title"><a href="../../../topics/sdk/secure/spi_flash_enc_function.html">SPI Flash 防抄板方案</a></div></div></li><li class="active"><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/secure/spienc_function_v2-V2.html">方案 V2</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/secure/spinenc-efuse-and-firmware-combined-V1.html" title="eFuse 与固件合并烧录" aria-label="上一主题: eFuse 与固件合并烧录" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/secure/spienc-generate-efuse-V2.html" title="烧录 eFuse" aria-label="下一主题: 烧录 eFuse" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3752e463" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3752e463-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e480" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3752e480-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e604" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e604-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3752e604-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_rcx_czh_pzb-d3752e1004" class="topicref" data-id="concept_rcx_czh_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_rcx_czh_pzb-d3752e1004-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3752e1004-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3752e1021" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/usb/udisk.html" id="id-d3752e1021-link">挂载 U 盘 </a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e1035" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/sdmc/sdcard.html" id="id-d3752e1035-link">挂载 SD 卡</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1049" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1049-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burnsys_user_guide.html" id="id-d3752e1049-link">系统更新</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1163" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1163-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/ota/ota_guide.html" id="id-d3752e1163-link">OTA 方案</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1283" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1283-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/xip/xip_user_guide.html" id="id-d3752e1283-link">XIP 方案 </a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1372" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1372-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/dm.html" id="id-d3752e1372-link">动态加载 (DM-APP)</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e1442" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e1442-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/chapter-secure.html" id="id-d3752e1442-link">安全方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="id-d3752e1456" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/firmware_encryption_with_spienc.html" id="id-d3752e1456-link">固件加密-SPIENC</a></div></div></li><li role="treeitem"><div data-tocid="hw_authentication-d3752e1470" class="topicref" data-id="hw_authentication" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/hw_authorization.html" id="hw_authentication-d3752e1470-link">硬件授权认证 </a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="spi-flash-enc-function-d3752e1484" class="topicref" data-id="spi-flash-enc-function" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action spi-flash-enc-function-d3752e1484-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spi_flash_enc_function.html" id="spi-flash-enc-function-d3752e1484-link">SPI Flash 防抄板方案</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="spienc_function-d3752e1498" class="topicref" data-id="spienc_function" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spienc_function-d3752e1498-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spienc_function_v1-V1.html" id="spienc_function-d3752e1498-link">方案 V1</a></div></div></li><li role="treeitem" aria-expanded="true" class="active"><div data-tocid="id-d3752e1567" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e1567-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spienc_function_v2-V2.html" id="id-d3752e1567-link">方案 V2</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="spienc-generate-efuse-d3752e1581" class="topicref" data-id="spienc-generate-efuse" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spienc-generate-efuse-V2.html" id="spienc-generate-efuse-d3752e1581-link">烧录 eFuse</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="spienc-generate-production-firmware-d3752e1597" class="topicref" data-id="spienc-generate-production-firmware" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spienc-generate-production-firmware-V2.html" id="spienc-generate-production-firmware-d3752e1597-link">生成量产固件</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li role="treeitem"><div data-tocid="spinenc-efuse-and-firmware-combined-d3752e1613" class="topicref" data-id="spinenc-efuse-and-firmware-combined" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/secure/spinenc-efuse-and-firmware-combined-V2.html" id="spinenc-efuse-and-firmware-combined-d3752e1613-link">eFuse 与固件合并烧录</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li></ul></li></ul></li></ul></li><li role="treeitem"><div data-tocid="mkfs_partition_image-d3752e1636" class="topicref" data-id="mkfs_partition_image" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/mkfs_partition_image.html" id="mkfs_partition_image-d3752e1636-link">制作分区镜像</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1650" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1650-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/burnsys/burner_offline_lite.html" id="id-d3752e1650-link">离线烧录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb_display-d3752e1706" class="topicref" data-id="usb_display" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb_display-d3752e1706-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/usb-display.html" id="usb_display-d3752e1706-link">USB Display 方案</a></div></div></li><li role="treeitem"><div data-tocid="backtrace-d3752e1833" class="topicref" data-id="backtrace" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/app/backtrace.html" id="backtrace-d3752e1833-link">Backtrace 栈回溯</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1848" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1848-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3752e1848-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2022" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2022-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3752e2022-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">主要描述板卡的各项配置，使 SDK 的环境和板卡匹配，并确保 SDK 编译后的固件能够在板子上正常运行。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2418" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2418-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3752e2418-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/secure/spienc_function_v2.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">方案 V2</h1>
+    <div class="date inPage">16 May 2025</div><div style="color: gray;">
+                    Read time: 2 minute(s)
+                </div>
+    <div class="- topic/body body">
+        <p class="- topic/p p" data-ofbid="d187954e31__20250519091526">本节介绍了 SPI Flash 防抄板方案 V2 的详细配置说明，以 D12x 开发板为例。</p>
+        <p class="- topic/p p" id="id__p_ppw_qsd_jdc" data-ofbid="id__p_ppw_qsd_jdc">本方案通过使用 D12x 的 SPIENC 总线加密功能来实现防抄板，结合实际使用的需求，提供对应的软件方案。</p>
+        <section class="- topic/section section" id="id__section_kw2_gqx_52c" data-ofbid="id__section_kw2_gqx_52c"><h2 class="- topic/title title sectiontitle">SPIENC 总线加密</h2>
+            
+            <div class="- topic/div div" id="id__div_i3t_jvp_pdc">
+                <div class="- topic/div div" id="id__div_v32_nsd_jdc">
+                    <p class="- topic/p p" data-ofbid="d187954e46__20250519091526">SPIENC 总线加密功能是一个芯片硬件支持的安全功能。芯片使能了 SPIENC 后，内部的 SPIENC 模块对 SPI
+                        总线上传输的数据进行实时的加密或解密，即对写出去的数据进行 AES 加密，读回来的数据进行 AES 解密， 使得保存在 Flash
+                        上的数据总是密文。</p>
+                    <p class="- topic/p p" data-ofbid="d187954e49__20250519091526">SPIENC 进行加解密时，使用芯片 eFuse 中特定密钥区域中的密钥对数据进行加密和解密，该密钥区域可以做到烧录后 CPU 不可读写，在芯片内部也仅有
+                        SPIENC 模块能够访问，因此可以做到硬件安全保密。</p>
+                    <div class="- topic/p p" data-ofbid="d187954e52__20250519091526">启用 SPIENC 需要：<ol class="- topic/ol ol simple" id="id__ul_bn4_dp4_fdc" data-ofbid="id__ul_bn4_dp4_fdc">
+                            <li class="- topic/li li" data-ofbid="d187954e56__20250519091526">
+                                <p class="- topic/p p" data-ofbid="d187954e58__20250519091526"> 在芯片中烧录特有的的 AES 密钥，并且将相关密钥区域设置为仅 SPIENC 可访问。</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d187954e62__20250519091526">
+                                <p class="- topic/p p" data-ofbid="d187954e64__20250519091526"> 提供对应的加密固件。</p>
+                            </li>
+                            <li class="- topic/li li" data-ofbid="d187954e68__20250519091526">
+                                <p class="- topic/p p" data-ofbid="d187954e70__20250519091526">对 AES 密钥进行妥善管理，防止泄露。</p>
+                            </li>
+                        </ol></div>
+                    <p class="- topic/p p" data-ofbid="d187954e75__20250519091526">此时芯片和对应的固件就被绑定在一起，提供出去的固件，只能运行在烧录了对应加密密钥的芯片上； 烧录了密钥的芯片，也只能运行使用对应密钥加密后的固件。</p>
+                </div>
+            </div>
+        </section>
+        <section class="- topic/section section" id="id__section_m42_bfx_52c" data-ofbid="id__section_m42_bfx_52c"><h2 class="- topic/title title sectiontitle">SPI ENC 功能对应的 eFuse 烧录信息</h2>
+            
+            <div class="- topic/p p" data-ofbid="d187954e86__20250519091526">D12x 使能 SPIENC 功能，需要烧录的 eFuse 信息如下：<ul class="- topic/ul ul" id="id__ol_ddj_ffx_52c" data-ofbid="id__ol_ddj_ffx_52c">
+                    <li class="- topic/li li" data-ofbid="d187954e90__20250519091526">
+                        <p class="- topic/p p" data-ofbid="d187954e92__20250519091526">SECURE 区域中的 SPI_ENC_EN 位。</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d187954e96__20250519091526">
+                        <p class="- topic/p p" data-ofbid="d187954e98__20250519091526">SPI_ENC KEY 区域中的密钥内容。</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d187954e102__20250519091526">
+                        <p class="- topic/p p" data-ofbid="d187954e104__20250519091526">DIS RD/DIS WR 区域中，关于 SPI_ENC KEY 的读写禁止位。</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d187954e108__20250519091526">
+                        <p class="- topic/p p" data-ofbid="d187954e110__20250519091526">SECURE 区域中的 JTAG_LOCK 位（可选，关闭 JTAG 更安全）。</p>
+                    </li>
+                </ul></div>
+            <div class="- topic/note note note note_note" id="id__note_fqk_3fx_52c" data-ofbid="id__note_fqk_3fx_52c"><span class="note__title">注：</span> 
+                <p class="- topic/p p" data-ofbid="d187954e117__20250519091526">相关信息可参考芯片用户手册 &gt; 安全 &gt; SID 章节。</p>
+            </div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__id19" data-ofbid="id__id19" data-cols="8"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 1</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">eFuse 空间划分</span></caption><colgroup><col style="width:16.35027556644213%"/><col style="width:6.613594611145131%"/><col style="width:7.348438456827923%"/><col style="width:8.87936313533374%"/><col style="width:6.123698714023269%"/><col style="width:6.919779546846295%"/><col style="width:8.695652173913041%"/><col style="width:39.069197795468455%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id19__entry__1">用途</th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id19__entry__2">位数</th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id19__entry__3">地址</th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id19__entry__4">禁止位</th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id19__entry__5">禁写</th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id19__entry__6">禁读</th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id19__entry__7">归属</th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__id19__entry__8">备注</th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__1">DIS</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__2">32</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__3">0~3</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__4">0</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__5">-</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__6">-</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__7">CSTM</td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id19__entry__8">每位对应 1 个 32bits 空间 <ul class="- topic/ul ul" id="id__ul_mfm_vgx_52c" data-ofbid="id__ul_mfm_vgx_52c">
+                                    <li class="- topic/li li" data-ofbid="d187954e206__20250519091526">15:00 eFuse 读禁止配置</li>
+                                    <li class="- topic/li li" data-ofbid="d187954e209__20250519091526">31:16 eFuse 写禁止配置</li>
+                                </ul></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__1">BROM_SECURE</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__2">32</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__3">4~7</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__4">1</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__5">V</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__6">-</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__7">CSTM</td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id19__entry__8">BROM 参数配置区域</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__1">CALI</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__2">64</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__3">8~F</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__4">2~3</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__5">V</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__6">-</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__7">AIC</td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id19__entry__8">模拟校准使用</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__1">CHIP ID</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__2">128</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__3">10~1F</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__4">4~7</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__5">V</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__6">-</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__7">AIC</td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id19__entry__8">芯片编号（子编号用到 Reserved 区域）</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__1">SPI_ENC KEY</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__2">128</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__3">20~2F</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__4">8~11</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__5">V</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__6">V</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id19__entry__7">CSTM</td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id19__entry__8">安全，连接到 SPI_ENC，对称密钥</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id19__entry__1">Reserved</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id19__entry__2">128</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id19__entry__3">30~3F</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id19__entry__4">12~15</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id19__entry__5">-</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id19__entry__6">-</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id19__entry__7">CSTM</td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__id19__entry__8">OEM 可自定义使用</td>
+                        </tr>
+                    </tbody></table></div>
+            <div class="table-container"><table class="- topic/table table frame-all" id="id__id20" data-ofbid="id__id20" data-cols="3"><caption class="- topic/title title tablecap" data-caption-side="top" data-is-repeated="true"><span class="table--title-label">表<span class="table--title-label-number"> 2</span><span class="table--title-label-punctuation">. </span></span><span class="table--title">SECURE 区域定义</span></caption><colgroup><col style="width:15.408320493066254%"/><col style="width:15.562403697996919%"/><col style="width:69.02927580893683%"/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id20__entry__1">比特位</th>
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="id__id20__entry__2">名称</th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="id__id20__entry__3">描述</th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id20__entry__1">31:29</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id20__entry__2"><em class="+ topic/ph hi-d/i ph i">-</em></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id20__entry__3"><em class="+ topic/ph hi-d/i ph i">-</em></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id20__entry__1">28</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id20__entry__2">SPI_ENC_EN</td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id20__entry__3">BROM 读取使用，使能 SPI 总线数据加密功能</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id20__entry__1">27:25</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="id__id20__entry__2"><em class="+ topic/ph hi-d/i ph i">-</em></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="id__id20__entry__3"><em class="+ topic/ph hi-d/i ph i">-</em></td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id20__entry__1">24</td>
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="id__id20__entry__2">JTAG_LOCK</td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="id__id20__entry__3">逻辑组合后连接到 CPU 屏蔽 TDO，关闭 JTAG 调试功能，在安全方案中烧录为 1</td>
+                        </tr>
+                    </tbody></table></div>
+        </section>
+        
+    </div>
+</article></main></div>
+                        
+                        <div class=" wh_child_links d-print-none "><nav aria-label="Child Links" role="navigation" class="- topic/related-links related-links"><ul class="ullinks"><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/secure/spienc-generate-efuse-V2.html">烧录 eFuse</a></strong><div class="- topic/desc desc"></div></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/secure/spienc-generate-production-firmware-V2.html">生成量产固件</a></strong><div class="- topic/desc desc"></div></li><li class="- topic/link link ulchildlink"><strong><a href="../../../topics/sdk/secure/spinenc-efuse-and-firmware-combined-V2.html">eFuse 与固件合并烧录</a></strong><div class="- topic/desc desc"></div></li></ul></nav></div>
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#id__section_kw2_gqx_52c" data-tocid="id__section_kw2_gqx_52c">SPIENC 总线加密</a></div></li><li class="section-item"><div class="section-title"><a href="#id__section_m42_bfx_52c" data-tocid="id__section_m42_bfx_52c">SPI ENC 功能对应的 eFuse 烧录信息</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style>
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    </style>
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-05-19
+    </div>        
+  </div> 
+  
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

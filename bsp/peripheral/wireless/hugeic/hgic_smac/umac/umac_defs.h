@@ -1,0 +1,240 @@
+#ifndef _UMAC_DEFS_H_
+#define _UMAC_DEFS_H_
+
+#define UMAC_CORE_DEBUG 0
+#define UMAC_APP_DEBUG  0
+//#define HUGEIC_P2P_RTOS
+
+
+#define IEEE80211_BSS_MAX_COUNT (128)
+
+/*******************************************************/
+/*            mac80211 compile configs                 */
+/*******************************************************/
+#define CONFIG_UMAC_VERBOSE_DEBUG
+#define CONFIG_MAC80211_MLME_DEBUG
+#define CONFIG_MAC80211_STA_DEBUG
+#define CONFIG_MAC80211_TDLS_DEBUG
+#define CONFIG_MAC80211_MESH_PS_DEBUG
+#define CONFIG_MAC80211_MESH_SYNC_DEBUG
+#define CONFIG_MAC80211_MHWMP_DEBUG
+#define CONFIG_MAC80211_MPATH_DEBUG
+#define CONFIG_MAC80211_MPL_DEBUG
+#define CONFIG_MAC80211_HT_DEBUG
+#define CONFIG_MAC80211_PS_DEBUG
+#define CONFIG_MAC80211_IBSS_DEBUG
+#define CONFIG_MAC80211_WIRELESS_BRIDGE
+#define CONFIG_UMAC_BEACON
+
+//#define CONFIG_MAC80211_MESH
+//#define CONFIG_MAC80211_IBSS
+#define CONFIG_MAC80211_P2P
+//#define CONFIG_MAC80211_RADAR
+//#define CONFIG_MAC80211_TDLS
+//#define CONFIG_MAC80211_OCB
+//#define CONFIG_MAC80211_SCHED_SCAN
+//#define CONFIG_MAC80211_SME
+//#define CONFIG_MAC80211_NAN
+//#define CONFIG_MAC80211_ACL
+
+#define CONFIG_WPAS
+#define CONFIG_HOSTAPD
+//#define CONFIG_MESH
+//#define CONFIG_IBSS
+//#define CONFIG_P2P
+//#define CONFIG_WDS
+//#define CONFIG_PM
+
+/*******************************************************/
+/*         wpa_supplicant compile configs              */
+/*******************************************************/
+#define CONFIG_DRIVER_NL80211
+#define CONFIG_NO_CONFIG_BLOBS
+
+#if !UMAC_APP_DEBUG
+#define CONFIG_NO_STDOUT_DEBUG
+#define CONFIG_NO_HOSTAPD_LOGGER
+//#define CONFIG_NO_WPA_MSG //for msg ctrl
+#endif
+
+#define HOSTAPD
+#define NEED_AP_MLME
+
+#define CONFIG_HT_OVERRIDES
+#define CONFIG_VHT_OVERRIDES
+//#define CONFIG_BACKEND_FILE
+//#define CONFIG_NO_CONFIG_WRITE
+//#define CONFIG_NO_SCAN_PROCESSING
+//#define CONFIG_SUITEB
+//#define CONFIG_SUITEB192
+//#define CONFIG_IEEE80211W
+//#define CONFIG_IEEE80211R
+//#define CONFIG_MESH
+//#define CONFIG_SAE  //--------
+//#define CONFIG_WNM
+//#define CONFIG_TDLS_TESTING
+//#define CONFIG_PEERKEY
+//#define CONFIG_NO_WPA
+//#define CONFIG_IBSS_RSN
+//#define CONFIG_MATCH_IFACE
+//#define CONFIG_P2P
+//#define CONFIG_P2P_STRICT
+//#define CONFIG_WIFI_DISPLAY
+//#define CONFIG_HS20
+//#define CONFIG_INTERWORKING
+//#define CONFIG_NO_ROAMING
+//#define CONFIG_WINPCAP
+//#define EAP_TLS_DYNAMIC
+//#define EAP_TLS
+//#define EAP_UNAUTH_TLS
+//#define EAP_PEAP_DYNAMIC
+//#define EAP_PEAP
+//#define EAP_TTLS_DYNAMIC
+//#define EAP_TTLS
+//#define EAP_MD5_DYNAMIC
+//#define EAP_MD5
+//#define EAP_MSCHAPv2_DYNAMIC
+//#define EAP_MSCHAPv2
+//#define EAP_GTC_DYNAMIC
+//#define EAP_GTC
+//#define EAP_OTP_DYNAMIC
+//#define EAP_OTP
+//#define EAP_SIM_DYNAMIC
+//#define EAP_SIM
+//#define EAP_LEAP_DYNAMIC
+//#define EAP_LEAP
+//#define EAP_PSK_DYNAMIC
+//#define EAP_PSK
+//#define EAP_AKA_DYNAMIC
+//#define EAP_AKA
+//#define CONFIG_EAP_PROXY
+//#define EAP_AKA_PRIME_DYNAMIC
+//#define EAP_AKA_PRIME
+//#define EAP_FAST_DYNAMIC
+//#define EAP_FAST
+//#define EAP_PAX_DYNAMIC
+//#define EAP_PAX
+//#define EAP_SAKE_DYNAMIC
+//#define EAP_SAKE
+//#define EAP_GPSK_DYNAMIC
+//#define EAP_GPSK
+//#define EAP_GPSK_SHA256
+//#define EAP_PWD
+//#define EAP_EKE_DYNAMIC
+//#define EAP_EKE
+//#define CONFIG_WPS 
+//#define EAP_WSC
+//#define CONFIG_WPS
+//#define EAP_WSC
+//#define CONFIG_WPS_NFC
+//#define CONFIG_WPS_OOB
+//#define CONFIG_WPS_ER
+//#define CONFIG_WPS_UPNP
+//#define CONFIG_WPS_STRICT
+//#define CONFIG_WPS_TESTING
+//#define CONFIG_WPS_REG_DISABLE_OPEN
+//#define EAP_IKEV2_DYNAMIC
+//#define EAP_IKEV2
+//#define EAP_VENDOR_TEST_DYNAMIC
+//#define EAP_VENDOR_TEST
+//#define EAP_TNC
+//#define IEEE8021X_EAPOL
+//#define IEEE8021X_WEP
+//#define CONFIG_DYNAMIC_EAP_METHODS
+//#define CONFIG_MACSEC
+#define CONFIG_NO_RADIUS
+#define CONFIG_NO_ACCOUNTING
+#define CONFIG_NO_VLAN
+//#define EAP_SERVER 
+//#define EAP_SERVER_IDENTITY
+//#define EAP_SERVER 
+//#define EAP_SERVER_IDENTITY
+#define CONFIG_IEEE80211N
+//#define CONFIG_IEEE80211AC
+//#define CONFIG_MBO
+//#define CONFIG_IEEE80211AH
+#define CONFIG_NO_RADIUS
+//#define CONFIG_ACS
+//#define PCSC_FUNCS
+//#define CONFIG_SIM_SIMULATOR
+//#define CONFIG_USIM_SIMULATOR
+//#define PKCS12_FUNCS
+//#define CONFIG_SMARTCARD
+//#define CONFIG_TLSV11
+//#define CONFIG_TLSV12 //-------openssl?
+//#define EAP_TLS_OPENSSL
+//#define CONFIG_TLS_INTERNAL_CLIENT
+#define CONFIG_CRYPTO_INTERNAL
+//#define CONFIG_INTERNAL_LIBTOMMATH
+//#define LTM_FAST
+//#define CONFIG_CRYPTO_CRYPTOAPI
+//#define EAP_TLS_NONE
+//#define CONFIG_OPENSSL_INTERNAL_AES_WRAP
+//#define CONFIG_OPENSSL_CMAC
+//#define CONFIG_NO_PBKDF2
+#define CONFIG_NO_RC4
+//#define CONFIG_SHA256
+//#define CONFIG_INTERNAL_SHA384
+//#define CONFIG_INTERNAL_SHA512
+//#define CONFIG_HMAC_SHA256_KDF
+//#define CONFIG_SHA384
+//#define ALL_DH_GROUPS
+//#define CONFIG_ECC
+#define CONFIG_NO_RANDOM_POOL
+#define CONFIG_CTRL_IFACE
+//#define CONFIG_CTRL_IFACE_UNIX
+//#define CONFIG_CTRL_IFACE_UDP
+//#define CONFIG_CTRL_IFACE_UDP
+//#define CONFIG_CTRL_IFACE_UDP_IPV6
+//#define CONFIG_CTRL_IFACE_NAMED_PIPE
+//#define CONFIG_CTRL_IFACE_UDP
+//#define CONFIG_CTRL_IFACE_UDP_REMOTE
+//#define CONFIG_CTRL_IFACE_UDP
+//#define CONFIG_CTRL_IFACE_UDP_REMOTE
+//#define CONFIG_CTRL_IFACE_UDP_IPV6
+//#define CONFIG_NATIVE_WINDOWS
+//#define CONFIG_IPV6
+//#define CONFIG_NO_LINUX_PACKET_SOCKET_WAR
+#define CONFIG_SME
+//#define CONFIG_DEBUG_SYSLOG
+//#define LOG_HOSTAPD "$(CONFIG_DEBUG_SYSLOG_FACILITY)"
+//#define CONFIG_DEBUG_LINUX_TRACING
+//#define CONFIG_DEBUG_FILE
+//#define CONFIG_DELAYED_MIC_ERROR_REPORT
+//#define CONFIG_FIPS
+//#define CONFIG_BGSCAN_SIMPLE
+//#define CONFIG_BGSCAN_LEARN
+//#define CONFIG_BGSCAN
+//#define CONFIG_SCHED_SCAN
+//#define CONFIG_AUTOSCAN_EXPONENTIAL
+//#define CONFIG_AUTOSCAN_PERIODIC
+//#define CONFIG_AUTOSCAN
+//#define CONFIG_EXT_PASSWORD_TEST
+//#define CONFIG_EXT_PASSWORD
+//#define CONFIG_GAS
+//#define CONFIG_OFFCHANNEL
+//#define CONFIG_MODULE_TESTS
+//#define CONFIG_NDIS_EVENTS_INTEGRATED
+//#define CONFIG_FST
+//#define CONFIG_FST_TEST
+
+#define WPA_SUPPLICANT_RTOS
+
+#ifdef HUGEIC_P2P_RTOS
+#define CONFIG_P2P
+//#define CONFIG_P2P_STRICT
+#define CONFIG_WIFI_DISPLAY
+#define CONFIG_WPS //---------
+#define IEEE8021X_EAPOL //-------
+//#define EAP_WSC //--------
+#define EAP_WSC
+#define EAP_SERVER_WSC //-------
+#define CONFIG_INTERNAL_LIBTOMMATH
+#define CONFIG_AP //-------------
+#define CONFIG_GAS
+#define CONFIG_OFFCHANNEL
+#define DCONFIG_NO_VLAN
+#endif
+
+
+#endif

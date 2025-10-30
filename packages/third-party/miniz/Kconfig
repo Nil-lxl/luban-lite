@@ -1,0 +1,13 @@
+
+# Kconfig file for package miniz
+menuconfig LPKG_USING_MINIZ
+    bool "miniz: data compression library."
+    default n
+
+if LPKG_USING_MINIZ
+
+    config LPKG_MINIZ_DEMO
+       bool "Enable miniz demo."
+       default n
+
+endif

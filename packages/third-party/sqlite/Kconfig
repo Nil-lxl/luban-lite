@@ -1,0 +1,40 @@
+
+menuconfig LPKG_USING_SQLITE
+    bool "SQLite: a self-contained, high-reliability, embedded, full-featured, public-domain, SQL database engine."
+    default n
+    select RT_USING_DFS      if RT_VER_NUM < 0x40100
+    select RT_USING_POSIX_FS if RT_VER_NUM >= 0x40100
+
+if LPKG_USING_SQLITE
+
+    config LPKG_SQLITE_VER
+        string
+        default "v3.19.3"
+
+    config LPKG_SQLITE_SQL_MAX_LEN
+        int "SQL statements max length"
+        default 512
+
+    config LPKG_SQLITE_DB_NAME_MAX_LEN
+        int "Database filename(fullpath) length"
+        range 8 256
+        default 64
+
+    config LPKG_SQLITE_DAO_EXAMPLE
+        bool "Enable example"
+            default n
+
+    config LPKG_SQLITE_RECIPE_EXAMPLE
+        bool "Enable recipeData test example"
+            default n
+
+    choice
+        prompt "version"
+        help
+            Select the Sqlite version
+
+        config LPKG_USING_SQLITE_V3193
+            bool "v3.19.3"
+    endchoice
+
+endif

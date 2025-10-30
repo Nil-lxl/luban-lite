@@ -1,0 +1,64 @@
+choice
+    prompt "Select gyro device"
+    default AIC_GYRO_SC7A20H
+    depends on AIC_USING_GYRO
+
+    config AIC_GYRO_SC7A20H
+        bool "SC7A20H"
+endchoice
+
+config AIC_GYRO_HPF_ENABLE
+    bool "Enable gyro hpf"
+    default n
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_FIFO_ENABLE
+    bool "Enable gyro fifo"
+    default n
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_INT_ENABLE
+    bool "Enable gyro int"
+    default y
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_I2C_CHAN_NAME
+    string "Using I2C channel index"
+    default "i2c3"
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_DEBUG_ENABLE
+    bool "Enable gyro debug"
+    default n
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_X_INVERT
+    bool "Gyro x invert"
+    default n
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_Y_INVERT
+    bool "Gyro y invert"
+    default n
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_Z_INVERT
+    bool "Gyro z invert"
+    default n
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_TILT_THRESHOLD_DEG
+    int "Gyro tilt threshold setting"
+    default 10
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_STABILITY_CHECK_COUNT
+    int "Gyro stability count setting"
+    default 3
+    depends on AIC_USING_GYRO
+
+config AIC_GYRO_NAME
+    string
+    default "sc7a20h"  if AIC_GYRO_SC7A20H
+    depends on AIC_USING_GYRO
+

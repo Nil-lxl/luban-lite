@@ -1,0 +1,10 @@
+
+from building import *
+
+cwd     = GetCurrentDir()
+src     = Glob('*.c')
+path    = [cwd]
+
+group = DefineGroup('at24cxx', src, depend = ['LPKG_USING_AT24CXX'], CPPPATH = path)
+
+Return('group')

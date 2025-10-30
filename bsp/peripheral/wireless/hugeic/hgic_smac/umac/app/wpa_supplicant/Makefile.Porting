@@ -1,0 +1,36 @@
+
+CC=/opt/buildroot-gcc463/usr/bin/mipsel-linux-gcc
+CFLAGS += $(EXTRA_CFLAGS)
+CFLAGS += -I$(abspath ../src)
+CFLAGS += -I$(abspath ../src/utils)
+CFLAGS += -I$(ROOTDIR)/uClibc-0.9.33.2/include
+-include .config
+
+OBJS = config.o
+OBJS += ../src/utils/eloop.o
+OBJS += ../src/utils/common.o
+OBJS += ../src/crypto/md5.o
+OBJS += ../src/crypto/rc4.o
+OBJS += ../src/crypto/sha1.o
+OBJS += config_none.o
+OBJS += ../src/l2_packet/l2_packet_none.o
+OBJS += ../src/crypto/tls_none.o
+OBJS += ../src/rsn_supp/wpa.o
+OBJS += ../src/rsn_supp/preauth.o
+OBJS += ../src/crypto/aes-wrap.o
+OBJS += wpa_supplicant.o
+OBJS += events.o
+OBJS += main_none.o
+OBJS += ../src/drivers/drivers.o
+
+TARGET = wpa_supplicant_simaple
+RM = rm -f
+
+$(TARGET):$(OBJS)
+	$(CC) -o $(TARGET) $(OBJS) $(CFLAGS)
+
+$(OBJS):%o:%c
+	$(CC) -c $(CFLAGS) $< -o $@
+
+clean:
+	$(RM) $(TARGET) $(OBJS)
