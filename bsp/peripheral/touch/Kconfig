@@ -62,6 +62,9 @@ choice
 
     config AIC_TOUCH_PANEL_HY4635
         bool "HY4635"
+    
+    config AIC_TOUCH_PANEL_ST7123
+        bool "ST7123"
 endchoice
 
 config AIC_TOUCH_PANEL_I2C_CHAN
@@ -198,4 +201,5 @@ config AIC_TOUCH_PANEL_NAME
     default "st77922"   if AIC_TOUCH_PANEL_ST77922
     default "tw31xx"    if AIC_TOUCH_PANEL_TW31XX
     default "hy4635"    if AIC_TOUCH_PANEL_HY4635
+    default "st7123"    if AIC_TOUCH_PANEL_ST7123
     depends on AIC_USING_CTP

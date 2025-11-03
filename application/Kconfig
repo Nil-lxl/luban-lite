@@ -128,11 +128,6 @@ if AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0 || AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1
     config AIC_USING_FS_IMAGE_TYPE_FATFS_CLUSTER_SIZE
         int "size of cluster in fatfs image"
         default 8
-
-    config AIC_FATFS_ENABLE_WRITE_IN_SPINOR
-        bool "FATFS enable write func in spinor"
-        depends on AIC_SPINOR_DRV
-        default n
 endif
 
 config GENERATE_BURNER_IMAGE
@@ -214,6 +209,9 @@ config AIC_LVGL_APP_UI_DEMO
 config AIC_LVGL_TEST_DEMO
     bool "LVGL demo of test"
 
+config AIC_LVGL_PLAYER_DEMO
+    bool "LVGL player demo(video/gif)"
+
 config AIC_WIDGETS_DEMO
     bool "LVGL aic widgets demos"
 
@@ -284,9 +282,6 @@ config AIC_LVGL_SIMPLE_PLAYER_DEMO
 
 config AIC_LVGL_INPUT_TEST_DEMO
     bool "LVGL input test demo"
-
-config AIC_LVGL_GIF_DEMO
-    bool "LVGL gif demo"
 
 config AIC_LVGL_MUSIC_DEMO
     bool "LVGL music demos"

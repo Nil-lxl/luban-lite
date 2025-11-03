@@ -139,7 +139,7 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #endif
 #ifdef AIC_USING_QSPI1
-    /* qspi1 */
+    /* qspi1 extern nor/nand flash*/
     {3, PIN_PULL_UP, 3, "PD.4"},
     {3, PIN_PULL_UP, 3, "PD.5"},
     {3, PIN_PULL_UP, 3, "PD.6"},
@@ -200,6 +200,29 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #ifdef AIC_PANEL_ENABLE_GPIO
     {1, PIN_PULL_DIS, 3, AIC_PANEL_ENABLE_GPIO},
+#endif
+#ifdef AIC_PRGB_16BIT_HD
+    {2, PIN_PULL_DIS, 4, "PD.0"},
+    {2, PIN_PULL_DIS, 4, "PD.1"},
+    {2, PIN_PULL_DIS, 4, "PD.2"},
+    {2, PIN_PULL_DIS, 4, "PD.3"},
+    {2, PIN_PULL_DIS, 4, "PD.4"},
+    {2, PIN_PULL_DIS, 4, "PD.5"},
+    {2, PIN_PULL_DIS, 4, "PD.6"},
+    {2, PIN_PULL_DIS, 4, "PD.7"},
+    {2, PIN_PULL_DIS, 4, "PD.8"},
+    {2, PIN_PULL_DIS, 4, "PD.9"},
+    {2, PIN_PULL_DIS, 4, "PD.10"},
+    {2, PIN_PULL_DIS, 4, "PD.11"},
+    {2, PIN_PULL_DIS, 4, "PD.12"},
+    {2, PIN_PULL_DIS, 4, "PD.13"},
+    {2, PIN_PULL_DIS, 4, "PD.14"},
+    {2, PIN_PULL_DIS, 4, "PD.15"},
+
+    {2, PIN_PULL_DIS, 4, "PD.24"},
+    {2, PIN_PULL_DIS, 4, "PD.25"},
+    {2, PIN_PULL_DIS, 4, "PD.26"},
+    {2, PIN_PULL_DIS, 4, "PD.27"},
 #endif
 #ifdef AIC_LVDS_LINK_0
     {3, PIN_PULL_DIS, 3, "PD.18"},

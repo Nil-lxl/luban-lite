@@ -6,7 +6,7 @@ group = []
 src = []
 CPPPATH = [cwd]
 
-src += Glob('./gif_ui.c')
+src += Glob('./player_ui.c')
 
 list = os.listdir(cwd)
 for d in list:
@@ -22,7 +22,7 @@ else:
 ins_src = 'assets/'
 install = [(ins_src, ins_dst)]
 
-group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_GIF_DEMO'], CPPPATH = CPPPATH,
+group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_PLAYER_DEMO'], CPPPATH = CPPPATH,
         INSTALL = install)
 
 Return('group')

@@ -38,7 +38,9 @@ extern struct aic_panel dsi_nv3051;
 extern struct aic_panel dsi_fl7707;
 extern struct aic_panel dsi_ft8201;
 extern struct aic_panel dsi_edp_lt9811exb;
+extern struct aic_panel dsi_h016a01;
 extern struct aic_panel dsi_h024b12;
+extern struct aic_panel dsi_h035a27;
 extern struct aic_panel dsi_h050a20;
 extern struct aic_panel dsi_h070b13;
 extern struct aic_panel dsi_h070a21;
@@ -79,6 +81,7 @@ extern struct aic_panel rgb_h024a13;
 extern struct aic_panel rgb_h028a19;
 extern struct aic_panel rgb_h050a12;
 extern struct aic_panel rgb_h068a04;
+extern struct aic_panel rgb_h068b06;
 extern struct aic_panel rgb_h070a18;
 
 /*

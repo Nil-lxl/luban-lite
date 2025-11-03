@@ -16,6 +16,7 @@
 #include "cir/cir_control.h"
 #include "can/can_demo.h"
 #include "http_req/http_request.h"
+#include "i2c/i2c_test.h"
 
 #ifdef RT_USING_ULOG
 #include <ulog.h>

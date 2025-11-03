@@ -301,4 +301,4 @@ static int rt_hw_hy4635_port(void) {
     return 0;
 }
 
-INIT_APP_EXPORT(rt_hw_hy4635_port);
+INIT_DEVICE_EXPORT(rt_hw_hy4635_port);

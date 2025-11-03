@@ -440,7 +440,8 @@ sfud_flash *sfud_probe(u32 spi_bus)
     struct qspi_master_config cfg = {0};
     char *partstr;
 
-    qspi = get_qspi_by_index(1);
+    // qspi = get_qspi_by_index(1);
+    qspi = get_qspi_by_index(spi_bus);
     if (!qspi) {
         pr_err("spi bus is invalid: %d\n", spi_bus);
         return NULL;

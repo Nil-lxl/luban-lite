@@ -4,24 +4,6 @@ menu "Custom App Config"
         default n
         depends on AIC_USING_TOUCH
         depends on !LPKG_USING_LVGL
-        if APP_USE_DRAW_LINE_TEST
-            choice 
-                prompt  "Select Touch Device"
-                default TOUCH_GT911
-                config TOUCH_GT911
-                    bool "gt911"
-                config TOUCH_FT6336
-                    bool "ft6336"
-                config TOUCH_HY4635
-                    bool "hy4635"
-            endchoice
-            config APP_TOUCH_DEVICE
-                string
-                default "gt911" if TOUCH_GT911
-                default "ft6336" if TOUCH_FT6336
-                default "hy4635" if TOUCH_HY4635
-
-        endif
 
     config APP_USE_UART_TEST
         bool "USE UART TEST"

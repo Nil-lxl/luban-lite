@@ -10,7 +10,6 @@
 #define LOG_TAG "Draw_Panel"
 
 #ifdef APP_USE_DRAW_LINE_TEST
-#define TOUCH_IC_NAME APP_TOUCH_DEVICE
 
 #define UI_BG_COLOR         0x18a000a8
 #define UI_FG_CTRL          0x18a000b0
@@ -26,7 +25,7 @@
 
 static rt_thread_t draw_thread = RT_NULL;
 static rt_thread_t touch_read_thread = RT_NULL;
-static rt_sem_t touch_semaphore;
+static rt_sem_t touch_sem;
 static rt_device_t touch_device;
 
 static struct rt_touch_info touch_info;
@@ -38,7 +37,7 @@ static struct aicfb_screeninfo screen_info;
 
 
 static rt_err_t rx_callback(rt_device_t dev, rt_size_t size) {
-    rt_sem_release(touch_semaphore);
+    rt_sem_release(touch_sem);
     rt_device_control(dev, RT_TOUCH_CTRL_DISABLE_INT, RT_NULL);
     return 0;
 }
@@ -124,9 +123,11 @@ void set_bg_color(void) {
 
 }
 void touch_init(void) {
-    touch_device = rt_device_find(APP_TOUCH_DEVICE);
-    if (touch_device == RT_NULL) {
-        LOG_E("touch device not found!");
+    touch_device = rt_device_find(AIC_TOUCH_PANEL_NAME);
+    if (touch_device != RT_NULL) {
+        LOG_I("found touch device %s", AIC_TOUCH_PANEL_NAME);
+    } else {
+        LOG_E("found touch device %s failed!", AIC_TOUCH_PANEL_NAME);
         return;
     }
 
@@ -144,8 +145,10 @@ void touch_init(void) {
 
     rt_device_set_rx_indicate(touch_device, rx_callback);
 
-    touch_semaphore = rt_sem_create("touch_semaphore", 0, RT_IPC_FLAG_FIFO);
-    if (touch_semaphore == RT_NULL) {
+    touch_sem = rt_sem_create("touch_semaphore", 0, RT_IPC_FLAG_FIFO);
+    if (touch_sem != RT_NULL) {
+        LOG_D("create touch semaphore success");
+    } else {
         LOG_E("create touch semaphore failed!");
         return;
     }
@@ -158,7 +161,7 @@ void touch_read_point(void *param) {
     prev_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * touch_info.point_num);
     touch_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * touch_info.point_num);
     while (1) {
-        rt_sem_take(touch_semaphore, RT_WAITING_FOREVER);
+        rt_sem_take(touch_sem, RT_WAITING_FOREVER);
 
         if (rt_device_read(touch_device, 0, touch_data, touch_info.point_num) > 0) {
             for (rt_uint8_t i = 0;i < touch_info.point_num;i++) {
@@ -259,6 +262,7 @@ void panel_draw_lines(void *param) {
 }
 
 void panel_draw_start() {
+
     open_panel();
 
     set_bg_color();
@@ -273,6 +277,8 @@ void panel_draw_start() {
         rt_thread_startup(draw_thread);
     }
 }
+
+MSH_CMD_EXPORT(panel_draw_start, touch draw panel);
 
 #endif
 

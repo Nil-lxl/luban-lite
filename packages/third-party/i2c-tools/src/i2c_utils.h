@@ -17,7 +17,7 @@
     #include "SoftwareI2C.h"
 #endif
 
-#define I2C_TOOLS_BUFFER_SIZE 64
+#define I2C_TOOLS_BUFFER_SIZE 128
 
 #define ARG_CMD_POS             1
 #define GET_ACK                 1

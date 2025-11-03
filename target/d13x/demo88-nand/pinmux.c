@@ -92,6 +92,15 @@ struct aic_pinmux aic_pinmux_config[] = {
     {8, PIN_PULL_UP, 3, "PB.17"},
 #endif
 #endif
+#ifdef AIC_USING_QSPI1
+    /* qspi1 */
+    {3, PIN_PULL_UP, 3, "PD.4"},
+    {3, PIN_PULL_UP, 3, "PD.5"},
+    {3, PIN_PULL_UP, 3, "PD.6"},
+    {3, PIN_PULL_UP, 3, "PD.7"},
+    {3, PIN_PULL_UP, 3, "PD.8"},
+    {3, PIN_PULL_UP, 3, "PD.9"},
+#endif
 #ifdef AIC_USING_SDMC0
     {2, PIN_PULL_UP, 7, "PB.6"},
     {2, PIN_PULL_UP, 7, "PB.7"},
@@ -100,6 +109,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_UP, 7, "PB.10"},
     {2, PIN_PULL_UP, 7, "PB.11"},
 #endif
+
 #ifdef AIC_USING_SDMC1
     {2, PIN_PULL_UP, 3, "PC.0"},
     {2, PIN_PULL_UP, 3, "PC.1"},

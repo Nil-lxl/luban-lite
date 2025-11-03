@@ -195,9 +195,6 @@ const struct dfs_mount_tbl mount_table[] = {
 #if defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0)
     {"blk_rodata", "/rodata", "elm", 0, 0, 0},
 #endif
-#if defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1)
-    {"blk_data", "/data", "elm", 0, 0, 1},
-#endif
 #endif
 #ifdef AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_1
     {"data", "/data", "lfs", 0, 0, 1},
