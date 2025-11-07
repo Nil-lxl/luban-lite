@@ -23,9 +23,9 @@
 
 #define LOG_TAG "LV_TEST"
 
-#define TEST_DEMO_USE_DEFAULT_CONTROL   1
-#define TEST_DEMO_USE_KEYADC_CONTROL    0
-#define TEST_DEMO_USE_CIR_CONTROL       0
+#define TEST_DEMO_USE_DEFAULT_CONTROL   0       //默认自动切换
+#define TEST_DEMO_USE_KEYADC_CONTROL    1       //使用外部按键切换
+#define TEST_DEMO_USE_CIR_CONTROL       0       //使用红外遥控切换
 
 #ifdef AIC_PANEL_CUSTOM_RESOLUTION
 #define LCD_HOR_RES PANEL_HACTIVE
@@ -35,10 +35,10 @@
 #define LCD_VER_RES PANEL_VACTIVE_RES
 #endif
 
-#define KEYADC_CHANNEL          7
-#define KEYADC_SCALE            50
+#define KEYADC_CHANNEL          7               //ADC按键通道
+#define KEYADC_SCALE            200             //电压变化范围(单位:mv)
 
-#define BACKLIGHT_PWM_CHANNEL   3
+#define BACKLIGHT_PWM_CHANNEL   3               //PWM通道
 
 static rt_thread_t cir_thread;
 static rt_device_t cir_dev;
@@ -50,7 +50,7 @@ static int brightness_level = AIC_PWM_BRIGHTNESS_LEVEL;
 #endif
 
 static lv_obj_t *scr;
-static lv_obj_t *gray_scr;
+static lv_obj_t *gray_block;
 static lv_obj_t *container;
 static lv_timer_t *timer;
 
@@ -59,7 +59,11 @@ static lv_obj_t *img2;
 static lv_obj_t *img3;
 static lv_obj_t *player;
 
+#if TEST_DEMO_USE_DEFAULT_CONTROL
 static int count = 0;
+#else 
+static int count = -1;
+#endif
 
 rt_err_t cir_rx_cb(rt_device_t dev, rt_size_t size) {
     rt_sem_release(cir_sem);
@@ -70,86 +74,92 @@ static void lv_set_bg_color(int color_hex) {
     lv_obj_set_style_bg_color(scr, lv_color_hex(color_hex), 0);
 }
 
-void lv_hide_obj(lv_obj_t *obj) {
+void lv_obj_hide(lv_obj_t *obj) {
     lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
 }
 
-void lv_show_obj(lv_obj_t *obj) {
+void lv_obj_show(lv_obj_t *obj) {
     if (lv_obj_has_flag(obj, LV_OBJ_FLAG_HIDDEN)) {
         lv_obj_clear_flag(obj, LV_OBJ_FLAG_HIDDEN);
     }
 }
 
-#define UI_MAX_COUNT  5
 void timer_cb(lv_timer_t *timer) {
     switch (count) {
         case 0:
-            // lv_hide_obj(img1);
-            lv_show_obj(container);
-            lv_set_bg_color(LV_COLOR_BLACK);
-            break;
-        case 1:
-            lv_hide_obj(container);
+            // lv_obj_hide(img2);
+            // lv_obj_show(container);
+            lv_obj_hide(container);
             lv_set_bg_color(LV_COLOR_RED);
             break;
-        case 2:
+        case 1:
             lv_set_bg_color(LV_COLOR_GREEN);
             break;
-        case 3:
+        case 2:
             lv_set_bg_color(LV_COLOR_BLUE);
             break;
+        case 3:
+            lv_obj_hide(gray_block);
+            lv_set_bg_color(LV_COLOR_WHITE);
+            break;
         case 4:
-            lv_set_bg_color(LV_COLOR_PINK);
+            lv_obj_show(gray_block);
+            lv_obj_hide(img1);
             break;
         case 5:
-            lv_hide_obj(img1);
-            lv_hide_obj(container);
-            lv_set_bg_color(LV_COLOR_WHITE);
+            lv_obj_show(img1);
+            lv_obj_hide(gray_block);
+            lv_obj_hide(img2);
             break;
         case 6:
-            lv_show_obj(img1);
+            lv_obj_show(img2);
+            lv_obj_hide(img1);
+            lv_obj_hide(container);
             break;
         case 7:
-            lv_hide_obj(img1);
-            lv_show_obj(img2);
+            lv_obj_hide(img2);
+            lv_obj_show(container);
+            lv_set_bg_color(LV_COLOR_BLACK);
             break;
         case 8:
-            lv_hide_obj(img2);
-            lv_show_obj(img3);
+            lv_obj_hide(img3);
             break;
         case 9:
-            lv_hide_obj(img3);
-            lv_set_bg_color(LV_COLOR_WHITE);
-            // lv_show_obj(player);
+            // lv_obj_show(player);
             // lv_aic_player_set_auto_restart(player, true);
             // lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
             break;
         default:
             break;
     }
-
+#define UI_MAX_COUNT    7
 #if TEST_DEMO_USE_DEFAULT_CONTROL
-    if (count == 9) {
+    if (count == 9) {                      //在第x个画面停止
         lv_timer_pause(timer);
     }
-    count = (count + 1) % 5;
+    count = (count + 1) % 8;    //在第x个画面结束一轮循环
 #endif
 }
 
 extern void test_control(void);
-void test_ui_init() {
-    aicos_msleep(1000);//等待sdcard挂载成功
 
-    // test_control();//test
+static lv_obj_t *gray_bar[16];
+const uint32_t gray_color[16] = { 0x000000,0x101010,0x202020,0x303030,0x404040,0x505050,0x606060,0x707070,0x808080,0x909090,0xA0A0A0,0xB0B0B0,0xC0C0C0,0xD0D0D0,0xE0E0E0,0xF0F0F0 };
+
+void test_ui_init() {
+    aicos_msleep(1500);     //等待sdcard挂载成功
+
 #if 1
     scr = lv_scr_act();
+    lv_obj_set_style_bg_opa(scr, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(scr, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_SCROLLED);
 
-    // player = lv_aic_player_create(scr);
+    player = lv_aic_player_create(scr);  //视频播放器
     // lv_aic_player_set_src(player, SD_VIDEO_PATH(cartoon.mp4));
-    // lv_obj_center(player);
-    // lv_hide_obj(player);
+    lv_obj_center(player);
+    lv_obj_hide(player);
 
-    container = lv_obj_create(scr);
+    container = lv_obj_create(scr);         //白色边框
     lv_obj_center(container);
     lv_obj_set_size(container, LCD_HOR_RES, LCD_VER_RES);
     lv_obj_set_style_radius(container, 0, 0);
@@ -157,40 +167,44 @@ void test_ui_init() {
     lv_obj_set_style_border_width(container, 1, 0);
     lv_obj_set_style_border_color(container, lv_color_white(), 0);
 
+    gray_block = lv_obj_create(scr);        //灰阶
+    lv_obj_set_size(gray_block, LCD_HOR_RES, LCD_VER_RES);
+    lv_obj_set_style_radius(gray_block, 0, 0);
+    lv_obj_set_style_border_width(gray_block, 0, 0);
+    lv_obj_set_style_pad_all(gray_block, 0, 0);
+    for (int i = 0;i < 16;i++) {
+        gray_bar[i] = lv_obj_create(gray_block);
+        if (LCD_HOR_RES > LCD_VER_RES) {    //横屏
+            lv_obj_set_size(gray_bar[i], LCD_HOR_RES / 16, lv_pct(100));
+            lv_obj_set_pos(gray_bar[i], (LCD_HOR_RES / 16) * i, 0);
+        } else {                            //竖屏
+            lv_obj_set_size(gray_bar[i], lv_pct(100), LCD_VER_RES / 16);
+            lv_obj_set_pos(gray_bar[i], 0, (LCD_VER_RES / 16) * i);
+        }
+        lv_obj_set_style_pad_all(gray_bar[i], 0, 0);
+        lv_obj_set_style_border_width(gray_bar[i], 0, 0);
+        lv_obj_set_style_radius(gray_bar[i], 0, 0);
+        lv_obj_set_style_bg_color(gray_bar[i], lv_color_hex(gray_color[i]), 0);
+    }
+    lv_obj_hide(gray_block);
+
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(img1280x480.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit1024x768.jpg));
     img2 = lv_img_create(scr);
-    lv_img_set_src(img2, LVGL_IMAGE_PATH(img480x1280_2.jpg));
+    lv_img_set_src(img2, LVGL_IMAGE_PATH(img1920.jpg));
     img3 = lv_img_create(scr);
     lv_img_set_src(img3, LVGL_IMAGE_PATH(img400x1280_3.jpg));
     lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
 
-    // create_gray_lvl();
 #if TEST_DEMO_USE_DEFAULT_CONTROL
-    timer = lv_timer_create(timer_cb, 1000, NULL);
+    timer = lv_timer_create(timer_cb, 3000, NULL);
 #else 
     timer = lv_timer_create(timer_cb, 300, NULL);
 #endif
 
 #endif
-}
-
-static lv_obj_t *gray_bar[10];
-const uint32_t gray_color[10] = { 0x303030,0x404040,0x505050,0x606060,0x707070,0x808080,0x909090,0xA0A0A0,0xB0B0B0,0xC0C0C0 };
-void create_gray_lvl() {
-    gray_scr = lv_obj_create(NULL);
-    lv_obj_set_size(gray_scr, LCD_HOR_RES, LCD_VER_RES);
-    for (int i = 0;i < 10;i++) {
-        gray_bar[i] = lv_obj_create(gray_scr);
-        lv_obj_set_size(gray_bar[i], lv_pct(100), LCD_VER_RES / 10);
-        lv_obj_set_pos(gray_bar[i], 0, (LCD_VER_RES / 10) * i);
-        lv_obj_set_style_pad_all(gray_bar[i], 0, 0);
-        lv_obj_set_style_border_width(gray_bar[i], 0, 0);
-        lv_obj_set_style_radius(gray_bar[i], 0, 0);
-        lv_obj_set_style_bg_color(gray_bar[i], lv_color_hex(gray_color[i]), 0);
-    }
 }
 
 void ui_init(void) {

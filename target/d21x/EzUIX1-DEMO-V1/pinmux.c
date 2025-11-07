@@ -26,11 +26,6 @@ struct aic_pinmux aic_pinmux_config[] = {
     {5, PIN_PULL_DIS, 3, "PA.4"},
     {5, PIN_PULL_UP, 3, "PA.5"},
 #endif
-#ifdef AIC_USING_UART2
-    /* uart2 */
-    {5, PIN_PULL_DIS, 3, "PA.8"},
-    {5, PIN_PULL_UP, 3, "PA.9"},
-#endif
 #ifdef AIC_USING_UART3
     /* uart3 */
     {5, PIN_PULL_DIS, 3, "PE.14"},
@@ -38,7 +33,6 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 
 #ifdef AIC_USING_SDMC1
-
     /* SD CARD */
     {2, PIN_PULL_UP, 3, "PC.0"},
     {2, PIN_PULL_UP, 3, "PC.1"},
@@ -58,24 +52,13 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #ifdef AIC_WIRELESS_LAN
     /* WIFI */
-    {1, PIN_PULL_DIS, 3, "PB.7"},    //BT HOST WAKE 
-    {1, PIN_PULL_DIS, 3, "PB.8"},    //Wifi Power On
-    {1, PIN_PULL_DIS, 3, "PB.9"},    //BT WAKE 
-    {1, PIN_PULL_DIS, 3, "PB.10"},   //WIFI HOST WAKE
-    {1, PIN_PULL_DIS, 3, "PB.11"},   //BT POWER ON
+     {1, PIN_PULL_DIS, 3, "PB.7"},    //BT HOST WAKE
+     {1, PIN_PULL_DIS, 3, "PB.8"},    //WIFI POWER ON
+     {1, PIN_PULL_DIS, 3, "PB.9"},    //BT WAKE
+     {1, PIN_PULL_DIS, 3, "PB.10"},   //WIFI HOST WAKE
+     {1, PIN_PULL_DIS, 3, "PB.11"},   //BT POWER ON
 #endif 
-#ifdef AIC_USING_I2C0
-    {4, PIN_PULL_DIS, 3, "PD.6"}, // SCK
-    {4, PIN_PULL_DIS, 3, "PD.7"}, // SDA
-#endif
-#ifdef AIC_USING_I2C1
-    {5, PIN_PULL_DIS, 3, "PD.18"}, // SCK
-    {5, PIN_PULL_DIS, 3, "PD.19"}, // SDA
-#endif
-#ifdef AIC_USING_I2C2
-    {4, PIN_PULL_DIS, 3, "PA.8"}, // SCK
-    {4, PIN_PULL_DIS, 3, "PA.9"}, // SDA
-#endif
+
 #ifdef AIC_USING_I2C3
     {4, PIN_PULL_DIS, 3, "PA.10"}, // I2C_SCK   
     {4, PIN_PULL_DIS, 3, "PA.11"}, // I2C_SDA
@@ -130,52 +113,6 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_DIS, 4, "PD.25"},  //HSD
     {2, PIN_PULL_DIS, 4, "PD.26"},  //VSD
     {2, PIN_PULL_DIS, 4, "PD.27"},  //DEN
-#endif
-#ifdef AIC_PRGB_16BIT_LD
-    {2, PIN_PULL_DIS, 3, "PD.8"},
-    {2, PIN_PULL_DIS, 3, "PD.9"},
-    {2, PIN_PULL_DIS, 3, "PD.10"},
-    {2, PIN_PULL_DIS, 3, "PD.11"},
-    {2, PIN_PULL_DIS, 3, "PD.12"},
-    {2, PIN_PULL_DIS, 3, "PD.13"},
-    {2, PIN_PULL_DIS, 3, "PD.14"},
-    {2, PIN_PULL_DIS, 3, "PD.15"},
-    {2, PIN_PULL_DIS, 3, "PD.16"},
-    {2, PIN_PULL_DIS, 3, "PD.17"},
-    {2, PIN_PULL_DIS, 3, "PD.18"},
-    {2, PIN_PULL_DIS, 3, "PD.19"},
-    {2, PIN_PULL_DIS, 3, "PD.20"},
-    {2, PIN_PULL_DIS, 3, "PD.21"},
-    {2, PIN_PULL_DIS, 3, "PD.22"},
-    {2, PIN_PULL_DIS, 3, "PD.23"},
-
-    {2, PIN_PULL_DIS, 3, "PD.24"},
-    {2, PIN_PULL_DIS, 3, "PD.25"},
-    {2, PIN_PULL_DIS, 3, "PD.26"},
-    {2, PIN_PULL_DIS, 3, "PD.27"},
-#endif
-#ifdef AIC_PRGB_16BIT_HD
-    {2, PIN_PULL_DIS, 4, "PD.0"},
-    {2, PIN_PULL_DIS, 4, "PD.1"},
-    {2, PIN_PULL_DIS, 4, "PD.2"},
-    {2, PIN_PULL_DIS, 4, "PD.3"},
-    {2, PIN_PULL_DIS, 4, "PD.4"},
-    {2, PIN_PULL_DIS, 4, "PD.5"},
-    {2, PIN_PULL_DIS, 4, "PD.6"},
-    {2, PIN_PULL_DIS, 4, "PD.7"},
-    {2, PIN_PULL_DIS, 4, "PD.8"},
-    {2, PIN_PULL_DIS, 4, "PD.9"},
-    {2, PIN_PULL_DIS, 4, "PD.10"},
-    {2, PIN_PULL_DIS, 4, "PD.11"},
-    {2, PIN_PULL_DIS, 4, "PD.12"},
-    {2, PIN_PULL_DIS, 4, "PD.13"},
-    {2, PIN_PULL_DIS, 4, "PD.14"},
-    {2, PIN_PULL_DIS, 4, "PD.15"},
-
-    {2, PIN_PULL_DIS, 4, "PD.24"},
-    {2, PIN_PULL_DIS, 4, "PD.25"},
-    {2, PIN_PULL_DIS, 4, "PD.26"},
-    {2, PIN_PULL_DIS, 4, "PD.27"},
 #endif
 #ifdef AIC_LVDS_LINK_1
     {3, PIN_PULL_DIS, 3, "PD.8"},

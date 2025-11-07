@@ -10,12 +10,18 @@
 #define LOG_TAG "KEYADC"
 
 #define KEYADC_TEST_CHANNLE     7
-#define KEYADC_TEST_SCALE       50
+#define KEYADC_TEST_SCALE       200
 
 static rt_adc_device_t gpai_device;
 static rt_thread_t keyadc_thread;
 
-static int keyadc_voltage[] = { 380, 1040, 1870, 2490 };
+#ifdef AIC_USING_D213ECV_EzUIX1_DEMO_V1
+// static int keyadc_voltage[] = { 380, 1040, 1870, 2490 };
+static int keyadc_voltage[] = { 460, 1160, 2090, 2740 };
+#elif defined AIC_USING_H215_DEMO_A02_V0
+static int keyadc_voltage[] = { 340, 700, 1240, 1560 };
+#endif
+
 static int keyadc_flag[] = { 1, 2, 3, 4 };
 
 
