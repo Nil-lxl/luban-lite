@@ -23,7 +23,12 @@
 #endif
 
 #define LOG_TAG "MAIN"
-#define BACKLIGHT_PIN "PC.7"
+
+#if defined AIC_USING_D213ECV_EzUIX1_DEMO_V1
+#define BL_EN_PIN "PC.7"
+#elif defined AIC_USING_HOT68_DEMO_A01_V0
+#define BL_EN_PIN "PE.14"
+#endif
 
 int main(void) {
 #ifdef ULOG_USING_FILTER
@@ -32,14 +37,9 @@ int main(void) {
     return 0;
 }
 
-void set_backlight(int level);
-
 void FunctionImp(void) {
     // rt_thread_mdelay(1000);
     LOG_I("--------------Function Implement--------------\n");
-#if defined AIC_USING_D213ECV_EzUIX1_DEMO_V1
-    set_backlight(1);
-#endif 
 
 #ifdef APP_USE_DRAW_LINE_TEST
     panel_draw_start();
@@ -58,15 +58,14 @@ void FunctionImp(void) {
 #endif
 }
 
-INIT_APP_EXPORT(FunctionImp);
-
-
-void set_backlight(int level) {
-    u32 backlight_pin = rt_pin_get(BACKLIGHT_PIN);
-    rt_pin_mode(backlight_pin, PIN_MODE_OUTPUT);
-    if (level == 1) {
-        rt_pin_write(backlight_pin, PIN_HIGH);
-    } else if (level == 0) {
-        rt_pin_write(backlight_pin, PIN_LOW);
-    }
+void backlight_enable() {
+    u32 backlight_en_pin = rt_pin_get(BL_EN_PIN);
+    rt_pin_mode(backlight_en_pin, PIN_MODE_OUTPUT);
+    rt_pin_write(backlight_en_pin, PIN_HIGH);
 }
+
+#ifdef BL_EN_PIN 
+INIT_DEVICE_EXPORT(backlight_enable);
+#endif 
+
+INIT_APP_EXPORT(FunctionImp);

@@ -3,31 +3,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-
 #include "panel_com.h"
 #include <aic_hal.h>
-
-#if defined AIC_USING_D213ECV_EzUIX1_DEMO_V1
-#define RESET_PIN  "PB.6"
-#define CS         "PE.13"
-#define SCL        "PE.12"
-#define SDI        "PE.18"
-#elif defined AIC_USING_D213ECV_EzUIX1_DEMO_V0
-#define RESET_PIN  "PA.3"
-#define CS         "PE.17"
-#define SCL        "PE.16"
-#define SDI        "PE.18"
-#elif defined AIC_USING_H215_DEMO_A02_V0
-#define RESET_PIN  "PF.0"
-#define CS         "PC.6"
-#define SCL        "PF.15"
-#define SDI        "PF.14"
-#elif defined AIC_USING_JYX68_RGB01
-#define RESET_PIN  "PB.1"
-#define CS         "PE.13"
-#define SCL        "PE.12"
-#define SDI        "PE.14"
-#endif
+#include "disp_gpio.h"
 
 static struct gpio_desc reset_gpio;
 
@@ -71,11 +49,7 @@ static int panel_enable(struct aic_panel *panel) {
     panel_spi_wr_reg(0x27, 0x14);
     panel_spi_wr_reg(0x38, 0x9C);
     panel_spi_wr_reg(0x39, 0xA7);
-#if defined AIC_CHIP_D21X
-    panel_spi_wr_reg(0x3A, 0x77);  //24bit
-#else
-    panel_spi_wr_reg(0x3A, 0x55);  //16bit
-#endif
+    // panel_spi_wr_reg(0x3A, 0x55);  //16bit
     panel_spi_wr_reg(0x28, 0x40);
     panel_spi_wr_reg(0x29, 0x01);
     panel_spi_wr_reg(0x2A, 0xdf);
@@ -277,11 +251,7 @@ static struct display_timing h035a17_timing = {
 
 static struct panel_rgb rgb = {
     .mode = PRGB,
-#if defined AIC_CHIP_D21X
     .format = PRGB_24BIT,
-#else
-    .format = PRGB_16BIT_HD,
-#endif
     .clock_phase = DEGREE_90,
     .data_order = BGR,
     .data_mirror = 0,

@@ -7,14 +7,7 @@
 #include "panel_com.h"
 #include "panel_dsi.h"
 #include <aic_hal.h>
-
-#if defined AIC_USING_D213ECV_EzUIX1_DEMO_V1
-#define RESET_PIN  "PB.6"
-#elif defined AIC_USING_D213ECV_EzUIX1_DEMO_V0
-#define RESET_PIN  "PA.3"
-#elif defined AIC_USING_JYX68_MIPI01
-#define RESET_PIN    "PD.17"
-#endif
+#include "disp_gpio.h"
 
 static struct gpio_desc reset_gpio;
 

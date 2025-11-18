@@ -6,29 +6,13 @@
 
 #include "panel_com.h"
 #include <aic_hal.h>
-
-#ifdef AIC_USING_D213ECV_EzUIX1_DEMO
-#define RESET_PIN  "PA.3"
-
-#define CS         "PE.17"
-#define SCL        "PE.16"
-#define SDI        "PE.18"
-#endif
-#ifdef AIC_USING_JYX68_RGB01
-#define RESET_PIN  "PB.1"
-#define CS         "PE.13"
-#define SCL        "PE.12"
-#define SDI        "PE.14"
-#endif
+#include "disp_gpio.h"
 static struct gpio_desc reset_gpio;
-// static struct gpio_desc sleep_gpio;
 
 static void panel_gpio_init(void)
 {
     panel_get_gpio(&reset_gpio, RESET_PIN);
-    // panel_get_gpio(&sleep_gpio, SLEEP_PIN);
 
-    // panel_gpio_set_value(&sleep_gpio, 1);
     aic_delay_ms(1);
     panel_gpio_set_value(&reset_gpio, 0);
     aic_delay_ms(20);

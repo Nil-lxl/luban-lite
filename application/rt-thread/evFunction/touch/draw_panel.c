@@ -186,7 +186,7 @@ void touch_read_point(void *param) {
 
 
 void panel_draw_lines(void *param) {
-    rt_thread_mdelay(100);
+    rt_thread_mdelay(200);
 
     struct frame_buffer_info fb_info = {
         .frame_buffer_format = screen_info.format,

@@ -7,19 +7,13 @@
 #include "panel_com.h"
 #include "panel_dsi.h"
 #include <aic_hal.h>
-
-#if defined AIC_USING_D213ECV_EzUIX1_DEMO
-#define H070A21_RESET_PIN    "PA.3"
-#elif defined AIC_USING_JYX68_MIPI01
-#define H070A21_RESET_PIN    "PD.17"
-#endif
-
+#include "disp_gpio.h"
 
 static struct gpio_desc reset_gpio;
 static struct gpio_desc sleep_gpio;
 
 static void panel_gpio_init(struct aic_panel *panel) {
-    panel_get_gpio(&reset_gpio, H070A21_RESET_PIN);
+    panel_get_gpio(&reset_gpio, RESET_PIN);
 
     panel_gpio_set_value(&reset_gpio, 1);
     aic_delay_ms(1);

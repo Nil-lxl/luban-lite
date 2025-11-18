@@ -210,7 +210,7 @@ const struct dfs_mount_tbl mount_table[] = {
     {"ramdisk0", "/ram", "elm", 0, 0, 0},
 #endif
 #ifndef AIC_AB_SYSTEM_INTERFACE
-#if (defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0) || defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1))
+#if defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0) || defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1)
     {"blk_rodata", "/rodata", "elm", 0, 0, 0},
 #endif
 #endif

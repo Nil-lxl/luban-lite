@@ -291,7 +291,7 @@ config AIC_LVGL_RTP_RECALIBRATE_DEMO
     bool "LVGL rtp recalibrate demo"
 
 config AIC_LVGL_DEMO_WIDGETS
-    bool "LVGL widgets demos"
+    bool "LVGL demo widgets"
     select LPKG_LVGL_USING_DEMOS
 
 config AIC_LVGL_DEMO_BENCHMARK

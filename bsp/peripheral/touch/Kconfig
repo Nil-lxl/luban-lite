@@ -69,17 +69,20 @@ endchoice
 
 config AIC_TOUCH_PANEL_I2C_CHAN
     string "Touch using I2C channel index"
-    default "i2c3"
+    default "i2c3" if AIC_CHIP_D21X
+    default "i2c2" if AIC_CHIP_D13X
     depends on AIC_USING_CTP
 
 config AIC_TOUCH_PANEL_RST_PIN
     string "Touch reset pin"
-    default "PA.8"
+    default "PA.8" if AIC_CHIP_D21X
+    default "PA.10" if AIC_CHIP_D13X
     depends on AIC_USING_CTP
 
 config AIC_TOUCH_PANEL_INT_PIN
     string "Touch irq pin"
-    default "PA.9"
+    default "PA.9" if AIC_CHIP_D21X
+    default "PA.11" if AIC_CHIP_D13X
     depends on AIC_USING_CTP
 
 config AIC_TOUCH_PANEL_WAKE_UP

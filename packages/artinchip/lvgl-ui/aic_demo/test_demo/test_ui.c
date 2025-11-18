@@ -35,10 +35,15 @@
 #define LCD_VER_RES PANEL_VACTIVE_RES
 #endif
 
-#define KEYADC_CHANNEL          7               //ADC按键通道
-#define KEYADC_SCALE            200             //电压变化范围(单位:mv)
+#ifdef AIC_USING_HOT68_DEMO_A01_V0
+#define KEYADC_CHANNEL     5 
+#define BACKLIGHT_PWM_CHANNEL   2
+#else 
+#define KEYADC_CHANNEL     7       
+#define BACKLIGHT_PWM_CHANNEL   3         
+#endif                                          
 
-#define BACKLIGHT_PWM_CHANNEL   3               //PWM通道
+#define KEYADC_SCALE            200             //电压变化范围(单位:mv)
 
 static rt_thread_t cir_thread;
 static rt_device_t cir_dev;
@@ -87,7 +92,7 @@ void lv_obj_show(lv_obj_t *obj) {
 void timer_cb(lv_timer_t *timer) {
     switch (count) {
         case 0:
-            // lv_obj_hide(img2);
+            lv_obj_hide(img2);
             // lv_obj_show(container);
             lv_obj_hide(container);
             lv_set_bg_color(LV_COLOR_RED);
@@ -139,7 +144,7 @@ void timer_cb(lv_timer_t *timer) {
     }
     count = (count + 1) % 8;    //在第x个画面结束一轮循环
 #endif
-}
+    }
 
 extern void test_control(void);
 
@@ -189,9 +194,9 @@ void test_ui_init() {
     lv_obj_hide(gray_block);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit1024x768.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit640x480.jpg));
     img2 = lv_img_create(scr);
-    lv_img_set_src(img2, LVGL_IMAGE_PATH(img1920.jpg));
+    lv_img_set_src(img2, LVGL_IMAGE_PATH(fruit800x1280.jpg));
     img3 = lv_img_create(scr);
     lv_img_set_src(img3, LVGL_IMAGE_PATH(img400x1280_3.jpg));
     lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
@@ -199,7 +204,7 @@ void test_ui_init() {
     lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
 
 #if TEST_DEMO_USE_DEFAULT_CONTROL
-    timer = lv_timer_create(timer_cb, 3000, NULL);
+    timer = lv_timer_create(timer_cb, 1000, NULL);
 #else 
     timer = lv_timer_create(timer_cb, 300, NULL);
 #endif
@@ -331,7 +336,7 @@ void cir_thread_begin(void) {
     cir_thread = rt_thread_create("cir_thread", cir_thread_entry, RT_NULL, 4 * 1024, 18, 10);
     if (cir_thread != RT_NULL) {
         rt_thread_startup(cir_thread);
-    } else {
+} else {
         LOG_E("CIR Thread Create Failed");
     }
 }

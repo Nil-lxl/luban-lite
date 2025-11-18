@@ -88,6 +88,8 @@
 
 #if defined AIC_USING_JYX68_MIPI01
 #define LANE_ASSIGNMENTS 0x3012
+#elif defined AIC_USING_HOT68_DEMO_A01_V0
+#define LANE_ASSIGNMENTS 0x0123
 #else
 #define LANE_ASSIGNMENTS 0x3210
 #endif
@@ -104,7 +106,11 @@
  *
  * LANE_POLARITIES 0b1010
  */
+#if defined AIC_USING_HOT68_DEMO_A01_V0
+#define LANE_POLARITIES  0b1001
+#else
 #define LANE_POLARITIES  0b0000
+#endif
 
 /**
  * data clk inverse, default 0

@@ -6,6 +6,7 @@
 
 #include "panel_com.h"
 #include "panel_dsi.h"
+#include "disp_gpio.h"
 
 static int panel_enable(struct aic_panel *panel) {
     int ret;

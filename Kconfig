@@ -47,6 +47,11 @@ choice
         bool "JYX68_MIPI01"
         depends on AIC_CHIP_D13X
 
+    config AIC_USING_HOT68_DEMO_A01_V0
+        bool "HOT68_DEMO_A01_V0"
+        depends on AIC_CHIP_D13X
+        
+
 endchoice
 
 endmenu

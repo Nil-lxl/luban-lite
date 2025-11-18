@@ -40,11 +40,15 @@ extern struct aic_panel dsi_ft8201;
 extern struct aic_panel dsi_edp_lt9811exb;
 extern struct aic_panel dsi_h016a01;
 extern struct aic_panel dsi_h024b12;
+extern struct aic_panel dsi_h034a01;
 extern struct aic_panel dsi_h035a27;
+extern struct aic_panel dsi_h035b16;
 extern struct aic_panel dsi_h050a20;
+extern struct aic_panel dsi_h055a03;
 extern struct aic_panel dsi_h070b13;
 extern struct aic_panel dsi_h070a21;
 extern struct aic_panel dsi_h078b06;
+extern struct aic_panel dsi_h080a11;
 extern struct aic_panel dsi_h080d16;
 
 

@@ -9,17 +9,24 @@
 
 #define LOG_TAG "KEYADC"
 
+#ifdef AIC_USING_HOT68_DEMO_A01_V0
+#define KEYADC_TEST_CHANNLE     5
+#else 
 #define KEYADC_TEST_CHANNLE     7
+#endif 
+
 #define KEYADC_TEST_SCALE       200
 
 static rt_adc_device_t gpai_device;
 static rt_thread_t keyadc_thread;
 
 #ifdef AIC_USING_D213ECV_EzUIX1_DEMO_V1
-// static int keyadc_voltage[] = { 380, 1040, 1870, 2490 };
-static int keyadc_voltage[] = { 460, 1160, 2090, 2740 };
+static int keyadc_voltage[] = { 400, 1100, 2000, 2680 };
+// static int keyadc_voltage[] = { 460, 1160, 2090, 2740 };
 #elif defined AIC_USING_H215_DEMO_A02_V0
 static int keyadc_voltage[] = { 340, 700, 1240, 1560 };
+#elif defined AIC_USING_HOT68_DEMO_A01_V0
+static int keyadc_voltage[] = { 540, 1030, 1810, 2280 };
 #endif
 
 static int keyadc_flag[] = { 1, 2, 3, 4 };
@@ -43,7 +50,7 @@ key_flag_t keyadc_get_flag(int channel, int scale) {
     while (1) {
         adc_value = rt_adc_read(gpai_device, channel);
         for (int i = 0;i < sizeof(keyadc_voltage) / sizeof(keyadc_voltage[0]);i++) {
-            // rt_kprintf("adc_value:%d\n",adc_value);
+            // rt_kprintf("adc_value:%d\n", adc_value);
             if ((keyadc_voltage[i] - scale <= adc_value) && (adc_value <= keyadc_voltage[i] + scale)) {
                 rt_thread_mdelay(300);
                 return keyadc_flag[i];

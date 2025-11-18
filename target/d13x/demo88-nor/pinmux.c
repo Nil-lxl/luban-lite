@@ -297,7 +297,6 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 #ifdef AIC_USING_PWM2
     {3, PIN_PULL_DIS, 3, "PE.13"},
-    //{3, PIN_PULL_DIS, 3, "PE.15"},
 #endif
 #ifdef AIC_USING_QEP2
     {6, PIN_PULL_DIS, 3, "PE.2"},
