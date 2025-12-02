@@ -22,7 +22,6 @@ int hal_clk_enable_deassertrst(uint32_t clk_id)
                         cfg->ops->enable_clk_deassert_rst != NULL,
                 -EINVAL);
 
-    cfg->enable = 1;
     return (cfg->ops->enable_clk_deassert_rst(cfg));
 }
 
@@ -37,7 +36,6 @@ int hal_clk_disable_assertrst(uint32_t clk_id)
                         cfg->ops->disable_clk_assert_rst != NULL,
                 -EINVAL);
 
-    cfg->enable = 0;
     cfg->ops->disable_clk_assert_rst(cfg);
     return 0;
 }
@@ -52,7 +50,6 @@ int hal_clk_enable(uint32_t clk_id)
     CHECK_PARAM(cfg != NULL && cfg->ops != NULL && cfg->ops->enable != NULL,
                 -EINVAL);
 
-    cfg->enable = 1;
     return (cfg->ops->enable(cfg));
 }
 
@@ -65,8 +62,6 @@ int hal_clk_disable(uint32_t clk_id)
     cfg = (struct aic_clk_comm_cfg *)aic_clk_cfgs[clk_id];
     CHECK_PARAM(cfg != NULL && cfg->ops != NULL && cfg->ops->disable != NULL,
                 -EINVAL);
-
-    cfg->enable = 0;
 
     cfg->ops->disable(cfg);
     return 0;
@@ -84,8 +79,7 @@ int hal_clk_is_enabled(uint32_t clk_id)
 
     if (cfg->ops->is_enabled == NULL) {
         parent_clk_id = hal_clk_get_parent(clk_id);
-        cfg->enable = hal_clk_is_enabled(parent_clk_id);
-        return cfg->enable;
+        return hal_clk_is_enabled(parent_clk_id);
     }
     return (cfg->ops->is_enabled(cfg));
 }

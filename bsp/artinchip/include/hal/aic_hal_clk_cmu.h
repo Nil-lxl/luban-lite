@@ -14,7 +14,6 @@ extern "C" {
 struct aic_clk_comm_cfg {
     struct aic_clk_ops *ops;
     const char *name;
-    bool enable;
 };
 
 struct aic_clk_fixed_rate_cfg {
@@ -154,7 +153,6 @@ struct aic_clk_ops {
         .id        = _id, \
         .parent_id = 0, \
         .rate      = _rate, \
-        .comm.enable = 1, \
         .comm.ops  = &aic_clk_fixed_rate_ops, \
         .comm.name = _name,  \
     }
