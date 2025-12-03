@@ -163,23 +163,22 @@ void touch_read_point(void *param) {
     while (1) {
         rt_sem_take(touch_sem, RT_WAITING_FOREVER);
 
-        if (rt_device_read(touch_device, 0, touch_data, touch_info.point_num) > 0) {
-            for (rt_uint8_t i = 0;i < touch_info.point_num;i++) {
-                if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
-                    touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
-                    touch_data[i].event == RT_TOUCH_EVENT_UP) {
-                    // LOG_I("%d %d %d %d", touch_data[i].track_id,
-                    //     touch_data[i].x_coordinate,
-                    //     touch_data[i].y_coordinate,
-                    //     touch_data[i].event);
-                }
-                rt_thread_delay(1);
-
+        rt_device_read(touch_device, 0, touch_data, touch_info.point_num);
+        for (rt_uint8_t i = 0;i < touch_info.point_num;i++) {
+            if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
+                touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
+                touch_data[i].event == RT_TOUCH_EVENT_UP) {
+                // LOG_I("%d %d %d %d", touch_data[i].track_id,
+                //     touch_data[i].x_coordinate,
+                //     touch_data[i].y_coordinate,
+                //     touch_data[i].event);
             }
-            /* 获取上一次的触摸数据 */
-            rt_memcpy(prev_data, touch_data, sizeof(struct rt_touch_data) * touch_info.point_num);
+            rt_thread_delay(1);
 
         }
+        /* 获取上一次的触摸数据 */
+        rt_memcpy(prev_data, touch_data, sizeof(struct rt_touch_data) * touch_info.point_num);
+
         rt_device_control(touch_device, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
     }
 }
@@ -195,7 +194,7 @@ void panel_draw_lines(void *param) {
         .frame_buffer = (uint8_t *)screen_info.framebuffer,
     };
 
-#if 1   //show display border
+#if 0   //show display border
     struct line_dsc border[4];
 
     border[0].x1 = 0;
@@ -267,12 +266,12 @@ void panel_draw_start() {
 
     set_bg_color();
 
-    touch_read_thread = rt_thread_create("touch_read", touch_read_point, RT_NULL, 2 * 1024, 20, 5);
+    touch_read_thread = rt_thread_create("touch_read", touch_read_point, RT_NULL, 2 * 1024, 10, 5);
     if (touch_read_thread != RT_NULL) {
         rt_thread_startup(touch_read_thread);
     }
 
-    draw_thread = rt_thread_create("draw_line", panel_draw_lines, RT_NULL, 2 * 1024, 21, 5);
+    draw_thread = rt_thread_create("draw_line", panel_draw_lines, RT_NULL, 2 * 1024, 11, 5);
     if (draw_thread != RT_NULL) {
         rt_thread_startup(draw_thread);
     }

@@ -128,6 +128,8 @@ static rt_size_t ft6336_read_point(struct rt_touch_device *touch, void *buf, rt_
     if (touch_num == 0) {
         read_num = 0;
         // return read_num;
+    } else {
+        LOG_D("touch_num:%d", touch_num);
     }
 
     //获取第一个触点坐标
@@ -136,6 +138,8 @@ static rt_size_t ft6336_read_point(struct rt_touch_device *touch, void *buf, rt_
         LOG_E("read touch status fail\n");
         read_num = 0;
         return read_num;
+    } else {
+        LOG_D("read_buf:%02x %02x %02x %02x %02x %02x", read_buf[0], read_buf[1], read_buf[2], read_buf[3], read_buf[4], read_buf[5]);
     }
 
 #if FT6336_MAX_TOUCH > 1   //多点触摸
@@ -179,6 +183,8 @@ static rt_size_t ft6336_read_point(struct rt_touch_device *touch, void *buf, rt_
         aic_touch_flip(&input_x, &input_y);
         aic_touch_rotate(&input_x, &input_y);
         aic_touch_scale(&input_x, &input_y);
+        // LOG_D("input_x:%d, input_y:%d", input_x, input_y);
+
         // if (!aic_touch_crop(&input_x, &input_y))
         //     continue;
 
@@ -186,7 +192,7 @@ static rt_size_t ft6336_read_point(struct rt_touch_device *touch, void *buf, rt_
             ft6336_touch_up(buf, 0);
         }
         if (point_state == 2) {
-            ft6336_touch_down(buf, 0, input_x, input_y);
+            ft6336_touch_down(buf, 0, input_x + 106, input_y);
         }
     } else {
         // read_id = (read_buf[2] & 0xf0) >> 4;
@@ -235,7 +241,7 @@ struct rt_touch_info ft6336_info =
 {
     RT_TOUCH_TYPE_CAPACITANCE,
     RT_TOUCH_VENDOR_FT,
-    5,
+    FT6336_MAX_TOUCH,
     (rt_int32_t)AIC_TOUCH_X_COORDINATE_RANGE,
     (rt_int32_t)AIC_TOUCH_Y_COORDINATE_RANGE,
 };

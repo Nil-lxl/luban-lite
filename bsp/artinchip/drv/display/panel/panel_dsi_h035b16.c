@@ -15,9 +15,9 @@ static void panel_gpio_init(struct aic_panel *panel) {
     panel_get_gpio(&reset_gpio, RESET_PIN);
 
     panel_gpio_set_value(&reset_gpio, 1);
-    aic_delay_ms(10);
+    aic_delay_ms(1);
     panel_gpio_set_value(&reset_gpio, 0);
-    aic_delay_ms(20);
+    aic_delay_ms(10);
     panel_gpio_set_value(&reset_gpio, 1);
     aic_delay_ms(120);
 }
@@ -49,9 +49,9 @@ static int panel_enable(struct aic_panel *panel) {
     panel_dsi_generic_send_seq(panel, 0xEA, 0x97, 0x0A, 0x82, 0x02, 0x03, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x81, 0x88, 0xBA, 0x17, 0x53, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x80, 0x88, 0xBA, 0x06, 0x42, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x23, 0x00, 0x00, 0x02, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 
     panel_dsi_generic_send_seq(panel, 0x11, 0x00);
-    aic_delay_ms(120);
+    aic_delay_ms(150);
     panel_dsi_generic_send_seq(panel, 0x29, 0x00);
-    aic_delay_ms(20);
+    aic_delay_ms(50);
 
     panel_dsi_setup_realmode(panel);
 
@@ -69,7 +69,7 @@ static struct aic_panel_funcs panel_funcs = {
 };
 
 static struct display_timing h035b16_timing = {
-    .pixelclock = 40 * 1000 * 1000,
+    .pixelclock = 35 * 1000 * 1000,
     .hactive = 640,
     .hfront_porch = 120,
     .hback_porch = 120,

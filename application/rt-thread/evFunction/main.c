@@ -38,7 +38,7 @@ int main(void) {
 }
 
 void FunctionImp(void) {
-    // rt_thread_mdelay(1000);
+    // rt_thread_mdelay(1000);    
     LOG_I("--------------Function Implement--------------\n");
 
 #ifdef APP_USE_DRAW_LINE_TEST

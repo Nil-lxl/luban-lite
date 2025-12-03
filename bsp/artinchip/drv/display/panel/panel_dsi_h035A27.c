@@ -45,7 +45,7 @@ static int panel_enable(struct aic_panel *panel) {
 
     panel_dsi_generic_send_seq(panel, 0xf0, 0x3c);
     panel_dsi_generic_send_seq(panel, 0xf0, 0x69);
-    panel_dsi_generic_send_seq(panel, 0X3A, 0x77);
+    panel_dsi_generic_send_seq(panel, 0x3A, 0x77);
 
     panel_dsi_generic_send_seq(panel, 0x11, 0x00);
     aic_delay_ms(120);

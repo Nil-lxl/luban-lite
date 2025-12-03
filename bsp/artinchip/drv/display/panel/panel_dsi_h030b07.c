@@ -27,6 +27,7 @@ static void panel_gpio_init(struct aic_panel *panel) {
 static int panel_enable(struct aic_panel *panel) {
 
     panel_gpio_init(panel);
+
     panel_di_enable(panel, 0);
     panel_dsi_send_perpare(panel);
 
@@ -83,7 +84,7 @@ static struct aic_panel_funcs panel_funcs = {
     .register_callback = panel_register_callback,
 };
 
-static struct display_timing st7701s_timing = {
+static struct display_timing h030b07_timing = {
     .pixelclock = 35 * 1000 * 1000,
     .hactive = 480,
     .hfront_porch = 20,
@@ -101,9 +102,9 @@ struct panel_dsi dsi = {
     .lane_num = 2,
 };
 
-struct aic_panel dsi_st7701s = {
-    .name = "panel-st7701s",
-    .timings = &st7701s_timing,
+struct aic_panel dsi_h030b07 = {
+    .name = "panel-h030b07",
+    .timings = &h030b07_timing,
     .funcs = &panel_funcs,
     .dsi = &dsi,
     .connector_type = AIC_MIPI_COM,

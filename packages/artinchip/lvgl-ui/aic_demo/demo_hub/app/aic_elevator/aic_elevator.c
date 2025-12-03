@@ -114,14 +114,11 @@ static void aic_elevator_ui_impl(lv_obj_t *parent)
 static void aic_elevator_player_impl(lv_obj_t *parent)
 {
     lv_obj_t *player = lv_aic_player_create(parent);
-    if (LV_HOR_RES == 1024)
-        lv_obj_set_pos(player, adaptive_width(420), adaptive_height(168));
-    else
-        lv_obj_set_pos(player, adaptive_width(150), adaptive_height(8));
+    lv_obj_set_pos(player, adaptive_width(305), adaptive_height(60));
     lv_aic_player_set_src(player, LVGL_PATH_ORI(common/elevator_mjpg.mp4));
     lv_aic_player_set_auto_restart(player, true);
     lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
-    lv_aic_player_set_width(player, adaptive_width(715));
+    lv_aic_player_set_width(player, adaptive_width(700));
     lv_aic_player_set_height(player, adaptive_height(485));
 }
 
@@ -158,9 +155,10 @@ static void ui_switch_run_dir_cb(lv_event_t *e)
 static void time_update_cb(lv_timer_t * timer)
 {
     lv_obj_t *label = (lv_obj_t *)timer->user_data;
-
+    lv_obj_t *player = lv_obj_get_child(lv_obj_get_parent(label), -1);
     seconds++;
     lv_label_set_text_fmt(label, "%02ld:%02ld:%02ld", GET_HOURS(seconds), GET_MINUTES(seconds), GET_SECONDS(seconds));
+    lv_obj_invalidate(player);
 }
 
 static void floor_update_cb(lv_timer_t * timer)

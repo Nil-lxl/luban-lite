@@ -182,7 +182,7 @@
  * D12x, just support { "PC.6", "PD.2", "PF.15" }
  * D13x, just support { "PC.6", "PA.1" }
  */
-#  define TE_PIN      "PC.6"
+#  define TE_PIN      "PD.2"
 #  define TE_PULSE_WIDTH  2
 #endif
 

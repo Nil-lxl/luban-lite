@@ -5,9 +5,12 @@
 - Display Driver:
   - MIPI I/F:
     - H016A01
+    - H030B07
     - H034A01
     - H035A27
     - H035B16
+    - H035B22
+    - H040B24
     - H055A03
     - H080A11
     - H080D16 (MIPI convert dual LVDS)

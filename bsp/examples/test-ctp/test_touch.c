@@ -11,7 +11,7 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
-#define THREAD_PRIORITY         25
+#define THREAD_PRIORITY         20
 #define THREAD_STACK_SIZE       4096
 #define THREAD_TIMESLICE        5
 #define TOUCH_DEFAULT_NAME      "gt911"
@@ -19,10 +19,9 @@
 static rt_sem_t     g_touch_sem = RT_NULL;
 static rt_device_t  g_dev = RT_NULL;
 static struct rt_touch_data *g_read_data = RT_NULL;
-static struct rt_touch_info g_info = {0};
+static struct rt_touch_info g_info = { 0 };
 
-static void cmd_touch_test_help(void)
-{
+static void cmd_touch_test_help(void) {
     rt_kprintf("Usage:\n");
     rt_kprintf("\ttest_touch <sensor_name>\n");
     rt_kprintf("\tFor example:\n");
@@ -30,25 +29,29 @@ static void cmd_touch_test_help(void)
     rt_kprintf("\t\ttest_touch gt911\n");
 }
 
-static void touch_entry(void *parameter)
-{
+static void touch_entry(void *parameter) {
+    rt_kprintf("touch thread start");
+
     rt_device_control(g_dev, RT_TOUCH_CTRL_GET_INFO, &g_info);
 
     g_read_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * g_info.point_num);
 
     while (1) {
         rt_sem_take(g_touch_sem, RT_WAITING_FOREVER);
-
-        if (rt_device_read(g_dev, 0, g_read_data, g_info.point_num) > 0) {
-            for (rt_uint8_t i = 0; i < g_info.point_num; i++) {
-                if (g_read_data[i].event == RT_TOUCH_EVENT_DOWN ||
-                    g_read_data[i].event == RT_TOUCH_EVENT_MOVE ||
-                    g_read_data[i].event == RT_TOUCH_EVENT_UP) {
-                    rt_kprintf("%d %d %d %d\n", g_read_data[i].track_id,
-                               g_read_data[i].x_coordinate,
-                               g_read_data[i].y_coordinate,
-                               g_read_data[i].event);
-                }
+        /*
+         * 2025/12/3
+         * 使用JYX68读取FT6336触摸芯片时,rt_device_read会返回0,将判断注释后仍可正常读取数据
+        */
+        rt_size_t size = rt_device_read(g_dev, 0, g_read_data, g_info.point_num);
+        // rt_kprintf("dev_read_size:%d  ",size);
+        for (rt_uint8_t i = 0; i < g_info.point_num; i++) {
+            if (g_read_data[i].event == RT_TOUCH_EVENT_DOWN ||
+                g_read_data[i].event == RT_TOUCH_EVENT_MOVE ||
+                g_read_data[i].event == RT_TOUCH_EVENT_UP) {
+                rt_kprintf("%d %d %d %d\n", g_read_data[i].track_id,
+                    g_read_data[i].x_coordinate,
+                    g_read_data[i].y_coordinate,
+                    g_read_data[i].event);
             }
         }
         rt_device_control(g_dev, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
@@ -62,15 +65,13 @@ static void touch_entry(void *parameter)
     }
 }
 
-static rt_err_t rx_callback(rt_device_t dev, rt_size_t size)
-{
+static rt_err_t rx_callback(rt_device_t dev, rt_size_t size) {
     rt_sem_release(g_touch_sem);
     rt_device_control(dev, RT_TOUCH_CTRL_DISABLE_INT, RT_NULL);
     return 0;
 }
 
-static void test_touch(int argc, char *argv[])
-{
+static void test_touch(int argc, char *argv[]) {
     rt_thread_t  touch_thread = RT_NULL;
     char touch_name[RT_NAME_MAX];
 
@@ -93,6 +94,7 @@ static void test_touch(int argc, char *argv[])
         rt_kprintf("open device failed!");
         return;
     } else {
+        rt_kprintf("open device %s success!\n", touch_name);
         rt_device_control(g_dev, RT_TOUCH_CTRL_GET_INFO, &g_info);
         rt_kprintf("type       :%d\n", g_info.type);
         rt_kprintf("point_num  :%d\n", g_info.point_num);
@@ -106,14 +108,16 @@ static void test_touch(int argc, char *argv[])
     if (g_touch_sem == RT_NULL) {
         rt_kprintf("create dynamic semaphore failed.\n");
         return;
+    } else {
+        rt_kprintf("create dynamic semaphore success.\n");
     }
 
     touch_thread = rt_thread_create("touch",
-                                     touch_entry,
-                                     RT_NULL,
-                                     THREAD_STACK_SIZE,
-                                     THREAD_PRIORITY,
-                                     THREAD_TIMESLICE);
+        touch_entry,
+        RT_NULL,
+        THREAD_STACK_SIZE,
+        THREAD_PRIORITY,
+        THREAD_TIMESLICE);
 
     if (touch_thread != RT_NULL)
         rt_thread_startup(touch_thread);

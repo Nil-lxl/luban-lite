@@ -10,7 +10,6 @@
 #include "disp_gpio.h"
 
 static struct gpio_desc reset_gpio;
-static struct gpio_desc sleep_gpio;
 
 static void panel_gpio_init(struct aic_panel *panel) {
     panel_get_gpio(&reset_gpio, RESET_PIN);

@@ -69,6 +69,10 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd MIPI DSI H024B12 panel"
         depends on AIC_DISP_MIPI_DSI
 
+    config AIC_PANEL_DSI_H030B07
+        bool "Hotlcd MIPI DSI H030B07 panel"
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_H034A01
         bool "Hotlcd MIPI DSI H034A01 panel"
         depends on AIC_DISP_MIPI_DSI
@@ -79,6 +83,14 @@ if !AIC_DISP_PQ_TOOL
 
     config AIC_PANEL_DSI_H035B16
         bool "Hotlcd MIPI DSI H035B16 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H035B22
+        bool "Hotlcd MIPI DSI H035B22 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H040B24
+        bool "Hotlcd MIPI DSI H040B24 panel"
         depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H050A20
@@ -221,6 +233,11 @@ if !AIC_DISP_PQ_TOOL
 
     config AIC_PANEL_RGB_H028A19
         bool "Hotlcd RGB H028A19 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H030A10
+        bool "Hotlcd RGB H030A10 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
@@ -389,14 +406,18 @@ config PANEL_HACTIVE_RES
     default 320 if AIC_PANEL_DBI_H040A12
     default 320 if AIC_PANEL_DBI_H040A27
     default 720 if AIC_PANEL_RGB_NV3052
+    default 480 if AIC_PANEL_RGB_H030A10
     default 640 if AIC_PANEL_RGB_H035A17
     default 480 if AIC_PANEL_RGB_H050A12
     default 480 if AIC_PANEL_RGB_H068A04
+    default 320 if AIC_PANEL_DSI_ST7797
     default 400 if AIC_PANEL_DSI_H016A01
     default 240 if AIC_PANEL_DSI_H024B12
     default 800 if AIC_PANEL_DSI_H034A01
     default 320 if AIC_PANEL_DSI_H035A27
     default 640 if AIC_PANEL_DSI_H035B16
+    default 720 if AIC_PANEL_DSI_H040B24
+    default 480 if AIC_PANEL_DSI_H035B22
     default 720 if AIC_PANEL_DSI_H050A20
     default 720 if AIC_PANEL_DSI_H055A03
     default 800 if AIC_PANEL_DSI_H070B13
@@ -414,14 +435,18 @@ config PANEL_VACTIVE_RES
     default 320 if AIC_PANEL_DBI_H040A12
     default 480 if AIC_PANEL_DBI_H040A27
     default 720 if AIC_PANEL_RGB_NV3052
+    default 854 if AIC_PANEL_RGB_H030A10
     default 480 if AIC_PANEL_RGB_H035A17
     default 854 if AIC_PANEL_RGB_H050A12
     default 1280 if AIC_PANEL_RGB_H068A04
+    default 480 if AIC_PANEL_DSI_ST7797
     default 400 if AIC_PANEL_DSI_H016A01
     default 320 if AIC_PANEL_DSI_H024B12
     default 800 if AIC_PANEL_DSI_H034A01
     default 480 if AIC_PANEL_DSI_H035A27
     default 480 if AIC_PANEL_DSI_H035B16
+    default 800 if AIC_PANEL_DSI_H035B22
+    default 720 if AIC_PANEL_DSI_H040B24
     default 1280 if AIC_PANEL_DSI_H050A20
     default 1280 if AIC_PANEL_DSI_H055A03
     default 1280 if AIC_PANEL_DSI_H070B13

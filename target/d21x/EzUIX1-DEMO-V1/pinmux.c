@@ -72,6 +72,9 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_DIS, 3, "PB.4"},
     {3, PIN_PULL_DIS, 3, "PB.5"},
 #endif
+
+    // {4, PIN_PULL_DIS, 3, "PD.2"},   //TE Singal
+
 #ifdef AIC_DISP_RGB
     /* 3-Wire SPI Initialize */
     {1, PIN_PULL_DIS, 3, "PB.6"},   //LCD RESET
@@ -184,7 +187,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_DIS, 3, "PD.13"},
     {2, PIN_PULL_DIS, 3, "PD.14"},
     {2, PIN_PULL_DIS, 3, "PD.15"},
-    
+
     {2, PIN_PULL_DIS, 3, "PD.16"},
     {2, PIN_PULL_DIS, 3, "PD.17"},
     {2, PIN_PULL_DIS, 3, "PD.18"},

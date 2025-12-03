@@ -32,6 +32,7 @@
 - SPI：D13x SPI2支持Quad模式
 - Touch：支持动态的区域裁剪
 - RTP：支持自动获取X、Y方向的板级电阻值
+- CAN: 添加UDS协议栈，以及基于UDS协议栈的OTA功能
 - 新增软件组件zipfs，支持从zip文件挂载文件系统
 - 新增PBus驱动，以及示例test-pbus
 - 新增封装型号：G730BEU
