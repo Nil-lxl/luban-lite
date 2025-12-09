@@ -172,7 +172,7 @@ static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf,
             if (!aic_touch_crop(&input_x, &input_y))
                 continue;
 
-            ili2511_touch_down(buf, read_id, input_x, input_y);
+            ili2511_touch_down(buf, read_id, (int16_t)(input_x/13.35), (int16_t)(input_y/7.5));
         }
     } else if (pre_touch) {
         for (read_index = 0; read_index < pre_touch; read_index++) {

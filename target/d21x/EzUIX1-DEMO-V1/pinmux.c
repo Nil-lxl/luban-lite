@@ -80,7 +80,6 @@ struct aic_pinmux aic_pinmux_config[] = {
     {1, PIN_PULL_DIS, 3, "PB.6"},   //LCD RESET
     {1, PIN_PULL_DIS, 3, "PE.12"},  //SPI-SCL
     {1, PIN_PULL_UP, 3, "PE.13"},  //SPI-CS
-
     {1, PIN_PULL_DIS, 3, "PE.18"},  //SPI-SDA
 #endif
 #ifdef AIC_DISP_RGB

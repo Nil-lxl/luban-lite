@@ -23,8 +23,8 @@
 
 #define LOG_TAG "LV_TEST"
 
-#define TEST_DEMO_USE_DEFAULT_CONTROL   1       //默认自动切换
-#define TEST_DEMO_USE_KEYADC_CONTROL    0       //使用外部按键切换
+#define TEST_DEMO_USE_DEFAULT_CONTROL   0       //默认自动切换
+#define TEST_DEMO_USE_KEYADC_CONTROL    1       //使用外部按键切换
 #define TEST_DEMO_USE_CIR_CONTROL       0       //使用红外遥控切换
 
 #ifdef AIC_PANEL_CUSTOM_RESOLUTION

@@ -163,22 +163,24 @@ void touch_read_point(void *param) {
     while (1) {
         rt_sem_take(touch_sem, RT_WAITING_FOREVER);
 
-        rt_device_read(touch_device, 0, touch_data, touch_info.point_num);
-        for (rt_uint8_t i = 0;i < touch_info.point_num;i++) {
-            if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
-                touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
-                touch_data[i].event == RT_TOUCH_EVENT_UP) {
-                // LOG_I("%d %d %d %d", touch_data[i].track_id,
-                //     touch_data[i].x_coordinate,
-                //     touch_data[i].y_coordinate,
-                //     touch_data[i].event);
+        rt_size_t read_size = rt_device_read(touch_device, 0, touch_data, touch_info.point_num);
+        if (read_size > 0) {
+            for (rt_uint8_t i = 0;i < touch_info.point_num;i++) {
+                if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
+                    touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
+                    touch_data[i].event == RT_TOUCH_EVENT_UP) {
+                    // LOG_I("%d %d %d %d", touch_data[i].track_id,
+                    //     touch_data[i].x_coordinate,
+                    //     touch_data[i].y_coordinate,
+                    //     touch_data[i].event);
+                }
+                rt_thread_delay(1);
+
             }
-            rt_thread_delay(1);
+            /* 获取上一次的触摸数据 */
+            rt_memcpy(prev_data, touch_data, sizeof(struct rt_touch_data) * touch_info.point_num);
 
         }
-        /* 获取上一次的触摸数据 */
-        rt_memcpy(prev_data, touch_data, sizeof(struct rt_touch_data) * touch_info.point_num);
-
         rt_device_control(touch_device, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
     }
 }
@@ -194,7 +196,7 @@ void panel_draw_lines(void *param) {
         .frame_buffer = (uint8_t *)screen_info.framebuffer,
     };
 
-#if 0   //show display border
+#if 1   //show display border
     struct line_dsc border[4];
 
     border[0].x1 = 0;

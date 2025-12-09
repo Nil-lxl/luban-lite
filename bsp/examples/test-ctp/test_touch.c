@@ -42,16 +42,17 @@ static void touch_entry(void *parameter) {
          * 2025/12/3
          * 使用JYX68读取FT6336触摸芯片时,rt_device_read会返回0,将判断注释后仍可正常读取数据
         */
-        rt_size_t size = rt_device_read(g_dev, 0, g_read_data, g_info.point_num);
-        // rt_kprintf("dev_read_size:%d  ",size);
-        for (rt_uint8_t i = 0; i < g_info.point_num; i++) {
-            if (g_read_data[i].event == RT_TOUCH_EVENT_DOWN ||
-                g_read_data[i].event == RT_TOUCH_EVENT_MOVE ||
-                g_read_data[i].event == RT_TOUCH_EVENT_UP) {
-                rt_kprintf("%d %d %d %d\n", g_read_data[i].track_id,
-                    g_read_data[i].x_coordinate,
-                    g_read_data[i].y_coordinate,
-                    g_read_data[i].event);
+        rt_size_t read_size = rt_device_read(g_dev, 0, g_read_data, g_info.point_num);
+        if (read_size > 0) {
+            for (rt_uint8_t i = 0; i < g_info.point_num; i++) {
+                if (g_read_data[i].event == RT_TOUCH_EVENT_DOWN ||
+                    g_read_data[i].event == RT_TOUCH_EVENT_MOVE ||
+                    g_read_data[i].event == RT_TOUCH_EVENT_UP) {
+                    rt_kprintf("%d %d %d %d\n", g_read_data[i].track_id,
+                        g_read_data[i].x_coordinate,
+                        g_read_data[i].y_coordinate,
+                        g_read_data[i].event);
+                }
             }
         }
         rt_device_control(g_dev, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);

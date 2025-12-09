@@ -311,9 +311,10 @@ config AIC_LVGL_SPI_EXTEND_DEMO
     bool "LVGL spi extend demo"
     select AIC_LVGL_SPI_WIDGET
 
+config AIC_LVGL_LANG_DEMO
+    bool "LVGL Multi-language demo"
+
 endchoice
-
-
 
 config LV_COLOR_DEPTH
     int "LVGL color depth(32/16)"
