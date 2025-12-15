@@ -24,12 +24,6 @@
 
 #define LOG_TAG "MAIN"
 
-#if defined AIC_USING_D213ECV_EzUIX1_DEMO_V1
-#define BL_EN_PIN "PC.7"
-#elif defined AIC_USING_HOT68_DEMO_A01_V0
-#define BL_EN_PIN "PE.14"
-#endif
-
 int main(void) {
 #ifdef ULOG_USING_FILTER
     ulog_global_filter_lvl_set(ULOG_OUTPUT_LVL);
@@ -58,14 +52,12 @@ void FunctionImp(void) {
 #endif
 }
 
-void backlight_enable() {
-    u32 backlight_en_pin = rt_pin_get(BL_EN_PIN);
-    rt_pin_mode(backlight_en_pin, PIN_MODE_OUTPUT);
-    rt_pin_write(backlight_en_pin, PIN_HIGH);
+void testFunction() {
+
+
 }
 
-#ifdef BL_EN_PIN 
-INIT_DEVICE_EXPORT(backlight_enable);
-#endif 
+
+// INIT_DEVICE_EXPORT(testFunction);
 
 INIT_APP_EXPORT(FunctionImp);

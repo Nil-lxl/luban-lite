@@ -113,52 +113,18 @@ static rt_err_t gt911_get_info(struct rt_i2c_client *dev, struct rt_touch_device
 
     info->range_x = (out_info[2] << 8) | out_info[1];
     info->range_y = (out_info[4] << 8) | out_info[3];
-
-    rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE, &angle);
-    if (angle == 90 || angle == 270) {
-        info->range_x = (rt_int16_t)AIC_TOUCH_REPORT_Y_COORDINATE;
-        info->range_y = (rt_int16_t)AIC_TOUCH_REPORT_X_COORDINATE;
-    } else {
-        info->range_x = (rt_int16_t)AIC_TOUCH_REPORT_X_COORDINATE;
-        info->range_y = (rt_int16_t)AIC_TOUCH_REPORT_Y_COORDINATE;
-    }
-
     info->point_num = out_info[5] & 0x0f;
-    if (info->point_num > GT911_MAX_TOUCH) {
-        info->point_num = GT911_MAX_TOUCH;
-        rt_kprintf("Warning,tp support more than 5 points, limited to 5 points\n");
-    }
+
+    // rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE, &angle);
+    // if (angle == 90 || angle == 270) {
+    //     info->range_x = (rt_int16_t)AIC_TOUCH_REPORT_Y_COORDINATE;
+    //     info->range_y = (rt_int16_t)AIC_TOUCH_REPORT_X_COORDINATE;
+    // } else {
+    //     info->range_x = (rt_int16_t)AIC_TOUCH_REPORT_X_COORDINATE;
+    //     info->range_y = (rt_int16_t)AIC_TOUCH_REPORT_Y_COORDINATE;
+    // }
 
     return RT_EOK;
-}
-
-static void gt911_gpio_init(struct rt_touch_config *cfg)
-{
-    // rst output 0
-    rt_pin_mode(cfg->rst_pin, PIN_MODE_OUTPUT);
-    rt_pin_write(cfg->rst_pin, PIN_LOW);
-    rt_thread_delay(10);
-
-    // irq output 0
-    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
-    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
-
-    rt_thread_delay(2);
-    // rst output 1
-    rt_pin_mode(cfg->rst_pin, PIN_MODE_OUTPUT);
-    rt_pin_write(cfg->rst_pin, PIN_HIGH);
-
-    rt_thread_delay(5);
-    // rst input
-    rt_pin_mode(cfg->rst_pin, PIN_MODE_INPUT);
-
-    //irq output 0
-    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
-    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
-
-    rt_thread_delay(50);
-
-    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_INPUT);
 }
 
 static rt_err_t gt911_power_down(struct rt_touch_device *touch)
@@ -499,20 +465,33 @@ static struct rt_touch_ops gt911_touch_ops = {
     .touch_readpoint = gt911_read_point,
     .touch_control = gt911_control,
 };
+static void gt911_gpio_init(struct rt_touch_config *cfg)
+{
+    // rst output 0
+    rt_pin_mode(cfg->rst_pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->rst_pin, PIN_LOW);
+    // irq output 0
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
+    rt_thread_mdelay(10);
+
+    // rst output 1
+    rt_pin_write(cfg->rst_pin, PIN_HIGH);
+    rt_thread_mdelay(50);
+
+    // irq input
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_INPUT);
+}
 
 static int rt_hw_gt911_init(const char *name, struct rt_touch_config *cfg)
 {
     struct rt_touch_device *touch_device = RT_NULL;
-
-    touch_device =
-        (struct rt_touch_device *)rt_malloc(sizeof(struct rt_touch_device));
+    touch_device = (struct rt_touch_device *)rt_malloc(sizeof(struct rt_touch_device));
     if (touch_device == RT_NULL) {
         LOG_E("touch device malloc fail");
         return -RT_ERROR;
     }
     rt_memset((void *)touch_device, 0, sizeof(struct rt_touch_device));
-
-    gt911_gpio_init(cfg);
 
     gt911_client.bus = (struct rt_i2c_bus_device *)rt_device_find(cfg->dev_name);
 
@@ -546,11 +525,13 @@ static int rt_hw_gt911_init(const char *name, struct rt_touch_config *cfg)
 
 static int rt_hw_gt911_port(void)
 {
-    struct rt_touch_config cfg = {0};
-    cfg.dev_name = AIC_TOUCH_PANEL_I2C_CHAN;
-    cfg.irq_pin.pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
-    cfg.irq_pin.mode = PIN_MODE_INPUT;
-    cfg.rst_pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
+    struct rt_touch_config cfg={
+        .dev_name = AIC_TOUCH_PANEL_I2C_CHAN,
+        .irq_pin.pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN),
+        .irq_pin.mode = PIN_MODE_INPUT,
+        .rst_pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN),
+    };
+    gt911_gpio_init(&cfg);
 
     rt_hw_gt911_init("gt911", &cfg);
 

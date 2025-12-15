@@ -231,8 +231,7 @@ void panel_draw_lines(void *param) {
 
         for (int i = 0;i < touch_info.point_num;i++) {
             if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
-                touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
-                touch_data[i].event == RT_TOUCH_EVENT_UP) {
+                touch_data[i].event == RT_TOUCH_EVENT_MOVE ) {
                 if (prev_data[i].x_coordinate != 0 || prev_data[i].y_coordinate != 0) {
 
                     line[i].x1 = prev_data[i].x_coordinate;
@@ -268,12 +267,12 @@ void panel_draw_start() {
 
     set_bg_color();
 
-    touch_read_thread = rt_thread_create("touch_read", touch_read_point, RT_NULL, 2 * 1024, 10, 5);
+    touch_read_thread = rt_thread_create("touch_read", touch_read_point, RT_NULL, 2 * 1024, 20, 5);
     if (touch_read_thread != RT_NULL) {
         rt_thread_startup(touch_read_thread);
     }
 
-    draw_thread = rt_thread_create("draw_line", panel_draw_lines, RT_NULL, 2 * 1024, 11, 5);
+    draw_thread = rt_thread_create("draw_line", panel_draw_lines, RT_NULL, 2 * 1024, 21, 5);
     if (draw_thread != RT_NULL) {
         rt_thread_startup(draw_thread);
     }

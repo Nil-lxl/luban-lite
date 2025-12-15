@@ -95,10 +95,10 @@ static struct aic_panel_funcs panel_funcs = {
 };
 
 static struct display_timing h070a21_timing = {
-    .pixelclock = 30 * 1000 * 1000,
+    .pixelclock = 53 * 1000 * 1000,
     .hactive = 280,
-    .hfront_porch = 340,
-    .hback_porch = 30,
+    .hfront_porch = 160,
+    .hback_porch = 160,
     .hsync_len = 2,
     .vactive = 1424,
     .vfront_porch = 15,

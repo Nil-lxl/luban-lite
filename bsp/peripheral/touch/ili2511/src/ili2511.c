@@ -20,9 +20,7 @@
 
 static struct rt_i2c_client ili2511_client;
 
-static rt_err_t ili2511_read_regs(struct rt_i2c_client *dev, rt_uint8_t *reg,
-                                rt_uint8_t *data, rt_uint8_t len)
-{
+static rt_err_t ili2511_read_regs(struct rt_i2c_client *dev, rt_uint8_t *reg, rt_uint8_t *data, rt_uint8_t len) {
     struct rt_i2c_msg msgs[2];
 
     msgs[0].addr = dev->client_addr;
@@ -42,59 +40,55 @@ static rt_err_t ili2511_read_regs(struct rt_i2c_client *dev, rt_uint8_t *reg,
     }
 }
 
-static int16_t pre_x[ILI2511_MAX_TOUCH] = { -1, -1, -1, -1, -1 };
-static int16_t pre_y[ILI2511_MAX_TOUCH] = { -1, -1, -1, -1, -1 };
-static rt_uint8_t s_tp_dowm[ILI2511_MAX_TOUCH] = {0};
-static struct rt_touch_data *g_read_data = RT_NULL;
+static int16_t pre_x[ILI2511_MAX_TOUCH] = { 0 };
+static int16_t pre_y[ILI2511_MAX_TOUCH] = { 0 };
+static rt_uint8_t s_tp_dowm[ILI2511_MAX_TOUCH] = { 0 };
+static struct rt_touch_data *read_data = RT_NULL;
 
-static void ili2511_touch_up(void *buf, int8_t id)
-{
-    g_read_data = (struct rt_touch_data *)buf;
+static void ili2511_touch_up(void *buf, int8_t id) {
+    read_data = (struct rt_touch_data *)buf;
 
     if (s_tp_dowm[id] == 1) {
         s_tp_dowm[id] = 0;
-        g_read_data[id].event = RT_TOUCH_EVENT_UP;
+        read_data[id].event = RT_TOUCH_EVENT_UP;
     } else {
-        g_read_data[id].event = RT_TOUCH_EVENT_NONE;
+        read_data[id].event = RT_TOUCH_EVENT_NONE;
     }
 
-    g_read_data[id].timestamp = rt_touch_get_ts();
-    g_read_data[id].x_coordinate = pre_x[id];
-    g_read_data[id].y_coordinate = pre_y[id];
-    g_read_data[id].track_id = id;
+    read_data[id].timestamp = rt_touch_get_ts();
+    read_data[id].x_coordinate = pre_x[id];
+    read_data[id].y_coordinate = pre_y[id];
+    read_data[id].track_id = id;
 
     pre_x[id] = -1; /* last point is none */
     pre_y[id] = -1;
 }
 
-static void ili2511_touch_down(void *buf, int8_t id, int16_t x, int16_t y)
-{
-    g_read_data = (struct rt_touch_data *)buf;
+static void ili2511_touch_down(void *buf, int8_t id, int16_t x, int16_t y) {
+    read_data = (struct rt_touch_data *)buf;
 
     if (s_tp_dowm[id] == 1) {
-        g_read_data[id].event = RT_TOUCH_EVENT_MOVE;
+        read_data[id].event = RT_TOUCH_EVENT_MOVE;
     } else {
-        g_read_data[id].event = RT_TOUCH_EVENT_DOWN;
+        read_data[id].event = RT_TOUCH_EVENT_DOWN;
         s_tp_dowm[id] = 1;
     }
 
-    g_read_data[id].timestamp = rt_touch_get_ts();
-    g_read_data[id].x_coordinate = x;
-    g_read_data[id].y_coordinate = y;
-    g_read_data[id].track_id = id;
+    read_data[id].timestamp = rt_touch_get_ts();
+    read_data[id].x_coordinate = x;
+    read_data[id].y_coordinate = y;
+    read_data[id].track_id = id;
 
     pre_x[id] = x; /* save last point */
     pre_y[id] = y;
 }
 
-static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf,
-                                  rt_size_t read_num)
-{
+static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf, rt_size_t read_num) {
     rt_uint8_t touch_num = 0;
-    rt_uint8_t reg, i, recombine_id;
+    rt_uint8_t reg;
     rt_uint8_t touch_status;
     rt_uint8_t read_buf[ILI2511_POINT_LEN * ILI2511_MAX_TOUCH + 1] = { 0 };
-    rt_uint8_t read_index, touch_id[ILI2511_MAX_TOUCH] = {0};
+    rt_uint8_t read_index, touch_id[ILI2511_MAX_TOUCH] = { 0 };
     int8_t read_id = 0;
     int16_t input_x = 0;
     int16_t input_y = 0;
@@ -117,28 +111,22 @@ static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf,
         goto __exit;
     }
 
-    for (i = 0; i < ILI2511_MAX_TOUCH; i++) {
-#ifdef AIC_TOUCH_PANEL_ILI2511
-        if (read_buf[i * ILI2511_POINT_LEN + 1] & 0x80)
-#else
-        if (read_buf[i * ILI2511_POINT_LEN + 1] & 0x40)
-#endif
+    for (int i = 0; i < ILI2511_MAX_TOUCH; i++) {
+        if ((read_buf[i * ILI2511_POINT_LEN + 1] & 0x80) && read_buf[i * ILI2511_POINT_LEN + 1] != 0xFF)
             touch_num++;
     }
 
-    for (recombine_id = 0; recombine_id < touch_num; recombine_id++)
-        touch_id[recombine_id] = recombine_id;
+    for (int i = 0; i < touch_num; i++)
+        touch_id[i] = i;
 
-    if (pre_touch > touch_num)
-    {
-        for (read_index = 0; read_index < pre_touch; read_index++) {
+    if (pre_touch > touch_num) {
+        for (int i = 0; i < pre_touch; i++) {
             rt_uint8_t j;
 
-            for (j = 0; j < touch_num; j++)
-            {
-                read_id = touch_id[read_index];
+            for (j = 0; j < touch_num; j++) {
+                read_id = touch_id[i];
 
-                if (pre_id[read_index] == read_id)
+                if (pre_id[i] == read_id)
                     break;
 
                 if (j >= touch_num - 1) {
@@ -158,13 +146,8 @@ static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf,
             read_id = touch_id[read_index];
             pre_id[read_index] = read_id;
 
-#ifdef AIC_TOUCH_PANEL_ILI2511
-            input_x = ((read_buf[off_set + 1] & 0x3f) << 8) | read_buf[off_set + 2];
-            input_y = ((read_buf[off_set + 3] & 0x3f) << 8) | read_buf[off_set + 4];
-#else
-            input_x = ((read_buf[off_set + 3] & 0x3f) << 8) | read_buf[off_set + 2];
-            input_y = ((read_buf[off_set + 5] & 0x3f) << 8) | read_buf[off_set + 4];
-#endif
+            input_y = ((read_buf[off_set + 1] & 0x3f) << 8) | read_buf[off_set + 2];
+            input_x = ((read_buf[off_set + 3] & 0x3f) << 8) | read_buf[off_set + 4];
 
             aic_touch_flip(&input_x, &input_y);
             aic_touch_rotate(&input_x, &input_y);
@@ -172,7 +155,7 @@ static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf,
             if (!aic_touch_crop(&input_x, &input_y))
                 continue;
 
-            ili2511_touch_down(buf, read_id, (int16_t)(input_x/13.35), (int16_t)(input_y/7.5));
+            ili2511_touch_down(buf, read_id, (int16_t)(input_x/(9600.0/720)), (int16_t)1280-(input_y/(9600.0/1280)));
         }
     } else if (pre_touch) {
         for (read_index = 0; read_index < pre_touch; read_index++) {
@@ -186,33 +169,31 @@ __exit:
     return read_num;
 }
 
-static rt_err_t ili2511_control(struct rt_touch_device *touch, int cmd, void *data)
-{
+static rt_err_t ili2511_control(struct rt_touch_device *touch, int cmd, void *data) {
     struct rt_touch_info *info = RT_NULL;
 
-    switch(cmd)
-    {
-    case RT_TOUCH_CTRL_GET_ID:
-        break;
-    case RT_TOUCH_CTRL_GET_INFO:
-        info = (struct rt_touch_info *)data;
-        if (info == RT_NULL)
-            return -RT_EINVAL;
+    switch (cmd) {
+        case RT_TOUCH_CTRL_GET_ID:
+            break;
+        case RT_TOUCH_CTRL_GET_INFO:
+            info = (struct rt_touch_info *)data;
+            if (info == RT_NULL)
+                return -RT_EINVAL;
 
-        info->point_num = touch->info.point_num;
-        info->range_x = touch->info.range_x;
-        info->range_y = touch->info.range_y;
-        info->type = touch->info.type;
-        info->vendor = touch->info.vendor;
-        break;
-    case RT_TOUCH_CTRL_SET_MODE:
-    case RT_TOUCH_CTRL_SET_X_RANGE:
-    case RT_TOUCH_CTRL_SET_Y_RANGE:
-    case RT_TOUCH_CTRL_SET_X_TO_Y:
-    case RT_TOUCH_CTRL_DISABLE_INT:
-    case RT_TOUCH_CTRL_ENABLE_INT:
-    default:
-        break;
+            info->point_num = touch->info.point_num;
+            info->range_x = touch->info.range_x;
+            info->range_y = touch->info.range_y;
+            info->type = touch->info.type;
+            info->vendor = touch->info.vendor;
+            break;
+        case RT_TOUCH_CTRL_SET_MODE:
+        case RT_TOUCH_CTRL_SET_X_RANGE:
+        case RT_TOUCH_CTRL_SET_Y_RANGE:
+        case RT_TOUCH_CTRL_SET_X_TO_Y:
+        case RT_TOUCH_CTRL_DISABLE_INT:
+        case RT_TOUCH_CTRL_ENABLE_INT:
+        default:
+            break;
     }
 
     return RT_EOK;
@@ -226,15 +207,14 @@ const struct rt_touch_ops ili2511_touch_ops =
 
 struct rt_touch_info ili2511_info =
 {
-    RT_TOUCH_TYPE_CAPACITANCE,
-    RT_TOUCH_VENDOR_UNKNOWN,
-    5,
-    (rt_int32_t)AIC_TOUCH_X_COORDINATE_RANGE,
-    (rt_int32_t)AIC_TOUCH_Y_COORDINATE_RANGE,
+    .type = RT_TOUCH_TYPE_CAPACITANCE,
+    .vendor = RT_TOUCH_VENDOR_UNKNOWN,
+    .range_x = (rt_int32_t)AIC_TOUCH_X_COORDINATE_RANGE,
+    .range_y = (rt_int32_t)AIC_TOUCH_Y_COORDINATE_RANGE,
+    .point_num = 10,
 };
 
-int ili2511_hw_init(const char *name, struct rt_touch_config *cfg)
-{
+int ili2511_hw_init(const char *name, struct rt_touch_config *cfg) {
     rt_touch_t touch_device = RT_NULL;
 
     touch_device = (rt_touch_t)rt_calloc(1, sizeof(struct rt_touch_device));
@@ -244,17 +224,17 @@ int ili2511_hw_init(const char *name, struct rt_touch_config *cfg)
     }
 
     /* Reset TP IC */
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
-    rt_thread_delay(10);
+    // rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
+    // rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
+    // rt_thread_delay(10);
 
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_LOW);
-    rt_thread_delay(10);
+    // rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
+    // rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_LOW);
+    // rt_thread_delay(10);
 
-    rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
-    rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
-    rt_thread_delay(125);
+    // rt_pin_mode(*(rt_uint8_t *)cfg->user_data, PIN_MODE_OUTPUT);
+    // rt_pin_write(*(rt_uint8_t *)cfg->user_data, PIN_HIGH);
+    // rt_thread_delay(125);
 
     ili2511_client.bus = (struct rt_i2c_bus_device *)rt_device_find(cfg->dev_name);
     if (ili2511_client.bus == RT_NULL) {
@@ -280,7 +260,7 @@ int ili2511_hw_init(const char *name, struct rt_touch_config *cfg)
         return -RT_ERROR;
     }
 
-    rt_uint8_t data_buf[4] = {0};
+    rt_uint8_t data_buf[4] = { 0 };
     rt_uint8_t reg = ILI2511_MAX_X_H_COORDINATE;
     rt_uint16_t max_x, max_y;
     if (ili2511_read_regs(&ili2511_client, &reg, data_buf, sizeof(data_buf)) != RT_EOK) {
@@ -297,8 +277,7 @@ int ili2511_hw_init(const char *name, struct rt_touch_config *cfg)
 
 }
 
-static int ili2511_gpio_cfg()
-{
+static int ili2511_gpio_cfg() {
     unsigned int g, p;
     long pin;
 
@@ -318,8 +297,7 @@ static int ili2511_gpio_cfg()
     return 0;
 }
 
-static int rt_hw_ili2511_port(void)
-{
+static int rt_hw_ili2511_port(void) {
     struct rt_touch_config cfg;
     rt_uint8_t rst_pin;
 

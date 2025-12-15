@@ -13,8 +13,8 @@
 
 struct aic_pinmux aic_pinmux_config[] = {
 
-    /* PANEL ON*/
-    // {1, PIN_PULL_UP, 3, "PA.3"},
+    /* PANEL Sleep*/
+    // {1, PIN_PULL_DOWN, 3, "PA.3"},
 
 #ifdef AIC_USING_UART0
     /* uart0 DEBUG*/
@@ -74,6 +74,10 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 
     // {4, PIN_PULL_DIS, 3, "PD.2"},   //TE Singal
+
+#ifdef AIC_BACKLIGHT_ENABLE_GPIO
+    {1, PIN_PULL_DIS, 3, AIC_BACKLIGHT_ENABLE_GPIO, FLAG_WAKEUP_SOURCE},
+#endif
 
 #ifdef AIC_DISP_RGB
     /* 3-Wire SPI Initialize */
@@ -200,9 +204,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_DIS, 3, "PD.26"},  //CS
     {2, PIN_PULL_DIS, 3, "PD.27"},  //DC/RS
 #endif
-#ifdef AIC_PANEL_ENABLE_GPIO
-    {1, PIN_PULL_DIS, 3, AIC_PANEL_ENABLE_GPIO},
-#endif
+
 #if (defined(AIC_USING_USB0_DEVICE) || defined(AIC_USING_USB0_HOST))
     /* usb0 */
     {2, PIN_PULL_DIS, 3, "PO.0"},
@@ -252,7 +254,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {7, PIN_PULL_DIS, 3, "PC.5"},
 #endif
 #ifdef AIC_USING_PWM3
-    /* Backlight Control*/
+    /* Backlight PWM */
     {5, PIN_PULL_DIS, 3, "PE.19"},
 #endif
 #ifdef AIC_USING_GPAI0

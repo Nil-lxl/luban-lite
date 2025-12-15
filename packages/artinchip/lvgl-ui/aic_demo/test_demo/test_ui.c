@@ -195,7 +195,7 @@ void test_ui_init() {
     lv_obj_hide(gray_block);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit640x480.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(block.jpg));
     img2 = lv_img_create(scr);
     lv_img_set_src(img2, LVGL_IMAGE_PATH(fruit640x480.jpg));
     img3 = lv_img_create(scr);
@@ -205,7 +205,7 @@ void test_ui_init() {
     lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
 
 #if TEST_DEMO_USE_DEFAULT_CONTROL
-    timer = lv_timer_create(timer_cb, 500, NULL);
+    timer = lv_timer_create(timer_cb, 1000, NULL);
 #else 
     timer = lv_timer_create(timer_cb, 300, NULL);
 #endif

@@ -69,6 +69,10 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd MIPI DSI H024B12 panel"
         depends on AIC_DISP_MIPI_DSI
 
+    config AIC_PANEL_DSI_H028B23
+        bool "Hotlcd MIPI DSI H028B23 panel"
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_H030B07
         bool "Hotlcd MIPI DSI H030B07 panel"
         depends on AIC_DISP_MIPI_DSI
@@ -246,6 +250,11 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
+    config AIC_PANEL_RGB_H043A7
+        bool "Hotlcd RGB H043A7 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
     config AIC_PANEL_RGB_H050A12
         bool "Hotlcd RGB H050A12 panel"
         depends on AIC_DISP_RGB
@@ -408,10 +417,12 @@ config PANEL_HACTIVE_RES
     default 720 if AIC_PANEL_RGB_NV3052
     default 480 if AIC_PANEL_RGB_H030A10
     default 640 if AIC_PANEL_RGB_H035A17
+    default 480 if AIC_PANEL_RGB_H043A7
     default 480 if AIC_PANEL_RGB_H050A12
     default 480 if AIC_PANEL_RGB_H068A04
     default 320 if AIC_PANEL_DSI_ST7797
     default 400 if AIC_PANEL_DSI_H016A01
+    default 480 if AIC_PANEL_DSI_H028B23
     default 240 if AIC_PANEL_DSI_H024B12
     default 800 if AIC_PANEL_DSI_H034A01
     default 320 if AIC_PANEL_DSI_H035A27
@@ -437,11 +448,13 @@ config PANEL_VACTIVE_RES
     default 720 if AIC_PANEL_RGB_NV3052
     default 854 if AIC_PANEL_RGB_H030A10
     default 480 if AIC_PANEL_RGB_H035A17
+    default 800 if AIC_PANEL_RGB_H043A7
     default 854 if AIC_PANEL_RGB_H050A12
     default 1280 if AIC_PANEL_RGB_H068A04
     default 480 if AIC_PANEL_DSI_ST7797
     default 400 if AIC_PANEL_DSI_H016A01
     default 320 if AIC_PANEL_DSI_H024B12
+    default 640 if AIC_PANEL_DSI_H028B23
     default 800 if AIC_PANEL_DSI_H034A01
     default 480 if AIC_PANEL_DSI_H035A27
     default 480 if AIC_PANEL_DSI_H035B16

@@ -8,20 +8,15 @@
  * 2024-07-26        the first version
  */
 
-#ifndef __ILI2511_H__
-#define __ILI2511_H__
+#pragma once
 
 #include <aic_hal_gpio.h>
 #include <aic_drv_gpio.h>
 #include "drivers/touch.h"
 
-#define ILI2511_MAX_TOUCH           5
+#define ILI2511_MAX_TOUCH           10
 
-#ifdef AIC_TOUCH_PANEL_ILI2511
 #define ILI2511_POINT_LEN           5
-#else
-#define ILI2511_POINT_LEN           6
-#endif
 
 #define ILI2511_SALVE_ADDR          0x41
 /* ILI2511 reg */
@@ -40,5 +35,3 @@
 #define ILI2511_MAX_Y_H_COORDINATE  0x22
 #define ILI2511_MAX_Y_L_COORDINATE  0x23
 #define ILI2511_MAX_POINT           0x26
-
-#endif

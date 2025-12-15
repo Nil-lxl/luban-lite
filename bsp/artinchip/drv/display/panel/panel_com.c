@@ -58,6 +58,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DSI_H024B12
     &dsi_h024b12,
 #endif
+#ifdef AIC_PANEL_DSI_H028B23
+    &dsi_h028b23,
+#endif
 #ifdef AIC_PANEL_DSI_H030B07
     &dsi_h030b07,
 #endif
@@ -165,6 +168,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_RGB_H035A17
     &rgb_h035a17,
 #endif
+#ifdef AIC_PANEL_RGB_H043A7
+    &rgb_h043a7,
+#endif
 #ifdef AIC_PANEL_RGB_H050A12
     &rgb_h050a12,
 #endif
@@ -261,18 +267,17 @@ void panel_backlight_enable(struct aic_panel *panel, u32 ms)
     if (panel && panel->independent_pwkey)
         return;
 #endif
-#ifdef AIC_PANEL_ENABLE_GPIO
+#ifdef AIC_BACKLIGHT_ENABLE_GPIO
     unsigned int g, p;
     long pin;
-
-    pin = hal_gpio_name2pin(AIC_PANEL_ENABLE_GPIO);
+    pin = hal_gpio_name2pin(AIC_BACKLIGHT_ENABLE_GPIO);
 
     g = GPIO_GROUP(pin);
     p = GPIO_GROUP_PIN(pin);
 
     hal_gpio_direction_output(g, p);
 
-#ifndef AIC_PANEL_ENABLE_GPIO_LOW
+#ifndef AIC_BACKLIGHT_ENABLE_GPIO_LOW
     hal_gpio_set_output(g, p);
 #else
     hal_gpio_clr_output(g, p);

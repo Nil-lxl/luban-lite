@@ -200,14 +200,19 @@ choice
     bool "gpio"
 endchoice
 
+config AIC_BACKLIGHT_ENABLE_GPIO
+    string "panel backlight enable pin"
+    default "PC.7" if AIC_USING_D213ECV_EzUIX1_DEMO_V1
+    default "PE.14" if AIC_USING_HOT68_DEMO_A01_V0
+
+config AIC_BACKLIGHT_ENABLE_GPIO_LOW
+    bool "panel backlight enable pin low active"
+    default n
+
 if AIC_GPIO_BACKLIGHT
     config AIC_PANEL_ENABLE_GPIO
-        string "panel backlight enable pin"
+        string "panel backlight control pin"
         default "PE.19"
-
-    config AIC_PANEL_ENABLE_GPIO_LOW
-        bool "panel backlight enable pin low active"
-        default n
 endif
 
 if AIC_PWM_BACKLIGHT
