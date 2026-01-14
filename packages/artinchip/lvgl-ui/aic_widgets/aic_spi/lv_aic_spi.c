@@ -11,11 +11,11 @@
 
 #define SPI_DEV_NAME "spidev"
 
-#define SPI_BUF_NAME "spi2"
+#define SPI_BUF_NAME "spi1"
 #define SPI_MODE     (RT_SPI_MODE_0 | RT_SPI_MSB)
 #define SPI_MAX_HZ   70000000
 
-#define RS_PIN      "PB.11"
+#define RS_PIN      "PD.8"
 #define BL_PIN      "PC.0"
 
 #define BL_LOW_ACTIVE 1

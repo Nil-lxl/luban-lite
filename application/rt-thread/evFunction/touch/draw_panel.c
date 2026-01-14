@@ -80,38 +80,37 @@ static void fg_color_disable(void) {
 }
 void set_bg_color(void) {
     struct aicfb_layer_data layer = { 0 };
-    uint8_t red, green, blue;
 
     bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
     bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(0));
     bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
     fg_color_disable();
-    rt_thread_mdelay(500);
+    aic_mdelay(500);
 
     bg_update_bits(BG_RED_MASK, PIXELS_RED(0));
     bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
     bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
-    rt_thread_mdelay(500);
+    aic_mdelay(500);
 
     bg_update_bits(BG_RED_MASK, PIXELS_RED(0));
     bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(0));
     bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(255));
-    rt_thread_mdelay(500);
+    aic_mdelay(500);
 
     bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
     bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
     bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
-    rt_thread_mdelay(500);
+    aic_mdelay(500);
 
     bg_update_bits(BG_RED_MASK, PIXELS_RED(204));
     bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(108));
     bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(231));
-    rt_thread_mdelay(500);
+    aic_mdelay(500);
 
     bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
     bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
     bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(255));
-    rt_thread_mdelay(500);
+    aic_mdelay(500);
 
     /* enable fg color */
     layer.layer_id = AICFB_LAYER_TYPE_UI;
@@ -196,6 +195,22 @@ void panel_draw_lines(void *param) {
         .frame_buffer = (uint8_t *)screen_info.framebuffer,
     };
 
+    char *fb_buf = (char *)screen_info.framebuffer;
+
+    int pixel_size = screen_info.bits_per_pixel >> 3;
+    int color = 0xFFFFFFFF;
+
+    printf("Framebuf: size %d, width %d, height %d, bits per pixel %d\n", screen_info.smem_len, screen_info.width, screen_info.height, screen_info.bits_per_pixel);
+
+    for (int i = 0;i < screen_info.width;i++) {
+        for (int j = 0;j < screen_info.height;j++) {
+            memcpy(&fb_buf[j * pixel_size], &color, pixel_size);
+        }
+        fb_buf += screen_info.height * pixel_size;
+    }
+
+    aicos_dcache_clean_range(fb_buf, screen_info.smem_len);
+
 #if 1   //show display border
     struct line_dsc border[4];
 
@@ -220,7 +235,7 @@ void panel_draw_lines(void *param) {
     border[3].y2 = screen_info.height;
 
     for (int i = 0;i < 4;i++) {
-        border[i].color = 0xffffff;
+        border[i].color = 0xff0000;
         border[i].width = 5;
         draw_line(&border[i], &fb_info);
     }

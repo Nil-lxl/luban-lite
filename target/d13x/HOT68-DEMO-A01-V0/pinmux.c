@@ -129,8 +129,8 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PD.0"}, // SCK
     {4, PIN_PULL_DIS, 3, "PD.1"}, // SDA
 #endif
-#ifdef AIC_PANEL_ENABLE_GPIO
-    {1, PIN_PULL_DIS, 3, AIC_PANEL_ENABLE_GPIO},
+#ifdef AIC_BACKLIGHT_ENABLE_GPIO
+    {1, PIN_PULL_DIS, 3, AIC_BACKLIGHT_ENABLE_GPIO, FLAG_WAKEUP_SOURCE},
 #endif
 #ifdef AIC_DISP_RGB
     /* 3-Wire SPI Initialize */

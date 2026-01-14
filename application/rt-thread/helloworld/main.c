@@ -21,6 +21,5 @@ int main(void)
 void FunctionImp(void){
     rt_kprintf("--------------Function Implement--------------\n");
 
-    // can_start();
 }
 INIT_APP_EXPORT(FunctionImp);

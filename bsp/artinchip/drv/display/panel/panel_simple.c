@@ -106,6 +106,55 @@ static struct display_timing timing_800_480 = {
 
     .flags        = AIC_DISPLAY_FLAGS,
 };
+
+static struct display_timing timing_h050a21 = {
+    .pixelclock   = 25 * 1000 * 1000,
+
+    .hactive      = 800,
+    .hback_porch  = 8,
+    .hfront_porch = 8,
+    .hsync_len    = 4,
+
+    .vactive      = 480,
+    .vback_porch  = 16,
+    .vfront_porch = 16,
+    .vsync_len    = 4,
+
+    .flags        = AIC_DISPLAY_FLAGS,
+};
+
+static struct display_timing timing_h068b06 = {
+    .pixelclock   = 63 * 1000 * 1000,
+
+    .hactive      = 600,
+    .hback_porch  = 80,
+    .hfront_porch = 80,
+    .hsync_len    = 8,
+
+    .vactive      = 1280,
+    .vback_porch  = 40,
+    .vfront_porch = 40,
+    .vsync_len    = 4,
+
+    .flags        = AIC_DISPLAY_FLAGS,
+};
+
+static struct display_timing timing_h070a20 = {
+    .pixelclock   = 49 * 1000 * 1000,
+
+    .hactive      = 1024,
+    .hback_porch  = 136,
+    .hfront_porch = 160,
+    .hsync_len    = 24,
+
+    .vactive      = 600,
+    .vback_porch  = 21,
+    .vfront_porch = 12,
+    .vsync_len    = 2,
+
+    .flags        = AIC_DISPLAY_FLAGS,
+};
+
 #endif
 
 #if defined(AIC_DISP_RGB) || defined(AIC_DISP_LVDS)
@@ -173,6 +222,24 @@ static struct panel_desc rgb_desc[] = {
         .funcs = &simple_funcs,
     },
     [3] = {
+        .name = "h050a21",
+        .rgb = &rgb,
+        .timings = &timing_h050a21,
+        .funcs = &simple_funcs,
+    },
+    [4] = {
+        .name = "h068b06",
+        .rgb = &rgb,
+        .timings = &timing_h068b06,
+        .funcs = &simple_funcs,
+    },
+    [5] = {
+        .name = "h070a20",
+        .rgb = &rgb,
+        .timings = &timing_h070a20,
+        .funcs = &simple_funcs,
+    },
+    [6] = {
         .name = "custom",
         .rgb = &rgb,
         .timings = &timing_custom,

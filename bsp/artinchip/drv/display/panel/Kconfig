@@ -255,6 +255,11 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
+    config AIC_PANEL_RGB_H043B32
+        bool "Hotlcd RGB H043B32 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
     config AIC_PANEL_RGB_H050A12
         bool "Hotlcd RGB H050A12 panel"
         depends on AIC_DISP_RGB
@@ -310,19 +315,31 @@ choice
         prompt "Classic Resolution List"
         depends on AIC_SIMPLE_PANEL
         depends on !AIC_PANEL_CUSTOM_RESOLUTION
-        default AIC_PANEL_1024X600_RESOLUTION
+        default AIC_PANEL_1024X600
 
-    config AIC_PANEL_480X272_RESOLUTION
+    config AIC_PANEL_480X272
         bool "480x272"
         depends on AIC_DISP_RGB
 
-    config AIC_PANEL_800X480_RESOLUTION
+    config AIC_PANEL_800X480
         bool "800x480"
         depends on AIC_DISP_RGB
 
-    config AIC_PANEL_1024X600_RESOLUTION
+    config AIC_PANEL_1024X600
         bool "1024x600"
         depends on AIC_DISP_RGB || AIC_DISP_LVDS
+    
+    config AIC_PANEL_H050A21
+        bool "h050a21"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_H068B06
+        bool "h068b06"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_H070A20
+        bool "h070a20"
+        depends on AIC_DISP_RGB
 
     config AIC_PANEL_1920X1080_RESOLUTION
         bool "1920x1080"
@@ -331,14 +348,18 @@ endchoice
 
 config RGB_PANEL_MATCH_ID
     int
-    default 0 if AIC_PANEL_1024X600_RESOLUTION
-    default 1 if AIC_PANEL_800X480_RESOLUTION
-    default 2 if AIC_PANEL_480X272_RESOLUTION
-    default 3 if AIC_PANEL_CUSTOM_RESOLUTION
+    default 0 if AIC_PANEL_1024X600
+    default 1 if AIC_PANEL_800X480
+    default 2 if AIC_PANEL_480X272
+    default 3 if AIC_PANEL_H050A21
+    default 4 if AIC_PANEL_H068B06
+    default 5 if AIC_PANEL_H070A20
+    default 6 if AIC_PANEL_CUSTOM_RESOLUTION
+
 
 config LVDS_PANEL_MATCH_ID
     int
-    default 0 if AIC_PANEL_1024X600_RESOLUTION
+    default 0 if AIC_PANEL_1024X600
     default 1 if AIC_PANEL_1920X1080_RESOLUTION
     default 2 if AIC_PANEL_CUSTOM_RESOLUTION
 
@@ -410,8 +431,11 @@ endif
 
 config PANEL_HACTIVE_RES
     int
-    default 1024 if AIC_PANEL_1024X600_RESOLUTION
+    default 480 if AIC_PANEL_480X272
+    default 1024 if AIC_PANEL_1024X600
     default 1920 if AIC_PANEL_1920X1080_RESOLUTION
+    default 800 if AIC_PANEL_H050A21
+    default 1024 if AIC_PANEL_H070A20
     default 320 if AIC_PANEL_DBI_H040A12
     default 320 if AIC_PANEL_DBI_H040A27
     default 720 if AIC_PANEL_RGB_NV3052
@@ -420,6 +444,7 @@ config PANEL_HACTIVE_RES
     default 480 if AIC_PANEL_RGB_H043A7
     default 480 if AIC_PANEL_RGB_H050A12
     default 480 if AIC_PANEL_RGB_H068A04
+    default 480 if AIC_PANEL_RGB_H068B06
     default 320 if AIC_PANEL_DSI_ST7797
     default 400 if AIC_PANEL_DSI_H016A01
     default 480 if AIC_PANEL_DSI_H028B23
@@ -441,8 +466,11 @@ config PANEL_HACTIVE_RES
 
 config PANEL_VACTIVE_RES
     int
-    default 600 if AIC_PANEL_1024X600_RESOLUTION
+    default 272 if AIC_PANEL_480X272
+    default 600 if AIC_PANEL_1024X600
     default 1080 if AIC_PANEL_1920X1080_RESOLUTION
+    default 480 if AIC_PANEL_H050A21
+    default 600 if AIC_PANEL_H070A20
     default 320 if AIC_PANEL_DBI_H040A12
     default 480 if AIC_PANEL_DBI_H040A27
     default 720 if AIC_PANEL_RGB_NV3052
@@ -451,6 +479,7 @@ config PANEL_VACTIVE_RES
     default 800 if AIC_PANEL_RGB_H043A7
     default 854 if AIC_PANEL_RGB_H050A12
     default 1280 if AIC_PANEL_RGB_H068A04
+    default 1280 if AIC_PANEL_RGB_H068B06
     default 480 if AIC_PANEL_DSI_ST7797
     default 400 if AIC_PANEL_DSI_H016A01
     default 320 if AIC_PANEL_DSI_H024B12

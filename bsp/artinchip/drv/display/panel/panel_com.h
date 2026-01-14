@@ -92,6 +92,7 @@ extern struct aic_panel rgb_h028a19;
 extern struct aic_panel rgb_h030a10;
 extern struct aic_panel rgb_h035a17;
 extern struct aic_panel rgb_h043a7;
+extern struct aic_panel rgb_h043b32;
 extern struct aic_panel rgb_h050a12;
 extern struct aic_panel rgb_h068a04;
 extern struct aic_panel rgb_h068b06;

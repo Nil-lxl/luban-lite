@@ -28,3 +28,18 @@
 - 无线网RTL8733配置
 - 修改ili2511驱动代码,gt911上电时序
 - display背光使能gpio打开/关闭
+
+# 2025-1-14 #
+## 新增 ##
+- Demo Board:
+  - HT68-DEMO-A02_V0 演示板
+- Display Driver:
+  - 添加自定义RGB Display默认屏参:
+    - H050A21
+    - H068b06
+    - H070A20
+  - 添加spi控制器代替de驱动spi显示屏初始化代码
+    - H011A1 
+    - H027A28
+- 使用UiBuilder开发的LVGL demo
+## 修改 ##

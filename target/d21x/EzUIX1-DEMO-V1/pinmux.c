@@ -79,6 +79,16 @@ struct aic_pinmux aic_pinmux_config[] = {
     {1, PIN_PULL_DIS, 3, AIC_BACKLIGHT_ENABLE_GPIO, FLAG_WAKEUP_SOURCE},
 #endif
 
+#if defined AIC_USING_QSPI1 && defined(LV_USE_SPI_REPLACE_MIPI_DBI)
+    {1, PIN_PULL_DIS, 3, "PB.6"},   //LCD RESET
+    {1, PIN_PULL_DIS, 3, "PD.8"},   //HOLD
+    {4, PIN_PULL_DIS, 3, "PD.9"},   //WP
+    {4, PIN_PULL_DIS, 3, "PD.10"},  //CS
+    {4, PIN_PULL_DIS, 3, "PD.11"},  //MISO
+    {4, PIN_PULL_DIS, 3, "PD.12"},  //MOSI
+    {4, PIN_PULL_DIS, 3, "PD.13"},  //CLK
+#endif
+
 #ifdef AIC_DISP_RGB
     /* 3-Wire SPI Initialize */
     {1, PIN_PULL_DIS, 3, "PB.6"},   //LCD RESET
@@ -179,7 +189,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PD.26"},
     {4, PIN_PULL_DIS, 3, "PD.27"},
 #endif
-#ifdef AIC_DISP_MIPI_DBI
+#if defined AIC_DISP_MIPI_DBI && !defined(LV_USE_SPI_REPLACE_MIPI_DBI)
     {1, PIN_PULL_DIS, 3, "PB.6"},   //LCD RESET
 
     {2, PIN_PULL_DIS, 3, "PD.8"},

@@ -415,6 +415,9 @@ if GetDepend('AIC_PANEL_RGB_H035A17'):
 if GetDepend('AIC_PANEL_RGB_H043A7'):
     src += Glob('drv/display/panel/panel_rgb_h043a7.c')
 
+if GetDepend('AIC_PANEL_RGB_H043B32'):
+    src += Glob('drv/display/panel/panel_rgb_h043b32.c')
+
 if GetDepend('AIC_PANEL_RGB_H050A12'):
     src += Glob('drv/display/panel/panel_rgb_h050a12.c')
 
