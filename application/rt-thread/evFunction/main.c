@@ -58,6 +58,4 @@ void testFunction() {
 }
 
 
-// INIT_DEVICE_EXPORT(testFunction);
-
 INIT_APP_EXPORT(FunctionImp);

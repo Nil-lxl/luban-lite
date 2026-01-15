@@ -134,7 +134,7 @@ config AIC_RGB_CLK_CTL
 
 config RGB_DATA_MIRROT
     bool "data mirror"
-    default y if AIC_DISP_RGB_DRV_V11
+    default n if AIC_DISP_RGB_DRV_V11
 
 config AIC_RGB_DATA_MIRROR
     int

@@ -25,4 +25,9 @@
 #define CS         "PE.13"
 #define SCL        "PE.12"
 #define SDI        "PE.11"
+#elif defined AIC_USING_HT68_DEMO_A02_V0
+#define RESET_PIN  "PB.1"
+#define CS         "PE.15"
+#define SCL        "PE.14"
+#define SDI        "PE.13"
 #endif

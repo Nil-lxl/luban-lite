@@ -50,7 +50,10 @@ choice
     config AIC_USING_HOT68_DEMO_A01_V0
         bool "HOT68_DEMO_A01_V0"
         depends on AIC_CHIP_D13X
-        
+    
+    config AIC_USING_HT68_DEMO_A02_V0
+        bool "HT68_DEMO_A02_V0"
+        depends on AIC_CHIP_D13X
 
 endchoice
 
