@@ -34,6 +34,8 @@ static int panel_enable(struct aic_panel *panel) {
     panel_dsi_dcs_send_seq(panel, 0xFF, 0x52);
     panel_dsi_dcs_send_seq(panel, 0xFF, 0x01);
     panel_dsi_dcs_send_seq(panel, 0xE3, 0x00);
+    panel_dsi_dcs_send_seq(panel, 0x20, 0x90);// 2lanes
+
     panel_dsi_dcs_send_seq(panel, 0x08, 0x0E);
     panel_dsi_dcs_send_seq(panel, 0x25, 0x0f);
     panel_dsi_dcs_send_seq(panel, 0x28, 0x0F);
@@ -256,7 +258,7 @@ static struct display_timing h034a01_timing = {
 struct panel_dsi dsi = {
     .mode = DSI_MOD_VID_BURST,
     .format = DSI_FMT_RGB888,
-    .lane_num = 4,
+    .lane_num = 2,
 };
 
 struct aic_panel dsi_h034a01 = {

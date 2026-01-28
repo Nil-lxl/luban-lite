@@ -63,7 +63,7 @@ static void cir_thread_entry(void *param) {
         rt_thread_mdelay(100);
     }
 }
-void cir_control(void) {
+void test_cir(void) {
     int ret = 0;
     cir_config_t cir_config = {
         .protocol = CIR_PROTOCOL_NEC,
@@ -108,5 +108,7 @@ void cir_control(void) {
         LOG_E("CIR Thread Create Failed");
     }
 }
+
+MSH_CMD_EXPORT(test_cir, cir test start);
 
 

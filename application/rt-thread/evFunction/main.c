@@ -11,12 +11,7 @@
 #include "rtdbg.h"
 #include "aic_core.h"
 
-#include "touch/draw_panel.h"
-#include "uart/uart_control.h"
-#include "cir/cir_control.h"
-#include "can/can_demo.h"
 #include "http_req/http_request.h"
-#include "i2c/i2c_test.h"
 
 #ifdef RT_USING_ULOG
 #include <ulog.h>
@@ -31,6 +26,9 @@ int main(void) {
     return 0;
 }
 
+/**
+ * @brief 应用程序实现入口
+ */
 void FunctionImp(void) {
     // rt_thread_mdelay(1000);    
     LOG_I("--------------Function Implement--------------\n");
@@ -38,24 +36,6 @@ void FunctionImp(void) {
 #ifdef APP_USE_DRAW_LINE_TEST
     panel_draw_start();
 #endif
-
-#ifdef APP_USE_UART_TEST
-    uart_startup();
-#endif
-
-#ifdef APP_USE_CIR_TEST
-    cir_control();
-#endif
-
-#ifdef APP_USE_CAN_TEST
-    can_start();
-#endif
 }
-
-void testFunction() {
-
-
-}
-
 
 INIT_APP_EXPORT(FunctionImp);

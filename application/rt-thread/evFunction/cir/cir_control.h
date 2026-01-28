@@ -1,3 +1,3 @@
 #pragma once
 
-void cir_control(void);
+void cir_test(void);

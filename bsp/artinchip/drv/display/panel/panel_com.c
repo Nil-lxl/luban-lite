@@ -8,6 +8,7 @@
 #include <aic_hal.h>
 
 #include "panel_com.h"
+#include "disp_gpio.h"
 
 static struct aic_panel *panels[] = {
 #if defined(AIC_DISP_RGB) && defined(AIC_SIMPLE_PANEL)
@@ -52,6 +53,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DSI_FT8201
     &dsi_ft8201,
 #endif
+#ifdef AIC_PANEL_DSI_H013A08
+    &dsi_h013a08,
+#endif
 #ifdef AIC_PANEL_DSI_H016A01
     &dsi_h016a01,
 #endif
@@ -75,6 +79,9 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_DSI_H035B22
     &dsi_h035b22,
+#endif
+#ifdef AIC_PANEL_DSI_H043A8
+    &dsi_h043a8,
 #endif
 #ifdef AIC_PANEL_DSI_H040B24
     &dsi_h040b24,
@@ -342,6 +349,15 @@ int panel_default_unprepare(void)
 
 int panel_default_enable(struct aic_panel *panel)
 {
+    static struct gpio_desc reset_gpio;
+    panel_get_gpio(&reset_gpio, RESET_PIN);
+
+    aic_delay_ms(1);
+    panel_gpio_set_value(&reset_gpio, 0);
+    aic_delay_ms(10);
+    panel_gpio_set_value(&reset_gpio, 1);
+    aic_delay_ms(120);
+    
     panel_di_enable(panel, 0);
     panel_de_timing_enable(panel, 60);
     panel_backlight_enable(panel, 0);

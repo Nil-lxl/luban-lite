@@ -8,6 +8,16 @@ source "bsp/peripheral/camera/Kconfig"
 # touch panel driver global option
 #--------------------------------------------
 
+menuconfig AIC_USING_RGB_LED
+    bool "Using RGB LED"
+    default n
+    source "bsp/peripheral/rgb_led/Kconfig"
+
+menuconfig AIC_USING_SENSOR
+    bool "Using Sensor Devices"
+    default n
+    source "bsp/peripheral/sensor/Kconfig"
+
 menuconfig AIC_USING_TOUCH
     bool "Touch Panel Support"
 

@@ -6,8 +6,6 @@
 
 #include "uart_control.h"
 
-#ifdef APP_USE_UART_TEST
-
 #define LOG_TAG "Uart"
 
 #define UART_DEVICE_NAME APP_USE_UART_DEVICE
@@ -16,7 +14,11 @@ static rt_thread_t uart_thread;
 static rt_device_t uart_device;
 
 static struct rt_sem_t *uart_rx_sem;
-
+/**
+ * @brief uart 配置函数
+ * @param dev uart设备句柄
+ * @return 0成功，-1失败
+ */
 int uart_config(rt_device_t dev) {
     rt_serial_t *uart = container_of(dev, rt_serial_t, parent);
     uart->config.baud_rate = BAUD_RATE_115200;
@@ -40,7 +42,7 @@ rt_err_t uart_rx_cb(rt_device_t dev, rt_size_t size) {
 
 void uart_thread_entry(void *param) {
     const char *msg = "uart thread start\n";
-    int buf_size=1024;
+    int buf_size = 1024;
 
     void *read_buf = rt_malloc(buf_size);
 
@@ -49,12 +51,11 @@ void uart_thread_entry(void *param) {
     while (1) {
         memset(read_buf, 0, buf_size);
 
-        rt_sem_take(uart_rx_sem, RT_WAITING_FOREVER);
+        
         int ret = rt_device_read(uart_device, -1, read_buf, buf_size);
 
-        rt_thread_mdelay(10);
-
         if (ret > 0) {
+            rt_sem_take(uart_rx_sem, RT_WAITING_FOREVER);
             // rt_device_write(uart_device, 0, read_buf, strlen(read_buf));
             LOG_I("receive data:%s ,read size:%d", read_buf, ret);
         }
@@ -65,7 +66,7 @@ void uart_thread_entry(void *param) {
     rt_thread_delete(uart_thread);
 }
 
-void uart_startup(void) {
+void test_uart_rx(void) {
     int ret = 0;
     /* create semaphore */
     uart_rx_sem = rt_sem_create("uart_rx_sem", 0, RT_IPC_FLAG_FIFO);
@@ -73,11 +74,11 @@ void uart_startup(void) {
         LOG_E("uart rx sem create failed!");
         abort();
     }
-    
+
     /* find uart device */
     uart_device = rt_device_find(UART_DEVICE_NAME);
     if (!uart_device) {
-        LOG_E("%s device not found",UART_DEVICE_NAME);
+        LOG_E("%s device not found", UART_DEVICE_NAME);
         abort();
     }
     /* set uart device configuration */
@@ -89,14 +90,16 @@ void uart_startup(void) {
         LOG_E("uart open failed");
         abort();
     }
-    
+
     /* set uart rx indicate callback */
     rt_device_set_rx_indicate(uart_device, uart_rx_cb);
 
-    uart_thread = rt_thread_create("app_uart", uart_thread_entry, RT_NULL, 4 * 1024, 20, 10);
+    uart_thread = rt_thread_create("app_uart", uart_thread_entry, RT_NULL, 1024, 20, 5);
     if (uart_thread != RT_NULL) {
         rt_thread_startup(uart_thread);
     }
 
 }
-#endif
+
+MSH_CMD_EXPORT(test_uart_rx, uart test function);
+

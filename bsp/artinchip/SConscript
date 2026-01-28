@@ -288,6 +288,9 @@ if GetDepend('AIC_PANEL_DSI_ST7701S'):
 if GetDepend('AIC_PANEL_DSI_EDP_LT9811EXB'):
     src += Glob('drv/display/panel/panel_dsi_edp_lt8911exb.c')
 
+if GetDepend('AIC_PANEL_DSI_H013A08'):
+    src += Glob('drv/display/panel/panel_dsi_h013a08.c')
+
 if GetDepend('AIC_PANEL_DSI_H016A01'):
     src += Glob('drv/display/panel/panel_dsi_h016a01.c')
     
@@ -311,6 +314,9 @@ if GetDepend('AIC_PANEL_DSI_H035B16'):
 
 if GetDepend('AIC_PANEL_DSI_H035B22'):
     src += Glob('drv/display/panel/panel_dsi_h035b22.c')
+
+if GetDepend('AIC_PANEL_DSI_H043A8'):
+    src += Glob('drv/display/panel/panel_dsi_h043a8.c')
 
 if GetDepend('AIC_PANEL_DSI_H040B24'):
     src += Glob('drv/display/panel/panel_dsi_h040b24.c')

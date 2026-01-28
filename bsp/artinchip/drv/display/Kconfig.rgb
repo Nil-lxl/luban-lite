@@ -75,6 +75,7 @@ config AIC_RGB_FORMAT
 choice
     prompt "data order"
     default DATA_ORDER_RGB
+    default DATA_ORDER_BGR if AIC_USING_HT68_DEMO_A02_V0
     depends on AIC_DISP_RGB
 
 config DATA_ORDER_RGB

@@ -1,0 +1,7 @@
+if AIC_USING_RGB_LED
+    config AIC_RGB_LED_WS2812B
+        bool "Using WS2812B RGB LED"
+        default n
+
+endif
+

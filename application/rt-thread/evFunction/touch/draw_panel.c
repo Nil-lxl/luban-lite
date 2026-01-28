@@ -9,8 +9,6 @@
 
 #define LOG_TAG "Draw_Panel"
 
-#ifdef APP_USE_DRAW_LINE_TEST
-
 #define UI_BG_COLOR         0x18a000a8
 #define UI_FG_CTRL          0x18a000b0
 #define DE_CONFIG_UPDATE    0x18a00008
@@ -294,7 +292,5 @@ void panel_draw_start() {
 }
 
 MSH_CMD_EXPORT(panel_draw_start, touch draw panel);
-
-#endif
 
 

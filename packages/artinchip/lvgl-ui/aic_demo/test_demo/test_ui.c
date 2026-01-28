@@ -23,8 +23,8 @@
 
 #define LOG_TAG "LV_TEST"
 
-#define TEST_DEMO_USE_DEFAULT_CONTROL   0       //默认自动切换
-#define TEST_DEMO_USE_KEYADC_CONTROL    1       //使用外部按键切换
+#define TEST_DEMO_USE_DEFAULT_CONTROL   1       //默认自动切换
+#define TEST_DEMO_USE_KEYADC_CONTROL    0       //使用外部按键切换
 #define TEST_DEMO_USE_CIR_CONTROL       0       //使用红外遥控切换
 
 #ifdef AIC_PANEL_CUSTOM_RESOLUTION
@@ -139,7 +139,7 @@ void timer_cb(lv_timer_t *timer) {
     }
 #define UI_MAX_COUNT    6
 #if TEST_DEMO_USE_DEFAULT_CONTROL
-    if (count == 9) {                      //在第x个画面停止
+    if (count == 3) {                      //在第x个画面停止
         lv_timer_pause(timer);
     }
     count = (count + 1) % 7;    //在第x个画面结束一轮循环
@@ -194,7 +194,7 @@ void test_ui_init() {
     lv_obj_hide(gray_block);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit800x480.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit360x360.jpg));
     img2 = lv_img_create(scr);
     lv_img_set_src(img2, LVGL_IMAGE_PATH(fruit640x480.jpg));
     img3 = lv_img_create(scr);
@@ -204,7 +204,7 @@ void test_ui_init() {
     lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
 
 #if TEST_DEMO_USE_DEFAULT_CONTROL
-    timer = lv_timer_create(timer_cb, 1500, NULL);
+    timer = lv_timer_create(timer_cb, 2000, NULL);
 #else 
     timer = lv_timer_create(timer_cb, 300, NULL);
 #endif

@@ -1,0 +1,27 @@
+if AIC_USING_SENSOR
+    config AIC_USE_SENSOR_DHT11
+        bool "Using DHT11 Template and humidity sensor"
+        default n
+
+    config AIC_USE_SENSOR_PHOTOSENSITIVE
+        bool "Using Photosensitive sensor"
+        default n
+
+    config AIC_USE_SENSOR_FLAME
+        bool "Using Flame sensor"
+        default n
+
+    config AIC_USE_SENSOR_BMP180
+        bool "Using Bmp180 Air pressure sensor"
+        default n
+
+    config AIC_USE_SENSOR_MQ135
+        bool "Using MQ-135 Air quality sensor"
+        default n
+    
+    config AIC_USE_SENSOR_US016
+        bool "Using US-016 Distance measuring sensor"
+        default n
+    
+endif
+

@@ -61,6 +61,10 @@ if !AIC_DISP_PQ_TOOL
         bool "ArtInChip MIPI DSI FT8201 panel"
         depends on AIC_DISP_MIPI_DSI
 
+    config AIC_PANEL_DSI_H013A08
+        bool "Hotlcd MIPI DSI H013A08 panel"
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_H016A01
         bool "Hotlcd MIPI DSI H016A01 panel"
         depends on AIC_DISP_MIPI_DSI
@@ -95,6 +99,10 @@ if !AIC_DISP_PQ_TOOL
 
     config AIC_PANEL_DSI_H040B24
         bool "Hotlcd MIPI DSI H040B24 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H043A8
+        bool "Hotlcd MIPI DSI H043A8 panel"
         depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H050A20
@@ -446,6 +454,7 @@ config PANEL_HACTIVE_RES
     default 480 if AIC_PANEL_RGB_H068A04
     default 480 if AIC_PANEL_RGB_H068B06
     default 320 if AIC_PANEL_DSI_ST7797
+    default 360 if AIC_PANEL_DSI_H013A08
     default 400 if AIC_PANEL_DSI_H016A01
     default 480 if AIC_PANEL_DSI_H028B23
     default 240 if AIC_PANEL_DSI_H024B12
@@ -481,6 +490,7 @@ config PANEL_VACTIVE_RES
     default 1280 if AIC_PANEL_RGB_H068A04
     default 1280 if AIC_PANEL_RGB_H068B06
     default 480 if AIC_PANEL_DSI_ST7797
+    default 360 if AIC_PANEL_DSI_H013A08
     default 400 if AIC_PANEL_DSI_H016A01
     default 320 if AIC_PANEL_DSI_H024B12
     default 640 if AIC_PANEL_DSI_H028B23
