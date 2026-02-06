@@ -6,12 +6,11 @@
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  */
 
-#include <unistd.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
-#include <stdio.h>
+
 #include "lvgl.h"
 #include "aic_core.h"
 #include "mpp_mem.h"

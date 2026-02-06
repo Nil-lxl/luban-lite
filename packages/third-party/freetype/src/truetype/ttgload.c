@@ -1679,7 +1679,16 @@
                             glyph_data.pointer,
                             (FT_ULong)glyph_data.length );
 
+#ifndef PRJ_RV_TOOLCHAIN_V2_6_1
+#pragma GCC push_options
+#pragma GCC diagnostic ignored "-Wdangling-pointer="
+#endif
+
       loader->stream = &inc_stream;
+
+#ifndef PRJ_RV_TOOLCHAIN_V2_6_1
+#pragma GCC pop_options
+#endif
     }
     else
 

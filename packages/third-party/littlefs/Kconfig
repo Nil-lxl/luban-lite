@@ -116,5 +116,9 @@ if LPKG_USING_LITTLEFS
        default "v2.5.0" if LPKG_USING_LITTLEFS_V250
        default "latest" if LPKG_USING_LITTLEFS_LATEST_VERSION
 
+    config RT_DEF_LFS_DRIVERS
+       int "The max number of lfs drivers"
+       default 2
+
 endif
 

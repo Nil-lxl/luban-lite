@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -25,7 +25,7 @@
 #define AIC_RTP_EVT_BUF_SIZE        64
 
 enum aic_rtp_mode {
-    RTP_MODE_MANUAL = 0, /* Unsupported in RTOS */
+    RTP_MODE_MANUAL = 0,
     RTP_MODE_AUTO1,
     RTP_MODE_AUTO2, /* Default mode: AUTO2 + Period */
     RTP_MODE_AUTO3,

@@ -30,18 +30,18 @@ static struct aicupg_trans_info trans_info;
 static uint32_t aicupg_ep_start_read(uint8_t *data, uint32_t data_len)
 {
     trans_info.transfer_len = data_len;
-    usbd_ep_start_read(AIC_BULK_OUT_EP, data, data_len);
+    usbd_ep_start_read(0, AIC_BULK_OUT_EP, data, data_len);
     return data_len;
 }
 
 static uint32_t aicupg_ep_start_write(uint8_t *data, uint32_t data_len)
 {
     trans_info.transfer_len = data_len;
-    usbd_ep_start_write(AIC_BULK_IN_EP, data, data_len);
+    usbd_ep_start_write(0, AIC_BULK_IN_EP, data, data_len);
     return data_len;
 }
 
-static int aicupg_class_interface_request_handler(struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
+static int aicupg_class_interface_request_handler(uint8_t busid, struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
 {
     USB_LOG_DBG("AICUPG Class request: bRequest 0x%02x\r\n", setup->bRequest);
 
@@ -54,7 +54,7 @@ static int aicupg_class_interface_request_handler(struct usb_setup_packet *setup
     return 0;
 }
 
-static void aicupg_notify_handler(uint8_t event, void *arg)
+static void aicupg_notify_handler(uint8_t busid, uint8_t event, void *arg)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -82,14 +82,14 @@ static void aicupg_notify_handler(uint8_t event, void *arg)
     }
 }
 
-void aicupg_bulk_out(uint8_t ep, uint32_t nbytes)
+void aicupg_bulk_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     USB_LOG_DBG("actual out len:%d\r\n", nbytes);
 
     data_trans_layer_out_proc(&trans_info);
 }
 
-void aicupg_bulk_in(uint8_t ep, uint32_t nbytes)
+void aicupg_bulk_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     USB_LOG_DBG("actual in len:%d\r\n", nbytes);
     data_trans_layer_in_proc(&trans_info);
@@ -108,8 +108,8 @@ struct usbd_interface *usbd_aicupg_init_intf(struct usbd_interface *intf,
     aicupg_ep_data[BULK_IN_EP_IDX].ep_addr = in_ep;
     aicupg_ep_data[BULK_IN_EP_IDX].ep_cb = aicupg_bulk_in;
 
-    usbd_add_endpoint(&aicupg_ep_data[BULK_OUT_EP_IDX]);
-    usbd_add_endpoint(&aicupg_ep_data[BULK_IN_EP_IDX]);
+    usbd_add_endpoint(0, &aicupg_ep_data[BULK_OUT_EP_IDX]);
+    usbd_add_endpoint(0, &aicupg_ep_data[BULK_IN_EP_IDX]);
 
     memset((uint8_t *)&trans_info, 0, sizeof(struct aicupg_trans_info));
 

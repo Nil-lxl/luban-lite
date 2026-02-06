@@ -1052,9 +1052,9 @@ int usb_hc_init(struct usbh_bus *bus)
 
     usb_hc_low_level_init(bus);
 
-    USB_LOG_INFO("EHCI HCIVERSION:0x%04x\r\n", (unsigned int)EHCI_HCCR->hciversion);
-    USB_LOG_INFO("EHCI HCSPARAMS:0x%06x\r\n", (unsigned int)EHCI_HCCR->hcsparams);
-    USB_LOG_INFO("EHCI HCCPARAMS:0x%04x\r\n", (unsigned int)EHCI_HCCR->hccparams);
+    USB_LOG_INFO("EHCI(%d) HCIVERSION:0x%04x\r\n", bus->hcd.hcd_id, (unsigned int)EHCI_HCCR->hciversion);
+    USB_LOG_INFO("EHCI(%d) HCSPARAMS:0x%06x\r\n", bus->hcd.hcd_id, (unsigned int)EHCI_HCCR->hcsparams);
+    USB_LOG_INFO("EHCI(%d) HCCPARAMS:0x%04x\r\n", bus->hcd.hcd_id, (unsigned int)EHCI_HCCR->hccparams);
 
     g_ehci_hcd[bus->hcd.hcd_id].ppc = (EHCI_HCCR->hcsparams & EHCI_HCSPARAMS_PPC) ? true : false;
     g_ehci_hcd[bus->hcd.hcd_id].n_ports = (EHCI_HCCR->hcsparams & EHCI_HCSPARAMS_NPORTS_MASK) >> EHCI_HCSPARAMS_NPORTS_SHIFT;
@@ -1354,7 +1354,7 @@ int usbh_roothub_control(struct usbh_bus *bus, struct usb_setup_packet *setup, u
                             while (!(EHCI_HCOR->portsc[port - 1] & EHCI_PORTSC_OWNER)) {
                             }
 
-                            USB_LOG_INFO("Switch port %u to OHCI\r\n", port);
+                            USB_LOG_INFO("reset Switch port %u to OHCI\r\n", port);
                             return -USB_ERR_NOTSUPP;
                         }
 #endif
@@ -1520,7 +1520,7 @@ int usbh_kill_urb(struct usbh_urb *urb)
     size_t flags;
     bool remove_in_iaad = false;
 
-    if (!urb || !urb->hcpriv || !urb->hport->bus) {
+    if (!urb || !urb->hport || !urb->hcpriv || !urb->hport->bus) {
         return -USB_ERR_INVAL;
     }
 
@@ -1570,11 +1570,10 @@ int usbh_kill_urb(struct usbh_urb *urb)
 
     qh = (struct ehci_qh_hw *)urb->hcpriv;
     urb->hcpriv = NULL;
+    urb->errorcode = -USB_ERR_SHUTDOWN;
     qh->urb = NULL;
 
     if (urb->timeout) {
-        urb->timeout = 0;
-        urb->errorcode = -USB_ERR_SHUTDOWN;
         usb_osal_sem_give(qh->waitsem);
     } else {
         ehci_qh_free(bus, qh);

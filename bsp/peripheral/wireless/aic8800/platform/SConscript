@@ -33,7 +33,12 @@ lib_name = 'wlan_' + wifi_name + '_'+ rtconfig.CPUNAME
 LIBS = [lib_name]
 LIBPATH = [cwd + "/../host/"]
 
-myccflags = (' -w')
+if GetDepend(['PRJ_RV_TOOLCHAIN_V2_6_1']):
+    myccflags = (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types')
+elif GetDepend(['PRJ_RV_TOOLCHAIN_V3_2_0']):
+    myccflags = (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch')
+else:
+    myccflags = (' -w')
 
 group = DefineGroup('aic8800', src, depend = ['AIC_WLAN_AIC8800D40L'], CPPPATH = include_path, LIBS=LIBS, LIBPATH=LIBPATH, LOCAL_CFLAGS=myccflags)
 

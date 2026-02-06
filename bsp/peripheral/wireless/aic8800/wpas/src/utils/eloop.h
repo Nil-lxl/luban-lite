@@ -17,7 +17,7 @@
 #ifndef ELOOP_H
 #define ELOOP_H
 
-#ifdef PLATFORM_ASR_THREADX
+#ifdef CONFIG_PLAT_THREADX
 #define eloop_init	_eloop_init_wps
 #define eloop_run	_eloop_run_wps
 #endif

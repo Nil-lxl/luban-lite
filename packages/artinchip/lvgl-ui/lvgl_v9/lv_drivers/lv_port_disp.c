@@ -85,6 +85,7 @@ static void lv_fb_dump(int argc, char **argv)
 MSH_CMD_EXPORT_ALIAS(lv_fb_dump, lv_dump, lvgl dump display buffer);
 #endif
 
+#ifndef LV_USE_SPI_REPLACE_MIPI_DBI
 static void display_cal_frame_rate(aic_disp_t *aic_disp)
 {
 #if DISP_SHOW_FPS == 1
@@ -114,7 +115,6 @@ static void display_cal_frame_rate(aic_disp_t *aic_disp)
     return;
 }
 
-#ifndef LV_USE_SPI_REPLACE_MIPI_DBI
 static inline void *get_fb_buf_by_id(aic_disp_t *aic_disp, int id)
 {
     if (id == 1)
@@ -238,41 +238,6 @@ static void disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_ma
 
     lv_display_flush_ready(disp);
 }
-#else
-#include <lv_aic_spi.h>
-static inline void display_power_on(aic_disp_t *aic_disp)
-{
-    (void)aic_disp;
-
-    static bool first_frame = true;
-    if (first_frame) {
-        lv_spi_screen_enable();
-        first_frame = false;
-    }
-}
-
-static void disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
-{
-    aic_disp_t *aic_disp = (aic_disp_t *)lv_display_get_user_data(disp);
-
-    lv_draw_buf_t *disp_buf = lv_display_get_buf_active(disp);
-    (void)px_map;
-
-    if (lv_disp_flush_is_last(disp)) {
-#if LV_DISP_FB_DUMP
-        // dump frame buffer
-        lv_disp_buf_dump(disp);
-#endif
-        aicos_dcache_clean_invalid_range((ulong *)disp_buf->data, (ulong)ALIGN_UP(aic_disp->fb_size, CACHE_LINE_SIZE));
-        display_power_on(aic_disp);
-        lv_spi_flush(disp_buf->data, aic_disp->fb_size);
-
-        display_cal_frame_rate(aic_disp);
-    }
-
-    lv_display_flush_ready(disp);
-}
-#endif
 
 static lv_color_format_t lv_display_fmt(enum mpp_pixel_format cf)
 {
@@ -347,7 +312,7 @@ static uint8_t *create_draw_buf(aic_disp_t *aic_disp, int w, int h, lv_color_for
 }
 #endif
 
-void lv_port_disp_init(void)
+static int lv_de_display_init()
 {
     void *buf1;
     void *buf2;
@@ -358,18 +323,10 @@ void lv_port_disp_init(void)
     int stride;
     lv_color_format_t cf;
 
-#if LV_USE_MPP_DEC
-    lv_mpp_dec_init();
-#endif
-
-#if LV_USE_DRAW_GE2D
-    lv_draw_ge2d_init();
-#endif
-
     aic_disp = (aic_disp_t *)lv_malloc_zeroed(sizeof(aic_disp_t));
     if (!aic_disp) {
         LV_LOG_ERROR("malloc aic display failed");
-        return;
+        return -1;
     }
 
     aic_disp->fb = mpp_fb_open();
@@ -391,7 +348,7 @@ void lv_port_disp_init(void)
     } else {
         LV_LOG_ERROR("get device fb info failed");
         lv_free(aic_disp);
-        return;
+        return -1;
     }
 
     cf = lv_display_fmt(aic_disp->info.format);
@@ -400,7 +357,7 @@ void lv_port_disp_init(void)
         LV_LOG_ERROR("create draw buffer failed");
         mpp_fb_close(aic_disp->fb);
         lv_free(aic_disp);
-        return;
+        return -1;
     } else {
         buf1 = (void *)aic_disp->buf_aligned;
         buf2 = NULL;
@@ -426,15 +383,62 @@ void lv_port_disp_init(void)
     lv_thread_sync_init(&aic_disp->sync_notify);
     lv_thread_init(&aic_disp->thread, LV_THREAD_PRIO_HIGH, aic_display_thread, 4 * 1024, aic_disp);
 #endif
+    return 0;
+}
+#endif /* LV_USE_SPI_REPLACE_MIPI_DBI */
 
-#ifdef AIC_LVGL_SPI_EXTEND_DEMO
-    extern void lv_spi_display_init();
-    lv_spi_display_init();
+static int lv_port_disp_info(struct aicfb_screeninfo *fb_info)
+{
+    struct mpp_fb *fb = mpp_fb_open();
+    if (!fb) {
+        LV_LOG_ERROR("get device fb info failed");
+        return -1;
+    }
+
+    if (mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, fb_info) < 0) {
+        LV_LOG_ERROR("get device fb info failed");
+        return -1;
+    }
+    mpp_fb_close(fb);
+    return 0;
+}
+
+void lv_port_disp_init(void)
+{
+    struct aicfb_screeninfo fb_info = {0};
+
+#if LV_USE_MPP_DEC
+    lv_mpp_dec_init();
+#endif
+
+#if LV_USE_DRAW_GE2D
+    lv_draw_ge2d_init();
+#endif
+
+    lv_port_disp_info(&fb_info);
+
+#ifndef LV_USE_SPI_REPLACE_MIPI_DBI
+    if (lv_de_display_init() < 0) {
+        LV_LOG_ERROR("init de display failed");
+        return;
+    }
+#endif
+
+#if defined(AIC_LVGL_DOUBLE_DISP_DEMO) || defined(LV_USE_SPI_REPLACE_MIPI_DBI)
+    int use_frame_buffer = 0;
+#ifdef LV_USE_SPI_REPLACE_MIPI_DBI
+    use_frame_buffer = 1;
+#endif
+    extern int lv_spi_display_init(int use_frame_buffer);
+    if (lv_spi_display_init(use_frame_buffer) < 0) {
+        LV_LOG_ERROR("init spi display failed");
+        return;
+    }
 #endif
 
 #ifndef AIC_MONKEY_TEST
 #if defined(KERNEL_RTTHREAD) && defined(AIC_USING_TOUCH)
-    int result = tpc_run(AIC_TOUCH_PANEL_NAME, width, height);
+    int result = tpc_run(AIC_TOUCH_PANEL_NAME, fb_info.width, fb_info.height);
     if (result) {
         LV_LOG_INFO("can't find touch panel\n");
     }

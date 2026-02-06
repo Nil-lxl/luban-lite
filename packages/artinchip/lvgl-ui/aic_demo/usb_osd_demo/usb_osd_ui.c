@@ -11,7 +11,7 @@
 
 #include "usb_osd_ui.h"
 #include "video/usb_osd_video.h"
-#include "aic_lv_ffmpeg.h"
+#include "lv_aic_player.h"
 #include "lv_tpc_run.h"
 
 //#define USB_OSD_LOG
@@ -24,7 +24,7 @@
 static lv_osd_manager_t* instance = NULL;
 
 #ifdef LV_USB_OSD_LOGO_TYPE_VIDEO
-static lv_obj_t *ffmpeg = NULL;
+static lv_obj_t *aic_player = NULL;
 static lv_timer_t *play_end_timer = NULL;
 #endif
 
@@ -415,17 +415,17 @@ int usb_disp_get_suspend_ms(void)
 extern uint8_t usb_display_en;
 static uint8_t lv_display_en = 0;
 
-static void ffmpeg_player_update_cb(lv_timer_t * timer)
+static void aic_player_update_cb(lv_timer_t * timer)
 {
     bool play_end = false;
-    if (!ffmpeg)
+    if (!aic_player)
         return;
 
-    lv_ffmpeg_player_set_cmd_ex(ffmpeg, LV_FFMPEG_PLAYER_CMD_PLAY_END_EX, &play_end);
+    lv_aic_player_set_cmd(aic_player, LV_AIC_PLAYER_CMD_PLAY_END, &play_end);
     if (play_end == true) {
-        USB_OSD_DEBUG("usb disp delete ffmpeg obj\n");
-        lv_obj_del(ffmpeg);
-        ffmpeg = NULL;
+        USB_OSD_DEBUG("usb disp delete aic_player obj\n");
+        lv_obj_del(aic_player);
+        aic_player = NULL;
         lv_timer_pause(play_end_timer);
         lv_timer_del(play_end_timer);
         play_end_timer = NULL;
@@ -537,15 +537,15 @@ static void usb_osd_ui_display_logo(void)
     lv_display_en = usb_display_en;
     usb_display_en = 0;
 
-    ffmpeg = lv_ffmpeg_player_create(logo_screen);
-    lv_obj_set_style_transform_angle(ffmpeg, rotation, LV_PART_MAIN);
-    lv_obj_add_flag(ffmpeg, LV_OBJ_FLAG_HIDDEN);
+    aic_player = lv_aic_player_create(logo_screen);
+    lv_obj_set_style_transform_angle(aic_player, rotation, LV_PART_MAIN);
+    lv_obj_add_flag(aic_player, LV_OBJ_FLAG_HIDDEN);
 
-    lv_ffmpeg_player_set_src(ffmpeg, logo_video_src);
-    lv_ffmpeg_player_set_cmd_ex(ffmpeg, LV_FFMPEG_PLAYER_CMD_START, NULL);
-    lv_ffmpeg_player_set_auto_restart(ffmpeg, false);
+    lv_aic_player_set_src(aic_player, logo_video_src);
+    lv_aic_player_set_cmd(aic_player, LV_AIC_PLAYER_CMD_START, NULL);
+    lv_aic_player_set_auto_restart(aic_player, false);
 
-    play_end_timer = lv_timer_create(ffmpeg_player_update_cb, 50 , NULL);
+    play_end_timer = lv_timer_create(aic_player_update_cb, 50 , NULL);
     lv_timer_resume(play_end_timer);
 #endif
 }

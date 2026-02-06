@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -32,6 +32,9 @@ struct lv_spi_dev {
     unsigned int mode;
     unsigned int max_hz;
 
+    unsigned int spi_type;
+    unsigned int use_spi_hardware;
+
     void *dev;
     unsigned int rs_pin;
     unsigned int bl_pin;
@@ -41,10 +44,11 @@ struct lv_spi_dev {
     unsigned char *tx_buf;
     unsigned int tx_len;
     struct mpp_ge *ge2d_dev;
+    lv_display_t *disp;
 
     aicos_sem_t display_sem;
-    aicos_sem_t send_sem;
     aicos_wqueue_t te_queue;
+    unsigned int has_send_data;
     unsigned int frame_count;
 
     struct aicfb_screeninfo info;
@@ -55,7 +59,7 @@ void lv_spi_flush(u8 *data, unsigned int len);
 void lv_spi_write_buffer(struct lv_spi_dev *spi_dev,
                          unsigned int cmd, unsigned int len, const u8 *data);
 
-void lv_spi_display_init(void);
+int lv_spi_display_init(int use_frame_buffer);
 
 /*
  * defined in the spi tft controller dirver lv_xxx.c
@@ -72,4 +76,4 @@ void lv_spi_panel_enable(struct lv_spi_dev *dev);
  * Init ArtInChip SoC SPI Controller and enable
  * lcd peripheral by calling lv_spi_panel_enable()
  */
-void lv_spi_screen_enable(void);
+void lv_spi_screen_enable(lv_display_t *disp);

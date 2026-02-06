@@ -31,8 +31,7 @@ static int msh_readline(int fd, char *line_buf, int size)
             /* nothing in this file */
             return 0;
         }
-    }
-    while (ch == '\n' || ch == '\r');
+    } while (ch == '\n' || ch == '\r');
 
     /* set the first character */
     line_buf[index ++] = ch;
@@ -129,8 +128,7 @@ int msh_exec_script(const char *cmd_line, int size)
                 if (ch != '#') /* not a comment */
                     msh_exec(line_buf, length);
             }
-        }
-        while (length > 0);
+        } while (length > 0);
 
         close(fd);
         rt_free(line_buf);
@@ -500,15 +498,21 @@ static int cmd_mount(int argc, char **argv)
         }
         return 0;
     }
-    else if (argc == 4)
+    else if (argc == 4 || argc == 5)
     {
         char *device = argv[1];
         char *path = argv[2];
         char *fstype = argv[3];
+        unsigned long rwflag = 0;
+
+
+        if (argc == 5 && !strcmp(argv[4], "ro"))
+            rwflag = MS_RDONLY;
 
         /* mount a filesystem to the specified directory */
-        rt_kprintf("mount device %s(%s) onto %s ... ", device, fstype, path);
-        if (dfs_mount(device, path, fstype, 0, 0) == 0)
+        rt_kprintf("mount device %s(%s) onto %s %s... ", device, fstype, path,
+                   rwflag ? "in read only" : "");
+        if (dfs_mount(device, path, fstype, rwflag, 0) == 0)
         {
             rt_kprintf("succeed!\n");
             return 0;

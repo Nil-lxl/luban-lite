@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -12,6 +12,10 @@
 #include <netdev.h>
 #include <math.h>
 #include "aic_core.h"
+
+#if defined(RT_USING_SAL) && defined(SAL_INTERNET_CHECK)
+#error "SAL_INTERNET_CHECK should disabled in test-wifi when RT_USING_SAL"
+#endif
 
 typedef enum {
     ERR_NONE = 0,
@@ -532,9 +536,9 @@ static void aic_wifi_stress_test()
 {
     // basic test device name use RT_WLAN_DEVICE
     while (1) {
-        aic_wifi_sta_basic_test(NULL);
+        aic_wifi_sta_basic_test(RT_WLAN_DEVICE_STA_NAME);
         rt_thread_mdelay(200);
-        aic_wifi_ap_basic_test(NULL);
+        aic_wifi_ap_basic_test(RT_WLAN_DEVICE_AP_NAME);
         rt_thread_mdelay(200);
 
         /* check the heap */

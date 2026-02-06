@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -62,28 +62,18 @@ static void dashboard_ui_cb(lv_event_t * e)
 
 static void elevator_ui_cb(lv_event_t * e)
 {
-#if defined(AIC_CHIP_D12X)
-    if (LV_HOR_RES == 480)
-        return;
-#endif
     app_entrance(APP_ELEVATOR, 1);
 }
 
 static void aic_video_ui_cb(lv_event_t * e)
 {
-#if defined(AIC_CHIP_D12X)
-    if (LV_HOR_RES == 480)
-        return;
-#endif
     app_entrance(APP_VIDEO, 1);
 }
 
 static void aic_audio_ui_cb(lv_event_t * e)
 {
-#if defined(AIC_CHIP_D13X)
     if (LV_HOR_RES == 480)
         app_entrance(APP_AUDIO, 1);
-#endif
 }
 
 static void camera_ui_cb(lv_event_t * e)
@@ -375,7 +365,13 @@ static void ui_navigator_cb(lv_event_t *e)
 
     if (code == LV_EVENT_DELETE) {;}
 
-    if (code == LV_EVENT_SCREEN_LOADED) {;}
+    if (code == LV_EVENT_SCREEN_LOADED) {
+#if defined(AIC_CHIP_D21X)
+        lv_img_cache_set_size(20);
+#else
+        lv_img_cache_set_size(14);
+#endif
+}
 }
 
 lv_obj_t *navigation_ui_init(void)

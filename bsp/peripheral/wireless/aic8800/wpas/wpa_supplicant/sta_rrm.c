@@ -106,7 +106,7 @@ void wpas_rrm_process_neighbor_rep(struct wpa_supplicant *wpa_s,
 #define ECANCELED -1
 #endif
 
-#ifdef PLATFORM_ASR_THREADX
+#ifdef CONFIG_PLAT_THREADX
 //#define ENOTCONN -1
 //#define EOPNOTSUPP -1
 #define ECANCELED -1

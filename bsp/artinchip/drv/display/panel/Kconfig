@@ -124,7 +124,7 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DSI_H078B06
         bool "Hotlcd MIPI DSI H078B06 panel"
         depends on AIC_DISP_MIPI_DSI
-    
+
     config AIC_PANEL_DSI_H080A11
         bool "Hotlcd MIPI DSI H080A11 panel"
         depends on AIC_DISP_MIPI_DSI
@@ -193,9 +193,10 @@ if !AIC_DISP_PQ_TOOL
         help
             MIPI-DBI Type C, SPI_4LINE_RGB565
 
-    config AIC_PANEL_DBI_GC0D01N
-        bool "ArtInChip MIPI DBI GC0D01N panel"
+    config AIC_PANEL_DBI_GC9108
+        bool "ArtInChip MIPI DBI GC9108 panel"
         depends on AIC_DISP_MIPI_DBI
+        depends on AIC_DISP_MIPI_DBI_DRV_V13
         help
             MIPI-DBI Type C, SPI_4LINE_RGB565
 
@@ -205,6 +206,11 @@ if !AIC_DISP_PQ_TOOL
         help
             MIPI-DBI Type C, SPI_4LINE_RGB565
 
+    config AIC_PANEL_SPI_GENERAL
+        bool "ArtInChip SPI General panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            Use SPI Controller refresh SPI LCD Peripheral
 #
 # RGB Panel SPI Init
 #
@@ -212,6 +218,18 @@ if !AIC_DISP_PQ_TOOL
         bool "ArtInChip RGB ST7701S panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_ST77916
+        bool "ArtInChip RGB ST77916 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+        select AIC_SPI_EMULATION_WITH_DC
+
+    config AIC_PANEL_RGB_JD9855
+        bool "ArtInChip RGB JD9855 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+        select AIC_SPI_EMULATION_WITH_DC
 
     config AIC_PANEL_RGB_NV3052
         bool "ArtInChip RGB NV3052 panel"
@@ -282,7 +300,7 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd RGB H068B06 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
-    
+
     config AIC_PANEL_RGB_H070A18
         bool "Hotlcd RGB H070A18 panel"
         depends on AIC_DISP_RGB
@@ -336,7 +354,7 @@ choice
     config AIC_PANEL_1024X600
         bool "1024x600"
         depends on AIC_DISP_RGB || AIC_DISP_LVDS
-    
+
     config AIC_PANEL_H050A21
         bool "h050a21"
         depends on AIC_DISP_RGB
@@ -431,6 +449,15 @@ config LT9811EXB_RESOLUTION
     default 1 if LT9811EXB_1920X1080
     default 2 if LT9811EXB_1366X768
 
+if AIC_PANEL_SPI_GENERAL
+config SPI_GENERAL_WIDTH
+    int "SPI LCD Width"
+    default 160
+
+config SPI_GENERAL_HEIGHT
+    int "SPI LCD Height"
+    default 160
+endif
 
 if AIC_PANEL_CUSTOM_RESOLUTION && !AIC_DISP_PQ_TOOL
 source "bsp/artinchip/drv/display/panel/Kconfig.timing"

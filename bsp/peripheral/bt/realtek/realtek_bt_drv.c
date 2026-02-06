@@ -1,8 +1,9 @@
 /*
- * Copyright (C) 2015 Endless Mobile, Inc.
+ * Copyright (C) 2015-2026 Endless Mobile, Inc.
  *
  * Author: Thomas_li <thomas_li@realsil.com.cn>
  */
+
 #include <stdio.h>
 #include <aic_core.h>
 #include <nimble/host/src/ble_hs_hci_priv.h>
@@ -24,11 +25,30 @@ static const struct realtek_bt_module module_table[] = {
 	  .has_rom_version = true,
     },
 
-	/* 8733BS */
+	/* 8733BS BT5.2 */
 	{
       .flags = RTL_FLAG_LMPSUBV | RTL_FLAG_HCIREV | RTL_FLAG_HCIVER | RTL_FLAG_HCIBUS,
 	  .bus = HCI_UART,
 	  .hci_ver = 0xb,
+	  .hci_rev = 0xf,
+	  .lmp_subver = RTL_ROM_LMP_8723B,
+	  .config_needed = true,
+	  .has_rom_version = true,
+      .fw = {
+       .data = fw_rtl8733bs_d7b8_0da7,
+       .len = sizeof(fw_rtl8733bs_d7b8_0da7)
+      },
+      .cfg = {
+       .data = config_rtl8733bs,
+       .len = sizeof(config_rtl8733bs)
+      }
+    },
+
+	/* 8733BS BT4.2 */
+	{
+      .flags = RTL_FLAG_LMPSUBV | RTL_FLAG_HCIREV | RTL_FLAG_HCIVER | RTL_FLAG_HCIBUS,
+	  .bus = HCI_UART,
+	  .hci_ver = 0x8,
 	  .hci_rev = 0xf,
 	  .lmp_subver = RTL_ROM_LMP_8723B,
 	  .config_needed = true,
@@ -62,7 +82,7 @@ static const struct realtek_bt_module module_table[] = {
     },
 
 	/* 8723DS */
-	{ 
+	{
       .flags = RTL_FLAG_LMPSUBV | RTL_FLAG_HCIREV | RTL_FLAG_HCIVER | RTL_FLAG_HCIBUS,
 	  .bus = HCI_UART,
 	  .hci_ver = 0x8,
@@ -73,7 +93,7 @@ static const struct realtek_bt_module module_table[] = {
     },
 
 	/* 8723DU */
-	{ 
+	{
       .flags = RTL_FLAG_LMPSUBV | RTL_FLAG_HCIREV,
       .hci_rev = 0x826C,
       .lmp_subver = RTL_ROM_LMP_8723D,

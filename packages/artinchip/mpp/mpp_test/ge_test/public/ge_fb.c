@@ -18,19 +18,22 @@ struct ge_fb_info *fb_open(void)
     int ret = 0;
     struct ge_fb_info *info;
 
-    info = (struct ge_fb_info *)aicos_malloc(MEM_CMA, sizeof(struct ge_fb_info));
+    info = (struct ge_fb_info *)aicos_malloc(MEM_DEFAULT, sizeof(struct ge_fb_info));
 
     memset(info, 0, sizeof(struct ge_fb_info));
 
     info->fb = mpp_fb_open();
     if (!info->fb) {
         printf("mpp fb open failed\n");
+        aicos_free(MEM_DEFAULT, info);
         return NULL;
     }
 
     ret = mpp_fb_ioctl(info->fb, AICFB_GET_SCREENINFO , &info->fb_data);
     if (ret) {
         printf("mpp_fb_ioctl ops failed\n");
+        mpp_fb_close(info->fb);
+        aicos_free(MEM_DEFAULT, info);
         return NULL;
     }
 
@@ -39,10 +42,12 @@ struct ge_fb_info *fb_open(void)
 
 void fb_close(struct ge_fb_info *info)
 {
+    if (!info)
+        return;
     if (!info->fb)
         mpp_fb_close(info->fb);
 
-    aicos_free(MEM_CMA, info);
+    aicos_free(MEM_DEFAULT, info);
 }
 
 /* Using double frambuffers, select different buffers based on swap_flag */
@@ -55,9 +60,9 @@ unsigned int fb_get_cur_frame(struct ge_fb_info *info)
 {
     unsigned long fb_phy = 0;
 
-    if (!info->swap_flag)
+    if (!info->swap_flag) {
         fb_phy = (intptr_t)info->fb_data.framebuffer;
-    else {
+    } else {
         if (APP_FB_NUM > 1) {
             fb_phy = (intptr_t)info->fb_data.framebuffer + info->fb_data.smem_len;
         } else {

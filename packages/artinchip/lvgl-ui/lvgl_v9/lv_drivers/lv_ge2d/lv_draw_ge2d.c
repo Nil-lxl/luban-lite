@@ -185,6 +185,12 @@ static bool ge2d_draw_img_supported(const lv_draw_image_dsc_t *draw_dsc)
     if (draw_dsc->rotation % 900 && scale)
         return false;
 
+    // check scale ratio
+    if (draw_dsc->scale_x < LV_SCALE_NONE / 16 || draw_dsc->scale_y < LV_SCALE_NONE / 16  ||
+        draw_dsc->scale_x > LV_SCALE_NONE * 16 || draw_dsc->scale_y > LV_SCALE_NONE * 16) {
+            return false;
+    }
+
     if (draw_dsc->header.cf < LV_COLOR_FORMAT_YUV_START) {
         if (draw_dsc->header.stride % 8) {
             LV_LOG_TRACE("stride:%d", draw_dsc->header.stride);

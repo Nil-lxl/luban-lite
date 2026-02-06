@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -908,6 +908,18 @@ void mmc_set_rx_delay(void *priv, u32 delay)
     hal_sdmc_set_delay(&host->host, 0, delay);
 }
 
+void mmc_set_tx_phase(void *priv, u32 phase)
+{
+    struct aic_sdmc *host = (struct aic_sdmc *)priv;
+    hal_sdmc_set_phase(&host->host, phase, host->pdata->smp_phase);
+}
+
+void mmc_set_tx_delay(void *priv, u32 delay)
+{
+    struct aic_sdmc *host = (struct aic_sdmc *)priv;
+    hal_sdmc_set_delay(&host->host, delay, 0);
+}
+
 u32 mmc_bread(void *priv, u32 start, u32 blkcnt, u8 *dst)
 {
     struct aic_sdmc *host = (struct aic_sdmc *)priv;
@@ -1017,7 +1029,10 @@ u32 mmc_erase_t(struct aic_sdmc *host, u32 start, u32 blkcnt)
         start = start * host->dev->read_bl_len;
     }
 
-    cmd.cmd_code = MMC_CMD_ERASE_GROUP_START;
+    if (IS_SD(host))
+        cmd.cmd_code = SD_CMD_ERASE_WR_BLK_START;
+    else
+        cmd.cmd_code = MMC_CMD_ERASE_GROUP_START;
     cmd.arg = start;
     cmd.resp_type = MMC_RSP_R1;
 
@@ -1025,7 +1040,10 @@ u32 mmc_erase_t(struct aic_sdmc *host, u32 start, u32 blkcnt)
     if (err)
         goto err_out;
 
-    cmd.cmd_code = MMC_CMD_ERASE_GROUP_END;
+    if (IS_SD(host))
+        cmd.cmd_code = SD_CMD_ERASE_WR_BLK_END;
+    else
+        cmd.cmd_code = MMC_CMD_ERASE_GROUP_END;
     cmd.arg = end;
 
     err = mmc_send_cmd(host, &cmd, NULL);
@@ -1043,7 +1061,7 @@ u32 mmc_erase_t(struct aic_sdmc *host, u32 start, u32 blkcnt)
     return 0;
 
 err_out:
-    pr_err("Erase blocks failed, error = -%d\n", err);
+    pr_err("Erase blocks failed, error = %d\n", err);
     return err;
 }
 

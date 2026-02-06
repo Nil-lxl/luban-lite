@@ -121,8 +121,8 @@ volatile bool ep_tx_busy_flag = false;
 #define MAX_MPS 64
 #endif
 
-void usbd_vender_out(uint8_t ep, uint32_t nbytes);
-void usbd_vender_in(uint8_t ep, uint32_t nbytes);
+void usbd_vender_out(uint8_t busid, uint8_t ep, uint32_t nbytes);
+void usbd_vender_in(uint8_t busid, uint8_t ep, uint32_t nbytes);
 /*!< endpoint call back */
 struct usbd_endpoint vender_out_ep = {
     .ep_addr = OUT_EP,
@@ -134,11 +134,8 @@ struct usbd_endpoint vender_in_ep = {
     .ep_cb = usbd_vender_in
 };
 
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-void usbd_comp_vender_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
+
+static void usbd_comp_vender_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -153,7 +150,7 @@ void usbd_event_handler(uint8_t event)
             break;
         case USBD_EVENT_CONFIGURED:
             /* setup first out ep read transfer */
-            usbd_ep_start_read(vender_out_ep.ep_addr , read_buffer, 2048);
+            usbd_ep_start_read(0, vender_out_ep.ep_addr , read_buffer, 2048);
             break;
         case USBD_EVENT_SET_REMOTE_WAKEUP:
             break;
@@ -165,15 +162,15 @@ void usbd_event_handler(uint8_t event)
     }
 }
 
-void usbd_vender_out(uint8_t ep, uint32_t nbytes)
+void usbd_vender_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     USB_LOG_INFO("vender out data %#x %d\n", ep, nbytes);
 
     /* setup next out ep read transfer */
-    usbd_ep_start_read(vender_out_ep.ep_addr , read_buffer, 2048);
+    usbd_ep_start_read(0, vender_out_ep.ep_addr , read_buffer, 2048);
 }
 
-void usbd_vender_in(uint8_t ep, uint32_t nbytes)
+void usbd_vender_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     USB_LOG_INFO("vender in data %#x %d\n", ep, nbytes);
 }
@@ -186,9 +183,9 @@ int usbd_comp_vender_init(uint8_t *ep_table, void *data)
 {
     vender_out_ep.ep_addr = ep_table[0];
     vender_in_ep.ep_addr = ep_table[1];
-    usbd_add_interface(usbd_vender_init_intf(&intf0));
-    usbd_add_endpoint(&vender_out_ep);
-    usbd_add_endpoint(&vender_in_ep);
+    usbd_add_interface(0, usbd_vender_init_intf(0, &intf0));
+    usbd_add_endpoint(0, &vender_out_ep);
+    usbd_add_endpoint(0, &vender_in_ep);
     return 0;
 }
 #endif
@@ -201,11 +198,11 @@ int vender_device_init(void)
     memset(&write_buffer[10], 'a', 2038);
 
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_desc_register(vender_descriptor);
-    usbd_add_interface(usbd_vender_init_intf(&intf0));
-    usbd_add_endpoint(&vender_out_ep);
-    usbd_add_endpoint(&vender_in_ep);
-    usbd_initialize();
+    usbd_desc_register(0, vender_descriptor);
+    usbd_add_interface(0, usbd_vender_init_intf(0, &intf0));
+    usbd_add_endpoint(0, &vender_out_ep);
+    usbd_add_endpoint(0, &vender_in_ep);
+    usbd_initialize(0, USB_DEV_BASE, usbd_comp_vender_event_handler);
 #else
     usbd_comp_func_register(vender_descriptor,
                             usbd_comp_vender_event_handler,
@@ -218,7 +215,7 @@ USB_INIT_APP_EXPORT(vender_device_init);
 static int cmd_test_vender(int argc, char **argv)
 {
     memset(write_buffer, 'a', 2038);
-    usbd_ep_start_write(vender_in_ep.ep_addr , write_buffer, 192);
+    usbd_ep_start_write(0, vender_in_ep.ep_addr , write_buffer, 192);
     return 0;
 }
 

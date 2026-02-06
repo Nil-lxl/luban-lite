@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Artinchip Technology Co., Ltd
+ * Copyright (c) 2023-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -86,13 +86,29 @@ struct upg_internal {
 struct storage_media {
     char media_type[FWC_STR_MAX_LEN];
     u32 media_dev_id;
-};
+} __packed;
 
 struct media_partition {
     struct storage_media media;
     struct aic_partition part;
     char attr[FWC_STR_MAX_LEN];
 };
+
+struct storage_geometry {
+    u64 total_size; /* UNIT: byte for Flash, sector for MMC */
+    u32 erase_size; /* UNIT: byte for Flash, sector for MMC */
+    u32 write_size; /* UNIT: byte */
+    u32 oob_size; /* Only for NAND */
+    u32 rsvd;
+} __packed;
+
+#define STORAGE_ERASE_DONT_SKIP_BAD  (1 << 0)
+
+struct storage_erase {
+    u64 start; /* UNIT: byte for Flash, sector for MMC */
+    u64 size;  /* UNIT: byte for Flash, sector for MMC */
+    u64 flag;
+} __packed;
 
 struct fwc_meta {
     char magic[8];                   /* "META" */
@@ -159,9 +175,17 @@ s32 mmc_fwc_prepare(struct fwc_info *fwc, u32 mmc_id);
 s32 nand_fwc_prepare(struct fwc_info *fwc, u32 id);
 s32 nor_fwc_prepare(struct fwc_info *fwc, u32 id);
 
-s32 mmc_is_exist(void);
-s32 nand_is_exist(void);
-s32 nor_is_exist(void);
+s32 mmc_is_exist(u32 id);
+s32 mmc_get_geometry(u32 id, struct storage_geometry *geo);
+s32 mmc_storage_erase(u32 id, struct storage_erase *erase);
+
+s32 nand_is_exist(u32 id);
+s32 nand_get_geometry(u32 id, struct storage_geometry *geo);
+s32 nand_storage_erase(u32 id, struct storage_erase *erase);
+
+s32 nor_is_exist(u32 id);
+s32 nor_get_geometry(u32 id, struct storage_geometry *geo);
+s32 nor_storage_erase(u32 id, struct storage_erase *erase);
 
 void fwc_meta_config(struct fwc_info *fwc, struct fwc_meta *pmeta);
 s32 media_device_prepare(struct fwc_info *fwc, struct image_header_upgrade *header);

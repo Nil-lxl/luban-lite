@@ -226,7 +226,7 @@ static void rtt_mutex_get(aicos_mutex_t *plock)
 static int rtt_mutex_get_timeout(aicos_mutex_t *plock, u32 timeout_ms)
 {
     if (*plock == 0)
-        return;
+        return -1;
 
     if (aicos_mutex_take(*plock, timeout_ms) != RT_EOK) {
         pr_info("%s(%p) failed, retry\n", __FUNCTION__, plock);
@@ -731,7 +731,7 @@ void rtt_release_wakelock()
 {
 }
 
-void rtt_wakelock_timeout(uint32_t timeout)
+void rtt_wakelock_timeout(u32 timeout)
 {
 }
 #include <osdep_service.h>

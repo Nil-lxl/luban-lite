@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,6 +8,7 @@
 #define _AIC_HAL_QSPI_REGS_H_
 #include <aic_common.h>
 #include <aic_soc.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,6 +17,7 @@ extern "C" {
 #define QSPI_REG_VER(base)              (volatile void *)((base) + 0x00UL)
 #define QSPI_REG_CFG(base)              (volatile void *)((base) + 0x04UL)
 #define QSPI_REG_TCFG(base)             (volatile void *)((base) + 0x08UL)
+#define QSPI_REG_PHACTL(base)           (volatile void *)((base) + 0x0CUL)
 #define QSPI_REG_ICR(base)              (volatile void *)((base) + 0x10UL)
 #define QSPI_REG_ISTS(base)             (volatile void *)((base) + 0x14UL)
 #define QSPI_REG_FCTL(base)             (volatile void *)((base) + 0x18UL)
@@ -40,6 +42,47 @@ extern "C" {
 #define QSPI_REG_IDMA_BCFG(base)        (volatile void *)((base) + 0x9CUL)
 #define QSPI_REG_TXD(base)              (volatile void *)((base) + 0x200UL)
 #define QSPI_REG_RXD(base)              (volatile void *)((base) + 0x300UL)
+
+/***** spi display ********/
+#define SPI_DISP_MODE_REG(base) 	(volatile void *)((base) + 0xA0UL)
+#define SPI_DISP_HIGH_REG(base) 	(volatile void *)((base) + 0xA4UL)
+#define SPI_DISP_WIDTH_REG(base) 	(volatile void *)((base) + 0xA8UL)
+#define SPI_DISP_VSW_REG(base) 	    (volatile void *)((base) + 0xACUL)
+#define SPI_DISP_VBP_REG(base) 	    (volatile void *)((base) + 0xB0UL)
+#define SPI_DISP_VLD_REG(base) 	    (volatile void *)((base) + 0xB4UL)
+#define SPI_DISP_VFP_REG(base) 	    (volatile void *)((base) + 0xB8UL)
+#define SPI_DISP_TMO_REG(base) 	    (volatile void *)((base) + 0xBCUL)
+#define SPI_DISP_FRMCNT(base) 		(volatile void *)((base) + 0xC0UL)
+#define SPI_DISP_ETFCFG(base) 		(volatile void *)((base) + 0xC4UL)
+
+#define SPI_IDMA_BTCFG_RX_LEN   (3U << 10)
+#define SPI_IDMA_BTCFG_TX_LEN   (3U << 8)
+#define SPI_IDMA_BTCFG_IDMA_WIDTH     (7U)
+#define SPI_IDMA_BTCFG_AUTO_LEN_EN    (1U << 12)
+#define SPI_DISP_TXFC_TRANS_TRIG_3    (7U << 24)
+#define SPI_DISP_TXFC_TRANS_TRIG_2    (5U << 24)
+#define SPI_DISP_CTL_DRQ_SEL    (3U << 10)
+#define SPI_TMC_QUAD_EN         (1U << 29)
+#define SPI_TMC_DUAL_EN         (1U << 28)
+#define SPI_DISP_CTRL_PROC_3    (1U << 3)
+#define SPI_DISP_CTRL_PROC_2    (1U << 2)
+#define SPI_DISP_CTRL_PROC_1    (1U << 1)
+#define SPI_DISP_CTRL_PROC_0    (1U)
+#define SPI_DISP_CMD_MTW_EN	    (1U << 8)
+#define SPI_ENABLE		        (1U << 0)
+#define SPI_DISP_EN		        (1U << 8)
+#define SPI_TXIDMA_DONE	        (1U << 23)
+#define SPI_DISP_RESTART	    (0x1<<31)
+#define SPI_DISP_PARA_DECEN	    (0x1<<9)
+#define SPI_TXIDMA_EN		    (1U << 4)
+#define SPI_DISP_ERR_INT_EN	    (1U << 27)
+#define SPI_TC_INT		        (1U << 12)
+#define SPI_TXUR_INT	        (1U << 11)
+#define SPI_TXOF_INT	        (1U << 10)
+#define SPI_RXUR_INT	        (1U << 9)
+#define SPI_RXOF_INT	        (1U << 8)
+#define SPI_ERROR_INT	        (SPI_TXUR_INT|SPI_TXOF_INT|SPI_RXUR_INT|SPI_RXOF_INT)
+/***********************/
 
 #define CFG_BIT_CTRL_EN_OFS             (0)
 #define CFG_BIT_CTRL_EN_MSK             (1UL << 0)
@@ -1413,6 +1456,195 @@ static inline int qspi_hw_bit_mode_send_then_recv(u32 base, const u8 *tx_buf,
         rx_p[i] = (rxbits >> (i * 8)) & 0xFF;
 
     return rx_bits_len;
+}
+
+/**
+ * spi display
+ */
+#define DATA_MODE_SINGLE 	0x0
+#define DATA_MODE_DUAL		0x1
+#define DATA_MODE_QUAD		0x2
+
+#define SPI_IDMA_BL8		2
+
+#define sbit(v, addr)	(*((volatile u32 *)((uintptr_t)addr)) |=  (u32)(v))
+#define cbit(v, addr)	(*((volatile u32 *)((uintptr_t)addr)) &= ~(u32)(v))
+
+static inline void spi_disp_control_en(u32 base)
+{
+    u32 rval = readl(QSPI_REG_CFG(base))&(~(1 << 0));
+    rval |= SPI_ENABLE;
+    writel(rval, QSPI_REG_CFG(base));
+}
+
+static inline void spi_disp_mode_choose(u32 base, u32 mode)
+{
+    if(mode == DATA_MODE_QUAD)
+        sbit(SPI_TMC_QUAD_EN, QSPI_REG_TMC(base));		//Data in Quad mode
+    else if (mode == DATA_MODE_DUAL)
+        sbit(SPI_TMC_DUAL_EN, QSPI_REG_TMC(base));		//Data in Dual mode
+    else if (mode == DATA_MODE_SINGLE)
+        cbit(SPI_TMC_QUAD_EN | SPI_TMC_DUAL_EN, QSPI_REG_TMC(base));		//Data in Single mode
+}
+
+static inline void spi_disp_set_disp_mode(u32 base, u32 mtw, u32 vsw_en, u32 vbp_en, u32 vfp_en)
+{
+    sbit(SPI_DISP_CTRL_PROC_2, SPI_DISP_MODE_REG(base));
+
+    if(mtw)
+        sbit(SPI_DISP_CMD_MTW_EN, SPI_DISP_MODE_REG(base));
+    else
+        cbit(SPI_DISP_CMD_MTW_EN, SPI_DISP_MODE_REG(base));
+
+    if(vsw_en)
+        sbit(SPI_DISP_CTRL_PROC_0, SPI_DISP_MODE_REG(base));
+    else
+        cbit(SPI_DISP_CTRL_PROC_0, SPI_DISP_MODE_REG(base));
+
+    if(vbp_en)
+        sbit(SPI_DISP_CTRL_PROC_1, SPI_DISP_MODE_REG(base));
+    else
+        cbit(SPI_DISP_CTRL_PROC_1, SPI_DISP_MODE_REG(base));
+
+    if(vfp_en)
+        sbit(SPI_DISP_CTRL_PROC_3, SPI_DISP_MODE_REG(base));
+    else
+        cbit(SPI_DISP_CTRL_PROC_3, SPI_DISP_MODE_REG(base));
+}
+
+static inline void spi_disp_idrq_mode(u32 base, u32 mode, u32 urg_en, u32 trig_wl)
+{
+    u16 ug_thrl = 16 << (trig_wl);
+    u16 ug_thrh = 16 << (trig_wl + 1);
+
+    cbit(SPI_DISP_CTL_DRQ_SEL, SPI_DISP_MODE_REG(base));
+    sbit(mode << 10, SPI_DISP_MODE_REG(base));
+
+    sbit(urg_en << 31, SPI_DISP_ETFCFG(base));
+    sbit(urg_en << 30, SPI_DISP_ETFCFG(base));
+
+    cbit(0xFFFFFF, SPI_DISP_ETFCFG(base));
+    sbit((ug_thrl << 12), SPI_DISP_ETFCFG(base));
+    sbit(ug_thrh, SPI_DISP_ETFCFG(base));
+
+    cbit(SPI_DISP_TXFC_TRANS_TRIG_3, SPI_DISP_ETFCFG(base));
+    sbit(trig_wl << 24, SPI_DISP_ETFCFG(base));
+
+    sbit(SPI_DISP_TXFC_TRANS_TRIG_2, SPI_DISP_ETFCFG(base));
+}
+
+static inline void spi_disp_idma_burst_cfg(u32 base, u32 auto_en, u32 size, u32 txlen, u32 rxlen)
+{
+    if(auto_en) {
+        sbit(SPI_IDMA_BTCFG_AUTO_LEN_EN, QSPI_REG_IDMA_BCFG(base));
+    } else {
+        cbit(SPI_IDMA_BTCFG_AUTO_LEN_EN, QSPI_REG_IDMA_BCFG(base));
+    }
+
+    cbit(SPI_IDMA_BTCFG_IDMA_WIDTH, QSPI_REG_IDMA_BCFG(base));
+    sbit(size, QSPI_REG_IDMA_BCFG(base));
+
+    cbit(SPI_IDMA_BTCFG_TX_LEN, QSPI_REG_IDMA_BCFG(base));
+    sbit(txlen << 8, QSPI_REG_IDMA_BCFG(base));
+
+    cbit(SPI_IDMA_BTCFG_RX_LEN, QSPI_REG_IDMA_BCFG(base));
+    sbit(rxlen << 10, QSPI_REG_IDMA_BCFG(base));
+}
+
+static inline void spi_disp_dma_onoff(u32 base, u32 dma_en)
+{
+    if(dma_en)
+        spi_disp_idma_burst_cfg(base, 0, 4, SPI_IDMA_BL8, SPI_IDMA_BL8);
+    else
+        pr_info("Don't use spi dma\r\n");
+}
+
+static inline void spi_disp_en(u32 base, u32 disp_on)
+{
+    if(disp_on)
+        sbit(SPI_DISP_EN, QSPI_REG_CFG(base));
+    else
+        cbit(SPI_DISP_EN, QSPI_REG_CFG(base));
+
+    spi_disp_idrq_mode(base, 1, 1, 5);
+}
+
+static inline void spi_disp_set_disp_vpara(u32 base, u32 len_stride, u32 len)
+{
+    writel(len_stride << 16 | len, SPI_DISP_WIDTH_REG(base));
+}
+
+static inline void spi_disp_set_disp_hpara(u32 base, u32 hvbp, u32 hvld, u32 hvfp)
+{
+    writel(hvfp << 24 | hvbp << 16 | hvld, SPI_DISP_HIGH_REG(base));
+}
+
+static inline void spi_disp_set_disp_cmd(u32 base, u32 VSW, u32 VBP, u32 VLD, u32 VFP)
+{
+    writel(VSW, SPI_DISP_VSW_REG(base));
+    writel(VBP, SPI_DISP_VBP_REG(base));
+    writel(VLD, SPI_DISP_VLD_REG(base));
+    writel(VFP, SPI_DISP_VFP_REG(base));
+}
+
+static inline void spi_disp_set_disp_timeout(u32 base, u32 count)
+{
+    writel(count, SPI_DISP_TMO_REG(base));
+}
+
+static inline void spi_disp_tc_init(u32 base)
+{
+    sbit(SPI_TC_INT, QSPI_REG_ICR(base));
+}
+
+static inline void spi_disp_idma_tx_config(u32 base, uintptr_t txaddr, u32 test_len)
+{
+    sbit(SPI_TXIDMA_DONE, QSPI_REG_ICR(base));
+
+    writel((u32)txaddr, QSPI_REG_IDMA_TXADDR(base));
+    cbit(0xFFFFFU, QSPI_REG_IDMA_TXLEN(base));
+    sbit(test_len, QSPI_REG_IDMA_TXLEN(base));
+}
+
+static inline void spi_disp_restart(u32 base, u32 en, u32 frm_cnt)
+{
+    u32 freq = 48;
+    u32 count = frm_cnt*freq;
+
+    writel(count, SPI_DISP_FRMCNT(base));
+    if(en) {
+        cbit(SPI_DISP_PARA_DECEN, SPI_DISP_MODE_REG(base));
+        sbit(SPI_DISP_RESTART, SPI_DISP_MODE_REG(base));
+    } else {
+        sbit(SPI_DISP_PARA_DECEN, SPI_DISP_MODE_REG(base));
+        cbit(SPI_DISP_RESTART, SPI_DISP_MODE_REG(base));
+    }
+}
+
+static inline void spi_disp_set_disp_dummy(u32 base, u32 dmc)
+{
+    cbit(0xF << 20, SPI_DISP_MODE_REG(base));
+    sbit(dmc << 20, SPI_DISP_MODE_REG(base));
+}
+
+static inline void spi_disp_rw_disp_restart(u32 base, void* tx_buf, u32 en, u32 frm_cnt)
+{
+    u32 ier;
+
+    spi_disp_idma_tx_config(base, (uintptr_t)tx_buf, 0);
+    sbit(SPI_TXIDMA_EN, QSPI_REG_CFG(base));
+    writel(0x0, QSPI_REG_ICR(base));
+    ier = readl(QSPI_REG_ICR(base)) | SPI_TC_INT | SPI_DISP_ERR_INT_EN | SPI_ERROR_INT;
+    writel(ier, QSPI_REG_ICR(base));
+
+    spi_disp_restart(base, en, frm_cnt);
+}
+
+static inline void spi_disp_tx_delay_enable(u32 base)
+{
+    u32 val = readl(QSPI_REG_PHACTL(base));
+    val |= BIT(14);
+    writel(val, QSPI_REG_PHACTL(base));
 }
 
 #ifdef __cplusplus

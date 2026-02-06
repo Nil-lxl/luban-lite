@@ -23,6 +23,8 @@ extern "C" {
 #define LSR_THR_EMPTY           0x20
 #define IER_RDA_INT_ENABLE      0x01
 #define IER_THRE_INT_ENABLE     0x02
+#define IER_SREE_INT_ENABLE     0x20
+#define IER_PTIME_INT_ENABLE    0x80
 #define IIR_RECV_LINE_ENABLE    0x04
 #define IIR_NO_ISQ_PEND         0x01
 

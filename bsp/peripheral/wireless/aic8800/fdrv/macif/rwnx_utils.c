@@ -1369,7 +1369,10 @@ void rwnx_reord_deinit(void)
             reord_deinit_sta(reord_info);
         }
     } while (reord_info);
-    rtos_mutex_delete(stas_reord_lock);
+    if (stas_reord_lock) {
+        rtos_mutex_delete(stas_reord_lock);
+        stas_reord_lock = NULL;
+    }
 #if (AICWF_RWNX_TIMER_EN)
 	rwnx_timer_deinit();
 #endif

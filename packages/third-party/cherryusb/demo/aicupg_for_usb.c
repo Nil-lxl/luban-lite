@@ -76,6 +76,21 @@ static const uint8_t usb_upg_descriptor[] = {
     'c', 0x00,                  /* wcChar14 */
     'e', 0x00,                  /* wcChar15 */
     0x00, 0x00,                 /* wcChar16 */
+    ///////////////////////////////////////
+    /// string3 descriptor
+    ///////////////////////////////////////
+    0x16,                       /* bLength */
+    USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
+    '2', 0x00,                  /* wcChar0 */
+    '0', 0x00,                  /* wcChar1 */
+    '2', 0x00,                  /* wcChar2 */
+    '2', 0x00,                  /* wcChar3 */
+    '1', 0x00,                  /* wcChar4 */
+    '2', 0x00,                  /* wcChar5 */
+    '3', 0x00,                  /* wcChar6 */
+    '4', 0x00,                  /* wcChar7 */
+    '5', 0x00,                  /* wcChar8 */
+    '6', 0x00,                  /* wcChar9 */
 #ifdef CONFIG_USB_HS
     ///////////////////////////////////////
     /// device qualifier descriptor
@@ -98,15 +113,15 @@ static struct usbd_interface intf1;
 
 int usb_init(void)
 {
-    usbd_desc_register(usb_upg_descriptor);
-    usbd_add_interface(usbd_aicupg_init_intf(&intf0, BULK_OUT_EP, BULK_IN_EP));
-    usbd_add_interface(usbd_aicupg_init_intf(&intf1, BULK_OUT_EP, BULK_IN_EP));
-    usbd_initialize();
+    usbd_desc_register(0, usb_upg_descriptor);
+    usbd_add_interface(0, usbd_aicupg_init_intf(&intf0, BULK_OUT_EP, BULK_IN_EP));
+    usbd_add_interface(0, usbd_aicupg_init_intf(&intf1, BULK_OUT_EP, BULK_IN_EP));
+    usbd_initialize(0, USB_DEV_BASE, NULL);
     return 0;
 }
 
 int usb_deinit(void)
 {
-    usbd_deinitialize();
+    usbd_deinitialize(0);
     return 0;
 }

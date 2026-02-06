@@ -1,16 +1,15 @@
 /*
- * Copyright (C) 2022-2024 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2022-2025 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  */
 
-#include <unistd.h>
 #include <time.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+
 #include "lvgl.h"
 #include "base_ui.h"
 #include "aic_ui.h"

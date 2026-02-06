@@ -293,6 +293,26 @@ typedef int (*init_fn_t)(void);
 /* late application initialization (backgroud application etc ...) */
 #define INIT_LATE_APP_EXPORT(fn)        INIT_EXPORT(fn, "7")
 
+/*
+ * Macro: INIT_APP_LEVEL_EXPORT
+ * Purpose: Registers an application initialization function with a specific priority level
+ *          in the RT-Thread kernel's initialization table. The priority level is formatted
+ *          as "6.<lev>", where "lev" is the fractional part of the priority.
+ * Parameters:
+ *   - fn: The name of the initialization function (function pointer).
+ *   - lev: The fractional part of the priority level (integer), used to generate the full
+ *          priority string "6.<lev>".
+ * Description:
+ *   - This macro concatenates the string "6." with the provided level (`lev`) to form a
+ *     complete priority identifier such as "6.1", "6.2", etc.
+ *   - It then calls the [INIT_EXPORT] macro to register the function into the kernel's
+ *     initialization flow.
+ * Example:
+ *   INIT_APP_LEVEL_EXPORT(my_app_init, 1);
+ *   // Equivalent to: INIT_EXPORT(my_app_init, "6.1");
+ */
+#define INIT_APP_LEVEL_EXPORT(fn, lev)  INIT_EXPORT(fn, "6."#lev)
+
 #if !defined(RT_USING_FINSH)
 /* define these to empty, even if not include finsh.h file */
 #define FINSH_FUNCTION_EXPORT(name, desc)

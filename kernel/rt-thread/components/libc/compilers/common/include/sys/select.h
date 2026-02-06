@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 #ifndef  FD_SETSIZE
-#define  FD_SETSIZE  32
+#define  FD_SETSIZE  64
 #endif
 
 #ifdef SAL_USING_POSIX

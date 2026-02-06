@@ -247,7 +247,7 @@ extern void player_demo_stop(void);
 extern void copy(const char *src, const char *dst);
 #endif // end of #ifdef HID_RECV_VIDEO_FILE
 
-void usbd_event_handler(uint8_t event)
+static void usbd_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -262,7 +262,7 @@ void usbd_event_handler(uint8_t event)
             break;
         case USBD_EVENT_CONFIGURED:
             /* setup first out ep read transfer */
-            usbd_ep_start_read(HIDRAW_OUT_EP, read_buffer, HIDRAW_OUT_EP_SIZE);
+            usbd_ep_start_read(0, HIDRAW_OUT_EP, read_buffer, HIDRAW_OUT_EP_SIZE);
             break;
         case USBD_EVENT_SET_REMOTE_WAKEUP:
             break;
@@ -470,17 +470,17 @@ static void dump_to_buf(uint8_t *data, uint32_t len)
     }
 }
 
-static void usbd_hid_custom_in_callback(uint8_t ep, uint32_t nbytes)
+static void usbd_hid_custom_in_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     custom_state = HID_STATE_IDLE;
 }
 
-static void usbd_hid_custom_out_callback(uint8_t ep, uint32_t nbytes)
+static void usbd_hid_custom_out_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     if (nbytes)
         dump_to_buf(read_buffer, nbytes);
 
-    usbd_ep_start_read(HIDRAW_OUT_EP, read_buffer, HIDRAW_OUT_EP_SIZE);
+    usbd_ep_start_read(0, HIDRAW_OUT_EP, read_buffer, HIDRAW_OUT_EP_SIZE);
 }
 
 static struct usbd_endpoint custom_in_ep = {
@@ -504,12 +504,12 @@ struct usbd_interface intf0;
 
 void hid_custom_init(void)
 {
-    usbd_desc_register(hid_descriptor);
-    usbd_add_interface(usbd_hid_init_intf(&intf0, hid_custom_report_desc, HID_CUSTOM_REPORT_DESC_SIZE));
-    usbd_add_endpoint(&custom_in_ep);
-    usbd_add_endpoint(&custom_out_ep);
+    usbd_desc_register(0, hid_descriptor);
+    usbd_add_interface(0, usbd_hid_init_intf(0, &intf0, hid_custom_report_desc, HID_CUSTOM_REPORT_DESC_SIZE));
+    usbd_add_endpoint(0, &custom_in_ep);
+    usbd_add_endpoint(0, &custom_out_ep);
 
-    usbd_initialize();
+    usbd_initialize(0, USB_DEV_BASE, usbd_event_handler);
 }
 
 #if defined(KERNEL_RTTHREAD)
@@ -791,7 +791,7 @@ static int test_usbd_hid_keyboard(int argc, char **argv)
     uint8_t buf[8] = {0x00, 0x00, HID_KBD_USAGE_A, 0x00, 0x01, 0x03, 0x05, 0x07};
 
     memcpy(send_buffer, buf, 8);
-    int ret = usbd_ep_start_write(HIDRAW_IN_EP, send_buffer, 8);
+    int ret = usbd_ep_start_write(0, HIDRAW_IN_EP, send_buffer, 8);
     if (ret < 0) {
         pr_err("Failed to write IN_EP, return %d\n", ret);
         return -1;

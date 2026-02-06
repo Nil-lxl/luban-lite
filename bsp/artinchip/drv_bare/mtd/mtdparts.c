@@ -31,6 +31,16 @@ static struct nftl_volume *nftl_new_volume(char *s)
         p++;
     } else {
         vol->size = strtoull(p, &p, 0);
+        if ((*p == 'k') || (*p == 'K')) {
+            vol->size *= 1024;
+            p++;
+        } else if ((*p == 'm') || (*p == 'M')) {
+            vol->size *= (1024 * 1024);
+            p++;
+        } else if ((*p == 'g') || (*p == 'G')) {
+            vol->size *= (1024 * 1024 * 1024);
+            p++;
+        }
     }
     if (*p == '@') {
         p++;

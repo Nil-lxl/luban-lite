@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -161,7 +161,7 @@ static int fat_direct_spinand_write_data(char *fpath, struct mtd_dev *mtd,
                 }
                 mtd_erase(mtd, doffset, mtd->erasesize);
             }
-            ret = mtd_write(mtd, doffset, p, dolen);
+            ret = mtd_write_oob(mtd, doffset, p, dolen, NULL, 0);
             writecnt += dolen;
             printf("\r\t wrote count 0x%lx", writecnt);
             if (ret) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -19,7 +19,11 @@
 #ifdef AIC_GPAI_USING_RTP_CHAN
 #define AIC_RTP_DEFAULT_MODE    RTP_MODE_MANUAL
 #else
+#ifdef AIC_ADCIM_DM_DRV
+#define AIC_RTP_DEFAULT_MODE    RTP_MODE_AUTO4
+#else
 #define AIC_RTP_DEFAULT_MODE    RTP_MODE_AUTO2
+#endif
 #endif
 
 static struct rt_touch_device g_rt_rtp_dev = {0};
@@ -86,7 +90,7 @@ static rt_size_t drv_rtp_read_point(struct rt_touch_device *touch, void *buf,
 
     ret = hal_rtp_ebuf_read(&g_rtp_dev.ebuf, &e);
     if (ret < 0) {
-        rt_kprintf("Failed to get touch data");
+        pr_err("Failed to get touch data\n");
         return 0;
     }
 

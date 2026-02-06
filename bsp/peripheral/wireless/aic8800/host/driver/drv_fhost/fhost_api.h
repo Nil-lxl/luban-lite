@@ -41,7 +41,6 @@
  */
 #include "mac.h"
 #include "rwnx_defs.h"
-#include "rwnx_rx.h"
 
 /**
  * FHOST configuration item description
@@ -641,6 +640,7 @@ struct fhost_cntrl_link;
  ****************************************************************************************
  */
 void fhost_init(struct rwnx_hw *rwnx_hw);
+void fhost_update(struct rwnx_hw *rwnx_hw);
 
 void fhost_deinit(struct rwnx_hw *rwnx_hw);
 

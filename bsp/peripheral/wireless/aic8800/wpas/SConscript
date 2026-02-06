@@ -101,7 +101,13 @@ src += Glob('wpa_supplicant/sme.c')
 
 #LOCAL_CFLAGS = ' -std=c99 -w'
 LOCAL_CFLAGS = ' -std=c99'
-LOCAL_CFLAGS += ' -w'
+
+if GetDepend(['PRJ_RV_TOOLCHAIN_V2_6_1']):
+    LOCAL_CFLAGS += (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types')
+elif GetDepend(['PRJ_RV_TOOLCHAIN_V3_2_0']):
+    LOCAL_CFLAGS += (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch')
+else:
+    LOCAL_CFLAGS += (' -w')
 
 group = DefineGroup('aic8800_wpas', src, depend = ['AIC_WLAN_AIC8800D40L'], CPPPATH = include_path, LOCAL_CFLAGS=LOCAL_CFLAGS)
 

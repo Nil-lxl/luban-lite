@@ -470,9 +470,9 @@ rt_spi_flash_device_t rt_sfud_flash_probe_ex(const char *spi_flash_dev_name, con
                 goto error;
             }
             /* when initialize success, then copy SFUD flash device's geometry to RT-Thread SPI flash device */
-            rtt_dev->geometry.sector_count = sfud_dev->chip.capacity / sfud_dev->chip.erase_gran;
-            rtt_dev->geometry.bytes_per_sector = sfud_dev->chip.erase_gran;
-            rtt_dev->geometry.block_size = sfud_dev->chip.erase_gran;
+            rtt_dev->geometry.sector_count = sfud_dev->chip.capacity / sfud_dev->chip.eraser[0].size;
+            rtt_dev->geometry.bytes_per_sector = sfud_dev->chip.eraser[0].size;
+            rtt_dev->geometry.block_size = sfud_dev->chip.eraser[0].size;
 #ifdef SFUD_USING_QSPI
             /* reconfigure the QSPI bus for medium size */
             if(rtt_dev->rt_spi_device->bus->mode &RT_SPI_BUS_MODE_QSPI) {

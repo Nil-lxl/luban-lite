@@ -7,11 +7,9 @@
  * Desc: aic audio mix
  */
 
-#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <pthread.h>
 
 #include <rtthread.h>
@@ -28,17 +26,21 @@
 #include "aic_core.h"
 #include "aic_osal.h"
 
-#define MIX_SUM_BUF_SIZE (2048)      // 2048 samples
-#define MIX_RESAMPLE_BUF_SIZE (8192)
+#define MIX_SUM_BUF_SIZE (4096)      // 2048 samples
+#define MIX_RESAMPLE_BUF_SIZE (16384)
 
 struct aic_pcm_mix_manager *g_mix_manager = NULL;
 
-static inline unsigned long buf_readable(const struct aic_pcm_mix *mix)
+static inline unsigned long buf_readable(struct aic_pcm_mix *mix)
 {
-    return (mix->wt - mix->rd) % mix->size;
+    if (mix->wt >= mix->rd) {
+        return mix->wt - mix->rd;
+    } else {
+        return mix->size - mix->rd + mix->wt;
+    }
 }
 
-static inline unsigned long buf_writable(const struct aic_pcm_mix *mix)
+static inline unsigned long buf_writable(struct aic_pcm_mix *mix)
 {
     return mix->size - buf_readable(mix);
 }
@@ -137,7 +139,7 @@ int aic_pcm_mix_manager_destroy(struct aic_pcm_mix_manager *mix_manager)
         return -1;
     }
 
-    if ((NULL != mix_manager->mix) || (NULL == g_mix_manager)) {
+    if ((NULL != mix_manager->mix) || (0 != mix_manager->mix_cnt)) {
         return -1;
     }
 
@@ -158,8 +160,10 @@ int aic_pcm_mix_manager_destroy(struct aic_pcm_mix_manager *mix_manager)
         mix_manager->resample_buf = NULL;
     }
 
+    if (mix_manager == g_mix_manager) {
+        g_mix_manager = NULL;
+    }
     free(mix_manager);
-    g_mix_manager = NULL;
 
     return 0;
 }
@@ -288,6 +292,7 @@ struct aic_pcm_mix *aic_pcm_mix_create(struct aic_pcm_mix_manager *mix_manager, 
     mix->rd = 0;
     mix->wt = 0;
     mix->id = id;
+    mix->volume = 100;
 
     insert_mix_to_manager(mix_manager, mix);
 
@@ -296,23 +301,26 @@ struct aic_pcm_mix *aic_pcm_mix_create(struct aic_pcm_mix_manager *mix_manager, 
 
 int aic_pcm_mix_destroy(struct aic_pcm_mix *mix)
 {
+    struct aic_pcm_mix_manager *manager = NULL;
+
     if (NULL == mix) {
         loge("<%s:%d>invalid parameter!\n", __func__, __LINE__);
         return -1;
     }
 
-    pop_mix_from_manager(mix->mix_manager, mix);
+    manager = mix->mix_manager;
 
-    if (0 == mix->mix_manager->mix_cnt) {
-        aic_pcm_mix_manager_destroy(mix->mix_manager);
-    }
+    pop_mix_from_manager(manager, mix);
 
     if (mix->data) {
         free(mix->data);
         mix->data = NULL;
     }
-
     free(mix);
+
+    if (0 == manager->mix_cnt) {
+        aic_pcm_mix_manager_destroy(manager);
+    }
 
     return 0;
 }
@@ -435,45 +443,66 @@ int aic_pcm_mix_write_data(struct aic_pcm_mix *mix, char *data, int size)
         data_sample = size / bps;
     }
 
-    int n = 0;
-    while (1) {
-        avail = buf_writable(mix);
-        if (data_sample <= avail) {
-            break;
+    do {
+        /* wait for space */
+        int n = 0;
+        while (1) {
+            avail = buf_writable(mix);
+            if (avail > 0) {
+                break;
+            } else {
+                usleep(10);
+                if (++n >= 300) {
+                    loge("no spce to write, data size:%d space:%ld\n", size, avail * bps);
+                    return -1;
+                }
+            }
         }
-        aicos_msleep(10);
-        if (++n >= 10) {
-            loge("no spce to write, drop data, size:%d\n", size);
-            return -1;
+
+        if (avail > data_sample) {
+            avail = data_sample;
         }
-    }
 
-    unsigned long wt = mix->wt % mix->size;
-    unsigned long first = mix->size - wt;
-    if (first > data_sample) {
-        first = data_sample;
-    }
-    memcpy(mix->data + wt, data, first * bps);
+        unsigned long wt = mix->wt % mix->size;
+        unsigned long first = mix->size - wt;
+        if (first > avail) {
+            first = avail;
+        }
+        memcpy(mix->data + wt, data, first * bps);
 
-    if (data_sample > first) {
-        data += first * bps;
-        memcpy(mix->data, data, (data_sample - first) * bps);
-    }
+        if (avail > first) {
+            memcpy(mix->data, data + first * bps, (avail - first) * bps);
+        }
 
-    mix->wt += data_sample;
+        mix->wt += avail;
+        data_sample -= avail;
+        data += avail * bps;
+    } while (data_sample > 0);
 
     return size;
 }
 
-static int adjust_volume(int32_t *data, int samples, int divisor)
+static int adjust_volume(struct aic_pcm_mix *mix, int16_t *data, int samples)
 {
-    if ((NULL == data) || (samples <= 0) || (divisor <= 0)) {
-        loge("invalid parameter [%p / %d / %d]\n", data, samples, divisor);
+    int s;
+
+    if ((NULL == mix) || (NULL == data) || (samples <= 0)) {
+        loge("invalid parameter [%p / %p / %d]\n", mix, data, samples);
         return -1;
     }
 
+    if (0 == mix->volume) {
+        memset(data, 0, samples * mix->byte_per_sample);
+        return 0;
+    } else if (100 == mix->volume) {
+        return 0;
+    }
+
     for (int i = 0; i < samples; i++) {
-        data[i] /= divisor;
+        s = data[i];
+        s *= mix->volume;
+        s /= 100;
+        data[i] = (int16_t)s;
     }
 
     return 0;
@@ -519,23 +548,19 @@ int do_mix(struct aic_pcm_mix_manager *mix_manager, int samples)
     do {
         avail = buf_readable(mix);
         if (avail >= samples) {
-
-            // set main track volume 1/2
-            if (1 == mix->id) {
-                adjust_volume(mix_manager->sum_buf, samples, 2);
-            }
-
             rd = mix->rd % mix->size;
 
             unsigned long first = mix->size - rd;
             if (first > samples) {
                 first = samples;
             }
-            generic_mix_areas_16_native(samples, mix_manager->mix_buf, mix->data + rd,
+            adjust_volume(mix, mix->data + rd, first);
+            generic_mix_areas_16_native(first, mix_manager->mix_buf, mix->data + rd,
                         mix_manager->sum_buf, src_step, dst_step, sum_step);
 
             if (samples > first) {
-                generic_mix_areas_16_native(samples, mix_manager->mix_buf + first, mix->data,
+                adjust_volume(mix, mix->data, samples - first);
+                generic_mix_areas_16_native(samples - first, mix_manager->mix_buf + first, mix->data,
                         mix_manager->sum_buf + first, src_step, dst_step, sum_step);
             }
 
@@ -559,4 +584,22 @@ unsigned long get_mix_reamin_data(struct aic_pcm_mix *mix)
     }
 
     return buf_readable(mix);
+}
+
+int aic_set_track_volume(struct aic_pcm_mix *mix, int volume)
+{
+    if (NULL == mix) {
+        loge("invalid parameter!\n");
+        return -1;
+    }
+
+    if (volume < 0) {
+        volume = 0;
+    } else if (volume > 100) {
+        volume = 100;
+    }
+
+    mix->volume = volume;
+
+    return 0;
 }

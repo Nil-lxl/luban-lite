@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -114,6 +114,10 @@ int mtd_erase(struct mtd_dev *mtd, u32 offset, u32 len)
     return -1;
 }
 
+/*
+ * Since NAND Flash returns errors every time a page is written, this function cannot accurately
+ * return the true error page number. Therefore, we should use mtd_write_oob() to write a page.
+ */
 int mtd_write(struct mtd_dev *mtd, u32 offset, uint8_t *data, u32 len)
 {
     if (mtd && mtd->ops.write)

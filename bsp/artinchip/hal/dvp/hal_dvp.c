@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -126,6 +126,7 @@ void hal_dvp_set_cfg(struct aic_dvp_config *cfg)
     val = DVP_CTL_IN_FMT(cfg->input)
             | DVP_CTL_IN_SEQ(cfg->input_seq)
             | DVP_CTL_OUT_FMT(cfg->output)
+            | DVP_CTL_VIDEO_CONTINUE_EN
             | DVP_CTL_EN;
     if (!cfg->interlaced)
         val |= DVP_CTL_DROP_FRAME_EN;

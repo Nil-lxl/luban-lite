@@ -124,10 +124,72 @@ endif
 
 endif
 
-if AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0 || AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1
+menuconfig AIC_USING_FS_IMAGE_2
+    bool "Using File System Image 2"
+    default n
+
+if AIC_USING_FS_IMAGE_2
+choice
+    prompt "Select File System Type"
+    default AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_2
+    config AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_2
+        bool "FATFS"
+    config AIC_USING_FS_IMAGE_TYPE_UFFS_FOR_2
+        bool "UFFS"
+    config AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_2
+        bool "LittleFS"
+endchoice
+
+config AIC_FS_IMAGE_DIR_2
+    string "Data Directory"
+    default "fs_user"
+
+config AIC_FS_IMAGE_NAME_2
+    string "Image Name"
+    default "user"
+
+if AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_2
+config AIC_FATFS_AUTO_SIZE_FOR_2
+    bool "auto calcuate image size"
+    default y
+config AIC_FATFS_SECTOR_SIZE_FOR_2
+    int "sector size"
+    depends on !AIC_FATFS_AUTO_SIZE_FOR_2
+    default 512
+
+config AIC_FATFS_SECTOR_COUNT_FOR_2
+    int "sector count"
+    depends on !AIC_FATFS_AUTO_SIZE_FOR_2
+    default 2048
+
+config AIC_FATFS_DEFAULT_VOLAB_2
+    bool "using default volume label"
+    default y
+config AIC_FATFS_VOLAB_2
+    string "volume label"
+    depends on !AIC_FATFS_DEFAULT_VOLAB_2
+    default "aic-disk"
+endif
+
+# Parameters for LittleFS
+if AIC_USING_FS_IMAGE_TYPE_LITTLEFS_FOR_2
+config AIC_LITTLEFS_BLOCK_SIZE_FOR_2
+    int "Erase block size"
+    default 4096
+config AIC_LITTLEFS_PAGE_SIZE_FOR_2
+    int "Page size"
+    default 256
+endif
+
+endif
+
+if AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0 || AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1 || AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_2
     config AIC_USING_FS_IMAGE_TYPE_FATFS_CLUSTER_SIZE
         int "size of cluster in fatfs image"
         default 8
+    config AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+        bool "enable directory entry cache for read only fatfs"
+        default y
 endif
 
 config GENERATE_BURNER_IMAGE
@@ -201,7 +263,7 @@ choice
 
 config AIC_LVGL_UI_BUILDER
     select LPKG_USING_FREETYPE
-    bool "LVGL Support AiUIBuider"
+    bool "LVGL Support UIBuider"
 
 config AIC_LVGL_APP_UI_DEMO
     bool "LVGL demo of app ui"
@@ -254,11 +316,6 @@ config AIC_LVGL_DEMO_HUB_DEMO
     help
     "At present, only 1024x600, 480x272 resoulution in supported, and different resources are used for different resolutions"
 
-config AIC_LVGL_VSCODE_DEMO
-    bool "LVGL vscode emultarot import demo"
-    help
-    "assets in packages/artinchip/lvgl-ui/aic_demo/vscode_simulator/hello_demo/lvgl_src"
-
 config AIC_LLM_DEMO
     bool "LVGL aic llm demo"
 
@@ -276,9 +333,6 @@ config AIC_LVGL_ELEVATOR_DEMO
 
 config AIC_LVGL_SLIDE_DEMO
     bool "LVGL sliding demo"
-
-config AIC_LVGL_SIMPLE_PLAYER_DEMO
-    bool "LVGL simple player demo"
 
 config AIC_LVGL_INPUT_TEST_DEMO
     bool "LVGL input test demo"
@@ -307,8 +361,8 @@ config AIC_LVGL_USB_OSD_DEMO
 config AIC_LVGL_IMAGE_DEMO
     bool "LVGL image demo"
 
-config AIC_LVGL_SPI_EXTEND_DEMO
-    bool "LVGL spi extend demo"
+config AIC_LVGL_DOUBLE_DISP_DEMO
+    bool "LVGL double display demo"
     select AIC_LVGL_SPI_WIDGET
 
 config AIC_LVGL_LANG_DEMO
@@ -366,6 +420,30 @@ config LV_ROTATE_DEGREE
     default 180 if LV_ROTATE_180
     default 270 if LV_ROTATE_270
 
+choice
+    prompt "LVGL rotation degree of second display"
+    default LV_SECOND_ROTATE_0
+    depends on LPKG_USING_LVGL
+    depends on LV_DISPLAY_ROTATE_EN
+    depends on AIC_LVGL_DOUBLE_DISP_DEMO
+
+config LV_SECOND_ROTATE_0
+    bool "0"
+config LV_SECOND_ROTATE_90
+    bool "90"
+config LV_SECOND_ROTATE_180
+    bool "180"
+config LV_SECOND_ROTATE_270
+    bool "270"
+endchoice
+
+config LV_SECOND_ROTATE_DEGREE
+    int
+    default 0 if LV_SECOND_ROTATE_0
+    default 90 if LV_SECOND_ROTATE_90
+    default 180 if LV_SECOND_ROTATE_180
+    default 270 if LV_SECOND_ROTATE_270
+
 config MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE
     bool "Limit the output size of MPP JPEG decoder"
     default n
@@ -394,7 +472,7 @@ config LV_MEM_HEAP_ADAPTIVE_SUPPORT
     depends on LVGL_V_9
 
 config LV_USE_CMA_HEAP_LOW_LIMIT
-    int "LVGL use cmp heap low limit(Bytes)"
+    int "LVGL use cma heap low limit(Bytes)"
     default 50000
     depends on LV_MEM_HEAP_ADAPTIVE_SUPPORT
 
@@ -403,7 +481,13 @@ config LV_USE_SPI_REPLACE_MIPI_DBI
     default n
     depends on AIC_DISP_MIPI_DBI
     depends on LVGL_V_9
-    depends on !AIC_LVGL_SPI_EXTEND_DEMO
+    depends on !AIC_LVGL_DOUBLE_DISP_DEMO
+    select AIC_LVGL_SPI_WIDGET
+
+config LV_SPI_HARDWARE
+    bool "LVGL send data through hardware"
+    default n
+    depends on LVGL_V_9
     select AIC_LVGL_SPI_WIDGET
 
 # Parameters for LVGL meter demo
@@ -519,20 +603,47 @@ config AIC_LVGL_SPI_WIDGET
     default n
 
 if AIC_LVGL_SPI_WIDGET
+
+    config LV_SPI
+        bool
+        default n
+
+    config LV_QSPI
+        bool
+        default n
+
     choice
         prompt "extend spi controller driver"
-            default LV_SPI_ST77916
+            default LV_SPI_ST77912
 
         config LV_SPI_ST77912
             bool "ST77912"
+            select LV_SPI
         config LV_SPI_ST77916
             bool "ST77916"
         config LV_SPI_ST7789
             bool "ST7789"
+            select LV_SPI
         config LV_SPI_GC9D01N
             bool "GC9D01N"
+            select LV_SPI
     endchoice
-endif # AIC_LVGL_SPI_EXTEND_DEMO
+
+    if LV_SPI_ST77916
+        choice
+            prompt "SPI type for ST77916"
+            default LV_ST77916_QSPI_CONTROL
+
+            config LV_ST77916_SPI_CONTROL
+                bool "SPI Control"
+                select LV_SPI
+
+            config LV_ST77916_QSPI_CONTROL
+                bool "QSPI Control"
+                select LV_QSPI
+        endchoice
+    endif
+endif # AIC_LVGL_DOUBLE_DISP_DEMO
 
 endif # AIC_LVGL_DEMO
 

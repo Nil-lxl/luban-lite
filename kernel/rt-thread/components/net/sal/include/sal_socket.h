@@ -194,6 +194,16 @@ struct sockaddr_storage
 #endif /* NETDEV_IPV6 */
 };
 
+struct msghdr
+{
+    void            *msg_name;
+    socklen_t        msg_namelen;
+    struct iovec    *msg_iov;
+    int              msg_iovlen;
+    void            *msg_control;
+    socklen_t        msg_controllen;
+    int              msg_flags;
+};
 int sal_accept(int socket, struct sockaddr *addr, socklen_t *addrlen);
 int sal_bind(int socket, const struct sockaddr *name, socklen_t namelen);
 int sal_shutdown(int socket, int how);
@@ -203,6 +213,8 @@ int sal_getsockopt (int socket, int level, int optname, void *optval, socklen_t 
 int sal_setsockopt (int socket, int level, int optname, const void *optval, socklen_t optlen);
 int sal_connect(int socket, const struct sockaddr *name, socklen_t namelen);
 int sal_listen(int socket, int backlog);
+int sal_sendmsg(int socket, const struct msghdr *message, int flags);
+int sal_recvmsg(int socket, struct msghdr *message, int flags);
 int sal_recvfrom(int socket, void *mem, size_t len, int flags,
       struct sockaddr *from, socklen_t *fromlen);
 int sal_sendto(int socket, const void *dataptr, size_t size, int flags,

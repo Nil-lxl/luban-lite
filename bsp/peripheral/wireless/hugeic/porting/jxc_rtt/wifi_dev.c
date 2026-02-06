@@ -8,7 +8,7 @@
 #include "netif/ethernetif.h"
 #include "os_porting.h"
 #include "aic_core.h"
-#include "../../hgic.h"
+#include "hgic.h"
 #include "umac_config.h"
 #include <string.h>
 
@@ -394,7 +394,7 @@ void hgic_smac_init_cb(void *args)
     hgic_dbg("hgics init done!\r\n");
 }
 
-void hgic_smac_event_cb(char * ifname, int event, int param1, int param2)
+void hgic_smac_event_cb(char * ifname, int event, long param1, long param2)
 {
     hgic_dbg("event id:%d\n", event);
     switch (event) {

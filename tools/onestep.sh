@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2023-2025 ArtInChip Technology Co., Ltd
+# Copyright (C) 2023-2026 ArtInChip Technology Co., Ltd
 # Dehuang Wu <dehuang.wu@artinchip.com>
 
 # Notes:
@@ -110,6 +110,8 @@ function _get_solution_list()
 	SOLUTION_LIST_BOOT=`echo "${SOLUTION_LIST_ALL}" | grep bootloader`
 	SOLUTION_LIST=`echo "${SOLUTION_LIST_ALL}" | grep -v "bootloader"`
 	SOLUTION_LIST_WITH_BOOT=`echo -e "${SOLUTION_LIST_BOOT}\n""${SOLUTION_LIST}"`
+
+	unset SOLUTION_TOTAL
 }
 
 cd_root()
@@ -127,6 +129,28 @@ cd_back()
 	if [ "$GO_BACK" = "yes" ]; then
 		cd - > /dev/null || exit 110
 	fi
+}
+
+function checkout_binary()
+{
+	which git 2>&1 > /dev/null
+	if [ $? -ne 0 ]; then
+		return
+	fi
+
+	git status 2>&1 > /dev/null
+	if [ $? -ne 0 ]; then
+		return
+	fi
+
+	git status | grep "\.a" | while read bin
+	do
+		bin=$(echo $bin | awk '{print $2}')
+		if [ ! -z $bin ] && [ -f $bin ]; then
+			echo "Checkout $bin"
+			git checkout $bin
+		fi
+	done
 }
 
 function lunch()
@@ -322,7 +346,11 @@ build_one_solution()
 	LOG_FILE=$LOG_DIR/$SOLUTION_NAME".log"
 	echo
 	echo --------------------------------------------------------------
-	echo Build $SOLUTION_NAME
+	if [ -z $SOLUTION_TOTAL ]; then
+		echo Build $SOLUTION_NAME
+	else
+		echo ${SOLUTION_CNT}/${SOLUTION_TOTAL}. Build $SOLUTION_NAME
+	fi
 	echo --------------------------------------------------------------
 
 	scons --apply-def=$DEFCONFIG_NAME -C $SDK_PRJ_TOP_DIR
@@ -421,6 +449,8 @@ function _make_boot()
 		return
 	fi
 
+	checkout_binary
+
 	CUR_DEF=$(_get_cur_def)
 	boot_filter=`echo ${CUR_DEF} | grep baremetal_bootloader`
 	if [ -n "$boot_filter" ]; then
@@ -492,6 +522,8 @@ function _make_boot_and_app()
 		echo "Not lunch project yet"
 		return
 	fi
+
+	checkout_binary
 
 	CUR_DEF=$(_get_cur_def)
 	boot_filter=`echo $CUR_DEF | grep baremetal_bootloader`
@@ -589,8 +621,12 @@ function build_check_all()
 
 	_get_solution_list > /dev/null
 
+	SOLUTION_TOTAL=$(echo $SOLUTION_LIST_WITH_BOOT | grep -o defconfig | wc -l)
+	SOLUTION_CNT=0
 	for app in $SOLUTION_LIST_WITH_BOOT
 	do
+		SOLUTION_CNT=$(expr $SOLUTION_CNT + 1)
+		checkout_binary
 		build_one_solution $app $1
 	done
 

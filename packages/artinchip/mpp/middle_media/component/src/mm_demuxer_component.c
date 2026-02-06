@@ -75,10 +75,12 @@ typedef struct mm_demuxer_data {
     s32 need_peek;
     s32 skip_track;
     s32 need_check_uri;
+    MM_BOOL dec_delay_exit;
+    MM_BOOL debug_en;
 } mm_demuxer_data;
 
 static void *mm_demuxer_component_thread(void *p_thread_data);
-
+static void mm_demuxer_show_debug_info(mm_demuxer_data *p_demuxer_data);
 static s32 mm_demuxer_send_command(mm_handle h_component, MM_COMMAND_TYPE cmd,
                                    u32 param, void *p_cmd_data)
 {
@@ -369,6 +371,7 @@ static s32 mm_demuxer_index_param_contenturi(mm_demuxer_data *p_demuxer_data,
     p_demuxer_data->get_video_pkt_ok_num = 0;
     p_demuxer_data->put_video_pkt_ok_num = 0;
     p_demuxer_data->put_video_pkt_fail_num = 0;
+    p_demuxer_data->dec_delay_exit = MM_FALSE;
 
     if (b_audio_find || b_video_find) {
         mm_demuxer_event_notify(p_demuxer_data, MM_EVENT_PORT_FORMAT_DETECTED,
@@ -498,6 +501,12 @@ static s32 mm_demuxer_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
             }
             break;
 
+
+        case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
+            p_demuxer_data->debug_en = ((mm_param_u32 *)p_param)->u32;
+            mm_demuxer_show_debug_info(p_demuxer_data);
+            break;
+
         default:
             break;
     }
@@ -536,6 +545,7 @@ static s32 mm_demuxer_set_config(mm_handle h_component, MM_INDEX_TYPE index,
             mm_time_config_timestamp *timestamp =
                 (mm_time_config_timestamp *)p_config;
             logd("timestamp.timestamp:" FMT_d64 "\n", timestamp->timestamp);
+            p_demuxer_data->dec_delay_exit = MM_FALSE;
             //1  seek
             ret =
                 aic_parser_seek(p_demuxer_data->p_parser, timestamp->timestamp);
@@ -1002,7 +1012,7 @@ static int mm_demuxer_component_uri_is_exist(mm_demuxer_data *p_demuxer_data)
 {
     bool is_exist = true;
 
-    if (!p_demuxer_data->p_contenturi || !p_demuxer_data->p_contenturi->content_uri)
+    if (!p_demuxer_data->p_contenturi || !p_demuxer_data->p_contenturi->content_uri[0])
         is_exist = false;
 
     if (is_exist == true && p_demuxer_data->need_check_uri) {
@@ -1130,8 +1140,7 @@ mm_demuxer_component_process_video_pkt(mm_demuxer_data *p_demuxer_data,
     pkt.pts = p_pkt->pts;
     ret = mpp_decoder_put_packet(p_decoder, &pkt);
     if (pkt.flag & PACKET_FLAG_EOS) {
-        mm_set_parameter(h_vdec_comp, MM_INDEX_PARAM_VIDEO_STREAM_END_FLAG,
-                         NULL);
+        mm_set_parameter(h_vdec_comp, MM_INDEX_PARAM_VIDEO_STREAM_END_FLAG, NULL);
         logi("strem end flag!!!\n");
     }
     if (ret != 0) {
@@ -1245,6 +1254,10 @@ mm_demuxer_component_process_audio_pkt(mm_demuxer_data *p_demuxer_data,
     pkt.flag = p_pkt->flag;
     pkt.pts = p_pkt->pts;
     ret = aic_audio_decoder_put_packet(p_decoder, &pkt);
+    if (pkt.flag & PACKET_FLAG_EOS) {
+        mm_set_parameter(h_adec_comp, MM_INDEX_PARAM_AUDIO_STREAM_END_FLAG, NULL);
+        logi("strem end flag!!!\n");
+    }
     if (ret != 0) {
         p_demuxer_data->put_audio_pkt_fail_num++;
     } else {
@@ -1254,22 +1267,90 @@ mm_demuxer_component_process_audio_pkt(mm_demuxer_data *p_demuxer_data,
     return ret;
 }
 
-void mm_demuxer_pkt_count_print(mm_demuxer_data *p_demuxer_data)
+static void mm_demuxer_show_debug_info(mm_demuxer_data *p_demuxer_data)
 {
-    logi("[%s:%d]video_pkt_num:%u,get_video_pkt_ok_num:%u,"
-           "put_video_pkt_ok_num:%u,put_video_pkt_fail_num:%u,"
-           "audio_pkt_num:%u,get_audio_pkt_ok_num:%u,"
-           "put_audio_pkt_ok_num:%u,put_audio_pkt_fail_num:%u\n",
-           __FUNCTION__,__LINE__,
+    if (!p_demuxer_data->debug_en)
+        return;
+
+    printf("**************************Demuxer comp info***************************\n");
+    printf("video:  pkt_num    get_ok    put_ok    put_fail\n");
+    printf("\t%7u    %6u    %6u   %8u\n",
            p_demuxer_data->video_pkt_num,
            p_demuxer_data->get_video_pkt_ok_num,
            p_demuxer_data->put_video_pkt_ok_num,
-           p_demuxer_data->put_video_pkt_fail_num,
-           p_demuxer_data->audio_pkt_num,
-           p_demuxer_data->get_audio_pkt_ok_num,
-           p_demuxer_data->put_audio_pkt_ok_num,
-           p_demuxer_data->put_audio_pkt_fail_num);
+           p_demuxer_data->put_video_pkt_fail_num);
+    printf("audio:  pkt_num    get_ok    put_ok    put_fail\n");
+    printf("\t%7u    %6u    %6u   %8u\n",
+            p_demuxer_data->audio_pkt_num,
+            p_demuxer_data->get_audio_pkt_ok_num,
+            p_demuxer_data->put_audio_pkt_ok_num,
+            p_demuxer_data->put_audio_pkt_fail_num);
+    printf("\nstate: %s\n\n", mm_component_sta_to_str(p_demuxer_data->state));
 }
+
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+static s32 mm_demuxer_delay_decode_sync(mm_demuxer_data *p_demuxer_data)
+{
+    u8   has_audio = p_demuxer_data->s_media_info.has_audio;
+    u8   has_video = p_demuxer_data->s_media_info.has_video;
+    MM_BOOL delay_vdec_exit = MM_FALSE;
+    MM_BOOL delay_adec_exit = MM_FALSE;
+    s32 ret = 0;
+
+    mm_component *h_vdec_comp =
+        p_demuxer_data->out_port_bind[DEMUX_PORT_VIDEO_INDEX].p_bind_comp;
+    mm_component *h_adec_comp =
+            p_demuxer_data->out_port_bind[DEMUX_PORT_AUDIO_INDEX].p_bind_comp;
+
+    if (p_demuxer_data->dec_delay_exit == MM_TRUE)
+        return MM_ERROR_NONE;
+
+    if (h_vdec_comp) {
+        ret = mm_get_parameter(h_vdec_comp, MM_INDEX_PARAM_DELAY_DECODE_EXIT,
+                                (void *)&delay_vdec_exit);
+        if (ret != MM_ERROR_NONE) {
+            logd("get video decoder delay exit flag failed\n");
+            return MM_ERROR_NULL_POINTER;
+        }
+    }
+    if (h_adec_comp) {
+        ret = mm_get_parameter(h_adec_comp, MM_INDEX_PARAM_DELAY_DECODE_EXIT,
+                                (void *)&delay_adec_exit);
+        if (ret != MM_ERROR_NONE) {
+            logd("get audio decoder delay exit flag failed\n");
+            return MM_ERROR_NULL_POINTER;
+        }
+    }
+
+    if(has_video && has_audio) {
+        if (delay_vdec_exit || delay_adec_exit) {
+            p_demuxer_data->dec_delay_exit = MM_TRUE;
+            if (h_vdec_comp) {
+                mm_set_parameter(h_vdec_comp,
+                                MM_INDEX_PARAM_DELAY_DECODE_EXIT,
+                                &p_demuxer_data->dec_delay_exit);
+            }
+            if (h_adec_comp) {
+                mm_set_parameter(h_adec_comp,
+                                MM_INDEX_PARAM_DELAY_DECODE_EXIT,
+                                &p_demuxer_data->dec_delay_exit);
+            }
+        }
+    } else if (has_video && delay_vdec_exit) {
+        p_demuxer_data->dec_delay_exit = MM_TRUE;
+        mm_set_parameter(h_vdec_comp,
+                         MM_INDEX_PARAM_DELAY_DECODE_EXIT,
+                         &delay_vdec_exit);
+    } else if (has_audio && delay_adec_exit) {
+        p_demuxer_data->dec_delay_exit = MM_TRUE;
+        mm_set_parameter(h_adec_comp,
+                         MM_INDEX_PARAM_DELAY_DECODE_EXIT,
+                         &delay_adec_exit);
+    }
+
+    return MM_ERROR_NONE;
+}
+#endif
 
 static void *mm_demuxer_component_thread(void *p_thread_data)
 {
@@ -1347,6 +1428,10 @@ static void *mm_demuxer_component_thread(void *p_thread_data)
             goto _AIC_MSG_GET_;
         }
 
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+        /*sync delay audio decode and video decode*/
+        mm_demuxer_delay_decode_sync(p_demuxer_data);
+#endif
         /* read pkt from parser and put it to decoder*/
         if (s_pkt.type == MPP_MEDIA_TYPE_VIDEO) {
             if (p_demuxer_data->skip_track & DEMUX_SKIP_VIDEO_TRACK) {
@@ -1364,7 +1449,7 @@ static void *mm_demuxer_component_thread(void *p_thread_data)
     }
 
 _EXIT:
-    mm_demuxer_pkt_count_print(p_demuxer_data);
+    mm_demuxer_show_debug_info(p_demuxer_data);
 
     return (void *)MM_ERROR_NONE;
 }

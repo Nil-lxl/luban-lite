@@ -64,8 +64,8 @@ enum time_origin_t {
 #define AIC_OS_SUSPEND              RT_THREAD_SUSPEND
 
 //rtos timer stat
-#define	AIC_RTOS_TIMER_ACT			1
-#define	AIC_RTOS_TIMER_DACT			2
+#define AIC_RTOS_TIMER_ACT          1
+#define AIC_RTOS_TIMER_DACT         2
 /* DEFINITIONS
 ****************************************************************************************
 */
@@ -165,8 +165,13 @@ void rtos_semaphore_delete(rtos_semaphore semaphore);
 int rtos_semaphore_wait(rtos_semaphore semaphore, int timeout);
 int rtos_semaphore_signal(rtos_semaphore semaphore, bool isr);
 
-int rtos_timer_create(rtos_timer *timer,char*name);
-int rtos_timer_start(rtos_timer timer, uint32_t initialTime, uint32_t rescheduleTime, rtos_timer_fct func, void * const args);
+int rtos_timer_create(const char * const name,
+                      rtos_timer *timer,
+                      const uint32_t ms,
+                      const uint8_t periodic,
+                      void * const args,
+                      rtos_timer_fct func);
+int rtos_timer_start(rtos_timer timer, const uint32_t ms);
 int rtos_timer_get_status(rtos_timer timer, rtos_timer_status *timer_status);
 int rtos_timer_stop(rtos_timer timer);
 int rtos_timer_delete(rtos_timer timer);

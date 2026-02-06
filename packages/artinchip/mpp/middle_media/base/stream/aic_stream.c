@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -7,8 +7,7 @@
  * Desc: aic stream
  */
 
-#include <stdio.h>
-#include <unistd.h>
+#include "aic_core.h"
 #include "aic_stream.h"
 #include "aic_file_stream.h"
 

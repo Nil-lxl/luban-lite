@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <rtconfig.h>
 #include <csi_core.h>

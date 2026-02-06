@@ -27,21 +27,12 @@
 #include <unistd.h>
 #include "player_video_test.h"
 
-#ifdef PLAYER_DEMO_USE_VE_FILL_FB
-#define PLAYER_SHARE_RECEIVE_ALL_FRAME_FLAG 0x02
-#define PLAYER_DEC_SHARE_THREAD_CREATE 0x0
-#define PLAYER_DEC_SHARE_THREAD_RUN 0x1
-#define PLAYER_DEC_SHARE_THREAD_EXIT 0x2
-#define PLAYER_DEC_SHARE_THREAD_DESTROY 0x3
-
-#define PLAYER_DEC_SHARE_FB_X 100
-#define PLAYER_DEC_SHARE_FB_Y 0
-#define PLAYER_DEC_SHARE_DEC_CROP_X 100
-#define PLAYER_DEC_SHARE_DEC_CROP_Y 100
-#define PLAYER_DEC_SHARE_DEC_CROP_WIDTH 200
-#define PLAYER_DEC_SHARE_DEC_CROP_HEIGHT 200
-
-#define PLAYER_DEC_CROP_UPDATE_TIME_1S (1000 * 1000)
+#ifdef PLAYER_DEMO_VIDEO_EXT_RENDER
+#define EXT_RENDER_RECV_ALL_FRAME_FLAG  0x02
+#define VIDEO_EXT_RENDER_THREAD_CREATE  0x0
+#define VIDEO_EXT_RENDER_THREAD_RUN     0x1
+#define VIDEO_EXT_RENDER_THREAD_EXIT    0x2
+#define VIDEO_EXT_RENDER_THREAD_DESTROY 0x3
 
 struct player_fb_video_render {
     struct aicfb_layer_data layer;
@@ -49,7 +40,7 @@ struct player_fb_video_render {
     rt_device_t render_dev;
 };
 
-struct player_dec_share_data {
+struct video_ext_render_data {
     pthread_t thread_id;
     s32 thread_run_flag;
     struct mpp_frame disp_frames[2];
@@ -58,13 +49,11 @@ struct player_dec_share_data {
     u32 disp_frame_num;
     s32 flags;
     s32 init_flag;
+    bool debug_en;
 
     u32 receive_frame_num;
-    u32 show_frame_ok_num;
-    u32 show_frame_fail_num;
     u32 giveback_frame_fail_num;
     u32 giveback_frame_ok_num;
-
 };
 
 struct ext_frame_allocator {
@@ -72,30 +61,114 @@ struct ext_frame_allocator {
 };
 
 static struct aicfb_screeninfo g_screen_info = {0};
-static struct player_dec_share_data g_dec_share_data = {0};
+static struct video_ext_render_data g_video_ext_render = {0};
 static struct player_fb_video_render g_fb_video_render = {0};
 
-static void *player_vdec_share_frame_thread(void *p_thread_data);
+static void *video_ext_render_thread(void *p_thread_data);
 
 extern void player_demo_stop(void);
 
-static int alloc_frame_buffer(struct frame_allocator *p, struct mpp_frame *frame,
-                              int width, int height, enum mpp_pixel_format format)
+
+#ifndef AIC_CHIP_D21X
+static int get_fb_info(struct mpp_buf *buf, int *comp, int *mem_size)
 {
-    frame->buf.format = g_screen_info.format;
-    frame->buf.size.width = g_screen_info.width;
-    frame->buf.size.height = g_screen_info.height;
-    frame->buf.stride[0] = g_screen_info.stride;
-    frame->buf.buf_type = MPP_PHY_ADDR;
-    frame->buf.phy_addr[0] = (unsigned long)g_screen_info.framebuffer;
+    int height = buf->size.height;
+
+    mem_size[0] = height * buf->stride[0];
+    switch (buf->format) {
+    case MPP_FMT_YUV420P:
+        *comp = 3;
+        mem_size[1] = mem_size[2] = mem_size[0] >> 2;
+        break;
+    case MPP_FMT_YUV444P:
+        *comp = 3;
+        mem_size[1] = mem_size[2] = mem_size[0];
+        break;
+
+    case MPP_FMT_YUV422P:
+        *comp = 3;
+        mem_size[1] = mem_size[2] = mem_size[0] >> 1;
+        break;
+    case MPP_FMT_NV12:
+    case MPP_FMT_NV21:
+        *comp = 2;
+        mem_size[1] = mem_size[0] >> 1;
+        break;
+    case MPP_FMT_YUV400:
+    case MPP_FMT_ABGR_8888:
+    case MPP_FMT_ARGB_8888:
+    case MPP_FMT_RGBA_8888:
+    case MPP_FMT_BGRA_8888:
+    case MPP_FMT_BGR_888:
+    case MPP_FMT_RGB_888:
+    case MPP_FMT_BGR_565:
+    case MPP_FMT_RGB_565:
+        *comp = 1;
+        break;
+
+    default:
+        loge("pixel format not support %d", buf->format);
+        return -1;
+    }
 
     return 0;
 }
 
+static int alloc_frame_buffer(struct frame_allocator *p, struct mpp_frame *frame,
+                              int width, int height, enum mpp_pixel_format format)
+{
+    int mem_size[3] = {0, 0, 0};
+    int comp = 0;
+    int i;
+
+    frame->buf.size.height = height;
+    frame->buf.stride[0] = width;
+    frame->buf.format = format;
+
+    frame->buf.buf_type = MPP_PHY_ADDR;
+    frame->buf.phy_addr[0] = frame->buf.phy_addr[1] = frame->buf.phy_addr[2] = 0;
+
+    get_fb_info(&frame->buf, &comp, mem_size);
+
+    for (i = 0; i < comp; i++) {
+        frame->buf.phy_addr[i] = mpp_phy_alloc(mem_size[i]);
+
+        if (frame->buf.phy_addr[i] == 0) {
+            loge("alloc(%d) failed, need %d bytes", i, mem_size[i]);
+            goto failed;
+        }
+        logi("alloc frame buf.phy_addr[%d] = 0x%x, size = %d\n",
+            i, frame->buf.phy_addr[i], mem_size[i]);
+    }
+
+    return 0;
+
+failed:
+    for (i = 0; i < comp; i++) {
+        if (frame->buf.phy_addr[i]) {
+            mpp_phy_free(frame->buf.phy_addr[i]);
+            frame->buf.phy_addr[i] = 0;
+        }
+    }
+    return -1;
+}
+
 static int free_frame_buffer(struct frame_allocator *p, struct mpp_frame *frame)
 {
-    // we use the ui layer framebuffer, do not need to free
+    int mem_size[3] = {0, 0, 0};
+    int comp = 0;
+    int i;
 
+    get_fb_info(&frame->buf, &comp, mem_size);
+
+    for (i = 0; i < comp; i++) {
+        if (frame->buf.phy_addr[i]) {
+            logi("free frame buf.phy_addr[%d] = 0x%x\n",
+                i, frame->buf.phy_addr[i]);
+            mpp_phy_free(frame->buf.phy_addr[i]);
+            frame->buf.phy_addr[i] = 0;
+        }
+    }
     return 0;
 }
 
@@ -126,9 +199,9 @@ static struct frame_allocator *open_allocator()
 
     return &impl->base;
 }
+#endif
 
-
-static int player_vdec_share_clear_screen()
+static int clear_frame_buffer()
 {
     int ret = 0;
     struct ge_fillrect fill = {0};
@@ -147,7 +220,8 @@ static int player_vdec_share_clear_screen()
 
     //fb_phy = fb_info->framebuffer;
     fill.dst_buf.buf_type = MPP_PHY_ADDR;
-    fill.dst_buf.phy_addr[0] = (unsigned int)g_screen_info.framebuffer;
+    fill.dst_buf.phy_addr[0] =
+        (unsigned long)g_screen_info.framebuffer;
     fill.dst_buf.stride[0] = g_screen_info.stride;
     fill.dst_buf.size.width = g_screen_info.width;
     fill.dst_buf.size.height = g_screen_info.height;
@@ -179,7 +253,7 @@ _EXIT:
     return ret;
 }
 
-s32 player_vdec_share_frame_render_init()
+s32 video_ext_render_init()
 {
     struct player_fb_video_render *fb_render = &g_fb_video_render;
     fb_render->render_dev = rt_device_find("aicfb");
@@ -188,8 +262,11 @@ s32 player_vdec_share_frame_render_init()
         loge("rt_device_find aicfb failed!");
         return -1;
     }
-
+#ifdef AIC_CHIP_D21X
+    fb_render->layer.layer_id = AICFB_LAYER_TYPE_VIDEO;
+#else
     fb_render->layer.layer_id = AICFB_LAYER_TYPE_UI;
+#endif
     rt_device_control(fb_render->render_dev,
                       AICFB_GET_LAYER_CONFIG, &fb_render->layer);
 
@@ -199,12 +276,12 @@ s32 player_vdec_share_frame_render_init()
         return -1;
     }
     printf("g_screen_info:width=%d, height=%d!\n", g_screen_info.width, g_screen_info.height);
-    player_vdec_share_clear_screen();
+    clear_frame_buffer();
     return 0;
 }
 
 
-s32 player_vdec_share_frame_init(struct aic_player *player)
+s32 player_video_ext_render_init(struct aic_player *player)
 {
     if (player == NULL) {
         loge("player is NULL\n");
@@ -212,19 +289,20 @@ s32 player_vdec_share_frame_init(struct aic_player *player)
     }
 
     s32 ret = 0;
-    s32 ext_frame_num = 0;
-    struct frame_allocator *allocator = NULL;
-    struct mpp_dec_crop_info crop;
-    struct player_dec_share_data *p_dec_share_data = &g_dec_share_data;
+
+    struct video_ext_render_data *p_ext_render = &g_video_ext_render;
     pthread_attr_t attr;
 
-    memset(p_dec_share_data, 0, sizeof(struct player_dec_share_data));
-    ret = player_vdec_share_frame_render_init();
+    memset(p_ext_render, 0, sizeof(struct video_ext_render_data));
+    ret = video_ext_render_init();
     if (ret != 0) {
         loge("player dec share frame render init failed %d", ret);
         return -1;
     }
 
+#ifndef AIC_CHIP_D21X
+    struct frame_allocator *allocator = NULL;
+    s32 ext_frame_num = 1;
     /*create vdecoder frame buffer share with FB*/
     ret = aic_player_control(player, AIC_PLAYER_CMD_SET_VDEC_EXT_FRAME_NUM,
                              (void *)&ext_frame_num);
@@ -236,59 +314,56 @@ s32 player_vdec_share_frame_init(struct aic_player *player)
         loge("player set vdec ext frame alloc failed %d", ret);
         return -1;
     }
-
-    /*config initial crop info avoid display full decoder frame*/
-    crop.crop_out_x = PLAYER_DEC_SHARE_FB_X;
-    crop.crop_out_y = PLAYER_DEC_SHARE_FB_Y;
-    crop.crop_x = PLAYER_DEC_SHARE_DEC_CROP_X;
-    crop.crop_y = PLAYER_DEC_SHARE_DEC_CROP_Y;
-    crop.crop_width = PLAYER_DEC_SHARE_DEC_CROP_WIDTH;
-    crop.crop_height = PLAYER_DEC_SHARE_DEC_CROP_HEIGHT;
-    aic_player_control(player, AIC_PLAYER_CMD_SET_VDEC_SET_CROP_INFO, (void *)&crop);
-
+#endif
     /*create the thread of get decoder frame and render process*/
     pthread_attr_init(&attr);
     attr.stacksize = 4 * 1024;
     attr.schedparam.sched_priority = 25;
-    p_dec_share_data->thread_run_flag = PLAYER_DEC_SHARE_THREAD_CREATE;
-    ret = pthread_create(&p_dec_share_data->thread_id, &attr,
-                         player_vdec_share_frame_thread, (void *)player);
+    p_ext_render->thread_run_flag = VIDEO_EXT_RENDER_THREAD_CREATE;
+    ret = pthread_create(&p_ext_render->thread_id, &attr,
+                         video_ext_render_thread, (void *)player);
     if (ret != 0) {
-        loge("create thread player vdec share frame failed %d", ret);
+        loge("create thread player ext render failed %d", ret);
         return -1;
     }
-    p_dec_share_data->init_flag = 1;
+    p_ext_render->init_flag = 1;
 
     return 0;
 }
 
-s32 player_vdec_share_frame_deinit()
+s32 player_video_ext_render_deinit()
 {
-    g_dec_share_data.thread_run_flag = PLAYER_DEC_SHARE_THREAD_EXIT;
-    if (g_dec_share_data.thread_id != 0)
-        pthread_join(g_dec_share_data.thread_id, NULL);
+    g_video_ext_render.thread_run_flag = VIDEO_EXT_RENDER_THREAD_EXIT;
+    if (g_video_ext_render.thread_id != 0)
+        pthread_join(g_video_ext_render.thread_id, NULL);
 
     return 0;
 }
 
-static void player_vdec_share_print_frame_count()
+static void player_video_ext_render_print()
 {
-    struct player_dec_share_data *p_dec_share_data = &g_dec_share_data;
-    printf("[%s:%d]receive_frame_num:%u,"
-           "show_frame_ok_num:%u,"
-           "show_frame_fail_num:%u,"
-           "giveback_frame_ok_num:%u,"
-           "giveback_frame_fail_num:%u,"
-           "disp_frame_num:%u\n",
-           __FUNCTION__, __LINE__, p_dec_share_data->receive_frame_num,
-           p_dec_share_data->show_frame_ok_num,
-           p_dec_share_data->show_frame_fail_num,
-           p_dec_share_data->giveback_frame_ok_num,
-           p_dec_share_data->giveback_frame_fail_num,
-           p_dec_share_data->disp_frame_num);
+    struct video_ext_render_data *p_ext_render = &g_video_ext_render;
+
+    if (!p_ext_render->debug_en)
+        return;
+
+    printf("************************Ext Video_render info***********************\n");
+
+    printf("recv_ok    display    give_ok    give_fail\n");
+    printf("%7u    %7u    %7u    %9u\n",
+        p_ext_render->receive_frame_num,
+        p_ext_render->disp_frame_num,
+        p_ext_render->giveback_frame_ok_num,
+        p_ext_render->giveback_frame_fail_num);
 }
 
-static void player_vdec_share_render_frame_swap(s32 *a, s32 *b)
+void player_video_ext_render_debug(bool debug_en)
+{
+    g_video_ext_render.debug_en = debug_en;
+    player_video_ext_render_print();
+}
+
+static void video_ext_render_frame_swap(s32 *a, s32 *b)
 {
     s32 tmp = *a;
     *a = *b;
@@ -296,7 +371,7 @@ static void player_vdec_share_render_frame_swap(s32 *a, s32 *b)
 }
 
 
-static s32 player_vdec_share_video_render(struct mpp_frame *frame)
+static s32 video_ext_render_rend(struct mpp_frame *frame)
 {
     if (frame == NULL) {
         loge("frame_info is NULL\n");
@@ -306,8 +381,11 @@ static s32 player_vdec_share_video_render(struct mpp_frame *frame)
     struct aicfb_layer_data layer = {0};
     struct player_fb_video_render *fb_render =
         (struct player_fb_video_render *)&g_fb_video_render;
-
+#ifdef AIC_CHIP_D21X
+    layer.layer_id = AICFB_LAYER_TYPE_VIDEO;
+#else
     layer.layer_id = AICFB_LAYER_TYPE_UI;
+#endif
     layer.rect_id = 0;
     layer.enable = 1;
     layer.buf.phy_addr[0] = frame->buf.phy_addr[0];
@@ -335,40 +413,37 @@ static s32 player_vdec_share_video_render(struct mpp_frame *frame)
     return 0;
 }
 
-static void *player_vdec_share_frame_thread(void *p_thread_data)
+static void *video_ext_render_thread(void *p_thread_data)
 {
-    s32 ret = 0;
+    struct video_ext_render_data *p_ext_render = &g_video_ext_render;
     s32 cur_frame_id, last_frame_id;
-    struct player_dec_share_data *p_dec_share_data = &g_dec_share_data;
+    s32 ret = 0;
 
     struct aic_player *player = (struct aic_player *)p_thread_data;
-    p_dec_share_data->thread_run_flag = PLAYER_DEC_SHARE_THREAD_RUN;
+    p_ext_render->thread_run_flag = VIDEO_EXT_RENDER_THREAD_RUN;
 
-    while (p_dec_share_data->thread_run_flag == PLAYER_DEC_SHARE_THREAD_RUN) {
+    while (p_ext_render->thread_run_flag == VIDEO_EXT_RENDER_THREAD_RUN) {
         /*get new frame flag eos flag then exit*/
-        if (p_dec_share_data->flags & PLAYER_SHARE_RECEIVE_ALL_FRAME_FLAG) {
-            player_demo_stop();
+        if (p_ext_render->flags & EXT_RENDER_RECV_ALL_FRAME_FLAG) {
             goto exit;
         }
 
-
         /* get frame from player vdec*/
-        cur_frame_id = p_dec_share_data->cur_disp_frame_id;
-        last_frame_id = p_dec_share_data->last_disp_frame_id;
-        ret = aic_player_get_frame(player, &p_dec_share_data->disp_frames[cur_frame_id]);
+        cur_frame_id = p_ext_render->cur_disp_frame_id;
+        last_frame_id = p_ext_render->last_disp_frame_id;
+        ret = aic_player_get_frame(player, &p_ext_render->disp_frames[cur_frame_id]);
         if (ret != 0) {
             usleep(5000);
             continue;
         }
-        p_dec_share_data->receive_frame_num++;
+        p_ext_render->receive_frame_num++;
 
         /* do render one frame*/
-        ret = player_vdec_share_video_render(
-            &p_dec_share_data->disp_frames[cur_frame_id]);
+        ret = video_ext_render_rend(&p_ext_render->disp_frames[cur_frame_id]);
         if (ret == 0) {
-            p_dec_share_data->disp_frame_num++;
-            if (p_dec_share_data->disp_frames[cur_frame_id].flags & FRAME_FLAG_EOS) {
-                p_dec_share_data->flags |= PLAYER_SHARE_RECEIVE_ALL_FRAME_FLAG;
+            p_ext_render->disp_frame_num++;
+            if (p_ext_render->disp_frames[cur_frame_id].flags & FRAME_FLAG_EOS) {
+                p_ext_render->flags |= EXT_RENDER_RECV_ALL_FRAME_FLAG;
                 printf("[%s:%d]receive frame_end_flag\n", __FUNCTION__, __LINE__);
             }
         } else {
@@ -376,25 +451,27 @@ static void *player_vdec_share_frame_thread(void *p_thread_data)
         }
 
         /*put back frame to player vdec component*/
-        if (p_dec_share_data->disp_frame_num) {
-            ret = aic_player_put_frame(player, &p_dec_share_data->disp_frames[last_frame_id]);
+        if (p_ext_render->disp_frame_num) {
+            ret = aic_player_put_frame(player,
+                &p_ext_render->disp_frames[last_frame_id]);
             if (0 == ret) {
-                p_dec_share_data->giveback_frame_ok_num++;
+                p_ext_render->giveback_frame_ok_num++;
             } else {
-                p_dec_share_data->giveback_frame_fail_num++;
+                p_ext_render->giveback_frame_fail_num++;
             }
         }
-        player_vdec_share_render_frame_swap(&p_dec_share_data->cur_disp_frame_id,
-                                            &p_dec_share_data->last_disp_frame_id);
+
+        video_ext_render_frame_swap(&p_ext_render->cur_disp_frame_id,
+                               &p_ext_render->last_disp_frame_id);
 
         usleep(5000);
     }
 
 exit:
-    p_dec_share_data->init_flag = 0;
-    p_dec_share_data->thread_run_flag = PLAYER_DEC_SHARE_THREAD_DESTROY;
-    printf("[%s:%d]player dec share thread exit\n", __FUNCTION__, __LINE__);
-    player_vdec_share_print_frame_count();
+    p_ext_render->init_flag = 0;
+    p_ext_render->thread_run_flag = VIDEO_EXT_RENDER_THREAD_DESTROY;
+    printf("[%s:%d]player ext render exit\n", __FUNCTION__, __LINE__);
+    player_video_ext_render_print();
     return NULL;
 }
 #endif

@@ -1693,9 +1693,18 @@ typedef ptrdiff_t  FT_PtrDist;
     /* memory management */
     n = ( height * sizeof ( PCell ) + sizeof ( TCell ) - 1 ) / sizeof ( TCell );
 
+#ifndef PRJ_RV_TOOLCHAIN_V2_6_1
+#pragma GCC push_options
+#pragma GCC diagnostic ignored "-Wdangling-pointer="
+#endif
+
     ras.cells     = buffer + n;
     ras.max_cells = (FT_PtrDist)( FT_MAX_GRAY_POOL - n );
     ras.ycells    = (PCell*)buffer;
+
+#ifndef PRJ_RV_TOOLCHAIN_V2_6_1
+#pragma GCC pop_options
+#endif
 
     for ( y = yMin; y < yMax; )
     {

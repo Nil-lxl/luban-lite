@@ -9,6 +9,7 @@
 #include "usbd_hid.h"
 #include <rtthread.h>
 #include <rtdevice.h>
+#include <math.h>
 
 #define TOUCH_MAX_POINT_NUM     5
 #define TOUCH_LOGICAL_MAXNUM    4096
@@ -17,6 +18,7 @@
 #define TOUCHSCREEN_PACKET_SIZE (TOUCH_MAX_POINT_NUM * 10 + 4)
 #define TOUCHPAD_PACKET_SIZE    (TOUCH_MAX_POINT_NUM * 10 + 5)
 #define GLOBAL_REPORT_SIZE      TOUCHPAD_PACKET_SIZE
+#define TOUCHMOUSE_PACKET_SIZE  13
 /*!< endpoint address */
 #define HID_INT_EP          0x81
 #define HID_INT_EP_SIZE     (GLOBAL_REPORT_SIZE)
@@ -41,6 +43,11 @@
 #define HID_TOUCHPAD_REPORT_DESC_OFFSET     8
 #define HID_TOUCHPAD_PHYSICAL_MAX_OFFSET    46
 #define HID_TOUCHPAD_PHYSICAL_MIN_OFFSET    53
+#define HID_TOUCHMOUSE_REPORT_DESC_SIZE2    (80 + 47)
+#define TOUCHMOUSE_X_LOGICAL_MAXNUM 16383
+#define TOUCHMOUSE_Y_LOGICAL_MAXNUM 9599
+#define TOUCHMOUSE_X_PHYSICAL_MAXNUM 2169
+#define TOUCHMOUSE_Y_PHYSICAL_MAXNUM 906
 
 /*!< config descriptor size offset*/
 #define HID_TOUCH_REPORT_DESC_SIZE_OFFSET   43
@@ -270,7 +277,7 @@ uint8_t hid_descriptor[] = {
 static uint8_t hid_touchpad_report_desc[] = {
 //TOUCH PAD input TLC
     0x05, 0x0d,                         //  USAGE_PAGE (Digitizers)
-    0x09, 0x05,                         //  USAGE (Touch Pad)
+    0x09, 0x02,                         //  USAGE (Touch Pad)
     0xa1, 0x01,                         //  COLLECTION (Application)
     0x85, REPORTID_TOUCHPAD,            //  REPORT_ID (Touch pad)
     FINGER_TOUCHPAD_REPORT_DESC(TOUCH_LOGICAL_MAXNUM, TOUCH_X_PHYSICAL_MAXNUM, TOUCH_Y_PHYSICAL_MAXNUM)
@@ -434,13 +441,149 @@ static uint8_t hid_touchscreen_report_desc[] = {
     0x96, 0x00,  0x01,                  // REPORT_COUNT (0x100 (256))
     0xb1, 0x02,                         // FEATURE (Data,Var,Abs)
     0xc0,                               // END_COLLECTION
+    #ifdef HID_TOUCHMOUSE_MODE
+    0x05, 0x01, //      USAGE_PAGE (Generic Desktop)
+    0x09, 0x02, //      USAGE (Mouse)
+    0xA1, 0x01, //      COLLECTION (Application)
+    0x85, 0x07, //      REPORT_ID (7)
+    0x09, 0x01, //      USAGE (Pointer)
+    0xA1, 0x00, //      COLLECTION (Physical)
+    0x05, 0x09, //      USAGE_PAGE (Button)
+    0x19, 0x01, //      USAGE_MINIMUM (Button 1)
+    0x29, 0x03, //      USAGE_MAXIMUM (Button 3)
+    0x15, 0x00, //      LOGICAL_MINIMUM (0)
+    0x25, 0x01, //      LOGICAL_MAXIMUM (1)
+    0x75, 0x01, //      REPORT_SIZE (1)
+    0x95, 0x03, //      REPORT_COUNT (3)
+    0x81, 0x02, //      INPUT (Data,Var,Abs)
+    0x75, 0x01, //      REPORT_SIZE (1)
+    0x95, 0x05, //      REPORT_COUNT (5)
+    0x81, 0x03, //      INPUT (Cnst,Var,Abs)
+    0x05, 0x01, //      USAGE_PAGE (Generic Desktop)
+    0x09, 0x30, //      USAGE (X)
+    0x75, 0x10, //      REPORT_SIZE (16)
+    0x95, 0x01, //      REPORT_COUNT (1)
+    0x55, 0x0E, //      UNIT_EXPONENT (-2)
+    0x65, 0x11, //      UNIT (Centimeter)
+    0x35, 0x00, //      PHYSICAL_MINIMUM (0)
+    0x46, (uint8_t)TOUCHMOUSE_X_PHYSICAL_MAXNUM, (uint8_t)(TOUCHMOUSE_X_PHYSICAL_MAXNUM >> 8), //      PHYSICAL_MAXIMUM (2169)
+    0x26, (uint8_t)TOUCHMOUSE_X_LOGICAL_MAXNUM, (uint8_t)(TOUCHMOUSE_X_LOGICAL_MAXNUM >> 8), /*LOGICAL_MAXIMUM (4095) */
+    0x81, 0x02, //     INPUT (Data,Var,Abs)
+    0x09, 0x31, //     USAGE (Y)
+    0x46, (uint8_t)TOUCHMOUSE_Y_PHYSICAL_MAXNUM, (uint8_t)(TOUCHMOUSE_Y_PHYSICAL_MAXNUM >> 8), //     PHYSICAL_MAXIMUM (906)
+    0x26, (uint8_t)TOUCHMOUSE_Y_LOGICAL_MAXNUM, (uint8_t)(TOUCHMOUSE_Y_LOGICAL_MAXNUM >> 8), /*LOGICAL_MAXIMUM (4095) */\
+    0x81, 0x02, //     INPUT (Data,Var,Abs)
+    0x09, 0x38, //     USAGE (Wheel)
+    0x15, 0x81, //     LOGICAL_MINIMUM (-127)
+    0x25, 0x7F, //     LOGICAL_MAXIMUM (127)
+    0x75, 0x08, //     REPORT_SIZE (8)
+    0x95, 0x01, //     REPORT_COUNT (1)
+    0x81, 0x06, //     INPUT (Data,Var,Rel)
+    0xC0,       //   END_COLLECTION
+    // HID Keyboard 47 bytes
+    0x05, 0x01,        //   Usage Page (Generic Desktop Ctrls)
+    0x09, 0x06,        //   Usage (Keyboard)
+    0xA1, 0x01,        //   Collection (Application)
+    0x85, 0x09,        //   Report ID (9)
+    0x05, 0x07,        //   Usage Page (Kbrd/Keypad)
+    0x19, 0xE0,        //   Usage Minimum (0xE0)
+    0x29, 0xE7,        //   Usage Maximum (0xE7)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x25, 0x01,        //   Logical Maximum (1)
+    0x75, 0x01,        //   Report Size (1)
+    0x95, 0x08,        //   Report Count (8)
+    0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x95, 0x01,        //   Report Count (1)
+    0x75, 0x08,        //   Report Size (8)
+    0x81, 0x01,        //   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x95, 0x0A,        //   Report Count (10)
+    0x75, 0x08,        //   Report Size (8)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x25, 0x65,        //   Logical Maximum (101)
+    0x05, 0x07,        //   Usage Page (Kbrd/Keypad)
+    0x19, 0x00,        //   Usage Minimum (0x00)
+    0x29, 0x65,        //   Usage Maximum (0x65)
+    0x81, 0x00,        //   Input (Data,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0xC0,               //   End Collection
+    0xC0        // END_COLLECTION
+    #endif
+};
+#endif
+
+#ifdef HID_TOUCHMOUSE_MODE
+static  const uint8_t hid_touchmouse_report_desc[] = {
+    0x05, 0x01, //      USAGE_PAGE (Generic Desktop)
+    0x09, 0x02, //      USAGE (Mouse)
+    0xA1, 0x01, //      COLLECTION (Application)
+    0x85, 0x07, //      REPORT_ID (7)
+    0x09, 0x01, //      USAGE (Pointer)
+    0xA1, 0x00, //      COLLECTION (Physical)
+    0x05, 0x09, //      USAGE_PAGE (Button)
+    0x19, 0x01, //      USAGE_MINIMUM (Button 1)
+    0x29, 0x03, //      USAGE_MAXIMUM (Button 3)
+    0x15, 0x00, //      LOGICAL_MINIMUM (0)
+    0x25, 0x01, //      LOGICAL_MAXIMUM (1)
+    0x75, 0x01, //      REPORT_SIZE (1)
+    0x95, 0x03, //      REPORT_COUNT (3)
+    0x81, 0x02, //      INPUT (Data,Var,Abs)
+    0x75, 0x01, //      REPORT_SIZE (1)
+    0x95, 0x05, //      REPORT_COUNT (5)
+    0x81, 0x03, //      INPUT (Cnst,Var,Abs)
+    0x05, 0x01, //      USAGE_PAGE (Generic Desktop)
+    0x09, 0x30, //      USAGE (X)
+    0x75, 0x10, //      REPORT_SIZE (16)
+    0x95, 0x01, //      REPORT_COUNT (1)
+    0x55, 0x0E, //      UNIT_EXPONENT (-2)
+    0x65, 0x11, //      UNIT (Centimeter)
+    0x35, 0x00, //      PHYSICAL_MINIMUM (0)
+    0x46, (uint8_t)TOUCHMOUSE_X_PHYSICAL_MAXNUM, (uint8_t)(TOUCHMOUSE_X_PHYSICAL_MAXNUM >> 8), //      PHYSICAL_MAXIMUM (2169)
+    0x26, (uint8_t)TOUCHMOUSE_X_LOGICAL_MAXNUM, (uint8_t)(TOUCHMOUSE_X_LOGICAL_MAXNUM >> 8), /*LOGICAL_MAXIMUM (4095) */
+    0x81, 0x02, //     INPUT (Data,Var,Abs)
+    0x09, 0x31, //     USAGE (Y)
+    0x46, (uint8_t)TOUCHMOUSE_Y_PHYSICAL_MAXNUM, (uint8_t)(TOUCHMOUSE_Y_PHYSICAL_MAXNUM >> 8), //     PHYSICAL_MAXIMUM (906)
+    0x26, (uint8_t)TOUCHMOUSE_Y_LOGICAL_MAXNUM, (uint8_t)(TOUCHMOUSE_Y_LOGICAL_MAXNUM >> 8), /*LOGICAL_MAXIMUM (4095) */\
+    0x81, 0x02, //     INPUT (Data,Var,Abs)
+    0x09, 0x38, //     USAGE (Wheel)
+    0x15, 0x81, //     LOGICAL_MINIMUM (-127)
+    0x25, 0x7F, //     LOGICAL_MAXIMUM (127)
+    0x75, 0x08, //     REPORT_SIZE (8)
+    0x95, 0x01, //     REPORT_COUNT (1)
+    0x81, 0x06, //     INPUT (Data,Var,Rel)
+    0xC0,       //   END_COLLECTION
+    // HID Keyboard 47 bytes
+    0x05, 0x01,        //   Usage Page (Generic Desktop Ctrls)
+    0x09, 0x06,        //   Usage (Keyboard)
+    0xA1, 0x01,        //   Collection (Application)
+    0x85, 0x09,        //   Report ID (9)
+    0x05, 0x07,        //   Usage Page (Kbrd/Keypad)
+    0x19, 0xE0,        //   Usage Minimum (0xE0)
+    0x29, 0xE7,        //   Usage Maximum (0xE7)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x25, 0x01,        //   Logical Maximum (1)
+    0x75, 0x01,        //   Report Size (1)
+    0x95, 0x08,        //   Report Count (8)
+    0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x95, 0x01,        //   Report Count (1)
+    0x75, 0x08,        //   Report Size (8)
+    0x81, 0x01,        //   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x95, 0x0A,        //   Report Count (10)
+    0x75, 0x08,        //   Report Size (8)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x25, 0x65,        //   Logical Maximum (101)
+    0x05, 0x07,        //   Usage Page (Kbrd/Keypad)
+    0x19, 0x00,        //   Usage Minimum (0x00)
+    0x29, 0x65,        //   Usage Maximum (0x65)
+    0x81, 0x00,        //   Input (Data,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0xC0,               //   End Collection
+    0xC0        // END_COLLECTION
 };
 
 #endif
-
 enum touch_mode {
     TOUCH_SCREEN = 0,   /* support for win10、win11 */
     TOUCH_PAD = 1,      /* support for win10、win11 */
+    TOUCH_MOUSE = 2,      /* support for win10、win11 */
+    TOUCH_KEYBOARD = 3,      /* support for win10、win11 */
 };
 
 struct hid_touch_cfg_t {  // 10 bytes
@@ -469,6 +612,30 @@ struct hid_touchpad_report_t { // 5 + 10 * TOUCH_MAX_POINT_NUM
     uint8_t buttons3 : 1;
 }__attribute__((packed));
 
+struct hid_touchmouse_report_t {
+    uint8_t report_id;
+    uint8_t buttons1 : 1;
+    uint8_t buttons2 : 1;
+    uint8_t buttons3 : 1;
+    uint8_t not_used:5;
+    int16_t x;
+    int16_t y;
+    int8_t wheel;
+};
+
+struct hid_touchkeyboard_report_t {  // 13 bytes
+    uint8_t report_id;
+    uint8_t control_left : 1;
+    uint8_t shift_left : 1;
+    uint8_t alt_left : 1;
+    uint8_t gui_left : 1;
+    uint8_t control_right : 1;
+    uint8_t shift_right : 1;
+    uint8_t alt_right : 1;
+    uint8_t gui_right : 1;
+    uint8_t not_used;
+    uint8_t keyboard_array[10];
+};
 struct hid_touch_t {
     rt_device_t dev;
     rt_sem_t sem;
@@ -478,6 +645,8 @@ struct hid_touch_t {
     uint8_t last_event;
     uint8_t id[TOUCH_MAX_POINT_NUM + 1];
     struct hid_touch_cfg_t finger[TOUCH_MAX_POINT_NUM];
+    struct hid_touchmouse_report_t mouse;
+    struct hid_touchkeyboard_report_t keyboard;
     volatile uint8_t cur_max_point_num;
     volatile uint8_t cur_point_num;
     volatile uint8_t hid_state;
@@ -510,7 +679,7 @@ static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_report[GLOBAL_REPORT_SIZ
 #define HID_STATE_IDLE 0
 #define HID_STATE_BUSY 1
 
-void usbd_hid_get_report(uint8_t intf, uint8_t report_id, uint8_t report_type,
+void usbd_hid_get_report(uint8_t busid, uint8_t intf, uint8_t report_id, uint8_t report_type,
                             uint8_t **data, uint32_t *len)
 {
     USB_LOG_DBG("Get report : id %d\n", report_id);
@@ -529,11 +698,7 @@ void usbd_hid_get_report(uint8_t intf, uint8_t report_id, uint8_t report_type,
     }
 }
 
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-void usbd_comp_touch_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
+static void usbd_touch_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -564,13 +729,21 @@ static struct hid_touch_t *get_hid_touch(void)
     return &g_hid_touch;
 }
 
-void usbd_hid_set_idle(uint8_t intf, uint8_t report_id, uint8_t duration)
+void usbd_hid_set_idle(uint8_t busid, uint8_t intf, uint8_t report_id, uint8_t duration)
 {
     struct hid_touch_t *hid_touch = get_hid_touch();
     hid_touch->hid_state = HID_STATE_IDLE;
 }
 
-static void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
+void usbd_hid_set_protocol(uint8_t busid, uint8_t intf, uint8_t protocol)
+{
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    hid_touch->hid_state = HID_STATE_IDLE;
+    hid_touch->mode = TOUCH_MOUSE;
+    USB_LOG_INFO("HID-TOUCH: switch to touch-mouse\n");
+}
+
+static void usbd_hid_int_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     struct hid_touch_t *hid_touch = get_hid_touch();
     hid_touch->hid_state = HID_STATE_IDLE;
@@ -851,6 +1024,37 @@ static uint8_t *hid_touchpad_data(void)
 
 }
 
+static uint8_t *hid_touchmouse_data(void)
+{
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    struct hid_touchmouse_report_t *touchmouse_report = NULL;
+    touchmouse_report = (struct hid_touchmouse_report_t *)g_report;
+
+    memset(g_report, 0, GLOBAL_REPORT_SIZE);
+
+    memcpy(touchmouse_report, (uint8_t *)&hid_touch->mouse,
+            sizeof(struct hid_touchmouse_report_t));
+    touchmouse_report->report_id = 0x07;
+
+    return (uint8_t *)touchmouse_report;
+
+}
+
+static uint8_t *hid_touchkeyboard_data(void)
+{
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    struct hid_touchkeyboard_report_t *touchkeyboard_report = NULL;
+    touchkeyboard_report = (struct hid_touchkeyboard_report_t *)g_report;
+
+    memset(g_report, 0, GLOBAL_REPORT_SIZE);
+
+    memcpy(touchkeyboard_report, (uint8_t *)&hid_touch->keyboard,
+            sizeof(struct hid_touchkeyboard_report_t));
+    touchkeyboard_report->report_id = 0x09;
+
+    return (uint8_t *)touchkeyboard_report;
+
+}
 static void hid_touch_send_data(void)
 {
     int ret = 0;
@@ -864,6 +1068,12 @@ static void hid_touch_send_data(void)
         case TOUCH_PAD:
             report = hid_touchpad_data();
             break;
+        case TOUCH_MOUSE:
+            report = hid_touchmouse_data();
+            break;
+        case TOUCH_KEYBOARD:
+            report = hid_touchkeyboard_data();
+            break;
         default:
             goto __err;
     }
@@ -871,9 +1081,9 @@ static void hid_touch_send_data(void)
     if (report == NULL)
         goto __err;
 
-    if (hid_touch->hid_state == HID_STATE_IDLE) {
+    if (hid_touch->hid_state == HID_STATE_IDLE && usb_device_is_configured(0)) {
         hid_touch->hid_state = HID_STATE_BUSY;
-        ret = usbd_ep_start_write(hid_in_ep.ep_addr, report,
+        ret = usbd_ep_start_write(0, hid_in_ep.ep_addr, report,
                                     hid_touch->int_ep_size);
         #ifdef HID_TOUCH_DEBUG
         USB_LOG_RAW("HID-TOUCH: Current effective finger count: %#lx \n",
@@ -916,6 +1126,288 @@ static int hid_touch_event_processing(uint8_t index, uint8_t event)
     return 0;
 }
 
+static uint32_t hid_touch_get_distance_square(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+{
+    uint32_t dx = (uint32_t)((x1 > x2) ? (x1 - x2) : (x2 - x1));
+    uint32_t dy = (uint32_t)((y1 > y2) ? (y1 - y2) : (y2 - y1));
+    uint32_t distance_square = dx * dx + dy * dy;
+
+    return distance_square;
+}
+
+int hid_touch_is_point_outside_circle(uint16_t center_x, uint16_t center_y,
+                                     uint16_t target_x, uint16_t target_y,
+                                     uint16_t radius)
+{
+    uint32_t distance_square;
+    uint32_t radius_square;
+
+    if (radius == 0) {
+        return -1;
+    }
+
+    distance_square = hid_touch_get_distance_square(center_x, center_y, target_x, target_y);
+
+    radius_square = (uint32_t)radius * radius;
+
+    if (distance_square > radius_square) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int _is_point_inside_circle(uint16_t center_x, uint16_t center_y,
+                                    uint16_t target_x, uint16_t target_y,
+                                    uint16_t radius)
+{
+    int result = hid_touch_is_point_outside_circle(center_x, center_y, target_x, target_y, radius);
+
+    if (result < 0) {
+        return result;
+    }
+
+    return (result == 1) ? 0 : 1;
+}
+static uint16_t hid_touch_scale_coordinate(uint16_t coordinate, uint16_t phy_max, uint16_t logic_max)
+{
+    uint32_t u32_coordinate = (uint32_t)coordinate;
+    uint32_t ret = (u32_coordinate * logic_max) / phy_max;
+
+    return (uint16_t)ret;
+}
+
+static int hid_touchmouse_click(uint16_t cur_x, uint16_t cur_y, uint8_t left_click, uint8_t right_click)
+{
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    struct hid_touchmouse_report_t *mouse_report = &hid_touch->mouse;
+
+    mouse_report->buttons1 = left_click;
+    mouse_report->buttons2 = right_click;
+    mouse_report->x = hid_touch_scale_coordinate(cur_x, hid_touch->x_physical_maxnum, TOUCHMOUSE_X_LOGICAL_MAXNUM);
+    mouse_report->y = hid_touch_scale_coordinate(cur_y, hid_touch->y_physical_maxnum, TOUCHMOUSE_Y_LOGICAL_MAXNUM);
+
+    if (mouse_report->x > TOUCHMOUSE_X_LOGICAL_MAXNUM ||
+        mouse_report->y > TOUCHMOUSE_Y_LOGICAL_MAXNUM)
+        USB_LOG_WRN("WRN 2: The x/y values have been scaled incorrectly.\n"
+                    "You can try swapping the x/y logical resolution.\n");
+
+    hid_touch_send_data();
+    USB_LOG_DBG("HID-TOUCHMOUSE : %s %s click -> %d %d\n",
+                    right_click ? "right" : " ",
+                    left_click ?  "left " : " ",
+                    cur_x, cur_y);
+    return 0;
+}
+
+static int hid_touchmouse_scale(uint8_t val)
+{
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    struct hid_touchkeyboard_report_t *keyboard_report = &hid_touch->keyboard;
+
+    hid_touch->mode = TOUCH_KEYBOARD;
+    keyboard_report->gui_left = 1;
+    if (val == 1)
+        keyboard_report->keyboard_array[0] = 0x2E; // enlarged
+    else
+        keyboard_report->keyboard_array[0] = 0x2D; // reduction
+    hid_touch_send_data();
+    keyboard_report->gui_left = 1;
+    keyboard_report->keyboard_array[0] = 0;
+    hid_touch_send_data();
+    USB_LOG_DBG("HID-TOUCHMOUSE : scale %s\n", val ? "enlarged" : "reduction");
+
+    return 0;
+}
+
+static int hid_touchmouse_wheel(uint16_t cur_x, uint16_t cur_y, int8_t wheel)
+{
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    struct hid_touchmouse_report_t *mouse_report = &hid_touch->mouse;
+
+    mouse_report->wheel = wheel;
+    mouse_report->buttons1 = 0;
+    mouse_report->buttons2 = 0;
+    mouse_report->x = hid_touch_scale_coordinate(cur_x, hid_touch->x_physical_maxnum, TOUCHMOUSE_X_LOGICAL_MAXNUM);
+    mouse_report->y = hid_touch_scale_coordinate(cur_y, hid_touch->y_physical_maxnum, TOUCHMOUSE_Y_LOGICAL_MAXNUM);
+
+    if (mouse_report->x > TOUCHMOUSE_X_LOGICAL_MAXNUM ||
+        mouse_report->y > TOUCHMOUSE_Y_LOGICAL_MAXNUM)
+        USB_LOG_WRN("WRN 2: The x/y values have been scaled incorrectly.\n"
+                    "You can try swapping the x/y logical resolution.\n");
+
+    hid_touch_send_data();
+    USB_LOG_DBG("HID-TOUCHMOUSE : move %s \n", mouse_report->wheel ? "up" : "down");
+
+    return 0;
+}
+
+static int hid_touchmouse_event_processing(uint8_t index, uint8_t event)
+{
+    struct hid_touch_t *hid_touch = get_hid_touch();
+    uint8_t finger_count = hid_touch->cur_max_point_num;
+    uint16_t cur_x = hid_touch->data[index].x_coordinate;
+    uint16_t cur_y = hid_touch->data[index].y_coordinate;
+    struct hid_touchmouse_report_t *mouse_report = &hid_touch->mouse;
+    struct hid_touchkeyboard_report_t *keyboard_report = &hid_touch->keyboard;
+    static uint16_t ref_x[TOUCH_MAX_POINT_NUM] = {0};
+    static uint16_t ref_y[TOUCH_MAX_POINT_NUM] = {0};
+    static bool right_click_pending = false;
+    static bool scale_pending = false;
+
+    // Double-click detection variables
+    static uint32_t last_click_time = 0;
+    static uint16_t last_click_x = 0;
+    static uint16_t last_click_y = 0;
+    static bool is_first_click = false;
+    const uint32_t double_click_timeout = 500; // Double-click timeout (ms)
+    const uint16_t double_click_distance_threshold = 20; // Double-click distance threshold
+
+    uint32_t temp = 0;
+    int ret = 0;
+
+    switch(event) {
+        case RT_TOUCH_EVENT_DOWN:
+            USB_LOG_DBG("HID-TOUCHMOUSE: RT_TOUCH_EVENT_DOWN, fingers: %d\n", finger_count);
+            ref_x[index] = cur_x;
+            ref_y[index] = cur_y;
+            break;
+
+        case RT_TOUCH_EVENT_MOVE:
+            USB_LOG_DBG("HID-TOUCHMOUSE: RT_TOUCH_EVENT_MOVE, fingers: %d\n", finger_count);
+            if (finger_count == 1) {
+                return hid_touchmouse_click(cur_x, cur_y, 1, 0);
+            } else if (finger_count == 2) {
+                if (index != 1) {
+                    return 0;
+                }
+                mouse_report->buttons1 = 0;
+
+                // Calculate X and Y axis direction changes
+                int32_t y_direction[2] = {0};
+                y_direction[0] = (int32_t)cur_y - (int32_t)ref_y[0];
+                y_direction[1] = (int32_t)cur_y - (int32_t)ref_y[1];
+
+                // Calculate distance between two points for zoom detection
+                uint32_t initial_distance = hid_touch_get_distance_square(ref_x[0], ref_y[0], ref_x[1], ref_y[1]);
+                uint32_t current_distance = hid_touch_get_distance_square(hid_touch->data[0].x_coordinate, hid_touch->data[0].y_coordinate,
+                                                                            hid_touch->data[1].x_coordinate, hid_touch->data[1].y_coordinate);
+                USB_LOG_DBG("HID-TOUCHMOUSE: distance: %d %d\n", current_distance, initial_distance);
+                // Determine vector direction --> sliding (same Y-axis movement direction)
+                // Send wheel event based on distance change direction to simulate zoom
+                if (current_distance > initial_distance * 15 / 10) {
+                    hid_touchmouse_scale(1);
+                    scale_pending = true;
+                    hid_touch->mode = TOUCH_MOUSE;
+                    return 0;
+                } else if (current_distance < initial_distance * 5 / 10) {
+                    hid_touchmouse_scale(0);
+                    scale_pending = true;
+                    hid_touch->mode = TOUCH_MOUSE;
+                    return 0;
+                }
+
+                // Determine vector direction --> sliding (same Y-axis movement direction)
+                if (y_direction[0] < 0 && y_direction[1] < 0) {
+                    hid_touchmouse_wheel(cur_x, cur_y, 1);
+                    return 0;
+                } else if (y_direction[0] > 0 && y_direction[1] > 0) {
+                    hid_touchmouse_wheel(cur_x, cur_y, -1);
+                    return 0;
+                }
+
+                // Judge movement amplitude --> predict right click
+                temp = (hid_touch->x_physical_maxnum < hid_touch->y_physical_maxnum) ?
+                       hid_touch->x_physical_maxnum : hid_touch->y_physical_maxnum;
+                temp = temp / 100 * 5;
+                ret = _is_point_inside_circle(ref_x[index], ref_y[index], cur_x, cur_y, temp);
+
+                if (ret == 1) {
+                    right_click_pending = true;
+                }
+            }
+            break;
+
+        case RT_TOUCH_EVENT_UP:
+            USB_LOG_DBG("HID-TOUCHMOUSE: RT_TOUCH_EVENT_UP, fingers: %d\n", finger_count);
+            mouse_report->buttons1 = 0;
+            mouse_report->buttons2 = 0;
+            mouse_report->wheel = 0;
+
+            // Handle right click
+            if (right_click_pending && finger_count <= 2) {
+                // Check if release point is still near the original point
+                temp = 10; // Fixed radius threshold
+                ret = _is_point_inside_circle(ref_x[1], ref_y[1], cur_x, cur_y, temp);
+
+                if (ret == 1) {
+                    hid_touchmouse_click(ref_x[0], ref_y[0], 0, 1);
+                    right_click_pending = false;
+                    // Delay for a short time then release right button
+                    rt_thread_mdelay(50);
+                    hid_touchmouse_click(ref_x[0], ref_y[0], 0, 0);
+                    return 0;
+                }
+            }
+            if (scale_pending == true) {
+                hid_touch->mode = TOUCH_KEYBOARD;
+                keyboard_report->gui_left = 0;
+                keyboard_report->keyboard_array[0] = 0;
+                hid_touch_send_data();
+                hid_touch->mode = TOUCH_MOUSE;
+                scale_pending = false;
+            }
+
+            // Double-click detection logic
+            if (finger_count == 1) { // Only consider double-click for single-finger operations
+                uint32_t current_time = (uint32_t)(aic_get_time_us() / 1000); // Convert to milliseconds
+                uint32_t time_diff = current_time - last_click_time;
+
+                // Calculate distance from last click
+                uint32_t distance_square = hid_touch_get_distance_square(cur_x, cur_y, last_click_x, last_click_y);
+                uint32_t distance_threshold_square = double_click_distance_threshold * double_click_distance_threshold;
+
+                // Check if double-click conditions are met: within timeout and close position
+                if (is_first_click && (time_diff <= double_click_timeout) &&
+                    (distance_square <= distance_threshold_square)) {
+                    // Double-click confirmed
+                    USB_LOG_DBG("HID-TOUCHMOUSE: Double click detected \n");
+
+                    // Perform double-click operation by sending two left-click events
+                    hid_touchmouse_click(cur_x, cur_y, 0, 0); // Second release
+                    rt_thread_mdelay(10); // Brief delay
+                    hid_touchmouse_click(cur_x, cur_y, 1, 0); // Second press
+                    rt_thread_mdelay(10); // Brief delay
+                    hid_touchmouse_click(cur_x, cur_y, 1, 0); // Second press
+                    rt_thread_mdelay(10); // Brief delay
+                    hid_touchmouse_click(cur_x, cur_y, 0, 0); // Second release
+                    // Reset double-click state
+                    is_first_click = false;
+                } else {
+                    // Record first click
+                    last_click_time = current_time;
+                    last_click_x = cur_x;
+                    last_click_y = cur_y;
+                    is_first_click = true;
+
+                    // Normal single-click release
+                    hid_touchmouse_click(cur_x, cur_y, 0, 0);
+                }
+            } else {
+                // Non-single-finger operation, reset double-click state
+                is_first_click = false;
+                // Ensure final state is sent
+                hid_touchmouse_click(cur_x, cur_y, 0, 0);
+            }
+            break;
+
+        default:
+            return -1;
+    }
+
+    return 0;
+}
+
 static void hid_touch_thread(void *parameter)
 {
     int ret;
@@ -932,7 +1424,7 @@ static void hid_touch_thread(void *parameter)
             continue;
         }
 
-        usbd_send_remote_wakeup();
+        usbd_send_remote_wakeup(0);
 
         if (rt_device_read(hid_touch->dev, 0, hid_touch->data, hid_touch->info.point_num)
                             == hid_touch->info.point_num) {
@@ -943,15 +1435,18 @@ static void hid_touch_thread(void *parameter)
                 if (i > hid_touch->info.point_num)
                     break;
 
-                if (hid_touch->mode == TOUCH_SCREEN || TOUCH_PAD)
+                if (hid_touch->mode == TOUCH_SCREEN || hid_touch->mode  == TOUCH_PAD)
                     ret = hid_touch_event_processing(i, hid_touch->data[i].event);
+                else
+                    ret = hid_touchmouse_event_processing(i, hid_touch->data[i].event);
 
                 if (ret < 0)
                     continue;
 
                 hid_touch->last_event = hid_touch->data[i].event;
             }
-            hid_touch_send_data();
+            if (hid_touch->mode == TOUCH_SCREEN || hid_touch->mode  == TOUCH_PAD)
+                hid_touch_send_data();
         }
         rt_device_control(hid_touch->dev, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
     }
@@ -1028,6 +1523,12 @@ static int hid_touch_mode_switch(void)
 {
     struct hid_touch_t *hid_touch = get_hid_touch();
 
+#ifdef HID_TOUCHMOUSE_MODE
+    hid_touch->mode = TOUCH_MOUSE;
+    hid_touch->cur_desc = hid_touchmouse_report_desc;
+    hid_touch->int_ep_size = TOUCHMOUSE_PACKET_SIZE;
+    hid_touch->hid_desc_len = HID_TOUCHMOUSE_REPORT_DESC_SIZE2;
+#endif
 #ifdef HID_TOUCHPAD_MODE
     hid_touch->mode = TOUCH_PAD;
     hid_touch->cur_desc = hid_touchpad_report_desc;
@@ -1038,7 +1539,7 @@ static int hid_touch_mode_switch(void)
     hid_touch->mode = TOUCH_SCREEN;
     hid_touch->cur_desc = hid_touchscreen_report_desc;
     hid_touch->int_ep_size = TOUCHSCREEN_PACKET_SIZE;
-    hid_touch->hid_desc_len = HID_TOUCHSCREEN_REPORT_DESC_SIZE;
+    hid_touch->hid_desc_len += HID_TOUCHSCREEN_REPORT_DESC_SIZE;
 #endif
 
     _set_desc_intep_size(hid_touch->int_ep_size);
@@ -1058,10 +1559,10 @@ int usbd_comp_touch_init(uint8_t *ep_table, void *data)
     struct hid_touch_t *hid_touch = get_hid_touch();
     hid_in_ep.ep_addr = ep_table[0];
 
-    usbd_add_interface(usbd_hid_init_intf(&touch_intf,
+    usbd_add_interface(0, usbd_hid_init_intf(0, &touch_intf,
                                             hid_touch->cur_desc,
                                             hid_touch->hid_desc_len));
-    usbd_add_endpoint(&hid_in_ep);
+    usbd_add_endpoint(0, &hid_in_ep);
     return 0;
 }
 #endif
@@ -1080,15 +1581,15 @@ int usbd_hid_touch_init(void)
     hid_touch_mode_switch();
 
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_desc_register(hid_descriptor);
-    usbd_add_interface(usbd_hid_init_intf(&touch_intf,
+    usbd_desc_register(0, hid_descriptor);
+    usbd_add_interface(0, usbd_hid_init_intf(0, &touch_intf,
                                             hid_touch->cur_desc,
                                             hid_touch->hid_desc_len));
-    usbd_add_endpoint(&hid_in_ep);
-    usbd_initialize();
+    usbd_add_endpoint(0, &hid_in_ep);
+    usbd_initialize(0, USB_DEV_BASE, usbd_touch_event_handler);
 #else
     usbd_comp_func_register(hid_descriptor,
-                            usbd_comp_touch_event_handler,
+                            usbd_touch_event_handler,
                             usbd_comp_touch_init, "touch");
 #endif
     return 0;
@@ -1099,7 +1600,7 @@ int usbd_hid_touch_deinit(void)
     struct hid_touch_t *hid_touch = get_hid_touch();
 
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_deinitialize();
+    usbd_deinitialize(0);
 #else
     usbd_comp_func_release(hid_descriptor, "touch");
 #endif

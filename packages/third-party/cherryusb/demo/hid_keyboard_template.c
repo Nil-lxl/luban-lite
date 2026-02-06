@@ -270,11 +270,8 @@ const uint32_t hid_keyboard_map[128] = {
     ['~'] = HID_KBD_USAGE_POSTFAIL << 16 | HID_KBD_USAGE_TILDE,
 };
 
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-void usbd_comp_keyboard_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
+
+void usbd_comp_keyboard_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -307,7 +304,7 @@ static volatile uint8_t hid_state = HID_STATE_IDLE;
 static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t write_buffer[64];
 static usb_osal_mutex_t usbd_keyboard_mutex;
 
-void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
+void usbd_hid_int_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     if (hid_state == HID_STATE_BUSY)
         hid_state = HID_STATE_IDLE;
@@ -325,8 +322,8 @@ static struct usbd_interface intf0;
 int usbd_comp_keyboard_init(uint8_t *ep_table, void *data)
 {
     hid_in_ep.ep_addr = ep_table[0];
-    usbd_add_interface(usbd_hid_init_intf(&intf0, hid_keyboard_report_desc, HID_KEYBOARD_REPORT_DESC_SIZE));
-    usbd_add_endpoint(&hid_in_ep);
+    usbd_add_interface(0, usbd_hid_init_intf(0, &intf0, hid_keyboard_report_desc, HID_KEYBOARD_REPORT_DESC_SIZE));
+    usbd_add_endpoint(0, &hid_in_ep);
     return 0;
 }
 #endif
@@ -335,11 +332,11 @@ void hid_keyboard_init(void)
 {
     usbd_keyboard_mutex = usb_osal_mutex_create();
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_desc_register(hid_descriptor);
-    usbd_add_interface(usbd_hid_init_intf(&intf0, hid_keyboard_report_desc, HID_KEYBOARD_REPORT_DESC_SIZE));
-    usbd_add_endpoint(&hid_in_ep);
+    usbd_desc_register(0,hid_descriptor);
+    usbd_add_interface(0, usbd_hid_init_intf(0, &intf0, hid_keyboard_report_desc, HID_KEYBOARD_REPORT_DESC_SIZE));
+    usbd_add_endpoint(0, &hid_in_ep);
 
-    usbd_initialize();
+    usbd_initialize(0, USB_DEV_BASE, usbd_comp_keyboard_event_handler);
 #else
     usbd_comp_func_register(hid_descriptor,
                             usbd_comp_keyboard_event_handler,
@@ -354,7 +351,7 @@ static int usbd_keyboard_send_data(uint8_t *buf)
     int ret =0;
 
 _retry:
-    ret = usbd_ep_start_write(hid_in_ep.ep_addr, buf, 8);
+    ret = usbd_ep_start_write(0, hid_in_ep.ep_addr, buf, 8);
     if (ret < 0 && err_cnt < 10) {
         aic_udelay(1);
         err_cnt++;
@@ -444,7 +441,7 @@ void hid_keyboard_test(void)
 int usbd_hid_keyboard_deinit(void)
 {
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_deinitialize();
+    usbd_deinitialize(0);
 #else
     usbd_comp_func_release(hid_descriptor, "keyboard");
 #endif
@@ -471,7 +468,7 @@ USB_INIT_APP_EXPORT(usbd_hid_keyboard_init);
 
 int test_usbd_hid_keyboard(int argc, char **argv)
 {
-    usbd_send_remote_wakeup();
+    usbd_send_remote_wakeup(0);
 
     if (argc > 1) {
         usbd_keyboard_putnchar(argv[1], strlen(argv[1]));

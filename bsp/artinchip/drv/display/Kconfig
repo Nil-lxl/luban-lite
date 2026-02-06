@@ -37,22 +37,22 @@ choice
 config AIC_DISP_RGB
     bool "Display RGB interface"
     select AIC_DISP_RGB_DRV
-    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11 || AIC_DE_DRV_V12
+    depends on AIC_DISP_HW_RGB
 
 config AIC_DISP_LVDS
     bool "Display LVDS interface"
     select AIC_DISP_LVDS_DRV
-    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11
+    depends on AIC_DISP_HW_LVDS
 
 config AIC_DISP_MIPI_DSI
     bool "Display MIPI-DSI interface"
     select AIC_DISP_MIPI_DSI_DRV
-    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11
+    depends on AIC_DISP_HW_MIPI_DSI
 
 config AIC_DISP_MIPI_DBI
     bool "Display MIPI-DBI interface"
     select AIC_DISP_MIPI_DBI_DRV
-    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11 || AIC_DE_DRV_V12
+    depends on AIC_DISP_HW_MIPI_DBI
 endchoice
 
 config AIC_DI_TYPE

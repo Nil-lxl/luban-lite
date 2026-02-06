@@ -611,6 +611,20 @@ static int usb_video_src_release(void)
     return 0;
 }
 
+static void usage(char *program)
+{
+    printf("Usage: %s [options]: \n", program);
+    printf("\t -f, --format\t\t format of input video, MJPEG/YUYV etc\n");
+    printf("\t -w, --width\t\t width of input video\n");
+    printf("\t -h, --height\t\t height of input video\n");
+    printf("\t -s, --stop \t\t stop video stream\n");
+    printf("\t -r, --record \t\t record video stream path:%s \n", UVC_DATA_PATH);
+    printf("\t -l, --list\t\t list Video device information\n");
+    printf("\t -u, --usage \n");
+    printf("\n");
+    printf("Example: %s -f mjpeg -w 640 -h 480\n", program);
+}
+
 static int parse_options(struct usbh_uvc_player_t *uvc_player, int cnt, char**options)
 {
     int argc = cnt;
@@ -624,7 +638,7 @@ static int parse_options(struct usbh_uvc_player_t *uvc_player, int cnt, char**op
 
     optind = 0;
     while (1) {
-        opt = getopt(argc, argv, "w:h:f:r:isl");
+        opt = getopt(argc, argv, "w:h:f:r:islu");
         if (opt == -1) {
             break;
         }
@@ -667,6 +681,9 @@ static int parse_options(struct usbh_uvc_player_t *uvc_player, int cnt, char**op
             return -1;
         case 'i':
             uvc_player_info(uvc_player);
+            return -1;
+        case 'u':
+            usage(argv[0]);
             return -1;
         default:
             return -1;

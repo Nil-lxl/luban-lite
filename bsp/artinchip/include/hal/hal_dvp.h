@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -46,6 +46,7 @@
 #define DVP_CTL_IN_SEQ_MASK         GENMASK(9, 8)
 #define DVP_CTL_IN_FMT(v)           ((v) << 4)
 #define DVP_CTL_IN_FMT_MASK         GENMASK(6, 4)
+#define DVP_CTL_VIDEO_CONTINUE_EN   BIT(3)
 #define DVP_CTL_DROP_FRAME_EN       BIT(2)
 #define DVP_CTL_CLR                 BIT(1)
 #define DVP_CTL_EN                  BIT(0)

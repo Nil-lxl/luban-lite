@@ -57,11 +57,6 @@ if PKG_USING_QBOOT
         select PKG_USING_ZLIB
         default n
 
-    config QBOOT_USING_QUICKLZ
-        bool "using quicklz decompress"
-        select PKG_USING_QUICKLZ
-        default y
-
     config QBOOT_USING_FASTLZ
         bool "using fastlz decompress"
         select PKG_USING_FASTLZ

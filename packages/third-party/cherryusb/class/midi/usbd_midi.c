@@ -6,13 +6,13 @@
 #include "usbd_core.h"
 #include "usbd_midi.h"
 
-static int midi_class_interface_request_handler(struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
+static int midi_class_interface_request_handler(uint8_t busid, struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
 {
     USB_LOG_INFO("midi_class_interface_request_handler\r\n");
     return 0;
 }
 
-static void midi_notify_handler(uint8_t event, void *arg)
+static void midi_notify_handler(uint8_t busid, uint8_t event, void *arg)
 {
     switch (event) {
     case USBD_EVENT_RESET:
@@ -26,7 +26,7 @@ static void midi_notify_handler(uint8_t event, void *arg)
     }
 }
 
-struct usbd_interface *usbd_midi_init_intf(struct usbd_interface *intf)
+struct usbd_interface *usbd_midi_init_intf(uint8_t busid, struct usbd_interface *intf)
 {
 
     intf->class_interface_handler = midi_class_interface_request_handler;

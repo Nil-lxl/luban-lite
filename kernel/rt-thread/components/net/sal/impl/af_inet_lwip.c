@@ -292,6 +292,10 @@ static const struct sal_socket_ops lwip_socket_ops =
     lwip_connect,
     inet_accept,
     (int (*)(int, const void *, size_t, int, const struct sockaddr *, socklen_t))lwip_sendto,
+#if LWIP_VERSION >= 0x20102ff
+    (int (*)(int, const struct msghdr *, int))lwip_sendmsg,
+    (int (*)(int, struct msghdr *, int))lwip_recvmsg,
+#endif
     (int (*)(int, void *, size_t, int, struct sockaddr *, socklen_t *))lwip_recvfrom,
     lwip_getsockopt,
     //TODO fix on 1.4.1
@@ -307,10 +311,12 @@ static const struct sal_socket_ops lwip_socket_ops =
 
 static const struct sal_netdb_ops lwip_netdb_ops =
 {
+#if LWIP_DNS && LWIP_SOCKET
     lwip_gethostbyname,
     lwip_gethostbyname_r,
     lwip_getaddrinfo,
     lwip_freeaddrinfo,
+#endif
 };
 
 static const struct sal_proto_family lwip_inet_family =

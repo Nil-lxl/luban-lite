@@ -57,10 +57,6 @@ lv_obj_t *aic_elevator_ui_init(void)
     lv_obj_set_size(aic_elevator_ui, LV_HOR_RES, LV_VER_RES);
     lv_obj_clear_flag(aic_elevator_ui, LV_OBJ_FLAG_SCROLLABLE);
 
-#ifdef AIC_CHIP_D12X
-    return aic_elevator_ui;
-#endif
-
     aic_elevator_ui_impl(aic_elevator_ui);
     aic_elevator_player_impl(aic_elevator_ui);
 

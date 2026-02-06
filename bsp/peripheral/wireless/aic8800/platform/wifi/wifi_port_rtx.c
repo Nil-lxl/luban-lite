@@ -11,6 +11,9 @@
 #include "fhost.h"
 #include "cli_al.h"
 
+#ifdef WIFI_USING_LOOPBACK_NETDEV
+bool loop_dev_reg_flag = 0;
+#endif
 struct rt_wlan_device * s_wlan_dev = NULL;
 struct rt_wlan_device * s_ap_dev = NULL;
 rt_err_t aic8800_init(struct rt_wlan_device *wlan)
@@ -33,9 +36,19 @@ rt_err_t aic8800_set_mode(struct rt_wlan_device *wlan, rt_wlan_mode_t mode)
 {
     AIC_LOG_PRINTF("%s: %d\n", __func__, mode);
     if(mode == RT_WLAN_AP) {
-
+#ifdef WIFI_USING_LOOPBACK_NETDEV
+        if (!loop_dev_reg_flag) {
+            net_loopback_netdev_register();
+            loop_dev_reg_flag = 1;
+        }
+#endif
     } else if ( mode == RT_WLAN_STATION){
-
+#ifdef WIFI_USING_LOOPBACK_NETDEV
+        if (!loop_dev_reg_flag) {
+            net_loopback_netdev_register();
+            loop_dev_reg_flag = 1;
+        }
+#endif
     }
 
     return 0;
@@ -394,14 +407,14 @@ int wifi_device_reg(void)
         rt_kprintf("wlan0 devcie malloc fail!\n");
         return -1;
     }
-    rt_wlan_dev_register(s_wlan_dev, "wlan0", &wlan_ops, RT_WLAN_FLAG_STA_ONLY, NULL);
+    rt_wlan_dev_register(s_wlan_dev, RT_WLAN_DEVICE_STA_NAME, &wlan_ops, RT_WLAN_FLAG_STA_ONLY, NULL);
 
     s_ap_dev = rt_malloc(sizeof(struct rt_wlan_device));
     if (!s_ap_dev){
         rt_kprintf("ap0 devcie malloc fail!\n");
         return -1;
     }
-    rt_wlan_dev_register(s_ap_dev, "ap0", &wlan_ops, RT_WLAN_FLAG_AP_ONLY, NULL);
+    rt_wlan_dev_register(s_ap_dev, RT_WLAN_DEVICE_AP_NAME, &wlan_ops, RT_WLAN_FLAG_AP_ONLY, NULL);
 
     return 0;
 }

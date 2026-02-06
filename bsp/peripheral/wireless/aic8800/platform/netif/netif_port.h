@@ -11,9 +11,22 @@
 // Driver Header Files
 //-------------------------------------------------------------------
 #include "netif_def.h"
-#include"aic_plat_net.h"
-#include"aic_plat_sock.h"
+#include "aic_plat_net.h"
+#include "aic_plat_sock.h"
 #include "aic_plat_types.h"
+
+#if defined(RT_USING_SAL) && defined(SAL_USING_POSIX)
+#if (RTTHREAD_VERSION >= RT_VERSION_CHECK(5, 0, 1))
+#if defined(SAL_USING_AF_UNIX)
+#define WIFI_USING_LOOPBACK_NETDEV
+#else
+#error "loopback netdev required"
+#endif
+#else // old version RTT
+/// Force using loopback netdev, make sure SAL has merged sendmsg/recvmsg api & AF_UNIX feature
+#define WIFI_USING_LOOPBACK_NETDEV
+#endif
+#endif
 
 #define AICWF_WIFI_HDR          WIFI_HDR
 #define AICWF_WIFI_HDR_LEN      WIFI_HDR_LEN
@@ -68,6 +81,9 @@ int tx_mon_data_process(uint8_t *pkt, uint32_t len);
 //-------------------------------------------------------------------
 int net_dhcp_start(int net_id);
 
+#ifdef WIFI_USING_LOOPBACK_NETDEV
+void net_loopback_netdev_register(void);
+#endif
 
 #endif // NET_AL_H_
 

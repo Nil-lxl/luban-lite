@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -239,8 +239,18 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
     }
 
     /* A bad block should not impact other partitions. */
-    if (addr == 0)
+    if (addr == 0) {
         bad_block_off = 0;
+        if (g_nftl_flag) {
+            LOG_I("Reinit the nftl for Data partition.\n");
+            extern rt_err_t rt_spinand_init_nftl(rt_device_t dev);
+            ret = rt_spinand_init_nftl(nand_dev);
+            if (ret) {
+                LOG_E("spinand init nftl fail!\n");
+                return ret;
+            }
+        }
+    }
 
     if (g_nftl_flag == 0) {
         ret = rt_device_open(nand_dev, RT_DEVICE_OFLAG_RDWR);
@@ -287,7 +297,7 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
         page = addr / page_size;
         sector = page * 4;
 
-       sector_total = (size / page_size) * 4;
+        sector_total = (size / page_size) * 4;
 
         ret = rt_device_write(nand_dev, sector, buf, sector_total);
         if (ret < 0) {
@@ -302,6 +312,84 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
 
     return ret;
 }
+
+int aic_ota_nand_read(uint32_t addr, uint8_t *buf, size_t size)
+{
+    unsigned long blk = 0, offset = 0, page = 0, sector = 0, sector_total = 0;
+    static unsigned long bad_block_off = 0;
+    unsigned long blk_size = 0, page_size = 0;
+    rt_err_t ret = 0;
+
+    if (size > 2048) {
+        LOG_E("OTA_BURN_LEN need set 2048! size = %d", size);
+        return -RT_ERROR;
+    }
+
+    /* A bad block should not impact other partitions. */
+    if (addr == 0)
+        bad_block_off = 0;
+
+    if (g_nftl_flag == 0) {
+        ret = rt_device_open(nand_dev, RT_DEVICE_OFLAG_RDWR);
+        if (ret) {
+            LOG_E("Open MTD device failed.!\n");
+            return ret;
+        }
+
+        blk_size = nand_mtd->pages_per_block * nand_mtd->page_size;
+        offset = addr + bad_block_off;
+
+        /* Search for the first good block after the given offset */
+        if (offset % blk_size == 0) {
+            blk = offset / blk_size;
+            while (rt_mtd_nand_check_block(nand_mtd, blk) != RT_EOK) {
+                LOG_W("find a bad block(%d), off adjust to the next block\n", blk);
+                bad_block_off += blk_size;
+                offset = addr + bad_block_off;
+                blk = offset / blk_size;
+            }
+        }
+
+        page = offset / nand_mtd->page_size;
+        ret = rt_mtd_nand_read(nand_mtd, page, buf, size, RT_NULL, 0);
+        if (ret) {
+            LOG_E("Read data to page %u error.\n", page);
+            ret = -RT_ERROR;
+            if (rt_mtd_nand_mark_badblock(nand_mtd, offset / blk_size)) {
+                LOG_E("Mark bad block failed.\n");
+            }
+        }
+
+        rt_device_close(nand_dev);
+
+    } else {
+
+        ret = rt_device_open(nand_dev, RT_DEVICE_OFLAG_RDWR);
+        if (ret) {
+            LOG_E("Open MTD device failed.!\n");
+            return ret;
+        }
+        page_size = 2048;//default size:nand_blk->mtd_device->page_size;
+
+        page = addr / page_size;
+        sector = page * 4;
+
+        sector_total = (size / page_size) * 4;
+
+        ret = rt_device_read(nand_dev, sector, buf, sector_total);
+        if (ret < 0) {
+            LOG_E("Failed to read data to NAND.\n");
+            ret = -RT_ERROR;
+        } else {
+            ret = 0;
+        }
+
+        rt_device_close(nand_dev);
+    }
+
+    return ret;
+}
+
 #endif
 
 int aic_ota_mmc_erase_part(void)
@@ -347,6 +435,27 @@ int aic_ota_mmc_write(uint32_t addr, const uint8_t *buf, size_t size)
     rt_device_open(mmc_dev, RT_DEVICE_FLAG_RDWR);
 
     rt_device_write(mmc_dev, blkoffset, (void *)buf, blkcnt);
+
+    rt_device_close(mmc_dev);
+
+    return 0;
+}
+
+int aic_ota_mmc_read(uint32_t addr, uint8_t *buf, size_t size)
+{
+    unsigned long blkcnt, blkoffset;
+
+    if (size > 2048) {
+        LOG_E("OTA_BURN_LEN need set 2048! size = %d", size);
+        return -RT_ERROR;
+    }
+
+    blkcnt = size / block_size;
+    blkoffset = addr / block_size;
+
+    rt_device_open(mmc_dev, RT_DEVICE_FLAG_RDWR);
+
+    rt_device_read(mmc_dev, blkoffset, (void *)buf, blkcnt);
 
     rt_device_close(mmc_dev);
 
@@ -423,4 +532,46 @@ int aic_ota_part_write(uint32_t addr, const uint8_t *buf, size_t size)
 
     return ret;
 }
+
+int aic_ota_part_read(uint32_t addr, uint8_t *buf, size_t size)
+{
+    int ret = 0;
+
+    switch (aic_get_boot_device()) {
+#ifdef AIC_SPINOR_DRV
+        case BD_SPINOR:
+            ret = fal_partition_read(dl_part, addr, buf, size);
+            if (ret < 0) {
+                LOG_E(" Partition (%s) read data error!", dl_part->name);
+                return -RT_ERROR;
+            } else {
+                ret = RT_EOK;
+            }
+            break;
+#endif
+#ifdef AIC_SPINAND_DRV
+        case BD_SPINAND:
+            ret = aic_ota_nand_read(addr, buf, size);
+            if (ret < 0) {
+                LOG_E("nand partition read data error!");
+                return -RT_ERROR;
+            }
+            break;
+#endif
+        case BD_SDMC0:
+        case BD_SDMC1:
+            ret = aic_ota_mmc_read(addr, buf, size);
+            if (ret < 0) {
+                LOG_E("mmc partition read data error!");
+                return -RT_ERROR;
+            }
+            break;
+        default:
+            return -RT_ERROR;
+            break;
+    }
+
+    return ret;
+}
+
 

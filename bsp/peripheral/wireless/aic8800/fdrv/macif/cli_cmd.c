@@ -9,6 +9,7 @@
 #include "reg_access.h"
 #include "rwnx_main.h"
 #include "rwnx_msg_tx.h"
+#include "rwnx_rx.h"
 #include "rwnx_platform.h"
 #include "cli_cmd.h"
 #include "wifi_if.h"
@@ -353,6 +354,71 @@ unsigned int command_strtoul(const char *cp, char **endp, unsigned int base)
 
 #define P2P_GO_SSID_STRING  "DIRECT-AIC-RTT-P2P"
 #define P2P_GO_PASS_STRING  "kkkkkkkk"
+
+void cmd_set_lp_level(uint8_t lp_level)
+{
+    int ret;
+    ret = fhost_cntrl_me_set_lp_level(lp_level);
+    if (ret) {
+        AIC_LOG_PRINTF("set lp_level fail, ret=%d\n", ret);
+    }
+}
+
+int cmd_dbg_severity_config(int argc, char * const argv[])
+{
+    int ret = 0;
+    unsigned int func = 0;
+    if (argc > 1) {
+        func = command_strtoul(argv[1], NULL, 0);
+    }
+    if (func == 0) { // show curr
+        CliPrint("dbg sev: %d\n", dbg_get_severity());
+    } else if (func == 1) { // config sev
+        if (argc > 2) {
+            unsigned int sev_idx = command_strtoul(argv[2], NULL, 0);
+            if (sev_idx < DBG_SEV_IDX_MAX) {
+                CliPrint("Cfg dbg sev: %d\n", sev_idx);
+                dbg_set_severity(sev_idx);
+            } else {
+                CliPrint("invalid sev_idx:%d\n", sev_idx);
+                ret = 1;
+            }
+        } else {
+            CliPrint("invalid args\n");
+            ret = 2;
+        }
+    } else {
+        CliPrint("invalid func\n");
+        ret = 3;
+    }
+    return ret;
+}
+
+int cmd_dbg_module_config(int argc, char * const argv[])
+{
+    int ret = 0;
+    unsigned int func = 0;
+    if (argc > 1) {
+        func = command_strtoul(argv[1], NULL, 0);
+    }
+    if (func == 0) { // show curr
+        CliPrint("dbg mod: %08X\n", dbg_get_module());
+    } else if (func == 1) { // config mod
+        if (argc > 2) {
+            unsigned int mod_msk = command_strtoul(argv[2], NULL, 16);
+            CliPrint("Cfg dbg mod: %08X\n", mod_msk);
+            dbg_set_module(mod_msk);
+        } else {
+            CliPrint("invalid args\n");
+            ret = 2;
+        }
+    }
+    else {
+        CliPrint("invalid func\n");
+        ret = 3;
+    }
+    return ret;
+}
 
 int handle_private_cmd(struct rwnx_hw *rwnx_hw, char *command)
 {
@@ -1509,7 +1575,22 @@ int handle_private_cmd(struct rwnx_hw *rwnx_hw, char *command)
                     break;
                 }
                 fhost_cntrl_cfgrwnx_set_fixed_rate(sta_idx, bw, format_idx, rate_idx, pre_type);
-            } else {
+            }
+            else if (strcasecmp(argv[0], "SET_LP") == 0) {
+                if (argc >= 2) {
+                    uint8_t lp_level = (uint8_t)command_strtoul(argv[1], NULL, 10);
+                    cmd_set_lp_level(lp_level);
+                } else {
+                    CliPrint("wrong param\r\n");
+                }
+            }
+            else if (strcasecmp(argv[0], "ds") == 0) {
+                cmd_dbg_severity_config(argc, argv);
+            }
+            else if (strcasecmp(argv[0], "dm") == 0) {
+                cmd_dbg_module_config(argc, argv);
+            }
+            else {
                 CliPrint("%s: wrong cmd(%s) in mode:%x\r\n", __func__, argv[0], rwnx_hw->mode);
             }
         } while(0);

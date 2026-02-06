@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -93,6 +93,7 @@ static s32 nand_fwc_get_mtd_partitions(struct fwc_info *fwc,
                         pr_err("[NE]nftl_initialize failed\n");
                         return -1;
                     }
+                    nftl_api_enable_oob_verify(priv->nftl_handler[idx], AIC_NFTL_OOB_VERIFY);
                 }
             }
 #endif
@@ -108,9 +109,78 @@ static s32 nand_fwc_get_mtd_partitions(struct fwc_info *fwc,
     return 0;
 }
 
-int nand_is_exist()
+int nand_is_exist(u32 id)
 {
+    struct mtd_dev *mtd;
+    char name[10];
+
+    memset(name, 0, 10);
+    strcpy(name, "nand0");
+    name[4] = '0' + id;
+    mtd = mtd_get_device(name);
+    if (mtd) {
+        return 1;
+    }
+
     return 0;
+}
+
+s32 nand_get_geometry(u32 id, struct storage_geometry *geo)
+{
+    struct mtd_dev *mtd;
+    char name[10];
+
+    if (geo == NULL)
+        return -1;
+
+    memset(name, 0, 10);
+    strcpy(name, "nand0");
+    name[4] = '0' + id;
+    mtd = mtd_get_device(name);
+    if (mtd) {
+        geo->total_size = mtd->size;
+        geo->write_size = mtd->writesize;
+        geo->erase_size = mtd->erasesize;
+        geo->oob_size = mtd->oobsize;
+        return 0;
+    }
+
+    return -1;
+}
+
+s32 nand_storage_erase(u32 id, struct storage_erase *erase)
+{
+    struct mtd_dev *mtd;
+    char name[10];
+    int ret = 0;
+    u64 cur;
+
+    if (erase == NULL)
+        return -1;
+
+    memset(name, 0, 10);
+    strcpy(name, "nand0");
+    name[4] = '0' + id;
+    mtd = mtd_get_device(name);
+    if (mtd) {
+        /* The start offset of flash */
+        cur = erase->start;
+        while (cur < (erase->start + erase->size)) {
+            if (mtd_block_isbad(mtd, cur) && (erase->flag & STORAGE_ERASE_DONT_SKIP_BAD) == 0) {
+                /* Default is skip bad block */
+                cur += mtd->erasesize;
+                continue;
+            }
+            ret = mtd_erase(mtd, cur, mtd->erasesize);
+            if (ret == -SPINAND_ERR) {
+                mtd_block_markbad(mtd, cur);
+            }
+            cur += mtd->erasesize;
+        }
+        return 0;
+    }
+
+    return -1;
 }
 
 s32 nand_fwc_prepare(struct fwc_info *fwc, u32 id)
@@ -318,9 +388,19 @@ out:
 s32 nand_fwc_mtd_erase_write(u32 dolen, struct mtd_dev *mtd, struct aicupg_nand_priv *priv, int i, u8 *buf)
 {
     int ret = 0;
+    u32 write_len = 0;
+
+    if (!IS_ALIGNED(mtd->erasesize, dolen)) {
+        pr_err("The parameter dolen[%u:%lu] not support, please check!\n", dolen, mtd->erasesize);
+        return -1;
+    }
 
     if (((priv->start_offset[i] + dolen) > priv->erase_offset[i])) {
 erase_err:
+        if ((priv->erase_offset[i] + mtd->erasesize) > mtd->size) {
+            pr_err("Error! The block to erase is out of range.\n");
+            return -1;
+        }
         /* Check bad block, before erase it. */
         if (mtd_block_isbad(mtd, priv->erase_offset[i])) {
             pr_err("The block to erase is bad, skip it.\n");
@@ -329,9 +409,10 @@ erase_err:
             goto erase_err;
         }
 
-        ret = mtd_erase(mtd, priv->erase_offset[i], ROUNDUP(dolen, mtd->erasesize));
+        /* Erase one block at a time. */
+        ret = mtd_erase(mtd, priv->erase_offset[i], mtd->erasesize);
         if (ret) {
-            pr_err("Erase block is bad, mark it.\n");
+            pr_err("Erase block is bad, mark it.offset: %lu\n", priv->erase_offset[i]);
             ret = mtd_block_markbad(mtd, priv->erase_offset[i]);
             if (ret)
                 pr_err("Mark block is bad.\n");
@@ -349,15 +430,23 @@ erase_err:
         }
         priv->erase_offset[i] += mtd->erasesize;
     }
+    if (IS_ALIGNED(priv->start_offset[i], mtd->erasesize) && mtd_block_isbad(mtd, priv->start_offset[i]))
+        priv->start_offset[i] += mtd->erasesize;
+
     pr_debug("priv->erase_offset: %lu, priv->start_offset: %lu, dolen: %u\n", priv->erase_offset[i], priv->start_offset[i], dolen);
-    ret = mtd_write(mtd, priv->start_offset[i], buf, dolen);
-    if (ret) {
-        pr_err("Write mtd %s block error, mark it.\n", mtd->name);
-        ret = mtd_block_markbad(mtd, priv->start_offset[i]);
-        if (ret)
-            pr_err("Mark block is bad.\n");
-        goto erase_err;
+    while (write_len < dolen) {
+        ret = mtd_write_oob(mtd, priv->start_offset[i] + write_len, buf + write_len, mtd->writesize, NULL, 0);
+        if (ret) {
+            pr_err("Write mtd at offset 0x%lx error, mark it.\n", priv->start_offset[i] + write_len);
+            ret = mtd_block_markbad(mtd, ALIGN_DOWN(priv->start_offset[i] + write_len, mtd->erasesize));
+            if (ret)
+                pr_err("Mark block bad error.\n");
+
+            return -1;
+        }
+        write_len += mtd->writesize;
     }
+
     return 0;
 }
 
@@ -408,7 +497,8 @@ s32 nand_fwc_mtd_write(struct fwc_info *fwc, u8 *buf, s32 len)
         if (len >= mtd->erasesize) {
             pr_debug("priv->erase_offset[i]: %lu, priv->start_offset[i]: %lu\n", priv->erase_offset[i], priv->start_offset[i]);
             for (j = 0; j < count; j++) {
-                nand_fwc_mtd_erase_write(dolen, mtd, priv, i, buf_to_write);
+                if (nand_fwc_mtd_erase_write(dolen, mtd, priv, i, buf_to_write))
+                    goto out;
 #ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
                 mtd_read(mtd, priv->start_offset[i], buf_to_read, dolen);
                 buf_to_read += dolen;
@@ -423,7 +513,8 @@ s32 nand_fwc_mtd_write(struct fwc_info *fwc, u8 *buf, s32 len)
         if (len % mtd->erasesize) {
             pr_debug("priv->erase_offset[i]: %lu, priv->start_offset[i]: %lu\n", priv->erase_offset[i], priv->start_offset[i]);
             dolen = len - (count * mtd->erasesize);
-            nand_fwc_mtd_erase_write(dolen, mtd, priv, i, buf_to_write);
+            if (nand_fwc_mtd_erase_write(dolen, mtd, priv, i, buf_to_write))
+                goto out;
 #ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
             mtd_read(mtd, priv->start_offset[i], buf_to_read, dolen);
             buf_to_read += dolen;

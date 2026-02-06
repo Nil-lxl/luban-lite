@@ -255,6 +255,10 @@ if GetDepend(['RT_USING_LWIP_IPV6']):
 if GetDepend(['RT_LWIP_USING_PING']):
     src += lwipping_SRCS
 
+if GetDepend(['RT_LWIP_USING_MQTT']):
+    src += lwipmqtt_SRCS
+    path += [cwd + '/src/apps/mqtt']
+
 mycflags = ' -w'
 group = DefineGroup('lwIP', src, depend = ['RT_USING_LWIP', 'RT_USING_LWIP212'], CPPPATH = path, LOCAL_CFLAGS = mycflags)
 

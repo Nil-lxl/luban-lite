@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -616,6 +616,7 @@ static void get_storage_media_cmd_start(struct upg_cmd *cmd, s32 cmd_data_len)
 static s32 get_storage_media_cmd_write_input_data(struct upg_cmd *cmd, u8 *buf,
                                                   s32 len)
 {
+    pr_debug("%s\n", __func__);
     /* No input data for this command */
     return 0;
 }
@@ -624,25 +625,37 @@ static s32 get_storage_media_cmd_read_output_data(struct upg_cmd *cmd, u8 *buf,
                                                   s32 len)
 {
     struct resp_header resp;
-    struct storage_media medias[3] = { 0 };
+    struct storage_media medias[5] = { 0 };
     u32 siz = 0, i = 0;
 
     pr_debug("%s\n", __func__);
 #if defined(AICUPG_MMC_ARTINCHIP)
-    if (mmc_is_exist()) {
+    if (mmc_is_exist(0)) {
         medias[i].media_dev_id = 0;
+        strcpy(medias[i++].media_type, "mmc");
+    }
+    if (mmc_is_exist(1)) {
+        medias[i].media_dev_id = 1;
         strcpy(medias[i++].media_type, "mmc");
     }
 #endif
 #if defined(AICUPG_NAND_ARTINCHIP)
-    if (nand_is_exist()) {
+    if (nand_is_exist(0)) {
         medias[i].media_dev_id = 0;
+        strcpy(medias[i++].media_type, "spi-nand");
+    }
+    if (nand_is_exist(1)) {
+        medias[i].media_dev_id = 1;
         strcpy(medias[i++].media_type, "spi-nand");
     }
 #endif
 #if defined(AICUPG_NOR_ARTINCHIP)
-    if (nor_is_exist()) {
+    if (nor_is_exist(0)) {
         medias[i].media_dev_id = 0;
+        strcpy(medias[i++].media_type, "spi-nor");
+    }
+    if (nor_is_exist(1)) {
+        medias[i].media_dev_id = 1;
         strcpy(medias[i++].media_type, "spi-nor");
     }
 #endif
@@ -748,7 +761,7 @@ static s32 get_partition_table_cmd_read_output_data(struct upg_cmd *cmd,
 
     printf("media_type:%s\n", priv->media_type);
     if (cmd->state == CMD_STATE_DATA_OUT) {
-        if (priv->media_type == NULL)
+        if (priv->media_type[0] == 0)
             return 0;
 #if defined(AICUPG_MMC_ARTINCHIP)
         else if (!memcmp(priv->media_type, "mmc", 3))
@@ -1045,6 +1058,218 @@ static void set_uart_args_cmd_end(struct upg_cmd *cmd)
     }
 }
 
+/*
+ * UPG_PROTO_CMD_GET_STORAGE_GEOME:
+ *   -> [CMD HEADER]
+ *   -> [CMD ARGS]
+ *   <- [RESP HEADER]
+ *   <- [STORAGE GEOMETRY]
+ */
+static void get_storage_geome_cmd_start(struct upg_cmd *cmd, s32 cmd_data_len)
+{
+    struct storage_media *media_info;
+
+    pr_debug("%s\n", __func__);
+    if (cmd->cmd != UPG_PROTO_CMD_GET_STORAGE_GEOME)
+        return;
+    media_info = malloc(sizeof(struct storage_media));
+    if (!media_info)
+        return;
+    memset(media_info, 0, sizeof(*media_info));
+    cmd->priv = media_info;
+    cmd_state_init(cmd, CMD_STATE_START);
+}
+
+static s32 get_storage_geome_cmd_write_input_data(struct upg_cmd *cmd, u8 *buf,
+                                                  s32 len)
+{
+    struct storage_media *priv;
+    u32 clen;
+
+    clen = 0;
+    priv = (struct storage_media *)cmd->priv;
+    if (priv == NULL)
+        return 0;
+
+    if (cmd->state == CMD_STATE_START)
+        cmd_state_set_next(cmd, CMD_STATE_ARG);
+
+    if (cmd->state == CMD_STATE_ARG) {
+        /*
+         * Enter recv argument state
+         */
+        if (len < sizeof(*priv))
+            return 0;
+        memcpy(priv, buf, sizeof(*priv));
+        clen += sizeof(*priv);
+        cmd_state_set_next(cmd, CMD_STATE_RESP);
+    }
+
+    return clen;
+}
+
+static s32 get_storage_geome_cmd_read_output_data(struct upg_cmd *cmd, u8 *buf,
+                                                  s32 len)
+{
+    struct storage_media *priv;
+    struct resp_header resp;
+    u32 siz = 0;
+    u8 *p;
+
+    priv = (struct storage_media *)cmd->priv;
+    if (priv == NULL)
+        return 0;
+    if (cmd->state == CMD_STATE_RESP) {
+        /*
+         * Enter read RESP state, to make it simple, HOST should read
+         * RESP in one read operation.
+         */
+        siz = sizeof(struct storage_geometry);
+        aicupg_gen_resp(&resp, cmd->cmd, 0, siz);
+        siz = sizeof(struct resp_header);
+        memcpy(buf, &resp, siz);
+        cmd_state_set_next(cmd, CMD_STATE_DATA_OUT);
+    }
+    if (siz == len)
+        return siz;
+    if (cmd->state == CMD_STATE_DATA_OUT) {
+        struct storage_geometry geome;
+
+        memset(&geome, 0, sizeof(geome));
+#if defined(AICUPG_MMC_ARTINCHIP)
+        if (strncmp(priv->media_type, "mmc", 3) == 0)
+            mmc_get_geometry(priv->media_dev_id, &geome);
+#endif
+#if defined(AICUPG_NOR_ARTINCHIP)
+        if (strncmp(priv->media_type, "spi-nor", 7) == 0)
+            nor_get_geometry(priv->media_dev_id, &geome);
+#endif
+#if defined(AICUPG_NAND_ARTINCHIP)
+        if (strncmp(priv->media_type, "spi-nand", 8) == 0)
+            nand_get_geometry(priv->media_dev_id, &geome);
+#endif
+
+        /* Enter read DATA state */
+        p = (u8 *)&geome;
+        memcpy(buf + siz, p, sizeof(geome));
+        siz += sizeof(geome);
+        cmd_state_set_next(cmd, CMD_STATE_END);
+    }
+    return siz;
+}
+
+static void get_storage_geome_cmd_end(struct upg_cmd *cmd)
+{
+    pr_debug("%s\n", __func__);
+    free((void *)cmd->priv);
+    cmd->priv = 0;
+    cmd_state_set_next(cmd, CMD_STATE_IDLE);
+}
+
+struct storage_erase_args {
+    struct storage_media media;
+    u32 pad;
+    struct storage_erase erase;
+} __packed;
+
+/*
+ * UPG_PROTO_CMD_ERASE_STORAGE:
+ *   -> [CMD HEADER]
+ *   -> [CMD ARGS]
+ *   <- [RESP]
+ */
+static void erase_storage_cmd_start(struct upg_cmd *cmd, s32 cmd_data_len)
+{
+    struct storage_erase_args *erase_info;
+
+    pr_debug("%s\n", __func__);
+    if (cmd->cmd != UPG_PROTO_CMD_ERASE_STORAGE)
+        return;
+    erase_info = malloc(sizeof(struct storage_erase_args));
+    if (!erase_info)
+        return;
+
+    memset(erase_info, 0, sizeof(struct storage_erase_args));
+    cmd->priv = erase_info;
+    cmd_state_init(cmd, CMD_STATE_START);
+}
+
+static s32 erase_storage_cmd_write_input_data(struct upg_cmd *cmd, u8 *buf, s32 len)
+{
+    struct storage_erase_args *erase_info;
+    u32 clen;
+
+    clen = 0;
+    erase_info = (struct storage_erase_args *)cmd->priv;
+    if (erase_info == NULL)
+        return 0;
+
+    pr_debug("%s\n", __func__);
+    if (cmd->state == CMD_STATE_START)
+        cmd_state_set_next(cmd, CMD_STATE_ARG);
+
+    if (cmd->state == CMD_STATE_ARG) {
+        /*
+         * Enter recv argument state
+         */
+        if (len < sizeof(*erase_info))
+            return 0;
+
+        memcpy(erase_info, buf, sizeof(*erase_info));
+        clen += sizeof(*erase_info);
+        cmd_state_set_next(cmd, CMD_STATE_RESP);
+    }
+
+    return clen;
+}
+
+static s32 erase_storage_cmd_read_output_data(struct upg_cmd *cmd, u8 *buf,
+                                                  s32 len)
+{
+    struct storage_erase_args *erase_info;
+    struct resp_header resp;
+    u32 siz = 0;
+    s32 ret = -1;
+
+    erase_info = (struct storage_erase_args *)cmd->priv;
+    if (cmd->state == CMD_STATE_RESP) {
+        // Call erase
+#if defined(AICUPG_MMC_ARTINCHIP)
+        if (strncmp(erase_info->media.media_type, "mmc", 3) == 0)
+            ret = mmc_storage_erase(erase_info->media.media_dev_id, &erase_info->erase);
+#endif
+#if defined(AICUPG_NOR_ARTINCHIP)
+        if (strncmp(erase_info->media.media_type, "spi-nor", 7) == 0)
+            ret = nor_storage_erase(erase_info->media.media_dev_id, &erase_info->erase);
+#endif
+#if defined(AICUPG_NAND_ARTINCHIP)
+        if (strncmp(erase_info->media.media_type, "spi-nand", 8) == 0)
+            ret = nand_storage_erase(erase_info->media.media_dev_id, &erase_info->erase);
+#endif
+        /*
+         * Enter read RESP state, to make it simple, HOST should read
+         * RESP in one read operation.
+         */
+        if (ret)
+            aicupg_gen_resp(&resp, cmd->cmd, (unsigned long)UPG_RESP_FAIL, 0);
+        else
+            aicupg_gen_resp(&resp, cmd->cmd, (unsigned long)UPG_RESP_OK, 0);
+        siz = sizeof(struct resp_header);
+        memcpy(buf, &resp, siz);
+        cmd_state_set_next(cmd, CMD_STATE_END);
+    }
+
+    return siz;
+}
+
+static void erase_storage_cmd_end(struct upg_cmd *cmd)
+{
+    pr_debug("%s\n", __func__);
+    free((void *)cmd->priv);
+    cmd->priv = 0;
+    cmd_state_set_next(cmd, CMD_STATE_IDLE);
+}
+
 static struct upg_cmd fwc_cmd_list[] = {
     {
         UPG_PROTO_CMD_SET_FWC_META,
@@ -1116,6 +1341,20 @@ static struct upg_cmd fwc_cmd_list[] = {
         set_uart_args_cmd_read_output_data,
         set_uart_args_cmd_end,
     },
+    {
+        UPG_PROTO_CMD_GET_STORAGE_GEOME,
+        get_storage_geome_cmd_start,
+        get_storage_geome_cmd_write_input_data,
+        get_storage_geome_cmd_read_output_data,
+        get_storage_geome_cmd_end,
+    },
+    {
+        UPG_PROTO_CMD_ERASE_STORAGE,
+        erase_storage_cmd_start,
+        erase_storage_cmd_write_input_data,
+        erase_storage_cmd_read_output_data,
+        erase_storage_cmd_end,
+    },
 };
 
 struct upg_cmd *find_fwc_command(struct cmd_header *h)
@@ -1123,8 +1362,9 @@ struct upg_cmd *find_fwc_command(struct cmd_header *h)
     int i;
 
     for (i = 0; i < ARRAY_SIZE(fwc_cmd_list); i++) {
-        if (fwc_cmd_list[i].cmd == (u32)h->command)
+        if (fwc_cmd_list[i].cmd == (u32)h->command) {
             return &fwc_cmd_list[i];
+        }
     }
 
     return NULL;

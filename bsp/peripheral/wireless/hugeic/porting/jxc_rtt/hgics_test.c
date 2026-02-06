@@ -1,4 +1,4 @@
-#include "../../hgic.h"
+#include "hgic.h"
 #include "os_porting.h"
 #include <rtthread.h>
 #include <string.h>

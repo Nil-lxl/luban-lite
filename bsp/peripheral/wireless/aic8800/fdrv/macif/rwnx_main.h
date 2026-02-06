@@ -37,6 +37,7 @@ void rwnx_buffer_dump(char* tag, u8 *data, u32_l len);
 int rwnx_fdrv_init(struct rwnx_hw *rwnx_hw);
 int rwnx_fdrv_deinit(struct rwnx_hw *rwnx_hw);
 int rwnx_read_efuse_mac(struct rwnx_hw *rwnx_hw);
+int rwnx_read_local_mac(void);
 uint32_t rwnx_fmac_remote_sta_max_get(struct rwnx_hw *rwnx_hw);
 #endif // RTOS_MAIN_H_
 

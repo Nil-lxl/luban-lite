@@ -98,12 +98,20 @@ int netdev_register(struct netdev *netdev, const char *name, void *user_data)
     if (netdev_list == RT_NULL)
     {
         netdev_list = netdev;
-        netdev_default = netdev;
     }
     else
     {
         /* tail insertion */
         rt_slist_append(&(netdev_list->list), &(netdev->list));
+    }
+
+    if ((netdev_default == RT_NULL)
+#ifdef SAL_USING_AF_UNIX
+        || rt_strncmp(netdev->name, "lo", 2)
+#endif
+        )
+    {
+        netdev_set_default(netdev);
     }
 
     rt_hw_interrupt_enable(level);
@@ -161,6 +169,9 @@ int netdev_unregister(struct netdev *netdev)
     if (cur_netdev == netdev)
     {
 #ifdef RT_USING_SAL
+#ifdef SAL_INTERNET_CHECK
+        sal_del_netdev_internet_up_work(netdev);
+#endif
         extern int sal_netdev_cleanup(struct netdev *netdev);
         sal_netdev_cleanup(netdev);
 #endif
@@ -359,7 +370,7 @@ void netdev_set_default(struct netdev *netdev)
     {
         netdev_default = netdev;
 
-        if (netdev->ops->set_default)
+        if (netdev->ops && netdev->ops->set_default)
         {
             /* set default network interface device in the current network stack */
             netdev->ops->set_default(netdev);

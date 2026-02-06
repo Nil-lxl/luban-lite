@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -244,6 +244,7 @@ rt_err_t drv_i2s_sound_configure(struct rt_audio_device *audio,
             hal_i2s_sclk_set(pi2s, pformat->rate, pformat->sclk_nfs);
             codec_set_mclk(codec, pformat);
             codec_set_sclk(codec, pformat);
+            codec_set_sample_rate(codec, pformat);
 
             LOG_D("set samplerate %d, channel: %d, samplebits: %d\n",
                   pformat->rate, pformat->channel, pformat->width);
@@ -258,6 +259,7 @@ rt_err_t drv_i2s_sound_configure(struct rt_audio_device *audio,
             hal_i2s_sclk_set(pi2s, pformat->rate, pformat->sclk_nfs);
             codec_set_mclk(codec, pformat);
             codec_set_sclk(codec, pformat);
+            codec_set_sample_rate(codec, pformat);
 
             LOG_D("set samplerate %d\n", pformat->rate);
             break;

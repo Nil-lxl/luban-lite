@@ -68,6 +68,7 @@ struct hci_h5_sm {
     uint16_t len;
     uint16_t exp_len;
     uint8_t hdr[4];
+    uint8_t idx;
     union {
         uint8_t *buf;
         struct os_mbuf *om;

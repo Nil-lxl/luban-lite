@@ -111,8 +111,8 @@ void aic_clr_reboot_reason(void)
     val = readl(WRI_RST_FLAG);
     writel(val, WRI_RST_FLAG); /* clear the flag */
 
-    BOOT_INFO_GET(WRI_REBOOT_REASON_MASK, WRI_REBOOT_REASON_SHIFT, val);
-    if (val) {
+    BOOT_INFO_GET(0xFF, 0, val);
+    if (val & WRI_REBOOT_REASON_MASK) {
         /* Clear the previous state */
         clrbits(WRI_REBOOT_REASON_MASK, val);
         BOOT_INFO_WRITEB(val);

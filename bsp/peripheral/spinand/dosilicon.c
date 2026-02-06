@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,11 +29,11 @@ const struct aic_spinand_info dosilicon_spinand_table[] = {
     /*DS35Q1GA-IB*/
     { DEVID(0x71), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "dosilicon 128MB: 2048+64@64@1024", cmd_cfg_table,
-      NULL, ds35q1ga_ooblayout_user },
+      NULL, ds35q1ga_ooblayout_user, 4 },
     /*DS35Q2GA-IB*/
     { DEVID(0x72), PAGESIZE(2048), OOBSIZE(64), BPL(2048), PPB(64), PLANENUM(2),
       DIE(0), "dosilicon 256MB: 2048+64@64@2048", cmd_cfg_table,
-      NULL, ds35q1ga_ooblayout_user },
+      NULL, ds35q1ga_ooblayout_user, 4 },
 };
 
 const struct aic_spinand_info *

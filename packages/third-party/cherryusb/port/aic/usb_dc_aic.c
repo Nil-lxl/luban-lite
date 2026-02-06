@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -67,6 +67,8 @@
 #define AIC_UDC_REG      ((AIC_UDC_RegDef *)(USB_BASE))
 #define AIC_EP_FIFO(i)  *(__IO uint32_t *)(USB_BASE + AIC_EP_FIFO_BASE + ((i)*AIC_EP_FIFO_SIZE))
 
+#define AIC_EP_READ_TIMEOUT  1000000U
+#define AIC_EP_FIFOCTL_TIMEOUT 200000U
 /* Endpoint state */
 struct aic_ep_state {
     uint16_t ep_mps;    /* Endpoint max packet size */
@@ -94,6 +96,10 @@ extern uint32_t usbd_clk;
     uint8_t test_mode;
 } g_aic_udc;
 
+#ifndef AIC_USB_DEVICE_DRV_V10
+static uint32_t g_tx_fifo_sz_array[USB_NUM_BIDIR_ENDPOINTS] = {0};
+#endif
+
 #define AIC_EP0_SETUP           1
 #define AIC_EP0_DATA_IN         2
 #define AIC_EP0_STATUS_OUT      3
@@ -101,6 +107,7 @@ extern uint32_t usbd_clk;
 #define AIC_EP0_STATUS_IN       13
 
 uint8_t ep0_ctrl_stage = 0; /* 1 = setup stage, 2 = data stage, 3 = status stage */
+static int setup_handler_immediately = 0;
 
 #ifdef CONFIG_USB_AIC_DMA_ENABLE
 static uint8_t g_aic_udc_ibuf[USB_RAM_SIZE] __ALIGNED(CACHE_LINE_SIZE);
@@ -190,6 +197,10 @@ static void aic_set_dma_nextep(void)
     uint32_t i, j;
     uint32_t inepcfg = 0, next = 0;
 
+#ifndef AIC_USB_DEVICE_DRV_V10
+    return;
+#endif
+
     /* dma to set the next-endpoint pointer. */
     for (i = 0; i < USB_NUM_BIDIR_ENDPOINTS; i++) {
         for (j = i + 1; j < USB_NUM_BIDIR_ENDPOINTS; j++) {
@@ -214,7 +225,7 @@ static inline int aic_reset(void)
 
     /* Wait for AHB master IDLE state. */
     do {
-        if (++count > 200000U) {
+        if (++count > AIC_EP_FIFOCTL_TIMEOUT) {
             return -1;
         }
         tmpreg = readl(&AIC_UDC_REG->ahbbasic);
@@ -227,7 +238,7 @@ static inline int aic_reset(void)
     writel(tmpreg, &AIC_UDC_REG->usbdevinit);
 
     do {
-        if (++count > 200000U) {
+        if (++count > AIC_EP_FIFOCTL_TIMEOUT) {
             return -1;
         }
         tmpreg = readl(&AIC_UDC_REG->usbdevinit);
@@ -243,7 +254,11 @@ static inline int aic_core_init(void)
         0 << 19     /* ULPI Clock SuspendM */
         | 0 << 18   /* ULPI Phy Auto Resume */
         | 0 << 15   /* PHY Low Power Clock sel */
+#ifdef FPGA_BOARD_ARTINCHIP
+        | 0x9 << 10 /* USB Turnaround time (0x5 for HS phy) */
+#else
         | 0x5 << 10 /* USB Turnaround time (0x5 for HS phy) */
+#endif
         | 0 << 7    /* ULPI DDR sel 0:single 8bit, 1:double 4bit */
         /*| 0 << 6   0: high speed utmi+, 1: full speed serial*/
 #ifdef FPGA_BOARD_ARTINCHIP
@@ -255,10 +270,11 @@ static inline int aic_core_init(void)
         | 0x7 << 0; /* HS/FS timeout calibration**/
 
     /* Activate the USB Transceiver */
-    writel(usb_gusbcfg, &AIC_UDC_REG->usbphyif);
 
     /* Reset after a PHY select */
     ret = aic_reset();
+
+    writel(usb_gusbcfg, &AIC_UDC_REG->usbphyif);
 
     aic_set_dma_nextep();
 
@@ -275,7 +291,7 @@ static inline int aic_flush_rxfifo(void)
     writel(tmpreg, &AIC_UDC_REG->usbdevinit);
 
     do {
-        if (++count > 200000U) {
+        if (++count > AIC_EP_FIFOCTL_TIMEOUT) {
             return -1;
         }
         tmpreg = readl(&AIC_UDC_REG->usbdevinit);
@@ -296,7 +312,7 @@ static inline int aic_flush_txfifo(uint32_t num)
     writel(tmpreg, &AIC_UDC_REG->usbdevinit);
 
     do {
-        if (++count > 200000U) {
+        if (++count > AIC_EP_FIFOCTL_TIMEOUT) {
             return -1;
         }
         tmpreg = readl(&AIC_UDC_REG->usbdevinit);
@@ -309,7 +325,9 @@ static void aic_set_turnaroundtime(uint32_t hclk, uint8_t speed)
 {
     uint32_t UsbTrd;
     uint32_t tmpreg = 0;
-
+#ifdef FPGA_BOARD_ARTINCHIP
+    return;
+#endif
     /* The USBTRD is configured according to the tables below, depending on AHB frequency
   used by application. In the low AHB frequency range it is used to stretch enough the USB response
   time to IN tokens, the USB turnaround time, so to compensate for the longer AHB read access
@@ -409,10 +427,10 @@ static uint8_t aic_get_devspeed(void)
     return speed;
 }
 
-static void aic_ep0_start_read_setup(uint8_t *psetup)
+void aic_ep0_start_read_setup(void)
 {
     uint32_t outepcfg = 0;
-
+    uint8_t *psetup = (uint8_t *)&g_aic_udc.setup;
     g_aic_udc.out_ep[0].xfer_buf = psetup;
     g_aic_udc.out_ep[0].xfer_len = 8;
     ep0_ctrl_stage = AIC_EP0_SETUP;
@@ -422,7 +440,7 @@ static void aic_ep0_start_read_setup(uint8_t *psetup)
 
     aic_udc_dcache_invalidate((uintptr_t)psetup, CACHE_LINE_SIZE);
 
-    writel((1<<29) | (DXEPTSIZ_PKT_CNT_MASK & (1U << 19)) | (8U), &AIC_UDC_REG->outeptsfsiz[0]);
+    writel((1<<29) | (DXEPTSIZ_PKT_CNT_MASK & (3U << 19)) | (24U), &AIC_UDC_REG->outeptsfsiz[0]);
 
 #ifdef CONFIG_USB_AIC_DMA_ENABLE
     writel((uint32_t)(uintptr_t)psetup, &AIC_UDC_REG->outepdmaaddr[0]);
@@ -433,6 +451,11 @@ static void aic_ep0_start_read_setup(uint8_t *psetup)
     outepcfg = readl(&AIC_UDC_REG->outepcfg[0]);
     outepcfg |= DEPCTL_CNAK | DEPCTL_EPENA | DEPCTL_USBACTEP;
     writel(outepcfg, &AIC_UDC_REG->outepcfg[0]);
+}
+
+void usbd_ep0_start_read_zlp(void)
+{
+    usbd_ep_start_read(0, USB_CONTROL_OUT_EP0, (uint8_t *)&g_aic_udc.setup, 0);
 }
 
 void aic_ep_write(uint8_t ep_idx, uint8_t *src, uint16_t len)
@@ -460,20 +483,41 @@ void aic_ep_read(uint8_t *dest, uint16_t len)
 }
 
 #ifndef CONFIG_USB_AIC_DMA_ENABLE
-static void aic_tx_fifo_empty_procecss(uint8_t ep_idx)
+static int aic_tx_fifo_is_ready(uint8_t ep_idx)
 {
     uint32_t len;
-    //uint32_t len32b;
+    uint32_t len32b;
 
     len = g_aic_udc.in_ep[ep_idx].xfer_len - g_aic_udc.in_ep[ep_idx].actual_xfer_len;
     if (len > g_aic_udc.in_ep[ep_idx].ep_mps) {
         len = g_aic_udc.in_ep[ep_idx].ep_mps;
     }
 
-    //len32b = (len + 3U) / 4U;
+    len32b = (len + 3U) / 4U;
 
-    while (/*((AIC_UDC_REG->ineptxsts[ep_idx] & INEPTXSTS_IN_EP_TXFIFO_STS) >= len32b) &&*/
-           (g_aic_udc.in_ep[ep_idx].actual_xfer_len < g_aic_udc.in_ep[ep_idx].xfer_len) && (g_aic_udc.in_ep[ep_idx].xfer_len != 0U)) {
+    if (AIC_UDC_REG->inepcfg[ep_idx] & DEPCTL_EPENA
+            && (g_aic_udc.in_ep[ep_idx].actual_xfer_len < g_aic_udc.in_ep[ep_idx].xfer_len)
+            && (g_aic_udc.in_ep[ep_idx].xfer_len != 0U)
+#ifdef AIC_USB_DEVICE_DRV_V10
+            &&((AIC_UDC_REG->nptxfifosts & INEPTXSTS_IN_EP_TXFIFO_STS) >= len32b)
+            && ((AIC_UDC_REG->nptxfifosts & INEPTXSTS_IN_EP_TXQUEUE_STS) != 0)
+#else
+            &&((AIC_UDC_REG->ineptxsts[ep_idx] & INEPTXSTS_IN_EP_TXFIFO_STS) >= len32b)
+#endif
+    ) {
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
+static void aic_tx_fifo_empty_procecss(uint8_t ep_idx)
+{
+    uint32_t len;
+
+    len = g_aic_udc.in_ep[ep_idx].xfer_len - g_aic_udc.in_ep[ep_idx].actual_xfer_len;
+
+    while (aic_tx_fifo_is_ready(ep_idx) == 0) {
         /* Write the FIFO */
         len = g_aic_udc.in_ep[ep_idx].xfer_len - g_aic_udc.in_ep[ep_idx].actual_xfer_len;
         if (len > g_aic_udc.in_ep[ep_idx].ep_mps) {
@@ -583,7 +627,7 @@ int usb_dc_rst(void)
 
     USB_LOG_DBG("usb_dc_rst.\n");
 
-    usbd_set_address(0);
+    usbd_set_address(0, 0);
 
     aic_flush_txfifo(0x10U);
     aic_flush_rxfifo();
@@ -593,8 +637,8 @@ int usb_dc_rst(void)
             writel(DEPCTL_SNAK, &AIC_UDC_REG->inepcfg[i]);
             writel(DEPCTL_SNAK, &AIC_UDC_REG->outepcfg[i]);
         } else {
-            usbd_ep_close(i);
-            usbd_ep_close(i | 0x80);
+            usbd_ep_close(0, i);
+            usbd_ep_close(0, i | 0x80);
         }
 
         writel(0U, &AIC_UDC_REG->ineptsfsiz[i]);
@@ -623,14 +667,26 @@ int usb_dc_rst(void)
 #endif
 
     memset(&g_aic_udc, 0, sizeof(struct aic_udc));
-    usbd_event_reset_handler();
+    usbd_event_reset_handler(0);
     /* Start reading setup */
-    aic_ep0_start_read_setup((uint8_t *)&g_aic_udc.setup);
+    aic_ep0_start_read_setup();
 
     return 0;
 }
 
-int usb_dc_init(void)
+static int _set_tx_fifo_size(void)
+{
+    #ifndef AIC_USB_DEVICE_DRV_V10
+    g_tx_fifo_sz_array[0] = AIC_DEDICATED_TX_FIFO0_SIZE;
+    g_tx_fifo_sz_array[1] = AIC_DEDICATED_TX_FIFO1_SIZE;
+    g_tx_fifo_sz_array[2] = AIC_DEDICATED_TX_FIFO2_SIZE;
+    g_tx_fifo_sz_array[3] = AIC_DEDICATED_TX_FIFO3_SIZE;
+    g_tx_fifo_sz_array[4] = AIC_DEDICATED_TX_FIFO4_SIZE;
+    #endif
+    return 0;
+}
+
+int usb_dc_init(uint8_t busid)
 {
     int ret;
     uint32_t base = 0;
@@ -651,9 +707,11 @@ int usb_dc_init(void)
 
     ret = aic_core_init();
 
-    for (uint8_t i = 0U; i < 2U; i++) {
+    for (uint8_t i = 0U; i < (USB_NUM_BIDIR_ENDPOINTS - 1); i++) {
         writel(0, &AIC_UDC_REG->txfifosiz[i]);
     }
+
+    _set_tx_fifo_size();
 
     /* Device mode configuration */
     tmpreg = readl(&AIC_UDC_REG->usbdevconf);
@@ -701,11 +759,27 @@ int usb_dc_init(void)
     base = 0;
     writel(AIC_RX_FIFO_SIZE, &AIC_UDC_REG->rxfifosiz);
     base += AIC_RX_FIFO_SIZE;
+
+#ifdef AIC_USB_DEVICE_DRV_V10
     writel((AIC_NP_TX_FIFO_SIZE << 16) | base, &AIC_UDC_REG->nptxfifosiz);
     base += AIC_NP_TX_FIFO_SIZE;
     writel((AIC_PERIOD_TX_FIFO1_SIZE << 16) | base, &AIC_UDC_REG->txfifosiz[0]);
     base += AIC_PERIOD_TX_FIFO1_SIZE;
     writel((AIC_PERIOD_TX_FIFO2_SIZE << 16) | base, &AIC_UDC_REG->txfifosiz[1]);
+#else
+    AIC_UDC_REG->ietxfifosiz = (g_tx_fifo_sz_array[0] << 16) | base;
+    base += g_tx_fifo_sz_array[0];
+
+    for (int i = 1; i < USB_NUM_BIDIR_ENDPOINTS; i++) {
+        /* txfifo is configuared separately, starting from txfifo 1 here. */
+
+        if (g_tx_fifo_sz_array[i] == 0)
+            continue;
+
+        writel((g_tx_fifo_sz_array[i] << 16) | base, &AIC_UDC_REG->txfifosiz[i -1]);
+        base += g_tx_fifo_sz_array[i];
+    }
+#endif
 
     usb_dc_rst();
 
@@ -723,11 +797,11 @@ int usb_dc_init(void)
     return ret;
 }
 
-int usb_dc_deinit(void)
+int usb_dc_deinit(uint8_t busid)
 {
     uint32_t tmpreg = 0;
 
-    usbd_event_suspend_handler();
+    usbd_event_suspend_handler(busid);
 
     /* Clear Pending interrupt */
     for (uint8_t i = 0U; i < USB_NUM_BIDIR_ENDPOINTS; i++) {
@@ -752,7 +826,7 @@ int usb_dc_deinit(void)
     return 0;
 }
 
-int usbd_set_address(const uint8_t addr)
+int usbd_set_address(uint8_t busid, const uint8_t addr)
 {
     uint32_t tmpreg = 0;
 
@@ -764,7 +838,7 @@ int usbd_set_address(const uint8_t addr)
     return 0;
 }
 
-int usbd_set_remote_wakeup(void)
+int usbd_set_remote_wakeup(uint8_t busid)
 {
     uint32_t tmpreg = 0;
 
@@ -778,7 +852,7 @@ int usbd_set_remote_wakeup(void)
     return 0;
 }
 
-uint8_t usbd_get_port_speed(const uint8_t port)
+uint8_t usbd_get_port_speed(uint8_t busid)
 {
     uint8_t speed;
     uint32_t DevEnumSpeed = readl(&AIC_UDC_REG->usblinests);
@@ -796,12 +870,11 @@ uint8_t usbd_get_port_speed(const uint8_t port)
     return speed;
 }
 
-int usbd_ep_open(const struct usb_endpoint_descriptor *ep)
+int usbd_ep_open(uint8_t busid, const struct usb_endpoint_descriptor *ep)
 {
     uint8_t ep_idx = USB_EP_GET_IDX(ep->bEndpointAddress);
     uint16_t ep_mps;
     uint8_t tx_fifo_num = 0;
-    uint32_t i;
     uint32_t usbepintmsk = 0;
     uint32_t epcfg = 0;
 
@@ -848,11 +921,11 @@ int usbd_ep_open(const struct usb_endpoint_descriptor *ep)
 
         usbepintmsk |= DAINT_IN_MASK & (uint32_t)(1UL << ep_idx);
         writel(usbepintmsk, &AIC_UDC_REG->usbepintmsk);
-
+#ifdef AIC_USB_DEVICE_DRV_V10
         /* Period IN EP alloc fifo num */
         if ((USB_GET_ENDPOINT_TYPE(ep->bmAttributes) == USB_ENDPOINT_TYPE_INTERRUPT) ||
             (USB_GET_ENDPOINT_TYPE(ep->bmAttributes) == USB_ENDPOINT_TYPE_ISOCHRONOUS)) {
-            for (i = 1; i <= USB_P_TXFIFO_NUM; i++) {
+            for (int i = 1; i <= USB_P_TXFIFO_NUM; i++) {
                 if (g_aic_udc.p_txfifo_map & (1 << i))
                     continue;
                 g_aic_udc.p_txfifo_map |= (1 << i);
@@ -868,6 +941,11 @@ int usbd_ep_open(const struct usb_endpoint_descriptor *ep)
             g_aic_udc.np_txfifo_map |= (1 << ep_idx);
         }
         aic_set_dma_nextep();
+#else
+        tx_fifo_num = ep_idx;
+        aic_flush_txfifo(tx_fifo_num);
+#endif
+
         epcfg = readl(&AIC_UDC_REG->inepcfg[ep_idx]);
         epcfg |= (ep_mps & DEPCTL_MPS_MASK) |
                  ((uint32_t)USB_GET_ENDPOINT_TYPE(ep->bmAttributes) << 18) |
@@ -879,7 +957,7 @@ int usbd_ep_open(const struct usb_endpoint_descriptor *ep)
     return 0;
 }
 
-int usbd_ep_close(const uint8_t ep)
+int usbd_ep_close(uint8_t busid, const uint8_t ep)
 {
     uint8_t ep_idx = USB_EP_GET_IDX(ep);
     uint8_t tx_fifo_num = 0;
@@ -1008,10 +1086,12 @@ int usbd_ep_close(const uint8_t ep)
             aic_flush_txfifo(tx_fifo_num);
 
             /* Period IN EP free fifo num */
+            #ifdef AIC_USB_DEVICE_DRV_V10
             if (tx_fifo_num > 0)
                 g_aic_udc.p_txfifo_map &= ~(1 << tx_fifo_num);
             else
                 g_aic_udc.np_txfifo_map &= ~(1 << ep_idx);
+            #endif
 
             /* (4) Clear Global In NP NAK in Shared FIFO for non periodic ep */
             if (!tx_fifo_num) {
@@ -1135,11 +1215,11 @@ int usbd_npinep_rewrite(const uint8_t ep)
     writel(tmpreg, &AIC_UDC_REG->usbdevfunc);
 
     /* (2) reopen current ep */
-    usbd_ep_open(&g_aic_udc.in_ep_desc[ep]);
+    usbd_ep_open(0, &g_aic_udc.in_ep_desc[ep]);
 
     /* (3) rewrite current ep */
     if (pending_map & (1 << ep)) {
-        usbd_ep_start_write(ep, g_aic_udc.in_ep[ep].xfer_buf,
+        usbd_ep_start_write(0, ep, g_aic_udc.in_ep[ep].xfer_buf,
                                 g_aic_udc.in_ep[ep].xfer_len);
     }
 
@@ -1148,15 +1228,15 @@ int usbd_npinep_rewrite(const uint8_t ep)
         if (!(pending_map & (1 << i)) ||
             (i == ep))
             continue;
-        usbd_ep_open(&g_aic_udc.in_ep_desc[i]);
-        usbd_ep_start_write(i, g_aic_udc.in_ep[i].xfer_buf,
+        usbd_ep_open(0, &g_aic_udc.in_ep_desc[i]);
+        usbd_ep_start_write(0, i, g_aic_udc.in_ep[i].xfer_buf,
                             g_aic_udc.in_ep[i].xfer_len);
     }
 
     return 0;
 }
 
-int usbd_ep_set_stall(const uint8_t ep)
+int usbd_ep_set_stall(uint8_t busid, const uint8_t ep)
 {
     uint8_t ep_idx = USB_EP_GET_IDX(ep);
     uint32_t tmpreg = 0;
@@ -1179,13 +1259,13 @@ int usbd_ep_set_stall(const uint8_t ep)
 
 #ifdef CONFIG_USB_AIC_DMA_ENABLE
     if (ep_idx == 0) {
-        aic_ep0_start_read_setup((uint8_t *)&g_aic_udc.setup);
+        aic_ep0_start_read_setup();
     }
 #endif
     return 0;
 }
 
-int usbd_ep_clear_stall(const uint8_t ep)
+int usbd_ep_clear_stall(uint8_t busid, const uint8_t ep)
 {
     uint8_t ep_idx = USB_EP_GET_IDX(ep);
     uint32_t tmpreg = 0;
@@ -1211,7 +1291,7 @@ int usbd_ep_clear_stall(const uint8_t ep)
     return 0;
 }
 
-int usbd_ep_is_stalled(const uint8_t ep, uint8_t *stalled)
+int usbd_ep_is_stalled(uint8_t busid, const uint8_t ep, uint8_t *stalled)
 {
     if (USB_EP_DIR_IS_OUT(ep)) {
     } else {
@@ -1273,6 +1353,10 @@ int usbd_ep_start_write_raw(const uint8_t ep, const uint8_t *data, uint32_t data
     ineptsfsiz &= ~(DXEPTSIZ_XFER_SIZE_MASK);
 
     if (data_len == 0) {
+#ifdef CONFIG_USB_AIC_DMA_ENABLE
+        if (data)
+            writel((uint32_t)(uintptr_t)data, &AIC_UDC_REG->inepdmaaddr[ep_idx]);
+#endif
         ineptsfsiz |= (DXEPTSIZ_PKT_CNT_MASK & (1U << 19));
         writel(ineptsfsiz, &AIC_UDC_REG->ineptsfsiz[ep_idx]);
         inepcfg |= (DEPCTL_CNAK | DEPCTL_EPENA);
@@ -1304,7 +1388,7 @@ int usbd_ep_start_write_raw(const uint8_t ep, const uint8_t *data, uint32_t data
             inepcfg |= DEPCTL_SETD0PID;
         }
         ineptsfsiz &= ~(DXEPTSIZ_MULCNT_MASK);
-        ineptsfsiz |= ((pktcnt << DXEPTSIZ_MULCNT_SHIFT) & DXEPTSIZ_MULCNT_MASK);
+        ineptsfsiz |= ((MIN(3, pktcnt) << DXEPTSIZ_MULCNT_SHIFT) & DXEPTSIZ_MULCNT_MASK);
     } else if (g_aic_udc.in_ep[ep_idx].ep_type == USB_ENDPOINT_TYPE_INTERRUPT) {
         ineptsfsiz &= ~(DXEPTSIZ_MULCNT_MASK);
         ineptsfsiz |= (1U << DXEPTSIZ_MULCNT_SHIFT);
@@ -1324,7 +1408,7 @@ int usbd_ep_start_write_raw(const uint8_t ep, const uint8_t *data, uint32_t data
 }
 
 
-int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len)
+int usbd_ep_start_write(uint8_t busid, const uint8_t ep, const uint8_t *data, uint32_t data_len)
 {
     return usbd_ep_start_write_raw(ep, data, data_len, 1);
 }
@@ -1333,7 +1417,6 @@ int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, u
 {
     uint8_t ep_idx = USB_EP_GET_IDX(ep);
     uint32_t pktcnt = 0;
-    uint32_t i = 0;
     uint32_t outepcfg = 0;
     uint32_t outeptsfsiz = 0;
     uint32_t usblinests = 0;
@@ -1343,12 +1426,13 @@ int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, u
     }
     outepcfg = readl(&AIC_UDC_REG->outepcfg[ep_idx]);
     if (outepcfg & DEPCTL_EPENA) {
-        for (i = 0; i < 100000; i++) {
+        uint32_t i = 0;
+        for (i = 0; i < AIC_EP_READ_TIMEOUT; i++) {
             outepcfg = readl(&AIC_UDC_REG->outepcfg[ep_idx]);
             if (!(outepcfg & DEPCTL_EPENA))
                 break;
         }
-        if (i == 1000000) {
+        if (i == AIC_EP_READ_TIMEOUT) {
             g_aic_udc.out_ep[ep_idx].xfer_len = data_len;
             USB_LOG_ERR("ep%d AIC_UDC_REG->outepcfg[ep_idx] = 0x%x.\n",
                         (unsigned int)ep_idx, (unsigned int)outepcfg);
@@ -1397,6 +1481,10 @@ int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, u
         outeptsfsiz |= (DXEPTSIZ_PKT_CNT_MASK & (1 << 19));
         outeptsfsiz |= (DXEPTSIZ_XFER_SIZE_MASK & g_aic_udc.out_ep[ep_idx].ep_mps);
         writel(outeptsfsiz, &AIC_UDC_REG->outeptsfsiz[ep_idx]);
+        #ifdef CONFIG_USB_AIC_DMA_ENABLE
+        if (data)
+            writel((uint32_t)(uintptr_t)data, &AIC_UDC_REG->outepdmaaddr[ep_idx]);
+        #endif
         outepcfg |= (DEPCTL_CNAK | DEPCTL_EPENA);
         writel(outepcfg, &AIC_UDC_REG->outepcfg[ep_idx]);
         return 0;
@@ -1439,7 +1527,7 @@ int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, u
 }
 
 
-int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len)
+int usbd_ep_start_read(uint8_t busid, const uint8_t ep, uint8_t *data, uint32_t data_len)
 {
     return usbd_ep_start_read_raw(ep, data, data_len, 1);
 }
@@ -1487,7 +1575,57 @@ void usbd_execute_test_mode(uint8_t test_mode)
 }
 #endif
 
-void USBD_IRQHandler(void)
+static int usbd_ep0_setup_handler(void)
+{
+    uint32_t outepdmaaddr = readl(&AIC_UDC_REG->outepdmaaddr[0]);
+    struct usb_setup_packet *setup = (struct usb_setup_packet *)(uintptr_t)outepdmaaddr;
+    setup--;
+    if (setup == NULL) {
+        USB_LOG_ERR("outepdmaaddr is null.\n");
+        return -1;
+    }
+
+    if (g_aic_udc.setup.wLength) {
+        if ((g_aic_udc.setup.bmRequestType & USB_REQUEST_DIR_MASK) == USB_REQUEST_DIR_OUT) {
+            ep0_ctrl_stage = AIC_EP0_DATA_OUT;
+            // USB_LOG_DBG("out cb -> out data start\n");
+        } else {
+            ep0_ctrl_stage = AIC_EP0_DATA_IN;
+        }
+    } else {
+        ep0_ctrl_stage = AIC_EP0_STATUS_IN;
+    }
+
+    usbd_event_ep0_setup_complete_handler(0, (uint8_t *)setup);
+
+    return 0;
+}
+
+static int usbd_ep0_setup_handler_immediately(void)
+{
+    uint32_t count = 0;
+
+    aic_udc_dcache_invalidate((uintptr_t)&g_aic_udc, CACHE_LINE_SIZE);
+
+    USB_LOG_DBG("out cb -> out setup + done %#x %#x %#x ",
+                readl(&AIC_UDC_REG->inepcfg[0]),
+                readl(&AIC_UDC_REG->outepcfg[0]),
+                *(uint16_t *)&g_aic_udc.setup);
+
+    setup_handler_immediately = 1;
+    do {
+        if (++count > AIC_EP_FIFOCTL_TIMEOUT) {
+            USB_LOG_ERR("(E) setup busy timeout. -> %#x %#x\n",
+                        readl(&AIC_UDC_REG->inepcfg[0]), readl(&AIC_UDC_REG->outepcfg[0]));
+            break;
+        }
+    } while ((readl(&AIC_UDC_REG->outepcfg[0]) & DEPCTL_NAK_STATUS) == 0);
+
+    return 0;
+}
+
+
+void usbd_irq_handler(void)
 {
     uint32_t gint_status, ep_idx, ep_intr, epint, daintmask, tmpreg, tmpreg01;
     gint_status = aic_get_glb_intstatus();
@@ -1554,30 +1692,47 @@ void USBD_IRQHandler(void)
                         /* Setup data-out will send STATUS_PHASE_RCVD interrupt when next setup.
                            Attemp to re-read setup data. */
                         if (epint & CTRL_OUT_EP_STATUS_PHASE_RCVD) {
-                            aic_ep0_start_read_setup((uint8_t *)&g_aic_udc.setup);
+                            if (epint & TRANSFER_DONE)  {
+                                /* case E*/
+                                aic_ep0_start_read_setup();
+                                USB_LOG_DBG("(E)out cb -> out status %d \n", epint);
+                            } else {
+                                /* case D */
+                                usbd_ep_start_read(0, USB_CONTROL_OUT_EP0, (uint8_t *)&g_aic_udc.setup, 0);
+                                USB_LOG_DBG("(D)out cb -> out status %d \n", epint);
+                            }
                         }
 
                         /* Normal setup handle */
                         if (epint & CTRL_OUT_EP_SETUP_PHASE_DONE) {
-                            if (g_aic_udc.setup.wLength)
-                                if ((g_aic_udc.setup.bmRequestType & USB_REQUEST_DIR_MASK) == USB_REQUEST_DIR_OUT)
-                                    ep0_ctrl_stage = AIC_EP0_DATA_OUT;
-                                else
-                                    ep0_ctrl_stage = AIC_EP0_DATA_IN;
-                            else
-                                ep0_ctrl_stage = AIC_EP0_STATUS_IN;
-                            usbd_event_ep0_setup_complete_handler((uint8_t *)&g_aic_udc.setup);
+                            USB_LOG_DBG("out cb -> out setup %#x %#x %#x \n",
+                                        readl(&AIC_UDC_REG->inepcfg[0]),
+                                        readl(&AIC_UDC_REG->outepcfg[0]),
+                                        *(uint16_t *)&g_aic_udc.setup);
+
+                            usbd_ep0_setup_handler();
                         }
                     } else {
+                        if (epint & CTRL_OUT_EP_SETUP_PHASE_DONE)  {
+                            usbd_ep0_setup_handler_immediately();
+                        }
+
                         if ((epint & TRANSFER_DONE) == TRANSFER_DONE) {
                             if (ep->xfer_len == 0) {
+                                USB_LOG_DBG("out cb -> out status\n");
                                 /* Out status, start reading setup */
-                                aic_ep0_start_read_setup((uint8_t *)&g_aic_udc.setup);
+                                if (setup_handler_immediately) {
+                                    usbd_ep0_setup_handler();
+                                    setup_handler_immediately = 0;
+                                } else {
+                                    aic_ep0_start_read_setup();
+                                }
                             } else {
-                                //ep->actual_xfer_len = ep->xfer_len - ((AIC_UDC_REG->outeptsfsiz[ep_idx]) & DXEPTSIZ_XFER_SIZE_MASK);
+                                USB_LOG_DBG("out cb -> out data %#x %#x \n", readl(&AIC_UDC_REG->inepcfg[0]), readl(&AIC_UDC_REG->outepcfg[0]));
+                                // ep->actual_xfer_len = ep->xfer_len - ((AIC_UDC_REG->outeptsfsiz[ep_idx]) & DXEPTSIZ_XFER_SIZE_MASK);
                                 ep->actual_xfer_len = ep->xfer_len;
                                 ep->xfer_len = 0;
-                                usbd_event_ep_out_complete_handler(0x00, ep->actual_xfer_len);
+                                usbd_event_ep_out_complete_handler(0, 0x00, ep->actual_xfer_len);
                             }
                         }
                     }
@@ -1591,14 +1746,14 @@ void USBD_IRQHandler(void)
                     tmpreg = readl(&AIC_UDC_REG->outeptsfsiz[ep_idx]);
                     ep->actual_xfer_len = ep->xfer_len - (tmpreg & DXEPTSIZ_XFER_SIZE_MASK);
                     ep->xfer_len = 0;
-                    usbd_event_ep_out_complete_handler(ep_idx, ep->actual_xfer_len);
+                    usbd_event_ep_out_complete_handler(0, ep_idx, ep->actual_xfer_len);
                 }
 
 #ifndef CONFIG_USB_AIC_DMA_ENABLE
                 if ((epint & CTRL_OUT_EP_SETUP_PHASE_DONE) == CTRL_OUT_EP_SETUP_PHASE_DONE) {
                     if (ep0_ctrl_stage == 1) {
                         ep0_ctrl_stage = 2;
-                        usbd_event_ep0_setup_complete_handler((uint8_t *)&g_aic_udc.setup);
+                        usbd_event_ep0_setup_complete_handler(0, (uint8_t *)&g_aic_udc.setup);
                     }
                 }
 #endif
@@ -1634,14 +1789,16 @@ void USBD_IRQHandler(void)
                     if (ep_idx == 0) {
                         if (g_aic_udc.setup.wLength && ((g_aic_udc.setup.bmRequestType & USB_REQUEST_DIR_MASK) == USB_REQUEST_DIR_OUT)) {
                             /* In status, start reading setup */
-                            aic_ep0_start_read_setup((uint8_t *)&g_aic_udc.setup);
+                            aic_ep0_start_read_setup();
                         } else if (g_aic_udc.setup.wLength == 0) {
                             /* In status, start reading setup */
-                            aic_ep0_start_read_setup((uint8_t *)&g_aic_udc.setup);
+                            USB_LOG_DBG("in cb -> zlp %d \n", setup_handler_immediately);
+                            aic_ep0_start_read_setup();
                         } else {
+                            USB_LOG_DBG("in cb -> data %d\n", g_aic_udc.in_ep[ep_idx].xfer_len);
                             g_aic_udc.in_ep[ep_idx].actual_xfer_len = g_aic_udc.in_ep[ep_idx].xfer_len - ((AIC_UDC_REG->ineptsfsiz[ep_idx]) & DXEPTSIZ_XFER_SIZE_MASK);
                             g_aic_udc.in_ep[ep_idx].xfer_len = 0;
-                            usbd_event_ep_in_complete_handler(0x80, g_aic_udc.in_ep[ep_idx].actual_xfer_len);
+                            usbd_event_ep_in_complete_handler(0, 0x80, g_aic_udc.in_ep[ep_idx].actual_xfer_len);
                         }
 #ifdef CONFIG_USBDEV_TEST_MODE
                         if (g_aic_udc.test_mode) {
@@ -1654,7 +1811,7 @@ void USBD_IRQHandler(void)
                         tmpreg = readl(&AIC_UDC_REG->ineptsfsiz[ep_idx]);
                         g_aic_udc.in_ep[ep_idx].actual_xfer_len = g_aic_udc.in_ep[ep_idx].xfer_len - (tmpreg & DXEPTSIZ_XFER_SIZE_MASK);
                         g_aic_udc.in_ep[ep_idx].xfer_len = 0;
-                        usbd_event_ep_in_complete_handler(ep_idx | 0x80, g_aic_udc.in_ep[ep_idx].actual_xfer_len);
+                        usbd_event_ep_in_complete_handler(0, ep_idx | 0x80, g_aic_udc.in_ep[ep_idx].actual_xfer_len);
                     }
                 }
 
@@ -1740,7 +1897,7 @@ void USBD_IRQHandler(void)
     }
     if (gint_status & INT_SUSPEND) {
         writel(INT_SUSPEND, &AIC_UDC_REG->usbintsts);
-        usbd_event_suspend_handler();
+        usbd_event_suspend_handler(0);
     }
     if (gint_status & INT_RESUME) {
         writel(INT_RESUME, &AIC_UDC_REG->usbintsts);
@@ -1756,9 +1913,9 @@ void usb_plug_irq(void *args)
 
     hal_gpio_get_value(GPIO_GROUP(pin), GPIO_GROUP_PIN(pin), &ret);
     if (ret) {
-        usbd_event_connect_handler();
+        usbd_event_connect_handler(0);
     } else {
-        usbd_event_disconnect_handler();
+        usbd_event_disconnect_handler(0);
     }
 }
 int usbd_plug_irq_init(void)

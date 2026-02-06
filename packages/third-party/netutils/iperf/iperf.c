@@ -11,6 +11,9 @@
 #include <unistd.h>
 
 #include <sys/time.h>
+#ifdef RT_USING_POSIX_SELECT
+#include <sys/select.h>
+#endif
 #ifdef RT_USING_POSIX_SOCKET
 #include <sys/socket.h>
 #endif

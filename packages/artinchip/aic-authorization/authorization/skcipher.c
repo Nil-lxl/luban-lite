@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,7 +15,6 @@
 
 #define CE_CIPHER_MAX_KEY_SIZE  64
 #define CE_CIPHER_MAX_IV_SIZE   AES_BLOCK_SIZE
-#define CE_CIPHER_MAX_DATA_SIZE 0x3FF00
 #define FLG_DEC                 BIT(0)
 #define FLG_AES                 BIT(1)
 #define FLG_DES                 BIT(2)
@@ -834,6 +833,7 @@ err:
 static int aic_skcipher_do_one_req(struct skcipher_request *req)
 {
     struct aic_skcipher_req_ctx *rctx;
+    u32 timeout = 300 * 1000;
 
     pr_debug("%s\n", __func__);
     rctx = skcipher_request_ctx(req);
@@ -849,8 +849,9 @@ static int aic_skcipher_do_one_req(struct skcipher_request *req)
     hal_crypto_init();
     hal_crypto_irq_enable(ALG_SK_ACCELERATOR);
     hal_crypto_start_symm(rctx->task);
-    while (!hal_crypto_poll_finish(ALG_SK_ACCELERATOR)) {
-        continue;
+    if (hal_crypto_poll_finish(ALG_SK_ACCELERATOR, timeout)) {
+        pr_err("SK ACCELERATOR run timeout.\n");
+        return -ETIMEDOUT;
     }
     hal_crypto_pending_clear(ALG_SK_ACCELERATOR);
 

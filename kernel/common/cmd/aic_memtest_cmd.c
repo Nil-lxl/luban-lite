@@ -6,7 +6,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include "aic_osal.h"
 #include "aic_common.h"
 

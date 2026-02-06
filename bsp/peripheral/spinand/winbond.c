@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,6 +22,58 @@ int winbond_ecc_get_status(struct aic_spinand *flash, u8 status)
             return 4;
         case STATUS_ECC_UNCOR_ERROR:
             return -SPINAND_ERR_ECC;
+        default:
+            break;
+    }
+
+    return -SPINAND_ERR;
+}
+
+int w25n01gv_ecc_get_status(struct aic_spinand *flash, u8 status)
+{
+    switch (status & STATUS_ECC_MASK) {
+        case STATUS_ECC_NO_BITFLIPS:
+            return 0;
+        case STATUS_ECC_HAS_1_4_BITFLIPS:
+            return 1;
+        case STATUS_ECC_UNCOR_ERROR:
+            return -SPINAND_ERR_ECC;
+        default:
+            break;
+    }
+
+    return -SPINAND_ERR;
+}
+
+int w25n04kv_ecc_get_status(struct aic_spinand *flash, u8 status)
+{
+    switch (status & STATUS_ECC_MASK) {
+        case STATUS_ECC_NO_BITFLIPS:
+            return 0;
+        case STATUS_ECC_HAS_1_4_BITFLIPS:
+            return 4;
+        case STATUS_ECC_UNCOR_ERROR:
+            return -SPINAND_ERR_ECC;
+        case STATUS_ECC_MASK:
+            return 8;
+        default:
+            break;
+    }
+
+    return -SPINAND_ERR;
+}
+
+int w25n01kv_ecc_get_status(struct aic_spinand *flash, u8 status)
+{
+    switch (status & STATUS_ECC_MASK) {
+        case STATUS_ECC_NO_BITFLIPS:
+            return 0;
+        case STATUS_ECC_HAS_1_4_BITFLIPS:
+            return 1;
+        case STATUS_ECC_UNCOR_ERROR:
+            return -SPINAND_ERR_ECC;
+        case STATUS_ECC_MASK:
+            return 4;
         default:
             break;
     }
@@ -71,25 +123,26 @@ const struct aic_spinand_info winbond_spinand_table[] = {
     is_die_select*/
     { DEVID(0xAA, 0x21), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "W25N01GVxxxG/T/R Winbond 128MB: 2048+64@64@1024", cmd_cfg_table,
-      winbond_ecc_get_status, w25n01gv_ooblayout_user },
+      w25n01gv_ecc_get_status, w25n01gv_ooblayout_user, 1 },
     { DEVID(0xAA, 0x22), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64), PLANENUM(1),
       DIE(0), "W25N02KVxxIR/U Winbond 256MB: 2048+128@64@2048", cmd_cfg_table,
-      winbond_ecc_get_status, w25n02kv_ooblayout_user },
+      w25n01gv_ecc_get_status, w25n02kv_ooblayout_user, 1 },
     { DEVID(0xAA, 0x23), PAGESIZE(2048), OOBSIZE(128), BPL(4096), PPB(64), PLANENUM(1),
       DIE(0), "W25N04KVxxIR/U Winbond 512MB: 2048+128@64@4096", cmd_cfg_table,
-      winbond_ecc_get_status, w25n02kv_ooblayout_user },
-    { DEVID(0xBF, 0x22), PAGESIZE(2048), OOBSIZE(64), BPL(2048), PPB(64), PLANENUM(1),
-      DIE(0), "W25N02JWxxxF/C Winbond 256MB: 2048+64@64@2048", cmd_cfg_table,
-      NULL, w25n01jw_ooblayout_user },  /* 1.8V */
+      w25n04kv_ecc_get_status, w25n02kv_ooblayout_user, 8 },
+    { DEVID(0xAE, 0x21), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
+      DIE(0), "W25N01KVxxxE Winbond 128MB: 2048+64@64@1024", cmd_cfg_table,
+      w25n01kv_ecc_get_status, w25n02kv_ooblayout_user, 4 },
     { DEVID(0xAB, 0x21), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "W25M02GV Winbond 256MB: 2048+64@64@1024, MCP", cmd_cfg_table,
-      winbond_ecc_get_status, w25n01gv_ooblayout_user },
+      w25n01gv_ecc_get_status, w25n01gv_ooblayout_user, 1 },
     { DEVID(0xBA, 0x22), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "W25N02KW Winbond 128MB: 2048+128@64@1024", cmd_cfg_table,
       NULL, w25n02kv_ooblayout_user },  /* 1.8V */
-    { DEVID(0xAE, 0x21), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
-      DIE(0), "W25N01KVxxxE Winbond 128MB: 2048+64@64@1024", cmd_cfg_table,
-      NULL, w25n02kv_ooblayout_user },
+    { DEVID(0xBF, 0x22), PAGESIZE(2048), OOBSIZE(64), BPL(2048), PPB(64), PLANENUM(1),
+      DIE(0), "W25N02JWxxxF/C Winbond 256MB: 2048+64@64@2048", cmd_cfg_table,
+      NULL, w25n01jw_ooblayout_user, 1 },  /* 1.8V */
+    
 };
 
 const struct aic_spinand_info *winbond_spinand_detect(struct aic_spinand *flash)

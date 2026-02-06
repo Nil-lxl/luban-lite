@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -32,6 +32,7 @@ typedef enum {
     PLAYER_CMD_GET_FRAME,
     PLAYER_CMD_GET_IMAGE_SRC,
     PLAYER_CMD_UPDATE_DISPLAY_AREA,
+    PLAYER_CMD_SET_PLAYBACK_RATE,
 } player_cmd_t;
 
 typedef struct {

@@ -77,6 +77,7 @@ typedef struct mm_video_render_data {
     MM_BOOL frame_end_flag;
     MM_BOOL flags;
     MM_BOOL wait_ready_frame_flag;
+    MM_BOOL debug_en;
 
     u32 receive_frame_num;
     u32 show_frame_ok_num;
@@ -96,7 +97,7 @@ typedef struct mm_video_render_data {
 } mm_video_render_data;
 
 static void *mm_video_render_component_thread(void *p_thread_data);
-
+static void mm_video_render_show_debug_info(mm_video_render_data *p_video_render_data);
 
 static int mm_video_render_calloc_frame_buffer(struct mpp_frame *p_frame)
 {
@@ -662,8 +663,7 @@ static s32 mm_video_render_get_parameter(mm_handle h_component,
                 error = MM_ERROR_UNDEFINED;
                 break;
             }
-            p_video_render_data->render->get_screen_size(
-                p_video_render_data->render, &size);
+            aic_video_render_get_screen_size(p_video_render_data->render, &size);
             ((mm_param_screen_size *)p_param)->width = size.width;
             ((mm_param_screen_size *)p_param)->height = size.height;
             break;
@@ -698,6 +698,7 @@ static s32 mm_video_render_set_parameter(mm_handle h_component,
                 ((mm_config_rect *)p_param)->height;
             p_video_render_data->dis_rect_change = MM_TRUE;
             break;
+
         case MM_INDEX_VENDOR_STREAM_FRAME_END:
             frame_end = (mm_param_frame_end *)p_param;
             if (frame_end->b_frame_end == MM_TRUE) {
@@ -716,6 +717,11 @@ static s32 mm_video_render_set_parameter(mm_handle h_component,
             }
             error = aic_video_render_rend_last_frame(p_video_render_data->render,
                                                      (s32)(((mm_param_u32 *)p_param)->u32));
+            break;
+
+        case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
+            p_video_render_data->debug_en = ((mm_param_u32 *)p_param)->u32;
+            mm_video_render_show_debug_info(p_video_render_data);
             break;
 
         default:
@@ -782,9 +788,9 @@ static s32 mm_video_render_set_config(mm_handle h_component,
                     loge("aic_video_render_create error!!!!\n");
                     break;
                 }
-                ret = p_video_render_data->render->init(
-                    p_video_render_data->render, p_video_render_data->layer_id,
-                    p_video_render_data->dev_id);
+                ret = aic_video_render_init(p_video_render_data->render,
+                                            p_video_render_data->layer_id,
+                                            p_video_render_data->dev_id);
                 if (!ret) {
                     logi("[%s:%d]p_video_render_data->render->init ok\n",
                            __FUNCTION__, __LINE__);
@@ -937,7 +943,7 @@ s32 mm_video_render_component_deinit(mm_handle h_component)
     mm_video_render_deinit_rotation_param(p_video_render_data);
 
     if (p_video_render_data->render) {
-        p_video_render_data->render->set_on_off(p_video_render_data->render, 0);
+        aic_video_render_set_on_off(p_video_render_data->render, 0);
         aic_video_render_destroy(p_video_render_data->render);
         p_video_render_data->render = NULL;
     }
@@ -1456,20 +1462,21 @@ CMD_EXIT:
     return cmd;
 }
 
-void mm_video_render_print_frame_count(mm_video_render_data *p_video_render_data)
+static void mm_video_render_show_debug_info(mm_video_render_data *p_video_render_data)
 {
-    logi("[%s:%d]receive_frame_num:%u,"
-           "show_frame_ok_num:%u,"
-           "show_frame_fail_num:%u,"
-           "giveback_frame_ok_num:%u,"
-           "giveback_frame_fail_num:%u,"
-           "drop_frame_num:%u\n",
-           __FUNCTION__, __LINE__, p_video_render_data->receive_frame_num,
-           p_video_render_data->show_frame_ok_num,
-           p_video_render_data->show_frame_fail_num,
-           p_video_render_data->giveback_frame_ok_num,
-           p_video_render_data->giveback_frame_fail_num,
-           p_video_render_data->drop_frame_num);
+    if (!p_video_render_data->debug_en)
+        return;
+
+    printf("************************Video_render comp info************************\n");
+    printf("receive    show_ok    show_fail    give_ok    give_fail    drop\n");
+    printf("%7u    %7u    %9u    %7u    %9u    %4u\n",
+            p_video_render_data->receive_frame_num,
+            p_video_render_data->show_frame_ok_num,
+            p_video_render_data->show_frame_fail_num,
+            p_video_render_data->giveback_frame_ok_num,
+            p_video_render_data->giveback_frame_fail_num,
+            p_video_render_data->drop_frame_num);
+    printf("\nstate: %s\n\n", mm_component_sta_to_str(p_video_render_data->state));
 }
 
 void mm_video_render_print_frame(struct mpp_frame *p_frame)
@@ -1529,22 +1536,19 @@ static void mm_video_render_set_dis_rect(mm_video_render_data *p_video_render_da
     struct mpp_size size;
     struct mpp_rect dis_rect;
 
-    p_video_render_data->render->get_screen_size(p_video_render_data->render,
-                                                 &size);
+    aic_video_render_get_screen_size(p_video_render_data->render, &size);
+
     dis_rect.x = 0;
     dis_rect.y = 0;
     dis_rect.width = size.width;
     dis_rect.height = size.height;
+
     if (p_video_render_data->dis_rect_change) {
-        p_video_render_data->render->set_dis_rect(
-            p_video_render_data->render, &p_video_render_data->dis_rect);
+        aic_video_render_set_dis_rect(p_video_render_data->render,
+                                      &p_video_render_data->dis_rect);
         p_video_render_data->dis_rect_change = MM_FALSE;
     } else {
-        p_video_render_data->render->set_dis_rect(p_video_render_data->render,
-                                                  &dis_rect);
-        logi("[%s:%d]init dis rect:[%d,%d,%d,%d]!!!\n", __FUNCTION__,
-               __LINE__, dis_rect.x, dis_rect.y, dis_rect.width,
-               dis_rect.height);
+        aic_video_render_set_dis_rect(p_video_render_data->render, &dis_rect);
     }
 }
 
@@ -1565,8 +1569,8 @@ static s32 mm_video_render_rend_frame(mm_video_render_data *p_video_render_data,
     mm_video_render_dump_pic(&p_video_render_data->p_cur_display_frame->buf,
                              p_video_render_data->dump_index++);
 #endif
-    ret = p_video_render_data->render->rend(
-        p_video_render_data->render, p_video_render_data->p_cur_display_frame);
+    ret = aic_video_render_rend(p_video_render_data->render,
+        p_video_render_data->p_cur_display_frame);
 
     if (ret == 0) {
         p_video_render_data->show_frame_ok_num++;
@@ -1651,31 +1655,162 @@ _AIC_SHOW_DIRECT_:
         clock_gettime(CLOCK_REALTIME, &delay_after);
         delay = (delay_after.tv_sec - delay_before.tv_sec) * 1000 * 1000 +
                 (delay_after.tv_nsec - delay_before.tv_nsec) / 1000;
-        logd("[%s:%d]:true sleep time %ld, predict sleep time:%lld\n", __FUNCTION__, __LINE__,
+        logd("true sleep time %ld, predict sleep time:%lld\n",
              delay, delay_time - MM_VIDEO_SYNC_DIFF_TIME);
+
         goto _AIC_SHOW_DIRECT_;
     }
 
     return ret;
 }
 
-
-static void *mm_video_render_component_thread(void *p_thread_data)
+static void mm_video_render_giveback_frame(mm_video_render_data *p_video_render_data,
+                                           struct mpp_frame *p_last_frame)
 {
     s32 ret = MM_ERROR_NONE;
-    s32 cmd = MM_COMMAND_UNKNOWN;
-    mm_video_render_data *p_video_render_data =
-        (mm_video_render_data *)p_thread_data;
-    MM_BOOL b_notify_frame_end = 0;
+    mm_bind_info *p_bind_vdec =
+        &p_video_render_data->in_port_bind[VIDEO_RENDER_PORT_IN_VIDEO_INDEX];
 
-    mm_bind_info *p_bind_clock;
-    mm_bind_info *p_bind_vdec;
+    if (p_video_render_data->disp_frame_num) {
+        ret = mm_video_render_put_frame(p_bind_vdec->p_bind_comp, p_last_frame);
+        if (DEC_OK == ret) {
+            p_video_render_data->giveback_frame_ok_num++;
+        } else {
+            p_video_render_data->giveback_frame_fail_num++;
+        }
+        mm_send_command(p_bind_vdec->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
+    }
+
+    mm_video_render_frame_swap(&p_video_render_data->cur_disp_frame_id,
+                               &p_video_render_data->last_disp_frame_id);
+    p_video_render_data->disp_frame_num++;
+}
+
+static int mm_video_render_process_first_frame(mm_video_render_data *p_video_render_data)
+{
+    mm_bind_info *p_bind_clock, *p_bind_vdec;
+    struct mpp_frame *p_cur_frame, *p_last_frame;
+    mm_time_config_timestamp timestamp;
     s32 cur_frame_id, last_frame_id;
+    s32 ret = MM_ERROR_NONE;
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+    s32 try_wait_times = 0;
+#endif
 
     p_video_render_data->wait_ready_frame_flag = 1;
 
     p_bind_clock =
         &p_video_render_data->in_port_bind[VIDEO_RENDER_PORT_IN_CLOCK_INDEX];
+    p_bind_vdec =
+        &p_video_render_data->in_port_bind[VIDEO_RENDER_PORT_IN_VIDEO_INDEX];
+
+    cur_frame_id = p_video_render_data->cur_disp_frame_id;
+    last_frame_id = p_video_render_data->last_disp_frame_id;
+
+    p_cur_frame = &p_video_render_data->disp_frames[cur_frame_id];
+    p_last_frame = &p_video_render_data->disp_frames[last_frame_id];
+
+    // init render
+    if (!p_video_render_data->video_render_init_flag) {
+        ret = aic_video_render_init(p_video_render_data->render,
+                                    p_video_render_data->layer_id,
+                                    p_video_render_data->dev_id);
+        if (!ret) {
+            p_video_render_data->video_render_init_flag = 1;
+        } else {
+            loge("aic_video_render_init fail %d\n", ret);
+            return MM_ERROR_BAD_PARAMETER;
+        }
+    }
+
+    // sync the first video frame pts to clock
+    if (p_bind_clock->flag) {
+        timestamp.port_index = p_bind_clock->bind_port_index;
+        timestamp.timestamp = p_cur_frame->pts;
+
+        mm_set_config(p_bind_clock->p_bind_comp,
+                      MM_INDEX_CONFIG_TIME_CLIENT_START_TIME,
+                      &timestamp);
+
+        if (p_video_render_data->clock_state != MM_TIME_CLOCK_STATE_RUNNING) {
+            if (p_video_render_data->disp_frame_num) {
+                ret = mm_video_render_put_frame(p_bind_vdec->p_bind_comp, p_last_frame);
+                if (DEC_OK == ret) {
+                    p_video_render_data->giveback_frame_ok_num++;
+                } else {
+                    p_video_render_data->giveback_frame_fail_num++;
+                }
+                mm_send_command(p_bind_vdec->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
+            }
+            mm_video_render_frame_swap(&p_video_render_data->cur_disp_frame_id,
+                                       &p_video_render_data->last_disp_frame_id);
+            p_video_render_data->disp_frame_num++;
+            if (p_cur_frame->flags & FRAME_FLAG_EOS) {
+                mm_video_render_event_notify(p_video_render_data,
+                                             MM_EVENT_VIDEO_RENDER_FIRST_FRAME,
+                                              0, 0, NULL);
+                p_video_render_data->flags |= VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
+                return MM_ERROR_UNDEFINED;
+            }
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+            //Because of the audio get first frame need to set attr and wait 200ms,
+            //so we need to wait some time to wait audio process the first frame
+            while(try_wait_times++ < 20) {
+                if (p_video_render_data->clock_state == MM_TIME_CLOCK_STATE_RUNNING)
+                    break;
+                aic_msg_wait_new_msg(&p_video_render_data->s_msg, 10 * 1000);
+            }
+#else
+            aic_msg_wait_new_msg(&p_video_render_data->s_msg, 10 * 1000);
+#endif
+            return MM_ERROR_UNDEFINED;
+        }
+    } else {
+        //only video, calc media time by self for control frame rate
+        mm_vdieo_render_set_media_clock(p_video_render_data, p_cur_frame);
+    }
+
+    // update render display rect by user config
+    mm_video_render_set_dis_rect(p_video_render_data);
+
+    mm_video_render_print_frame(p_cur_frame);
+
+    /* do render one frame*/
+    ret = mm_video_render_rend_frame(p_video_render_data, p_cur_frame);
+    if (ret == 0) {
+        p_video_render_data->frame_first_show_flag = MM_FALSE;
+        mm_video_render_event_notify(p_video_render_data,
+                                     MM_EVENT_VIDEO_RENDER_FIRST_FRAME,
+                                     0, 0, NULL);
+        if (p_cur_frame->flags & FRAME_FLAG_EOS) {
+            p_video_render_data->flags |= VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
+        }
+    } else {
+        loge("render error %d", ret);
+    }
+
+    // give back the last frame
+    mm_video_render_giveback_frame(p_video_render_data, p_last_frame);
+
+    return MM_ERROR_NONE;
+}
+
+static void *mm_video_render_component_thread(void *p_thread_data)
+{
+    s32 ret = MM_ERROR_NONE;
+    s32 cmd = MM_COMMAND_UNKNOWN;
+    struct mpp_frame *p_cur_frame, *p_last_frame;
+    mm_video_render_data *p_video_render_data =
+        (mm_video_render_data *)p_thread_data;
+    MM_BOOL b_notify_frame_end = 0;
+
+    mm_bind_info *p_bind_vdec;
+    s32 cur_frame_id, last_frame_id;
+    MM_VIDEO_SYNC_TYPE sync_type;
+    s64 delay_time;
+
+    p_video_render_data->wait_ready_frame_flag = 1;
+
     p_bind_vdec =
         &p_video_render_data->in_port_bind[VIDEO_RENDER_PORT_IN_VIDEO_INDEX];
 
@@ -1695,8 +1830,7 @@ static void *mm_video_render_component_thread(void *p_thread_data)
             continue;
         }
 
-        if (p_video_render_data->flags &
-            VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG) {
+        if (p_video_render_data->flags & VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG) {
             if (!b_notify_frame_end) {
                 mm_video_render_event_notify(p_video_render_data,
                                              MM_EVENT_BUFFER_FLAG, 0, 0, NULL);
@@ -1710,9 +1844,9 @@ static void *mm_video_render_component_thread(void *p_thread_data)
         /* get frame from video decoder*/
         cur_frame_id = p_video_render_data->cur_disp_frame_id;
         last_frame_id = p_video_render_data->last_disp_frame_id;
-        ret = mm_video_render_get_frame(
-            p_bind_vdec->p_bind_comp,
-            &p_video_render_data->disp_frames[cur_frame_id]);
+        p_cur_frame = &p_video_render_data->disp_frames[cur_frame_id];
+        p_last_frame = &p_video_render_data->disp_frames[last_frame_id];
+        ret = mm_video_render_get_frame(p_bind_vdec->p_bind_comp, p_cur_frame);
         if (ret != DEC_OK) {
             mm_video_render_wait_frame_timeout(p_video_render_data);
             continue;
@@ -1720,143 +1854,36 @@ static void *mm_video_render_component_thread(void *p_thread_data)
         p_video_render_data->receive_frame_num++;
 
         if (p_video_render_data->frame_first_show_flag) {
-            if (!p_video_render_data->video_render_init_flag) {
-                ret = p_video_render_data->render->init(
-                    p_video_render_data->render, p_video_render_data->layer_id,
-                    p_video_render_data->dev_id);
-                if (!ret) {
-                    p_video_render_data->video_render_init_flag = 1;
-                } else {
-                    loge("p_video_render_data->render->init fail\n");
-                }
-            }
-
-            if (p_bind_clock->flag) {
-                mm_time_config_timestamp timestamp;
-                timestamp.port_index = p_bind_clock->bind_port_index;
-                timestamp.timestamp =
-                    p_video_render_data->disp_frames[cur_frame_id].pts;
-                mm_set_config(p_bind_clock->p_bind_comp,
-                              MM_INDEX_CONFIG_TIME_CLIENT_START_TIME,
-                              &timestamp);
-                // whether need to wait????
-                if (p_video_render_data->clock_state !=
-                    MM_TIME_CLOCK_STATE_RUNNING) {
-                    if (p_video_render_data->disp_frame_num) {
-                        ret = mm_video_render_put_frame(
-                            p_bind_vdec->p_bind_comp,
-                            &p_video_render_data->disp_frames[last_frame_id]);
-                        if (DEC_OK == ret) {
-                            p_video_render_data->giveback_frame_ok_num++;
-                        } else {
-                            p_video_render_data->giveback_frame_fail_num++;
-                        }
-                        mm_send_command(p_bind_vdec->p_bind_comp,
-                                        MM_COMMAND_WKUP, 0, NULL);
-                    }
-                    mm_video_render_frame_swap(
-                        &p_video_render_data->cur_disp_frame_id,
-                        &p_video_render_data->last_disp_frame_id);
-                    p_video_render_data->disp_frame_num++;
-                    if (p_video_render_data->disp_frames[cur_frame_id].flags & FRAME_FLAG_EOS) {
-                        mm_video_render_event_notify(p_video_render_data,
-                                                     MM_EVENT_VIDEO_RENDER_FIRST_FRAME,
-                                                     0, 0, NULL);
-                        p_video_render_data->flags |= VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
-                        goto _AIC_MSG_GET_;
-                    }
-                    aic_msg_wait_new_msg(&p_video_render_data->s_msg,
-                                         10 * 1000);
-                    goto _AIC_MSG_GET_;
-                }
-                logi("[%s:%d]audio start time arrive\n", __FUNCTION__, __LINE__);
-            } else { //if it does not tunneld with clock ,it need calcuaute media time by self for control frame rate
-                mm_vdieo_render_set_media_clock(
-                    p_video_render_data,
-                    &p_video_render_data->disp_frames[cur_frame_id]);
-            }
-
-            mm_video_render_set_dis_rect(p_video_render_data);
-
-            mm_video_render_print_frame(
-                &p_video_render_data->disp_frames[cur_frame_id]);
-
-            /* do render one frame*/
-            ret = mm_video_render_rend_frame(p_video_render_data,
-                &p_video_render_data->disp_frames[cur_frame_id]);
-            if (ret == 0) {
-                p_video_render_data->frame_first_show_flag = MM_FALSE;
-                mm_video_render_event_notify(p_video_render_data,
-                                             MM_EVENT_VIDEO_RENDER_FIRST_FRAME,
-                                             0, 0, NULL);
-                if (p_video_render_data->disp_frames[cur_frame_id].flags & FRAME_FLAG_EOS) {
-                    p_video_render_data->flags |=
-                        VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
-                }
-            } else {
-                // how to do ,now deal with  same success
-                loge("render error");
-            }
-            if (p_video_render_data->disp_frame_num) {
-                ret = mm_video_render_put_frame(
-                    p_bind_vdec->p_bind_comp,
-                    &p_video_render_data->disp_frames[last_frame_id]);
-                if (DEC_OK == ret) {
-                    p_video_render_data->giveback_frame_ok_num++;
-                } else {
-                    p_video_render_data->giveback_frame_fail_num++;
-                }
-                mm_send_command(p_bind_vdec->p_bind_comp, MM_COMMAND_WKUP, 0,
-                                NULL);
-            }
-            mm_video_render_frame_swap(
-                &p_video_render_data->cur_disp_frame_id,
-                &p_video_render_data->last_disp_frame_id);
-            p_video_render_data->disp_frame_num++;
-        } else { // not fisrt show
-            s64 delay_time;
-            MM_VIDEO_SYNC_TYPE sync_type;
-
+            /* process first frame*/
+            ret = mm_video_render_process_first_frame(p_video_render_data);
+            if (MM_ERROR_NONE != ret)
+                goto _AIC_MSG_GET_;
+        } else {
             /* process video sync*/
-            sync_type = mm_vdieo_render_process_video_sync(
-                p_video_render_data,
-                &p_video_render_data->disp_frames[cur_frame_id], &delay_time);
+            sync_type = mm_vdieo_render_process_video_sync(p_video_render_data,
+                                                           p_cur_frame, &delay_time);
 
             mm_video_render_calc_fps(p_video_render_data);
 
-            /* process render show diffrent strategy*/
+            /* process render show different strategy*/
             ret = mm_video_render_process_sync_show(p_video_render_data,
                                                     sync_type, delay_time);
             if (ret != 0) {
                 goto _AIC_MSG_GET_;
             }
 
-            if (p_video_render_data->disp_frame_num) {
-                ret = mm_video_render_put_frame(
-                    p_bind_vdec->p_bind_comp,
-                    &p_video_render_data->disp_frames[last_frame_id]);
-                if (DEC_OK == ret) {
-                    p_video_render_data->giveback_frame_ok_num++;
-                } else {
-                    p_video_render_data->giveback_frame_fail_num++;
-                }
-                mm_send_command(p_bind_vdec->p_bind_comp, MM_COMMAND_WKUP, 0,
-                                NULL);
-            }
-            mm_video_render_frame_swap(
-                &p_video_render_data->cur_disp_frame_id,
-                &p_video_render_data->last_disp_frame_id);
-            p_video_render_data->disp_frame_num++;
+            /* giveback frame to vdec*/
+            mm_video_render_giveback_frame(p_video_render_data, p_last_frame);
         }
         if (p_video_render_data->dis_rect_change) {
-            p_video_render_data->render->set_dis_rect(
-                p_video_render_data->render, &p_video_render_data->dis_rect);
+            aic_video_render_set_dis_rect(p_video_render_data->render,
+                                         &p_video_render_data->dis_rect);
             p_video_render_data->dis_rect_change = MM_FALSE;
         }
     }
 
 _EXIT:
-    mm_video_render_print_frame_count(p_video_render_data);
+    mm_video_render_show_debug_info(p_video_render_data);
 
     return (void *)MM_ERROR_NONE;
 }

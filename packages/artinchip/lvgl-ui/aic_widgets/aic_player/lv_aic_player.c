@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -11,34 +11,6 @@
 
 #if LV_USE_AIC_SIMULATOR == 0
 #include "./player_backend/player_backend_ops.h"
-
-#if LVGL_VERSION_MAJOR == 8
-#define LV_IMAGE_SRC_FILE     LV_IMG_SRC_FILE
-#define lv_image_src_t        lv_img_src_t
-#define lv_image_t     lv_img_t
-
-#define lv_image_set_src      lv_img_set_src
-#define lv_image_get_src      lv_img_get_src
-#define lv_image_src_get_type lv_img_src_get_type
-#define lv_image_set_pivot    lv_img_set_pivot
-#define lv_image_get_pivot    lv_img_get_pivot
-#define lv_image_set_scale    lv_img_set_zoom
-#define lv_image_get_scale    lv_img_get_zoom
-#define lv_image_set_rotation lv_img_set_angle
-#define lv_image_get_rotation lv_img_get_angle
-#define lv_image_set_offset_x lv_img_set_offset_x
-#define lv_image_get_offset_y lv_img_get_offset_y
-#define lv_image_set_offset_y lv_img_set_offset_y
-#define lv_image_cache_drop   lv_img_cache_invalidate_src
-
-#define lv_obj_send_event     lv_event_send
-
-#define lv_result_t           lv_res_t
-#define LV_RESULT_OK          LV_RES_OK
-
-#define lv_timer_delete       lv_timer_del
-#define lv_free                 lv_mem_free
-#endif
 
 static lv_res_t player_backend_ensure(lv_obj_t *obj, const char *src);
 
@@ -55,6 +27,10 @@ static void lv_player_remove_all_slaves(lv_obj_t *obj);
 static void player_reset_frame_syc(lv_obj_t *obj);
 static bool player_should_wait_sync(lv_obj_t * obj);
 static bool player_reset_frame_sync(lv_obj_t *obj, void *data);
+static void player_set_width(lv_obj_t *obj, uint32_t width);
+static void player_set_height(lv_obj_t *obj, uint32_t height);
+static void player_reset_size(lv_obj_t *obj);
+static void player_update_size(lv_obj_t *obj);
 
 static void lv_aic_player_constructor(const lv_obj_class_t * class_p, lv_obj_t * obj);
 static void lv_aic_player_destructor(const lv_obj_class_t * class_p, lv_obj_t * obj);
@@ -112,6 +88,9 @@ lv_res_t lv_aic_player_set_src(lv_obj_t * obj, const char *src)
         return LV_RES_INV;
     }
 
+    if (lv_image_get_src(obj))
+        lv_image_cache_drop(lv_image_get_src(obj));
+
     if (!player->timer) {
         player->timer = lv_timer_create(lv_player_refresh_next_frame_cb, 5, obj);
         if (!player->timer) {
@@ -132,6 +111,8 @@ lv_res_t lv_aic_player_set_src(lv_obj_t * obj, const char *src)
     lv_player_propagate_src_to_slaves(obj);
 
     lv_aic_player_set_image_src(obj);
+
+    player_update_size(obj);
 
     return LV_RES_OK;
 
@@ -162,7 +143,14 @@ void lv_aic_player_set_cmd(lv_obj_t * obj, lv_aic_player_cmd_t cmd, void *data)
         lv_timer_resume(player->timer);
         break;
     case LV_AIC_PLAYER_CMD_STOP:
-        player_backend_control(player->ctx, PLAYER_CMD_STOP, data);
+        if (player->ctx) {
+            player_backend_destroy(player->ctx);
+            player->ctx = NULL;
+            LV_LOG_WARN("The playback resource has been release, indicating a possible exception.");
+        }
+        if (lv_image_get_src(obj))
+            lv_image_cache_drop(lv_image_get_src(obj));
+        lv_image_set_src(obj, NULL);
         lv_timer_pause(player->timer);
         break;
     case LV_AIC_PLAYER_CMD_PAUSE:
@@ -198,6 +186,27 @@ void lv_aic_player_set_cmd(lv_obj_t * obj, lv_aic_player_cmd_t cmd, void *data)
         break;
     case LV_AIC_PLAYER_CMD_ATTACH_GROUP:
         player->group = (lv_obj_t *)data;
+        break;
+    case LV_AIC_PLAYER_CMD_SET_PLAYBACK_RATE:
+        if (!data) {
+            LV_LOG_WARN("LV_AIC_PLAYER_CMD_SET_PLAYBACK_RATE: data is NULL");
+            return;
+        }
+        float rate = *(float *)data;
+        if (rate < 0.1f || rate > 10.0f) {
+            LV_LOG_ERROR("Invalid playback rate: %.2f (valid range: 0.1 to 10.0)", rate);
+            return;
+        }
+        if (player_backend_control(player->ctx, PLAYER_CMD_SET_PLAYBACK_RATE, &rate) == LV_RES_OK) {
+            player->playback_rate = rate;
+        }
+        break;
+    case LV_AIC_PLAYER_CMD_GET_PLAYBACK_RATE:
+        if (!data) {
+            LV_LOG_WARN("LV_AIC_PLAYER_CMD_GET_PLAYBACK_RATE: data is NULL");
+            return;
+        }
+        *(float *)data = player->playback_rate;
         break;
     default:
         LV_LOG_WARN("unknown cmd %d", cmd);
@@ -279,9 +288,9 @@ static void lv_player_refresh_next_frame_cb(lv_timer_t * timer)
     }
 
     if (player_backend_control(player->ctx, PLAYER_CMD_GET_FRAME, &wait_en) == LV_RES_INV) {
-        return;
         if (player_reset_frame_sync(obj, &seek_time))
             return;
+        return;
     }
 
     player->cur_frame_index++;
@@ -441,6 +450,93 @@ static void player_reset_frame_syc(lv_obj_t *obj)
     }
 }
 
+static void player_set_width(lv_obj_t *obj, uint32_t width)
+{
+    lv_aic_player_t * player = (lv_aic_player_t *)obj;
+
+    if (lv_player_is_slave(obj))
+        return;
+
+    player->width = width;
+
+    if (!player->ctx) {
+        return;
+    }
+
+    struct av_media_info media_info = {0};
+    if (player_backend_control(player->ctx, PLAYER_CMD_GET_MEDIA_INFO, &media_info) == LV_RES_INV) {
+        LV_LOG_WARN("get media info failed");
+        return;
+    }
+
+    int video_width = media_info.video_stream.width;
+    uint32_t scale_x = ((double)(width * 1.0) / (double)(video_width * 1.0)) * 256;
+    int16_t errors = ((scale_x * 1.0) * video_width/ 256) - width;
+
+    if (errors)
+        LV_LOG_WARN("player scaling width has precision errors = %d", errors);
+
+    lv_obj_set_width(obj, width);
+#if LVGL_VERSION_MAJOR == 9
+    lv_image_set_scale_x(obj, scale_x);
+#endif
+    lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
+}
+
+static void player_set_height(lv_obj_t *obj, uint32_t height)
+{
+    lv_aic_player_t * player = (lv_aic_player_t *)obj;
+
+    if (lv_player_is_slave(obj))
+        return;
+
+    player->height = height;
+
+    if (!player->ctx) {
+        return;
+    }
+
+    struct av_media_info media_info = {0};
+    if (player_backend_control(player->ctx, PLAYER_CMD_GET_MEDIA_INFO, &media_info) == LV_RES_INV) {
+        LV_LOG_WARN("get media info failed");
+        return;
+    }
+
+    int video_height = media_info.video_stream.height;
+    uint32_t scale_y = ((double)(height * 1.0) / (double)(video_height * 1.0)) * 256;
+    int16_t errors = ((scale_y * 1.0) * video_height) / 256 - height;
+
+    if (errors)
+        LV_LOG_WARN("player scaling height has precision errors = %d", errors);
+
+    lv_obj_set_height(obj, height);
+#if LVGL_VERSION_MAJOR == 9
+    lv_image_set_scale_y(obj, scale_y);
+#endif
+    lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
+}
+
+static void player_reset_size(lv_obj_t *obj)
+{
+    lv_aic_player_t * player = (lv_aic_player_t *)obj;
+
+    if (lv_player_is_slave(obj))
+        return;
+
+    player->width = 0;
+    player->height = 0;
+}
+
+static void player_update_size(lv_obj_t *obj)
+{
+    lv_aic_player_t * player = (lv_aic_player_t *)obj;
+
+    if (player->width != 0)
+        player_set_width(obj, player->width);
+    if (player->height != 0)
+        player_set_height(obj, player->height);
+}
+
 static void lv_aic_player_constructor(const lv_obj_class_t * class_p,
                                          lv_obj_t * obj)
 {
@@ -451,6 +547,7 @@ static void lv_aic_player_constructor(const lv_obj_class_t * class_p,
     player->ctx          = NULL;
     player->draw_layer   = LV_AIC_PLAYER_LAYER_DEFAULT;
     player->timer        = NULL;
+    player->playback_rate = 1.0f;
 
     LV_TRACE_OBJ_CREATE("finished");
 }
@@ -461,6 +558,9 @@ static void lv_aic_player_destructor(const lv_obj_class_t * class_p,
     LV_TRACE_OBJ_CREATE("begin");
 
     lv_aic_player_t * player = (lv_aic_player_t *)obj;
+
+    if (lv_image_get_src(obj))
+        lv_image_cache_drop(lv_image_get_src(obj));
 
     lv_aic_player_group_remove(player->group, obj);
 
@@ -484,16 +584,18 @@ static void lv_aic_player_event(const lv_obj_class_t * class_p, lv_event_t * e)
     lv_obj_t * obj = lv_event_get_current_target(e);
     lv_aic_player_t * player = (lv_aic_player_t *)obj;
 
-    if(code == LV_EVENT_SIZE_CHANGED || code == LV_EVENT_STYLE_CHANGED) {
+    if(code == LV_EVENT_SIZE_CHANGED || code == LV_EVENT_STYLE_CHANGED || code == LV_EVENT_GET_SELF_SIZE) {
         if (player->ctx == NULL || strcmp(player_backend_get_name(player->ctx), "aic_player") != 0)
             return;
 
-        lv_obj_update_layout(obj);
+        if (code != LV_EVENT_GET_SELF_SIZE)
+            lv_obj_update_layout(obj);
 
         if (player_backend_control(player->ctx, PLAYER_CMD_UPDATE_DISPLAY_AREA, NULL) == LV_RES_INV)
             return;
 
-        lv_aic_player_set_image_src(obj);
+        if (code != LV_EVENT_GET_SELF_SIZE)
+            lv_aic_player_set_image_src(obj);
     }
 }
 
@@ -573,26 +675,7 @@ void lv_aic_player_set_width(lv_obj_t *obj, uint32_t width)
 #if LVGL_VERSION_MAJOR == 8
     LV_LOG_WARN("This function is not implemented yet");
 #elif LVGL_VERSION_MAJOR == 9
-    lv_aic_player_t * player = (lv_aic_player_t *)obj;
-
-    if (!player->ctx) {
-        LV_LOG_WARN("player is NULL, please set src first");
-        return;
-    }
-    struct av_media_info media_info = {0};
-    if (player_backend_control(player->ctx, PLAYER_CMD_GET_MEDIA_INFO, &media_info) == LV_RES_INV) {
-        LV_LOG_WARN("get media info failed");
-        return;
-    }
-
-    int video_width = media_info.video_stream.width;
-    uint32_t scale_x = ((double)(width * 1.0) / (double)(video_width * 1.0)) * 256;
-    int16_t errors = ((scale_x * 1.0) * video_width/ 256) - width;
-    if (errors)
-        LV_LOG_WARN("player scaling width has precision errors = %d", errors);
-    lv_obj_set_width(obj, width);
-    lv_image_set_scale_x(obj, scale_x);
-    lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
+    player_set_width(obj, width);
 #endif
 #endif
 }
@@ -603,32 +686,14 @@ void lv_aic_player_set_height(lv_obj_t *obj, uint32_t height)
 #if LVGL_VERSION_MAJOR == 8
     LV_LOG_WARN("This function is not implemented yet");
 #elif LVGL_VERSION_MAJOR == 9
-    lv_aic_player_t * player = (lv_aic_player_t *)obj;
-
-    if (!player->ctx) {
-        LV_LOG_WARN("player is NULL, please set src first");
-        return;
-    }
-    struct av_media_info media_info = {0};
-    if (player_backend_control(player->ctx, PLAYER_CMD_GET_MEDIA_INFO, &media_info) == LV_RES_INV) {
-        LV_LOG_WARN("get media info failed");
-        return;
-    }
-
-    int video_height = media_info.video_stream.height;
-    uint32_t scale_y = ((double)(height * 1.0) / (double)(video_height * 1.0)) * 256;
-    int16_t errors = ((scale_y * 1.0) * video_height) / 256 - height;
-    if (errors)
-        LV_LOG_WARN("player scaling height has precision errors = %d", errors);
-    lv_obj_set_height(obj, height);
-    lv_image_set_scale_y(obj, scale_y);
-    lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
+    player_set_height(obj, height);
 #endif
 #endif
 }
 
 void lv_aic_player_set_scale(lv_obj_t * obj, uint32_t scale)
 {
+    player_reset_size(obj);
     lv_image_set_scale(obj, scale);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
 }
@@ -638,6 +703,7 @@ void lv_aic_player_set_scale_x(lv_obj_t * obj, uint32_t scale_x)
 #if LVGL_VERSION_MAJOR == 8
     LV_LOG_WARN("This function is not implemented yet");
 #elif LVGL_VERSION_MAJOR == 9
+    player_reset_size(obj);
     lv_image_set_scale_x(obj, scale_x);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
 #endif
@@ -648,6 +714,7 @@ void lv_aic_player_set_scale_y(lv_obj_t * obj, uint32_t scale_y)
 #if LVGL_VERSION_MAJOR == 8
     LV_LOG_WARN("This function is not implemented yet");
 #elif LVGL_VERSION_MAJOR == 9
+    player_reset_size(obj);
     lv_image_set_scale_y(obj, scale_y);
     lv_obj_send_event(obj, LV_EVENT_SIZE_CHANGED, NULL);
 #endif

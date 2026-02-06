@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,10 +16,10 @@ const struct aic_spinand_info macronix_spinand_table[] = {
     is_die_select*/
     /*MX35LF2G14AC-Z4I*/
     { DEVID(0x20), PAGESIZE(2048), OOBSIZE(64), BPL(2048), PPB(64), PLANENUM(2),
-      DIE(0), "macronix 256MB: 2048+64@64@2048", cmd_cfg_table },
+      DIE(0), "macronix 256MB: 2048+64@64@2048", cmd_cfg_table }, //This device lacks internal ECC, we do not support it.
     /*MX35LF1G24AD-Z4I*/
     { DEVID(0x14), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
-      PLANENUM(1), DIE(0), "macronix 128MB: 2048+128@64@1024", cmd_cfg_table },
+      PLANENUM(1), DIE(0), "macronix 128MB: 2048+128@64@1024", cmd_cfg_table }, //This device lacks internal ECC, we do not support it.
 };
 
 const struct aic_spinand_info *

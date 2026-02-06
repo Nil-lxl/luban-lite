@@ -5,8 +5,8 @@
 
 typedef void (*task_pfunc)(void *);
 
-int os_thread_create(unsigned int *taskhdl,task_pfunc func,
-                            char *name,unsigned int param,
+int os_thread_create(uintptr_t *taskhdl,task_pfunc func,
+                            char *name,void *param,
                             unsigned int stack_size,unsigned int task_prio)
 {
     unsigned char taskname[32] = {0};
@@ -24,14 +24,14 @@ int os_thread_create(unsigned int *taskhdl,task_pfunc func,
         return -1;
     } else {
         if(taskhdl) {
-            *taskhdl = (unsigned int)task;
+            *taskhdl = (uintptr_t)task;
         }
 		rt_thread_startup(task);
         return 0;
     }
 }
 
-void os_task_delete(unsigned int taskhdl)
+void os_thread_delete(uintptr_t taskhdl)
 {
     rt_thread_t *task = (rt_thread_t *)taskhdl;
     if(task == NULL)

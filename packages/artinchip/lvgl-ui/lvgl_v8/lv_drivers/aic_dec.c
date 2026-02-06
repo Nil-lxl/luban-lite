@@ -283,7 +283,7 @@ static lv_res_t jpeg_decoder_info(lv_img_decoder_t *decoder, const void *src, lv
 
     header->cf = LV_IMG_CF_TRUE_COLOR;
 
-    LV_LOG_INFO("w:%d, h:%d, cf:%d\n", header->w, header->h, header->cf);
+    LV_LOG_INFO("w:%d, h:%d, cf:%d\n", (int)header->w, (int)header->h, (int)header->cf);
 	lv_aic_stream_close(&stream);
 
     return LV_RES_OK;
@@ -363,7 +363,7 @@ static lv_res_t png_decoder_info(lv_img_decoder_t *decoder, const void *src, lv_
     header->h = stream_to_u32(buf + 8 + 8 + 4);
     header->cf = LV_IMG_CF_RAW;
 
-    LV_LOG_INFO("header->w:%d, header->h:%d\n", header->w, header->h);
+    LV_LOG_INFO("header->w:%d, header->h:%d\n", (int)header->w, (int)header->h);
     lv_aic_stream_close(&stream);
 
     return LV_RES_OK;
@@ -410,7 +410,7 @@ static lv_res_t aic_decoder_info(lv_img_decoder_t *decoder, const void *src, lv_
                 header->cf = LV_IMG_CF_TRUE_COLOR;
                 res = LV_RES_OK;
             }
-            LV_LOG_INFO("w:%d, h:%d, cf:%d", header->w, header->h, header->cf);
+            LV_LOG_INFO("w:%d, h:%d, cf:%d", (int)header->w, (int)header->h, (int)header->cf);
         }
     }
 

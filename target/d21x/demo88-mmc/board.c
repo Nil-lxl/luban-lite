@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -186,22 +186,22 @@ const struct romfs_dirent romfs_root =
 
 const struct dfs_mount_tbl mount_table[] = {
 #ifdef RT_USING_DFS_ROMFS
-    {RT_NULL, "/", "rom", 0, &romfs_root, 0},
+    {RT_NULL, "/", "rom", 0, &romfs_root, DFS_MOUNT_PRIO_EARLY},
 #endif
 #ifdef LPKG_RAMDISK_TYPE_INITDATA
-    {"ramdisk0", "/ram", "elm", 0, 0, 0},
+    {"ramdisk0", "/ram", "elm", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
 #ifdef AIC_USING_SDMC0
 #ifndef AIC_AB_SYSTEM_INTERFACE
-    {"mmc0p5", "/rodata", "elm", 0, 0, 0},
-    {"mmc0p7", "/data",   "elm", 0, 0, 0},
+    {"mmc0p5", "/rodata", "elm", MS_RDONLY, 0, DFS_MOUNT_PRIO_EARLY},
+    {"mmc0p7", "/data",   "elm", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
 #endif
 #ifdef AIC_USING_SDMC1
-    {"sd1", "/sdcard", "elm", 0, 0, 0},
+    {"sd1", "/sdcard", "elm", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
 #if (defined(AIC_USING_USB0_HOST) || defined(AIC_USING_USB0_OTG) || defined(AIC_USING_USB1_HOST))
-    {"udisk", "/udisk", "elm", 0, 0, 0},
+    {"udisk", "/udisk", "elm", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
     {0}
 };

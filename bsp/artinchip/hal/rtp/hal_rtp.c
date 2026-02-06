@@ -239,7 +239,7 @@ void hal_rtp_enable(struct aic_rtp_dev *rtp, int en)
                        rtp->mode << RTR_MCR_MODE_SHIFT | RTP_MCR_EN, en);
     }
 
-#if defined(CONFIG_ARTINCHIP_ADCIM_DM)
+#if defined(AIC_ADCIM_DM_DRV)
     writel(0, RTP_PDEB);
 #else
     writel(0xffffffff , RTP_PCTL);
@@ -348,7 +348,7 @@ static u32 rtp_press_calc_only_xplate(struct aic_rtp_dev *rtp)
         pr_debug("Invalid pressure %d\n", pressure);
         pressure = AIC_RTP_INVALID_VAL;
     }
-#if defined(CONFIG_ARTINCHIP_ADCIM_DM)
+#if defined(AIC_ADCIM_DM_DRV)
     return (dat->z_a + dat->z_b) / 2;
 #else
     return pressure;
@@ -374,7 +374,7 @@ static u32 rtp_press_calc_xy_plate(struct aic_rtp_dev *rtp)
         pr_debug("Invalid pressure %d\n", pressure);
         pressure = AIC_RTP_INVALID_VAL;
     }
-#if defined(CONFIG_ARTINCHIP_ADCIM_DM)
+#if defined(AIC_ADCIM_DM_DRV)
     return (dat->z_a + dat->z_b) / 2;
 #else
     return pressure;
@@ -558,7 +558,7 @@ static void rtp_report_abs_auto4(struct aic_rtp_dev *rtp, u16 *ori, u32 cnt)
                  latest->z_a, latest->z_c,
                  latest->z_b, latest->z_d);
 
-#if defined(CONFIG_ARTINCHIP_ADCIM_DM)
+#if defined(AIC_ADCIM_DM_DRV)
         rtp_report_abs(rtp, 1);
         latest->x_minus = latest->x_plus;
         latest->y_minus = latest->y_plus;

@@ -99,6 +99,7 @@
 
 #ifndef DHCP_SERVER_PORT
 #define DHCP_SERVER_PORT 67
+#define DHCP_DNS_SERVER_IP "0.0.0.0"
 #endif
 
 /**

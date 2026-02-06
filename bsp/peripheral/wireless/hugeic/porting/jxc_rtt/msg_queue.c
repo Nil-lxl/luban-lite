@@ -1,7 +1,7 @@
 #include "os_porting.h"
 #include <rtthread.h>
 
-int os_msgqueue_init(unsigned int *queue_hdl, int elem_num)
+int os_msgqueue_init(uintptr_t *queue_hdl, int elem_num)
 {
     rt_mailbox_t q = NULL;
     static unsigned char index = 0;
@@ -15,13 +15,13 @@ int os_msgqueue_init(unsigned int *queue_hdl, int elem_num)
         return -1;
     } else {
         if (queue_hdl) {
-            *queue_hdl = (unsigned int)q;
+            *queue_hdl = (uintptr_t)q;
         }
         return 0;
     }
 }
 
-void *os_msgqueue_recv(unsigned int queue_hdl, int millisec)
+void *os_msgqueue_recv(uintptr_t queue_hdl, int millisec)
 {
     rt_mailbox_t q = (rt_mailbox_t)queue_hdl;
     void *msg = NULL;
@@ -44,7 +44,7 @@ void *os_msgqueue_recv(unsigned int queue_hdl, int millisec)
     }
 }
 
-int os_msgqueue_send(unsigned int queue_hdl, int data, int millisec)
+int os_msgqueue_send(uintptr_t queue_hdl, void *data, int millisec)
 {
     rt_mailbox_t q = (rt_mailbox_t)queue_hdl;
     int ret = 0;
@@ -56,7 +56,7 @@ int os_msgqueue_send(unsigned int queue_hdl, int data, int millisec)
     return rt_mb_send(q, data);
 }
 
-void os_msgqueue_del(unsigned int queue_hdl)
+void os_msgqueue_del(uintptr_t queue_hdl)
 {
     rt_mailbox_t q = (rt_mailbox_t)queue_hdl;
     int ret = 0;
@@ -68,7 +68,7 @@ void os_msgqueue_del(unsigned int queue_hdl)
     rt_mb_delete(q);
 }
 
-int os_msgqueue_get_count(unsigned int queue_hdl)
+int os_msgqueue_get_count(uintptr_t queue_hdl)
 {
     rt_mailbox_t q = (rt_mailbox_t)queue_hdl;
 

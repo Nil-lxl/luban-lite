@@ -61,7 +61,7 @@
 #include "lwip/err.h"
 
 #include <string.h>
-
+#include <stdio.h>
 #if MEM_LIBC_MALLOC
 #include <stdlib.h> /* for malloc()/free() */
 #endif

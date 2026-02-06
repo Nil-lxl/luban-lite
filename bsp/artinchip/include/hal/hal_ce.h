@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2020-2026 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -12,6 +12,8 @@
 #include <aic_common.h>
 
 #define DEBUG_CE 0
+
+#define CE_CIPHER_MAX_DATA_SIZE 0x3FF00
 
 #define RSA2048_SIGN_LEN 256
 #define RSA2048_KEY_LEN  256
@@ -303,7 +305,7 @@ s32 hal_crypto_start_symm(struct crypto_task *task);
 s32 hal_crypto_start_asym(struct crypto_task *task);
 s32 hal_crypto_start_hash(struct crypto_task *task);
 bool hal_crypto_is_start();
-u32 hal_crypto_poll_finish(u32 alg_unit);
+s32 hal_crypto_poll_finish(u32 alg_unit, u32 timeout_us);
 void hal_crypto_pending_clear(u32 alg_unit);
 u32 hal_crypto_get_err(u32 alg_unit);
 s32 hal_crypto_bignum_byteswap(u8 *bn, u32 len);

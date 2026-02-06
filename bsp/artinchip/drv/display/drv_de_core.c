@@ -40,8 +40,15 @@ static irqreturn_t aic_de_handler(int irq, void *ctx)
     status = de_timing_interrupt_status(comp->regs);
     de_timing_interrupt_clean_status(comp->regs, status);
 
-    if (status & TIMING_INIT_V_BLANK_FLAG) {
+#ifdef AIC_DE_DRV_V11_1
+    if (status & TIMING_INIT_CFG_DONE_STATUS)
         aicos_wqueue_wakeup(comp->vsync_queue);
+#endif
+
+    if (status & TIMING_INIT_V_BLANK_FLAG) {
+#ifndef AIC_DE_DRV_V11_1
+        aicos_wqueue_wakeup(comp->vsync_queue);
+#endif
         if (comp->cb)
             comp->cb(comp->cb_data);
     }
@@ -351,6 +358,9 @@ static int aic_de_timing_enable(void)
 #ifndef AIC_BOOTLOADER_CMD_PROGRESS_BAR
     de_timing_enable_interrupt(comp->regs, true, TIMING_INIT_V_BLANK_FLAG);
     de_timing_enable_interrupt(comp->regs, true, TIMING_INIT_UNDERFLOW_FLAG);
+#ifdef AIC_DE_DRV_V11_1
+    de_timing_enable_interrupt(comp->regs, true, TIMING_INIT_CFG_DONE);
+#endif
 #endif
 
     aic_de_set_gamma_config(&comp->gamma);

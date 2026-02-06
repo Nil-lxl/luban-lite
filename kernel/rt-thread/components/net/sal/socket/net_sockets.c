@@ -160,6 +160,22 @@ int listen(int s, int backlog)
 }
 RTM_EXPORT(listen);
 
+int sendmsg(int s, const struct msghdr *message, int flags)
+{
+    int socket = dfs_net_getsocket(s);
+
+    return sal_sendmsg(socket, message, flags);
+}
+RTM_EXPORT(sendmsg);
+
+int recvmsg(int s, struct msghdr *message, int flags)
+{
+    int socket = dfs_net_getsocket(s);
+
+    return sal_recvmsg(socket, message, flags);
+}
+RTM_EXPORT(recvmsg);
+
 int recv(int s, void *mem, size_t len, int flags)
 {
     int socket = dfs_net_getsocket(s);

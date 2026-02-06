@@ -157,33 +157,11 @@ static unsigned long clk_multi_parent_mod_recalc_rate(struct aic_clk_comm_cfg *c
     return rate;
 }
 
-static void try_best_divider(u32 rate, u32 parent_rate, u32 max_div, u32 *div)
-{
-    u32 tmp, i, min_delta = U32_MAX, best_div = 0;
-
-    for (i = 1; i <= max_div; i++) {
-        tmp = i * rate;
-        if (parent_rate == tmp) {
-            best_div = i;
-            goto __out;
-        }
-
-        if (abs(parent_rate - tmp) < min_delta) {
-            min_delta = abs(parent_rate - tmp);
-            best_div = i;
-        }
-    }
-
-__out:
-    *div = best_div;
-}
-
 static long clk_multi_parent_mod_round_rate(struct aic_clk_comm_cfg *comm_cfg,
                                             unsigned long rate,
                                             unsigned long *prate)
 {
-    u32 rrate, parent_rate, parent_index;
-    u32 div = 0, div_max;
+    u32 rrate, parent_rate, parent_index, div = 0;
     struct aic_clk_multi_parent_cfg *mod = to_clk_multi_parent(comm_cfg);
 
     if (!mod->table_div) {
@@ -207,8 +185,7 @@ static long clk_multi_parent_mod_round_rate(struct aic_clk_comm_cfg *comm_cfg,
     if (mod->table_div[parent_index].shift < 0) {
         rrate = parent_rate / mod->table_div[parent_index].wd.div;
     } else {
-        div_max = 1 << mod->table_div[parent_index].wd.width;
-        try_best_divider(rate, parent_rate, div_max, &div);
+        div = DIV_ROUND_CLOSEST(parent_rate, rate);
         rrate = parent_rate / div;
     }
 
@@ -223,18 +200,11 @@ static int clk_multi_parent_mod_set_rate(struct aic_clk_comm_cfg *comm_cfg,
                                          unsigned long parent_rate)
 {
     struct aic_clk_multi_parent_cfg *mod = to_clk_multi_parent(comm_cfg);
-    u32 val, parent_index;
-    u32 div = 0, div_max, div_mask;
+    u32 val, parent_index = 0;
+    u32 div = 0, div_mask;
 
     if (!mod->table_div) {
         hal_log_err("%s does not have valid table_div\n", comm_cfg->name);
-        return -EINVAL;
-    }
-
-    parent_index = (readl(cmu_reg(mod->offset_reg)) >> mod->mux_bit) & mod->mux_mask;
-
-    if (parent_index >= mod->num_parents) {
-        hal_log_err("%s parent clock index error!\n", comm_cfg->name);
         return -EINVAL;
     }
 
@@ -243,12 +213,29 @@ static int clk_multi_parent_mod_set_rate(struct aic_clk_comm_cfg *comm_cfg,
         return -EINVAL;
     }
 
+    div = DIV_ROUND_CLOSEST(parent_rate, rate);
+
+    /*
+     * If div != 1, we need to set the clock divider, so we must find the parent_index
+     * that can configure the divider.
+     */
+    if (div != 1) {
+        for (parent_index = 0; parent_index < mod->num_parents; parent_index++)
+            if (mod->table_div[parent_index].shift < 0)
+                continue;
+            else
+                break;
+    }
+
+    if (parent_index >= mod->num_parents) {
+        hal_log_err("%s parent clock index error!\n", comm_cfg->name);
+        return -EINVAL;
+    }
+
     if (mod->table_div[parent_index].shift < 0)
         return 0;
 
-    div_max = 1 << mod->table_div[parent_index].wd.width;
-    try_best_divider(rate, parent_rate, div_max, &div);
-    div_mask = div_max - 1;
+    div_mask = (1 << mod->table_div[parent_index].wd.width) - 1;
 
     val = readl(cmu_reg(mod->offset_reg));
     val &= ~(div_mask << mod->table_div[parent_index].shift);

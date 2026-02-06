@@ -63,6 +63,7 @@ static void _system_init_for_kernel(void)
 #endif
 }
 
+#ifdef QEMU_RUN
 /**
   * @brief  initialize system map
   * @param  None
@@ -71,14 +72,13 @@ static void _system_init_for_kernel(void)
 void systemmap_config(void)
 {
    csi_sysmap_config_region(0, 0x20000000, SYSMAP_SYSMAPCFG_B_Msk | SYSMAP_SYSMAPCFG_C_Msk);
-   csi_sysmap_config_region(1, 0x40000000, SYSMAP_SYSMAPCFG_B_Msk | SYSMAP_SYSMAPCFG_C_Msk);
-   csi_sysmap_config_region(2, 0x50000000, SYSMAP_SYSMAPCFG_SO_Msk);
-   csi_sysmap_config_region(3, 0x50700000, SYSMAP_SYSMAPCFG_B_Msk | SYSMAP_SYSMAPCFG_C_Msk);
-   csi_sysmap_config_region(4, 0x60000000, SYSMAP_SYSMAPCFG_SO_Msk);
-   csi_sysmap_config_region(5, 0x80000000, SYSMAP_SYSMAPCFG_B_Msk | SYSMAP_SYSMAPCFG_C_Msk);
-   csi_sysmap_config_region(6, 0x90000000, SYSMAP_SYSMAPCFG_B_Msk | SYSMAP_SYSMAPCFG_C_Msk);
-   csi_sysmap_config_region(7, 0xf0000000, SYSMAP_SYSMAPCFG_SO_Msk);
+   csi_sysmap_config_region(1, 0x40000000, SYSMAP_SYSMAPCFG_SO_Msk);
+   csi_sysmap_config_region(2, 0x60000000, SYSMAP_SYSMAPCFG_SO_Msk);
+   csi_sysmap_config_region(3, 0x80000000, SYSMAP_SYSMAPCFG_B_Msk | SYSMAP_SYSMAPCFG_C_Msk);
+   csi_sysmap_config_region(4, 0x90000000, SYSMAP_SYSMAPCFG_B_Msk | SYSMAP_SYSMAPCFG_C_Msk);
+   csi_sysmap_config_region(5, 0xE0000000, SYSMAP_SYSMAPCFG_SO_Msk);
 }
+#endif
 
 /**
   * @brief  initialize the system

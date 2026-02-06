@@ -119,8 +119,19 @@ lv_result_t lv_snapshot_take_to_draw_buf(lv_obj_t * obj, lv_color_format_t cf, l
     lv_obj_redraw(&layer, obj);
 
     while(layer.draw_task_head) {
-        lv_draw_dispatch_wait_for_request();
-        lv_draw_dispatch_layer(NULL, &layer);
+        bool render_running = false;
+        lv_layer_t * cur_layer = disp_new->layer_head;
+
+        while(cur_layer) {
+            if(lv_draw_dispatch_layer(NULL, cur_layer))
+                render_running = true;
+
+            cur_layer = cur_layer->next;
+        }
+
+        if(!render_running) {
+            lv_draw_dispatch_request();
+        }
     }
 
     disp_new->layer_head = layer_old;

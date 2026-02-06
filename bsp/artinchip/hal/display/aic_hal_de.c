@@ -103,7 +103,7 @@ static int qos_cfg[4][4] = {
 #define QOS_OUTSTANDING     0x1f
 #define QOS_DMAR_URGENT_TH  0x40
 
-#if defined(AIC_DE_DRV_V10) || defined(AIC_DE_V10)
+#if defined(AIC_DE_DRV_V10)
 static const unsigned int scaling_coeffs[4][32] = {
     [0] = {
         0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -208,13 +208,13 @@ void de_set_te_pulse_width(void *base_addr, u32 width)
 
 u32 de_set_te_pinmux(const char *name)
 {
-#if defined(AIC_DE_DRV_V10) || defined(AIC_DE_V10)
+#if defined(AIC_DE_DRV_V10)
     char *pins[] = { "PC.6", "PD.2", "PF.15" };
     unsigned int func[] = { 4, 4, 2 };
-#elif defined(AIC_DE_DRV_V11) || defined(AIC_DE_V11)
+#elif defined(AIC_DE_DRV_V11) || defined(AIC_DE_DRV_V11_1)
     char *pins[] = { "PA.1", "PC.6" };
     unsigned int func[] = { 8, 6 };
-#elif defined(AIC_DE_DRV_V12) || defined(AIC_DE_V12)
+#elif defined(AIC_DE_DRV_V12)
 char *pins[] = { "PA.1", "PC.6" };
 unsigned int func[] = { 8, 6 };
 #endif
@@ -606,7 +606,7 @@ void de_ui_layer_rect_enable(void *base_addr, u32 index, u32 enable)
 
 void de_scaler0_active_handle(void *base_addr, u32 index)
 {
-#if defined(AIC_DE_DRV_V10) || defined(AIC_DE_V10)
+#if defined(AIC_DE_DRV_V10)
     const unsigned int *table;
     int i;
 

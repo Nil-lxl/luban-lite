@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -7,7 +7,6 @@
  */
 
 #include <rtconfig.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <spinand.h>

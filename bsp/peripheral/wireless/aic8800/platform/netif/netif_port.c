@@ -32,6 +32,53 @@
 #define NET_TXBUF_TH            (NET_TXBUF_CNT/2-2)
 #define NET_RX_LWIP_CNT         (40)
 
+#ifdef WIFI_USING_LOOPBACK_NETDEV
+#define MAX_ADDR_LEN    6
+
+struct loop_net_device
+{
+    /* inherit from ethernet device */
+    struct eth_device parent;
+
+    /* interface address info. */
+    rt_uint8_t  dev_addr[MAX_ADDR_LEN]; /* hw address   */
+};
+
+/* control the interface */
+static rt_err_t loop_net_control(rt_device_t dev, int cmd, void *args)
+{
+    struct loop_net_device *aicwf_net = (struct loop_net_device *)dev;
+    switch (cmd)
+    {
+    case NIOCTL_GADDR:
+        /* get mac address */
+        if (args)
+            rt_memcpy(args, aicwf_net->dev_addr, MAX_ADDR_LEN);
+        else
+            return -RT_ERROR;
+        break;
+
+    default :
+        break;
+    }
+
+    return RT_EOK;
+}
+
+#ifdef RT_USING_DEVICE_OPS
+const static struct rt_device_ops aicwf_net_ops =
+{
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    loop_net_control
+};
+#endif
+
+static struct loop_net_device loop_net_dev = {};
+#endif
 
 //-------------------------------------------------------------------
 // Driver Variables define
@@ -42,40 +89,6 @@ struct aic_netif_dev netif_dev = {0};
 //-------------------------------------------------------------------
 // Driver Import functions
 //-------------------------------------------------------------------
-/* ASR Platform functions */
-#if 0
-extern int netif_recv_from_wifi(UINT8 *data, UINT32 len, UINT8 *buf);
-extern int netif_wifi_status(int status);
-extern int netif_wifi_init(int ip_addr, char* mac_addr);
-
-//-------------------------------------------------------------------
-// Driver platform functions
-//-------------------------------------------------------------------
-uint8_t *platform_net_buf_rx_alloc(uint32_t length)
-{
-    return lwip_wifi_in_buf_alloc(length);
-}
-
-void *platform_net_buf_rx_desc(uint8_t *buffer)
-{
-    return lwip_wifi_in_buf_pmsg(buffer);
-}
-
-void platform_net_buf_rx_free(void *ref)
-{
-    ((pmsg*)ref)->free(ref);
-}
-
-int aicwifi_pkt_send_to_platform(UINT8 *data, UINT32 len, UINT8 *desc)
-{
-    return netif_recv_from_wifi(data, len, desc);
-}
-
-signed long netif_send_to_wifi_uap_nocpy(UINT8 *data, UINT32 len,void*msg)
-{
-    return tx_eth_data_process(data,len,msg);
-}
-#endif
 
 //-------------------------------------------------------------------
 // Driver netif base API define
@@ -227,24 +240,42 @@ int net_init(void)
 
 void net_deinit(void)
 {
-    uint8_t i;
+    int txbuf_cnt = 0;
     struct net_tx_buf_tag *tx_buf;
     struct aic_netif_dev *netifdev = &netif_dev;
 
     #ifndef CONFIG_DRIVER_ORM
-	for(i = 0; i < NET_TXBUF_CNT; i++)
-	{
-		rtos_mutex_lock(netifdev->net_tx_buf_mutex, -1);
-		tx_buf = (struct net_tx_buf_tag *)co_list_pop_front(&netifdev->net_tx_buf_free_list);
-		rtos_mutex_unlock(netifdev->net_tx_buf_mutex);
-		rtos_free(tx_buf);
-	}
+    if (netifdev->net_tx_buf_mutex) {
+        rtos_mutex_lock(netifdev->net_tx_buf_mutex, -1);
+    }
+    tx_buf = (struct net_tx_buf_tag *)co_list_pop_front(&netifdev->net_tx_buf_free_list);
+    while (tx_buf) {
+        rtos_free(tx_buf);
+        txbuf_cnt++;
+        tx_buf = (struct net_tx_buf_tag *)co_list_pop_front(&netifdev->net_tx_buf_free_list);
+    }
+    if (netifdev->net_tx_buf_mutex) {
+        rtos_mutex_unlock(netifdev->net_tx_buf_mutex);
+    }
+    AIC_LOG_PRINTF("%s txbuf_cnt: %d, %d\n", __func__, txbuf_cnt, NET_TXBUF_CNT);
     #endif
 
-	RTOS_RES_NULL(netifdev->net_tx_buf_sema);
-	RTOS_RES_NULL(netifdev->net_tx_buf_mutex);
-	RTOS_RES_NULL(netifdev->l2_semaphore);
-	RTOS_RES_NULL(netifdev->l2_mutex);
+    if (netifdev->net_tx_buf_sema) {
+        rtos_semaphore_delete(netifdev->net_tx_buf_sema);
+        netifdev->net_tx_buf_sema = NULL;
+    }
+    if (netifdev->net_tx_buf_mutex) {
+        rtos_mutex_delete(netifdev->net_tx_buf_mutex);
+        netifdev->net_tx_buf_mutex = NULL;
+    }
+    if (netifdev->l2_semaphore) {
+        rtos_semaphore_delete(netifdev->l2_semaphore);
+        netifdev->l2_semaphore = NULL;
+    }
+    if (netifdev->l2_mutex) {
+        rtos_mutex_delete(netifdev->l2_mutex);
+        netifdev->l2_mutex = NULL;
+    }
 	memset(netifdev->l2_filter, 0, sizeof(netifdev->l2_filter));
 	//net_if_down(NULL);
 }
@@ -631,3 +662,23 @@ int net_dhcp_start(int net_id)
     return 0;
 }
 
+#ifdef WIFI_USING_LOOPBACK_NETDEV
+void net_loopback_netdev_register(void)
+{
+    int err;
+    #ifdef RT_USING_DEVICE_OPS
+    loop_net_dev.parent.parent.ops     = &aicwf_net_ops;
+    #else
+    loop_net_dev.parent.parent.init    = NULL;
+    loop_net_dev.parent.parent.open    = NULL;
+    loop_net_dev.parent.parent.close   = NULL;
+    loop_net_dev.parent.parent.read    = NULL;
+    loop_net_dev.parent.parent.write   = NULL;
+    loop_net_dev.parent.parent.control = loop_net_control;
+    #endif
+    err = af_unix_eth_device_init(&loop_net_dev.parent, "lo");
+    if (err) {
+        AIC_LOG_PRINTF("AF_UNIX eth dev init err=%d\n", err);
+    }
+}
+#endif

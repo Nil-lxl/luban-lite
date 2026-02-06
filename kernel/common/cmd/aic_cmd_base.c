@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <sys/time.h>
 #include <stdio.h>
 
 #include "aic_common.h"

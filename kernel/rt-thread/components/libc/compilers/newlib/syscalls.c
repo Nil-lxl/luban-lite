@@ -13,13 +13,13 @@
 
 #include <reent.h>
 #include <rtthread.h>
-#include <stdio.h>
 #include <string.h>
 #include <stddef.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/errno.h>
 #include <sys/stat.h>
+#include <stdio.h>
 #ifdef RT_USING_POSIX_STDIO
 #include "libc.h"
 #endif /* RT_USING_POSIX_STDIO */

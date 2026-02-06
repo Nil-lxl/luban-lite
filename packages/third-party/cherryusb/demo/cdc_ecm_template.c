@@ -28,7 +28,8 @@
 #endif
 
 #define CDC_ECM_ETH_STATISTICS_BITMAP 0x00000000
-
+/* Ethernet Maximum Segment size, typically 1514 bytes */
+#define CONFIG_CDC_ECM_ETH_MAX_SEGSZE 1536U
 /* str idx = 4 is for mac address: aa:bb:cc:dd:ee:ff*/
 #define CDC_ECM_MAC_STRING_INDEX      4
 
@@ -200,20 +201,9 @@ rt_err_t rt_usbd_cdc_ecm_eth_tx(rt_device_t dev, struct pbuf *p)
     }
 }
 
-#ifdef RT_USING_DEVICE_OPS
-static const struct rt_device_ops aicusb_device_ecm_ops = {
-    .control = rt_usbd_cdc_ecm_control,
-};
-#endif
-
 void cdc_ecm_lwip_init(void)
 {
-#ifdef RT_USING_DEVICE_OPS
-    cdc_ecm_dev.parent.ops = &aicusb_device_ecm_ops;
-#else
     cdc_ecm_dev.parent.control = rt_usbd_cdc_ecm_control;
-#endif
-
     cdc_ecm_dev.eth_rx = rt_usbd_cdc_ecm_eth_rx;
     cdc_ecm_dev.eth_tx = rt_usbd_cdc_ecm_eth_tx;
 
@@ -223,7 +213,7 @@ void cdc_ecm_lwip_init(void)
     dhcpd_start("u0");
 }
 
-void usbd_cdc_ecm_data_recv_done(void)
+void usbd_cdc_ecm_data_recv_done(uint32_t len)
 {
     eth_device_ready(&cdc_ecm_dev);
 }
@@ -323,7 +313,7 @@ void cdc_ecm_lwip_init(void)
     // while (dnserv_init(&ipaddr, PORT_DNS, dns_query_proc)) {}
 }
 
-void usbd_cdc_ecm_data_recv_done(void)
+void usbd_cdc_ecm_data_recv_done(uint32_t len)
 {
 }
 
@@ -333,7 +323,7 @@ void cdc_ecm_input_poll(void)
 }
 #endif
 
-void usbd_event_handler(uint8_t event)
+void usbd_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -366,14 +356,15 @@ struct usbd_interface intf1;
  * sudo ifconfig enxaabbccddeeff up
  * sudo dhcpclient enxaabbccddeeff
 */
-static int cdc_ecm_init(void)
+int cdc_ecm_init(void)
 {
     cdc_ecm_lwip_init();
 
-    usbd_desc_register(cdc_eth_descriptor);
-    usbd_add_interface(usbd_cdc_ecm_init_intf(&intf0, CDC_INT_EP, CDC_OUT_EP, CDC_IN_EP));
-    usbd_add_interface(usbd_cdc_ecm_init_intf(&intf1, CDC_INT_EP, CDC_OUT_EP, CDC_IN_EP));
-    usbd_initialize();
+    usbd_desc_register(0, cdc_eth_descriptor);
+    usbd_add_interface(0, usbd_cdc_ecm_init_intf(&intf0, CDC_INT_EP, CDC_OUT_EP, CDC_IN_EP));
+    usbd_add_interface(0, usbd_cdc_ecm_init_intf(&intf1, CDC_INT_EP, CDC_OUT_EP, CDC_IN_EP));
+    usbd_initialize(0, USB_DEV_BASE, usbd_event_handler);
+
     return 0;
 }
 

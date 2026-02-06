@@ -31,6 +31,7 @@ static struct rt_wlan_device *s_ap_dev = NULL;
 static struct rt_wlan_device *s_current_dev = NULL;
 static char rtw_mac[6];
 
+extern int realtek_init(void);
 rt_err_t aic_realtek_init(struct rt_wlan_device *wlan)
 {
     return realtek_init();
@@ -185,7 +186,7 @@ rt_err_t aic_realtek_softap(struct rt_wlan_device *wlan, struct rt_ap_info *ap_i
 {
     if (!wifi_is_up(RTW_AP_INTERFACE)) {
         wifi_off();
-        msleep(20);
+        aicos_msleep(20);
         aicos_msleep(100);
         if (wifi_on(RTW_MODE_AP) < 0) {
             pr_err("WIFI mode AP start Failed\n");
@@ -241,7 +242,7 @@ rt_err_t aic_realtek_disconnect(struct rt_wlan_device *wlan)
             break;
         }
 
-        rtw_mdelay_os(1000);
+        aicos_msleep(1000);
 
         timeout --;
     }

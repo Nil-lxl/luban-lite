@@ -6,7 +6,6 @@
  * Author: Xiong Hao <hao.xiong@artinchip.com>
  */
 
-#include <stdio.h>
 #include <aic_core.h>
 #include <aic_common.h>
 #include <ram_param.h>

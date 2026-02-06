@@ -9,7 +9,6 @@
  * 2019-07-09     Zero-Free    improve device ops interface and data flows
  */
 
-#include <stdio.h>
 #include <string.h>
 #include <rthw.h>
 #include <rtdevice.h>

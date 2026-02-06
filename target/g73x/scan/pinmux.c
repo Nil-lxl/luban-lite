@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -42,11 +42,8 @@ struct aic_pinmux aic_pinmux_config[] = {
     {5, PIN_PULL_UP, 3, "PD.5"},   // BT_UART2_RX
     {1, PIN_PULL_DIS, 3, AIC_UART2_PA_RS485_CTL_NAME},
 #else
-    {8, PIN_PULL_DIS, 3, "PA.2"},   // BT_UART2_CTS
-    {8, PIN_PULL_DIS, 3, "PA.3"},   // BT_UART2_RTS
-    {5, PIN_PULL_DIS, 3, "PD.4"},   // BT_UART2_TX
-    {5, PIN_PULL_UP, 3, "PD.5"},   // BT_UART2_RX
-    {1, PIN_PULL_DIS, 3, "PD.6"},   // BT_PWR_ON
+    {5, PIN_PULL_DIS, 3, "PD.16"},   // BT_UART2_TX
+    {5, PIN_PULL_UP, 3, "PD.17"},   // BT_UART2_RX
 #endif
 #endif
 #ifdef AIC_USING_CAN0
@@ -170,7 +167,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_UP, 3, "PC.11"},
 #endif
 #ifdef AIC_WIRELESS_LAN
-    {1, PIN_PULL_DIS, 3, "PD.7"},  // WIFI_PWR_ON
+    {1, PIN_PULL_DIS, 3, AIC_WIRELESS_PWR_GPIO},  // WIFI_PWR_ON
 #endif
 #ifdef AIC_USING_I2C0
     {4, PIN_PULL_DIS, 3, "PD.0"}, // SCK

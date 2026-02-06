@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -392,9 +392,9 @@ void lv_port_disp_init(void)
     lv_disp_set_rotation(lv_disp_get_default(), LV_ROTATE_DEGREE / 90);
 #endif
 
-#ifdef AIC_LVGL_SPI_EXTEND_DEMO
-    extern void lv_spi_display_init();
-    lv_spi_display_init();
+#ifdef AIC_LVGL_DOUBLE_DISP_DEMO
+    extern int lv_spi_display_init(int use_frame_buffer);
+    lv_spi_display_init(0);
 #endif
 
 #ifndef AIC_MONKEY_TEST

@@ -7,14 +7,12 @@
  * Desc: aic audio render manager
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
 #include <inttypes.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <getopt.h>
 #include <pthread.h>
@@ -94,6 +92,7 @@ s32 aic_audio_render_manager_destroy(struct aic_audio_render *render)
            render_device->dev_ref_cnt, audio_render->scene_type, audio_render->scene_id);
 
     if (1 == audio_render->mix_enable) {
+        audio_render->mix_enable = 0;
         aic_pcm_mix_destroy(audio_render->mix);
         audio_render->mix = NULL;
     }
@@ -225,6 +224,7 @@ s32 aic_audio_render_manager_control(struct aic_audio_render *render,
         break;
 
     case AUDIO_RENDER_CMD_SET_SUB_TRACK_VOL:
+        ret = aic_set_track_volume(audio_render->mix, *(int *)params);
         break;
     case AUDIO_RENDER_CMD_GET_SUB_TRACK_REMAIN_DATA:
         *(unsigned long *)params = get_mix_reamin_data(audio_render->mix);
@@ -354,10 +354,10 @@ s32 aic_audio_render_create(struct aic_audio_render **render,
 
     if (create_params->mix_enable) {
         if (AUDIO_RENDER_SCENE_DEFAULT == create_params->scene_type) {
-            audio_render->mix = aic_pcm_mix_create(NULL, 0, 2048);
+            audio_render->mix = aic_pcm_mix_create(NULL, 0, 4096);
             audio_render->mix_enable = 1;
         } else if (AUDIO_RENDER_SCENE_WARNING_TONE == create_params->scene_type) {
-            audio_render->mix = aic_pcm_mix_create(NULL, 1, 8192);
+            audio_render->mix = aic_pcm_mix_create(NULL, 1, 16384);
             audio_render->mix_enable = 1;
         }
     }

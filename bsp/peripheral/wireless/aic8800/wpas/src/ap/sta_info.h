@@ -15,7 +15,7 @@
 #include "common/wpa_common.h"
 #include "common/ieee802_11_defs.h"
 
-#ifdef PLATFORM_ASR_THREADX
+#ifdef CONFIG_PLAT_THREADX
 #define ap_get_sta	_ap_get_sta_wps
 #endif
 

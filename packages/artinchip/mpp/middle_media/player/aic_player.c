@@ -12,9 +12,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <inttypes.h>
 
@@ -69,7 +67,7 @@ struct aic_player {
     s8 mute;
     s8 seeking;
     s8 video_render_keep_last_frame;
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     void *vdec_allocator;
     s8 init_vdec_crop;
     struct mpp_dec_crop_info vdec_crop;
@@ -112,7 +110,7 @@ static s32 component_event_handler (
             break;
         case MM_EVENT_BUFFER_FLAG:
             if (player->media_info.has_video) {
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
                 if (player->vdecoder_handle == h_component) {
 #else
                 if (player->video_render_handle == h_component) {
@@ -172,7 +170,7 @@ static s32 component_event_handler (
         case MM_EVENT_VIDEO_RENDER_FIRST_FRAME:
         case MM_EVENT_AUDIO_RENDER_FIRST_FRAME:
             if (player->media_info.has_video) {
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
                 if (player->vdecoder_handle == h_component) {
 #else
                 if (player->video_render_handle == h_component) {
@@ -380,7 +378,7 @@ s32 aic_player_start_video(struct aic_player *player)
             loge("unable to get vdecoder_handle handle.\n");
             return MM_ERROR_INSUFFICIENT_RESOURCES;
         }
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         if (player->vdec_allocator) {
             if (MM_ERROR_NONE != mm_set_config(player->vdecoder_handle,
                                                MM_INDEX_CONFIG_VIDEO_DECODER_EXT_FRAME_ALLOCATOR,
@@ -406,7 +404,7 @@ s32 aic_player_start_video(struct aic_player *player)
 #endif
         video_port_format.color_format = MM_COLOR_FORMAT_NV12;
         if (video_port_format.compression_format == MM_VIDEO_CODING_MJPEG) {
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
             if (strcmp(PRJ_CHIP, "d12x") == 0 || strcmp(PRJ_CHIP, "d13x") == 0) {
 #else
             if (strcmp(PRJ_CHIP, "d12x") == 0) {
@@ -451,7 +449,7 @@ s32 aic_player_start_video(struct aic_player *player)
             return MM_ERROR_BAD_PARAMETER;
         }
 
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         if (player->video_render_handle) {
             loge("please call aic_player_stop,free(vdecoder_handle)\n");
             return MM_ERROR_INSUFFICIENT_RESOURCES;
@@ -485,7 +483,7 @@ s32 aic_player_start_video(struct aic_player *player)
             loge("mm_set_bind error.\n");
             return MM_ERROR_INSUFFICIENT_RESOURCES;
         }
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         if (MM_ERROR_NONE != mm_set_bind(player->vdecoder_handle,
                                          VDEC_PORT_OUT_INDEX,
                                          player->video_render_handle,
@@ -617,7 +615,7 @@ s32 aic_player_start_clock(struct aic_player *player)
             return MM_ERROR_INSUFFICIENT_RESOURCES;
         }
 
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         if (MM_ERROR_NONE != mm_set_bind(player->clock_handle,
                                          CLOCK_PORT_OUT_VIDEO,
                                          player->vdecoder_handle,
@@ -699,7 +697,7 @@ s32 aic_player_start(struct aic_player *player)
                         MM_STATE_IDLE, NULL);
     }
 #endif
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     if (player->media_info.has_video && player->video_render_handle) {
         mm_send_command(player->video_render_handle, MM_COMMAND_STATE_SET,
                         MM_STATE_IDLE, NULL);
@@ -748,7 +746,7 @@ _EXIT:
         player->adecoder_handle = NULL;
     }
 
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     if (player->video_render_handle) {
         mm_free_handle(player->video_render_handle);
         player->video_render_handle = NULL;
@@ -783,7 +781,7 @@ s32 aic_player_play(struct aic_player *player)
                         MM_STATE_EXECUTING, NULL);
     }
 #endif
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     if (player->media_info.has_video && player->video_render_handle) {
         mm_send_command(player->video_render_handle, MM_COMMAND_STATE_SET,
                         MM_STATE_EXECUTING, NULL);
@@ -832,7 +830,7 @@ s32 aic_player_pause(struct aic_player *player)
         wait_state(player->adecoder_handle, MM_STATE_PAUSE);
     }
     if (player->media_info.has_video && player->vdecoder_handle) {
- #ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+ #ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         if (player->video_render_handle) {
             mm_send_command(player->video_render_handle,
                             MM_COMMAND_STATE_SET, MM_STATE_PAUSE, NULL);
@@ -873,7 +871,7 @@ static int do_seek(struct aic_player *player,u64 seek_time)
     player->video_audio_seek_mask = 0;
 
     if (player->media_info.has_video) {
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         if (player->video_render_handle) {
             if (MM_ERROR_NONE != mm_set_config(player->video_render_handle,
                                                MM_INDEX_CONFIG_TIME_POSITION,
@@ -983,7 +981,7 @@ s32 aic_player_seek(struct aic_player *player,u64 seek_time)
 void aic_player_stop_component(struct aic_player *player)
 {
     if (player->media_info.has_video) {
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         if (player->video_render_handle) {
             mm_send_command(player->video_render_handle,
                             MM_COMMAND_STATE_SET, MM_STATE_IDLE, NULL);
@@ -1048,7 +1046,7 @@ void aic_player_stop_component(struct aic_player *player)
             mm_set_bind(NULL, 0, player->vdecoder_handle, VDEC_PORT_IN_INDEX);
             mm_set_bind(player->vdecoder_handle, VDEC_PORT_OUT_INDEX, NULL, 0);
 
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
             if (player->video_render_handle) {
                 mm_set_bind(NULL, 0, player->video_render_handle,
                             VIDEO_RENDER_PORT_IN_VIDEO_INDEX);
@@ -1100,7 +1098,7 @@ s32 aic_player_stop(struct aic_player *player)
     player->video_audio_end_mask = 0;
 
     if (player->media_info.has_video) {
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         if (player->video_render_handle) {
             mm_param_u32 params;
             params.u32 = (u32)player->video_render_keep_last_frame;
@@ -1392,11 +1390,41 @@ s32 aic_player_get_rotation(struct aic_player *player)
     return rotation.rotation;
 }
 
+static void set_debug_info(struct aic_player *player, int debug_en)
+{
+    mm_param_u32 params = {0};
+
+    params.u32 = debug_en;
+    printf("%s: debug_en=%d, has_video=%d, has_audio=%d\n", __func__, debug_en,
+        player->media_info.has_video, player->media_info.has_audio);
+
+    if (player->media_info.has_video) {
+        if (player->video_render_handle) {
+            mm_set_parameter(player->video_render_handle, MM_INDEX_PARAM_PRINT_DEBUG_INFO, &params);
+        }
+        if (player->vdecoder_handle) {
+            mm_set_parameter(player->vdecoder_handle, MM_INDEX_PARAM_PRINT_DEBUG_INFO, &params);
+        }
+    }
+    if (player->media_info.has_audio) {
+        if (player->audio_render_handle) {
+            mm_set_parameter(player->audio_render_handle, MM_INDEX_PARAM_PRINT_DEBUG_INFO, &params);
+        }
+        if (player->adecoder_handle) {
+            mm_set_parameter(player->adecoder_handle, MM_INDEX_PARAM_PRINT_DEBUG_INFO, &params);
+        }
+    }
+
+    if (player->demuxer_handle) {
+        mm_set_parameter(player->demuxer_handle, MM_INDEX_PARAM_PRINT_DEBUG_INFO, &params);
+    }
+}
+
 s32 aic_player_control(struct aic_player *player, enum aic_player_command cmd, void *data)
 {
     s32 ret = 0;
     switch (cmd) {
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         case AIC_PLAYER_CMD_SET_VDEC_EXT_FRAME_ALLOCATOR:
             player->vdec_allocator = data;
             break;
@@ -1426,6 +1454,9 @@ s32 aic_player_control(struct aic_player *player, enum aic_player_command cmd, v
             break;
         }
 #endif
+        case AIC_PLAYER_CMD_SET_DEBUG_INFO:
+            set_debug_info(player, *(s32 *)data);
+            break;
 
         default:
             return -1;

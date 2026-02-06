@@ -319,7 +319,6 @@ int aicbt_patch_trap_data_load(struct rwnx_hw *rwnx_hw, struct aicbt_patch_table
 
 	if (rwnx_plat_bin_fw_upload_android(rwnx_hw, patch_info.addr_adid, adid_name))
 		return -1;
-
 	if (rwnx_plat_bin_fw_upload_android(rwnx_hw, patch_info.addr_patch, patch_name))
 		return -1;
 	if (aicbt_ext_patch_data_load(rwnx_hw, &patch_info))

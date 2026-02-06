@@ -25,12 +25,12 @@ void wifi_memory_copy(void *dst, void *src, unsigned long len)
     rt_memcpy(dst, src, len);
 }
 
-unsigned int sys_disable_irq(void)
+unsigned long sys_disable_irq(void)
 {
     return rt_hw_interrupt_disable();
 }
 
-void sys_enable_irq(unsigned int f)
+void sys_enable_irq(unsigned long f)
 {
    rt_hw_interrupt_enable(f);
 }

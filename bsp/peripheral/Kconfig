@@ -2,6 +2,7 @@
 source "bsp/peripheral/spinand/Kconfig"
 source "bsp/peripheral/spinor_sfud/Kconfig"
 source "bsp/peripheral/nftl/Kconfig"
+source "bsp/peripheral/spinand_refresh/Kconfig"
 source "bsp/peripheral/bt/Kconfig"
 source "bsp/peripheral/camera/Kconfig"
 #--------------------------------------------

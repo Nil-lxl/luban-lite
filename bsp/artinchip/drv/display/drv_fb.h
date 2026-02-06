@@ -88,6 +88,9 @@ struct panel_dbi {
     unsigned int format;
     unsigned int first_line;
     unsigned int other_line;
+#ifdef AIC_DISP_MIPI_DBI_DRV_V13
+    unsigned int flags;
+#endif
     struct panel_dbi_commands commands;
     struct spi_cfg *spi;
 };

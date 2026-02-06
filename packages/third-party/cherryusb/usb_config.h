@@ -7,8 +7,6 @@
 #define CHERRYUSB_CONFIG_H
 
 #include <aic_core.h>
-#define CHERRYUSB_VERSION     0x010000
-#define CHERRYUSB_VERSION_STR "v1.0.0"
 
 /* ================ USB common Configuration ================ */
 
@@ -62,6 +60,10 @@
 
 #ifndef CONFIG_USBDEV_MSC_MAX_BUFSIZE
 #define CONFIG_USBDEV_MSC_MAX_BUFSIZE 512
+#endif
+
+#ifndef CONFIG_USBDEV_MSC_MAX_LUN
+#define CONFIG_USBDEV_MSC_MAX_LUN 1
 #endif
 
 #ifndef CONFIG_USBDEV_MSC_MANUFACTURER_STRING
@@ -187,6 +189,8 @@
 
 #if defined(AIC_USING_USB0_DEVICE) || defined(AIC_USING_USB0_OTG)
 /* AIC Device Controller Configuration */
+#define CONFIG_USBDEV_MAX_BUS       1
+#define CONFIG_USBDEV_DEF_BUS       0
 #define CONFIG_USB_AIC_DC_PORT      1  /* 0 = FullSpeed, 1 = HighSpeed */
 #define CONFIG_USB_AIC_DC_BASE      (USB_DEV_BASE)
 #define CONFIG_USB_AIC_DC_CLK       (CLK_USBD)
@@ -194,7 +198,6 @@
 #define CONFIG_USB_AIC_DC_PHY_CLK   (CLK_USB_PHY0)
 #define CONFIG_USB_AIC_DC_PHY_RESET (RESET_USBPHY0)
 #define CONFIG_USB_AIC_DC_IRQ_NUM   (USB_DEV_IRQn)
-#define USB_NUM_BIDIR_ENDPOINTS     5
 #ifndef LPKG_CHERRYUSB_DEVICE_AIC_CPU
 #define CONFIG_USB_AIC_DMA_ENABLE
 #endif

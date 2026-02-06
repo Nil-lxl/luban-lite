@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -11,23 +11,43 @@
 #include <hal_wdt.h>
 #include <getopt.h>
 
-#define AIC_WDT_DEV_NAME           "wdt"
+#define AIC_WDT_DEV_NAME            "wdt"
+#define KEEP_FEED_TIMES             5
 
-irqreturn_t aic_wdt_irq(int irq, void *arg)
+static aicos_sem_t g_wdt_sem = NULL;
+static u64 g_wdt_start_ms = 0;
+
+int aic_wdt_irq_cb(void)
 {
-    rt_kprintf("Watchdog chan0 IRQ happened\n");
-
-    return IRQ_HANDLED;
+    printf("Watchdog IRQ pretimeout happened after %ld ms\n",
+           (long)(aic_get_time_ms() - g_wdt_start_ms));
+    if (g_wdt_sem)
+        aicos_sem_give(g_wdt_sem);
+    return 0;
 }
 
 void wdt_feed_thread_entry(void *parameter)
 {
+    int timeout = *((int *)parameter) * 1000;
     rt_device_t wdt_dev = RT_NULL;
-    do {
-        wdt_dev = rt_device_find(AIC_WDT_DEV_NAME);
+    int i;
+
+    wdt_dev = rt_device_find(AIC_WDT_DEV_NAME);
+    if (!wdt_dev) {
+        pr_err("Failed to open %s\n", AIC_WDT_DEV_NAME);
+        return;
+    }
+
+    if (timeout <= 0)
+        timeout = 1000;
+
+    for (i = 0; i < KEEP_FEED_TIMES; i++) {
+        aicos_msleep(timeout);
+        printf("[%lld] %d. Feed watchdog\n", aic_get_time_ms(), i);
         rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_KEEPALIVE, NULL);
-        rt_thread_mdelay(200);
-    } while (wdt_dev);
+    }
+
+    rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_STOP, NULL);
 }
 
 static void usage(char * program)
@@ -52,16 +72,17 @@ int test_wdt(int argc, char **argv)
 {
     int opt, ret = 0;
     __unused int status;
-    int wreg_switch,timeout = 0;
+    int wreg_switch, timeout = 0, pretimeout = 0;
     rt_device_t wdt_dev = RT_NULL;
     rt_thread_t wdt_thread = RT_NULL;
+    bool keepalive = false;
 
     if (argc < 2) {
         usage(argv[0]);
         return -1;
     }
 
-    wdt_dev =  rt_device_find(AIC_WDT_DEV_NAME);
+    wdt_dev = rt_device_find(AIC_WDT_DEV_NAME);
     if (!wdt_dev) {
         rt_kprintf("Failed to open %s device\n", AIC_WDT_DEV_NAME);
         return -1;
@@ -77,47 +98,48 @@ int test_wdt(int argc, char **argv)
         switch (opt) {
             case 'c':
                 timeout = strtoul(optarg, NULL, 10);
-                rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_CLR_THD, &timeout);
+                ret = rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_CLR_THD, &timeout);
                 rt_kprintf("set clear threshold:%d\n", timeout);
                 break;
             case 's':
                 timeout = strtoul(optarg, NULL, 10);
-                rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_TIMEOUT, &timeout);
-                rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_START, RT_NULL);
+                ret = rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_TIMEOUT, &timeout);
+                ret |= rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_START, RT_NULL);
                 rt_kprintf("set timeout:%d\n", timeout);
                 break;
             case 'g':
-                rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_GET_TIMEOUT, &timeout);
+                ret = rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_GET_TIMEOUT, &timeout);
                 rt_kprintf("timeout:%d\n", timeout);
-                break;
+                return timeout;
             case 'p':
-                timeout = strtoul(optarg, NULL, 10);
-                rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_IRQ_TIMEOUT, &timeout);
-                rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_IRQ_ENABLE, &aic_wdt_irq);
-                rt_kprintf("set pretimeout:%d\n", timeout);
+                pretimeout = strtoul(optarg, NULL, 10);
+                g_wdt_sem = aicos_sem_create(0);
+                if (!g_wdt_sem) {
+                    pr_err("Failed to create sem\n");
+                    return -1;
+                }
+                ret = rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_IRQ_TIMEOUT, &pretimeout);
+                ret |= rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_IRQ_ENABLE, &aic_wdt_irq_cb);
+                if (ret)
+                    return ret;
+                rt_kprintf("set pretimeout:%d\n", pretimeout);
+                g_wdt_start_ms = aic_get_time_ms();
                 break;
             case 'k':
-                wdt_thread = rt_thread_create("wdt_feed_thread", wdt_feed_thread_entry,
-                                            RT_NULL, 1024, 10, 10);
-                if (wdt_thread != RT_NULL) {
-                    rt_thread_startup(wdt_thread);
-                    rt_kprintf("keep feeding the dog!\n");
-                } else {
-                    rt_kprintf("wdt thread create fail!\n");
-                }
+                keepalive = true;
                 break;
             case 'r':
             #ifdef AIC_WDT_DRV_V11
                 status = rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_GET_RST_EN, RT_NULL);
                 if (status)
-                    rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_RST_SYS, RT_NULL);
+                    ret = rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_RST_SYS, RT_NULL);
                 else
-                    rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_RST_CPU, RT_NULL);
+                    ret = rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_RST_CPU, RT_NULL);
                 break;
             #endif
             case 'w':
                 wreg_switch = atoi(optarg);
-                rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_EN_REG, &wreg_switch);
+                ret = rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_EN_REG, &wreg_switch);
 
                 if (wreg_switch == 1)
                     rt_kprintf("enable write protect reg function\n");
@@ -130,6 +152,41 @@ int test_wdt(int argc, char **argv)
         }
     }
 
-    return 0;
+    if (keepalive) {
+        if (timeout >= 2)
+            timeout -= 1;
+        else
+            timeout = 1;
+        wdt_thread = rt_thread_create("wdt_feed_thread", wdt_feed_thread_entry,
+                                      &timeout, 2048, 10, 10);
+        if (wdt_thread != RT_NULL) {
+            rt_thread_startup(wdt_thread);
+            timeout = (timeout + 1) * KEEP_FEED_TIMES;
+            printf("Keep feeding the watchdog %d times.\n", KEEP_FEED_TIMES);
+            printf("Waiting for %d sec ...\n", timeout);
+            aicos_msleep(timeout * 1000);
+        } else {
+            rt_kprintf("wdt thread create fail!\n");
+            ret = -1;
+        }
+    }
+
+    if (g_wdt_sem) {
+        rt_kprintf("Wait for the pretimeout IRQ ...\n");
+        ret = aicos_sem_take(g_wdt_sem, (pretimeout + 2) * 1000);
+        if (ret < 0)
+            pr_err("Timeout\n");
+        else
+            ret = (aic_get_time_ms() - g_wdt_start_ms + 300) / 1000;
+
+        aicos_sem_delete(g_wdt_sem);
+        if (rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_IRQ_DISABLE, RT_NULL))
+            return -1;
+        if (rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_STOP, RT_NULL))
+            return -1;
+        g_wdt_sem = NULL;
+    }
+
+    return ret;
 }
 MSH_CMD_EXPORT_ALIAS(test_wdt, test_wdt, Reboot the system);

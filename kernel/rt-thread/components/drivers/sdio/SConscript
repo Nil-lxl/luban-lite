@@ -8,6 +8,7 @@ mmcsd_core.c
 sd.c
 sdio.c
 mmc.c
+sdio_mgr.c
 """)
 
 # The set of source files associated with this SConscript file.

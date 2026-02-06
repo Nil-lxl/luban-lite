@@ -25,6 +25,8 @@ for /f %%i in ('dir /b "%SDK_PRJ_TOP_DIR%\target\configs\*_defconfig"') do (
 
 	if "%NEED_CLEAN%" == "clean" call scons -c -C %SDK_PRJ_TOP_DIR% -j 8
 
+	call checkout_binary.bat
+
 	echo.
 	call scons -C %SDK_PRJ_TOP_DIR% -j 8 2>&1 | tee %LOG_DIR%\!SOLUTION!.log
 )

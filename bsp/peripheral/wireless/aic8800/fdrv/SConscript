@@ -19,8 +19,13 @@ src += Glob('aicbt_bsp/*.c')
 src += Glob('layer_abstract/src/*.c')
 src += Glob('layer_common/src/*.c')
 
-myccflags = (' -w')
+if GetDepend(['PRJ_RV_TOOLCHAIN_V2_6_1']):
+    myccflags = (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types')
+elif GetDepend(['PRJ_RV_TOOLCHAIN_V3_2_0']):
+    myccflags = (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch')
+else:
+    myccflags = (' -w')
 
 group = DefineGroup('aic8800', src, depend = ['AIC_WLAN_AIC8800D40L'], CPPPATH = include_path, LOCAL_CFLAGS=myccflags)
-            
+
 Return('group')

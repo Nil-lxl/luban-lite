@@ -219,6 +219,58 @@ static int do_mmc_scan(int argc, char **argv)
     }
 
     /* print the result */
+    printf("sample phase result:\n");
+    printf("     ");
+    for (i = 0; i < 32; i++) {
+        printf("%-3d", i);
+    }
+    printf("\n    ----------------------------------------------------------------"
+        "--------------------------------\n");
+    for (i = 0; i < 4; i++) {
+        printf("%-2d | ", i);
+        for (j = 0; j < 32; j++) {
+            printf("%02x ", scan_res[i][j]);
+        }
+        printf("\n");
+    }
+
+    for (k = 0; k < 512; k++)
+        w_buf[k] = rand() & 0xff;
+
+    memset(scan_res, 1, sizeof(scan_res));
+
+    /* scan the driver phase and chain */
+    for (i = 0; i < 4; i++) {
+        mmc_set_tx_phase(host, i);
+        for (j = 0; j < 32; j++) {
+            mmc_set_tx_delay(host, j);
+
+            ret = mmc_bwrite(host, blkoffset, 1, w_buf);
+            if (ret == 0) {
+                printf("mmc_bwrite error!\n");
+                scan_res[i][j] = 0;
+                continue;
+            }
+
+            memset(r_buf, 0, sizeof(r_buf));
+
+            ret = mmc_bread(host, blkoffset, 1, r_buf);
+            if (ret == 0) {
+                scan_res[i][j] = 0;
+                continue;
+            }
+            for (k = 0; k < 512; k++) {
+                if (w_buf[k] != r_buf[k]) {
+                    printf("r_buf[%d]:expect 0x%02x, actual:0x%02x\n", k, w_buf[k], r_buf[k]);
+                    scan_res[i][j] = 0;
+                    break;
+                }
+            }
+        }
+    }
+
+    /* print the result */
+    printf("driver phase result:\n");
     printf("     ");
     for (i = 0; i < 32; i++) {
         printf("%-3d", i);

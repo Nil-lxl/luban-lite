@@ -25,7 +25,7 @@
 #define INTF_DESC_bInterfaceNumber  2 /** Interface number offset */
 #define INTF_DESC_bAlternateSetting 3 /** Alternate setting offset */
 
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_video_buf[128];
+USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_video_buf[USB_ALIGN_UP(128, CONFIG_USB_ALIGN_SIZE)];
 
 static const char *format_type[] = {
     [USBH_VIDEO_FORMAT_UNCOMPRESSED] = "uncompressed",
@@ -533,6 +533,7 @@ static int usbh_video_ctrl_disconnect(struct usbh_hubport *hport, uint8_t intf)
         }
 
         if (hport->config.intf[intf].devname[0] != '\0') {
+            usb_osal_thread_schedule_other();
             USB_LOG_INFO("Unregister Video Class:%s\r\n", hport->config.intf[intf].devname);
             usbh_video_stop(video_class);
         }
@@ -581,20 +582,18 @@ const struct usbh_class_driver video_streaming_class_driver = {
 
 CLASS_INFO_DEFINE const struct usbh_class_info video_ctrl_class_info = {
     .match_flags = USB_CLASS_MATCH_INTF_CLASS | USB_CLASS_MATCH_INTF_SUBCLASS | USB_CLASS_MATCH_INTF_PROTOCOL,
-    .class = USB_DEVICE_CLASS_VIDEO,
-    .subclass = VIDEO_SC_VIDEOCONTROL,
-    .protocol = VIDEO_PC_PROTOCOL_UNDEFINED,
-    .vid = 0x00,
-    .pid = 0x00,
+    .bInterfaceClass = USB_DEVICE_CLASS_VIDEO,
+    .bInterfaceSubClass = VIDEO_SC_VIDEOCONTROL,
+    .bInterfaceProtocol = VIDEO_PC_PROTOCOL_UNDEFINED,
+    .id_table = NULL,
     .class_driver = &video_ctrl_class_driver
 };
 
 CLASS_INFO_DEFINE const struct usbh_class_info video_streaming_class_info = {
     .match_flags = USB_CLASS_MATCH_INTF_CLASS | USB_CLASS_MATCH_INTF_SUBCLASS | USB_CLASS_MATCH_INTF_PROTOCOL,
-    .class = USB_DEVICE_CLASS_VIDEO,
-    .subclass = VIDEO_SC_VIDEOSTREAMING,
-    .protocol = VIDEO_PC_PROTOCOL_UNDEFINED,
-    .vid = 0x00,
-    .pid = 0x00,
+    .bInterfaceClass = USB_DEVICE_CLASS_VIDEO,
+    .bInterfaceSubClass = VIDEO_SC_VIDEOSTREAMING,
+    .bInterfaceProtocol = VIDEO_PC_PROTOCOL_UNDEFINED,
+    .id_table = NULL,
     .class_driver = &video_streaming_class_driver
 };

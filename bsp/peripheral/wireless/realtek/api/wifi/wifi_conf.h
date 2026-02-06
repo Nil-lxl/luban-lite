@@ -952,7 +952,7 @@ void wifi_set_indicate_mgnt(int enable);
  * @param[out]  ability : 0x1 stand for mp driver, and 0x0 stand for normal driver
  * @return  RTW_SUCCESS
  */
-int wifi_get_drv_ability(uint32_t *ability);
+int wifi_get_drv_ability(__u32 *ability);
 
 /**
  * @brief  Set channel plan into flash/efuse, must reboot after setting channel plan

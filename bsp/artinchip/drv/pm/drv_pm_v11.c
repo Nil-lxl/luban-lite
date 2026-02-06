@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,6 +17,11 @@
 
 uint64_t sleep_counter;
 uint64_t resume_counter;
+
+extern size_t __sram_pm_start;
+static void (*aic_suspend_resume_fn)();
+extern void aic_suspend_resume();
+extern u32 aic_suspend_resume_size;
 
 RT_WEAK void rt_pm_board_level_power_off(void)
 {
@@ -62,7 +67,7 @@ void aic_pm_enter_light_sleep(void)
 
 void aic_pm_enter_deep_sleep(void)
 {
-    uint32_t fra0_freq;
+    uint32_t save_context[12];
 
     /* change bus frequency to 24M */
     hal_clk_set_parent(CLK_AXI0, CLK_OSC24M);
@@ -76,22 +81,19 @@ void aic_pm_enter_deep_sleep(void)
     hal_clk_disable(CLK_PLL_INT1);
     /* disable PLL_INT0: cpu pll */
     hal_clk_disable(CLK_PLL_INT0);
-    /* bypass PLL_FRA0: spi/sdmc/psram pll */
-    fra0_freq = hal_clk_get_freq(CLK_PLL_FRA0);
-    hal_clk_set_freq(CLK_PLL_FRA0, 24000000);
-    /* disable PLL_FRA0 */
-    hal_clk_disable(CLK_PLL_FRA0);
     /* Turn off board level power that can be controlled via GPIO */
     rt_pm_board_level_power_off();
     /* deinit all non-wakup pinmux configuration */
     aic_board_pinmux_deinit();
 
-    /* reset all pins */
-    //TO DO
-    __WFI();
+    rt_memcpy((void *)&__sram_pm_start, aic_suspend_resume,
+              aic_suspend_resume_size);
+    aic_suspend_resume_fn = (void *)&__sram_pm_start;
+    aicos_icache_invalid();
+    aicos_dcache_clean_invalid();
+    aic_suspend_resume_fn(&save_context);
 
     /* wakeup flow */
-    hal_clk_set_freq(CLK_PLL_FRA0, fra0_freq);
     /* enable PLL_INT0: cpu pll */
     hal_clk_enable(CLK_PLL_INT0);
     /* change cpu frequency to pll */

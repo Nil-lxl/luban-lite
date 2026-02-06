@@ -168,10 +168,6 @@ static int rtthread_hci_uart_init(void)
     config.baud_rate = BAUD_RATE_115200;
     config.data_bits = DATA_BITS_8;
     config.stop_bits = STOP_BITS_1;
-#ifdef RT_USING_SERIAL_V2
-#else
-    config.bufsz     = 128;
-#endif
 #if defined(LPKG_NIMBLE_HCI_H5) // H5
     config.parity    = PARITY_EVEN;
 #elif defined(LPKG_NIMBLE_HCI_H4)
@@ -215,8 +211,8 @@ static int rtthread_hci_uart_init(void)
 int ble_transport_to_ll_cmd_impl(void *buf)
 {
     uint8_t *cmd_pkt_data = (uint8_t *)buf;
-    size_t pkt_len = cmd_pkt_data[2] + 3; 
-    
+    size_t pkt_len = cmd_pkt_data[2] + 3;
+
 #if defined(LPKG_NIMBLE_HCI_H5) // H5
     if (g_hci_h5sm.link_state == ACTIVE) {
         hci_h5_sm_send(&g_hci_h5sm, HCI_H5_CMD, buf, pkt_len);
@@ -260,7 +256,7 @@ int ble_transport_to_ll_acl_impl(struct os_mbuf *om)
         rtthread_uart_tx(x->om_data, x->om_len);
         x = SLIST_NEXT(x, om_next);
     }
-    
+
     os_mbuf_free_chain(om);
 #endif
 

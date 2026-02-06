@@ -20,7 +20,6 @@
 
 #include <rthw.h>
 #include <string.h>
-#include <stdio.h>
 
 #ifdef RT_USING_FINSH
 
@@ -28,6 +27,7 @@
 #include "msh.h"
 
 #ifdef DFS_USING_POSIX
+#include <sys/time.h>
 #include <unistd.h>
 #include <fcntl.h>
 #endif /* DFS_USING_POSIX */

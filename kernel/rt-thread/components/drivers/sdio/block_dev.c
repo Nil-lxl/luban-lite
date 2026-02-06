@@ -506,7 +506,7 @@ static struct mmcsd_blk_device * rt_mmcsd_create_blkdev(struct rt_mmcsd_card *ca
                 if (!strcmp(ro_target, blk_dev->part.name) ||
                     !strcmp(ro_target, blk_dev->dev.parent.name)) {
                     /* Try to mount the rodata device */
-                    if (dfs_mount(blk_dev->dev.parent.name, "/rodata", "elm", 0, 0) == 0)
+                    if (dfs_mount(blk_dev->dev.parent.name, "/rodata", "elm", MS_RDONLY, 0) == 0)
                         LOG_I("mount fs[elm] device[%s] to /rodata ok.\n", blk_dev->dev.parent.name);
                 }
             }

@@ -52,6 +52,7 @@ static rt_int32_t wifi_if_sdio_probe(struct rt_mmcsd_card *card)
 
 static rt_int32_t wifi_if_sdio_remove(struct rt_mmcsd_card *card)
 {
+    AIC_LOG_PRINTF("%s: card_type=%d, host_flags=0x%x\n", __func__, card->card_type, card->host->flags);
     aicwf_sdio_remove(&g_wifi_if_sdio_funcs[0]);
     return 0;
 }
@@ -119,3 +120,14 @@ int wifi_if_sdio_init_my(void)
 }
 INIT_COMPONENT_EXPORT(wifi_if_sdio_init_my);
 #endif
+
+int wifi_if_sdio_deinit(void)
+{
+    int ret = sdio_unregister_driver(&wifi_if_sdio_drv);
+    AIC_LOG_PRINTF("deinit sdio id = 0x%x\n", wifi_if_sdio_drv.id->product);
+    if (ret < 0) {
+        AIC_LOG_PRINTF("rt sdio unregister driver failed:%d\n", ret);
+        return ret;
+    }
+    return 0;
+}

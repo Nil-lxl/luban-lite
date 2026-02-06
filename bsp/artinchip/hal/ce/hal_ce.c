@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 Artinchip Technology Co., Ltd.
+ * Copyright (C) 2020-2026 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -10,6 +10,7 @@
 #include <aic_core.h>
 #include <aic_hal.h>
 #include <aic_log.h>
+#include <aic_iopoll.h>
 #include <hal_ce.h>
 
 #define SECURE_SRAM_ADDR    (0x1000)
@@ -90,14 +91,14 @@ s32 hal_crypto_start_hash(struct crypto_task *task)
     return hal_crypto_start(task);
 }
 
-u32 hal_crypto_poll_finish(u32 alg_unit)
+s32 hal_crypto_poll_finish(u32 alg_unit, u32 timeout_us)
 {
     u32 reg_val;
 
     /* Interrupt should be disabled, so here check and wait tmo */
-    reg_val = readl(CE_BASE + CE_REG_ISR);
-
-    return (reg_val & (0x01 << alg_unit));
+    return readl_poll_timeout(CE_BASE + CE_REG_ISR, reg_val,
+                              ((reg_val & (0x01 << alg_unit))),
+                              timeout_us);
 }
 
 void hal_crypto_irq_enable(u32 alg_unit)

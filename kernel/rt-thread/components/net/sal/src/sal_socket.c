@@ -177,6 +177,7 @@ static void check_netdev_internet_up_work(struct rt_work *work, void *work_data)
     if (work)
     {
         rt_free(work);
+        netdev->net_work = RT_NULL;
     }
 
     /* get network interface socket operations */
@@ -286,9 +287,15 @@ int sal_check_netdev_internet_up(struct netdev *netdev)
     RT_ASSERT(netdev);
 
 #ifdef SAL_INTERNET_CHECK
+    if (netdev->net_work != RT_NULL)
+    {
+        LOG_D("sal_check_netdev_internet_up alread called, skip.");
+        return 0;
+    }
+
+
     /* workqueue for network connect */
     struct rt_work *net_work = RT_NULL;
-
 
     net_work = (struct rt_work *)rt_calloc(1, sizeof(struct rt_work));
     if (net_work == RT_NULL)
@@ -297,8 +304,31 @@ int sal_check_netdev_internet_up(struct netdev *netdev)
         return -1;
     }
 
+    netdev->net_work = net_work;
+
     rt_work_init(net_work, check_netdev_internet_up_work, (void *)netdev);
     rt_work_submit(net_work, RT_TICK_PER_SECOND);
+#endif /* SAL_INTERNET_CHECK */
+    return 0;
+}
+
+/**
+ * This function will delete SAL network work.
+ *
+ * @param netdev the network interface device to delete
+ */
+int sal_del_netdev_internet_up_work(struct netdev *netdev)
+{
+    RT_ASSERT(netdev);
+
+#ifdef SAL_INTERNET_CHECK
+    if (netdev->net_work)
+    {
+        if (rt_work_cancel(netdev->net_work) == RT_EOK)
+        {
+            rt_free(netdev->net_work);
+        }
+    }
 #endif /* SAL_INTERNET_CHECK */
     return 0;
 }
@@ -866,6 +896,73 @@ int sal_listen(int socket, int backlog)
 
     return pf->skt_ops->listen((int) sock->user_data, backlog);
 }
+
+int sal_sendmsg(int socket, const struct msghdr *message, int flags)
+{
+    struct sal_socket *sock;
+    struct sal_proto_family *pf;
+
+    /* get the socket object by socket descriptor */
+    SAL_SOCKET_OBJ_GET(sock, socket);
+
+    /* check the network interface is up status  */
+    SAL_NETDEV_IS_UP(sock->netdev);
+    /* check the network interface socket opreation */
+    SAL_NETDEV_SOCKETOPS_VALID(sock->netdev, pf, sendmsg);
+
+#ifdef SAL_USING_TLS
+    if (SAL_SOCKOPS_PROTO_TLS_VALID(sock, send))
+    {
+        int ret;
+
+        if ((ret = proto_tls->ops->send(sock->user_data_tls, message, flags)) < 0)
+        {
+            return -1;
+        }
+        return ret;
+    }
+    else
+    {
+        return pf->skt_ops->sendmsg((int)(size_t)sock->user_data, message, flags);
+    }
+#else
+    return pf->skt_ops->sendmsg((int)(size_t)sock->user_data, message, flags);
+#endif
+}
+
+int sal_recvmsg(int socket, struct msghdr *message, int flags)
+{
+    struct sal_socket *sock;
+    struct sal_proto_family *pf;
+
+    /* get the socket object by socket descriptor */
+    SAL_SOCKET_OBJ_GET(sock, socket);
+
+    /* check the network interface is up status  */
+    SAL_NETDEV_IS_UP(sock->netdev);
+    /* check the network interface socket opreation */
+    SAL_NETDEV_SOCKETOPS_VALID(sock->netdev, pf, recvmsg);
+
+#ifdef SAL_USING_TLS
+    if (SAL_SOCKOPS_PROTO_TLS_VALID(sock, recv))
+    {
+        int ret;
+
+        if ((ret = proto_tls->ops->recv(sock->user_data_tls, message, flags)) < 0)
+        {
+            return -1;
+        }
+        return ret;
+    }
+    else
+    {
+        return pf->skt_ops->recvmsg((int)(size_t)sock->user_data, message, flags);
+    }
+#else
+    return pf->skt_ops->recvmsg((int)(size_t)sock->user_data, message, flags);
+#endif
+}
+
 
 int sal_recvfrom(int socket, void *mem, size_t len, int flags,
                  struct sockaddr *from, socklen_t *fromlen)

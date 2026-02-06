@@ -132,7 +132,7 @@ static int init(void)
     }
 
     /* update the flash chip information */
-    nor_flash0.blk_size = sfud_dev->chip.erase_gran;
+    nor_flash0.blk_size = sfud_dev->chip.eraser[0].size;
     nor_flash0.len = sfud_dev->chip.capacity;
 
     return 0;

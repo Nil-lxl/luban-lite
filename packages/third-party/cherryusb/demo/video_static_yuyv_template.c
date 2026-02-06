@@ -47,11 +47,82 @@
 
 #define USBD_VID           0xffff
 #define USBD_PID           0xffff
-#define USBD_MAX_POWER     500
+#define USBD_MAX_POWER     100
 #define USBD_LANGID_STRING 1033
 
-void video_test(void *arg);
+#ifdef CONFIG_USBDEV_ADVANCE_DESC
+static const uint8_t device_descriptor[] = {
+    USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0xef, 0x02, 0x01, USBD_VID, USBD_PID, 0x0001, 0x01)
+};
 
+static const uint8_t config_descriptor[] = {
+    USB_CONFIG_DESCRIPTOR_INIT(USB_VIDEO_DESC_SIZ, 0x02, 0x01, USB_CONFIG_BUS_POWERED, USBD_MAX_POWER),
+    //VIDEO_VC_DESCRIPTOR_INIT(0x00, VIDEO_INT_EP, 0x0100, VIDEO_VC_TERMINAL_LEN, 48000000, 0x02),
+    VIDEO_VC_NOEP_DESCRIPTOR_INIT(0x00, VIDEO_INT_EP, 0x0100, VIDEO_VC_TERMINAL_LEN, 48000000, 0x02),
+    VIDEO_VS_DESCRIPTOR_INIT(0x01, 0x00, 0x00),
+    VIDEO_VS_INPUT_HEADER_DESCRIPTOR_INIT(0x01, VS_HEADER_SIZ, VIDEO_IN_EP, 0x00),
+    VIDEO_VS_FORMAT_UNCOMPRESSED_DESCRIPTOR_INIT(0x01, 0x01, VIDEO_GUID_YUY2),
+    VIDEO_VS_FRAME_UNCOMPRESSED_DESCRIPTOR_INIT(0x01, WIDTH, HEIGHT, MIN_BIT_RATE, MAX_BIT_RATE, MAX_FRAME_SIZE, DBVAL(INTERVAL), 0x01, DBVAL(INTERVAL)),
+    VIDEO_VS_COLOR_MATCHING_DESCRIPTOR_INIT(),
+    VIDEO_VS_DESCRIPTOR_INIT(0x01, 0x01, 0x01),
+    /* 1.2.2.2 Standard VideoStream Isochronous Video Data Endpoint Descriptor */
+    USB_ENDPOINT_DESCRIPTOR_INIT(VIDEO_IN_EP, 0x05, VIDEO_PACKET_SIZE, 0x01),
+
+};
+
+static const uint8_t device_quality_descriptor[] = {
+    ///////////////////////////////////////
+    /// device qualifier descriptor
+    ///////////////////////////////////////
+    0x0a,
+    USB_DESCRIPTOR_TYPE_DEVICE_QUALIFIER,
+    0x00,
+    0x02,
+    0x00,
+    0x00,
+    0x00,
+    0x40,
+    0x00,
+    0x00,
+};
+
+static const char *string_descriptors[] = {
+    (const char[]){ 0x09, 0x04 }, /* Langid */
+    "CherryUSB",                  /* Manufacturer */
+    "CherryUSB UVC DEMO",         /* Product */
+    "2022123456",                 /* Serial Number */
+};
+
+static const uint8_t *device_descriptor_callback(uint8_t speed)
+{
+    return device_descriptor;
+}
+
+static const uint8_t *config_descriptor_callback(uint8_t speed)
+{
+    return config_descriptor;
+}
+
+static const uint8_t *device_quality_descriptor_callback(uint8_t speed)
+{
+    return device_quality_descriptor;
+}
+
+static const char *string_descriptor_callback(uint8_t speed, uint8_t index)
+{
+    if (index > 3) {
+        return NULL;
+    }
+    return string_descriptors[index];
+}
+
+const struct usb_descriptor video_descriptor = {
+    .device_descriptor_callback = device_descriptor_callback,
+    .config_descriptor_callback = config_descriptor_callback,
+    .device_quality_descriptor_callback = device_quality_descriptor_callback,
+    .string_descriptor_callback = string_descriptor_callback
+};
+#else
 const uint8_t video_descriptor[] = {
     USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0xef, 0x02, 0x01, USBD_VID, USBD_PID, 0x0001, 0x01),
     USB_CONFIG_DESCRIPTOR_INIT(USB_VIDEO_DESC_SIZ, 0x02, 0x01, USB_CONFIG_BUS_POWERED, USBD_MAX_POWER),
@@ -134,20 +205,18 @@ const uint8_t video_descriptor[] = {
     0x00,
     0x00,
     0x40,
-    0x01,
+    0x00,
     0x00,
 #endif
     0x00
 };
+#endif
 
 volatile bool tx_flag = 0;
 volatile bool iso_tx_busy = false;
+void video_test(void *arg);
 
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-void usbd_comp_video_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
+static void usbd_video_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -174,24 +243,26 @@ void usbd_event_handler(uint8_t event)
     }
 }
 
-void usbd_video_open(uint8_t intf)
+void usbd_video_open(uint8_t busid, uint8_t intf)
 {
     tx_flag = 1;
     USB_LOG_RAW("OPEN\r\n");
     iso_tx_busy = false;
     usb_osal_thread_create("usbd_video_test", 2048, CONFIG_USBHOST_PSC_PRIO + 1, video_test, NULL);
 }
-void usbd_video_close(uint8_t intf)
+void usbd_video_close(uint8_t busid, uint8_t intf)
 {
     USB_LOG_RAW("CLOSE\r\n");
     tx_flag = 0;
     iso_tx_busy = false;
 }
 
-void usbd_video_iso_callback(uint8_t ep, uint32_t nbytes)
+void usbd_video_iso_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
-    //USB_LOG_RAW("actual in len:%d\r\n", nbytes);
-    iso_tx_busy = false;
+    if (usbd_video_stream_split_transfer(busid, ep)) {
+        /* one frame has done */
+        iso_tx_busy = false;
+    }
 }
 
 static struct usbd_endpoint video_in_ep = {
@@ -207,77 +278,61 @@ static struct usbd_interface intf1;
 int usbd_comp_video_init(uint8_t *ep_table, void *data)
 {
     video_in_ep.ep_addr = ep_table[0];
-    usbd_add_interface(usbd_video_init_intf(&intf0, INTERVAL, MAX_FRAME_SIZE, MAX_PAYLOAD_SIZE));
-    usbd_add_interface(usbd_video_init_intf(&intf1, INTERVAL, MAX_FRAME_SIZE, MAX_PAYLOAD_SIZE));
-    usbd_add_endpoint(&video_in_ep);
+    usbd_add_interface(0, usbd_video_init_intf(0, &intf0, INTERVAL, MAX_FRAME_SIZE, MAX_PAYLOAD_SIZE));
+    usbd_add_interface(0, usbd_video_init_intf(0, &intf1, INTERVAL, MAX_FRAME_SIZE, MAX_PAYLOAD_SIZE));
+    usbd_add_endpoint(0, &video_in_ep);
     return 0;
 }
 #endif
 
-int video_init(void)
+int video_init(uint8_t busid, uintptr_t reg_base)
 {
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_desc_register(video_descriptor);
-    usbd_add_interface(usbd_video_init_intf(&intf0, INTERVAL, MAX_FRAME_SIZE, MAX_PAYLOAD_SIZE));
-    usbd_add_interface(usbd_video_init_intf(&intf1, INTERVAL, MAX_FRAME_SIZE, MAX_PAYLOAD_SIZE));
-    usbd_add_endpoint(&video_in_ep);
-    usbd_initialize();
+    usbd_desc_register(busid, video_descriptor);
+    usbd_add_interface(busid, usbd_video_init_intf(busid, &intf0, INTERVAL, MAX_FRAME_SIZE, MAX_PAYLOAD_SIZE));
+    usbd_add_interface(busid, usbd_video_init_intf(busid, &intf1, INTERVAL, MAX_FRAME_SIZE, MAX_PAYLOAD_SIZE));
+    usbd_add_endpoint(busid, &video_in_ep);
+
+    usbd_initialize(busid, reg_base, usbd_video_event_handler);
 #else
     usbd_comp_func_register(video_descriptor,
-                            usbd_comp_video_event_handler,
+                            usbd_video_event_handler,
                             usbd_comp_video_init, "video");
 #endif
 
-
     return 0;
 }
-USB_INIT_APP_EXPORT(video_init);
 
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t packet_buffer[40 * 1024];
+#if defined(KERNEL_RTTHREAD)
+#include <rtthread.h>
+#include <rtdevice.h>
+
+int usbd_video_init(void)
+{
+    video_init(0, USB_DEV_BASE);
+    return 0;
+}
+
+INIT_DEVICE_EXPORT(usbd_video_init);
+#endif
+
+USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t packet_buffer[MAX_PAYLOAD_SIZE];
+USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t frame_buffer[32 * 1024];
 
 void video_test(void *arg)
 {
-    uint32_t out_len;
-    uint32_t packets;
+    memset(packet_buffer, 0, sizeof(packet_buffer));
 
-    USB_LOG_INFO("begin video test for yuyv(yuy2 yuyv422)\n");
-
-    (void)packets;
-    memset(packet_buffer, 0, 40 * 1024);
-    while (tx_flag) {
-        packets = usbd_video_payload_fill((uint8_t *)cherryusb_yuyv, sizeof(cherryusb_yuyv), packet_buffer, &out_len);
-        USB_LOG_DBG("ep:%d, len:%ld, size:%d, packets:%d\n", video_in_ep.ep_addr, sizeof(cherryusb_yuyv), out_len, packets);
-#if 0
-        iso_tx_busy = true;
-        usbd_ep_start_write(video_in_ep.ep_addr, packet_buffer, out_len);
-        while (iso_tx_busy) {
-            if (tx_flag == 0) {
-                break;
-            }
-        }
-#else
-        for (uint32_t i = 0; i < packets; i++) {
-            if (i == (packets - 1)) {
-                iso_tx_busy = true;
-                USB_LOG_DBG("ep write:%d, l:%d\n", i, out_len - (packets - 1) * MAX_PAYLOAD_SIZE);
-                usbd_ep_start_write(video_in_ep.ep_addr, &packet_buffer[i * MAX_PAYLOAD_SIZE], out_len - (packets - 1) * MAX_PAYLOAD_SIZE);
-                while (iso_tx_busy) {
-                    if (tx_flag == 0) {
-                        break;
-                    }
-                }
-            } else {
-                iso_tx_busy = true;
-                USB_LOG_DBG("ep write:%d, l:%d\n", i, MAX_PAYLOAD_SIZE);
-                usbd_ep_start_write(video_in_ep.ep_addr, &packet_buffer[i * MAX_PAYLOAD_SIZE], MAX_PAYLOAD_SIZE);
-                while (iso_tx_busy) {
-                    if (tx_flag == 0) {
-                        break;
-                    }
+    while (1) {
+        if (tx_flag) {
+            iso_tx_busy = true;
+            memcpy(frame_buffer, cherryusb_yuyv, sizeof(cherryusb_yuyv)); // cherryusb_yuyv is a static yuyv frame buffer, so we need copy it to frame_buffer
+            usbd_video_stream_start_write(0, VIDEO_IN_EP, packet_buffer, (uint8_t *)frame_buffer, sizeof(cherryusb_yuyv), false);
+            while (iso_tx_busy) {
+                if (tx_flag == 0) {
+                    break;
                 }
             }
         }
-#endif
     }
-    USB_LOG_INFO("video test is completed\n");
 }

@@ -98,6 +98,11 @@ int usb_osal_event_recv(usb_osal_event_t event, uint32_t  set, uint8_t option,
     return 0;
 }
 
+void usb_osal_thread_schedule_other(void)
+{
+    return;
+}
+
 size_t usb_osal_enter_critical_section(void)
 {
     return aicos_enter_critical_section();
@@ -121,4 +126,14 @@ void *usb_osal_malloc_align(uint32_t mem_type, size_t size, size_t align)
 void usb_osal_free_align(uint32_t mem_type, void *mem)
 {
     aicos_free_align(mem_type, mem);
+}
+
+void *usb_osal_malloc(size_t size)
+{
+    return aicos_malloc(0, size);
+}
+
+void usb_osal_free(void *ptr)
+{
+    aicos_free(0, ptr);
 }

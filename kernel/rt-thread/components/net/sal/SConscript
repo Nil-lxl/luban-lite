@@ -30,6 +30,8 @@ if GetDepend('SAL_USING_POSIX'):
 if not GetDepend('HAVE_SYS_SOCKET_H'):
     CPPPATH += [cwd + '/include/socket/sys_socket']
 
-group = DefineGroup('SAL', src, depend = ['RT_USING_SAL'], CPPPATH = CPPPATH)
+myccflags = (' -w -Wno-error=pointer-to-int-cast')
+
+group = DefineGroup('SAL', src, depend = ['RT_USING_SAL'], CPPPATH = CPPPATH, LOCAL_CFLAGS=myccflags)
 
 Return('group')

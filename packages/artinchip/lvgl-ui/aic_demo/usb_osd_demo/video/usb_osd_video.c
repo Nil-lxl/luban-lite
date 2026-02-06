@@ -11,7 +11,7 @@
 #include "mpp_fb.h"
 
 #include "media_list.h"
-#include "aic_lv_ffmpeg.h"
+#include "lv_aic_player.h"
 
 #define ALIGN_EVEN(x)   ((x) & (~1))
 
@@ -37,7 +37,7 @@ static lv_timer_t *play_time_timer = NULL;
 #define PLAY_MODE_CIRCLE_ONE 2
 
 typedef struct _easy_player {
-    lv_obj_t *ffmpeg;
+    lv_obj_t *player;
     media_list_t *list;
     media_info_t cur_info;
     int cur_pos;
@@ -54,9 +54,9 @@ void lv_load_video_screen(void)
 
 void lv_video_play(void)
 {
-    lv_ffmpeg_player_set_src(player.ffmpeg, player.cur_info.source);
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_START, NULL);
-    lv_ffmpeg_player_set_auto_restart(player.ffmpeg, true);
+    lv_aic_player_set_src(player.player, player.cur_info.source);
+    lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_START, NULL);
+    lv_aic_player_set_auto_restart(player.player, true);
     lv_timer_resume(play_time_timer);
 
     lv_imgbtn_set_src(play_control, LV_IMGBTN_STATE_RELEASED , NULL, LVGL_PATH(video_icon/pause.png), NULL);
@@ -66,7 +66,7 @@ void lv_video_play(void)
 void lv_video_stop(void)
 {
     lv_timer_pause(play_time_timer);
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_STOP, NULL);
+    lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_PAUSE, NULL);
     lv_imgbtn_set_src(play_control, LV_IMGBTN_STATE_RELEASED , NULL, LVGL_PATH(video_icon/play.png), NULL);
     lv_imgbtn_set_src(play_control, LV_IMGBTN_STATE_PRESSED , NULL, LVGL_PATH(video_icon/play.png), NULL);
 }
@@ -156,8 +156,8 @@ static void get_media_info_from_src(const char *src_path, media_info_t *info)
 {
     struct av_media_info av_media;
 
-    lv_ffmpeg_player_set_src(player.ffmpeg, src_path);
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_GET_MEDIA_INFO_EX, &av_media);
+    lv_aic_player_set_src(player.player, src_path);
+    lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_GET_MEDIA_INFO, &av_media);
 
     info->duration_ms = av_media.duration / 1000;
     info->file_size_bytes = av_media.file_size;
@@ -189,12 +189,12 @@ static void play_control_cb(lv_event_t *e)
     if (code == LV_EVENT_CLICKED) {
         if (player.play_status == 0) {
             lv_timer_resume(play_time_timer);
-            lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_RESUME, NULL);
+            lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_RESUME, NULL);
             lv_imgbtn_set_src(play_control, LV_IMGBTN_STATE_RELEASED , NULL, LVGL_PATH(video_icon/pause.png), NULL);
             lv_imgbtn_set_src(play_control, LV_IMGBTN_STATE_PRESSED , NULL, LVGL_PATH(video_icon/pause.png), NULL);
         } else {
             lv_timer_pause(play_time_timer);
-            lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_PAUSE, NULL);
+            lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_RESUME, NULL);
             lv_imgbtn_set_src(play_control, LV_IMGBTN_STATE_RELEASED , NULL, LVGL_PATH(video_icon/play.png), NULL);
             lv_imgbtn_set_src(play_control, LV_IMGBTN_STATE_PRESSED , NULL, LVGL_PATH(video_icon/play.png), NULL);
         }
@@ -212,9 +212,9 @@ static void updata_ui_info(char *last_src)
     lv_label_set_text_fmt(duration, "%02ld:%02ld", GET_MINUTES(player.cur_info.duration_ms), GET_SECONDS(player.cur_info.duration_ms));
 
     if (strcmp(last_src, player.cur_info.source) == 0)
-        lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_SET_PLAY_TIME_EX, &seek_time);
+        lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_GET_PLAY_TIME, &seek_time);
     else
-        lv_ffmpeg_player_set_src(player.ffmpeg, player.cur_info.source);
+        lv_aic_player_set_src(player.player, player.cur_info.source);
 }
 
 static void play_next_cb(lv_event_t *e)
@@ -261,7 +261,7 @@ static void play_time_update_cb(lv_timer_t * timer)
     long escap_time = 0;
     bool play_end = false;
 
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_PLAY_END_EX, &play_end);
+    lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_PLAY_END, &play_end);
     if (play_end == true && (player.mode != PLAY_MODE_CIRCLE_ONE)) {
 #if LVGL_VERSION_MAJOR == 8
         lv_event_send(play_control_next, LV_EVENT_CLICKED, NULL); /* auto play next */
@@ -271,7 +271,7 @@ static void play_time_update_cb(lv_timer_t * timer)
         return;
     }
 
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_GET_PLAY_TIME_EX, &escap_time);
+    lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_GET_PLAY_TIME, &escap_time);
 
     escap_time = escap_time / 1000;
     lv_bar_set_value(progress, escap_time, LV_ANIM_ON);
@@ -283,13 +283,13 @@ lv_obj_t * lv_video_screen_create(void)
     video_src = lv_obj_create(NULL);
     lv_obj_clear_flag(video_src, LV_OBJ_FLAG_SCROLLABLE);
 
-    player.ffmpeg = lv_ffmpeg_player_create(video_src);
+    player.player = lv_aic_player_create(video_src);
     player.list = media_list_create();
     media_list_init();
     media_list_get_info(player.list, &player.cur_info, MEDIA_TYPE_POS_OLDEST);
     player.mode = PLAY_MODE_CIRCLE;
     player.play_status = 1;
-    lv_obj_add_flag(player.ffmpeg, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(player.player, LV_OBJ_FLAG_HIDDEN);
 
     lv_bg_dark_set(video_src);
     lv_obj_add_event_cb(video_src, show_control_cb, LV_EVENT_ALL, control_bg);

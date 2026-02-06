@@ -269,7 +269,7 @@ static void rtp_entry(void *parameter)
     return;
 }
 
-static rt_err_t rtp_rx_callback(rt_device_t g_rtp_dev, rt_size_t size)
+static rt_err_t rtp_rx_callback(rt_device_t dev, rt_size_t size)
 {
     rt_sem_release(g_rtp_sem);
     return 0;

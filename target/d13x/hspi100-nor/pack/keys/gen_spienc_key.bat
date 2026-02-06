@@ -26,4 +26,14 @@ if "%gen_aes%" == "true" (
 ..\..\..\..\..\tools\scripts\xxd.exe -c 16 -i spi_nonce.key >> spi_aes_key.h
 ..\..\..\..\..\tools\scripts\xxd.exe -c 16 -i rotpk.bin >> spi_aes_key.h
 
+..\..\..\..\..\tools\scripts\cat.exe spi_aes.key spi_nonce.key rotpk.bin > all.key
+..\..\..\..\..\tools\scripts\crc32.exe spi_aes.key > crc32.txt
+..\..\..\..\..\tools\scripts\sed.exe -i 's/([0-9]*)$/spi_aes.key/g' crc32.txt
+..\..\..\..\..\tools\scripts\crc32.exe spi_nonce.key >> crc32.txt
+..\..\..\..\..\tools\scripts\sed.exe -i 's/([0-9]*)$/spi_nonce.key/' crc32.txt
+..\..\..\..\..\tools\scripts\crc32.exe rotpk.bin >> crc32.txt
+..\..\..\..\..\tools\scripts\sed.exe -i 's/([0-9]*)$/rotpk.bin/' crc32.txt
+..\..\..\..\..\tools\scripts\crc32.exe all.key >> crc32.txt
+..\..\..\..\..\tools\scripts\sed.exe -i 's/([0-9]*)$/all.key/' crc32.txt
+
 copy spi_aes_key.h ..\..\..\..\..\bsp\examples_bare\test-efuse\spi_aes_key.h

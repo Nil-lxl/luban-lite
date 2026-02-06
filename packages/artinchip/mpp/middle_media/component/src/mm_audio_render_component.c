@@ -68,6 +68,7 @@ typedef struct mm_audio_render_data {
     MM_BOOL flags;
     MM_BOOL frame_fisrt_show_flag;
     MM_BOOL wait_ready_frame_flag;
+    MM_BOOL debug_en;
 
     u32 receive_frame_num;
     u32 show_frame_ok_num;
@@ -90,7 +91,7 @@ typedef struct mm_audio_render_data {
 } mm_audio_render_data;
 
 static void *mm_audio_render_component_thread(void *p_thread_data);
-
+static void mm_audio_render_show_debug_info(mm_audio_render_data *p_audio_render_data);
 
 
 static s32 mm_audio_render_send_command(mm_handle h_component,
@@ -184,6 +185,12 @@ static s32 mm_audio_render_set_parameter(mm_handle h_component,
 
             break;
         }
+
+        case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
+            p_audio_render_data->debug_en = ((mm_param_u32 *)p_param)->u32;
+            mm_audio_render_show_debug_info(p_audio_render_data);
+            break;
+
         default:
             break;
     }
@@ -552,6 +559,7 @@ mm_audio_render_state_change_to_idle(mm_audio_render_data *p_audio_render_data)
         if (!p_audio_render_data->render) {
             struct audio_render_create_params create_params;
             create_params.dev_id = 0;
+            create_params.mix_enable = 1;
             create_params.scene_type = AUDIO_RENDER_SCENE_DEFAULT;
             ret = aic_audio_render_create(&p_audio_render_data->render, &create_params);
         }
@@ -872,18 +880,19 @@ static void mm_audio_render_set_attr(mm_audio_render_data *p_audio_render_data)
 }
 
 
-void mm_audio_render_frame_count_print(mm_audio_render_data *p_audio_render_data)
+static void mm_audio_render_show_debug_info(mm_audio_render_data *p_audio_render_data)
 {
-    logi("[%s:%d]receive_frame_num:%u,"
-           "show_frame_ok_num:%u,"
-           "show_frame_fail_num:%u,"
-           "giveback_frame_ok_num:%u,"
-           "giveback_frame_fail_num:%u\n",
-           __FUNCTION__, __LINE__, p_audio_render_data->receive_frame_num,
+    if (!p_audio_render_data->debug_en)
+        return;
+    printf("************************Audio_render comp info************************\n");
+    printf("receive    show_ok    show_fail    give_ok    give_fail\n");
+    printf("%7u    %7u    %9u    %7u   %9u\n",
+           p_audio_render_data->receive_frame_num,
            p_audio_render_data->show_frame_ok_num,
            p_audio_render_data->show_frame_fail_num,
            p_audio_render_data->giveback_frame_ok_num,
            p_audio_render_data->giveback_frame_fail_num);
+    printf("\nstate: %s\n\n", mm_component_sta_to_str(p_audio_render_data->state));
 }
 
 
@@ -1059,6 +1068,6 @@ _EXIT:
         aic_audio_render_destroy(p_audio_render_data->render);
         p_audio_render_data->render = NULL;
     }
-    mm_audio_render_frame_count_print(p_audio_render_data);
+    mm_audio_render_show_debug_info(p_audio_render_data);
     return (void *)MM_ERROR_NONE;
 }

@@ -65,7 +65,7 @@ typedef struct mm_muxer_data {
     pthread_mutex_t in_pkt_lock;
     u32 in_pkt_node_num;
 
-    u32 max_duration;
+    s64 max_duration;
     u32 file_num;
     s32 muxer_type;
 
@@ -191,7 +191,7 @@ static s32 mm_muxer_set_parameter(mm_handle h_component, MM_INDEX_TYPE index, vo
             error = MM_ERROR_BAD_PARAMETER;
             break;
         }
-        p_muxer_data->max_duration = p_record_file->duration;
+        p_muxer_data->max_duration = p_record_file->duration * 1000;
         p_muxer_data->muxer_type = p_record_file->muxer_type;
         p_muxer_data->file_num = p_record_file->file_num;
         break;

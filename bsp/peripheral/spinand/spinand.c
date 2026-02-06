@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -7,7 +7,6 @@
  */
 
 #include <rtconfig.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -16,6 +15,11 @@
 #include <spinand.h>
 #include <manufacturer.h>
 #include <bbt.h>
+
+#ifdef AIC_NAND_REFRESH_SUPPORT
+#include <spinand_refresh.h>
+#endif
+
 
 static const struct spinand_manufacturer *spinand_manufacturers[] = {
 #ifdef SPI_NAND_WINBOND
@@ -486,10 +490,10 @@ static int spinand_info_read(struct aic_spinand *flash)
     spinand_read_id_op(flash, flash->id.data);
 
     for (i = 0; i < SPINAND_LIST_NUM; i++) {
-        if ((flash->id.data[0] & 0xFF) == spinand_manufacturers[i]->id) {
+        if (spinand_manufacturers[i]->ops->detect) {
             flash->info = spinand_manufacturers[i]->ops->detect(flash);
             if (!flash->info)
-                goto exit_spinand_info_read;
+                continue;
 
             if (spinand_manufacturers[i]->ops->init)
                 spinand_manufacturers[i]->ops->init(flash);
@@ -500,7 +504,6 @@ static int spinand_info_read(struct aic_spinand *flash)
         }
     }
 
-exit_spinand_info_read:
     pr_err("unknown raw ID %02x%02x%02x%02x\n", flash->id.data[0],
            flash->id.data[1], flash->id.data[2], flash->id.data[3]);
     return -SPINAND_ERR;
@@ -567,6 +570,11 @@ int spinand_flash_init(struct aic_spinand *flash)
     if ((result = nand_bbt_init(flash)) != SPINAND_SUCCESS)
         pr_err("nand_bbt_init failed\n");
 
+    if (flash->info->ecc_strength)
+        flash->bitflip_threshold = DIV_ROUND_UP(flash->info->ecc_strength * 3, 4);
+    else /* No SPI NAND can correct oob_size bits flipped, means no bitflip_threshold checking. */
+        flash->bitflip_threshold = flash->info->oob_size;
+
     return result;
 
 exit_spinand_init:
@@ -601,7 +609,7 @@ int spinand_check_if_do_memcpy(struct aic_spinand *flash, u8 *data,
 int spinand_read_page(struct aic_spinand *flash, u32 page, u8 *data,
                       u32 data_len, u8 *spare, u32 spare_len)
 {
-    int result = SPINAND_SUCCESS;
+    int result = SPINAND_SUCCESS, ecc_ret = SPINAND_SUCCESS;
     u32 cpos __attribute__((unused));
     u8 *buf = NULL;
     u32 nbytes = 0;
@@ -635,6 +643,7 @@ int spinand_read_page(struct aic_spinand *flash, u32 page, u8 *data,
     } else if (result > 0) {
         pr_debug("with %d bit/page ECC corrections, status : [0x%x].\n", result,
                  status);
+        ecc_ret = result >= flash->bitflip_threshold ? SPINAND_ECC_LIMIT : SPINAND_SUCCESS;
     }
 
     if (data && data_len) {
@@ -705,6 +714,9 @@ int spinand_read_page(struct aic_spinand *flash, u32 page, u8 *data,
         }
     }
 
+    if (result == SPINAND_SUCCESS && ecc_ret == SPINAND_ECC_LIMIT)
+        result = ecc_ret;
+
 exit_spinand_read_page:
     return result;
 }
@@ -718,7 +730,7 @@ bool spinand_isbad(struct aic_spinand *flash, u16 blk)
     page = blk * flash->info->pages_per_eraseblock;
 
     result = spinand_read_page(flash, page, NULL, 0, &marker, 1);
-    if (result != SPINAND_SUCCESS)
+    if (result < 0)
         return result;
 
     if (marker != 0xFF) {
@@ -1039,10 +1051,17 @@ int spinand_read(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size)
         }
         page = off / flash->info->page_size;
 
-        err =
-            spinand_read_page(flash, page, p, flash->info->page_size, NULL, 0);
-        if (err != 0)
+        err = spinand_read_page(flash, page, p, flash->info->page_size, NULL, 0);
+        if (err < 0)
             goto exit_spinand_read;
+
+        if (err == SPINAND_ECC_LIMIT) {
+            pr_warn("Bit_flip_limit ECC status page: %u.\n", page);
+#ifdef AIC_NAND_REFRESH_SUPPORT
+            if (flash->report_bitflip_cb)
+                flash->report_bitflip_cb(flash, page);
+#endif
+        }
 
         cplen = flash->info->page_size;
 
@@ -1182,4 +1201,31 @@ int spinand_write(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size)
     }
 
     return err;
+}
+
+int spinand_set_internal_ecc(struct aic_spinand *flash, u8 enable)
+{
+    if (!flash) {
+        pr_err("flash is NULL\r\n");
+        return -SPINAND_ERR;
+    }
+
+    return spinand_hwecc_set(flash, enable);
+}
+
+int spinand_register_report_bitflip_cb(struct aic_spinand *flash, spinand_report_bitflip_cb cb)
+{
+    if (!flash || !cb) {
+        pr_err("flash is NULL\r\n");
+        return -SPINAND_ERR;
+    }
+
+    if (flash->report_bitflip_cb) {
+        pr_err("flash report_bitflip_cb exet\r\n");
+        return -SPINAND_ERR;
+    }
+
+    flash->report_bitflip_cb = cb;
+
+    return SPINAND_SUCCESS;
 }

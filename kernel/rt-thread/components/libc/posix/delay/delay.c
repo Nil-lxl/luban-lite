@@ -8,6 +8,7 @@
  * 2021-05-07     Meco Man     first Version
  */
 
+#include <sys/time.h>
 #include <sys/types.h>
 #include <rtthread.h>
 #include <rthw.h>

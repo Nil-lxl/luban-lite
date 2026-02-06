@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+# Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -26,5 +26,8 @@ xxd -p -r set_nonce.txt > spi_nonce.key
 xxd -c 16 -i spi_aes.key > spi_aes_key.h
 xxd -c 16 -i spi_nonce.key >> spi_aes_key.h
 xxd -c 16 -i rotpk.bin >> spi_aes_key.h
+
+cat spi_aes.key spi_nonce.key rotpk.bin > all.key
+crc32 spi_aes.key spi_nonce.key rotpk.bin all.key > crc32.txt
 
 cp spi_aes_key.h ../../../../../bsp/examples_bare/test-efuse/spi_aes_key.h

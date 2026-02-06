@@ -7,23 +7,21 @@
 #include "usbd_cdc_ecm.h"
 
 #define CDC_ECM_OUT_EP_IDX 0
-#define CDC_ECM_IN_EP_IDX   1
-#define CDC_ECM_INT_EP_IDX  2
+#define CDC_ECM_IN_EP_IDX  1
+#define CDC_ECM_INT_EP_IDX 2
+
+/* Ethernet Maximum Segment size, typically 1514 bytes */
+#define CONFIG_CDC_ECM_ETH_MAX_SEGSZE 1536U
 
 /* Describe EndPoints configuration */
 static struct usbd_endpoint cdc_ecm_ep_data[3];
 
-#ifdef CONFIG_USB_HS
-#define CDC_ECM_MAX_PACKET_SIZE 512
-#else
-#define CDC_ECM_MAX_PACKET_SIZE 64
+#ifdef CONFIG_USBDEV_CDC_ECM_USING_LWIP
+static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_cdc_ecm_rx_buffer[USB_ALIGN_UP(CONFIG_CDC_ECM_ETH_MAX_SEGSZE, CONFIG_USB_ALIGN_SIZE)];
+static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_cdc_ecm_tx_buffer[USB_ALIGN_UP(CONFIG_CDC_ECM_ETH_MAX_SEGSZE, CONFIG_USB_ALIGN_SIZE)];
 #endif
+static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_cdc_ecm_notify_buf[USB_ALIGN_UP(16, CONFIG_USB_ALIGN_SIZE)];
 
-static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_cdc_ecm_rx_buffer[CONFIG_CDC_ECM_ETH_MAX_SEGSZE];
-static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_cdc_ecm_tx_buffer[CONFIG_CDC_ECM_ETH_MAX_SEGSZE];
-static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t g_cdc_ecm_notify_buf[16];
-
-volatile uint8_t *g_cdc_ecm_rx_data_buffer = NULL;
 volatile uint32_t g_cdc_ecm_rx_data_length = 0;
 volatile uint32_t g_cdc_ecm_tx_data_length = 0;
 
@@ -74,16 +72,22 @@ void usbd_cdc_ecm_send_notify(uint8_t notifycode, uint8_t value, uint32_t *speed
             break;
     }
 
-    if (bytes2send) {
-        usbd_ep_start_write(cdc_ecm_ep_data[CDC_ECM_INT_EP_IDX].ep_addr, g_cdc_ecm_notify_buf, bytes2send);
+    if (usb_device_is_configured(0)) {
+        if (bytes2send) {
+            usbd_ep_start_write(0, cdc_ecm_ep_data[CDC_ECM_INT_EP_IDX].ep_addr, g_cdc_ecm_notify_buf, bytes2send);
+        }
     }
 }
 
-static int cdc_ecm_class_interface_request_handler(struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
+static int cdc_ecm_class_interface_request_handler(uint8_t busid, struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
 {
     USB_LOG_DBG("CDC ECM Class request: "
                 "bRequest 0x%02x\r\n",
                 setup->bRequest);
+
+    (void)busid;
+    (void)data;
+    (void)len;
 
     g_cmd_intf = LO_BYTE(setup->wIndex);
 
@@ -95,11 +99,11 @@ static int cdc_ecm_class_interface_request_handler(struct usb_setup_packet *setu
              * bit3 Broadcast
              * bit4 Multicast
             */
-            if (g_current_net_status == 0) {
-                g_current_net_status = 1;
-                usbd_cdc_ecm_send_notify(CDC_ECM_NOTIFY_CODE_NETWORK_CONNECTION, CDC_ECM_NET_CONNECTED, NULL);
-            }
-
+#ifdef CONFIG_USBDEV_CDC_ECM_USING_LWIP
+            g_connect_speed_table[0] = 100000000; /* 100 Mbps */
+            g_connect_speed_table[1] = 100000000; /* 100 Mbps */
+            usbd_cdc_ecm_set_connect(true, g_connect_speed_table);
+#endif
             break;
         default:
             USB_LOG_WRN("Unhandled CDC ECM Class bRequest 0x%02x\r\n", setup->bRequest);
@@ -109,17 +113,21 @@ static int cdc_ecm_class_interface_request_handler(struct usb_setup_packet *setu
     return 0;
 }
 
-void cdc_ecm_notify_handler(uint8_t event, void *arg)
+void cdc_ecm_notify_handler(uint8_t busid, uint8_t event, void *arg)
 {
+    (void)busid;
+    (void)arg;
+
     switch (event) {
         case USBD_EVENT_RESET:
             g_current_net_status = 0;
             g_cdc_ecm_rx_data_length = 0;
             g_cdc_ecm_tx_data_length = 0;
-            g_cdc_ecm_rx_data_buffer = NULL;
             break;
         case USBD_EVENT_CONFIGURED:
-            usbd_ep_start_read(cdc_ecm_ep_data[CDC_ECM_OUT_EP_IDX].ep_addr, &g_cdc_ecm_rx_buffer[g_cdc_ecm_rx_data_length], CDC_ECM_MAX_PACKET_SIZE);
+#ifdef CONFIG_USBDEV_CDC_ECM_USING_LWIP
+            usbd_cdc_ecm_start_read(g_cdc_ecm_rx_buffer, CONFIG_CDC_ECM_ETH_MAX_SEGSZE);
+#endif
             break;
 
         default:
@@ -127,55 +135,65 @@ void cdc_ecm_notify_handler(uint8_t event, void *arg)
     }
 }
 
-void cdc_ecm_bulk_out(uint8_t ep, uint32_t nbytes)
+void cdc_ecm_bulk_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
-    g_cdc_ecm_rx_data_length += nbytes;
+    (void)busid;
 
-    if (nbytes < CDC_ECM_MAX_PACKET_SIZE) {
-        g_cdc_ecm_rx_data_buffer = g_cdc_ecm_rx_buffer;
-        usbd_cdc_ecm_data_recv_done();
-    } else {
-        usbd_ep_start_read(ep, &g_cdc_ecm_rx_buffer[g_cdc_ecm_rx_data_length], CDC_ECM_MAX_PACKET_SIZE);
-    }
+    g_cdc_ecm_rx_data_length = nbytes;
+    usbd_cdc_ecm_data_recv_done(g_cdc_ecm_rx_data_length);
 }
 
-void cdc_ecm_bulk_in(uint8_t ep, uint32_t nbytes)
+void cdc_ecm_bulk_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
-    if ((nbytes % CDC_ECM_MAX_PACKET_SIZE) == 0 && nbytes) {
+    (void)busid;
+
+    if ((nbytes % usbd_get_ep_mps(0, ep)) == 0 && nbytes) {
         /* send zlp */
-        usbd_ep_start_write(ep, NULL, 0);
+        usbd_ep_start_write(0, ep, NULL, 0);
     } else {
         usbd_cdc_ecm_data_send_done(g_cdc_ecm_tx_data_length);
         g_cdc_ecm_tx_data_length = 0;
     }
 }
 
-void cdc_ecm_int_in(uint8_t ep, uint32_t nbytes)
+void cdc_ecm_int_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
-    if (g_current_net_status == 1) {
-        g_current_net_status = 2;
-        usbd_cdc_ecm_send_notify(CDC_ECM_NOTIFY_CODE_NETWORK_CONNECTION, CDC_ECM_NET_CONNECTED, g_connect_speed_table);
+    (void)busid;
+    (void)ep;
+    (void)nbytes;
+
+    if (g_current_net_status == 2) {
+        g_current_net_status = 3;
+        usbd_cdc_ecm_send_notify(CDC_ECM_NOTIFY_CODE_CONNECTION_SPEED_CHANGE, 0, g_connect_speed_table);
+    } else {
+        g_current_net_status = 0;
     }
 }
 
-uint8_t *usbd_cdc_ecm_get_tx_buffer(void)
+int usbd_cdc_ecm_start_write(uint8_t *buf, uint32_t len)
 {
-    return g_cdc_ecm_tx_buffer;
-}
+    if (!usb_device_is_configured(0)) {
+        return -USB_ERR_NOTCONN;
+    }
 
-int usbd_cdc_ecm_start_write(uint32_t length)
-{
-    g_cdc_ecm_tx_data_length = length;
+    if (g_cdc_ecm_tx_data_length > 0) {
+        return -USB_ERR_BUSY;
+    }
+
+    g_cdc_ecm_tx_data_length = len;
 
     USB_LOG_DBG("txlen:%d\r\n", g_cdc_ecm_tx_data_length);
-    return usbd_ep_start_write(cdc_ecm_ep_data[CDC_ECM_IN_EP_IDX].ep_addr, g_cdc_ecm_tx_buffer, g_cdc_ecm_tx_data_length);
+    return usbd_ep_start_write(0, cdc_ecm_ep_data[CDC_ECM_IN_EP_IDX].ep_addr, buf, len);
 }
 
-void usbd_cdc_ecm_start_read_next(void)
+int usbd_cdc_ecm_start_read(uint8_t *buf, uint32_t len)
 {
+    if (!usb_device_is_configured(0)) {
+        return -USB_ERR_NOTCONN;
+    }
+
     g_cdc_ecm_rx_data_length = 0;
-    g_cdc_ecm_rx_data_buffer = NULL;
-    usbd_ep_start_read(cdc_ecm_ep_data[CDC_ECM_OUT_EP_IDX].ep_addr, g_cdc_ecm_rx_buffer, CDC_ECM_MAX_PACKET_SIZE);
+    return usbd_ep_start_read(0, cdc_ecm_ep_data[CDC_ECM_OUT_EP_IDX].ep_addr, buf, len);
 }
 
 #ifdef CONFIG_USBDEV_CDC_ECM_USING_LWIP
@@ -183,19 +201,19 @@ struct pbuf *usbd_cdc_ecm_eth_rx(void)
 {
     struct pbuf *p;
 
-    if (g_cdc_ecm_rx_data_buffer == NULL) {
+    if (g_cdc_ecm_rx_data_length == 0) {
         return NULL;
     }
     p = pbuf_alloc(PBUF_RAW, g_cdc_ecm_rx_data_length, PBUF_POOL);
     if (p == NULL) {
-        usbd_cdc_ecm_start_read_next();
+        usbd_cdc_ecm_start_read(g_cdc_ecm_rx_buffer, CONFIG_CDC_ECM_ETH_MAX_SEGSZE);
         return NULL;
     }
-    memcpy(p->payload, (uint8_t *)g_cdc_ecm_rx_buffer, g_cdc_ecm_rx_data_length);
+    usb_memcpy(p->payload, (uint8_t *)g_cdc_ecm_rx_buffer, g_cdc_ecm_rx_data_length);
     p->len = g_cdc_ecm_rx_data_length;
 
     USB_LOG_DBG("rxlen:%d\r\n", g_cdc_ecm_rx_data_length);
-    usbd_cdc_ecm_start_read_next();
+    usbd_cdc_ecm_start_read(g_cdc_ecm_rx_buffer, CONFIG_CDC_ECM_ETH_MAX_SEGSZE);
     return p;
 }
 
@@ -203,6 +221,10 @@ int usbd_cdc_ecm_eth_tx(struct pbuf *p)
 {
     struct pbuf *q;
     uint8_t *buffer;
+
+    if (!usb_device_is_configured(0)) {
+        return -USB_ERR_NOTCONN;
+    }
 
     if (g_cdc_ecm_tx_data_length > 0) {
         return -USB_ERR_BUSY;
@@ -214,13 +236,11 @@ int usbd_cdc_ecm_eth_tx(struct pbuf *p)
 
     buffer = g_cdc_ecm_tx_buffer;
     for (q = p; q != NULL; q = q->next) {
-        memcpy(buffer, q->payload, q->len);
+        usb_memcpy(buffer, q->payload, q->len);
         buffer += q->len;
     }
 
-    g_cdc_ecm_tx_data_length = p->tot_len;
-
-    return usbd_cdc_ecm_start_write(g_cdc_ecm_tx_data_length);
+    return usbd_cdc_ecm_start_write(g_cdc_ecm_tx_buffer, p->tot_len);
 }
 #endif
 
@@ -238,18 +258,37 @@ struct usbd_interface *usbd_cdc_ecm_init_intf(struct usbd_interface *intf, const
     cdc_ecm_ep_data[CDC_ECM_INT_EP_IDX].ep_addr = int_ep;
     cdc_ecm_ep_data[CDC_ECM_INT_EP_IDX].ep_cb = cdc_ecm_int_in;
 
-    usbd_add_endpoint(&cdc_ecm_ep_data[CDC_ECM_OUT_EP_IDX]);
-    usbd_add_endpoint(&cdc_ecm_ep_data[CDC_ECM_IN_EP_IDX]);
-    usbd_add_endpoint(&cdc_ecm_ep_data[CDC_ECM_INT_EP_IDX]);
+    usbd_add_endpoint(0, &cdc_ecm_ep_data[CDC_ECM_OUT_EP_IDX]);
+    usbd_add_endpoint(0, &cdc_ecm_ep_data[CDC_ECM_IN_EP_IDX]);
+    usbd_add_endpoint(0, &cdc_ecm_ep_data[CDC_ECM_INT_EP_IDX]);
 
     return intf;
 }
 
-void usbd_cdc_ecm_set_connect_speed(uint32_t speed[2])
+int usbd_cdc_ecm_set_connect(bool connect, uint32_t speed[2])
 {
-    memcpy(g_connect_speed_table, speed, 8);
+    if (!usb_device_is_configured(0)) {
+        return -USB_ERR_NOTCONN;
+    }
+
+    if (connect) {
+        g_current_net_status = 2;
+        memcpy(g_connect_speed_table, speed, 8);
+        usbd_cdc_ecm_send_notify(CDC_ECM_NOTIFY_CODE_NETWORK_CONNECTION, CDC_ECM_NET_CONNECTED, NULL);
+    } else {
+        g_current_net_status = 1;
+        usbd_cdc_ecm_send_notify(CDC_ECM_NOTIFY_CODE_NETWORK_CONNECTION, CDC_ECM_NET_DISCONNECTED, NULL);
+    }
+
+    return 0;
 }
 
-__WEAK void usbd_cdc_ecm_data_recv_done(void)
+__WEAK void usbd_cdc_ecm_data_recv_done(uint32_t len)
 {
+    (void)len;
+}
+
+__WEAK void usbd_cdc_ecm_data_send_done(uint32_t len)
+{
+    (void)len;
 }

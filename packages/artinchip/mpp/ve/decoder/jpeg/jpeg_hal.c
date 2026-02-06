@@ -8,7 +8,6 @@
 
 #define LOG_TAG "jpeg_hal"
 #include <string.h>
-#include <unistd.h>
 #include "jpeg_hal.h"
 #include "ve.h"
 #include "mpp_log.h"
@@ -485,7 +484,7 @@ static void config_jpeg_picture_info_register(struct mjpeg_dec_ctx *s)
 			frame_format.color_mode = 2; // yuv224, display not support
 	} else {
 		logi("rgb format(%d)", s->pix_fmt);
-        frame_format.color_mode = 4;
+		frame_format.color_mode = 4;
 	}
 
 	pval = (u32 *)&frame_format;
@@ -529,7 +528,7 @@ static void config_header_info(struct mjpeg_dec_ctx *s)
     write_reg_u32(s->regs_base + JPG_SIZE_REG, *pval);
 
     int tatal_blks = s->h_count[0] * s->v_count[0] +
-        s->h_count[1] * s->v_count[1] + s->h_count[2] * s->v_count[2];
+        s->h_count[1] * s->v_count[1] + s->h_count[2] * s->v_count[2] + s->h_count[3] * s->v_count[3];
     reg_list->_18_mcu_reg.y_h_size = s->h_count[0];
     reg_list->_18_mcu_reg.y_v_size = s->v_count[0];
     reg_list->_18_mcu_reg.cb_h_size = s->h_count[1];

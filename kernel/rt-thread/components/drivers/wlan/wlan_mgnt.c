@@ -698,8 +698,8 @@ rt_err_t rt_wlan_set_mode(const char *dev_name, rt_wlan_mode_t mode)
 #if defined(RT_WLAN_PROT_ENABLE) && defined(RT_WLAN_DEFAULT_PROT)
         if ((g_wlan_device != NULL) && (g_wlan_device != device)) {
             rt_wlan_prot_detach_dev(g_wlan_device);
-            g_wlan_device = device;
-            rt_wlan_prot_attach_dev(device, RT_WLAN_DEFAULT_PROT);
+            g_wlan_device = (void *)device;
+            rt_wlan_prot_attach_dev((void *)device, RT_WLAN_DEFAULT_PROT);
         }
 #endif
         RT_WLAN_LOG_D("L:%d this device mode is set", mode);
@@ -711,7 +711,7 @@ rt_err_t rt_wlan_set_mode(const char *dev_name, rt_wlan_mode_t mode)
     if (g_wlan_device != NULL)
         rt_wlan_prot_detach_dev(g_wlan_device);
 
-    g_wlan_device = device;
+    g_wlan_device = (void *)device;
 #endif
 
     if ((mode == RT_WLAN_STATION) &&

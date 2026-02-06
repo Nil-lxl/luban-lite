@@ -104,6 +104,19 @@ static struct rt_sdio_device_id aicw_sdio_ids[] =
 // Driver functions define
 //-------------------------------------------------------------------
 /* AIC driver sdio base functions */
+void aic_sdio_set_clock(uint32_t clk)
+{
+    struct sdio_func *func = sdio_function[FUNC_0];
+    struct rt_mmcsd_card *rt_sdio_card = func->drv_priv;
+    if (rt_sdio_card) {
+        if (clk == 0) { // use freq_max
+            clk = (rt_sdio_card->host->freq_max > 50000000) ? 50000000 : rt_sdio_card->host->freq_max;
+        }
+        DBG_SDIO_INF("host set clock %d Hz\n", clk);
+        mmcsd_set_clock(rt_sdio_card->host, clk);
+    }
+}
+
 int aic_sdio_enable_func(struct sdio_func *func)
 {
     int ret = -1;
@@ -153,6 +166,7 @@ void sdio_release_host(struct sdio_func *func)
     rtos_mutex_unlock(sdio_host_mutex);
     #endif
 }
+
 unsigned char sdio_readb(struct sdio_func *func, unsigned int addr, int *err_ret)
 {
     rt_int32_t ret;
@@ -531,6 +545,38 @@ int sdio_interrupt_init(struct aic_sdio_dev *sdiodev)
     return 0;
 }
 
+int sdio_interrupt_deinit(struct aic_sdio_dev *sdiodev)
+{
+    int ret;
+    AIC_LOG_PRINTF("%s, chipid=%d\n", __func__, sdiodev->chipid);
+    // func1
+    sdio_claim_host(sdio_function[FUNC_1]);
+    aic_sdio_release_irq(sdio_function[FUNC_1]);
+    //enable sdio interrupt
+    sdio_writeb(sdio_function[FUNC_1], 0x0, sdiodev->sdio_reg.intr_config_reg, &ret);
+    sdio_release_host(sdio_function[FUNC_1]);
+    if (ret) {
+        ret = EREMOTEIO;
+        AIC_LOG_PRINTF("reg:%d write failed!\n", sdiodev->sdio_reg.intr_config_reg);
+        return ret;
+    }
+    if ((sdiodev->chipid == PRODUCT_ID_AIC8800DC) || (sdiodev->chipid == PRODUCT_ID_AIC8800DW)) {
+        // func2
+        sdio_claim_host(sdio_function[FUNC_2]);
+        aic_sdio_release_irq(sdio_function[FUNC_2]);
+        //enable sdio interrupt
+        sdio_writeb(sdio_function[FUNC_2], 0x0, sdiodev->sdio_reg.intr_config_reg, &ret);
+        sdio_release_host(sdio_function[FUNC_2]);
+        if (ret) {
+            ret = EREMOTEIO;
+            AIC_LOG_PRINTF("func2 reg:%d write failed!\n", sdiodev->sdio_reg.intr_config_reg);
+            return ret;
+        }
+    }
+    msgcfm_poll_en = 1;
+    return 0;
+}
+
 int aicwf_sdio_func_init(uint16_t chipid, struct aic_sdio_dev *sdiodev)
 {
     int32_t ret = 0;
@@ -553,6 +599,10 @@ int aicwf_sdio_func_init(uint16_t chipid, struct aic_sdio_dev *sdiodev)
     }
 
     ret = aic_sdio_enable_func(sdio_function[FUNC_1]);
+    if (ret) {
+        AIC_LOG_PRINTF("sdio func1 enable failed, ret=%d\n", ret);
+        return ret;
+    }
 
     sdio_writeb(sdio_function[FUNC_1], block_bit0, sdiodev->sdio_reg.register_block, &ret);
     if (ret < 0) {
@@ -599,6 +649,10 @@ int aicwf_sdio_func_init(uint16_t chipid, struct aic_sdio_dev *sdiodev)
 
         //set sdio enable func
         ret = aic_sdio_enable_func(sdio_function[FUNC_2]);
+        if (ret) {
+            AIC_LOG_PRINTF("sdio func2 enable failed, ret=%d\n", ret);
+            return ret;
+        }
 
         sdio_writeb(sdio_function[FUNC_2], block_bit0, sdiodev->sdio_reg.register_block, &ret);
         if (ret < 0) {
@@ -651,6 +705,10 @@ int aicwf_sdiov3_func_init(uint16_t chipid, struct aic_sdio_dev *sdiodev)
     }
 
     ret = aic_sdio_enable_func(sdio_function[FUNC_1]);
+    if (ret) {
+        AIC_LOG_PRINTF("sdio func1 enable failed, ret=%d\n", ret);
+        return ret;
+    }
 
     #if 0 //set phase and sample
     {
@@ -686,10 +744,12 @@ int aicwf_sdiov3_func_init(uint16_t chipid, struct aic_sdio_dev *sdiodev)
         return ret;
     }
 
+    aic_sdio_set_clock(0);
+
     //1: no byte mode
     sdio_writeb(sdio_function[FUNC_1], byte_mode_disable, sdiodev->sdio_reg.bytemode_enable_reg, &ret);
     if (ret < 0) {
-        AIC_LOG_PRINTF("reg:%d write failed!\n", sdiodev->sdio_reg.bytemode_enable_reg);
+        AIC_LOG_PRINTF("reg:%d write failed! ret=%d\n", sdiodev->sdio_reg.bytemode_enable_reg, ret);
         return ret;
     }
 
@@ -747,7 +807,8 @@ int aicwf_sdio_probe(struct sdio_func *func)
 int aicwf_sdio_remove(struct sdio_func *func)
 {
     int ret = 0;
-    aic_driver_reboot(0x05);
+    //aic_driver_reboot(0x05);
+    aic_wifi_deinit(WIFI_MODE_UNKNOWN);
     #if CONFIG_SDIO_HOST_MUTEX
     if (sdio_host_mutex) {
         rtos_mutex_delete(sdio_host_mutex);

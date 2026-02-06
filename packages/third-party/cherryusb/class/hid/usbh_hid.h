@@ -9,11 +9,6 @@
 #include "usb_hid.h"
 
 struct usbh_hid {
-    uint8_t protocol;
-    uint8_t intf; /* interface number */
-    uint8_t minor;
-    uint8_t bInterval;
-
     struct usbh_hubport *hport;
     struct usb_endpoint_descriptor *intin;  /* INTR IN endpoint */
     struct usb_endpoint_descriptor *intout; /* INTR OUT endpoint */
@@ -21,6 +16,12 @@ struct usbh_hid {
     struct usbh_urb intout_urb;             /* INTR OUT urb */
 
     uint16_t report_size;
+
+    uint8_t protocol;
+    uint8_t intf; /* interface number */
+    uint8_t minor;
+    uint8_t bInterval;
+    void *user_data;
 };
 
 #ifdef __cplusplus
@@ -30,6 +31,8 @@ extern "C" {
 int usbh_hid_get_report_descriptor(struct usbh_hid *hid_class, uint8_t *buffer, uint32_t buflen);
 int usbh_hid_set_idle(struct usbh_hid *hid_class, uint8_t report_id, uint8_t duration);
 int usbh_hid_get_idle(struct usbh_hid *hid_class, uint8_t *buffer);
+int usbh_hid_set_protocol(struct usbh_hid *hid_class, uint8_t protocol);
+int usbh_hid_get_protocol(struct usbh_hid *hid_class, uint8_t *protocol);
 int usbh_hid_set_report(struct usbh_hid *hid_class, uint8_t report_type, uint8_t report_id, uint8_t *buffer, uint32_t buflen);
 int usbh_hid_get_report(struct usbh_hid *hid_class, uint8_t report_type, uint8_t report_id, uint8_t *buffer, uint32_t buflen);
 

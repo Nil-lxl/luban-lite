@@ -1133,6 +1133,9 @@ static rt_err_t rt_serial_control(struct rt_device *dev,
                     /*can not change buffer size*/
                     return RT_EBUSY;
                 }
+                if (serial->config.bufsz < RT_SERIAL_FIFO_SIZE)
+                    rt_kprintf("Warning: Serial buffer size must more than %d,"
+                               "current setting:%d\n", RT_SERIAL_FIFO_SIZE, serial->config.bufsz);
                 /* set serial configure */
                 serial->config = *pconfig;
                 if (serial->parent.ref_count)

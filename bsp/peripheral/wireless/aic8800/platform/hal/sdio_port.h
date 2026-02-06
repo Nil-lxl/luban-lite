@@ -66,6 +66,7 @@ void sdio_set_irq_handler(void (*cb)(void));
 
 void sdio_release_func2(void);
 
+void aic_sdio_set_clock(uint32_t clk);
 int aic_sdio_enable_func(struct sdio_func *func);
 int xhci_sdio_disable_func(struct sdio_func *func);
 void sdio_claim_host(struct sdio_func *func);
@@ -82,6 +83,7 @@ bool sdio_readb_cmd52_func2(uint32_t addr, uint8_t *data);
 void aicwf_sdio_oob_enable(void);
 #endif /* CONFIG_OOB */
 int sdio_interrupt_init(struct aic_sdio_dev *sdiodev);
+int sdio_interrupt_deinit(struct aic_sdio_dev *sdiodev);
 int aicwf_sdio_func_init(uint16_t chipid, struct aic_sdio_dev *sdiodev);
 int aicwf_sdiov3_func_init(uint16_t chipid, struct aic_sdio_dev *sdiodev);
 int aicwf_sdio_probe(struct sdio_func *func);

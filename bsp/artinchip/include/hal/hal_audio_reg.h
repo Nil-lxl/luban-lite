@@ -136,6 +136,10 @@
 #define TX_CNT_REG                              (0x4C)
 
 #define FADE_CTRL0_REG                          (0x58)
+#define FADE_CTRL0_DEFAULT_STEP                 0x80
+#define FADE_CTRL0_STEP(n)                      ((n) << 16)
+#define FADE_CTRL0_DEFAULT_SPEED                0x4
+#define FADE_CTRL0_SPEED(n)                     ((n) << 12)
 #define FADE_CTRL0_CH1_EN                       BIT(2)
 #define FADE_CTRL0_CH0_EN                       BIT(1)
 #define FADE_CTRL0_EN                           (0)

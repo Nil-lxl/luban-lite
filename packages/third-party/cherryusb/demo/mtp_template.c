@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Artinchip Technology Co., Ltd
+ * Copyright (c) 2023-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -191,7 +191,7 @@ uint8_t bos_descriptor[] = {
     0x0a, 0x10, 0x03, 0x00, 0x0f, 0x00, 0x01, 0x01, 0xf4, 0x01
 };
 
-void usbd_event_handler(uint8_t event)
+static void usbd_mtp_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -393,11 +393,11 @@ void mtp_init(void)
 {
 
     usbd_mtp_fs_init(ROOT_PATH);
-    usbd_desc_register(mtp_descriptor);
-    usbd_msosv1_desc_register(&msosv1_desc);
-    usbd_bos_desc_register(&bos_desc);
-    usbd_add_interface(usbd_mtp_init_intf(&intf0, MTP_OUT_EP, MTP_IN_EP, MTP_INT_EP));
-    usbd_initialize();
+    usbd_desc_register(0, mtp_descriptor);
+    usbd_msosv1_desc_register(0, &msosv1_desc);
+    usbd_bos_desc_register(0, &bos_desc);
+    usbd_add_interface(0, usbd_mtp_init_intf(0, &intf0, MTP_OUT_EP, MTP_IN_EP, MTP_INT_EP));
+    usbd_initialize(0, USB_DEV_BASE, usbd_mtp_event_handler);
 }
 
 #if defined(KERNEL_RTTHREAD)
@@ -414,7 +414,7 @@ static void usbd_mtp_detection_thread(void *parameter)
 int usbd_mtp_detection(void)
 {
     usbd_mtp_tid = rt_thread_create("usbd_mtp_detection", usbd_mtp_detection_thread, RT_NULL,
-                           1536, RT_THREAD_PRIORITY_MAX - 2, 20);
+                           1024 * 4, RT_THREAD_PRIORITY_MAX - 2, 20);
     if (usbd_mtp_tid != RT_NULL)
         rt_thread_startup(usbd_mtp_tid);
     else

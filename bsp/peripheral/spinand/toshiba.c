@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,7 +21,7 @@ int toshiba_ecc_get_status(struct aic_spinand *flash, u8 status)
         case STATUS_ECC_UNCOR_ERROR:
             return -SPINAND_ERR_ECC;
         case STATUS_ECC_MASK:
-            return 4;
+            return 8;
         default:
             break;
     }
@@ -47,7 +47,7 @@ const struct aic_spinand_info toshiba_spinand_table[] = {
     /*TC58CVG1S3HRAIJ*/
     { DEVID(0xEB, 0x40), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64),
       PLANENUM(1), DIE(0), "toshiba 256MB: 2048+128@64@2048", cmd_cfg_table,
-      toshiba_ecc_get_status, tc58cvg1s_ooblayout_user },
+      toshiba_ecc_get_status, tc58cvg1s_ooblayout_user, 8 },
 };
 
 const struct aic_spinand_info *toshiba_spinand_detect(struct aic_spinand *flash)

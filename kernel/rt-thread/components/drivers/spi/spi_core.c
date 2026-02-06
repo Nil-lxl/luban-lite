@@ -147,6 +147,28 @@ void rt_spi_set_rx_delay_mode(struct rt_spi_device        *device,
     }
 }
 
+void rt_spi_display_set(struct rt_spi_device        *device,
+                      struct spi_disp_config *spi_disp)
+{
+    RT_ASSERT(device != RT_NULL);
+
+    if (device->bus != RT_NULL && device->bus->ops->spi_disp != RT_NULL)
+    {
+        device->bus->ops->spi_disp(device, spi_disp);
+    }
+}
+
+void rt_spi_display_trans(struct rt_spi_device        *device,
+                      struct drv_spi_trans_data *spi_disp_trans)
+{
+    RT_ASSERT(device != RT_NULL);
+
+    if (device->bus != RT_NULL && device->bus->ops->spi_trans_data != RT_NULL)
+    {
+        device->bus->ops->spi_trans_data(device, spi_disp_trans);
+    }
+}
+
 rt_err_t rt_spi_wait_completion(struct rt_spi_device *device)
 {
     rt_err_t result = -RT_EINVAL;

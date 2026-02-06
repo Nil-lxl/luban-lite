@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -35,6 +35,8 @@ extern "C" {
 #define UPG_PROTO_CMD_GET_PARTITION_TABLE 0x17
 #define UPG_PROTO_CMD_READ_FWC_DATA       0x18
 #define UPG_PROTO_CMD_SET_UART_ARGS       0x19
+#define UPG_PROTO_CMD_GET_STORAGE_GEOME   0x1A
+#define UPG_PROTO_CMD_ERASE_STORAGE       0x1B
 #define UPG_PROTO_CMD_INVALID             0xFF
 
 #define UPG_PROTO_TYPE    0x01

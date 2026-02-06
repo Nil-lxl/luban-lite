@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  *  SPDX-License-Identifier: Apache-2.0
  *  author: <qi.xu@artinchip.com>
@@ -96,6 +96,12 @@ int mpp_decoder_control(struct mpp_decoder *decoder, int cmd, void *param)
     } else if (cmd == MPP_DEC_INIT_CMD_SET_EXT_PACKET_ALLOCATOR) {
         struct packet_allocator *allocator = (struct packet_allocator *)param;
         decoder->pkt_allocator = allocator;
+        return 0;
+    } else if (cmd == MPP_DEC_GET_READY_PACKET_NUMBER) {
+        *(int *)param = pm_get_ready_packet_num(decoder->pm);
+        return 0;
+    } else if (cmd == MPP_DEC_GET_RENDER_FRAME_NUMBER) {
+        *(int *)param = fm_get_render_frame_num(decoder->fm);
         return 0;
     }
     return decoder->ops->control(decoder, cmd, param);

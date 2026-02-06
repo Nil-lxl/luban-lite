@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -76,6 +76,7 @@ rt_err_t rt_spinand_init_nftl(rt_device_t dev)
         pr_err("[NE]nftl_initialize failed\n");
         return RT_ERROR;
     }
+    nftl_api_enable_oob_verify(part->nftl_handler, AIC_NFTL_OOB_VERIFY);
 
     return RT_EOK;
 }
@@ -92,17 +93,21 @@ static u32 spinand_start_page_calculate(rt_device_t dev, rt_off_t pos)
     struct spinand_blk_device *blk_dev = (struct spinand_blk_device *)dev;
     struct rt_mtd_nand_device *mtd_dev = blk_dev->mtd_device;
     const u8 SECTORS_PP = mtd_dev->page_size / blk_dev->geometry.bytes_per_sector;
-    u32 start_page = 0, block;
+    u32 start_page = 0, block = 0;
     u32 block_temp = 0, good_blk_cnt = 0;
 
     start_page = pos / SECTORS_PP + mtd_dev->block_start * mtd_dev->pages_per_block;
     block = start_page / mtd_dev->pages_per_block;
+    if (block < mtd_dev->block_start || block > mtd_dev->block_end) {
+        pr_err("error block:%u\n", block);
+        return INVALID_PAGE;
+    }
 
     if (blk_dev->block_num_cache && *(blk_dev->block_num_cache + 1) != 0) {
         /* Check the block_num_cache has been initialized and use it. */
         block_temp = *(blk_dev->block_num_cache + (block - mtd_dev->block_start));
     } else {
-        for (block_temp = mtd_dev->block_start; block_temp < mtd_dev->block_end; block_temp++) {
+        for (block_temp = mtd_dev->block_start; block_temp <= mtd_dev->block_end; block_temp++) {
             if (mtd_dev->ops->get_block_status(mtd_dev, block_temp) == BBT_BLOCK_GOOD)
                 good_blk_cnt++;
 
@@ -195,14 +200,20 @@ static rt_size_t spinand_read_nonftl_nalign(rt_device_t dev, rt_off_t *pos, void
     int ret = 0;
 
     start_page = spinand_start_page_calculate(dev, *pos);
+    if (start_page == INVALID_PAGE)
+        return -RT_ERROR;
 
     memset(blk_dev->pagebuf, 0xFF, mtd_dev->page_size);
     pr_debug("read_page: %d\n", start_page);
     ret = mtd_dev->ops->read_page(mtd_dev, start_page, blk_dev->pagebuf,
                                     mtd_dev->page_size, NULL, 0);
-    if (ret != RT_EOK) {
+    if (ret < RT_EOK) {
         pr_err("read_page failed!\n");
         return -RT_ERROR;
+    }
+    if (ret == SPINAND_ECC_LIMIT) {
+        pr_warn("page %u bit_flip, please refresh flash data.\n", start_page);
+        mtd_dev->ops->report_bitflip(mtd_dev, start_page);
     }
 
     copybuf = blk_dev->pagebuf + POS_SECTOR_OFFS * blk_dev->geometry.bytes_per_sector;
@@ -233,17 +244,25 @@ static rt_size_t spinand_read_nonftl_align(rt_device_t dev, rt_off_t pos, void *
     int ret = 0;
 
     start_page = spinand_start_page_calculate(dev, pos);
+    if (start_page == INVALID_PAGE)
+        return -RT_ERROR;
 
     while (size > sectors_read) {
         start_page = spinand_start_page_calculate(dev, pos);
+        if (start_page == INVALID_PAGE)
+            return -RT_ERROR;
 
         memset(blk_dev->pagebuf, 0xFF, mtd_dev->page_size);
         pr_debug("read_page: %d\n", start_page);
         ret = mtd_dev->ops->read_page(mtd_dev, start_page, blk_dev->pagebuf,
                                         mtd_dev->page_size, NULL, 0);
-        if (ret != RT_EOK) {
+        if (ret < RT_EOK) {
             pr_err("read_page failed!\n");
             return -RT_ERROR;
+        }
+        if (ret == SPINAND_ECC_LIMIT) {
+            pr_warn("page %u bit_flip, refresh flash immediately.\n", start_page);
+            mtd_dev->ops->report_bitflip(mtd_dev, start_page);
         }
 
         if ((size - sectors_read) > SECTORS_PP) {
@@ -298,6 +317,9 @@ static rt_size_t spinand_continuous_read_nonftl(rt_device_t dev, rt_off_t pos, v
 
     rt_memset(data_ptr, 0, read_size);
     start_page = spinand_start_page_calculate(dev, pos);
+    if (start_page == INVALID_PAGE)
+        goto cont_read_error;
+
     ret = mtd_dev->ops->continuous_read(mtd_dev, start_page, data_ptr, read_size);
     if (ret != RT_EOK) {
         pr_err("continuous_read failed!\n");
@@ -378,7 +400,7 @@ rt_err_t rt_spinand_init_nonftl(rt_device_t dev)
 
     assert(part != RT_NULL);
 
-    for (block = device->block_start; block < device->block_end; block++) {
+    for (block = device->block_start; block <= device->block_end; block++) {
         if (device->ops->check_block(device, block)) {
             pr_err("Find a bad block, block: %u.\n", block);
             device->ops->set_block_status(device, block, BBT_BLOCK_FACTORY_BAD);
@@ -393,7 +415,7 @@ rt_err_t rt_spinand_init_nonftl(rt_device_t dev)
     rt_mutex_init(&(part->blk_cache_lock), part->name, RT_IPC_FLAG_PRIO);
 
     /* initialize block_num_cache */
-    nbytes_temp = (device->block_end - device->block_start) * sizeof(u32);
+    nbytes_temp = (device->block_end - device->block_start + 1) * sizeof(u32);
     part->block_num_cache = (u32 *)rt_malloc(nbytes_temp);
     if (!part->block_num_cache) {
         pr_err("malloc buf failed\n");
@@ -402,7 +424,7 @@ rt_err_t rt_spinand_init_nonftl(rt_device_t dev)
 
     memset(part->block_num_cache, 0, nbytes_temp);
     blk_num_ptr = part->block_num_cache;
-    for (block = device->block_start; block < device->block_end; block++) {
+    for (block = device->block_start; block <= device->block_end; block++) {
         if (device->ops->get_block_status(device, block) == BBT_BLOCK_GOOD) {
             *blk_num_ptr = block;
             blk_num_ptr++;

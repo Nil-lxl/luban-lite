@@ -37,7 +37,7 @@ struct usb_osal_timer {
     usb_timer_handler_t handler;
     void *argument;
     bool is_period;
-    uint32_t ticks;
+    uint32_t timeout_ms;
     void *timer;
 };
 
@@ -83,5 +83,6 @@ void usb_osal_msleep(uint32_t delay);
 
 void *usb_osal_malloc_align(uint32_t mem_type, size_t size, size_t align);
 void usb_osal_free_align(uint32_t mem_type, void *mem);
-
+void *usb_osal_malloc(size_t size);
+void usb_osal_free(void *ptr);
 #endif /* USB_OSAL_H */

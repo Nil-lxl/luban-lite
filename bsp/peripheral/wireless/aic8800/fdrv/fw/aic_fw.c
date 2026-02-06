@@ -32,6 +32,7 @@
 #include "fw_patch_table_8800d80_u02.h"
 #include "fw_patch_8800d80_u02_ext0.h"
 #include "aic_fw.h"
+#include "aic_plat_log.h"
 
 
 void *aic_fw_ptr_get(enum aic_fw name)
@@ -51,54 +52,54 @@ void *aic_fw_ptr_get(enum aic_fw name)
         break;
 
     case FW_ADID_8800DC_U02:
-        printf("FW_ADID_8800DC_U02\n");
+        AIC_LOG_PRINTF("FW_ADID_8800DC_U02\n");
         ptr = fw_adid_8800dc_u02;
         break;
     case FW_PATCH_8800DC_U02:
-        printf("FW_PATCH_8800DC_U02\n");
+        AIC_LOG_PRINTF("FW_PATCH_8800DC_U02\n");
         ptr = fw_patch_8800dc_u02;
         break;
 	case FW_PATCH_TABLE_8800DC_U02:
-        printf("FW_PATCH_TABLE_8800DC_U02\n");
+        AIC_LOG_PRINTF("FW_PATCH_TABLE_8800DC_U02\n");
 		ptr = fw_patch_table_8800dc_u02;
 		break;
 	case FW_PATCH_8800DC_U02_EXT:
-		printf("FW_PATCH_8800DC_U02_EXT\n");
+		AIC_LOG_PRINTF("FW_PATCH_8800DC_U02_EXT\n");
 		ptr = fw_patch_8800dc_u02_ext0;
 		break;
 
     case FW_ADID_8800DC_U02H:
-        printf("FW_ADID_8800DC_U02\n");
+        AIC_LOG_PRINTF("FW_ADID_8800DC_U02\n");
         ptr = fw_adid_8800dc_u02h;
         break;
     case FW_PATCH_8800DC_U02H:
-        printf("FW_PATCH_8800DC_U02\n");
+        AIC_LOG_PRINTF("FW_PATCH_8800DC_U02\n");
         ptr = fw_patch_8800dc_u02h;
         break;
 	case FW_PATCH_TABLE_8800DC_U02H:
-        printf("FW_PATCH_TABLE_8800DC_U02\n");
+        AIC_LOG_PRINTF("FW_PATCH_TABLE_8800DC_U02\n");
 		ptr = fw_patch_table_8800dc_u02h;
 		break;
 
     case FW_ADID_8800D80_U02:
-        printf("FW_ADID_8800D80_U02\n");
+        AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
         ptr = fw_adid_8800d80_u02;
         break;
     case FW_PATCH_8800D80_U02:
-        printf("FW_ADID_8800D80_U02\n");
+        AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
         ptr = fw_patch_8800d80_u02;
         break;
 	case FW_PATCH_TABLE_8800D80_U02:
-        printf("FW_ADID_8800D80_U02\n");
+        AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
 		ptr = fw_patch_table_8800d80_u02;
 		break;
 	case FW_PATCH_8800D80_U02_EXT:
-		printf("FW_ADID_8800D80_U02\n");
+		AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
 		ptr = fw_patch_8800d80_u02_ext0;
 		break;
 #endif
     default:
-        printf("PTR is NULL\n");
+        AIC_LOG_PRINTF("PTR is NULL\n");
         ptr = NULL;
         break;
     }

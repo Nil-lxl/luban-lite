@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -74,15 +74,21 @@ INCLUDE rom_api.lds
     #define AIC_SRAM_RESERVE_SIZE AIC_SRAM_S1_SIZE
 #endif
 
+#ifdef AIC_USING_PM
+    #define AIC_PM_SRAM_RESERVE_SIZE 0x200
+#else
+    #define AIC_PM_SRAM_RESERVE_SIZE 0
+#endif
+
 MEMORY
 {
     BROM        : ORIGIN = 0x30000000                                             , LENGTH = 256K
 #ifdef AIC_TCM_EN
     ITCM        : ORIGIN = 0x30040000                                             , LENGTH = AIC_ITCM_SIZE
     DTCM        : ORIGIN = 0x30040000 + AIC_ITCM_SIZE                             , LENGTH = AIC_DTCM_SIZE
-    SRAM_S0     : ORIGIN = 0x30040000 + AIC_ITCM_SIZE + AIC_DTCM_SIZE             , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE - AIC_ITCM_SIZE - AIC_DTCM_SIZE
+    SRAM_S0     : ORIGIN = 0x30040000 + AIC_ITCM_SIZE + AIC_DTCM_SIZE             , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE - AIC_ITCM_SIZE - AIC_DTCM_SIZE - AIC_PM_SRAM_RESERVE_SIZE
 #else
-    SRAM_S0     : ORIGIN = 0x30040000                                             , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE
+    SRAM_S0     : ORIGIN = 0x30040000 + AIC_XIP_RAMCODE_SIZE                      , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE - AIC_XIP_RAMCODE_SIZE - AIC_PM_SRAM_RESERVE_SIZE
 #endif
     SRAM_S1_SW  : ORIGIN = 0x40000000 - AIC_SRAM_S1_SIZE                          , LENGTH = AIC_SRAM1_SW_SIZE
     SRAM_S1_CMA : ORIGIN = 0x40000000 - AIC_SRAM_S1_SIZE + AIC_SRAM1_SW_SIZE      , LENGTH = AIC_SRAM_S1_SIZE - AIC_SRAM1_SW_SIZE
@@ -102,11 +108,13 @@ PROVIDE (__itcm_end                 = __itcm_start + AIC_ITCM_SIZE);
 PROVIDE (__dtcm_start               = __itcm_end);
 PROVIDE (__dtcm_end                 = __itcm_end + AIC_DTCM_SIZE);
 PROVIDE (__sram_s0_start            = __dtcm_end);
-PROVIDE (__sram_s0_end              = __dtcm_end + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE - AIC_ITCM_SIZE - AIC_DTCM_SIZE);
+PROVIDE (__sram_s0_end              = __dtcm_end + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE - AIC_ITCM_SIZE - AIC_DTCM_SIZE - AIC_PM_SRAM_RESERVE_SIZE);
 #else
 PROVIDE (__sram_s0_start            = 0x30040000);
-PROVIDE (__sram_s0_end              = __sram_s0_start + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE);
+PROVIDE (__sram_s0_end              = __sram_s0_start + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE - AIC_PM_SRAM_RESERVE_SIZE);
 #endif
+PROVIDE (__sram_pm_start           = __sram_s0_end);
+PROVIDE (__sram_pm_end             = __sram_pm_start + AIC_PM_SRAM_RESERVE_SIZE);
 PROVIDE (__sram_s1_sw_start        = 0x40000000 - AIC_SRAM_S1_SIZE);
 PROVIDE (__sram_s1_sw_end          = 0x40000000 - AIC_SRAM_S1_SIZE + AIC_SRAM1_SW_SIZE);
 PROVIDE (__sram_s1_cma_start       = __sram_s1_sw_end);

@@ -6,7 +6,7 @@
 
 menu "Wlan0 Parameter"
 
-    config AIC_DEV_ATBM603X_WLAN0_PWR_GPIO
+    config AIC_WIRELESS_PWR_GPIO
         string "atbm603x wlan0 power on gpio"
 
     config AIC_DEV_ATBM603X_WLAN0_RST_GPIO

@@ -322,11 +322,17 @@ rt_err_t at24cxx_write(at24cxx_device_t dev, uint32_t addr, uint8_t *buffer, uin
     {
         while (1) //num--
         {
+#pragma GCC push_options
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
             if (at24cxx_write_one_byte(dev, addr, buffer[i]) == RT_EOK)
             {
                 rt_thread_mdelay(2);
                 addr++;
             }
+
+#pragma GCC pop_options
+
             if (++i == num)
             {
                 break;

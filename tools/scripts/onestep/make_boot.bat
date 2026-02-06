@@ -32,6 +32,8 @@ set LOG_DIR=%SDK_PRJ_TOP_DIR%\.log
 if not exist %LOG_DIR% mkdir %LOG_DIR%
 del %LOG_DIR%\*.log /f /q
 
+call checkout_binary.bat
+
 :: Build bootloader
 call scons --apply-def=%boot_defconfig% -C %SDK_PRJ_TOP_DIR%
 call scons -C %SDK_PRJ_TOP_DIR%	 -j 8 2>&1 | tee %LOG_DIR%\%boot_defconfig%.log

@@ -271,21 +271,41 @@ config AIC_DE_DRV_V10
     bool
     default y if AIC_DE_DRV
 
-config AIC_DE_DRV_VER
-    string
-    default "10" if AIC_DE_DRV_V10
-
 #--------------------------------------------
 # Display interface driver global option
 #--------------------------------------------
 
+config AIC_DISP_HW_RGB
+    bool
+    default y
+
+config AIC_DISP_HW_LVDS
+    bool
+    default y
+
+config AIC_DISP_HW_MIPI_DBI
+    bool
+    default y
+
+config AIC_DISP_HW_MIPI_DSI
+    bool
+    default y
+
 config AIC_DISP_RGB_DRV_V10
     bool
-    default AIC_DISP_RGB
+    default y
 
-config AIC_DISP_RGB_DRV_VER
-    string
-    default "10" if AIC_DISP_RGB
+config AIC_DISP_LVDS_DRV_V10
+    bool
+    default y
+
+config AIC_DISP_MIPI_DBI_DRV_V10
+    bool
+    default y
+
+config AIC_DISP_MIPI_DSI_DRV_V10
+    bool
+    default y
 
 #---------------------------
 # GE driver global option

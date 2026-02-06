@@ -152,6 +152,27 @@ static rt_list_t *list_get_next(rt_list_t *current, list_get_next_t *arg)
     return node;
 }
 
+int rt_thread_is_available(struct rt_thread *thread)
+{
+    rt_list_t *obj_list[LIST_FIND_OBJ_NR] = {NULL};
+    rt_list_t *next = (rt_list_t *)RT_NULL;
+    list_get_next_t find_arg = {0};
+    struct rt_thread *cur = NULL;
+
+    list_find_init(&find_arg, RT_Object_Class_Thread, obj_list, sizeof(obj_list) / sizeof(obj_list[0]));
+
+    do {
+        next = list_get_next(next, &find_arg);
+        for (int i = 0; i < find_arg.nr_out; i++) {
+            cur = (struct rt_thread *)rt_list_entry(obj_list[i], struct rt_object, list);
+            if (thread == cur)
+                return 1;
+        }
+    } while (next != (rt_list_t *)RT_NULL);
+
+    return 0;
+}
+
 long list_thread(void)
 {
     rt_base_t level;

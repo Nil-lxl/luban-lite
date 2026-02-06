@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Dehuang.Wu
-# Copyright (C) 2021-2025 ArtInChip Technology Co., Ltd
+# Copyright (C) 2021-2026 ArtInChip Technology Co., Ltd
 
 import os
 import re
@@ -160,6 +160,55 @@ def round_pow2(x):
     return value
 
 
+def aic_calc_checksum(start, size):
+    offset = 0
+    total = 0
+    while offset < size:
+        val = int.from_bytes(start[offset: offset + 4], byteorder='little', signed=False)
+        total = total + val
+        offset = offset + 4
+    return (~total) & 0xFFFFFFFF
+
+
+def set_image_info_to_boot_sector(imgfile, total_size, used_size):
+    """ Set AIC FAT Image information after BPB structure, start from 0x80
+        struct {
+            uint32_t magic; "AICF", byte order: 'F''C''I''A'
+            uint32_t cksum32;
+            uint32_t length; From Magic to data end
+            uint32_t version; 1.1
+            uint64_t image_size;
+            uint64_t used_size;
+            uint32_t dirent_sect_id;
+            uint32_t dirent_data_len;
+        }
+    """
+    magic = "AICF"
+    cksum = 0
+    datalen = 4+4+4+4+8+8
+    version = int('0x0101', 16)
+    image_size = total_size
+    dirent_sect_id = 0
+    dirent_datalen = 0
+
+    data = magic.encode(encoding="utf-8")
+    data = data + cksum.to_bytes(4, byteorder='little', signed=False)
+    data = data + datalen.to_bytes(4, byteorder='little', signed=False)
+    data = data + version.to_bytes(4, byteorder='little', signed=False)
+    data = data + image_size.to_bytes(8, byteorder='little', signed=False)
+    data = data + used_size.to_bytes(8, byteorder='little', signed=False)
+    data = data + dirent_sect_id.to_bytes(0, byteorder='little', signed=False)
+    data = data + dirent_datalen.to_bytes(0, byteorder='little', signed=False)
+
+    # Update cksum
+    cksum = aic_calc_checksum(data, len(data))
+    imginfo = data[0:4] + cksum.to_bytes(4, byteorder='little', signed=False) + data[8:]
+    with open(imgfile, 'rb+') as f:
+        f.seek(128)
+        f.write(imginfo)
+        f.close()
+
+
 def main(args):
     cluster = int(args.cluster)
     # cluster should be pow of 2
@@ -257,21 +306,31 @@ def main(args):
         sys.exit(1)
 
     gen_fatfs(args.tooldir, inputdir, args.outfile, args.volab, imgsiz, sector_siz, cluster)
+
+    clus_cnt = imgsiz / cluster_siz
+    if clus_cnt < 65536:
+        # FAT16/FAT12, assume it is FAT16, and evaluate the valid data size
+        fat_siz = (clus_cnt * 16) / 8
+        rsvd_siz = 1 * sector_siz
+        root_ent_cnt = 512 * 32
+    else:
+        # FAT32, evaluate the valid data size
+        fat_siz = (clus_cnt * 32) / 8
+        rsvd_siz = 32 * sector_siz
+        root_ent_cnt = 0
+    minimal_siz = rsvd_siz + 2 * fat_siz + root_ent_cnt + 2 * cluster_siz + data_siz
+    # Round to cluster alignment
+    minimal_siz = cluster_siz * int(((minimal_siz + cluster_siz - 1) / cluster_siz))
+    # Set image information for NFTL offline burn
+    set_image_info_to_boot_sector(args.outfile, imgsiz, minimal_siz)
+
+    if platform.system() == 'Linux':
+        fatupdate = '{}fatupdate {}'.format(args.tooldir, args.outfile)
+        run_cmd(fatupdate)
+    elif platform.system() == 'Windows':
+        fatupdate = '{}fatupdate.exe {}'.format(args.tooldir, args.outfile)
+        run_cmd(fatupdate)
     if strip_siz:
-        clus_cnt = imgsiz / cluster_siz
-        if clus_cnt < 65536:
-            # FAT16/FAT12, assume it is FAT16, and evaluate the valid data size
-            fat_siz = (clus_cnt * 16) / 8
-            rsvd_siz = 1 * sector_siz
-            root_ent_cnt = 512 * 32
-        else:
-            # FAT32, evaluate the valid data size
-            fat_siz = (clus_cnt * 32) / 8
-            rsvd_siz = 32 * sector_siz
-            root_ent_cnt = 0
-        minimal_siz = rsvd_siz + 2 * fat_siz + root_ent_cnt + 2 * cluster_siz + data_siz
-        # Round to cluster alignment
-        minimal_siz = cluster_siz * int(((minimal_siz + cluster_siz - 1) / cluster_siz))
         if platform.system() == 'Linux':
             truncate = 'truncate -s {} {}'.format(minimal_siz, args.outfile)
             run_cmd(truncate)

@@ -101,6 +101,9 @@ struct netdev
 
 #ifdef RT_USING_SAL
     void *sal_user_data;                               /* user-specific data for SAL */
+#ifdef SAL_INTERNET_CHECK
+    struct rt_work *net_work;                          /* network for SAL internet check */
+#endif
 #endif /* RT_USING_SAL */
     void *user_data;                                   /* user-specific data */
 };

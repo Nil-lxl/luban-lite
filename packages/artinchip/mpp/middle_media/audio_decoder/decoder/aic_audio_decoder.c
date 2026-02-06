@@ -73,10 +73,14 @@ s32 aic_audio_decoder_decode(struct aic_audio_decoder* decoder)
 
 s32 aic_audio_decoder_control(struct aic_audio_decoder* decoder, int cmd, void *param)
 {
-	switch (cmd) {
-	default:
-		break;
+	if (decoder == NULL || param == NULL)
+		return DEC_ERR_NULL_PTR;
+
+	if (cmd == MPP_DEC_GET_READY_PACKET_NUMBER) {
+		*(int *)param = audio_pm_get_ready_packet_num(decoder->pm);
+		return 0;
 	}
+
 	return decoder->ops->control(decoder, cmd, param);
 }
 

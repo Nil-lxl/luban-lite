@@ -143,6 +143,15 @@ struct debug_env_tag
  * FUNCTIONS
  ****************************************************************************************
  */
+void dbg_set_module(unsigned int module);
+
+void dbg_set_severity(unsigned int severity);
+
+unsigned int dbg_get_module(void);
+
+unsigned int dbg_get_severity(void);
+
+int dbg_test_severity(unsigned int sev_idx);
 
 int dbg_test_module_severity(unsigned int mod_idx, unsigned int sev_idx);
 

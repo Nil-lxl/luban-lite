@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -83,9 +83,65 @@ static s32 nor_fwc_get_mtd_partitions(struct fwc_info *fwc,
     return 0;
 }
 
-int nor_is_exist()
+int nor_is_exist(u32 id)
 {
+    struct mtd_dev *mtd;
+    char name[10];
+
+    memset(name, 0, 10);
+    strcpy(name, "nor0");
+    name[3] = '0' + id;
+    mtd = mtd_get_device(name);
+    if (mtd) {
+        return 1;
+    }
+
     return 0;
+}
+
+s32 nor_get_geometry(u32 id, struct storage_geometry *geo)
+{
+    struct mtd_dev *mtd;
+    char name[10];
+
+    if (geo == NULL)
+        return -1;
+
+    memset(name, 0, 10);
+    strcpy(name, "nor0");
+    name[3] = '0' + id;
+    mtd = mtd_get_device(name);
+    if (mtd) {
+        geo->total_size = mtd->size;
+        geo->write_size = mtd->writesize;
+        geo->erase_size = mtd->erasesize;
+        geo->oob_size = 0;
+        return 0;
+    }
+
+    return -1;
+}
+
+s32 nor_storage_erase(u32 id, struct storage_erase *erase)
+{
+    struct mtd_dev *mtd;
+    char name[10];
+    int ret = 0;
+
+    if (erase == NULL)
+        return -1;
+
+    memset(name, 0, 10);
+    strcpy(name, "nor0");
+    name[3] = '0' + id;
+    mtd = mtd_get_device(name);
+    if (mtd) {
+        /* The start offset of flash */
+        ret = mtd_erase(mtd, erase->start, erase->size);
+        return ret;
+    }
+
+    return -1;
 }
 
 /*

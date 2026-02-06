@@ -8,10 +8,9 @@
 */
 
 
-#include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+
 #include "mpp_mem.h"
 #include "mpp_log.h"
 #include "aic_stream.h"

@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 /* Init audio interface driver */
-struct usbd_interface *usbd_midi_init_intf(struct usbd_interface *intf);
+struct usbd_interface *usbd_midi_init_intf(uint8_t busid, struct usbd_interface *intf);
 void usbd_midi_open(void);
 
 #ifdef __cplusplus

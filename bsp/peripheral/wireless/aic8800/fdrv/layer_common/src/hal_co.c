@@ -56,6 +56,9 @@ int aicwf_hal_send_check(void)
 
     if (sdiodev->fw_avail_bufcnt <= DATA_FLOW_CTRL_THRESH) {
         sdiodev->fw_avail_bufcnt = aicwf_sdio_flow_ctrl();
+        if (sdiodev->fw_avail_bufcnt < -DATA_FLOW_CTRL_THRESH) {
+            return -2;
+        } else
         if (sdiodev->fw_avail_bufcnt <= DATA_FLOW_CTRL_THRESH) {
             return -1;
         }

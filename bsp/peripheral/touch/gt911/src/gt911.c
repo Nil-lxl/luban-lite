@@ -129,22 +129,11 @@ static rt_err_t gt911_get_info(struct rt_i2c_client *dev, struct rt_touch_device
 
 static rt_err_t gt911_power_down(struct rt_touch_device *touch)
 {
-    rt_uint8_t buf[3] = {0};
-
     rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_DISABLE_INT, RT_NULL);
     /* Pull down irq pin */
     rt_pin_mode(touch->config.irq_pin.pin, PIN_MODE_OUTPUT);
     rt_pin_write(touch->config.irq_pin.pin, PIN_LOW);
     rt_thread_mdelay(10);
-
-    buf[0] = (rt_uint8_t)(GT911_COMMAND_REG >> 8);
-    buf[1] = (rt_uint8_t)(GT911_COMMAND_REG & 0xFF);
-    buf[2] = 0x05;
-
-    if (gt911_write_reg(&gt911_client, buf, 3) != RT_EOK) {
-        LOG_E("Gt911 enter sleep mode failed\n");
-        return -RT_ERROR;
-    }
 
     return RT_EOK;
 }

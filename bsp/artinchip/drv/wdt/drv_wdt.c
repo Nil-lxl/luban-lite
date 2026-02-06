@@ -44,6 +44,12 @@ rt_err_t drv_wdt_set_clr_thd(rt_watchdog_t *wdt, uint32_t sec)
     else
         wdt_dev->chan.clr_thd = sec;
 
+    /* The range of clr_thd is [0, rst_thd - 2] */
+    if (wdt_dev->chan.rst_thd < 3)
+        wdt_dev->chan.clr_thd = 0;
+    else if (sec > wdt_dev->chan.rst_thd - 2)
+        wdt_dev->chan.clr_thd = wdt_dev->chan.rst_thd - 2;
+
     hal_wdt_clr_thd_set(wdt_dev->cur_chan, &wdt_dev->chan);
     hal_wdt_op_clr(RT_NULL);
 
@@ -77,6 +83,15 @@ rt_err_t drv_wdt_set_timeout(rt_watchdog_t *wdt, uint32_t sec)
 
     if (hal_wdt_irq_sta() && wdt_dev->chan.irq_thd >=  wdt_dev->chan.rst_thd)
         drv_wdt_set_irq_thd(wdt, wdt_dev->chan.rst_thd);
+
+    /* The range of clr_thd is [0, rst_thd - 2] */
+    if (sec < 3) {
+        wdt_dev->chan.clr_thd = 0;
+        hal_wdt_clr_thd_set(wdt_dev->cur_chan, &wdt_dev->chan);
+    } else if (wdt_dev->chan.clr_thd > sec - 2) {
+        wdt_dev->chan.clr_thd = sec - 2;
+        hal_wdt_clr_thd_set(wdt_dev->cur_chan, &wdt_dev->chan);
+    }
 
     hal_wdt_rst_thd_set(wdt_dev->cur_chan, &wdt_dev->chan);
     hal_wdt_op_clr(RT_NULL);
@@ -151,12 +166,14 @@ static rt_err_t drv_wdt_control(rt_watchdog_t *wdt, int cmd, void *args)
         return drv_wdt_set_irq_thd(&wdt_dev->wdt, *(uint16_t *)args);
 
     case RT_DEVICE_CTRL_WDT_IRQ_ENABLE:
-        aicos_request_irq(WDT_IRQn, args, 0, AIC_WDT_NAME, &wdt_dev);
+        if (args)
+            hal_wdt_register_callback(args);
         hal_wdt_irq_enable(1);
         break;
 
     case RT_DEVICE_CTRL_WDT_IRQ_DISABLE:
         hal_wdt_irq_enable(0);
+        hal_wdt_register_callback(NULL);
         break;
 
     /* CLR_THD*/
@@ -207,6 +224,8 @@ rt_err_t drv_wdt_init(rt_watchdog_t *wdt)
     }
 
     hal_wdt_thd_get(wdt_dev->cur_chan, &wdt_dev->chan);
+
+    aicos_request_irq(WDT_IRQn, hal_wdt_irq, 0, AIC_WDT_NAME, &wdt_dev);
 
     wdt_dev->dbg_continue = 0;
     wdt_dev->cur_chan = 0;

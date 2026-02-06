@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ */
+
 #ifndef __MD5_H__
 #define __MD5_H__
 

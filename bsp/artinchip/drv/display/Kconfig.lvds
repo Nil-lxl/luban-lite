@@ -29,25 +29,25 @@ config AIC_LVDS_MODE
 
 choice
     prompt "lvds link mode"
-    default AIC_LVDS_LINK_1 if AIC_DE_DRV_V10
-    default AIC_LVDS_LINK_0 if AIC_DE_DRV_V11
+    default AIC_LVDS_LINK_1 if AIC_DISP_LVDS_DRV_V10
+    default AIC_LVDS_LINK_0 if AIC_DISP_LVDS_DRV_V11
     depends on AIC_DISP_LVDS
 
 config AIC_LVDS_LINK_0
     bool "single link 0"
-    depends on AIC_DE_DRV_V10 || AIC_DE_DRV_V11
+    depends on AIC_DISP_LVDS_DRV_V10 || AIC_DISP_LVDS_DRV_V11
 
 config AIC_LVDS_LINK_1
     bool "single link 1"
-    depends on AIC_DE_DRV_V10
+    depends on AIC_DISP_LVDS_DRV_V10
 
 config AIC_LVDS_DOUBLE_SCREEN
     bool "double screen"
-    depends on AIC_DE_DRV_V10
+    depends on AIC_DISP_LVDS_DRV_V10
 
 config AIC_LVDS_DUAL_LINK
     bool "dual link"
-    depends on AIC_DE_DRV_V10
+    depends on AIC_DISP_LVDS_DRV_V10
 endchoice
 
 config AIC_LVDS_LINK_MODE

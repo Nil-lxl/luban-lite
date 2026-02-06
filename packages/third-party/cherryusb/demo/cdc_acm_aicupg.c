@@ -146,7 +146,7 @@ static uint32_t g_acm_in_is_idle = 1;
 #define CDC_MAX_MPS 64
 #endif
 
-void usbd_event_handler(uint8_t event)
+static void usbd_event_handler(uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -207,14 +207,14 @@ void usbd_cdc_acm_bulk_in(uint8_t ep, uint32_t nbytes)
     }
 #endif
 
-    usbd_ep_start_write(CDC_IN_EP, write_buffer, len);
+    usbd_ep_start_write(0, CDC_IN_EP, write_buffer, len);
 #ifdef DEBUG_ENABLE_LOCAL_UART
     g_acm_in_is_idle = 0;
 #endif
 
     if (len && (len % CDC_MAX_MPS) == 0) {
         /* send zlp */
-        usbd_ep_start_write(CDC_IN_EP, NULL, 0);
+        usbd_ep_start_write(0, CDC_IN_EP, NULL, 0);
     } else {
         ep_tx_busy_flag = false;
     }
@@ -268,7 +268,7 @@ void aicupg_uart_recv_thread(void *argv)
                      g_acm_in_is_idle, ret, write_buffer);
             rt_ringbuffer_put_force(&g_uart_rb, write_buffer, g_uart_dat_sz);
             if (g_acm_in_is_idle)
-                usbd_ep_start_write(CDC_IN_EP, write_buffer, g_uart_dat_sz);
+                usbd_ep_start_write(0, CDC_IN_EP, write_buffer, g_uart_dat_sz);
         } else {
             if (ret < 0)
                 pr_warn("read() return [%ld] %s\n",
@@ -319,12 +319,12 @@ int cdc_acm_init(void)
     }
 #endif
 
-    usbd_desc_register(cdc_descriptor);
-    usbd_add_interface(usbd_cdc_acm_init_intf(&intf0));
-    usbd_add_interface(usbd_cdc_acm_init_intf(&intf1));
-    usbd_add_endpoint(&cdc_out_ep);
-    usbd_add_endpoint(&cdc_in_ep);
-    usbd_initialize();
+    usbd_desc_register(0, cdc_descriptor);
+    usbd_add_interface(0, usbd_cdc_acm_init_intf(0, &intf0));
+    usbd_add_interface(0, usbd_cdc_acm_init_intf(0, &intf1));
+    usbd_add_endpoint(0, &cdc_out_ep);
+    usbd_add_endpoint(0, &cdc_in_ep);
+    usbd_initialize(0, USB_DEV_BASE, usbd_event_handler);
     return 0;
 }
 INIT_DEVICE_EXPORT(cdc_acm_init);
@@ -346,7 +346,7 @@ void cdc_acm_data_send_with_dtr_test(void)
     USB_LOG_INFO("dtr_enable: %d, busy_flag: %d\n", dtr_enable, ep_tx_busy_flag);
     if (dtr_enable) {
         ep_tx_busy_flag = true;
-        usbd_ep_start_write(CDC_IN_EP, write_buffer, AICUPG_BUF_SIZE);
+        usbd_ep_start_write(0, CDC_IN_EP, write_buffer, AICUPG_BUF_SIZE);
         while (ep_tx_busy_flag) {
         }
     }

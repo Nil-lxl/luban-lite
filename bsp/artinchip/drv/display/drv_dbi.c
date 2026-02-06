@@ -135,6 +135,34 @@ static void aic_dbi_spi_cfg(void)
     }
 }
 
+static void aic_dbi_command_cfg(struct aic_dbi_comp *comp, struct panel_dbi *dbi)
+{
+#ifdef AIC_DISP_MIPI_DBI_DRV_V13
+    u32 value = 0;
+
+    if (dbi->flags & DBI_COMMAND_INSERT_ALL_LINE)
+        value = 0;
+    else if (dbi->flags & DBI_COMMAND_INSERT_ONLY_FIRST_LINE)
+        value = 1;
+    else if (dbi->flags & DBI_COMMAND_INSERT_NONE)
+        value = 2;
+
+    reg_set_bits(comp->regs + DBI_CTL,
+                 DBI_CTL_CIMMAND_CTL_MASK,
+                 DBI_CTL_CIMMAND_CTL(value));
+#endif
+}
+
+static void aic_dbi_refresh_cfg(struct aic_dbi_comp *comp, struct panel_dbi *dbi)
+{
+#ifdef AIC_DISP_MIPI_DBI_DRV_V13
+    if (dbi->flags & DBI_REFRESH_LINE)
+        reg_clr_bit(comp->regs + DBI_CTL, DBI_CTL_REFERSE_CTL);
+    else if (dbi->flags & DBI_REFRESH_FRAME)
+        reg_set_bit(comp->regs + DBI_CTL, DBI_CTL_REFERSE_CTL);
+#endif
+}
+
 static int aic_dbi_enable(void)
 {
     struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
@@ -164,6 +192,9 @@ static int aic_dbi_enable(void)
         pr_err("Invalid type %d\n", dbi->type);
         break;
     }
+
+    aic_dbi_command_cfg(comp, dbi);
+    aic_dbi_refresh_cfg(comp, dbi);
 
     reg_set_bit(comp->regs + DBI_CTL, DBI_CTL_EN);
     aic_dbi_release_drvdata();

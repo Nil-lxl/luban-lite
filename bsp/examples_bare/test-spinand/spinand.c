@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -26,7 +26,9 @@
     "  spinand erase <offset size>\n"      \
     "  spinand bad <offset size>\n"        \
     "  spinand contread <offset size>\n"   \
-    "  spinand regr <reg>\n"                \
+    "  spinand regr <reg>\n"               \
+    "  spinand eccen <enable>\n"           \
+    "  spinand bitflip <offset>\n"           \
     "  spinand read 0x40000000 0 0x20000\n"
 
 struct aic_spinand *g_spinand_flash;
@@ -257,6 +259,101 @@ static int do_spinand_reg_read(int argc, char *argv[])
     return 0;
 }
 
+static int do_spinand_eccen(int argc, char **argv)
+{
+    int enable = 1;
+
+    if (argc < 2) {
+        spinand_help();
+        return 0;
+    }
+
+    enable = strtol(argv[1], NULL, 0);
+    if (spinand_set_internal_ecc(g_spinand_flash, enable)) {
+        printf("eccen %d failed\n", enable);
+        return -1;
+    }
+
+    printf("eccen %d success\n", enable);
+
+    return 0;
+}
+
+unsigned char *s_buff[128] = {0};
+
+void toggle_bit(unsigned char *data, int bit_pos) {
+    data[bit_pos / 8] ^= (1 << (bit_pos % 8));
+}
+
+static int do_spinand_bit_flip(int argc, char **argv)
+{
+    unsigned long offset = 0, block_offset = 0;
+    int err = 0;
+    u32 block_size = 0;
+    int i = 0, j = 0;
+
+    if (argc < 2) {
+        spinand_help();
+        return 0;
+    }
+
+    block_size = g_spinand_flash->info->page_size * g_spinand_flash->info->pages_per_eraseblock;
+    for (i = 0; i < g_spinand_flash->info->pages_per_eraseblock; i++) {
+        s_buff[i] = aicos_malloc_align(0, g_spinand_flash->info->page_size + g_spinand_flash->info->oob_size, CACHE_LINE_SIZE);
+        if (!s_buff[i]) {
+            printf("Error, malloc failed!\n");
+            for (j = 0; j < i; j++)
+                aicos_free_align(0, s_buff[j]);
+            return -1;
+        }
+    }
+
+    offset = strtol(argv[1], NULL, 0);
+    block_offset = (offset / block_size) * block_size;
+    for (i = 0; i < g_spinand_flash->info->pages_per_eraseblock; i++) {
+        err = spinand_read_page(g_spinand_flash, (offset / block_size) * g_spinand_flash->info->pages_per_eraseblock + i, s_buff[i], g_spinand_flash->info->page_size,
+                                s_buff[i] + g_spinand_flash->info->page_size, g_spinand_flash->info->oob_size);
+        if (err)
+            printf("Read failed\n");
+    }
+
+    unsigned char *p_temp = s_buff[0];
+    toggle_bit(p_temp, 100);
+    err = spinand_erase(g_spinand_flash, block_offset, block_size);
+    if (err)
+        printf("Erase failed\n");
+
+    if (spinand_set_internal_ecc(g_spinand_flash, 0)) {
+        printf("eccen %d failed\n", 0);
+        return -1;
+    }
+
+    for (i = 0; i < g_spinand_flash->info->pages_per_eraseblock; i++) {
+        err = spinand_write_page(g_spinand_flash, (offset / block_size) * g_spinand_flash->info->pages_per_eraseblock + i, s_buff[i], g_spinand_flash->info->page_size,
+                                s_buff[i] + g_spinand_flash->info->page_size, g_spinand_flash->info->oob_size);
+        if (err)
+            printf("write failed\n");
+    }
+
+    if (spinand_set_internal_ecc(g_spinand_flash, 1)) {
+        printf("eccen %d failed\n", 1);
+        return -1;
+    }
+
+    for (i = 0; i < g_spinand_flash->info->pages_per_eraseblock; i++) {
+        err = spinand_read_page(g_spinand_flash, (offset / block_size) * g_spinand_flash->info->pages_per_eraseblock + i, s_buff[i], g_spinand_flash->info->page_size,
+                                s_buff[i] + g_spinand_flash->info->page_size, g_spinand_flash->info->oob_size);
+        if (err)
+            printf("Read err %d\n", err);
+    }
+
+    for (i = 0; i < g_spinand_flash->info->pages_per_eraseblock; i++) {
+        aicos_free_align(0, s_buff[j]);
+    }
+
+    return 0;
+}
+
 static int do_spinand_init(int argc, char *argv[])
 {
     unsigned long spi_bus;
@@ -310,6 +407,10 @@ static int do_spinand(int argc, char *argv[])
 #endif
     else if (!strncmp(argv[1], "regr", 4))
         return do_spinand_reg_read(argc - 1, &argv[1]);
+    else if (!strncmp(argv[1], "eccen", 5))
+        return do_spinand_eccen(argc - 1, &argv[1]);
+    else if (!strncmp(argv[1], "bitflip", 5))
+        return do_spinand_bit_flip(argc - 1, &argv[1]);
     spinand_help();
     return 0;
 }

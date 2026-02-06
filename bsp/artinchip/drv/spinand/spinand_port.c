@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -18,6 +18,10 @@
 #include "spinand_parts.h"
 #include "spinand_block.h"
 #include <spienc.h>
+
+#ifdef AIC_NAND_REFRESH_SUPPORT
+#include <spinand_refresh.h>
+#endif
 
 static struct rt_mtd_nand_device *g_mtd_partitions;
 static int g_mtd_partitions_cnt;
@@ -390,6 +394,21 @@ static rt_err_t spinand_unmap_user(struct rt_mtd_nand_device *device,
     return result;
 }
 
+static rt_err_t spinand_report_bitflip(struct rt_mtd_nand_device *device, rt_off_t page)
+{
+    rt_err_t result = RT_EOK;
+
+    RT_ASSERT(device != RT_NULL);
+
+#ifdef AIC_NAND_REFRESH_SUPPORT
+    struct aic_spinand *flash = (struct aic_spinand *)device->priv;
+
+    result = spinand_refresh_report_bitflip(flash, page);
+#endif
+
+    return result;
+}
+
 static int nand_read_data(void *dev, unsigned long offset, void *buf,
                           unsigned long len, int spienc_bypass)
 {
@@ -446,7 +465,8 @@ static struct rt_mtd_nand_driver_ops spinand_ops = {
     spinand_mtd_erase,         spinand_mtd_block_isbad,
     spinand_mtd_block_markbad, spinand_mtd_continuous_read,
     spinand_set_block_status, spinand_get_block_status,
-    spinand_map_user, spinand_unmap_user
+    spinand_map_user, spinand_unmap_user,
+    spinand_report_bitflip
 };
 
 static uint32_t get_spinand_bus_id(void)
@@ -521,6 +541,19 @@ rt_err_t rt_hw_mtd_spinand_init(struct aic_spinand *flash)
     }
 
     blocksize = flash->info->page_size * flash->info->pages_per_eraseblock;
+
+#ifdef AIC_NAND_REFRESH_SUPPORT
+    p = parts;
+    for (i = 0; i < cnt; i++) {
+        if (strcmp(p->name, "refresh") == 0) {
+            spinand_refresh_init(flash, p->start, p->size);
+            break;
+        }
+
+        p = p->next;
+    }
+#endif
+
     p = parts;
     for (i = 0; i < cnt; i++) {
         g_mtd_partitions[i].page_size = flash->info->page_size;

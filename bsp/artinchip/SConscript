@@ -19,7 +19,10 @@ if GetDepend('AIC_CMU_DRV'):
     if GetDepend('DRIVER_HAL_EN'):
         src += Glob('hal/cmu/*.c')
         if GetDepend('AIC_CMU_FRAMEWORK_V2'):
-            src += Glob('hal/cmu/v2/*.c')
+            if not GetDepend('AIC_IN_SUSPEND_ENV'):
+                src += Glob('hal/cmu/v2/*.c')
+            else:
+                src += Glob('hal/cmu/v2/*.c', exclude=['hal/cmu/v2/aic_hal_auth_clk.c'])
         else:
             src += Glob('hal/cmu/v1/*.c')
 
@@ -197,8 +200,9 @@ if GetDepend('AIC_AUDIO_DRV') or GetDepend('RING_BUFFER'):
 
 if GetDepend('AIC_PM_DRV'):
     if GetDepend('DRIVER_BARE_DRV_EN'):
-        src += Glob('drv_bare/pm/*.c')
-        src += Glob('drv_bare/pm/se_save_context.S')
+        ver = GetConfigValue('AIC_PM_DRV_VER')
+        ver = ver.replace('"', '')
+        src += Glob('drv_bare/pm/suspend_v%s.S' % ver)
 
 # Display driver
 if GetDepend('AIC_DISPLAY_DRV'):
@@ -293,7 +297,7 @@ if GetDepend('AIC_PANEL_DSI_H013A08'):
 
 if GetDepend('AIC_PANEL_DSI_H016A01'):
     src += Glob('drv/display/panel/panel_dsi_h016a01.c')
-    
+
 if GetDepend('AIC_PANEL_DSI_H024B12'):
     src += Glob('drv/display/panel/panel_dsi_h024b12.c')
 
@@ -383,8 +387,12 @@ if GetDepend('AIC_PANEL_DBI_ST77912'):
 if GetDepend('AIC_PANEL_DBI_CO5300'):
     src += Glob('drv/display/panel/panel_dbi_co5300.c')
 
-if GetDepend('AIC_PANEL_DBI_GC0D01N'):
-    src += Glob('drv/display/panel/panel_dbi_gc9d01n.c')
+if GetDepend('AIC_PANEL_DBI_GC9108'):
+    src += Glob('drv/display/panel/panel_dbi_gc9108.c')
+
+if GetDepend('AIC_PANEL_SPI_GENERAL'):
+    src += Glob('drv/display/panel/panel_spi_general.c')
+
 #
 # RGB Panel Driver SPI Init
 #
@@ -396,6 +404,12 @@ if GetDepend('AIC_PANEL_RGB_NV3052'):
 
 if GetDepend('AIC_PANEL_RGB_ST7703'):
     src += Glob('drv/display/panel/panel_rgb_st7703.c')
+
+if GetDepend('AIC_PANEL_RGB_ST77916'):
+    src += Glob('drv/display/panel/panel_rgb_st77916.c')
+
+if GetDepend('AIC_PANEL_RGB_JD9855'):
+    src += Glob('drv/display/panel/panel_rgb_jd9855.c')
 
 if GetDepend('AIC_PANEL_RGB_GC9A01A'):
     src += Glob('drv/display/panel/panel_rgb_gc9a01a.c')
@@ -537,7 +551,7 @@ if GetDepend('AIC_EPWM_DRV'):
         src += Glob('drv/epwm/*.c')
     if GetDepend('DRIVER_HAL_EN'):
         src += Glob('hal/pwmcs/hal_epwm.c')
-        src += Glob('hal/pwmcs/ewpm_info.c')
+        src += Glob('hal/pwmcs/epwm_info.c')
 
 if GetDepend('AIC_QEP_DRV'):
     if GetDepend('DRIVER_DRV_EN'):

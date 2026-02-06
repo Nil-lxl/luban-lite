@@ -316,6 +316,9 @@ static int aic_dvp_frame_done(struct aic_dvp *dvp, int err)
     list_del(&cur_buf->active_entry);
     aic_dvp_buf_mark_done(dvp, cur_buf, dvp->sequence, err);
 
+    if (!g_dvp.streaming)
+        aicos_sem_give(g_dvp.finished);
+
     return 0;
 }
 
@@ -433,19 +436,30 @@ err_disable_pipeline:
     return ret;
 }
 
+static void aic_dvp_wait_streaming(struct aic_dvp *dvp)
+{
+    if (!dvp->streaming)
+        return;
+
+    dvp->streaming = 0;
+    pr_debug("Wait streaming done\n");
+    if (aicos_sem_take(dvp->finished, 200) < 0)
+        pr_warn("Wait for stop streaming timeout!\n");
+}
+
 static void aic_dvp_stop_streaming(struct vb_queue *q)
 {
     struct aic_dvp *dvp = &g_dvp;
 
     pr_debug("Stopping capture\n");
+    aic_dvp_wait_streaming(dvp);
 
     hal_dvp_capture_stop();
     hal_dvp_enable_int(&dvp->cfg, 0);
     hal_dvp_update_ctl();
 
     /* Release all active buffers */
-    aic_dvp_reclaim_all_buffers(dvp, VB_BUF_STATE_ERROR);
-    dvp->streaming = 0;
+    aic_dvp_reclaim_all_buffers(dvp, VB_BUF_STATE_DONE);
 }
 
 static const struct vb_ops aic_dvp_vb_ops = {
@@ -568,6 +582,8 @@ int aic_dvp_vb_init(void)
         return -1;
 
     INIT_LIST_HEAD(&g_dvp.active_list);
+    if (!g_dvp.finished)
+        g_dvp.finished = aicos_sem_create(0);
 
     return 0;
 }
@@ -608,6 +624,9 @@ int aic_dvp_open(void)
 int aic_dvp_close(void)
 {
     int ret = 0;
+
+    if (g_dvp.streaming)
+        aic_dvp_wait_streaming(&g_dvp);
 
     hal_dvp_enable(&g_dvp.cfg, 0);
 

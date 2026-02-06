@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2023-2024 ArtInChip Technology Co., Ltd
+# Copyright (C) 2023-2025 ArtInChip Technology Co., Ltd
 # Dehuang Wu <dehuang.wu@artinchip.com>
 
 import os
@@ -72,12 +72,12 @@ def aic_create_part_file_string(cfg, start_offs):
         if "size" not in partitions[part]:
             print("No size value for partition: {}".format(part))
         part_offs += part_size
+        if "offset" in partitions[part]:
+            part_offs = size_str_to_int(partitions[part]["offset"])
         if partitions[part]["size"] == "-":
             part_size = total_siz - part_offs
         else:
             part_size = size_str_to_int(partitions[part]["size"])
-        if "offset" in partitions[part]:
-            part_offs = size_str_to_int(partitions[part]["offset"])
         partitions[part]["part_size"] = part_size
         partitions[part]["part_offs"] = part_offs
 
@@ -169,13 +169,13 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--outfile", type=str,
                         help="output partition file")
     args = parser.parse_args()
-    if args.config == None:
+    if args.config is None:
         print('Error, option --config is required.')
         sys.exit(1)
 
     cfg = parse_image_cfg(args.config)
     parts = aic_create_parts_string(cfg)
-    if args.outfile == None:
+    if args.outfile is None:
         print(parts)
     else:
         with open(args.outfile, "w+") as f:

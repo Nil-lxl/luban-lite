@@ -1,5 +1,7 @@
-Porting
+主从驱动
 =========================
+
+.. note:: 请注意，v1.1 版本开始增加 busid 形参，其余保持不变，所以 API 说明不做更新
 
 device controller(dcd)
 -------------------------
@@ -35,6 +37,7 @@ usbd_set_address
 
     int usbd_set_address(const uint8_t addr);
 
+- **addr** 设备地址
 - **return** 返回 0 表示正确，其他表示错误
 
 usbd_ep_open
@@ -44,8 +47,9 @@ usbd_ep_open
 
 .. code-block:: C
 
-    int usbd_ep_open(const struct usbd_endpoint_cfg *ep_cfg);
+    int usbd_ep_open(const struct usb_endpoint_descriptor *ep);
 
+- **ep** 端点描述符
 - **return** 返回 0 表示正确，其他表示错误
 
 usbd_ep_close
@@ -57,7 +61,7 @@ usbd_ep_close
 
     int usbd_ep_close(const uint8_t ep);
 
-- **event**
+- **ep** 端点地址
 - **return** 返回 0 表示正确，其他表示错误
 
 usbd_ep_set_stall
@@ -124,7 +128,9 @@ usbd_ep_start_read
 - **data_len** 接收长度，原则上无限长，推荐 16K 字节以内，并且推荐是最大包长的整数倍
 - **return** 返回 0 表示正确，其他表示错误
 
-.. note:: 启动接收以后，以下两种情况，会进入传输完成中断：1、最后一包为短包；2、接收总长度等于 data_len
+.. note:: 启动接收以后，以下两种情况，会进入传输完成中断：1、最后一包为短包（小于 EP MPS）；2、接收总长度等于 data_len
+
+.. note:: 对于 bulk 传输，data_len 通常设计为 EP MPS，以下三种情况可以修改为多个 EP MPS: 固定长度；自定义协议并携带长度（MSC）; 主机手动发送 ZLP 或者短包（RNDIS）
 
 host controller(hcd)
 ------------------------
@@ -137,6 +143,17 @@ usb_hc_init
 .. code-block:: C
 
     int usb_hc_init(void);
+
+- **return** 返回 0 表示正确，其他表示错误
+
+usb_hc_deinit
+""""""""""""""""""""""""""""""""""""
+
+``usb_hc_deinit`` 用于反初始化 usb host controller 寄存器。 **此函数不对用户开放**。
+
+.. code-block:: C
+
+    int usb_hc_deinit(void);
 
 - **return** 返回 0 表示正确，其他表示错误
 
@@ -207,6 +224,8 @@ usbh_submit_urb
 - **complete** 传输完成回调函数
 - **arg** 传输完成时携带的参数
 - **iso_packet** iso 数据包
+
+.. note:: timeout 如何没有特别对时间的要求，必须设置成 0xffffffff，原则上不允许超时，如果超时了，一般不能再继续工作
 
 `errorcode` 可以返回以下值：
 

@@ -10,8 +10,8 @@
 #include "aic_audio_render_manager.h"
 
 
-#define USBD_VID           0x33C3
-#define USBD_PID           0xffff
+#define USBD_VID           0x3643
+#define USBD_PID           0xf123
 #define USBD_MAX_POWER     100
 #define USBD_LANGID_STRING 1033
 
@@ -184,7 +184,7 @@ static const uint8_t default_sampling_freq_table[] = {
 #define UAC_CTRL_MUTE           BIT(3)
 #define UAC_CTRL_RECONFIG       BIT(4)
 
-void usbd_audio_iso_out_callback(uint8_t ep, uint32_t nbytes);
+void usbd_audio_iso_out_callback(uint8_t busid, uint8_t ep, uint32_t nbytes);
 
 struct audio_volume_mute {
     int  volume;
@@ -238,11 +238,7 @@ void usbd_clear_buffer(void)
     }
 }
 
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-void usbd_comp_uac_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
+static void usbd_uac_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -294,7 +290,7 @@ static void uac_audio_ctrl_set_volume(int volume)
     }
 }
 
-void usbd_audio_set_volume(uint8_t ep, uint8_t ch, int volume)
+void usbd_audio_set_volume(uint8_t busid, uint8_t ep, uint8_t ch, int volume)
 {
     struct uac_msg msg = {UAC_CTRL_SET_VOLUME, volume};
 
@@ -302,12 +298,12 @@ void usbd_audio_set_volume(uint8_t ep, uint8_t ch, int volume)
     rt_mq_send(&g_uac_mq, &msg, sizeof(struct uac_msg));
 }
 
-int usbd_audio_get_volume(uint8_t ep, uint8_t ch)
+int usbd_audio_get_volume(uint8_t busid, uint8_t ep, uint8_t ch)
 {
     return usbd_volume_mute.volume;
 }
 
-void usbd_audio_set_mute(uint8_t ep, uint8_t ch, bool mute)
+void usbd_audio_set_mute(uint8_t busid, uint8_t ep, uint8_t ch, bool mute)
 {
     struct uac_msg msg = {UAC_CTRL_MUTE, 0};
 
@@ -320,12 +316,12 @@ void usbd_audio_set_mute(uint8_t ep, uint8_t ch, bool mute)
         rt_mq_send(&g_uac_mq, &msg, sizeof(struct uac_msg));
 }
 
-bool usbd_audio_get_mute(uint8_t ep, uint8_t ch)
+bool usbd_audio_get_mute(uint8_t busid, uint8_t ep, uint8_t ch)
 {
     return usbd_volume_mute.mute;
 }
 
-void usbd_audio_set_sampling_freq(uint8_t ep, uint32_t sampling_freq)
+void usbd_audio_set_sampling_freq(uint8_t busid, uint8_t ep, uint32_t sampling_freq)
 {
     uint16_t packet_size = 0;
 
@@ -337,7 +333,7 @@ void usbd_audio_set_sampling_freq(uint8_t ep, uint32_t sampling_freq)
     }
 }
 
-void usbd_audio_get_sampling_freq_table(uint8_t ep, uint8_t **sampling_freq_table)
+void usbd_audio_get_sampling_freq_table(uint8_t busid, uint8_t ep, uint8_t **sampling_freq_table)
 {
     if (ep == audio_out_ep.ep_addr) {
         *sampling_freq_table = (uint8_t *)default_sampling_freq_table;
@@ -412,17 +408,17 @@ exit:
 }
 
 
-void usbd_audio_open(uint8_t intf)
+void usbd_audio_open(uint8_t busid, uint8_t intf)
 {
     struct uac_msg msg = {UAC_CTRL_START, 0};
 
     /* setup first out ep read transfer */
-    usbd_ep_start_read(audio_out_ep.ep_addr, read_buffer, AUDIO_OUT_PACKET);
+    usbd_ep_start_read(0, audio_out_ep.ep_addr, read_buffer, AUDIO_OUT_PACKET);
     USB_LOG_DBG("UAC OPEN\r\n");
     rt_mq_send(&g_uac_mq, &msg, sizeof(struct uac_msg));
 }
 
-void usbd_audio_close(uint8_t intf)
+void usbd_audio_close(uint8_t busid, uint8_t intf)
 {
     struct uac_msg msg = {UAC_CTRL_STOP, 0};
 
@@ -431,7 +427,7 @@ void usbd_audio_close(uint8_t intf)
 }
 
 
-void usbd_audio_iso_out_callback(uint8_t ep, uint32_t nbytes)
+void usbd_audio_iso_out_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     struct usbd_uac_t *usbd_audio = &g_usbd_audio;
     if  (!usbd_audio->render || !usbd_audio->transfer_buffer.buffer) {
@@ -441,7 +437,7 @@ void usbd_audio_iso_out_callback(uint8_t ep, uint32_t nbytes)
 
     /*Need drop the uac data when reconfiging audio render*/
     if (g_usbd_audio.reconfig_flag) {
-        usbd_ep_start_read(audio_out_ep.ep_addr, read_buffer, AUDIO_OUT_PACKET);
+        usbd_ep_start_read(0, audio_out_ep.ep_addr, read_buffer, AUDIO_OUT_PACKET);
         return;
     }
 
@@ -450,9 +446,9 @@ void usbd_audio_iso_out_callback(uint8_t ep, uint32_t nbytes)
                                       AUDIO_RENDER_CMD_GET_BYPASS,
                                       NULL)) {
         aic_audio_render_rend(usbd_audio->render, usbd_audio->transfer_buffer.buffer, AUDIO_OUT_PACKET);
-        usbd_ep_start_read(audio_out_ep.ep_addr, usbd_audio->transfer_buffer.buffer, AUDIO_OUT_PACKET);
+        usbd_ep_start_read(0, audio_out_ep.ep_addr, usbd_audio->transfer_buffer.buffer, AUDIO_OUT_PACKET);
     } else {
-        usbd_ep_start_read(audio_out_ep.ep_addr, read_buffer, AUDIO_OUT_PACKET);
+        usbd_ep_start_read(0, audio_out_ep.ep_addr, read_buffer, AUDIO_OUT_PACKET);
     }
 }
 
@@ -510,9 +506,9 @@ int usbd_comp_uac_init(uint8_t *ep_table, void *data)
     audio_entity_table[0].ep = ep_table[0];
     audio_entity_table[1].ep = ep_table[0];
     audio_out_ep.ep_addr = ep_table[0];
-    usbd_add_interface(usbd_audio_init_intf(&uac_intf0, 0x0200, audio_entity_table, 2));
-    usbd_add_interface(usbd_audio_init_intf(&uac_intf1, 0x0200, audio_entity_table, 2));
-    usbd_add_endpoint(&audio_out_ep);
+    usbd_add_interface(0,usbd_audio_init_intf(0,&uac_intf0, 0x0200, audio_entity_table, 2));
+    usbd_add_interface(0,usbd_audio_init_intf(0,&uac_intf1, 0x0200, audio_entity_table, 2));
+    usbd_add_endpoint(0, &audio_out_ep);
     return 0;
 }
 #endif
@@ -543,14 +539,14 @@ int usbd_audio_v2_init(void)
         rt_thread_startup(usbd_audio->usb_audio_tid);
 
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_desc_register(audio_v2_descriptor);
-    usbd_add_interface(usbd_audio_init_intf(&uac_intf0, 0x0200, audio_entity_table, 2));
-    usbd_add_interface(usbd_audio_init_intf(&uac_intf1, 0x0200, audio_entity_table, 2));
-    usbd_add_endpoint(&audio_out_ep);
-    usbd_initialize();
+    usbd_desc_register(0, audio_v2_descriptor);
+    usbd_add_interface(0, usbd_audio_init_intf(0, &uac_intf0, 0x0200, audio_entity_table, 2));
+    usbd_add_interface(0, usbd_audio_init_intf(0, &uac_intf1, 0x0200, audio_entity_table, 2));
+    usbd_add_endpoint(0, &audio_out_ep);
+    usbd_initialize(0, USB_DEV_BASE, usbd_uac_event_handler);
 #else
     usbd_comp_func_register(audio_v2_descriptor,
-                            usbd_comp_uac_event_handler,
+                            usbd_uac_event_handler,
                             usbd_comp_uac_init, "uac");
 #endif
 
@@ -562,7 +558,7 @@ int usbd_audio_v2_deinit(void)
     struct usbd_uac_t *usbd_audio = &g_usbd_audio;
 
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_deinitialize();
+    usbd_deinitialize(0);
 #else
     usbd_comp_func_release(audio_v2_descriptor, "uac");
 #endif

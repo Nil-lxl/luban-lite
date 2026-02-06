@@ -20,7 +20,7 @@ static void platform_pwr_wifi_pin_set(int on)
 
 void platform_pwr_wifi_pin_init(void)
 {
-    wifi_pwrkey_pin = hal_gpio_name2pin(AIC_DEV_AIC8800_WLAN0_PWR_GPIO);
+    wifi_pwrkey_pin = hal_gpio_name2pin(AIC_WIRELESS_PWR_GPIO);
     if (wifi_pwrkey_pin > 0) {
         hal_gpio_direction_output(GPIO_GROUP(wifi_pwrkey_pin),
                                   GPIO_GROUP_PIN(wifi_pwrkey_pin));

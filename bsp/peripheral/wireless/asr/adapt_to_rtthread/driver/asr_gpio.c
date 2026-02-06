@@ -11,7 +11,7 @@ unsigned int wifi_reset_pin = 0;
 
 int asr_gpio_init(void)
 {
-    wifi_reset_pin = hal_gpio_name2pin(AIC_DEV_ASR_RST_GPIO);
+    wifi_reset_pin = hal_gpio_name2pin(AIC_WIRELESS_PWR_GPIO);
     if (wifi_reset_pin > 0)
         hal_gpio_direction_output(GPIO_GROUP(wifi_reset_pin),
                                   GPIO_GROUP_PIN(wifi_reset_pin));

@@ -335,6 +335,48 @@ void dsi_set_vm(void *base, enum dsi_mode mode, enum dsi_format format,
         DSI_VID_VACT_TIME(timing->vactive));
 }
 
+static void dsi_cmd_set_dt(void *base, u32 dt)
+{
+    switch (dt) {
+    case DSI_DT_GEN_WR_P0:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_GEN_SW_0P);
+        break;
+    case DSI_DT_GEN_WR_P1:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_GEN_SW_1P);
+        break;
+    case DSI_DT_GEN_WR_P2:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_GEN_SW_2P);
+        break;
+    case DSI_DT_GEN_RD_P0:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_GEN_SR_0P);
+        break;
+    case DSI_DT_GEN_RD_P1:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_GEN_SR_1P);
+        break;
+    case DSI_DT_GEN_RD_P2:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_GEN_SR_2P);
+        break;
+    case DSI_DT_GEN_LONG_WR:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_GEN_LW);
+        break;
+    case DSI_DT_DCS_WR_P0:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_DCS_SW_0P);
+        break;
+    case DSI_DT_DCS_WR_P1:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_DCS_SW_1P);
+        break;
+    case DSI_DT_DCS_RD_P0:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_DCS_SR_0P);
+        break;
+    case DSI_DT_DCS_LONG_WR:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_DCS_LW);
+        break;
+    case DSI_DT_MAX_RET_SIZE:
+        reg_set_bit(base, DSI_CMD_MODE_CFG_MAX_RD_PKG_SIZE);
+        break;
+    }
+}
+
 void dsi_cmd_wr(void *base, u32 dt, u32 vc, const u8 *data, u32 len)
 {
     const u8 *p = data;
@@ -357,6 +399,7 @@ void dsi_cmd_wr(void *base, u32 dt, u32 vc, const u8 *data, u32 len)
     case DSI_DT_GEN_WR_P2:
     case DSI_DT_GEN_RD_P2:
     case DSI_DT_DCS_WR_P1:
+    case DSI_DT_MAX_RET_SIZE:
         d0 = *p++; d1 = *p++; i = 2;
         break;
     case DSI_DT_GEN_LONG_WR:
@@ -368,41 +411,7 @@ void dsi_cmd_wr(void *base, u32 dt, u32 vc, const u8 *data, u32 len)
         break;
     }
 
-    switch (dt) {
-    case DSI_DT_GEN_WR_P0:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_GEN_SW_0P);
-        break;
-    case DSI_DT_GEN_WR_P1:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_GEN_SW_1P);
-        break;
-    case DSI_DT_GEN_WR_P2:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_GEN_SW_2P);
-        break;
-    case DSI_DT_GEN_RD_P0:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_GEN_SR_0P);
-        break;
-    case DSI_DT_GEN_RD_P1:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_GEN_SR_1P);
-        break;
-    case DSI_DT_GEN_RD_P2:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_GEN_SR_2P);
-        break;
-    case DSI_DT_GEN_LONG_WR:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_GEN_LW);
-        break;
-    case DSI_DT_DCS_WR_P0:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_DCS_SW_0P);
-        break;
-    case DSI_DT_DCS_WR_P1:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_DCS_SW_1P);
-        break;
-    case DSI_DT_DCS_RD_P0:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_DCS_SR_0P);
-        break;
-    case DSI_DT_DCS_LONG_WR:
-        reg_set_bit(CMDCFG, DSI_CMD_MODE_CFG_DCS_LW);
-        break;
-    }
+    dsi_cmd_set_dt(CMDCFG, dt);
 
     if (dt == DSI_DT_GEN_RD_P0 || dt == DSI_DT_GEN_RD_P1 ||
         dt == DSI_DT_GEN_RD_P2 || dt == DSI_DT_DCS_RD_P0) {

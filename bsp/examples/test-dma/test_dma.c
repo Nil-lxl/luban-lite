@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <string.h>
 #if defined(RT_USING_FINSH)
 #include <finsh.h>
@@ -32,30 +38,42 @@ static void dma_test_cb(void *param)
 
 static void cmd_test_dma_memcpy(int argc, char **argv)
 {
-    struct dma_chan *chan = NULL;
-    u32 test_len = 0, align_len = 0;
+    u32 test_len = 0, align_len = 0, align_test = 0, mem_len = 0;
+    char *src_store = NULL, *dest_store = NULL;
     char *src = NULL, *dest = NULL;
-    int ret = 0, i;
+    struct dma_chan *chan = NULL;
+    int ret = 0, i = 0;
     u32 size = 0;
+
 #ifdef RT_USING_POSIX_CLOCK
     struct timespec start = {0}, end = {0};
     float speed = 0.0;
 #endif
 
-    if (argc != 2) {
+    if (argc < 2) {
         pr_err("Invalid parameter\n");
+        pr_err("test_dma_memcpy <len> [align]\n");
+        pr_err("test_dma_memcpy 65536 4\n");
         return;
     }
     test_len = atoi(argv[1]);
 
-    align_len = roundup(test_len, CACHE_LINE_SIZE);
+    if (argc >= 3)
+        align_test = atoi(argv[2]);
 
-    src = aicos_malloc_align(0, align_len, CACHE_LINE_SIZE);
-    dest = aicos_malloc_align(0, align_len, CACHE_LINE_SIZE);
-    if ((src == NULL) || (dest == NULL)){
+    align_len = roundup(test_len, CACHE_LINE_SIZE);
+    mem_len = align_len + 64;
+
+    src = aicos_malloc_align(0, mem_len, CACHE_LINE_SIZE);
+    dest = aicos_malloc_align(0, mem_len, CACHE_LINE_SIZE);
+    if ((src == NULL) || (dest == NULL)) {
         pr_err("Alloc %d mem fail!\n ", align_len);
         goto free_mem;
     }
+    src_store = src;
+    dest_store = dest;
+    src += align_test;
+    dest += align_test;
 
     printf("DMA memcpy test: from 0x%lx to 0x%lx, len %d/%d\n",
            (unsigned long)src, (unsigned long)dest, test_len, align_len);
@@ -70,37 +88,38 @@ static void cmd_test_dma_memcpy(int argc, char **argv)
 #endif
 
     chan = dma_request_channel();
-    if (chan == NULL){
+    if (chan == NULL) {
         pr_err("Alloc dma chan fail!\n ");
         goto free_mem;
     }
 
     ret = dmaengine_prep_dma_memcpy(chan, (unsigned long)dest, (unsigned long)src, align_len);
-    if (ret){
+    if (ret) {
         pr_err("dmaengine_prep_dma_memcpy fail! ret = %d\n ", ret);
         goto free_chan;
     }
 
     ret = dmaengine_submit(chan, dma_test_cb, chan);
-    if (ret){
+    if (ret) {
         pr_err("dmaengine_submit fail! ret = %d\n ", ret);
         goto free_chan;
     }
 
     dma_async_issue_pending(chan);
 
-    while (dmaengine_tx_status(chan, &size) != DMA_COMPLETE);
+    while (dmaengine_tx_status(chan, &size) != DMA_COMPLETE) {}
     aicos_dcache_invalid_range(dest, align_len);
 
 #ifdef RT_USING_POSIX_CLOCK
     clock_gettime(CLOCK_REALTIME, &end);
 #endif
 
-    for (i = 0;i < test_len; i++){
-        if (dest[i] != src[i]){
+    for (i = 0;i < test_len; i++) {
+        if (dest[i] != src[i]) {
             printf("Error 0x%lx -> 0x%lx: expect 0x%x, actual 0x%x\n",
                    i + (ptr_t)src, i + (ptr_t)dest, src[i], dest[i]);
             ret = -1;
+            break;
         }
     }
 
@@ -119,15 +138,14 @@ free_chan:
     if (chan)
         dma_release_channel(chan);
 free_mem:
-    if (src)
-        aicos_free_align(0, src);
-    if (dest)
-        aicos_free_align(0, dest);
+    if (src_store)
+        aicos_free_align(0, src_store);
+    if (dest_store)
+        aicos_free_align(0, dest_store);
 }
 
 #if defined(RT_USING_FINSH)
-MSH_CMD_EXPORT_ALIAS(cmd_test_dma_memcpy, test_dma_memcpy,
-                     Test DMA memcpy. Argument: length);
+MSH_CMD_EXPORT_ALIAS(cmd_test_dma_memcpy, test_dma_memcpy, Test DMA memcpy. Argument: length);
 #elif defined(AIC_CONSOLE_BARE_DRV)
 #include <console.h>
 
@@ -167,7 +185,7 @@ static void cmd_test_dma_memset(int argc, char **argv)
     align_len = roundup(test_len, CACHE_LINE_SIZE);
 
     dest = aicos_malloc_align(0, align_len, CACHE_LINE_SIZE);
-    if ((dest == NULL)){
+    if ((dest == NULL)) {
         pr_err("Alloc %d mem fail!\n ", align_len);
         goto free_mem;
     }
@@ -181,34 +199,34 @@ static void cmd_test_dma_memset(int argc, char **argv)
 #endif
 
     chan = dma_request_channel();
-    if (chan == NULL){
+    if (chan == NULL) {
         printf("Alloc dma chan fail!\n ");
         goto free_mem;
     }
 
     ret = dmaengine_prep_dma_memset(chan, (unsigned long)dest, test_val, align_len);
-    if (ret){
+    if (ret) {
         pr_err("hal_dma_chan_prep_memset fail! ret = %d\n ", ret);
         goto free_chan;
     }
 
     ret = dmaengine_submit(chan, dma_test_cb, chan);
-    if (ret){
+    if (ret) {
         pr_err("dmaengine_submit fail! ret = %d\n ", ret);
         goto free_chan;
     }
 
     dma_async_issue_pending(chan);
 
-    while (dmaengine_tx_status(chan, &size) != DMA_COMPLETE);
+    while (dmaengine_tx_status(chan, &size) != DMA_COMPLETE) {}
     aicos_dcache_invalid_range(dest, align_len);
 #ifdef RT_USING_POSIX_CLOCK
     clock_gettime(CLOCK_REALTIME, &end);
 #endif
 
     val = (char *)&test_val;
-    for (i = 0;i < test_len; i++){
-        if (dest[i] != val[i%4]){
+    for (i = 0;i < test_len; i++) {
+        if (dest[i] != val[i%4]) {
             printf("Error 0x%lx: expect 0x%x, actual 0x%x\n",
                    i + (ptr_t)dest, val[i%4], dest[i]);
             ret = -1;
@@ -235,8 +253,7 @@ free_mem:
 }
 
 #if defined(RT_USING_FINSH)
-MSH_CMD_EXPORT_ALIAS(cmd_test_dma_memset, test_dma_memset,
-                     Test DMA memset. Argument: Value Length);
+MSH_CMD_EXPORT_ALIAS(cmd_test_dma_memset, test_dma_memset, Test DMA memset. Argument: Value Length);
 #elif defined(AIC_CONSOLE_BARE_DRV)
 #include <console.h>
 
@@ -249,6 +266,87 @@ static int test_dma_memset(int argc, char *argv[])
 CONSOLE_CMD(test_dma_memset, test_dma_memset, "Test DMA memset. Argument: Value Length.");
 #endif
 
+#if defined(RT_USING_FINSH)
+int time_max = 1;
+int s_time = 1;
+int s_len = 0;
 
+static void do_dma_memcpy(int test_len, int max_time, int time);
+
+static void dma_test_cbs(void *param)
+{
+	struct dma_chan *chan = (struct dma_chan *)param;
+
+    printf("   release %u time: %d\n", chan->chan.ch_nr, s_time);
+
+    if (chan)
+        dma_release_channel(chan);
+
+    if (s_time < time_max) {
+        s_time+= 1;
+        do_dma_memcpy(s_len, time_max, s_time);
+    }
+}
+
+static void do_dma_memcpy(int test_len, int max_time, int time)
+{
+    char *src = NULL, *dest = NULL;
+    struct dma_chan *chan = NULL;
+    int ret = 0, i;
+
+    src = aicos_malloc_align(MEM_CMA, test_len, CACHE_LINE_SIZE);
+    dest = aicos_malloc_align(MEM_CMA, test_len, CACHE_LINE_SIZE);
+    if ((src == NULL) || (dest == NULL)) {
+        pr_err("Alloc %d mem fail!\n ", test_len);
+        return;
+    }
+
+    for (i = 0;i < test_len; i++) {
+        src[i] = i & 0xff;
+        dest[i] = 0x55;
+    }
+
+    chan = dma_request_channel();
+    if (chan == NULL) {
+        pr_err("Alloc dma chan fail!\n ");
+        return;
+    }
+    printf("request %u from 0x%lx to 0x%lx\n", chan->chan.ch_nr, (unsigned long)src, (unsigned long)dest);
+
+    ret = dmaengine_prep_dma_memcpy(chan, (unsigned long)dest, (unsigned long)src, test_len);
+    if (ret) {
+        pr_err("dmaengine_prep_dma_memcpy fail! ret = %d\n ", ret);
+        return;
+    }
+
+    ret = dmaengine_submit(chan, dma_test_cbs, chan);
+    if (ret) {
+        pr_err("dmaengine_submit fail! ret = %d\n ", ret);
+        return;
+    }
+
+    dma_async_issue_pending(chan);
+}
+
+static void cmd_test_dma_memcpys(int argc, char **argv)
+{
+
+    s_time = 0;
+    if (argc < 2) {
+        pr_info("Invalid parameter\n");
+        pr_info("test_dma_memcpy <len> [times]\n");
+        pr_info("test_dma_memcpy 65536 4\n");
+        return;
+    }
+    s_len = atoi(argv[1]);
+
+    if (argc >= 3)
+        time_max = atoi(argv[2]);
+
+    do_dma_memcpy(s_len, time_max, s_time);
+}
+
+MSH_CMD_EXPORT_ALIAS(cmd_test_dma_memcpys, test_dma_memcpys, Test DMA memcpy. Argument: length);
+#endif
 #endif
 

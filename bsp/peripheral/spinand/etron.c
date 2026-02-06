@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,11 +17,29 @@ static int em73c044vcf_ecc_get_status(struct aic_spinand *flash, u8 status)
         case STATUS_ECC_NO_BITFLIPS:
             return 0;
         case STATUS_ECC_HAS_1_4_BITFLIPS:
-            return 4;
+            return 1;
         case STATUS_ECC_UNCOR_ERROR:
             return -SPINAND_ERR_ECC;
         case STATUS_ECC_MASK:
             return 4;
+        default:
+            break;
+    }
+
+    return -SPINAND_ERR;
+}
+
+static int em73c044vco_e_ecc_get_status(struct aic_spinand *flash, u8 status)
+{
+    switch (status & STATUS_ECC_MASK) {
+        case STATUS_ECC_NO_BITFLIPS:
+            return 0;
+        case STATUS_ECC_HAS_1_4_BITFLIPS:
+            return 4;
+        case STATUS_ECC_UNCOR_ERROR:
+            return -SPINAND_ERR_ECC;
+        case STATUS_ECC_MASK:
+            return 8;
         default:
             break;
     }
@@ -59,15 +77,15 @@ const struct aic_spinand_info etron_spinand_table[] = {
     /*EM73C044VCF-H*/
     { DEVID(0x25), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "etron 128MB: 2048+64@64@1024", cmd_cfg_table,
-      em73c044vcf_ecc_get_status, em73c_ooblayout_user },
+      em73c044vcf_ecc_get_status, em73c_ooblayout_user, 4 },
     /*EM73D044VCO-H*/
     { DEVID(0x3A), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64),
       PLANENUM(1), DIE(0), "etron 256MB: 2048+128@64@2048", cmd_cfg_table,
-      em73c044vcf_ecc_get_status, em73d_ooblayout_user },
+      em73c044vco_e_ecc_get_status, em73d_ooblayout_user, 8 },
     /*EM73E044VCE-H*/
     { DEVID(0x3B), PAGESIZE(2048), OOBSIZE(128), BPL(4096), PPB(64),
       PLANENUM(1), DIE(0), "etron 512MB: 2048+128@64@4096", cmd_cfg_table,
-      em73c044vcf_ecc_get_status, em73d_ooblayout_user },
+      em73c044vco_e_ecc_get_status, em73d_ooblayout_user, 8 },
 };
 
 const struct aic_spinand_info *etron_spinand_detect(struct aic_spinand *flash)

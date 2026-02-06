@@ -10,8 +10,8 @@ config AIC_MPP_PLAYER_INTERFACE
     select AIC_AUDIO_DRV
     select RT_USING_PTHREADS
 
-config AIC_MPP_PLAYER_VE_USE_FILL_FB
-    bool "Enable player ve use fill fb"
+config AIC_MPP_PLAYER_VIDEO_EXT_RENDER
+    bool "Enable player using external video render"
     default n
     depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
 
@@ -19,6 +19,29 @@ config AIC_MPP_PLAYER_AUDIO_RENDER_SHARE_TEST
     bool "Enable player audio render share test"
     default n
     depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+
+config AIC_MPP_PLAYER_DECODE_DELAY
+    bool "Enable player decoder delay decode"
+    default n
+    depends on LPKG_MPP && AIC_MPP_PLAYER_INTERFACE
+
+if AIC_MPP_PLAYER_DECODE_DELAY
+    config AIC_MPP_PLAYER_VIDEO_DECODE_BUF_SIZE
+        int "Player video decoder stream buffer size"
+        default 3145728
+
+    config AIC_MPP_PLAYER_VIDEO_DECODE_PACKET_NUM
+        int "Player video decoder stream packet number"
+        default 48
+
+    config AIC_MPP_PLAYER_AUDIO_DECODE_BUF_SIZE
+        int "Player audio decoder stream buffer size"
+        default 131072
+
+    config AIC_MPP_PLAYER_AUDIO_DECODE_PACKET_NUM
+        int "Player audio decoder stream packet number"
+        default 96
+endif
 
 config AIC_MPP_PLAYER_FILE_CACHE
     bool "Enable player read file using cache"
@@ -79,8 +102,14 @@ config AIC_MPP_RECORDER_INTERFACE
     default n
     depends on LPKG_MPP
     select LPKG_USING_MAD
+    select LPKG_USING_CJSON
     select AIC_AUDIO_DRV
     select RT_USING_PTHREADS
+
+config AIC_MPP_RECORDER_USING_EXTRA_FRAME
+    bool "Enable recorder using extra frame"
+    default y
+    depends on AIC_MPP_RECORDER_INTERFACE
 
 config AIC_MPP_VIN
     bool "Enable Video Input interface"
@@ -109,6 +138,11 @@ config AIC_MPP_VE_TEST
 
 config AIC_MPP_GE_TEST
     bool "Enable MPP GE test programs"
+    default n
+    depends on LPKG_MPP
+
+config AIC_MPP_PARSER_TEST
+    bool "Enable MPP parser test programs"
     default n
     depends on LPKG_MPP
 

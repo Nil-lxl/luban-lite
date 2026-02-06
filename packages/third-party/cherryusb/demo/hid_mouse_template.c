@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, sakumisu
+ * Copyright (c) 2024, sakumisu
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,10 +9,10 @@
 /*!< endpoint address */
 #define HID_INT_EP          0x81
 #define HID_INT_EP_SIZE     4
-#define HID_INT_EP_INTERVAL 10
+#define HID_INT_EP_INTERVAL 1
 
-#define USBD_VID           0x33C3
-#define USBD_PID           0x6789
+#define USBD_VID           0xffff
+#define USBD_PID           0xffff
 #define USBD_MAX_POWER     100
 #define USBD_LANGID_STRING 1033
 
@@ -21,6 +21,101 @@
 /*!< report descriptor size */
 #define HID_MOUSE_REPORT_DESC_SIZE 74
 
+#ifdef CONFIG_USBDEV_ADVANCE_DESC
+static const uint8_t device_descriptor[] = {
+    USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0x00, 0x00, 0x00, USBD_VID, USBD_PID, 0x0002, 0x01)
+};
+
+static const uint8_t config_descriptor[] = {
+    USB_CONFIG_DESCRIPTOR_INIT(USB_HID_CONFIG_DESC_SIZ, 0x01, 0x01, USB_CONFIG_BUS_POWERED, USBD_MAX_POWER),
+
+    /************** Descriptor of Joystick Mouse interface ****************/
+    /* 09 */
+    0x09,                          /* bLength: Interface Descriptor size */
+    USB_DESCRIPTOR_TYPE_INTERFACE, /* bDescriptorType: Interface descriptor type */
+    0x00,                          /* bInterfaceNumber: Number of Interface */
+    0x00,                          /* bAlternateSetting: Alternate setting */
+    0x01,                          /* bNumEndpoints */
+    0x03,                          /* bInterfaceClass: HID */
+    0x01,                          /* bInterfaceSubClass : 1=BOOT, 0=no boot */
+    0x02,                          /* nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse */
+    0,                             /* iInterface: Index of string descriptor */
+    /******************** Descriptor of Joystick Mouse HID ********************/
+    /* 18 */
+    0x09,                    /* bLength: HID Descriptor size */
+    HID_DESCRIPTOR_TYPE_HID, /* bDescriptorType: HID */
+    0x11,                    /* bcdHID: HID Class Spec release number */
+    0x01,
+    0x00,                       /* bCountryCode: Hardware target country */
+    0x01,                       /* bNumDescriptors: Number of HID class descriptors to follow */
+    0x22,                       /* bDescriptorType */
+    HID_MOUSE_REPORT_DESC_SIZE, /* wItemLength: Total length of Report descriptor */
+    0x00,
+    /******************** Descriptor of Mouse endpoint ********************/
+    /* 27 */
+    0x07,                         /* bLength: Endpoint Descriptor size */
+    USB_DESCRIPTOR_TYPE_ENDPOINT, /* bDescriptorType: */
+    HID_INT_EP,                   /* bEndpointAddress: Endpoint Address (IN) */
+    0x03,                         /* bmAttributes: Interrupt endpoint */
+    HID_INT_EP_SIZE,              /* wMaxPacketSize: 4 Byte max */
+    0x00,
+    HID_INT_EP_INTERVAL, /* bInterval: Polling Interval */
+    /* 34 */
+};
+
+static const uint8_t device_quality_descriptor[] = {
+    ///////////////////////////////////////
+    /// device qualifier descriptor
+    ///////////////////////////////////////
+    0x0a,
+    USB_DESCRIPTOR_TYPE_DEVICE_QUALIFIER,
+    0x00,
+    0x02,
+    0x00,
+    0x00,
+    0x00,
+    0x40,
+    0x00,
+    0x00,
+};
+
+static const char *string_descriptors[] = {
+    (const char[]){ 0x09, 0x04 }, /* Langid */
+    "CherryUSB",                  /* Manufacturer */
+    "CherryUSB HID DEMO",         /* Product */
+    "2022123456",                 /* Serial Number */
+};
+
+static const uint8_t *device_descriptor_callback(uint8_t speed)
+{
+    return device_descriptor;
+}
+
+static const uint8_t *config_descriptor_callback(uint8_t speed)
+{
+    return config_descriptor;
+}
+
+static const uint8_t *device_quality_descriptor_callback(uint8_t speed)
+{
+    return device_quality_descriptor;
+}
+
+static const char *string_descriptor_callback(uint8_t speed, uint8_t index)
+{
+    if (index > 3) {
+        return NULL;
+    }
+    return string_descriptors[index];
+}
+
+const struct usb_descriptor hid_descriptor = {
+    .device_descriptor_callback = device_descriptor_callback,
+    .config_descriptor_callback = config_descriptor_callback,
+    .device_quality_descriptor_callback = device_quality_descriptor_callback,
+    .string_descriptor_callback = string_descriptor_callback
+};
+#else
 /*!< global descriptor */
 const uint8_t hid_descriptor[] = {
     USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0x00, 0x00, 0x00, USBD_VID, USBD_PID, 0x0002, 0x01),
@@ -126,22 +221,12 @@ const uint8_t hid_descriptor[] = {
     0x00,
     0x00,
     0x40,
-    0x01,
     0x00,
-    ///////////////////////////////////////
-    /// Other Speed Configuration Descriptor
-    ///////////////////////////////////////
-    0x09,
-    USB_DESCRIPTOR_TYPE_OTHER_SPEED,
-    WBVAL(USB_HID_CONFIG_DESC_SIZ),
-    0x01,
-    0x01,
     0x00,
-    USB_CONFIG_BUS_POWERED,
-    USB_CONFIG_POWER_MA(USBD_MAX_POWER),
 #endif
     0x00
 };
+#endif
 
 /*!< hid mouse report descriptor */
 static const uint8_t hid_mouse_report_desc[HID_MOUSE_REPORT_DESC_SIZE] = {
@@ -210,7 +295,7 @@ static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX struct hid_mouse mouse_cfg;
 /*!< hid state ! Data can be sent only when state is idle  */
 static volatile uint8_t hid_state = HID_STATE_IDLE;
 
-void usbd_event_handler(uint8_t event)
+static void usbd_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -224,6 +309,7 @@ void usbd_event_handler(uint8_t event)
         case USBD_EVENT_SUSPEND:
             break;
         case USBD_EVENT_CONFIGURED:
+            hid_state = HID_STATE_IDLE;
             break;
         case USBD_EVENT_SET_REMOTE_WAKEUP:
             break;
@@ -236,7 +322,7 @@ void usbd_event_handler(uint8_t event)
 }
 
 /* function ------------------------------------------------------------------*/
-static void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
+static void usbd_hid_int_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     hid_state = HID_STATE_IDLE;
 }
@@ -249,13 +335,17 @@ static struct usbd_endpoint hid_in_ep = {
 
 struct usbd_interface intf0;
 
-void hid_mouse_init(void)
+void hid_mouse_init(uint8_t busid, uintptr_t reg_base)
 {
-    usbd_desc_register(hid_descriptor);
-    usbd_add_interface(usbd_hid_init_intf(&intf0, hid_mouse_report_desc, HID_MOUSE_REPORT_DESC_SIZE));
-    usbd_add_endpoint(&hid_in_ep);
+#ifdef CONFIG_USBDEV_ADVANCE_DESC
+    usbd_desc_register(busid, &hid_descriptor);
+#else
+    usbd_desc_register(busid, hid_descriptor);
+#endif
+    usbd_add_interface(busid, usbd_hid_init_intf(busid, &intf0, hid_mouse_report_desc, HID_MOUSE_REPORT_DESC_SIZE));
+    usbd_add_endpoint(busid, &hid_in_ep);
 
-    usbd_initialize();
+    usbd_initialize(busid, reg_base, usbd_event_handler);
 
     /*!< init mouse report data */
     mouse_cfg.buttons = 0;
@@ -264,28 +354,65 @@ void hid_mouse_init(void)
     mouse_cfg.y = 0;
 }
 
-/**
-  * @brief            hid mouse test
-  * @pre              none
-  * @param[in]        none
-  * @retval           none
-  */
-void hid_mouse_test(void)
+#define CURSOR_STEP  2U
+#define CURSOR_WIDTH 20U
+
+void draw_circle(uint8_t *buf)
 {
+    static int32_t move_cnt = 0;
+    static uint8_t step_x_y = 0;
+    static int8_t x = 0, y = 0;
+
+    move_cnt++;
+    if (move_cnt > CURSOR_WIDTH) {
+        step_x_y++;
+        step_x_y = step_x_y % 4;
+        move_cnt = 0;
+    }
+    switch (step_x_y) {
+        case 0: {
+            y = 0;
+            x = CURSOR_STEP;
+
+        } break;
+
+        case 1: {
+            x = 0;
+            y = CURSOR_STEP;
+
+        } break;
+
+        case 2: {
+            y = 0;
+            x = (int8_t)(-CURSOR_STEP);
+
+        } break;
+
+        case 3: {
+            x = 0;
+            y = (int8_t)(-CURSOR_STEP);
+
+        } break;
+    }
+
+    buf[0] = 0;
+    buf[1] = x;
+    buf[2] = y;
+    buf[3] = 0;
+}
+
+/* https://cps-check.com/cn/polling-rate-check */
+void hid_mouse_test(uint8_t busid)
+{
+    if(usb_device_is_configured(busid) == false) {
+        return;
+    }
+
     int counter = 0;
-
-    usbd_send_remote_wakeup();
-
     while (counter < 1000) {
-        /*!< move mouse pointer */
-        mouse_cfg.x += 40;
-        mouse_cfg.y += 0;
-
-        int ret = usbd_ep_start_write(HID_INT_EP, (uint8_t *)&mouse_cfg, 4);
-        if (ret < 0) {
-            return;
-        }
+        draw_circle((uint8_t *)&mouse_cfg);
         hid_state = HID_STATE_BUSY;
+        usbd_ep_start_write(busid, HID_INT_EP, (uint8_t *)&mouse_cfg, 4);
         while (hid_state == HID_STATE_BUSY) {
         }
 
@@ -299,7 +426,7 @@ void hid_mouse_test(void)
 
 int usbd_hid_mouse_init(void)
 {
-    hid_mouse_init();
+    hid_mouse_init(0, USB_DEV_BASE);
     return 0;
 }
 INIT_DEVICE_EXPORT(usbd_hid_mouse_init);
@@ -309,7 +436,7 @@ INIT_DEVICE_EXPORT(usbd_hid_mouse_init);
 
 int test_usbd_hid_mouse(int argc, char **argv)
 {
-    hid_mouse_test();
+    hid_mouse_test(0);
     return 0;
 }
 MSH_CMD_EXPORT_ALIAS(test_usbd_hid_mouse, test_usbd_hid_mouse, test usb device hid mouse);

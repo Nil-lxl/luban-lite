@@ -533,7 +533,7 @@ int dfs_mount_table_prio1(void)
 }
 
 INIT_ENV_EXPORT(dfs_mount_table_prio0);
-INIT_LATE_APP_EXPORT(dfs_mount_table_prio1);
+INIT_APP_LEVEL_EXPORT(dfs_mount_table_prio1, 1);
 
 int dfs_mount_device(rt_device_t dev)
 {

@@ -9,6 +9,7 @@ src     = ['linpack.c']
 path    = [cwd + '/']
 
 LOCAL_CCFLAGS = ''
+LOCAL_CCFLAGS += ' -O3'
 
 group = DefineGroup('linpack', src, depend = ['LPKG_USING_LINPACK'], CPPPATH = path, LOCAL_CCFLAGS = LOCAL_CCFLAGS)
 

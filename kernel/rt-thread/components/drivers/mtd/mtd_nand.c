@@ -199,4 +199,16 @@ rt_err_t rt_mtd_nand_unmap_user(
     return device->ops->unmap_user(device, dst, src, start, nbytes);
 }
 
+rt_err_t rt_mtd_nand_report_bitflip(struct rt_mtd_nand_device *device, rt_off_t page)
+{
+    if (device->ops->report_bitflip)
+    {
+        return device->ops->report_bitflip(device, page);
+    }
+    else
+    {
+        return -RT_ENOSYS;
+    }
+}
+
 #endif /* RT_USING_MTD_NAND */

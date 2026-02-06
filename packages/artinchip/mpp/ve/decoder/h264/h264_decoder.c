@@ -50,41 +50,6 @@ static int find_startcode(unsigned char* buf, int len)
 	return i == len-2 ? -1 : 0;
 }
 
-/**
-* @dst: [out] remove eptb buffer
-* @offset: [out] offset of first 0x03 byte in eptb
-* @src: [in]  input data
-* @len: [in]  length of input buffer
-* return: remove bytes number
-*/
-static int remove_eptb(unsigned char* dst, int* offset, unsigned char* src, int len)
-{
-	int si = 0;
-	int di = 0;
-	while(si+2<len && si<RBSP_BYTES) {
-		if(src[si+2] > 3) {
-			dst[di++] = src[si++];
-			dst[di++] = src[si++];
-		} else if(src[si]==0 && src[si+1]==0 && src[si+2]!=0) {
-			if(src[si+2] == 3) { // escape, remove 0x03
-				dst[di++] = 0;
-				dst[di++] = 0;
-				*offset = si+2;
-				si += 3;
-				continue;
-			} else { // next start code
-				break;
-			}
-		}
-		dst[di++] = src[si++];
-	}
-
-	while(si < len && si<RBSP_BYTES)
-		dst[di++] = src[si++];
-
-	return si-di;
-}
-
 static int process_extradata(struct h264_dec_ctx *s, unsigned char* buf, int len)
 {
 	int i, cnt, nal_size;
@@ -104,7 +69,7 @@ static int process_extradata(struct h264_dec_ctx *s, unsigned char* buf, int len
 	for (i=0; i<cnt; i++) {
 		nal_size = (p[0] << 8) | p[1];
 		p += 2;
-		init_read_bits(&s->gb, p, nal_size * 8);
+		init_read_bits(&s->gb, p, nal_size * 8, 1);
 		skip_bits(&s->gb, 8); // nalu type
 		if (h264_decode_sps(s)) {
 			loge("decode sps failed");
@@ -119,7 +84,7 @@ static int process_extradata(struct h264_dec_ctx *s, unsigned char* buf, int len
 		nal_size = (p[0] << 8) | p[1];
 		p += 2;
 		logi("pps cnt: %d, nal_size: %d", cnt, nal_size);
-		init_read_bits(&s->gb, p, nal_size * 8);
+		init_read_bits(&s->gb, p, nal_size * 8, 1);
 		skip_bits(&s->gb, 8); // nalu type
 		if (h264_decode_pps(s)) {
 			loge("decode pps failed");
@@ -146,16 +111,9 @@ static int procese_nalu(struct h264_dec_ctx *s, unsigned char* buf, int len, int
 
 	s->nal_ref_idc = buf[s->sc_byte_offset] & 0x60;
 	s->nal_unit_type = buf[s->sc_byte_offset] & 0x1f;
+	s->remove_bytes = 0;
 
-	// remove eptb only in Slice NALU, maybe error ??
-	if(s->nal_unit_type == NAL_TYPE_IDR || s->nal_unit_type == NAL_TYPE_SLICE) {
-		s->remove_bytes = remove_eptb(s->rbsp_buffer, &s->first_eptb_offset, buf+s->sc_byte_offset, len-s->sc_byte_offset);
-		s->rbsp_len = len - s->sc_byte_offset - s->remove_bytes;
-		logd("s->sc_byte_offset: %d, s->remove_bytes: %d, s->rbsp_len: %d", s->sc_byte_offset, s->remove_bytes, s->rbsp_len);
-		init_read_bits(&s->gb, s->rbsp_buffer, s->rbsp_len * 8);
-	} else {
-		init_read_bits(&s->gb, buf+s->sc_byte_offset, (len-s->sc_byte_offset) * 8);
-	}
+	init_read_bits(&s->gb, buf+s->sc_byte_offset, (len-s->sc_byte_offset) * 8, 1);
 
 	read_bits(&s->gb, 8); // nalu type
 

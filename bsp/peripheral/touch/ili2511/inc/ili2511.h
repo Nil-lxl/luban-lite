@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -18,7 +18,13 @@
 
 #define ILI2511_POINT_LEN           5
 
+#ifdef AIC_TOUCH_PANEL_ILI2117
+#define ILI2511_SALVE_ADDR          0x26
+#define ILI2117_PID_REG             0x00
+#else
 #define ILI2511_SALVE_ADDR          0x41
+#endif
+
 /* ILI2511 reg */
 #define ILI2511_PACKET_NUMBER       0x10
 #define ILI2511_TOCUH0_X_HIGH       0x11

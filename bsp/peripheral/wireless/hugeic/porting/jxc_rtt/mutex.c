@@ -1,7 +1,7 @@
 #include "os_porting.h"
 #include <rtthread.h>
 
-int os_mutex_new(unsigned int *mutex_handle)
+int os_mutex_new(uintptr_t *mutex_handle)
 {
     rt_mutex_t mutex = NULL;
     int ret = 0;
@@ -17,13 +17,13 @@ int os_mutex_new(unsigned int *mutex_handle)
         return -1;
     } else {
         if (mutex_handle) {
-            *mutex_handle = (unsigned int)mutex;
+            *mutex_handle = (uintptr_t)mutex;
         }
         return 0;
     }
 }
 
-int os_mutex_take(unsigned int mutex_handle)
+int os_mutex_take(uintptr_t mutex_handle)
 {
     rt_mutex_t  mutex = (rt_mutex_t)mutex_handle;
     int ret = 0;
@@ -35,7 +35,7 @@ int os_mutex_take(unsigned int mutex_handle)
     return rt_mutex_take(mutex, RT_WAITING_FOREVER);
 }
 
-void os_mutex_release(unsigned int mutex_handle)
+void os_mutex_release(uintptr_t mutex_handle)
 {
     rt_mutex_t  mutex = (rt_mutex_t)mutex_handle;
     int ret = 0;
@@ -47,7 +47,7 @@ void os_mutex_release(unsigned int mutex_handle)
     rt_mutex_release(mutex);
 }
 
-void os_mutex_delete(unsigned int mutex_handle)
+void os_mutex_delete(uintptr_t mutex_handle)
 {
     rt_mutex_t  mutex = (rt_mutex_t)mutex_handle;
     if (mutex == NULL) {

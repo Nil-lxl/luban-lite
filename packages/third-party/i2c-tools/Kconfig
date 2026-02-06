@@ -15,6 +15,10 @@ if LPKG_USING_I2C_TOOLS
         string
         default "/packages/peripherals/i2c-tools"
 
+    config I2C_TOOLS_USING_AIC_SOFT_I2C
+        bool "Use AIC sofware I2C"
+        default n
+
     config I2C_TOOLS_USE_SW_I2C
         bool "Use sofware I2C"
         help

@@ -12,9 +12,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <pthread.h>
@@ -76,6 +74,8 @@ char *file_suffix[SUPPORT_FILE_SUFFIX_TYPE_NUM] = {".h264", ".264", ".mp4", ".mp
 static struct video_player_ctx  *g_video_player_ctx = NULL;
 static bool g_power_on_flag = false;
 
+extern void play_wav(void *file_path);
+
 static void print_help(const char* prog)
 {
     printf("name: %s\n", prog);
@@ -95,15 +95,16 @@ static void print_cmd_help(const char* prog)
 {
     printf("name: %s\n", prog);
     printf("Usage: player_cmd [options]:\n"
-        "\t-d\t\tplay next\n"
+        "\t-n\t\tplay next\n"
         "\t-u\t\tplay previous\n"
         "\t-p\t\tpause/play\n"
-        "\t-v\t\tvolum \n"
+        "\t-v\t\tvolum [0 , 100]\n"
+        "\t-d\t\tdebug (0 | 1)\n"
         "\t-m\t\tmute \n"
         "\t-f\t\tforward seek +n s\n"
         "\t-b\t\tforward seek -n s\n"
         "\t-z\t\tseek to begin pos \n"
-        "\t-r\t\trotate 0 ~ 270 \n"
+        "\t-r\t\trotate (0 | 90 | 180 | 270) \n"
         "\t-w\t\tplay audio warning tone \n"
         "\t-e\t\texit app \n");
 }
@@ -254,7 +255,17 @@ static int do_rotation(struct video_player_ctx *player_ctx, int rotation)
 
     return 0;
 }
-#ifndef PLAYER_DEMO_USE_VE_FILL_FB
+
+static void set_debug_info(struct video_player_ctx *player_ctx, int debug_en)
+{
+    struct video_player_ctx *ctx = player_ctx;
+    aic_player_control(ctx->player, AIC_PLAYER_CMD_SET_DEBUG_INFO, &debug_en);
+#ifdef PLAYER_DEMO_VIDEO_EXT_RENDER
+    player_video_ext_render_debug(debug_en);
+#endif
+}
+
+#ifndef PLAYER_DEMO_VIDEO_EXT_RENDER
 static int cal_disp_size(struct aic_video_stream *media, struct mpp_rect *disp)
 {
     struct mpp_fb *fb = mpp_fb_open();
@@ -313,6 +324,10 @@ static int start_play(struct video_player_ctx *player_ctx)
     static struct av_media_info media_info;
     struct video_player_ctx *ctx = player_ctx;
 
+#ifdef PLAYER_DEMO_VIDEO_EXT_RENDER
+    player_video_ext_render_init(ctx->player);
+#endif
+
     ret = aic_player_start(ctx->player);
     if (ret != 0) {
         loge("aic_player_start error!!!!\n");
@@ -340,7 +355,7 @@ static int start_play(struct video_player_ctx *player_ctx)
         ,media_info.audio_stream.nb_channel
         ,media_info.audio_stream.sample_rate);
 
-#ifndef PLAYER_DEMO_USE_VE_FILL_FB
+#ifndef PLAYER_DEMO_VIDEO_EXT_RENDER
     struct mpp_size screen_size;
     if (media_info.has_video) {
         ret = aic_player_get_screen_size(ctx->player, &screen_size);
@@ -482,6 +497,11 @@ static int player_demo_prepare_stop(struct video_player_ctx *ctx, int force_stop
                                     int loop_time, int file_num)
 {
     int enable = 0;
+#ifdef PLAYER_DEMO_VIDEO_EXT_RENDER
+    player_video_ext_render_deinit();
+    return 0;
+#endif
+
     /*force stop need set render delay disable*/
     if (force_stop && (ctx->loop_time > 1 || ctx->files.file_num > 1)) {
         enable = 0;
@@ -505,7 +525,7 @@ static int player_demo_prepare_stop(struct video_player_ctx *ctx, int force_stop
     return 0;
 }
 
-static int player_start_render(struct video_player_ctx *ctx)
+static int player_store_ui_layer_config(struct video_player_ctx *ctx)
 {
     struct aicfb_alpha_config alpha = {0};
     if (!ctx) {
@@ -549,7 +569,7 @@ _EXIT_:
     return -1;
 }
 
-static void player_stop_render(struct video_player_ctx *ctx)
+static void player_restore_ui_layer_config(struct video_player_ctx *ctx)
 {
     if (strcmp(PRJ_CHIP, "d12x") == 0 && ctx->render_dev) {
         // restore ui layer after playing
@@ -654,7 +674,7 @@ static void player_thread_entry(void *arg)
 {
     struct video_player_ctx *ctx = (struct video_player_ctx *)arg;
 
-    if (player_start_render(ctx) < 0)
+    if (player_store_ui_layer_config(ctx) < 0)
         goto _EXIT_;
 
     ctx->player = aic_player_create(NULL);
@@ -663,27 +683,18 @@ static void player_thread_entry(void *arg)
         goto _EXIT_;
     }
 
-#ifdef PLAYER_DEMO_USE_VE_FILL_FB
-    if (player_vdec_share_frame_init(ctx->player) != 0) {
-        loge("player_vdec_share_frame_init fail!!!\n");
-        goto _EXIT_;
-    }
-#endif
     aic_player_set_event_callback(ctx->player, ctx, event_handle);
 
 
     player_loop_play(ctx);
 
 _EXIT_:
-#ifdef PLAYER_DEMO_USE_VE_FILL_FB
-    player_vdec_share_frame_deinit();
-#endif
     if (ctx->player) {
         aic_player_destroy(ctx->player);
         ctx->player = NULL;
     }
 
-    player_stop_render(ctx);
+    player_restore_ui_layer_config(ctx);
 
     if (ctx) {
         mpp_free(ctx);
@@ -732,7 +743,6 @@ _EXIT_:
 
 MSH_CMD_EXPORT_ALIAS(player_demo, player_demo, player demo);
 
-
 static int player_cmd(int argc, char**argv)
 {
     struct video_player_ctx *ctx = g_video_player_ctx;
@@ -749,7 +759,7 @@ static int player_cmd(int argc, char**argv)
 
     optind = 0;
     while (1) {
-        opt = getopt(argc, argv, "f:b:v:r:udepmzwh");
+        opt = getopt(argc, argv, "f:b:v:r:d:unepmzwh");
         if (opt == -1) {
             break;
         }
@@ -757,7 +767,7 @@ static int player_cmd(int argc, char**argv)
         case 'u':
             ctx->play_prev = true;
             break;
-        case 'd':
+        case 'n':
             ctx->play_next = true;
             break;
         case 'e':
@@ -784,10 +794,11 @@ static int player_cmd(int argc, char**argv)
         case 'r':
             do_rotation(ctx, atoi(optarg));
             break;
+        case 'd':
+            set_debug_info(ctx, atoi(optarg));
+            break;
         case 'w':
-#ifdef AIC_MPP_PLAYER_AUDIO_RENDER_SHARE_TEST
-            player_audio_render_share_play(ctx->audio_file_path);
-#endif
+            play_wav(ctx->audio_file_path);
             break;
         case 'h':
             print_cmd_help(argv[0]);

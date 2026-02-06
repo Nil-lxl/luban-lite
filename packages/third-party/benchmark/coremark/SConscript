@@ -9,6 +9,7 @@ src     = Glob('*.c')
 path    = [cwd + '/']
 
 LOCAL_CCFLAGS = ''
+LOCAL_CCFLAGS += ' -O3'
 
 group = DefineGroup('coremark', src, depend = ['LPKG_USING_COREMARK'], CPPPATH = path, LOCAL_CCFLAGS = LOCAL_CCFLAGS)
 

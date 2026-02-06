@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -19,7 +19,7 @@ extern "C" {
 /* Luban-Lite version information */
 #define LL_VERSION      1
 #define LL_SUBVERSION   2
-#define LL_REVISION     2
+#define LL_REVISION     3
 
 typedef __signed__ char     s8;
 typedef unsigned char       u8;
@@ -171,6 +171,10 @@ typedef unsigned long ptr_t;
     })
 
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
+
+#ifndef ABS
+#define ABS(x)  ((x) < 0 ? -(x) : (x))
+#endif
 
 #ifndef max
 #define max(x, y) ({				\

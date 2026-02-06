@@ -137,11 +137,8 @@ static void usbd_msc_suspend(void);
 static void usbd_msc_configured(void);
 int usbd_msc_detection(void);
 
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-void usbd_comp_msc_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
+
+static void usbd_msc_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -184,7 +181,7 @@ static void usbd_msc_suspend(void)
     if (usbd_storage == NULL || usbd_storage->fs == NULL)
         return;
 
-    if (usb_device_is_configured()== false)
+    if (usb_device_is_configured(0) == false || usbd_storage->is_mounted == true)
         return;
 
     if (usbd_storage->is_forbidden == true)
@@ -201,10 +198,12 @@ static void usbd_msc_suspend(void)
     disk_ioctl(usbd_storage->pdrv, GET_DEVICE_TYPE, &device_type);
 #endif
     ret = dfs_mount(usbd_storage->dev_name, usbd_storage->fs_path, usbd_storage->fs_type, 0, (void *)device_type);
-    if (ret < 0)
-        USB_LOG_ERR("Failed to mount %s to %s\n", usbd_storage->dev_name, usbd_storage->fs_path);
-    else
+    if (ret < 0) {
+        USB_LOG_ERR("Failed to mount %s to %s(ret: %d)\n", usbd_storage->dev_name, usbd_storage->fs_path, ret);
+        return;
+    } else {
         USB_LOG_INFO("Mount %s to %s\n", usbd_storage->dev_name, usbd_storage->fs_path);
+    }
 
     flag = usb_osal_enter_critical_section();
     usbd_storage->storage_exist = true;
@@ -227,17 +226,19 @@ static void usbd_msc_configured(void)
     if (usbd_storage->is_inited == false)
         return;
 
-    if (usb_device_is_configured() == false)
+    if (usb_device_is_configured(0) == false)
         return;
 
     if (usbd_storage->is_forbidden == true)
         return;
 
     ret = dfs_unmount(usbd_storage->fs_path);
-    if (ret < 0)
-        USB_LOG_ERR("Failed to unmount %s !\n", usbd_storage->fs_path);
-    else
+    if (ret < 0) {
+        USB_LOG_ERR("Failed to unmount %s !(ret: %d)\n", usbd_storage->fs_path, ret);
+        return;
+    } else {
         USB_LOG_INFO("Unmount %s \n", usbd_storage->fs_path);
+    }
 
 #if defined(KERNEL_RTTHREAD)
     ret = rt_device_open(usbd_storage->dev, RT_DEVICE_FLAG_RDWR);
@@ -253,7 +254,7 @@ static void usbd_msc_configured(void)
 
 }
 
-void usbd_msc_get_cap(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
+void usbd_msc_get_cap(uint8_t busid, uint8_t lun, uint32_t *block_num, uint32_t *block_size)
 {
     struct usbd_storage_p *usbd_storage = get_usbd_storage();
 
@@ -261,12 +262,12 @@ void usbd_msc_get_cap(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
         return;
 
     *block_num = (uint32_t)usbd_storage->block_num;
-    *block_size = (uint16_t)usbd_storage->block_size;
+    *block_size = (uint32_t)usbd_storage->block_size;
 
-    USB_LOG_DBG("block_num:%ld block_size:%d\n", *block_num, *block_size);
+    USB_LOG_DBG("block_num:%d block_size:%d\n", *block_num, *block_size);
 }
 
-int usbd_msc_sector_read(uint32_t sector, uint8_t *buffer, uint32_t length)
+int usbd_msc_sector_read(uint8_t busid, uint8_t lun, uint32_t sector, uint8_t *buffer, uint32_t length)
 {
     int ret = -1;
     struct usbd_storage_p *usbd_storage = get_usbd_storage();
@@ -287,7 +288,7 @@ int usbd_msc_sector_read(uint32_t sector, uint8_t *buffer, uint32_t length)
     return ret;
 }
 
-int usbd_msc_sector_write(uint32_t sector, uint8_t *buffer, uint32_t length)
+int usbd_msc_sector_write(uint8_t busid, uint8_t lun, uint32_t sector, uint8_t *buffer, uint32_t length)
 {
     int ret = -1;
     struct usbd_storage_p *usbd_storage = get_usbd_storage();
@@ -371,7 +372,7 @@ int usbd_storage_init(char *path)
 #include "composite_template.h"
 int usbd_comp_msc_init(uint8_t *ep_table, void *data)
 {
-    usbd_add_interface(usbd_msc_init_intf(&msc_intf0, ep_table[0], ep_table[1]));
+    usbd_add_interface(0, usbd_msc_init_intf(0, &msc_intf0, ep_table[0], ep_table[1]));
     return 0;
 }
 #endif
@@ -382,7 +383,7 @@ int usbd_comp_msc_init(uint8_t *ep_table, void *data)
 
 int msc_usbd_init(void)
 {
-    size_t flag;;
+    size_t flag;
     struct usbd_storage_p *usbd_storage = get_usbd_storage();
 
     if (usbd_storage->is_forbidden == true)
@@ -394,18 +395,17 @@ int msc_usbd_init(void)
     }
 
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_desc_register(msc_storage_descriptor);
-    usbd_add_interface(usbd_msc_init_intf(&msc_intf0, MSC_OUT_EP, MSC_IN_EP));
-    usbd_initialize();
+    usbd_desc_register(0, msc_storage_descriptor);
+    usbd_add_interface(0, usbd_msc_init_intf(0, &msc_intf0, MSC_OUT_EP, MSC_IN_EP));
+    usbd_initialize(0, USB_DEV_BASE, usbd_msc_event_handler);
 #else
     usbd_comp_func_register(msc_storage_descriptor,
-                            usbd_comp_msc_event_handler,
+                            usbd_msc_event_handler,
                             usbd_comp_msc_init, "msc");
 #endif
     flag = usb_osal_enter_critical_section();
     usbd_storage->is_inited = true;
     usb_osal_leave_critical_section(flag);
-
     return 0;
 }
 
@@ -413,7 +413,7 @@ int msc_storage_deinit()
 {
     struct usbd_storage_p *usbd_storage = get_usbd_storage();
     memset(usbd_storage, 0, sizeof(struct usbd_storage_p));
-    usbd_deinitialize();
+    usbd_deinitialize(0);
 
     return 0;
 }
@@ -454,7 +454,7 @@ void _msc_src_forbid(void)
     usbd_msc_check_storage();
 
 #if defined(KERNEL_RTTHREAD)
-    usbd_msc_thread_deinit();
+    usbd_msc_thread_deinit(0);
     if (usbd_msc_tid != NULL)
         rt_thread_delete(usbd_msc_tid);
 #endif
@@ -467,7 +467,7 @@ int msc_storage_forbid(void)
     if (usbd_storage->is_forbidden == true)
         return -1;
 
-    usbd_msc_set_popup();
+    usbd_msc_set_popup(0);
 
     _msc_src_forbid();
 
@@ -576,7 +576,7 @@ retry:
     }
 
     usbd_msc_configured();
-    usbd_msc_thread_init();
+    usbd_msc_thread_init(0);
 
     USB_LOG_INFO("Msc storage detected.\n");
 
@@ -585,8 +585,8 @@ retry:
         rt_thread_mdelay(400);
         if (false == usbd_msc_check_storage()) {
             USB_LOG_INFO("Msc storage ejected.\n");
-            usbd_msc_thread_deinit();
-            usbd_msc_set_popup();
+            usbd_msc_thread_deinit(0);
+            usbd_msc_set_popup(0);
             // msc_storage_deinit(); /* this will completely shut down USB.*/
             goto retry;
         }
@@ -625,12 +625,15 @@ int usbd_msc_init(void)
 
     return 0;
 }
+
 int usbd_msc_deinit(void)
 {
     struct usbd_storage_p *usbd_storage = get_usbd_storage();
 
     if (usbd_storage->is_inited == false)
         return -1;
+
+    _msc_src_forbid();
 
 #ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     size_t flag;
@@ -641,8 +644,6 @@ int usbd_msc_deinit(void)
 #else
     msc_storage_deinit();
 #endif
-
-    _msc_src_forbid();
 
     return 0;
 }

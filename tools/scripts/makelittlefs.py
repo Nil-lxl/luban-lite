@@ -43,7 +43,7 @@ def mkimage_get_mtdpart_size(outfile):
         lines = f.readlines()
         for ln in lines:
             name = ln.split(',')[1].replace('"', '').replace('*', '')
-            if imgname == name or imgname in name:
+            if imgname == name:
                 size = int(ln.split(',')[2])
                 return size
     print('Image {} is not used in any partition'.format(imgname))

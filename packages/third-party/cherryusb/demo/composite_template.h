@@ -9,8 +9,8 @@
 #define __COMPOSITE_TEMPLATE_H_
 
 void usbd_comp_func_register(const uint8_t *desc,
-                                void (*event_handler)(uint8_t event),
-                                int (*usbd_comp_class_init)(uint8_t *ep_table, void *data),
+                                void (*event_handler)(uint8_t busid, uint8_t event),
+                                int (*comp_class_init_cb)(uint8_t *ep_table, void *data),
                                 void *data);
 void usbd_comp_func_release(const uint8_t *desc, void *data);
 bool usbd_composite_is_inited(void);

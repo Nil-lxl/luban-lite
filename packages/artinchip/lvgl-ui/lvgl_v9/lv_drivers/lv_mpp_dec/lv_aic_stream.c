@@ -6,9 +6,10 @@
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  */
 
-#include <unistd.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <stdio.h>
+
 #include "lv_aic_stream.h"
 
 lv_fs_res_t lv_aic_stream_open(lv_stream_t *stream, const void *src)

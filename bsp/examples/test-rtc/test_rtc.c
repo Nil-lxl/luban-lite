@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,10 +15,10 @@
  */
 static rt_err_t cmd_test_rtc(int argc, char **argv)
 {
-    rt_err_t ret = RT_EOK;
-    time_t now;
-    struct tm *local_time;
     int year, month, day, hour, min, sec;
+    struct tm *local_time = NULL;
+    rt_err_t ret = RT_EOK;
+    time_t now, expect;
 
     if (argc != 7) {
         rt_kprintf("Usage: test_rtc YYYY MM DD HH MM SS]\n");
@@ -38,7 +38,7 @@ static rt_err_t cmd_test_rtc(int argc, char **argv)
     ret = set_date(year, month, day);
     if (ret != RT_EOK)
     {
-        rt_kprintf("set RTC date failed");
+        rt_kprintf("set RTC date failed\n");
         return ret;
     }
     // delay 1 ms for rtc sync
@@ -48,17 +48,33 @@ static rt_err_t cmd_test_rtc(int argc, char **argv)
     ret = set_time(hour, min, sec);
     if (ret != RT_EOK)
     {
-        rt_kprintf("set RTC time failed");
+        rt_kprintf("set RTC time failed\n");
         return ret;
     }
 
     // delay 1 ms for rtc sync
     rt_thread_mdelay(1);
 
+    // check the actual value after setting
     now = time(RT_NULL);
     local_time = localtime(&now);
-    rt_kprintf("date: %04d-%02d-%02d\n", local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday);
-    rt_kprintf("time: %02d:%02d:%02d\n", local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+    rt_kprintf("date: %04d-%02d-%02d\n",
+               local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday);
+    rt_kprintf("time: %02d:%02d:%02d\n",
+               local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+
+    if (local_time->tm_year + 1900 != year ||
+        local_time->tm_mon + 1 != month || local_time->tm_mday != day) {
+        rt_kprintf("The actual RTC date is invalid\n");
+        return -1;
+    }
+
+    now = local_time->tm_hour * 3600 + local_time->tm_min * 60 + local_time->tm_sec;
+    expect = hour * 3600 + min * 60 + sec;
+    if (expect > now + 3 || expect < now - 3) {
+        rt_kprintf("The actual RTC time is out of [-3, +3]\n");
+        return -1;
+    }
 
     return ret;
 }

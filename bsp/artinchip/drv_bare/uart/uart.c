@@ -211,6 +211,7 @@ static void uart_irqhandler(int irq, void * data)
             while (1)
             {
                 if (ringbuf_len(&(tx_fifo->rb)) > 0) {
+                    ringbuf_out(&(tx_fifo->rb), &ch, 1);
                     if (hal_usart_putchar(uart->handle, ch) != 0)
                         break;
                 } else {

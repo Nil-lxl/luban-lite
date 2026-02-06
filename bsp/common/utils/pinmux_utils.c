@@ -5,9 +5,11 @@
  *
  * Authors: weijie.ding <weijie.ding@artinchip.com>
  */
-#include <stdio.h>
-#include <stdlib.h>
+
+#include <stdint.h>
 #include <string.h>
+
+#include <aic_core.h>
 #include <aic_utils.h>
 #include <aic_common.h>
 #include <aic_hal_gpio.h>

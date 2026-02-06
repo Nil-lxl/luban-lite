@@ -4,7 +4,7 @@
 #include "os_porting.h"
 #include "rtconfig.h"
 #include "aic_core.h"
-#include "../../hgic.h"
+#include "hgic.h"
 
 rt_mailbox_t g_hgics_ble_mb = NULL;
 static struct rt_thread *g_hgics_ble_thread = NULL;
@@ -21,21 +21,22 @@ static void hgic_ble_proc_task()
     struct hgic_ble_mb *ble_mb = NULL;
 
     while(1) {
-        if (rt_mb_recv(g_hgics_ble_mb, (rt_ubase_t *)&ble_mb, RT_WAITING_FOREVER) == RT_EOK)
-        {
-            switch (ble_mb->event) {
-            case HGIC_EVENT_BLENC_DATA:
-                hgics_recv_blenc_data(ble_mb->data, ble_mb->data_len);
-                break;
-            case HGIC_EVENT_HGIC_DATA:
-                hgic_proc_bt_data(ble_mb->data, ble_mb->data_len);
-                break;
-            default:
-                break;
+        if (rt_mb_recv(g_hgics_ble_mb, (rt_ubase_t *)&ble_mb, RT_WAITING_FOREVER) == RT_EOK) {
+            if (ble_mb != NULL) {
+                switch (ble_mb->event) {
+                case HGIC_EVENT_BLENC_DATA:
+                    hgics_recv_blenc_data(ble_mb->data, ble_mb->data_len);
+                    break;
+                case HGIC_EVENT_HGIC_DATA:
+                    hgic_proc_bt_data(ble_mb->data, ble_mb->data_len);
+                    break;
+                default:
+                    break;
+                }
+                rt_free(ble_mb);
             }
         }
     }
-    rt_free(ble_mb);
 }
 
 int hgic_ble_proc_init()

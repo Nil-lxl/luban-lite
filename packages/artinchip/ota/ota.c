@@ -100,7 +100,6 @@ static unsigned int test_sum = 0;
 static unsigned int test_leng = 0;
 #endif
 
-static unsigned char flag_cpio = FLAG_CPIO_HEAD1; /*upgrade file name index*/
 static unsigned char cpio_or_file = FLAG_CPIO_HEAD;
 /*parse header info or file content*/
 
@@ -108,6 +107,10 @@ static struct bufhdr bhdr = { 0 };  /*burn buffer*/
 static struct bufhdr shdr = { 0 };  /*head buffer*/
 static struct filehdr fhdr = { 0 }; /*upgrade file info*/
 static struct fileinfo finfo = { 0 }; /* cpio file info */
+
+/*for ota check*/
+u8 g_ota_read_buf[OTA_BURN_LEN] = { 0 };
+unsigned int g_ota_read_sum = 0;
 
 unsigned int cpio_file_checksum(unsigned char *buffer, unsigned int length)
 {
@@ -265,6 +268,8 @@ static int parse_cpio_file_info(struct bufhdr *bhdr, struct filehdr *fhdr, struc
                     }
                     ptr++;
                 }
+            } else {
+                ptr++;
             }
         } else {
             //not '['
@@ -451,13 +456,21 @@ download_buf_pop_last:
             burn_len = OTA_BURN_LEN;
     }
 
+    fhdr->sum += cpio_file_checksum((unsigned char *)bhdr->buf, burn_len);
+
     /* Write the data to the corresponding partition address */
     ret = aic_ota_part_write(fhdr->begin_offset, (const uint8_t *)bhdr->buf,
                              burn_len);
     if (ret)
         return -RT_ERROR;
 
-    fhdr->sum += cpio_file_checksum((unsigned char *)bhdr->buf, burn_len);
+    /* Read the data to the corresponding partition address */
+    ret = aic_ota_part_read(fhdr->begin_offset, g_ota_read_buf,
+                             burn_len);
+    if (ret)
+        return -RT_ERROR;
+
+    g_ota_read_sum += cpio_file_checksum(g_ota_read_buf, burn_len);
 
     fhdr->begin_offset += burn_len;
     print_progress(fhdr->begin_offset, fhdr->size);
@@ -682,6 +695,18 @@ int ota_init(void)
     ota_buf_init(&bhdr, buf, OTA_BURN_BUFF_LEN);
     ota_buf_init(&shdr, buffer, OTA_HEAD_LEN);
 
+    cpio_or_file = FLAG_CPIO_HEAD;
+    memset(&fhdr, 0, sizeof(struct filehdr));
+    memset(&finfo, 0, sizeof(struct fileinfo));
+
+    g_ota_read_sum = 0;
+    memset(g_ota_read_buf, 0, OTA_BURN_LEN);
+
+#ifdef OTA_DOWNLOADER_DEBUG
+    test_sum = 0;
+    test_leng = 0;
+#endif
+
     return RT_EOK;
 
 __exit:
@@ -761,7 +786,6 @@ int ota_shard_download_fun(char *buffer, int length)
             } else {
                 LOG_I("Parsing cpio file info once is sufficient and successful!");
                 cpio_or_file = FLAG_CPIO_HEAD;
-                flag_cpio++;
                 ret = RT_EOK;
                 goto ota_shard_download_handle_last;
             }
@@ -770,7 +794,7 @@ int ota_shard_download_fun(char *buffer, int length)
             if (partname == NULL)
                 goto __download_exit;
 
-            LOG_I("Start upgrade to %s, flag_cpio:%d!", partname, flag_cpio);
+            LOG_I("Start upgrade to %s!", partname);
 
             ret = aic_ota_find_part(partname);
             if (ret)
@@ -820,7 +844,6 @@ int ota_shard_download_fun(char *buffer, int length)
             } else {
                 LOG_I("Parsing cpio file info is successful!");
                 cpio_or_file = FLAG_CPIO_HEAD;
-                flag_cpio++;
                 ret = RT_EOK;
                 goto ota_shard_download_handle_last;
             }
@@ -836,20 +859,23 @@ int ota_shard_download_fun(char *buffer, int length)
                 LOG_I("fhdr.size = %d fhdr.begin_offset = %d\n", fhdr.size,
                       fhdr.begin_offset);
 #endif
-                if (fhdr.sum == fhdr.chksum) {
+                if ((fhdr.sum == fhdr.chksum) && (g_ota_read_sum == fhdr.chksum)) {
+#ifdef OTA_DOWNLOADER_DEBUG
+                    LOG_I("recv sum:0x%x, read sum:0x%x, chksum:0x%x", fhdr.sum, g_ota_read_sum, fhdr.chksum);
+#endif
                     LOG_I("Sum check success!");
                     LOG_I("download %s success!\n", fhdr.filename);
+                    g_ota_read_sum = 0;
                     aic_set_upgrade_status(fhdr.filename);
                 } else {
                     LOG_E(
-                        "Sum check failed, fhdr->sum = 0x%x,fhdr->chksum = 0x%x\n",
-                        fhdr.sum, fhdr.chksum);
+                        "Sum check failed, recv sum = 0x%x, read sum = 0x%x, fhdr->chksum = 0x%x\n",
+                        fhdr.sum, g_ota_read_sum, fhdr.chksum);
                     ret = -RT_ERROR;
                     goto __download_exit;
                 }
 
                 cpio_or_file = FLAG_CPIO_HEAD;
-                flag_cpio++;
 
                 goto ota_shard_download_handle_last;
             }

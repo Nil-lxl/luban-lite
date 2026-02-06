@@ -19,6 +19,32 @@
 extern "C" {
 #endif
 
+/**
+ * @def DFS_MOUNT_PRIO_EARLY
+ * @brief Mount priority for early system initialization (INIT_ENV_EXPORT)
+ *
+ * File systems with this priority (0) will be mounted during early
+ * environment initialization stage.
+ */
+#define DFS_MOUNT_PRIO_EARLY   0
+
+/**
+ * @def DFS_MOUNT_PRIO_LATE
+ * @brief Mount priority for late application initialization (INIT_LATE_APP_EXPORT)
+ *
+ * File systems with this priority (1) will be mounted during late
+ * application initialization stage.
+ */
+#define DFS_MOUNT_PRIO_LATE    1
+
+/**
+ * @brief Mount flag constant for read-only filesystem mounting
+ * 
+ * This macro defines the flag value used to indicate that a filesystem
+ * should be mounted in read-only mode, preventing any write operations.
+ */
+#define MS_RDONLY      1
+
 /* Pre-declaration */
 struct dfs_filesystem;
 struct dfs_fd;

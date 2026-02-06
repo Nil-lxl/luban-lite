@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -118,7 +118,7 @@ IRQn_Type;
 #define E907_CLIC_BASE              0xE0800000UL
 #define UART0_BASE                  0x40015000UL
 #define UART_BASE(id)               (UART0_BASE + (id) * 0x1000UL)
-#define DRAM_BASE                   0x00000000UL
+#define PSRAM_BASE                  0x20000000UL
 
 #define QEMU_IO_BASE                0x60000000UL
 #define BROM_BASE                   QEMU_IO_BASE
@@ -126,10 +126,10 @@ IRQn_Type;
 #define DMA_BASE                    QEMU_IO_BASE
 #define DCE_BASE                    QEMU_IO_BASE
 #define XSPI_BASE                   QEMU_IO_BASE
-#define QSPI0_BASE                  QEMU_IO_BASE
-#define QSPI1_BASE                  QEMU_IO_BASE
-#define QSPI2_BASE                  QEMU_IO_BASE
-#define QSPI3_BASE                  QEMU_IO_BASE
+#define QSPI0_BASE                  (QEMU_IO_BASE + 0x400000)
+#define QSPI1_BASE                  (QEMU_IO_BASE + 0x410000)
+#define QSPI2_BASE                  (QEMU_IO_BASE + 0x420000)
+#define QSPI3_BASE                  (QEMU_IO_BASE + 0x430000)
 #define SDMC0_BASE                  QEMU_IO_BASE
 #define SDMC1_BASE                  QEMU_IO_BASE
 #define AHBCFG_BASE                 QEMU_IO_BASE

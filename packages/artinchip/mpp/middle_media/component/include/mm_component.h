@@ -51,6 +51,8 @@ typedef enum MM_STATE_TYPE {
 
     /**< component has received pause command */
     MM_STATE_PAUSE,
+
+    MM_STATE_MAX,
 } MM_STATE_TYPE;
 
 typedef enum MM_AUDIO_CODING_TYPE {
@@ -334,6 +336,19 @@ typedef struct mm_component {
 
     s32 (*deinit)(mm_handle h_component);
 } mm_component;
+
+static char g_state_str[MM_STATE_MAX][16] =
+{
+    "Invalid", "Loaded", "Idle", "Executing", "Pause"
+};
+
+static inline char* mm_component_sta_to_str(MM_STATE_TYPE state)
+{
+    if (state < MM_STATE_INVALID || state >= MM_STATE_MAX)
+        return "Unknown";
+
+    return g_state_str[state];
+}
 
 #ifdef __cplusplus
 }

@@ -357,9 +357,12 @@ static int memset_last_row_data(struct png_dec_ctx *s)
 {
     // if filter type of first line > 1.
     // memset the last row buffer
-    unsigned char* addr = (unsigned char*)(unsigned long)s->curr_frame->mpp_frame.buf.phy_addr[0] + s->stride*(s->height-2);
-    memset(addr, 0, s->stride*2);
-    aicos_dcache_clean_invalid_range(addr, s->stride * 2);
+    int stride = s->curr_frame->mpp_frame.buf.stride[0];
+    int len = (s->height == 1) ? stride : stride * 2;
+
+    unsigned char* addr = (unsigned char*)(unsigned long)s->curr_frame->mpp_frame.buf.phy_addr[0] + stride * s->height - len;
+    memset(addr, 0, len);
+    aicos_dcache_clean_invalid_range(addr, len);
     // ----- end ----------
 
     return 0;
@@ -476,7 +479,8 @@ exit_loop:
         return ret;
     }
 #ifdef AIC_VE_DRV_V10
-    memset_last_row_data(s);
+    if (!s->decode_next_dat)
+        memset_last_row_data(s);
 #endif
 
 

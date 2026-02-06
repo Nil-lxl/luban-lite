@@ -1,0 +1,14 @@
+*.o
+*.d
+*.su
+*.elf
+*.bin
+*.hex
+*.map
+*.dis
+bin2hex
+*.cscope
+tags
+*.log
+output
+tests/*/data/

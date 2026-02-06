@@ -70,6 +70,48 @@ struct rt_spi_message
 };
 
 /**
+ * SPI message structure
+ */
+
+struct drv_spi_display_config {
+    rt_uint32_t dma_en;
+    rt_uint32_t spi_mode;
+    rt_uint32_t disp_on;
+};
+
+struct drv_spi_display_param {
+    rt_uint32_t mtw;
+    rt_uint32_t vsw_en;
+    rt_uint32_t vbp_en;
+    rt_uint32_t vfp_en;
+
+    rt_uint32_t len_stride;
+    rt_uint32_t len;
+
+    rt_uint32_t hvbp;
+    rt_uint32_t hvld;
+    rt_uint32_t hvfp;
+
+    rt_uint32_t cmd_vsw;
+    rt_uint32_t cmd_vbp;
+    rt_uint32_t cmd_vld;
+    rt_uint32_t cmd_vfp;
+
+    rt_uint32_t count;
+};
+
+struct drv_spi_trans_data {
+    void* tx_buf;
+    rt_uint32_t en;
+    rt_uint32_t frm_cnt;
+};
+
+struct spi_disp_config {
+    struct drv_spi_display_param *disp_param;
+    struct drv_spi_display_config *disp_config;
+};
+
+/**
  * SPI configuration structure
  */
 struct rt_spi_configuration
@@ -103,6 +145,8 @@ struct rt_spi_ops
     rt_uint32_t (*gstatus)(struct rt_spi_device *device);
     void (*delaymode)(struct rt_spi_device *device, rt_uint32_t delaymode);
     rt_err_t (*wait_completion)(struct rt_spi_device *device);
+    void (*spi_disp)(struct rt_spi_device *device, struct spi_disp_config *spi_disp);
+    void (*spi_trans_data)(struct rt_spi_device *device, struct drv_spi_trans_data *spi_disp_trans);
 };
 
 /**
@@ -231,6 +275,13 @@ void rt_spi_set_rx_delay_mode(struct rt_spi_device        *device,
 
 /* wait completion */
 rt_err_t rt_spi_wait_completion(struct rt_spi_device        *device);
+
+/* spi display */
+void rt_spi_display_set(struct rt_spi_device        *device,
+                       struct spi_disp_config *spi_disp);
+
+void rt_spi_display_trans(struct rt_spi_device        *device,
+                       struct drv_spi_trans_data *spi_disp_trans);
 
 /* send data then receive data from SPI device */
 rt_err_t rt_spi_send_then_recv(struct rt_spi_device *device,

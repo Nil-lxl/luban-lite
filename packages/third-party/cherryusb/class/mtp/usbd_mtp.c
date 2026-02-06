@@ -64,7 +64,7 @@ USB_NOCACHE_RAM_SECTION struct usbd_mtp_priv {
 static struct usbd_endpoint mtp_ep_data[3];
 struct mtp_object mtp_objects[MTP_OBJECT_HANDLES_MAX_NUM];
 
-static int mtp_class_interface_request_handler(struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
+static int mtp_class_interface_request_handler(uint8_t busid, struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
 {
     USB_LOG_DBG("MTP Class request: "
                 "bRequest 0x%02x\r\n",
@@ -94,7 +94,7 @@ static int mtp_class_interface_request_handler(struct usb_setup_packet *setup, u
 static int usbd_mtp_get_object_by_handle(struct mtp_object **object, uint32_t handle)
 {
     if (handle < 0 || handle > MTP_OBJECT_HANDLES_MAX_NUM) {
-        USB_LOG_ERR("Failed to get object:%ld(%d)\n", handle, MTP_OBJECT_HANDLES_MAX_NUM);
+        USB_LOG_ERR("Failed to get object:%ld(%d)\n", (uintptr_t)handle, MTP_OBJECT_HANDLES_MAX_NUM);
         return -1;
     }
     *object = &mtp_objects[handle];
@@ -157,7 +157,7 @@ static void usbd_mtp_send_response_param(uint32_t code, uint32_t param1,
     g_usbd_mtp.con_response.param4 = (uint32_t)param4;
     g_usbd_mtp.con_response.param5 = (uint32_t)param5;
 
-    usbd_ep_start_write(mtp_ep_data[MTP_IN_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_response, 32);
+    usbd_ep_start_write(0, mtp_ep_data[MTP_IN_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_response, 32);
 }
 
 static void usbd_mtp_send_response(uint32_t code)
@@ -171,7 +171,7 @@ static void usbd_mtp_send_response(uint32_t code)
     g_usbd_mtp.con_response.code = code;
     g_usbd_mtp.con_response.trans_id = g_usbd_mtp.con_command.trans_id;
 
-    usbd_ep_start_write(mtp_ep_data[MTP_IN_EP_IDX].ep_addr,
+    usbd_ep_start_write(0, mtp_ep_data[MTP_IN_EP_IDX].ep_addr,
                         (uint8_t *)&g_usbd_mtp.con_response,
                         CONFIG_MTP_COMMAND_LEN);
 }
@@ -188,7 +188,7 @@ static void usbd_mtp_send_info(uint8_t *data, uint32_t len)
     g_usbd_mtp.con_data.trans_id = g_usbd_mtp.con_command.trans_id;
 
     memcpy(g_usbd_mtp.con_data.data, data, len);
-    usbd_ep_start_write(mtp_ep_data[MTP_IN_EP_IDX].ep_addr,
+    usbd_ep_start_write(0, mtp_ep_data[MTP_IN_EP_IDX].ep_addr,
                         (uint8_t *)&g_usbd_mtp.con_data,
                         CONFIG_MTP_COMMAND_LEN + len);
 }
@@ -306,7 +306,7 @@ uint16_t _get_format_by_name(char *file_name)
     char* ext = strrchr(file_name, '.');
 
     /* Get file type */
-    if (ext != 0U && (strlen(ext + 1) <= 5)) {
+    if (ext != NULL && (strlen(ext + 1) <= 5)) {
         strcpy(file_ext, (ext + 1));
     } else {
         objformat = MTP_OBJ_FORMAT_ASSOCIATION;
@@ -364,7 +364,7 @@ static int mtp_object_handles_list(struct mtp_object_handle *object_handle,
 {
     uint32_t i = 0, index = 0, size = 0, protection_status;
     char *path = (char*)pathname;
-    char file_name[255], fullpath[255];
+    char file_name[255] = {0}, fullpath[255] = {0};
     void *dirent = NULL;
     uint8_t file_name_len;
     struct mtp_object *object = NULL;
@@ -379,7 +379,7 @@ static int mtp_object_handles_list(struct mtp_object_handle *object_handle,
             &file_name_len, &protection_status)) {
         /* Get file information */
         usbd_mtp_get_fullpath(fullpath, path, file_name);
-        if (fullpath == NULL)
+        if (fullpath[0] == 0)
             return -1;
         USB_LOG_DBG("fullpath:%s\r\n", fullpath);
 
@@ -541,7 +541,7 @@ static void usbd_mtp_get_object(void)
         g_usbd_mtp.mtp_file_in.fd = fd;
         g_usbd_mtp.mtp_file_in.data_length = data_length;
     }
-    usbd_ep_start_write(mtp_ep_data[MTP_IN_EP_IDX].ep_addr,
+    usbd_ep_start_write(0, mtp_ep_data[MTP_IN_EP_IDX].ep_addr,
                         (uint8_t *)&g_usbd_mtp.con_data,
                         MIN(g_usbd_mtp.con_data.conlen, CONFIG_USBDEV_MTP_MAX_BUFSIZE));
 
@@ -580,7 +580,7 @@ void usbd_mtp_data_in(void)
         g_usbd_mtp.stage = MTP_SEND_RESPONSE;
     }
 
-    usbd_ep_start_write(mtp_ep_data[MTP_IN_EP_IDX].ep_addr,
+    usbd_ep_start_write(0, mtp_ep_data[MTP_IN_EP_IDX].ep_addr,
                         g_usbd_mtp.usbd_mtp_data_in, ret);
 
     return;
@@ -768,7 +768,7 @@ static void usbd_mtp_set_object_prop_value(void)
         last_trans_id = g_usbd_mtp.con_command.trans_id;
         object_handle = g_usbd_mtp.con_command.param1;
         object_prop_code = g_usbd_mtp.con_command.param2;
-        usbd_ep_start_read(mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_data, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
+        usbd_ep_start_read(0, mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_data, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
         return;
     }
     usbd_mtp_get_object_by_handle(&object, object_handle);
@@ -984,7 +984,7 @@ void usbd_mtp_send_object_info(void)
         }
 
         /* No response */
-        usbd_ep_start_read(mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_data,
+        usbd_ep_start_read(0, mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_data,
                             CONFIG_USBDEV_MSC_MAX_BUFSIZE);
         return;
     }
@@ -1015,8 +1015,8 @@ void usbd_mtp_send_object_info(void)
             if (usbd_mtp_get_cap(&MaxCapability, &FreeSpaceInBytes))
                 USB_LOG_ERR("Failed to get storage info \r\n");
             if (object->property.size > FreeSpaceInBytes) {
-                USB_LOG_ERR("Store full! object size:%ld freespace:%lld\r\n",
-                            object->property.size, FreeSpaceInBytes);
+                USB_LOG_ERR("Store full! object size:%ld freespace:%ld\r\n",
+                            (uintptr_t)object->property.size, (uintptr_t)FreeSpaceInBytes);
                 goto __store_full;
             }
             object->property.parent_object = parent_handle;
@@ -1044,7 +1044,7 @@ void usbd_mtp_send_object_info(void)
         return;
         }
     } else {
-        USB_LOG_ERR("Store full! handle_counter%ld\r\n", g_usbd_mtp.handle_counter + 1U);
+        USB_LOG_ERR("Store full! handle_counter%ld\r\n", (uintptr_t)(g_usbd_mtp.handle_counter + 1U));
         goto __store_full;
     }
 
@@ -1091,7 +1091,7 @@ void usbd_mtp_data_out(void)
         usbd_mtp_send_response(MTP_RESPONSE_OK);
         return;
     }
-    usbd_ep_start_read(mtp_ep_data[MTP_OUT_EP_IDX].ep_addr,
+    usbd_ep_start_read(0, mtp_ep_data[MTP_OUT_EP_IDX].ep_addr,
                         g_usbd_mtp.usbd_mtp_data_out, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
 }
 
@@ -1103,7 +1103,7 @@ void usbd_mtp_send_object(void)
     struct mtp_object *object = NULL;
     if (g_usbd_mtp.con_command.trans_id != last_trans_id) {
         last_trans_id = g_usbd_mtp.con_command.trans_id;
-        usbd_ep_start_read(mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_data, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
+        usbd_ep_start_read(0, mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_data, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
         return;
     }
 
@@ -1247,7 +1247,7 @@ static int usbd_mtp_decode(struct mtp_container *container)
     return 0;
 }
 
-static void usbd_mtp_bulk_out(uint8_t ep, uint32_t nbytes)
+static void usbd_mtp_bulk_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     switch (g_usbd_mtp.stage) {
         case MTP_READ_COMMAND:
@@ -1269,7 +1269,7 @@ static void usbd_mtp_bulk_out(uint8_t ep, uint32_t nbytes)
     }
 }
 
-static void usbd_mtp_bulk_in(uint8_t ep, uint32_t nbytes)
+static void usbd_mtp_bulk_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     switch (g_usbd_mtp.stage) {
         case MTP_DATA_IN:
@@ -1284,14 +1284,14 @@ static void usbd_mtp_bulk_in(uint8_t ep, uint32_t nbytes)
             break;
         case MTP_WAIT_RESPONSE:
             g_usbd_mtp.stage = MTP_READ_COMMAND;
-            usbd_ep_start_read(mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_command, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
+            usbd_ep_start_read(0, mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_command, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
             break;
         default:
             break;
     }
 }
 
-static void mtp_notify_handler(uint8_t event, void *arg)
+static void mtp_notify_handler(uint8_t busid, uint8_t event, void *arg)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -1299,7 +1299,7 @@ static void mtp_notify_handler(uint8_t event, void *arg)
         case USBD_EVENT_CONFIGURED:
             USB_LOG_DBG("Start reading command\r\n");
             g_usbd_mtp.stage = MTP_READ_COMMAND;
-            usbd_ep_start_read(mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_command, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
+            usbd_ep_start_read(0, mtp_ep_data[MTP_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_mtp.con_command, CONFIG_USBDEV_MTP_MAX_BUFSIZE);
             break;
 
         default:
@@ -1331,7 +1331,7 @@ static void usbdev_mtp_thread(void *argument)
 }
 #endif
 
-struct usbd_interface *usbd_mtp_init_intf(struct usbd_interface *intf,
+struct usbd_interface *usbd_mtp_init_intf(uint8_t busid, struct usbd_interface *intf,
                                           const uint8_t out_ep,
                                           const uint8_t in_ep,
                                           const uint8_t int_ep)
@@ -1351,16 +1351,16 @@ struct usbd_interface *usbd_mtp_init_intf(struct usbd_interface *intf,
     mtp_ep_data[MTP_INT_EP_IDX].ep_addr = int_ep;
     mtp_ep_data[MTP_INT_EP_IDX].ep_cb = NULL;
 
-    usbd_add_endpoint(&mtp_ep_data[MTP_OUT_EP_IDX]);
-    usbd_add_endpoint(&mtp_ep_data[MTP_IN_EP_IDX]);
-    usbd_add_endpoint(&mtp_ep_data[MTP_INT_EP_IDX]); //event
+    usbd_add_endpoint(busid, &mtp_ep_data[MTP_OUT_EP_IDX]);
+    usbd_add_endpoint(busid, &mtp_ep_data[MTP_IN_EP_IDX]);
+    usbd_add_endpoint(busid, &mtp_ep_data[MTP_INT_EP_IDX]); //event
 
 #ifdef CONFIG_USBDEV_MTP_THREAD
     g_usbd_mtp.usbd_mtp_mq = usb_osal_mq_create(DATA_BUFFER_SIZE / MAX_WITTE_FILE_SIZE);
     if (g_usbd_mtp.usbd_mtp_mq == NULL) {
         return NULL;
     }
-    g_usbd_mtp.usbd_mtp_thread = usb_osal_thread_create("usbd_mtp", 1024 * 6, CONFIG_USBDEV_MSC_PRIO, usbdev_mtp_thread, NULL);
+    g_usbd_mtp.usbd_mtp_thread = usb_osal_thread_create("usbd_mtp", 1024 * 8, CONFIG_USBDEV_MSC_PRIO, usbdev_mtp_thread, NULL);
     if (g_usbd_mtp.usbd_mtp_thread == NULL) {
         return NULL;
     }

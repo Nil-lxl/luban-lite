@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2021-04-27     flybreak     the first version.
  */
+#include <ctime>
 
 #include "__utils.h"
 #include <sys/time.h>

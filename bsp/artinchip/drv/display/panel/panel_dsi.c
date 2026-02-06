@@ -99,6 +99,14 @@ int panel_dsi_dcs_enter_sleep_mode(struct aic_panel *panel)
     return 0;
 }
 
+int panel_dsi_set_maximum_return_packet_size(struct aic_panel *panel, u16 value)
+{
+    u8 type = MIPI_DSI_SET_MAXIMUM_RETURN_PACKET_SIZE;
+    u8 tx[2] = { value & 0xff, value >> 8 };
+
+    return panel->callbacks.di_send_cmd((u32)type, 0, tx, sizeof(tx));
+}
+
 int panel_dsi_enter_command_mode(struct aic_panel *panel)
 {
     return panel->callbacks.di_send_cmd(0, 0, NULL, 0);

@@ -1,4 +1,4 @@
-#include "../../hgic.h"
+#include "hgic.h"
 #include "txw901_v2.h"
 #include "os_porting.h"
 

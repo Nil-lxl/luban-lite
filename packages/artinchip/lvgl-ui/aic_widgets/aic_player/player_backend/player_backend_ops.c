@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -12,7 +12,6 @@
 #if LV_USE_AIC_SIMULATOR == 0
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 extern const player_backend_ops_t *png_backend_get_template(void);
 extern const player_backend_ops_t *aic_backend_get_template(void);

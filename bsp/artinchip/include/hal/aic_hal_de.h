@@ -20,7 +20,7 @@ enum de_qos_plane {
     QOS_UI_CFG,
 };
 
-#if defined(AIC_DE_DRV_V10) || defined(AIC_DE_V10)
+#if defined(AIC_DE_DRV_V10)
 #define DE_FREQ             (200 * 1000 * 1000)
 
 #define UI_LAYER_NUM        1
@@ -35,7 +35,7 @@ enum de_qos_plane {
 
 #define LAYER_CONFIG_TIME_US    15
 
-#elif defined(AIC_DE_DRV_V11) || defined(AIC_DE_V11)
+#elif defined(AIC_DE_DRV_V11) || defined(AIC_DE_DRV_V11_1)
 #define DE_FREQ             (150 * 1000 * 1000)
 
 #define UI_LAYER_NUM        1
@@ -50,7 +50,7 @@ enum de_qos_plane {
 
 #define LAYER_CONFIG_TIME_US    30
 
-#elif defined(AIC_DE_DRV_V12) || defined(AIC_DE_V12)
+#elif defined(AIC_DE_DRV_V12)
 #define DE_FREQ             (100 * 1000 * 1000)
 
 #define UI_LAYER_NUM        1
@@ -172,11 +172,13 @@ enum de_qos_plane {
 #define TIMING_CTRL_EN                        BIT(0)
 
 #define TIMING_INIT_SF_END                    BIT(8)
+#define TIMING_INIT_CFG_DONE                  BIT(3)
 #define TIMING_INIT_UNDERFLOW                 BIT(2)
 #define TIMING_INIT_LINE                      BIT(1)
 #define TIMING_INIT_V_BLANK                   BIT(0)
 
 #define TIMING_INIT_SF_END_FLAG               BIT(8)
+#define TIMING_INIT_CFG_DONE_STATUS           BIT(3)
 #define TIMING_INIT_UNDERFLOW_FLAG            BIT(2)
 #define TIMING_INIT_LINE_FLAG                 BIT(1)
 #define TIMING_INIT_V_BLANK_FLAG              BIT(0)

@@ -497,7 +497,7 @@ sfud_flash *sfud_probe(u32 spi_bus)
     mtd->name[3] += spi_bus;
     mtd->start = 0;
     mtd->size = qspi->attached_flash.chip.capacity;
-    mtd->erasesize = qspi->attached_flash.chip.erase_gran;
+    mtd->erasesize = qspi->attached_flash.chip.eraser[0].size;
     mtd->ops.erase = sfud_mtd_erase;
     mtd->ops.read = sfud_mtd_read;
     mtd->ops.write = sfud_mtd_write;
@@ -520,7 +520,7 @@ sfud_flash *sfud_probe(u32 spi_bus)
         mtd->name = strdup(p->name);
         mtd->start = p->start;
         mtd->size = p->size;
-        mtd->erasesize = qspi->attached_flash.chip.erase_gran;
+        mtd->erasesize = qspi->attached_flash.chip.eraser[0].cmd;
         if (p->size == 0)
             mtd->size = qspi->attached_flash.chip.capacity - p->start;
         mtd->ops.erase = sfud_mtd_erase;

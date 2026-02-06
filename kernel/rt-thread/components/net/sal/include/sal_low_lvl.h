@@ -72,6 +72,8 @@ struct sal_socket_ops
     int (*connect)    (int s, const struct sockaddr *name, socklen_t namelen);
     int (*accept)     (int s, struct sockaddr *addr, socklen_t *addrlen);
     int (*sendto)     (int s, const void *data, size_t size, int flags, const struct sockaddr *to, socklen_t tolen);
+    int (*sendmsg)    (int s, const struct msghdr *message, int flags);
+    int (*recvmsg)    (int s, struct msghdr *message, int flags);
     int (*recvfrom)   (int s, void *mem, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen);
     int (*getsockopt) (int s, int level, int optname, void *optval, socklen_t *optlen);
     int (*setsockopt) (int s, int level, int optname, const void *optval, socklen_t optlen);
@@ -108,6 +110,9 @@ struct sal_socket *sal_get_socket(int sock);
 
 /* check SAL socket netweork interface device internet status */
 int sal_check_netdev_internet_up(struct netdev *netdev);
+
+/* delete SAL network work */
+int sal_del_netdev_internet_up_work(struct netdev *netdev);
 
 #ifdef __cplusplus
 }

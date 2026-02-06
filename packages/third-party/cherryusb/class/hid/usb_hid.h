@@ -169,14 +169,14 @@
 #define HID_LOCAL_ITEM_DELIMITER_PREFIX     0xa8 /* Delimiter */
 
 /* Modifier Keys (HID 8.3) */
-#define HID_MODIFER_LCTRL  (1 << 0) /* Left Ctrl */
-#define HID_MODIFER_LSHIFT (1 << 1) /* Left Shift */
-#define HID_MODIFER_LALT   (1 << 2) /* Left Alt */
-#define HID_MODIFER_LGUI   (1 << 3) /* Left GUI */
-#define HID_MODIFER_RCTRL  (1 << 4) /* Right Ctrl */
-#define HID_MODIFER_RSHIFT (1 << 5) /* Right Shift */
-#define HID_MODIFER_RALT   (1 << 6) /* Right Alt */
-#define HID_MODIFER_RGUI   (1 << 7) /* Right GUI */
+#define HID_MODIFIER_LCTRL  (1 << 0) /* Left Ctrl */
+#define HID_MODIFIER_LSHIFT (1 << 1) /* Left Shift */
+#define HID_MODIFIER_LALT   (1 << 2) /* Left Alt */
+#define HID_MODIFIER_LGUI   (1 << 3) /* Left GUI */
+#define HID_MODIFIER_RCTRL  (1 << 4) /* Right Ctrl */
+#define HID_MODIFIER_RSHIFT (1 << 5) /* Right Shift */
+#define HID_MODIFIER_RALT   (1 << 6) /* Right Alt */
+#define HID_MODIFIER_RGUI   (1 << 7) /* Right GUI */
 
 /* Keyboard output report (1 byte) (HID B.1) */
 #define HID_KBD_OUTPUT_REPORT_NUMLOCK    (1 << 0)
@@ -581,5 +581,94 @@ struct usb_hid_js_report
   uint8_t buttons;   /* See USBHID_JSIN_* definitions */
   uint8_t throttle;  /* Throttle */
 };
+
+// clang-format off
+#define HID_MOUSE_DESCRIPTOR_LEN (9 + 9 + 7)
+
+#define HID_MOUSE_DESCRIPTOR_INIT(bInterfaceNumber, bInterfaceSubClass, wItemLength, int_ep, wMaxPacketSize, bInterval) \
+    0x09,                          /* bLength: Interface Descriptor size */                                         \
+    USB_DESCRIPTOR_TYPE_INTERFACE, /* bDescriptorType: Interface descriptor type */                                 \
+    bInterfaceNumber,              /* bInterfaceNumber: Number of Interface */                                      \
+    0x00,                          /* bAlternateSetting: Alternate setting */                                       \
+    0x01,                          /* bNumEndpoints */                                                              \
+    0x03,                          /* bInterfaceClass: HID */                                                       \
+    bInterfaceSubClass,            /* bInterfaceSubClass : 1=BOOT, 0=no boot */                                     \
+    0x02,                          /* nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse */                           \
+    0x00,                          /* iInterface: Index of string descriptor */                                     \
+    0x09,                          /* bLength: HID Descriptor size */                                               \
+    HID_DESCRIPTOR_TYPE_HID,       /* bDescriptorType: HID */                                                       \
+    0x11,                          /* bcdHID: HID Class Spec release number */                                      \
+    0x01,                                                                                                           \
+    0x00,                         /* bCountryCode: Hardware target country */                                       \
+    0x01,                         /* bNumDescriptors: Number of HID class descriptors to follow */                  \
+    0x22,                         /* bDescriptorType */                                                             \
+    WBVAL(wItemLength),           /* wItemLength: Total length of Report descriptor */                              \
+    0x07,                         /* bLength: Endpoint Descriptor size */                                           \
+    USB_DESCRIPTOR_TYPE_ENDPOINT, /* bDescriptorType: */                                                            \
+    int_ep,                       /* bEndpointAddress: Endpoint Address (IN) */                                     \
+    0x03,                         /* bmAttributes: Interrupt endpoint */                                            \
+    WBVAL(wMaxPacketSize),        /* wMaxPacketSize: x Byte max */                                                  \
+    bInterval                     /* bInterval: Polling Interval */
+
+#define HID_KEYBOARD_DESCRIPTOR_LEN (9 + 9 + 7)
+
+#define HID_KEYBOARD_DESCRIPTOR_INIT(bInterfaceNumber, bInterfaceSubClass, wItemLength, int_ep, wMaxPacketSize, bInterval) \
+    0x09,                          /* bLength: Interface Descriptor size */                                         \
+    USB_DESCRIPTOR_TYPE_INTERFACE, /* bDescriptorType: Interface descriptor type */                                 \
+    bInterfaceNumber,              /* bInterfaceNumber: Number of Interface */                                      \
+    0x00,                          /* bAlternateSetting: Alternate setting */                                       \
+    0x01,                          /* bNumEndpoints */                                                              \
+    0x03,                          /* bInterfaceClass: HID */                                                       \
+    bInterfaceSubClass,            /* bInterfaceSubClass : 1=BOOT, 0=no boot */                                     \
+    0x01,                          /* nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse */                           \
+    0x00,                          /* iInterface: Index of string descriptor */                                     \
+    0x09,                          /* bLength: HID Descriptor size */                                               \
+    HID_DESCRIPTOR_TYPE_HID,       /* bDescriptorType: HID */                                                       \
+    0x11,                          /* bcdHID: HID Class Spec release number */                                      \
+    0x01,                                                                                                           \
+    0x00,                         /* bCountryCode: Hardware target country */                                       \
+    0x01,                         /* bNumDescriptors: Number of HID class descriptors to follow */                  \
+    0x22,                         /* bDescriptorType */                                                             \
+    WBVAL(wItemLength),           /* wItemLength: Total length of Report descriptor */                              \
+    0x07,                         /* bLength: Endpoint Descriptor size */                                           \
+    USB_DESCRIPTOR_TYPE_ENDPOINT, /* bDescriptorType: */                                                            \
+    int_ep,                       /* bEndpointAddress: Endpoint Address (IN) */                                     \
+    0x03,                         /* bmAttributes: Interrupt endpoint */                                            \
+    WBVAL(wMaxPacketSize),        /* wMaxPacketSize: x Byte max */                                                  \
+    bInterval                     /* bInterval: Polling Interval */
+
+#define HID_CUSTOM_INOUT_DESCRIPTOR_LEN (9 + 9 + 7 + 7)
+
+#define HID_CUSTOM_INOUT_DESCRIPTOR_INIT(bInterfaceNumber, bInterfaceSubClass, wItemLength, in_ep, out_ep,wMaxPacketSize, bInterval) \
+    0x09,                          /* bLength: Interface Descriptor size */                                         \
+    USB_DESCRIPTOR_TYPE_INTERFACE, /* bDescriptorType: Interface descriptor type */                                 \
+    bInterfaceNumber,              /* bInterfaceNumber: Number of Interface */                                      \
+    0x00,                          /* bAlternateSetting: Alternate setting */                                       \
+    0x02,                          /* bNumEndpoints */                                                              \
+    0x03,                          /* bInterfaceClass: HID */                                                       \
+    bInterfaceSubClass,            /* bInterfaceSubClass : 1=BOOT, 0=no boot */                                     \
+    0x00,                          /* nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse */                           \
+    0x00,                          /* iInterface: Index of string descriptor */                                     \
+    0x09,                          /* bLength: HID Descriptor size */                                               \
+    HID_DESCRIPTOR_TYPE_HID,       /* bDescriptorType: HID */                                                       \
+    0x11,                          /* bcdHID: HID Class Spec release number */                                      \
+    0x01,                                                                                                           \
+    0x00,                         /* bCountryCode: Hardware target country */                                       \
+    0x01,                         /* bNumDescriptors: Number of HID class descriptors to follow */                  \
+    0x22,                         /* bDescriptorType */                                                             \
+    WBVAL(wItemLength),           /* wItemLength: Total length of Report descriptor */                              \
+    0x07,                         /* bLength: Endpoint Descriptor size */                                           \
+    USB_DESCRIPTOR_TYPE_ENDPOINT, /* bDescriptorType: */                                                            \
+    in_ep,                        /* bEndpointAddress: Endpoint Address (IN) */                                     \
+    0x03,                         /* bmAttributes: Interrupt endpoint */                                            \
+    WBVAL(wMaxPacketSize),        /* wMaxPacketSize: x Byte max */                                                  \
+    bInterval,                    /* bInterval: Polling Interval */                                                 \
+    0x07,                         /* bLength: Endpoint Descriptor size */                                           \
+    USB_DESCRIPTOR_TYPE_ENDPOINT, /* bDescriptorType: */                                                            \
+    out_ep,                       /* bEndpointAddress: Endpoint Address (IN) */                                     \
+    0x03,                         /* bmAttributes: Interrupt endpoint */                                            \
+    WBVAL(wMaxPacketSize),        /* wMaxPacketSize: x Byte max */                                                  \
+    bInterval                     /* bInterval: Polling Interval */
+// clang-format on
 
 #endif /* USB_HID_H */

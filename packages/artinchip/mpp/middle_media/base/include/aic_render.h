@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -46,6 +46,12 @@ struct aic_video_render {
     render,                            \
     rect)                              \
     ((struct aic_video_render *)render)->get_dis_rect(render, rect)
+
+#define aic_video_render_get_screen_size( \
+    render,                            \
+    rect)                              \
+    ((struct aic_video_render *)render)->get_screen_size(render, rect)
+
 
 #define aic_video_render_set_on_off( \
     render,                          \

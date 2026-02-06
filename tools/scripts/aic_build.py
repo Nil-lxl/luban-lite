@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2021-2025 ArtInChip Technology Co., Ltd
+# Copyright (C) 2021-2026 ArtInChip Technology Co., Ltd
 
 import os
 import re
@@ -336,6 +336,7 @@ def show_info_cmd(aic_root, prj_chip, prj_board, prj_kernel, prj_app, prj_defcon
             sys.path.append(chip_path)
             import rtconfig
             toolchain = os.path.join(toolchain, rtconfig.PREFIX)
+        toolchain_ver = get_config(config_file, 'CONFIG_PRJ_TOOLCHAIN_VER').replace('"', '')
 
         # summary
         print('    Target app: application/{}/{}'.format(prj_kernel, prj_app))
@@ -346,6 +347,7 @@ def show_info_cmd(aic_root, prj_chip, prj_board, prj_kernel, prj_app, prj_defcon
         print('Defconfig file: target/configs/{}'.format(prj_defconfig))
         print('Root directory: {}'.format(aic_root))
         print(' Out directory: {}'.format(prj_out_dir))
+        print(' Toolchain ver: {}'.format(toolchain_ver))
         print('     Toolchain: {}'.format(toolchain))
         exit(0)
 
@@ -1093,6 +1095,12 @@ def chk_prepare_toolchain(aic_root, prj_chip, prj_board, prj_kernel, prj_app, pr
         elif platform.system() == 'Windows':
             toolchain_name = 'Xuantie-900-gcc-elf-newlib-mingw'
 
+        toolchain_ver = get_config(config_file, 'CONFIG_PRJ_TOOLCHAIN_VER')
+        if toolchain_ver:
+            toolchain_name += '-' + toolchain_ver.replace('"', '')
+        else:
+            toolchain_name += '-' + 'V2.6.1'
+
     os.chdir(aic_root)
     toolchain_ppath = 'tools/toolchain/'
     toolchain_bpath = 'toolchain'
@@ -1487,6 +1495,7 @@ def mkimage_prebuild(aic_root, prj_chip, prj_board, prj_kernel, prj_app, prj_def
     MKFS_ACTION = ''
     MKFS_ACTION += mkimage_gen_mkfs_action(0)
     MKFS_ACTION += mkimage_gen_mkfs_action(1)
+    MKFS_ACTION += mkimage_gen_mkfs_action(2)
 
     # save bootloader
     POST_ACTION += 'python3 ' + aic_script_dir + 'linked_size.py' + ' -m ' \
@@ -1533,10 +1542,7 @@ def mkimage_prebuild(aic_root, prj_chip, prj_board, prj_kernel, prj_app, prj_def
         ELF_PARSE_ACTION = ELF_PARSE_TOOL + ' $TARGET ' + prj_out_dir + ' ' + rtconfig.PREFIX + '\n'
         POST_ACTION += ELF_PARSE_ACTION
 
-        if platform.system() == 'Linux':
-            MAKE_IMG_TOOL = aic_script_dir + 'mk_image.py'
-        elif platform.system() == 'Windows':
-            MAKE_IMG_TOOL = aic_script_dir + 'mk_image.exe'
+        MAKE_IMG_TOOL = 'python3 ' + aic_script_dir + 'mk_image.py'
         IMG_JSON = prj_out_dir + 'image_cfg.json'
         if get_config(prj_root_dir + '.config', burner_enable) == 'y':
             MAKE_IMG_ARGS = ' -v -b -c '
@@ -1828,6 +1834,8 @@ def get_prj_config(aic_root):
         custom_lds = ''
     PRJ_CUSTOM_LDS = custom_lds
 
+    PRJ_TOOLCHAIN_VER = get_config(config_file, 'CONFIG_PRJ_TOOLCHAIN_VER')
+
     # cmd-option: save defconfig
     save_def_cmd(aic_root, PRJ_CHIP, PRJ_BOARD, PRJ_KERNEL, PRJ_APP, PRJ_DEFCONFIG_NAME)
 
@@ -1864,7 +1872,8 @@ def get_prj_config(aic_root):
     # check & prepare toolchain
     chk_prepare_toolchain(aic_root, PRJ_CHIP, PRJ_BOARD, PRJ_KERNEL, PRJ_APP, PRJ_DEFCONFIG_NAME)
 
-    return (PRJ_CHIP, PRJ_BOARD, PRJ_KERNEL, PRJ_APP, PRJ_DEFCONFIG_NAME, PRJ_CUSTOM_LDS)
+    return (PRJ_CHIP, PRJ_BOARD, PRJ_KERNEL, PRJ_APP, PRJ_DEFCONFIG_NAME, PRJ_CUSTOM_LDS,
+            PRJ_TOOLCHAIN_VER)
 
 
 def get_prj_post_action(aic_root, prj_chip, prj_board, prj_kernel, prj_app,

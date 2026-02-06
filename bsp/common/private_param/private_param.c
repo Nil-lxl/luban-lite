@@ -1,19 +1,19 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Authors:  Wu Dehuang <dehuang.wu@artinchip.com>
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <aic_core.h>
 #include <aic_common.h>
 #include <boot_param.h>
 #include <private_param.h>
 
-char private_params_stash[1024];
+char private_params_stash[1024] __attribute__((section(".data")));
 
 void reloc_private_params(void)
 {

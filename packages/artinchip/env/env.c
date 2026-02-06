@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -643,6 +643,8 @@ static int bar_spinand_save_env_simple(void *buf, size_t size)
 {
     struct mtd_dev *env_current;
     unsigned long offset = 0;
+    unsigned write_len = 0;
+    int err = 0;
 
     if (dev_current == 0) {
         env_current = mtd_get_device(AIC_ENV_REDUNDAND_PART_NAME);
@@ -667,9 +669,17 @@ static int bar_spinand_save_env_simple(void *buf, size_t size)
         return -1;
     }
 
-    if (mtd_write(env_current, offset, buf, size)) {
-        pr_err("Mtd write env fail\n");
-        return -1;
+    while (write_len < size) {
+        err = mtd_write_oob(env_current, offset + write_len, buf + write_len, env_current->writesize, NULL, 0);
+        if (err) {
+            printf("Write mtd at offset 0x%lx error, mark it.\n", offset + write_len);
+            err = mtd_block_markbad(env_current, ALIGN_DOWN(offset + write_len, env_current->erasesize));
+            if (err)
+                printf("Mark block bad error.\n");
+
+            return -1;
+        }
+        write_len += env_current->writesize;
     }
 
     return 0;

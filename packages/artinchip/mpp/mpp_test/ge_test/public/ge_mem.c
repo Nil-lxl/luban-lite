@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -172,7 +172,7 @@ struct ge_buf * ge_buf_malloc(int width, int height, enum mpp_pixel_format fmt)
     int raw_buf_size = 0;
 
     struct ge_buf * buffer;
-    buffer = (struct ge_buf *)aicos_malloc(MEM_CMA, sizeof(struct ge_buf));
+    buffer = (struct ge_buf *)aicos_malloc(MEM_DEFAULT, sizeof(struct ge_buf));
     memset(buffer, 0, sizeof(struct ge_buf));
 
     ge_cal_stride(fmt, width, (int *)buffer->buf.stride);
@@ -194,9 +194,9 @@ struct ge_buf * ge_buf_malloc(int width, int height, enum mpp_pixel_format fmt)
         buffer->ori_buf[i] = aicos_malloc(MEM_CMA, buf_size[i]);
         if (!buffer->ori_buf[i]) {
             printf("ge_buf_malloc fail, buf_size[%d] = %d\n", i, buf_size[i]);
+            ge_buf_free(buffer);
             return NULL;
         }
-        memset(buffer->ori_buf[i], 0, buf_size[i]);
     }
 
     ge_align_phy_addr(buffer);
@@ -208,13 +208,16 @@ void ge_buf_free(struct ge_buf * buffer)
 {
     int i = 0;
 
+    if (!buffer)
+        return;
+
     for (i = 0; i < 3; i++) {
         if (!buffer->ori_buf[i])
             aicos_free(MEM_CMA, buffer->ori_buf[i]);
     }
 
-    if (!buffer)
-        aicos_free(MEM_CMA, buffer);
+    if (buffer)
+        aicos_free(MEM_DEFAULT, buffer);
 }
 
 void ge_buf_clean_dcache(struct ge_buf * buffer)
@@ -223,5 +226,18 @@ void ge_buf_clean_dcache(struct ge_buf * buffer)
 
     for (i = 0; i < 3 && buffer->buf.phy_addr[i] != 0; i++) {
         aicos_dcache_clean_invalid_range((void *)((uintptr_t)buffer->buf.phy_addr[i]), buffer->use_buf_size[i]);
+    }
+}
+
+void ge_buf_argb8888_printf(unsigned char *map_mem, struct ge_buf *g_buf)
+{
+    if (!map_mem || !g_buf)
+        return;
+
+    for (int i = 0; i < g_buf->buf.size.height; i++) {
+        for (int j = 0; j < g_buf->buf.stride[0]; j += 4) {
+            printf("%08x ", *(unsigned int *)(map_mem + j + i * g_buf->buf.stride[0]));
+        }
+        printf("\n");
     }
 }

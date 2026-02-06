@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <aic_core.h>
+
+#include "aic_core.h"
 #include "ge_ops.h"
 
 static int ge_open()

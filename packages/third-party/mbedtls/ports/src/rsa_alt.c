@@ -205,32 +205,38 @@ static int mbedtls_hw_exp_mod(mbedtls_mpi *X, const mbedtls_mpi *A, const mbedtl
     struct hw_bignum_mpi a, b, c, x;
     int X_n;
 
-    rt_hwcrypto_bignum_init(&x);
+    if ((mbedtls_mpi_bitlen(N) <= 2048) &&
+            mbedtls_mpi_bitlen(A) <= 2048 &&
+            mbedtls_mpi_bitlen(E) <= 2048) {
+        rt_hwcrypto_bignum_init(&x);
 
-    a.sign = A->s;
-    a.total = A->n * sizeof(mbedtls_mpi_uint);
-    a.p = (rt_uint8_t *)A->p;
+        a.sign = A->s;
+        a.total = A->n * sizeof(mbedtls_mpi_uint);
+        a.p = (rt_uint8_t *)A->p;
 
-    b.sign = E->s;
-    b.total = E->n * sizeof(mbedtls_mpi_uint);
-    b.p = (rt_uint8_t *)E->p;
+        b.sign = E->s;
+        b.total = E->n * sizeof(mbedtls_mpi_uint);
+        b.p = (rt_uint8_t *)E->p;
 
-    c.sign = N->s;
-    c.total = N->n * sizeof(mbedtls_mpi_uint);
-    c.p = (rt_uint8_t *)N->p;
+        c.sign = N->s;
+        c.total = N->n * sizeof(mbedtls_mpi_uint);
+        c.p = (rt_uint8_t *)N->p;
 
-    if (rt_hwcrypto_bignum_exptmod(&x, &a, &b, &c) != RT_EOK)
-    {
-        return -1;
+        if (rt_hwcrypto_bignum_exptmod(&x, &a, &b, &c) != RT_EOK)
+        {
+            return -1;
+        }
+        X_n = (((x.total) + (sizeof(mbedtls_mpi_uint)) - 1) & ~((sizeof(mbedtls_mpi_uint)) - 1));
+        X_n /= sizeof(mbedtls_mpi_uint);
+        mbedtls_mpi_grow(X, X_n);
+        memset(X->p, 0, X->n * sizeof(mbedtls_mpi_uint));
+        memcpy(X->p, x.p, x.total);
+        X->s = x.sign;
+
+        rt_hwcrypto_bignum_free(&x);
+    } else {
+        return mbedtls_mpi_exp_mod(X, A, E, N, RT_NULL);
     }
-    X_n = (((x.total) + (sizeof(mbedtls_mpi_uint)) - 1) & ~((sizeof(mbedtls_mpi_uint)) - 1));
-    X_n /= sizeof(mbedtls_mpi_uint);
-    mbedtls_mpi_grow(X, X_n);
-    memset(X->p, 0, X->n * sizeof(mbedtls_mpi_uint));
-    memcpy(X->p, x.p, x.total);
-    X->s = x.sign;
-
-    rt_hwcrypto_bignum_free(&x);
 
     return 0;
 #else
@@ -648,7 +654,7 @@ int mbedtls_rsa_gen_key( mbedtls_rsa_context *ctx,
                  void *p_rng,
                  unsigned int nbits, int exponent )
 {
-    int ret;
+    int ret = 0;
     mbedtls_mpi H, G;
 
     if( f_rng == NULL || nbits < 128 || exponent < 3 )
@@ -810,7 +816,7 @@ int mbedtls_rsa_public( mbedtls_rsa_context *ctx,
                 const unsigned char *input,
                 unsigned char *output )
 {
-    int ret;
+    int ret = 0;
     size_t olen;
     mbedtls_mpi T;
 
@@ -2414,7 +2420,7 @@ int mbedtls_rsa_pkcs1_verify( mbedtls_rsa_context *ctx,
  */
 int mbedtls_rsa_copy( mbedtls_rsa_context *dst, const mbedtls_rsa_context *src )
 {
-    int ret;
+    int ret = 0;
 
     dst->ver = src->ver;
     dst->len = src->len;

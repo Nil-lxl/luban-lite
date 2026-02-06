@@ -67,9 +67,9 @@
 ////rm driver one key ,just reset env
 //#define     CONFIG_DRIVER_ORM
 
-//rtthread os
-//#define     PLATFORM_ASR_THREADX
-#define     CONFIG_RTTHEAD_PLAT
+//os platform
+//#define     CONFIG_PLAT_THREADX
+#define     CONFIG_PLAT_RTTHREAD
 
 //bt support
 #ifdef CONFIG_AIC8800_BT_SUPPORT
@@ -77,5 +77,7 @@
 #endif
 
 #define CONFIG_MONITOR_RADIO_HEADER
+
+//#define CONFIG_USE_LOCAL_MAC_ADDR
 
 #endif /* _AIC8800_CONFIG_H_ */

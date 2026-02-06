@@ -1,0 +1,20 @@
+from building import *
+import rtconfig
+
+# get current directory
+cwd     = GetCurrentDir()
+
+# The set of source files associated with this SConscript file.
+
+src = []
+
+if GetDepend('LPKG_USING_MHZ'):
+    src += Glob('*.c')
+
+LOCAL_CCFLAGS = ''
+
+path   =  [cwd]
+
+group = DefineGroup('memtester', src, CPPPATH = path, depend = ['LPKG_USING_MHZ'], LOCAL_CCFLAGS = LOCAL_CCFLAGS)
+
+Return('group')

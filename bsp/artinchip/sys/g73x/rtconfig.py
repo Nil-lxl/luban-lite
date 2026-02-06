@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2022-2025, ArtInChip Technology Co., Ltd
+# Copyright (C) 2022-2026, ArtInChip Technology Co., Ltd
 
 import os
 import platform
@@ -73,27 +73,45 @@ if PLATFORM == 'gcc':
     LD_SCRIPT       = 'gcc_aic.ld'
     QEMU_LD_SCRIPT  = 'gcc_qemu.ld'
 
+    PRJ_TOOLCHAIN_VER = os.getenv('PRJ_TOOLCHAIN_VER')
+    if not PRJ_TOOLCHAIN_VER:
+        PRJ_TOOLCHAIN_VER = 'V2.6.1'
+    else:
+        PRJ_TOOLCHAIN_VER = PRJ_TOOLCHAIN_VER.replace('"', '')
+
+    if PRJ_TOOLCHAIN_VER == 'V2.6.1':
+        ISA_TAG = ''
+    else:
+        ISA_TAG = '_zifencei'
+
     if CPUNAME == 'e906fdp' or CPUNAME == 'e907fdp':
-        DEVICE = ' -march=rv32imafdcpzpsfoperand_xtheade -mabi=ilp32d'
-        TOOLCHAIN_LIB = 'rv32imafdc_xtheade'
+        DEVICE = ' -march=rv32imafdcpzpsfoperand' + ISA_TAG + '_xtheade -mabi=ilp32d'
+        TOOLCHAIN_LIB = 'rv32imafdc' + ISA_TAG + '_xtheade'
         M_DEVICE = ' -march=rv32imafdc -mabi=ilp32d'
         M_TOOLCHAIN_LIB = 'rv32imafdc'
     if CPUNAME == 'e906fp' or CPUNAME == 'e907fp':
-        DEVICE = ' -march=rv32imafcpzpsfoperand_xtheade -mabi=ilp32f'
+        DEVICE = ' -march=rv32imafcpzpsfoperand' + ISA_TAG + '_xtheade -mabi=ilp32f'
     if CPUNAME == 'e906p' or CPUNAME == 'e907p':
-        DEVICE = ' -march=rv32imacpzpsfoperand_xtheade -mabi=ilp32'
+        DEVICE = ' -march=rv32imacpzpsfoperand' + ISA_TAG + '_xtheade -mabi=ilp32'
     if CPUNAME == 'e906fd' or CPUNAME == 'e907fd':
-        DEVICE = ' -march=rv32imafdc_xtheade -mabi=ilp32d'
+        DEVICE = ' -march=rv32imafdc' + ISA_TAG + '_xtheade -mabi=ilp32d'
     if CPUNAME == 'e906f' or CPUNAME == 'e907f':
-        DEVICE = ' -march=rv32imafc_xtheade -mabi=ilp32f'
+        DEVICE = ' -march=rv32imafc' + ISA_TAG + '_xtheade -mabi=ilp32f'
     if CPUNAME == 'e906' or CPUNAME == 'e907':
-        DEVICE = ' -march=rv32imac_xtheade -mabi=ilp32'
+        DEVICE = ' -march=rv32imac' + ISA_TAG + '_xtheade -mabi=ilp32'
 
     B_CFLAGS  += ' -c -g -ffunction-sections -fdata-sections -Wall -mcmodel=medany'
     B_AFLAGS  += ' -c' + ' -x assembler-with-cpp' + ' -D__ASSEMBLY__'
     CFLAGS  = DEVICE + B_CFLAGS + CFLAGS_DBG + ' -mno-dup-loop-header'
     AFLAGS  = DEVICE + B_AFLAGS + AFLAGS_DBG
     CXXFLAGS = CFLAGS
+    CFLAGS_GCC14 = ' -Wno-error=implicit-function-declaration -Wno-error=int-conversion \
+                    -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch \
+                    -Wno-error=declaration-missing-parameter-type -Wno-error=implicit-int'
+    if PRJ_TOOLCHAIN_VER == 'V2.6.1':
+        CFLAGS_GCC14 = ''
+    CFLAGS += CFLAGS_GCC14
+
     PRJ_KERNEL = os.getenv('PRJ_KERNEL')
     if PRJ_KERNEL == 'rt-thread':
         LFLAGS  = DEVICE + ' -nostartfiles -Wl,--no-whole-archive -lgcc -Wl,-gc-sections -Wl,-zmax-page-size=1024 -Wl,-Map=' + prj_out_dir + SOC + '.map'
@@ -116,6 +134,7 @@ if PLATFORM == 'gcc':
     M_CFLAGS  = M_DEVICE + B_CFLAGS + CFLAGS_DBG + ' -fPIC -shared'
     M_AFLAGS  = M_DEVICE + B_AFLAGS + AFLAGS_DBG
     M_CXXFLAGS = M_CFLAGS
+    M_CFLAGS += CFLAGS_GCC14
     M_LFLAGS  = M_DEVICE + ' -Wl,--gc-sections,-z,max-page-size=0x4 -shared -fPIC -nostartfiles -nostdlib -static-libgcc'
     M_POST_ACTION = M_STRIP + ' -R .hash $TARGET\n' + M_SIZE + ' $TARGET \n'
     M_BIN_PATH = ''

@@ -32,6 +32,7 @@ void aicwf_sdio_adma_desc(void *desc,sdio_adma_free func,uint8_t needfree);
 #ifdef CONFIG_SDIO_BUS_PWRCTRL
 int aicwf_sdio_bus_pwrctrl_preinit(void);
 void aicwf_sdio_bus_pwrctl_timer_task_init(void);
+void aicwf_sdio_bus_pwrctl_timer_task_deinit(void);
 int aicwf_sdio_bus_pwr_stctl(uint target);
 void aicwf_sdio_rxcnt_increase(void);
 void aicwf_sdio_rxcnt_decrease(void);

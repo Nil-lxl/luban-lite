@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -70,6 +70,39 @@ struct qspi_master_dma_config {
     u32 mem_max_burst;
     u32 dev_bus_width;
     u32 dev_max_burst;
+};
+
+struct spi_display_init_config {
+    u32 dma_en;
+    u32 spi_mode;
+    u32 disp_on;
+};
+
+struct spi_display_param {
+    u32 mtw;
+    u32 vsw_en;
+    u32 vbp_en;
+    u32 vfp_en;
+
+    u32 len_stride;
+    u32 len;
+
+    u32 hvbp;
+    u32 hvld;
+    u32 hvfp;
+
+    u32 cmd_vsw;
+    u32 cmd_vbp;
+    u32 cmd_vld;
+    u32 cmd_vfp;
+
+    u32 count;
+};
+
+struct spi_display_data {
+    void* tx_buf;
+    u32 en;
+    u32 frm_cnt;
 };
 
 struct qspi_slave_config {
@@ -282,6 +315,15 @@ int hal_qspi_master_transfer_bit_mode(qspi_master_handle *h, struct qspi_bm_tran
 
 /* set delay mode for RX sampling */
 void hal_qspi_master_set_rxdelay_mode(qspi_master_handle *h, u32 delay_mode);
+
+/**
+ * spi display
+ */
+#if defined(AIC_QSPI_DRV_V11) || defined(AIC_QSPI_DRV_V12)
+void hal_spi_disp_init(qspi_master_handle *h, struct spi_display_init_config *disp_config);
+void hal_spi_disp_set_mode(qspi_master_handle *h, struct spi_display_param *disp_param);
+void hal_spi_disp_restart(qspi_master_handle *h, struct spi_display_data *disp_data);
+#endif
 
 #ifdef __cplusplus
 }

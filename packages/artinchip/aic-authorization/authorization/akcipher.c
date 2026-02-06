@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -212,6 +212,7 @@ static int aic_akcipher_do_one_req(struct akcipher_request *req)
 {
     struct aic_akcipher_req_ctx *rctx;
     unsigned char *outbuf;
+    u32 timeout = 300 * 1000;
 
     pr_debug("%s\n", __func__);
     rctx = akcipher_request_ctx(req);
@@ -227,8 +228,9 @@ static int aic_akcipher_do_one_req(struct akcipher_request *req)
     hal_crypto_init();
     hal_crypto_irq_enable(ALG_AK_ACCELERATOR);
     hal_crypto_start_asym(rctx->task);
-    while (!hal_crypto_poll_finish(ALG_AK_ACCELERATOR)) {
-        continue;
+    if (hal_crypto_poll_finish(ALG_AK_ACCELERATOR, timeout)) {
+        pr_err("AK ACCELERATOR run timeout.\n");
+        return -ETIMEDOUT;
     }
     hal_crypto_pending_clear(ALG_AK_ACCELERATOR);
 

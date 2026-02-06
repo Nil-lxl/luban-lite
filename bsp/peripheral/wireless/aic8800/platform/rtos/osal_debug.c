@@ -34,11 +34,40 @@
 struct debug_env_tag dbg_env = {
     .filter_module = DBG_MOD_ALL,// & ~(CO_BIT(DBG_MOD_IDX_MACIF) | CO_BIT(DBG_MOD_IDX_SDIO)),
 #ifdef AIC_DEV_AIC8800_DEBUG_LOG
-    .filter_severity = DBG_SEV_IDX_INF,//DBG_SEV_IDX_INF,//
+    .filter_severity = DBG_SEV_IDX_INF,
 #else
     .filter_severity = DBG_SEV_IDX_WRN,
 #endif
 };
+
+void dbg_set_module(unsigned int module)
+{
+    dbg_env.filter_module = module;
+}
+
+void dbg_set_severity(unsigned int severity)
+{
+    dbg_env.filter_severity = severity;
+}
+
+unsigned int dbg_get_module(void)
+{
+    return dbg_env.filter_module;
+}
+
+unsigned int dbg_get_severity(void)
+{
+    return dbg_env.filter_severity;
+}
+
+int dbg_test_severity(unsigned int sev_idx)
+{
+    int ret = 0;
+    if (dbg_env.filter_severity >= sev_idx) {
+        ret = 1;
+    }
+    return ret;
+}
 
 int dbg_test_module_severity(unsigned int mod_idx, unsigned int sev_idx)
 {

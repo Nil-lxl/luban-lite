@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -10,8 +10,8 @@
 #ifndef MPP_LOG_H
 #define MPP_LOG_H
 
-#include <stdio.h>
 #include <sys/time.h>
+#include <stdio.h>
 #include <unistd.h>
 
 enum log_level {

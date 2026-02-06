@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -81,7 +81,6 @@ void drv_pin_mode(struct rt_device *device, rt_base_t pin, rt_base_t mode)
 
 void drv_pin_write(struct rt_device *device, rt_base_t pin, rt_base_t value)
 {
-    int ret;
     unsigned int g = GPIO_GROUP(pin);
     unsigned int p = GPIO_GROUP_PIN(pin);
 
@@ -91,6 +90,8 @@ void drv_pin_write(struct rt_device *device, rt_base_t pin, rt_base_t value)
     }
     else
     {
+        int ret;
+
         hal_gpio_set_output(g, p);
         ret = hal_gpio_get_pincfg(g, p, GPIO_CHECK_PIN_GEN_OE);
         if (ret < 0) {
@@ -150,6 +151,7 @@ rt_err_t drv_pin_detach_irq(struct rt_device *device, rt_int32_t pin)
     return RT_EOK;
 }
 
+extern void * g_irqvector[];
 irqreturn_t drv_gpio_group_irqhandler(int irq, void * data)
 {
     unsigned int g = irq - GPIO_IRQn;
@@ -168,9 +170,9 @@ irqreturn_t drv_gpio_group_irqhandler(int irq, void * data)
 
         gpio_irq = AIC_GPIO_TO_IRQ(g*GPIO_GROUP_SIZE + i);
         drv_irq_call_isr(gpio_irq);
+        if (g_irqvector[gpio_irq])
+            hal_gpio_group_set_irq_stat(g, (1U<<i));
     }
-
-    hal_gpio_group_set_irq_stat(g, 0xFFFFFFFF);
 
     return IRQ_HANDLED;
 }
@@ -178,11 +180,12 @@ irqreturn_t drv_gpio_group_irqhandler(int irq, void * data)
 unsigned int pin_group_irq_en = 0;
 rt_err_t drv_pin_irq_enable(struct rt_device *device, rt_base_t pin, rt_uint32_t enabled)
 {
-    int ret;
     unsigned int g = GPIO_GROUP(pin);
     unsigned int p = GPIO_GROUP_PIN(pin);
 
     if (enabled) {
+        int ret;
+
         if (!(pin_group_irq_en & (1<<g))) {
             aicos_request_irq(GPIO_IRQn + g, drv_gpio_group_irqhandler, 0, "pin_group", NULL);
             aicos_irq_enable(GPIO_IRQn + g);

@@ -17,6 +17,10 @@
 #pragma anon_unions
 #endif
 
+#include <stdio.h>
+
+#define dbg_sprintf   sprintf
+#define dbg_snprintf  snprintf
 #define dbg_vsnprintf vsnprintf
 
 #endif /* _AIC_COMPILER_H_ */

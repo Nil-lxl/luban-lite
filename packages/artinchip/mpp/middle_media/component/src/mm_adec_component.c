@@ -29,7 +29,13 @@
 
 #define ADEC_INPORT_STREAM_END_FLAG 0x01 //inprot stream end
 #define ADEC_OUTPORT_SEND_ALL_FRAME_FLAG 0x08
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+#define ADEC_BITSTREAM_BUFFER_SIZE AIC_MPP_PLAYER_AUDIO_DECODE_BUF_SIZE
+#define ADEC_BITSTREAM_PKT_COUNT   AIC_MPP_PLAYER_AUDIO_DECODE_PACKET_NUM
+#else
 #define ADEC_BITSTREAM_BUFFER_SIZE (4 * 1024)
+#define ADEC_BITSTREAM_PKT_COUNT   (4)
+#endif
 
 struct mm_adec_tbl {
     MM_AUDIO_CODING_TYPE type;
@@ -62,14 +68,16 @@ typedef struct mm_adec_data {
     pthread_mutex_t in_pkt_lock;
     pthread_mutex_t out_frame_lock;
     u32 decoder_ok_num;
+    u32 decoder_fail_num;
+    u32 decoder_total_num;
     MM_BOOL wait_for_ready_pkt;
     MM_BOOL wait_for_empty_frame;
 
-    MM_BOOL stream_end_flag;
-    MM_BOOL decode_end_flag;
-    MM_BOOL frame_end_flag;
     MM_BOOL pkt_end_flag;
     MM_BOOL flags;
+    MM_BOOL decode_delay_exit;
+    MM_BOOL debug_en;
+    u32 ready_packet_num;
 } mm_adec_data;
 
 
@@ -85,6 +93,7 @@ struct mm_adec_tbl adec_tbl[] =
 static void mm_adec_event_notify(mm_adec_data *p_adec_data, MM_EVENT_TYPE event,
                                  u32 data1, u32 data2, void *p_event_data);
 static void *mm_adec_component_thread(void *p_thread_data);
+static void mm_adec_show_debug_info(mm_adec_data *p_adec_data);
 
 static s32 mm_adec_send_command(mm_handle h_component, MM_COMMAND_TYPE cmd,
                                 u32 param1, void *p_cmd_data)
@@ -127,6 +136,32 @@ static s32 mm_adec_send_command(mm_handle h_component, MM_COMMAND_TYPE cmd,
     return error;
 }
 
+static bool mm_adec_delay_decode_exit(mm_adec_data *p_aec_data)
+{
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+    s32 ret = 0;
+
+    if(!p_aec_data->p_decoder) {
+        loge("audio decoder is not created\n");
+        return MM_TRUE;
+    }
+
+    ret = aic_audio_decoder_control(p_aec_data->p_decoder,
+                                    MPP_DEC_GET_READY_PACKET_NUMBER,
+                                    &p_aec_data->ready_packet_num);
+    if (ret != 0) {
+        loge("get audio ready_packet_num failed\n");
+        return MM_TRUE;
+    }
+
+    if (p_aec_data->ready_packet_num < ADEC_BITSTREAM_PKT_COUNT * 2 / 3) {
+        return MM_FALSE;
+    }
+
+#endif
+    return MM_TRUE;
+}
+
 static s32 mm_adec_get_parameter(mm_handle h_component, MM_INDEX_TYPE index,
                                  void *p_param)
 {
@@ -153,6 +188,10 @@ static s32 mm_adec_get_parameter(mm_handle h_component, MM_INDEX_TYPE index,
 
         case MM_INDEX_PARAM_AUDIO_DECODER_HANDLE:
             *((struct aic_audio_decoder **)p_param) = p_adec_data->p_decoder;
+            break;
+
+        case MM_INDEX_PARAM_DELAY_DECODE_EXIT:
+            *((MM_BOOL *)p_param) = mm_adec_delay_decode_exit(p_adec_data);
             break;
 
         default:
@@ -262,7 +301,6 @@ static s32 mm_adec_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
     s32 error = MM_ERROR_NONE;
 
     enum aic_audio_codec_type codec_type;
-    mm_param_frame_end *p_frame_end;
     p_adec_data =
         (mm_adec_data *)(((mm_component *)h_component)->p_comp_private);
 
@@ -285,7 +323,7 @@ static s32 mm_adec_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
                 logi("code_type:%d\n", p_adec_data->code_type);
                 p_adec_data->decoder_config.packet_buffer_size =
                     ADEC_BITSTREAM_BUFFER_SIZE;
-                p_adec_data->decoder_config.packet_count = 4;
+                p_adec_data->decoder_config.packet_count = ADEC_BITSTREAM_PKT_COUNT;
                 p_adec_data->decoder_config.frame_count = 2;
             } else if (index == ADEC_PORT_OUT_INDEX) {
                 logw("now no need to set out port param\n");
@@ -294,49 +332,26 @@ static s32 mm_adec_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
             }
             break;
         }
-        case MM_INDEX_PARAM_PORT_DEFINITION: {
-            mm_param_port_def *port = (mm_param_port_def *)p_param;
-            index = port->port_index;
-            if (index == ADEC_PORT_IN_INDEX) {
-                p_adec_data->in_port_def.format.audio.encoding =
-                    port->format.audio.encoding;
-                logw("encoding:%d\n",
-                     p_adec_data->in_port_def.format.audio.encoding);
-                if (mm_adec_audio_format_trans(
-                        &codec_type, &port->format.audio.encoding) != 0) {
-                    error = MM_ERROR_UNSUPPORT;
-                    loge("MM_ERROR_UNSUPPORT\n");
-                    break;
-                }
 
-                /*need to convert */
-                p_adec_data->code_type = codec_type;
-                logw("code_type:%d\n", p_adec_data->code_type);
-                p_adec_data->decoder_config.packet_buffer_size =
-                    ADEC_BITSTREAM_BUFFER_SIZE;
-                p_adec_data->decoder_config.packet_count = 4;
-                p_adec_data->decoder_config.frame_count = 2;
-
-            } else if (index == ADEC_PORT_OUT_INDEX) {
-                logw("now no need to set out port param\n");
-            } else {
-                loge("MM_ERROR_BAD_PARAMETER\n");
-                error = MM_ERROR_BAD_PARAMETER;
-            }
-        } break;
-
-        case MM_INDEX_VENDOR_STREAM_FRAME_END:
-            p_frame_end = (mm_param_frame_end *)p_param;
-            if (p_frame_end->b_frame_end == MM_TRUE) {
-                p_adec_data->stream_end_flag = MM_TRUE;
-                logi("setup stream_end_flag\n");
-            } else {
-                p_adec_data->stream_end_flag = MM_FALSE;
-                p_adec_data->decode_end_flag = MM_FALSE;
-                p_adec_data->frame_end_flag = MM_FALSE;
-                logi("cancel stream_end_flag\n");
-            }
+        case MM_INDEX_PARAM_AUDIO_STREAM_END_FLAG:
+            pthread_mutex_lock(&p_adec_data->in_pkt_lock);
+            p_adec_data->flags |= ADEC_INPORT_STREAM_END_FLAG;
+            pthread_mutex_unlock(&p_adec_data->in_pkt_lock);
             break;
+
+        case MM_INDEX_PARAM_DELAY_DECODE_EXIT:
+            pthread_mutex_lock(&p_adec_data->in_pkt_lock);
+            p_adec_data->decode_delay_exit = *(MM_BOOL *)p_param;
+            pthread_mutex_unlock(&p_adec_data->in_pkt_lock);
+            printf("set audio delay decode exit, ready_packet_num %d",
+                p_adec_data->ready_packet_num);
+            break;
+
+        case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
+            p_adec_data->debug_en = ((mm_param_u32 *)p_param)->u32;
+            mm_adec_show_debug_info(p_adec_data);
+            break;
+
         default:
             break;
     }
@@ -363,6 +378,7 @@ static s32 mm_adec_set_config(mm_handle h_component, MM_INDEX_TYPE index,
         case MM_INDEX_CONFIG_TIME_POSITION:
             // 1 clear flag
             p_adec_data->flags = 0;
+            p_adec_data->decode_delay_exit = MM_FALSE;
             // 2 clear decoder buff
             aic_audio_decoder_reset(p_adec_data->p_decoder);
             break;
@@ -567,6 +583,8 @@ s32 mm_adec_component_init(mm_handle h_component)
     p_adec_data->in_port_bind.p_self_comp = h_component;
     p_adec_data->out_port_bind.port_index = ADEC_PORT_OUT_INDEX;
     p_adec_data->out_port_bind.p_self_comp = h_component;
+
+    p_adec_data->decode_delay_exit = MM_FALSE;
 
     if (pthread_mutex_init(&p_adec_data->in_pkt_lock, NULL)) {
         loge("pthread_mutex_init fail!\n");
@@ -780,6 +798,30 @@ CMD_EXIT:
     return cmd;
 }
 
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+static bool mm_adec_delay_decode(mm_adec_data *p_adec_data)
+{
+    MM_BOOL dec_delay_flag;
+
+    pthread_mutex_lock(&p_adec_data->in_pkt_lock);
+    dec_delay_flag = p_adec_data->decode_delay_exit ? MM_FALSE : MM_TRUE;
+    pthread_mutex_unlock(&p_adec_data->in_pkt_lock);
+    return dec_delay_flag;
+}
+#endif
+
+static void mm_adec_show_debug_info(mm_adec_data *p_adec_data)
+{
+    if (!p_adec_data->debug_en)
+        return;
+
+    printf("************************Audio_decoder comp info***********************\n");
+    printf("total    dec_ok    dec_fail\n");
+    printf("%5u    %6u    %8u\n", p_adec_data->decoder_total_num,
+        p_adec_data->decoder_ok_num, p_adec_data->decoder_fail_num);
+    printf("\nstate: %s\n\n", mm_component_sta_to_str(p_adec_data->state));
+}
+
 static void *mm_adec_component_thread(void *p_thread_data)
 {
     s32 cmd = MM_COMMAND_UNKNOWN;
@@ -820,7 +862,15 @@ static void *mm_adec_component_thread(void *p_thread_data)
         }
         b_notify_frame_end = MM_FALSE;
 
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+        if (mm_adec_delay_decode(p_adec_data) == MM_TRUE) {
+            aic_msg_wait_new_msg(&p_adec_data->s_msg, 10000);
+            continue;
+        }
+#endif
+
         /* do audio decode*/
+        p_adec_data->decoder_total_num++;
         dec_ret = aic_audio_decoder_decode(p_adec_data->p_decoder);
         if (dec_ret == DEC_OK) {
             logd("aic_audio_decoder_decode ok!!!\n");
@@ -837,14 +887,18 @@ static void *mm_adec_component_thread(void *p_thread_data)
                 mm_send_command(p_bind_audio_render->p_bind_comp,
                                 MM_COMMAND_EOS, 0, NULL);
             }
+            p_adec_data->decoder_fail_num++;
         } else if (dec_ret == DEC_NO_EMPTY_FRAME) {
             pthread_mutex_lock(&p_adec_data->out_frame_lock);
             p_adec_data->wait_for_empty_frame = MM_TRUE;
             pthread_mutex_unlock(&p_adec_data->out_frame_lock);
+            p_adec_data->decoder_fail_num++;
         } else if (dec_ret == DEC_NO_RENDER_FRAME) {
             logd("aic_audio_decoder_decode error:%d\n", dec_ret);
+            p_adec_data->decoder_fail_num++;
         } else {
             logd("aic_audio_decoder_decode error:%d\n", dec_ret);
+            p_adec_data->decoder_fail_num++;
         }
 
         /* sleep and wait cmd wkup*/
@@ -863,5 +917,6 @@ static void *mm_adec_component_thread(void *p_thread_data)
         }
     }
 _EXIT:
+    mm_adec_show_debug_info(p_adec_data);
     return (void *)MM_ERROR_NONE;
 }

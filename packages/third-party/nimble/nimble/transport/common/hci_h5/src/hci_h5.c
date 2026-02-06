@@ -130,7 +130,7 @@ static void skb_free(struct sk_buff *skb)
 static uint8_t *skb_put(struct sk_buff *skb, uint32_t len)
 {
     uint8_t *tmp = NULL;
-    
+
     tmp = skb->tail;
     skb->tail += len;
     skb->len += len;
@@ -573,9 +573,9 @@ int hci_h5_sm_rx(struct hci_h5_sm *h5sm, const uint8_t *buf, uint16_t len)
         .buf = buf,
         .len = len,
     };
-    uint8_t hdr[4];
+    uint8_t *hdr;
 
-    int i, rc = 0;
+    int rc = 0;
     while (ib.len && (rc >= 0)) {
         rc = 0;
         switch (h5sm->state) {
@@ -586,24 +586,27 @@ int hci_h5_sm_rx(struct hci_h5_sm *h5sm, const uint8_t *buf, uint16_t len)
             hci_h5_ib_consume(&ib, 1);
             break;
         case HCI_H5_SM_W4_PKT_TYPE:
-            if (ib.buf[0] == SLIP_DELIMITER) {
+            if (ib.buf[0] == SLIP_DELIMITER && h5sm->idx == 0) {
                 hci_h5_ib_consume(&ib, 1);
+                continue;
             }
 
-	        for (i = 0; i < 4;) {
-                rc = hci_h5_unslip_one_byte(&hdr[i], ib.buf[0]);
-                if (rc < 0) {
-                    hci_h5_reset_rx(h5sm);
-                    break;
-                } else if (rc == 1) {
-                    hci_h5_ib_consume(&ib, 1);
-                    continue;
-                }
+            hdr = h5sm->hdr;
+            rc = hci_h5_unslip_one_byte(&hdr[h5sm->idx], ib.buf[0]);
+            if (rc < 0) {
+                hci_h5_reset_rx(h5sm);
+                break;
+            } else if (rc == 1) {
                 hci_h5_ib_consume(&ib, 1);
-                i++;
+                continue;
             }
+            hci_h5_ib_consume(&ib, 1);
+            h5sm->idx++;
 
-            memcpy(&h5sm->hdr[0], hdr, 4);
+            if (h5sm->idx < 4)
+                continue;
+            else
+                h5sm->idx = 0;
 
             if ((~(hdr[0] + hdr[1] + hdr[2]) & 0xFF) != hdr[3]) {
                 pr_err("Invalid header checksum.\n");

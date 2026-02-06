@@ -6,11 +6,13 @@
  * Change Logs:
  * Date           Author        Notes
  * 2012-01-13     weety         first version
+ * 2024-07-04     Evlers        fix an issue where repeated remove of card resulted in assertions
  */
 
 #include <drivers/mmcsd_core.h>
 #include <drivers/sdio.h>
 #include <drivers/sd.h>
+#include <drivers/sdio_mgr.h>
 
 #define DBG_TAG               "SDIO"
 #ifdef RT_SDIO_DEBUG
@@ -936,6 +938,8 @@ static rt_int32_t sdio_init_card(struct rt_mmcsd_host *host, rt_uint32_t ocr)
         goto err3;
     }
 
+    rt_sdio_mgr_notify_init_complete(DEVICE_TYPE_SDIO_DEVICE, RT_EOK);
+
     return 0;
 
 err3:
@@ -962,6 +966,7 @@ err1:
     if (host->card)
     {
         rt_free(host->card);
+        host->card = RT_NULL;
     }
 err:
     LOG_E("error %d while initialising SDIO card", err);
@@ -998,13 +1003,10 @@ rt_int32_t init_sdio(struct rt_mmcsd_host *host, rt_uint32_t ocr)
 
     err = sdio_init_card(host, current_ocr);
     if (err)
-        goto remove_card;
+        goto err;
 
     return 0;
 
-remove_card:
-    rt_free(host->card);
-    host->card = RT_NULL;
 err:
 
     LOG_E("init SDIO card failed");

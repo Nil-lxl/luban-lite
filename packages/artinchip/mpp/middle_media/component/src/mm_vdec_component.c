@@ -30,8 +30,16 @@
 #define VDEC_INPORT_STREAM_END_FLAG      0x01
 #define VDEC_OUTPORT_SEND_ALL_FRAME_FLAG 0x08 // consume all frame in readylist
 
+#if defined(AIC_MPP_PLAYER_DECODE_DELAY)
+#define VDEC_BITSTREAM_BUFFER_SIZE       AIC_MPP_PLAYER_VIDEO_DECODE_BUF_SIZE
+#define VDEC_BITSTREAM_PKT_COUNT         AIC_MPP_PLAYER_VIDEO_DECODE_PACKET_NUM
+#elif defined(AIC_CHIP_D21X)
+#define VDEC_BITSTREAM_BUFFER_SIZE       (1024 * 1024)
+#define VDEC_BITSTREAM_PKT_COUNT         (10)
+#else
 #define VDEC_BITSTREAM_BUFFER_SIZE       (512 * 1024)
-#define VDEC_BITSTREAM_LARGE_BUFFER_SIZE (1024 * 1024)
+#define VDEC_BITSTREAM_PKT_COUNT         (10)
+#endif
 #define VDEC_SEEK_TIME_DIFF_US           (100 * 1000)
 
 typedef struct mm_vdec_data {
@@ -62,6 +70,7 @@ typedef struct mm_vdec_data {
     s64 pre_frame_pts;
     s32 ext_frame_num;
     s64 seek_pts;
+    MM_BOOL seek_flag;
 
     pthread_t thread_id;
     struct aic_message_queue s_msg;
@@ -70,18 +79,27 @@ typedef struct mm_vdec_data {
     pthread_mutex_t in_pkt_lock;
     pthread_mutex_t out_frame_lock;
     pthread_mutex_t process_dec_lock;
+
+    u32 decoder_total_num;
     u32 decoder_ok_num;
+    u32 decoder_fail_num;
+    u32 get_frame_ok_num;
+    u32 get_frame_failed_num;
     u32 decoder_drop_num;
     MM_BOOL wait_for_ready_pkt;
     MM_BOOL wait_for_empty_frame;
     MM_BOOL pkt_end_flag;
     MM_BOOL first_get_frame_flag;
     MM_BOOL decode_resume_flag;
+    MM_BOOL decode_delay_exit;
+    MM_BOOL debug_en;
+    u32 ready_packet_num;
 } mm_vdec_data;
 
 static void *mm_vdec_component_thread(void *p_thread_data);
+static void mm_vdec_show_debug_info(mm_vdec_data *p_vdec_data);
 
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
 static int mm_vdec_component_update_decoder(mm_vdec_data *p_vdec_data)
 {
 #if 0
@@ -138,7 +156,7 @@ static s32 mm_vdec_send_command(mm_handle h_component, MM_COMMAND_TYPE cmd,
         }
     } else {
         if (MM_COMMAND_EOS == (s32)cmd) {
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
             mm_vdec_event_notify(p_vdec_data, MM_EVENT_BUFFER_FLAG, 0, 0, NULL);
             aic_msg_put(&p_vdec_data->s_get_frame_msg, &s_msg);
 #else
@@ -149,6 +167,31 @@ static s32 mm_vdec_send_command(mm_handle h_component, MM_COMMAND_TYPE cmd,
     }
 
     return error;
+}
+
+static bool mm_vdec_delay_decode_exit(mm_vdec_data *p_vdec_data)
+{
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+    s32 ret = 0;
+
+    if(!p_vdec_data->p_decoder) {
+        loge(" video decoder is not created\n");
+        return MM_TRUE;
+    }
+
+    ret = mpp_decoder_control(p_vdec_data->p_decoder,
+                              MPP_DEC_GET_READY_PACKET_NUMBER,
+                              &p_vdec_data->ready_packet_num);
+    if (ret != 0) {
+        loge("get video ready_packet_num failed\n");
+        return MM_TRUE;
+    }
+
+    if (p_vdec_data->ready_packet_num < VDEC_BITSTREAM_PKT_COUNT * 2 / 3) {
+        return MM_FALSE;
+    }
+#endif
+    return MM_TRUE;
 }
 
 static s32 mm_vdec_get_parameter(mm_handle h_component, MM_INDEX_TYPE index,
@@ -181,6 +224,13 @@ static s32 mm_vdec_get_parameter(mm_handle h_component, MM_INDEX_TYPE index,
         case MM_INDEX_PARAM_VIDEO_DECODER_HANDLE:
             *((struct mpp_decoder **)p_param) = p_vdec_data->p_decoder;
             break;
+
+
+        case MM_INDEX_PARAM_DELAY_DECODE_EXIT:
+            *((MM_BOOL *)p_param) = mm_vdec_delay_decode_exit(p_vdec_data);
+            break;
+
+
         default:
             error = MM_ERROR_UNSUPPORT;
             break;
@@ -279,16 +329,11 @@ static s32 mm_vdec_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
                 }
                 p_vdec_data->codec_type = codec_type;
                 p_vdec_data->decoder_config.pix_fmt = pix_format;
-                if ((0 == strcmp(PRJ_CHIP, "d12x")) || (0 == strcmp(PRJ_CHIP, "d13x"))) {
-                    p_vdec_data->decoder_config.bitstream_buffer_size =
+                p_vdec_data->decoder_config.bitstream_buffer_size =
                         VDEC_BITSTREAM_BUFFER_SIZE;
-                } else {
-                    p_vdec_data->decoder_config.bitstream_buffer_size =
-                        VDEC_BITSTREAM_LARGE_BUFFER_SIZE;
-                }
                 p_vdec_data->decoder_config.extra_frame_num =
                     p_vdec_data->ext_frame_num;
-                p_vdec_data->decoder_config.packet_count = 10;
+                p_vdec_data->decoder_config.packet_count = VDEC_BITSTREAM_PKT_COUNT;
             } else if (index == VDEC_PORT_OUT_INDEX) {
                 logw("now no need to set out port param\n");
                 error = MM_ERROR_UNSUPPORT;
@@ -298,52 +343,23 @@ static s32 mm_vdec_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
             break;
         }
 
-        case MM_INDEX_PARAM_PORT_DEFINITION: {
-            mm_param_port_def *port = (mm_param_port_def *)p_param;
-            index = port->port_index;
-            if (index == VDEC_PORT_IN_INDEX) {
-                p_vdec_data->in_port_def[index].format.video.compression_format =
-                    port->format.video.compression_format;
-                p_vdec_data->in_port_def[index].format.video.color_format =
-                    port->format.video.color_format;
-
-                if (mm_vdec_video_format_trans(
-                        &codec_type, &port->format.video.compression_format) !=
-                    0) {
-                    error = MM_ERROR_UNSUPPORT;
-                    loge("MM_ERROR_UNSUPPORT\n");
-                    break;
-                }
-                if (mm_vdec_video_pixel_format_trans(
-                        &pix_format, &port->format.video.color_format) != 0) {
-                    error = MM_ERROR_UNSUPPORT;
-                    loge("MM_ERROR_UNSUPPORT\n");
-                    break;
-                }
-
-                /*need to convert */
-                p_vdec_data->codec_type = codec_type;
-                p_vdec_data->decoder_config.pix_fmt = pix_format;
-
-                /*need to define extened mm_index or decide by inner*/
-                p_vdec_data->decoder_config.bitstream_buffer_size =
-                    VDEC_BITSTREAM_BUFFER_SIZE;
-                p_vdec_data->decoder_config.extra_frame_num =
-                    p_vdec_data->ext_frame_num;
-                p_vdec_data->decoder_config.packet_count = 10;
-            } else if (index == VDEC_PORT_OUT_INDEX) {
-                logw("now no need to set out port param\n");
-            } else {
-                loge("MM_ERROR_BAD_PARAMETER\n");
-                error = MM_ERROR_BAD_PARAMETER;
-            }
-            break;
-        }
-
         case MM_INDEX_PARAM_VIDEO_STREAM_END_FLAG:
             pthread_mutex_lock(&p_vdec_data->in_pkt_lock);
             p_vdec_data->flags |= VDEC_INPORT_STREAM_END_FLAG;
             pthread_mutex_unlock(&p_vdec_data->in_pkt_lock);
+            break;
+
+        case MM_INDEX_PARAM_DELAY_DECODE_EXIT:
+            pthread_mutex_lock(&p_vdec_data->in_pkt_lock);
+            p_vdec_data->decode_delay_exit = *(MM_BOOL *)p_param;
+            pthread_mutex_unlock(&p_vdec_data->in_pkt_lock);
+            printf("set video delay decode exit, ready_packet_num %u\n",
+                p_vdec_data->ready_packet_num);
+            break;
+
+        case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
+            p_vdec_data->debug_en = ((mm_param_u32 *)p_param)->u32;
+            mm_vdec_show_debug_info(p_vdec_data);
             break;
 
         default:
@@ -381,7 +397,7 @@ static s32 mm_vdec_set_config(mm_handle h_component, MM_INDEX_TYPE index,
     s32 error = MM_ERROR_NONE;
     mm_vdec_data *p_vdec_data =
         (mm_vdec_data *)(((mm_component *)h_component)->p_comp_private);
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     MM_STATE_TYPE state = MM_STATE_INVALID;
     MM_STATE_TYPE render_state = MM_STATE_INVALID;
     mm_handle h_render_comp = p_vdec_data->out_port_bind.p_bind_comp;
@@ -389,7 +405,7 @@ static s32 mm_vdec_set_config(mm_handle h_component, MM_INDEX_TYPE index,
     switch (index) {
         case MM_INDEX_CONFIG_TIME_POSITION:
             // 1 wait video Render & Vdec enter pause state
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
             do {
                 mm_vdec_get_state(h_component, &state);
                 mm_get_state(h_render_comp, &render_state);
@@ -407,6 +423,8 @@ static s32 mm_vdec_set_config(mm_handle h_component, MM_INDEX_TYPE index,
             // clear flag
             p_vdec_data->flags = 0;
             p_vdec_data->first_get_frame_flag = MM_FALSE;
+            p_vdec_data->decode_delay_exit = MM_FALSE;
+            p_vdec_data->seek_flag = MM_TRUE;
             p_vdec_data->seek_pts = ((mm_time_config_timestamp *)p_config)->timestamp;
 #endif
             break;
@@ -452,7 +470,6 @@ static s64 mm_vdec_clock_get_sys_time()
     tick = ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
     return tick;
 }
-
 
 
 static s64 mm_vdec_get_media_time(mm_vdec_data *p_vdec_data)
@@ -561,6 +578,7 @@ static s32 mm_vdec_get_buffer(mm_handle h_comp, mm_buffer *p_buffer)
 {
     s32 error = MM_ERROR_NONE;
     s32 try_decode_times = 6;
+    s32 render_frame_num = 0;
     s32 data1, data2;
     s64 delay_time = 0;
     mm_vdec_data *p_vdec_data;
@@ -569,7 +587,7 @@ static s32 mm_vdec_get_buffer(mm_handle h_comp, mm_buffer *p_buffer)
     struct mpp_frame *p_frame;
     MM_VIDEO_SYNC_TYPE sync_type = MM_VIDEO_SYNC_INVAILD;
 
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     return MM_ERROR_UNSUPPORT;
 #endif
     if (!h_comp || !p_buffer || !p_buffer->p_buffer) {
@@ -596,38 +614,62 @@ static s32 mm_vdec_get_buffer(mm_handle h_comp, mm_buffer *p_buffer)
 
 try_again:
     /*step1: process sync decode*/
+    p_vdec_data->decoder_total_num++;
     pthread_mutex_lock(&p_vdec_data->process_dec_lock);
     error = mpp_decoder_decode(p_vdec_data->p_decoder);
     if (error != DEC_OK) {
         pthread_mutex_unlock(&p_vdec_data->process_dec_lock);
-        if (error == DEC_NO_READY_PACKET && try_decode_times > 0) {
+        if (error == DEC_NO_READY_PACKET) {
             mm_send_command(p_bind_demuxer->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
-            aic_msg_wait_new_msg(&p_vdec_data->s_get_frame_msg, 10000);
-            try_decode_times--;
-            goto try_again;
+
+            //Avoid the problem of incomplete frame retrieval in situations with mult ref frame
+            //When decoder no packet, need to check the decoder render list if has residual frame
+            mpp_decoder_control(p_vdec_data->p_decoder,
+                                MPP_DEC_GET_RENDER_FRAME_NUMBER,
+                                &render_frame_num);
+            if (render_frame_num > 0) {
+                p_vdec_data->decoder_fail_num++;
+                goto get_frame;
+            }
+            if (try_decode_times > 0) {
+                aic_msg_wait_new_msg(&p_vdec_data->s_get_frame_msg, 10000);
+                try_decode_times--;
+                p_vdec_data->decoder_fail_num++;
+                goto try_again;
+            }
+
         }
         logd("decoder failed %d\n", error);
-        return error;
-    }
-
-    /*step2: get frame from decoder*/
-    error = mpp_decoder_get_frame(p_vdec_data->p_decoder, p_frame);
-    if (error != DEC_OK) {
-        pthread_mutex_unlock(&p_vdec_data->process_dec_lock);
-        logd("decoder get frame failed %d\n", error);
+        p_vdec_data->decoder_fail_num++;
         return error;
     }
     p_vdec_data->decoder_ok_num++;
+
     pthread_mutex_unlock(&p_vdec_data->process_dec_lock);
+
+get_frame:
+    /*step2: get frame from decoder*/
+    error = mpp_decoder_get_frame(p_vdec_data->p_decoder, p_frame);
+    if (error != DEC_OK) {
+        logd("get frame failed %d\n", error);
+        p_vdec_data->get_frame_failed_num++;
+        return error;
+    }
+    p_vdec_data->get_frame_ok_num++;
 
     /*step3: notify the first frame, this frame will be get by user render*/
     if (!p_vdec_data->first_get_frame_flag) {
+        //Not in seek mode, should avoid drop the fist frame
+        if (!p_vdec_data->seek_flag) {
+            p_vdec_data->seek_pts = p_frame->pts;
+        }
         if (abs(p_vdec_data->seek_pts - p_frame->pts) > VDEC_SEEK_TIME_DIFF_US &&
             !(p_frame->flags & FRAME_FLAG_EOS)) {
             mpp_decoder_put_frame(p_vdec_data->p_decoder, p_frame);
             mm_send_command(p_bind_demuxer->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
             logd("drop some frame:pts %lld\n", p_frame->pts);
             try_decode_times = 3;
+            p_vdec_data->decoder_drop_num++;
             goto try_again;
         }
         p_vdec_data->first_get_frame_flag = MM_TRUE;
@@ -661,11 +703,13 @@ try_again:
     /*step4: process video and audio sync strategy*/
     sync_type = mm_vdec_process_video_sync(p_vdec_data, p_frame, &delay_time);
     if (sync_type == MM_VIDEO_SYNC_DROP) {
-        //drop frame:put frame to decoder then drop the video frame
-        mpp_decoder_put_frame(p_vdec_data->p_decoder, p_frame);
-        error = MM_ERROR_EMPTY_DATA;
-        p_vdec_data->decoder_drop_num++;
-        logd("drop  frame:pts %lld\n", p_frame->pts);
+        if (!(p_frame->flags & FRAME_FLAG_EOS)) {
+            //drop frame:put frame to decoder then drop the video frame
+            mpp_decoder_put_frame(p_vdec_data->p_decoder, p_frame);
+            error = MM_ERROR_EMPTY_DATA;
+            p_vdec_data->decoder_drop_num++;
+            logd("drop  frame:pts %lld\n", p_frame->pts);
+        }
     } else if (sync_type == MM_VIDEO_SYNC_DELAY) {
         //wait audio frame:sleep a moment then delay video render
         mm_send_command(p_bind_demuxer->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
@@ -814,7 +858,7 @@ s32 mm_vdec_component_deinit(mm_handle h_component)
     pthread_mutex_destroy(&p_vdec_data->state_lock);
 
     aic_msg_destroy(&p_vdec_data->s_msg);
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     aic_msg_destroy(&p_vdec_data->s_get_frame_msg);
 #endif
     if (p_vdec_data->p_decoder) {
@@ -910,6 +954,8 @@ s32 mm_vdec_component_init(mm_handle h_component)
     p_vdec_data->out_port_bind.p_self_comp = h_component;
 
     p_vdec_data->first_get_frame_flag = MM_FALSE;
+    p_vdec_data->decode_delay_exit = MM_FALSE;
+    p_vdec_data->first_show_pts = mm_vdec_clock_get_sys_time();
 
     if (pthread_mutex_init(&p_vdec_data->in_pkt_lock, NULL)) {
         loge("pthread_mutex_init in_pkt_lock fail!\n");
@@ -937,7 +983,7 @@ s32 mm_vdec_component_init(mm_handle h_component)
         error = MM_ERROR_INSUFFICIENT_RESOURCES;
         goto _EXIT;
     }
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     if (aic_msg_create(&p_vdec_data->s_get_frame_msg) < 0) {
         loge("aic_msg_create fail!");
         error = MM_ERROR_INSUFFICIENT_RESOURCES;
@@ -981,7 +1027,7 @@ _EXIT:
     }
     if (msg_creat) {
         aic_msg_destroy(&p_vdec_data->s_msg);
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         aic_msg_destroy(&p_vdec_data->s_get_frame_msg);
 #endif
     }
@@ -1020,7 +1066,7 @@ static void mm_vdec_state_change_to_idle(mm_vdec_data *p_vdec_data)
                 return;
             }
             logw("mpp_decoder_create %d ok!\n", p_vdec_data->codec_type);
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
             if (p_vdec_data->ve_fill_fb_flag && p_vdec_data->allocator) {
                 ret = mpp_decoder_control(p_vdec_data->p_decoder,
                                           MPP_DEC_INIT_CMD_SET_EXT_FRAME_ALLOCATOR,
@@ -1172,6 +1218,45 @@ CMD_EXIT:
     return cmd;
 }
 
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+static bool mm_vdec_delay_decode(mm_vdec_data *p_vdec_data)
+{
+    MM_BOOL dec_delay_flag;
+
+    pthread_mutex_lock(&p_vdec_data->in_pkt_lock);
+    dec_delay_flag = p_vdec_data->decode_delay_exit ? MM_FALSE : MM_TRUE;
+    pthread_mutex_unlock(&p_vdec_data->in_pkt_lock);
+    return dec_delay_flag;
+}
+#endif
+
+static void mm_vdec_show_debug_info(mm_vdec_data *p_vdec_data)
+{
+    if (!p_vdec_data->debug_en)
+        return;
+
+    printf("************************Video_decoder comp info***********************\n");
+
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
+    printf("total    dec_ok    dec_fail    drop\n");
+    printf("%5u    %6u    %8u    %4u\n",
+        p_vdec_data->decoder_total_num,
+        p_vdec_data->decoder_ok_num,
+        p_vdec_data->decoder_fail_num,
+        p_vdec_data->decoder_drop_num);
+#else
+    printf("total    dec_ok    dec_fail    get_ok    get_fail    drop\n");
+    printf("%5u    %6u    %8u    %6u    %8u    %4u\n",
+        p_vdec_data->decoder_total_num,
+        p_vdec_data->decoder_ok_num,
+        p_vdec_data->decoder_fail_num,
+        p_vdec_data->get_frame_ok_num,
+        p_vdec_data->get_frame_failed_num,
+        p_vdec_data->decoder_drop_num);
+#endif
+    printf("\nstate: %s\n\n", mm_component_sta_to_str(p_vdec_data->state));
+}
+
 static void *mm_vdec_component_thread(void *p_thread_data)
 {
     s32 cmd = MM_COMMAND_UNKNOWN;
@@ -1180,7 +1265,7 @@ static void *mm_vdec_component_thread(void *p_thread_data)
     MM_BOOL b_notify_frame_end = 0;
     mm_bind_info *p_bind_demuxer =
         &p_vdec_data->in_port_bind[VDEC_PORT_IN_INDEX];
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     mm_bind_info *p_bind_video_render = &p_vdec_data->out_port_bind;
 #endif
 
@@ -1200,7 +1285,7 @@ static void *mm_vdec_component_thread(void *p_thread_data)
             aic_msg_wait_new_msg(&p_vdec_data->s_msg, 0);
             continue;
         }
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         aic_msg_wait_new_msg(&p_vdec_data->s_msg, 0);
         continue;
 #endif
@@ -1217,7 +1302,16 @@ static void *mm_vdec_component_thread(void *p_thread_data)
         }
         b_notify_frame_end = 0;
 
+#ifdef AIC_MPP_PLAYER_DECODE_DELAY
+        if (mm_vdec_delay_decode(p_vdec_data) == MM_TRUE) {
+            aic_msg_wait_new_msg(&p_vdec_data->s_msg, 10000);
+            continue;
+        }
+#endif
+
         /* do video decode*/
+
+        p_vdec_data->decoder_total_num++;
         pthread_mutex_lock(&p_vdec_data->process_dec_lock);
 
         dec_ret = mpp_decoder_decode(p_vdec_data->p_decoder);
@@ -1227,7 +1321,7 @@ static void *mm_vdec_component_thread(void *p_thread_data)
             logd("mpp_decoder_decode ok!!!\n");
             /*when set VE_USE_FILL_FB mode, there is no need wkup video render,
               because video render component is no create*/
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
             mm_send_command(p_bind_video_render->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
 #endif
             mm_send_command(p_bind_demuxer->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
@@ -1237,24 +1331,28 @@ static void *mm_vdec_component_thread(void *p_thread_data)
             pthread_mutex_lock(&p_vdec_data->in_pkt_lock);
             p_vdec_data->wait_for_ready_pkt = MM_TRUE;
             pthread_mutex_unlock(&p_vdec_data->in_pkt_lock);
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
             if (p_vdec_data->pkt_end_flag) {
                 mm_send_command(p_bind_video_render->p_bind_comp,
                                 MM_COMMAND_EOS, 0, NULL);
             }
 #endif
+            p_vdec_data->decoder_fail_num++;
         } else if (dec_ret == DEC_NO_EMPTY_FRAME) {
             pthread_mutex_lock(&p_vdec_data->out_frame_lock);
             p_vdec_data->wait_for_empty_frame = MM_TRUE;
             pthread_mutex_unlock(&p_vdec_data->out_frame_lock);
+            p_vdec_data->decoder_fail_num++;
         } else if (dec_ret == DEC_NO_RENDER_FRAME) {
             loge("mpp_decoder_decode ret:%d !!!\n", dec_ret);
+            p_vdec_data->decoder_fail_num++;
         } else {
             //ASSERT();
             loge("mpp_decoder_decode error serious,do not keep decoding ret:%d!!!\n", dec_ret);
             mm_vdec_event_notify(p_vdec_data, MM_EVENT_ERROR,
                                  MM_ERROR_MB_ERRORS_IN_FRAME, 0, NULL);
             p_vdec_data->flags |= VDEC_OUTPORT_SEND_ALL_FRAME_FLAG;
+            p_vdec_data->decoder_fail_num++;
             goto _AIC_MSG_GET_;
         }
 
@@ -1275,5 +1373,6 @@ static void *mm_vdec_component_thread(void *p_thread_data)
         }
     }
 _EXIT:
+    mm_vdec_show_debug_info(p_vdec_data);
     return (void *)MM_ERROR_NONE;
 }

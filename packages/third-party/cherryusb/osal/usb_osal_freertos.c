@@ -228,3 +228,13 @@ void usb_osal_free_align(uint32_t mem_type, void *mem)
 {
     aicos_free_align(mem_type, mem);
 }
+
+void *usb_osal_malloc(size_t size)
+{
+    return pvPortMalloc(size);
+}
+
+void usb_osal_free(void *ptr)
+{
+    vPortFree(ptr);
+}

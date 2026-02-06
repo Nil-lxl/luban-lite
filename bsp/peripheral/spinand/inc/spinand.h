@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,6 +17,7 @@
 #define SPINAND_ERR_ECC     3 /**< ecc check error */
 #define SPINAND_TRUE        1
 #define SPINAND_FALSE       0
+#define SPINAND_ECC_LIMIT   10 /**< success */
 
 #define SPINAND_DIE_ID0 (0)
 #define SPINAND_DIE_ID1 (1)
@@ -73,6 +74,7 @@ struct aic_spinand_info {
     int (*get_status)(struct aic_spinand *flash, u8 status);
     int (*oob_get_user)(struct aic_spinand *flash, int section,
                             struct aic_oob_region *oobuser);
+    u16 ecc_strength;
 };
 typedef struct aic_spinand_info *aic_spinand_info_t;
 
@@ -89,6 +91,8 @@ struct spinand_id {
     u8 data[SPINAND_MAX_ID_LEN];
 };
 
+typedef int (*spinand_report_bitflip_cb)(struct aic_spinand *flash, u32 page);
+
 struct aic_spinand {
     const struct aic_spinand_info *info;
     struct spinand_id id;
@@ -101,6 +105,8 @@ struct aic_spinand {
     u8 *databuf;
     u8 *oobbuf;
     struct nand_bbt bbt;
+    u16 bitflip_threshold;
+    spinand_report_bitflip_cb report_bitflip_cb;
 };
 typedef struct aic_spinand *aic_spinand_t;
 
@@ -122,6 +128,8 @@ int spinand_erase(struct aic_spinand *flash, u32 offset, u32 size);
 int spinand_read(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size);
 int spinand_write(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size);
 int spinand_get_feature(struct aic_spinand *flash, u8 reg_addr);
+int spinand_set_internal_ecc(struct aic_spinand *flash, u8 enable);
+int spinand_register_report_bitflip_cb(struct aic_spinand *flash, spinand_report_bitflip_cb cb);
 
 #ifdef AIC_SPINAND_CONT_READ
 
@@ -224,6 +232,7 @@ struct spi_nand_cmd_cfg {
 #define STATUS_ECC_NO_BITFLIPS      (0 << 4)
 #define STATUS_ECC_HAS_1_4_BITFLIPS (1 << 4)
 #define STATUS_ECC_UNCOR_ERROR      (2 << 4)
+#define STATUS_ECC_HAS_5_8_BITFLIPS (3 << 4)
 
 #ifdef SPI_NAND_WINBOND
 extern const struct spinand_manufacturer winbond_spinand_manufacturer;

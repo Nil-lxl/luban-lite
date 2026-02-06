@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -8,6 +8,7 @@
 
 #include <aic_common.h>
 #include <string.h>
+#include <ctype.h>
 #include <malloc.h>
 #include <aic_partition.h>
 #include <disk_part.h>
@@ -158,7 +159,6 @@ static void prepare_backup_gpt_header(gpt_header *gpt_h)
 }
 
 #define in_range(c, lo, up) ((u8)c >= lo && (u8)c <= up)
-#define isprint(c)          in_range(c, 0x20, 0x7f)
 static char *print_efiname(gpt_entry *pte)
 {
     static char name[PARTNAME_SZ + 1];
@@ -322,7 +322,7 @@ struct aic_partition *aic_disk_get_mbr_parts(struct blk_desc *dev_desc)
     }
 
     if (p_mbr->signature != MSDOS_MBR_SIGNATURE) {
-        pr_err("** Not MBR sector **\n");
+        pr_info("** Not MBR sector **\n");
         return NULL;
     }
 

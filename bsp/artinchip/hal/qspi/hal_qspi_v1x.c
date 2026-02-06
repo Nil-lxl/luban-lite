@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -114,6 +114,7 @@ int hal_qspi_master_init(qspi_master_handle *h, struct qspi_master_config *cfg)
     qspi_hw_set_tx_delay_mode(base, true);
     qspi_hw_set_rx_delay_mode(base, cfg->rx_dlymode);
     qspi_hw_interrupt_disable(base, ICR_BIT_ALL_MSK);
+    qspi_hw_clear_interrupt_status(base, ICR_BIT_ALL_MSK);
     qspi_hw_set_cpol(base, cfg->cpol);
     qspi_hw_set_cpha(base, cfg->cpha);
     qspi_hw_set_lsb_en(base, cfg->lsb_en);
@@ -556,6 +557,8 @@ static int qspi_master_can_dma(struct qspi_master_state *qspi,
 {
     if (t->data_len <= QSPI_FIFO_DEPTH)
         return 0;
+    if (t->data_len % AIC_DMA_ALIGN_SIZE)
+        return 0;
     if (t->tx_data) {
         /* Meet DMA's address align requirement. */
         if (((unsigned long)t->tx_data) & (AIC_DMA_ALIGN_SIZE - 1))
@@ -813,9 +816,9 @@ static int qspi_master_transfer_dma_sync(qspi_master_handle *h,
             dmacfg.src_addr_width = qspi->dma_cfg.dev_bus_width;
         else
             dmacfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-        dmacfg.src_maxburst = qspi->dma_cfg.mem_max_burst;
-        dmacfg.dst_addr_width = qspi->dma_cfg.dev_bus_width;
-        dmacfg.dst_maxburst = qspi->dma_cfg.dev_max_burst;
+        dmacfg.src_maxburst = qspi->dma_cfg.dev_max_burst;
+        dmacfg.dst_addr_width = qspi->dma_cfg.mem_bus_width;
+        dmacfg.dst_maxburst = qspi->dma_cfg.mem_max_burst;
 
         ret = hal_dma_chan_config(dma_rx, &dmacfg);
         if (ret < 0) {
@@ -996,7 +999,7 @@ static int qspi_master_transfer_dma_async(struct qspi_master_state *qspi,
             tx_1line_cnt = txlen;
         qspi_hw_tx_dma_enable(base);
         qspi->work_mode = QSPI_WORK_MODE_ASYNC_TX_DMA;
-        qspi->done_mask = HAL_QSPI_STATUS_ASYNC_ALL_DONE;
+        qspi->done_mask = HAL_QSPI_STATUS_ASYNC_TDONE;
         qspi_hw_set_transfer_cnt(base, txlen, tx_1line_cnt, 0, 0);
         dma_tx = qspi->dma_tx;
 
@@ -1122,31 +1125,37 @@ void hal_qspi_master_irq_handler(qspi_master_handle *h)
         }
     }
     if (sts & ISTS_BIT_TDONE) {
-        if (qspi->status == HAL_QSPI_STATUS_IN_PROGRESS)
-            qspi->status = HAL_QSPI_STATUS_OK;
-        else
-            qspi->status &= ~HAL_QSPI_STATUS_IN_PROGRESS;
-        qspi_hw_interrupt_disable(base, ICR_BIT_ALL_MSK);
-        qspi->async_rx = NULL;
-        qspi->async_rx_remain = 0;
-        qspi->async_tx = NULL;
-        qspi->async_tx_remain = 0;
-        qspi->status |= HAL_QSPI_STATUS_ASYNC_TDONE;
-        if (QSPI_IS_ASYNC_ALL_DONE(qspi->status, qspi->done_mask)) {
-#ifdef AIC_DMA_DRV
-            if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_TX_DMA) {
-                hal_dma_chan_stop(qspi->dma_tx);
-                if (qspi_master_dynamic_dma(qspi))
-                    hal_release_dma_chan(qspi->dma_tx);
-            }
-            if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_RX_DMA) {
-                hal_dma_chan_stop(qspi->dma_rx);
-                if (qspi_master_dynamic_dma(qspi))
-                    hal_release_dma_chan(qspi->dma_rx);
-            }
-#endif
-            if (qspi->cb)
+        if (qspi->work_mode == QSPI_WORK_MODE_FLUSH_DISPLAY) {
+            if (qspi->cb) {
                 qspi->cb(h, qspi->cb_priv);
+            }
+        } else {
+            if (qspi->status == HAL_QSPI_STATUS_IN_PROGRESS)
+                qspi->status = HAL_QSPI_STATUS_OK;
+            else
+                qspi->status &= ~HAL_QSPI_STATUS_IN_PROGRESS;
+            qspi_hw_interrupt_disable(base, ICR_BIT_ALL_MSK);
+            qspi->async_rx = NULL;
+            qspi->async_rx_remain = 0;
+            qspi->async_tx = NULL;
+            qspi->async_tx_remain = 0;
+            qspi->status |= HAL_QSPI_STATUS_ASYNC_TDONE;
+            if (QSPI_IS_ASYNC_ALL_DONE(qspi->status, qspi->done_mask)) {
+#ifdef AIC_DMA_DRV
+                if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_TX_DMA) {
+                    hal_dma_chan_stop(qspi->dma_tx);
+                    if (qspi_master_dynamic_dma(qspi))
+                        hal_release_dma_chan(qspi->dma_tx);
+                }
+                if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_RX_DMA) {
+                    hal_dma_chan_stop(qspi->dma_rx);
+                    if (qspi_master_dynamic_dma(qspi))
+                        hal_release_dma_chan(qspi->dma_rx);
+                }
+#endif
+                if (qspi->cb)
+                    qspi->cb(h, qspi->cb_priv);
+            }
         }
     }
     qspi_hw_clear_interrupt_status(base, sts);
@@ -1287,6 +1296,67 @@ void hal_qspi_master_xip_enable(qspi_master_handle *h, bool enable)
     base = qspi_hw_index_to_base(qspi->idx);
 
     qspi_hw_set_xip_en(base, enable);
+}
+
+/**
+ *  spi display
+ */
+
+#define SPI_TCFG_REG 0x8
+#define SPI_FCTL_REG 0x18
+
+#define SPI_TRANS_CONFIG 0x186
+#define SPI_FIFO_CONFIG  0x00200820
+
+void hal_spi_disp_init(qspi_master_handle *h, struct spi_display_init_config *disp_config)
+{
+    struct qspi_master_state *qspi;
+    u32 base;
+
+    CHECK_PARAM_RET(h);
+
+    qspi = (struct qspi_master_state *)h;
+    base = qspi_hw_index_to_base(qspi->idx);
+
+    writel(SPI_TRANS_CONFIG, base + SPI_TCFG_REG);
+    writel(SPI_FIFO_CONFIG, base + SPI_FCTL_REG);
+
+    spi_disp_dma_onoff(base, disp_config->dma_en);
+    spi_disp_control_en(base);
+    spi_disp_mode_choose(base, disp_config->spi_mode);
+    spi_disp_en(base, disp_config->disp_on);
+}
+
+void hal_spi_disp_set_mode(qspi_master_handle *h, struct spi_display_param *disp_param)
+{
+    struct qspi_master_state *qspi;
+    u32 base;
+
+    CHECK_PARAM_RET(h);
+
+    qspi = (struct qspi_master_state *)h;
+    base = qspi_hw_index_to_base(qspi->idx);
+
+    spi_disp_set_disp_mode(base, disp_param->mtw, disp_param->vsw_en, disp_param->vbp_en, disp_param->vfp_en);
+    spi_disp_set_disp_vpara(base, disp_param->len_stride, disp_param->len);
+    spi_disp_set_disp_hpara(base, disp_param->hvbp, disp_param->hvld, disp_param->hvfp);
+    spi_disp_set_disp_cmd(base, disp_param->cmd_vsw, disp_param->cmd_vbp, disp_param->cmd_vld, disp_param->cmd_vfp);
+    spi_disp_set_disp_timeout(base, disp_param->count);
+    spi_disp_tx_delay_enable(base);
+}
+
+void hal_spi_disp_restart(qspi_master_handle *h, struct spi_display_data *disp_data)
+{
+    struct qspi_master_state *qspi;
+    u32 base;
+
+    CHECK_PARAM_RET(h);
+
+    qspi = (struct qspi_master_state *)h;
+    base = qspi_hw_index_to_base(qspi->idx);
+
+    qspi->work_mode = QSPI_WORK_MODE_FLUSH_DISPLAY;
+    spi_disp_rw_disp_restart(base, disp_data->tx_buf, disp_data->en, disp_data->frm_cnt);
 }
 
 #endif /* AIC_QSPI_DRV_V11 */

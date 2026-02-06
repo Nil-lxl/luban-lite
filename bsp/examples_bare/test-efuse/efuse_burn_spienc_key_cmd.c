@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -12,7 +12,16 @@
 #include <efuse.h>
 #include <console.h>
 #include <aic_utils.h>
+#include <aic_crc32.h>
 #include "spi_aes_key.h"
+#if defined(LPKG_USING_DFS_ELMFAT)
+#include <dfs_file.h>
+#include <dfs_elm.h>
+#endif
+#include <mmc.h>
+#include <block_dev.h>
+
+static uint32_t crc32_val = 0;
 
 int write_efuse(char *msg, u32 offset, const void *val, u32 size)
 {
@@ -172,8 +181,8 @@ int check_spienc_key(void)
         printf("Read efuse error.\n");
         return -1;
     }
-    printf("SPI ENC KEY:\n");
-    hexdump(data, 16, 1);
+    crc32_val = crc32(crc32_val, data, 16);
+    printf("SPI ENC KEY crc32 value:0x%x\n", (u32)crc32(0, data, 16));
 
     return 0;
 }
@@ -212,8 +221,8 @@ int check_spienc_nonce(void)
         printf("Read efuse error.\n");
         return -1;
     }
-    printf("SPI ENC NONCE:\n");
-    hexdump(data, 8, 1);
+    crc32_val = crc32(crc32_val, data, 8);
+    printf("SPI ENC NONCE crc32 value:0x%x\n", (u32)crc32(0, data, 8));
 
 #endif
     return 0;
@@ -256,6 +265,8 @@ int check_spienc_rotpk(void)
         printf("Read efuse error.\n");
         return -1;
     }
+    crc32_val = crc32(crc32_val, data, 16);
+    printf("ROTPK crc32 value:0x%x\n", (u32)crc32(0, data, 16));
     printf("ROTPK:\n");
     hexdump(data, 16, 1);
 
@@ -385,22 +396,87 @@ int check_spienc_key_read_write_disable_bits(void)
     return 0;
 }
 
+int save_crc32_to_sdcard(void)
+{
+    int ret = 0;
+#if defined(LPKG_USING_DFS_ELMFAT) && defined(AICUPG_SDCARD_ENABLE)
+    struct dfs_fd fd = { 0 };
+    char *devname = NULL, *file_buf = NULL;
+    char str_chipid[64] = { 0 }, chipid[16] = { 0 };
+    int i, length = 0;
+
+    dfs_init();
+    elm_init();
+
+    ret = mmc_init(1);
+    if (ret) {
+        printf("sdmc 1 init failed.\n");
+        return ret;
+    }
+
+    devname = block_get_name_by_id(1);
+
+    if (dfs_mount(devname, "/", "elm", 0, DEVICE_TYPE_SDMC_DISK) < 0) {
+        pr_err("Failed to mount %s with FatFS\n", devname);
+        ret = -1;
+        goto err2;
+    } else {
+        pr_info("mount %s ok\n", devname);
+    }
+
+    file_buf = (char *)aicos_malloc_align(0, 2048, CACHE_LINE_SIZE);
+    if (!file_buf) {
+        pr_err("Error, malloc buf failed.\n");
+        ret = -1;
+        goto err2;
+    }
+    memset((void *)file_buf, 0, 2048);
+
+    if (dfs_file_open(&fd, "burn.log", O_CREAT | O_WRONLY | O_APPEND) < 0) {
+        pr_err("Open burn.log failed.\n");
+        ret = -1;
+        goto err2;
+    }
+
+    if (efuse_read_chip_id(chipid)) {
+        pr_err("Read chipid failed.\n");
+        ret = -1;
+        goto err1;
+    }
+
+    for (i = 0; i < sizeof(chipid); i++) {
+        sprintf(&str_chipid[2 * i], "%02x", chipid[i]);
+    }
+    sprintf(file_buf, "chipid:%s, crc32:0x%x\n", str_chipid, (u32)crc32_val);
+
+    length = dfs_file_write(&fd, file_buf, strlen(file_buf));
+    if (length != strlen(file_buf)) {
+        pr_err("Write file data failed, errno=%d\n", length);
+        ret = -1;
+        goto err1;
+    }
+
+err1:
+    dfs_file_close(&fd);
+
+err2:
+    if (file_buf)
+        aicos_free_align(0, file_buf);
+#endif
+
+    return ret;
+}
+
 
 int cmd_efuse_do_spienc(int argc, char **argv)
 {
     int ret;
+    crc32_val = 0;
 
     efuse_init();
     efuse_write_enable();
 
 #if defined(AIC_CHIP_D12X) || defined(AIC_CHIP_D13X) || defined(AIC_CHIP_D21X) || defined(AIC_CHIP_G73X)
-    ret = burn_brom_spienc_bit();
-    if (ret) {
-        efuse_write_disable();
-        printf("Error\n");
-        return -1;
-    }
-
     ret = burn_spienc_key();
     if (ret) {
         efuse_write_disable();
@@ -408,53 +484,14 @@ int cmd_efuse_do_spienc(int argc, char **argv)
         return -1;
     }
 
-    ret = burn_spienc_nonce();
-    if (ret) {
-        efuse_write_disable();
-        printf("Error\n");
-        return -1;
-    }
-
-#if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_D21X) || defined(AIC_CHIP_G73X)
-    ret = burn_spienc_rotpk();
-    if (ret) {
-        efuse_write_disable();
-        printf("Error\n");
-        return -1;
-    }
-#endif
-
-#if !defined(AIC_SID_BURN_DEBUG_MODE)
-    ret = burn_spienc_key_read_write_disable_bits();
-    if (ret) {
-        efuse_write_disable();
-        printf("Error\n");
-        return -1;
-    }
-
-    ret = burn_jtag_lock_bit();
-    if (ret) {
-        efuse_write_disable();
-        printf("Error\n");
-        return -1;
-    }
-#endif
-#endif
-
-    ret = check_brom_spienc_bit();
-    if (ret) {
-        efuse_write_disable();
-        printf("Error\n");
-        return -1;
-    }
-
-    ret = check_jtag_lock_bit();
-    if (ret) {
-        efuse_write_disable();
-        printf("Error\n");
-        return -1;
-    }
     ret = check_spienc_key();
+    if (ret) {
+        efuse_write_disable();
+        printf("Error\n");
+        return -1;
+    }
+
+    ret = burn_spienc_nonce();
     if (ret) {
         efuse_write_disable();
         printf("Error\n");
@@ -469,6 +506,13 @@ int cmd_efuse_do_spienc(int argc, char **argv)
     }
 
 #if defined(AIC_CHIP_D13X) || defined(AIC_CHIP_D21X) || defined(AIC_CHIP_G73X)
+    ret = burn_spienc_rotpk();
+    if (ret) {
+        efuse_write_disable();
+        printf("Error\n");
+        return -1;
+    }
+
     ret = check_spienc_rotpk();
     if (ret) {
         efuse_write_disable();
@@ -477,6 +521,28 @@ int cmd_efuse_do_spienc(int argc, char **argv)
     }
 #endif
 
+    ret = burn_brom_spienc_bit();
+    if (ret) {
+        efuse_write_disable();
+        printf("Error\n");
+        return -1;
+    }
+
+    ret = check_brom_spienc_bit();
+    if (ret) {
+        efuse_write_disable();
+        printf("Error\n");
+        return -1;
+    }
+
+#if !defined(AIC_SID_BURN_DEBUG_MODE)
+    ret = burn_spienc_key_read_write_disable_bits();
+    if (ret) {
+        efuse_write_disable();
+        printf("Error\n");
+        return -1;
+    }
+
     ret = check_spienc_key_read_write_disable_bits();
     if (ret) {
         efuse_write_disable();
@@ -484,9 +550,27 @@ int cmd_efuse_do_spienc(int argc, char **argv)
         return -1;
     }
 
+    ret = burn_jtag_lock_bit();
+    if (ret) {
+        efuse_write_disable();
+        printf("Error\n");
+        return -1;
+    }
+
+    ret = check_jtag_lock_bit();
+    if (ret) {
+        efuse_write_disable();
+        printf("Error\n");
+        return -1;
+    }
+#endif
+#endif
+
     efuse_write_disable();
     printf("\n");
     printf("Write SPI ENC eFuse done.\n");
+    printf("All key crc32 value are 0x%x.\n", (u32)crc32_val);
+    save_crc32_to_sdcard();
 #if defined(AIC_SID_BURN_DEBUG_MODE)
     printf("WARNING: The debug mode, the key is visible to the CPU.\n");
 #endif

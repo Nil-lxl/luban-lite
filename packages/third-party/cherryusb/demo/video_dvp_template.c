@@ -26,9 +26,6 @@
 #define VID_BUF_PLANE_NUM       2
 #define SENSOR_FORMAT           MPP_FMT_NV12
 
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t packet_buffer[460 * 1024];
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t buf[460 * 1024];
-
 /* USB Config Gloabl marco */
 #define VIDEO_IN_EP  0x81
 #define VIDEO_INT_EP 0x83
@@ -82,7 +79,10 @@ USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t buf[460 * 1024];
 #define USBD_MAX_POWER     500
 #define USBD_LANGID_STRING 1033
 
-const uint8_t video_descriptor[] = {
+USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t packet_buffer[MAX_PAYLOAD_SIZE];
+USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t buf[460 * 1024];
+
+uint8_t video_descriptor[] = {
     USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0xef, 0x02, 0x01, USBD_VID, USBD_PID, 0x0001, 0x01),
     USB_CONFIG_DESCRIPTOR_INIT(USB_VIDEO_DESC_SIZ, 0x02, 0x01, USB_CONFIG_BUS_POWERED, USBD_MAX_POWER),
     VIDEO_VC_NOEP_DESCRIPTOR_INIT(0x00, VIDEO_INT_EP, 0x0100, VIDEO_VC_TERMINAL_LEN, 48000000, 0x02),
@@ -198,11 +198,14 @@ static usb_osal_thread_t video_thread = NULL;
 static volatile bool g_running = false;
 static volatile bool iso_tx_busy = false;
 
-void usbd_video_iso_callback(uint8_t ep, uint32_t nbytes)
+void usbd_video_iso_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
-    USB_LOG_DBG("actual in len:%d\r\n", nbytes);
-    iso_tx_busy = false;
-    usb_osal_sem_give(g_uvc_video.tx_sem);
+    if (usbd_video_stream_split_transfer(busid, ep)) {
+        /* one frame has done */
+        USB_LOG_DBG("actual in len:%d\r\n", nbytes);
+        iso_tx_busy = false;
+        usb_osal_sem_give(g_uvc_video.tx_sem);
+    }
 }
 
 static struct usbd_endpoint video_in_ep = {
@@ -397,50 +400,30 @@ static int video_usb_set(struct uvc_video *uvc_video, int index)
     struct vin_video_buf *binfo = &uvc_video->binfo;
     int image_size = 0, i = 0;
     char *addr = NULL;
-    uint32_t out_len, remaining_len;
-    uint32_t packets, packet_size;
+
     /* calculate total image length */
     for (i = 0; i < VID_BUF_PLANE_NUM; i++)
         image_size += binfo->planes[index * VID_BUF_PLANE_NUM + i].len;
 
     addr = (char *)(uintptr_t)binfo->planes[index * VID_BUF_PLANE_NUM].buf;
-    USB_LOG_DBG("i:%d, len:%d, buf:0x%x, addr:%p\n",
-                i, binfo->planes[index * VID_BUF_PLANE_NUM].len,
-                binfo->planes[index * VID_BUF_PLANE_NUM].buf,
-                addr);
+    USB_LOG_DBG("len:%d, addr:%p\n", image_size, addr);
     aicos_dcache_invalid_range(addr, image_size);
 
     if (g_uvc_video.dst_fmt == MPP_FMT_YUV400) {
-        image_size += (image_size / 2);
-        memcpy(buf, addr, binfo->planes[index * VID_BUF_PLANE_NUM].len);
+        int y_size = image_size;
+        int uv_size = y_size / 2;
+
+        memcpy(buf, addr, y_size);
+
+        memset(buf + y_size, 128, uv_size);
+
+        image_size = y_size + uv_size;
         addr = (char *)(uintptr_t)buf;
     }
 
-    packets = usbd_video_payload_fill((uint8_t *)addr, image_size, packet_buffer, &out_len);
-    remaining_len = out_len;
+    usbd_video_stream_start_write(0, video_in_ep.ep_addr, packet_buffer, (uint8_t *)addr, image_size, false);
 
-    USB_LOG_DBG("ep:0x%x, packet:%d image_size:%d, total_size:%ld, packets:%ld\n",
-                video_in_ep.ep_addr, MAX_PAYLOAD_SIZE, image_size, out_len, packets);
-
-    for (i = 0; i < packets; i++) {
-        iso_tx_busy = true;
-        packet_size = MIN(MAX_PAYLOAD_SIZE, remaining_len);
-        usbd_ep_start_write(video_in_ep.ep_addr, &packet_buffer[out_len - remaining_len], packet_size);
-
-        USB_LOG_DBG("ep:0x%x, [%d]%#lx (%ld) total_size:%ld, remaining_len:%ld\n",
-                        video_in_ep.ep_addr, i, (uint32_t)&packet_buffer[out_len - remaining_len],
-                        packet_size, out_len, remaining_len);
-
-        if (usb_osal_sem_take(g_uvc_video.tx_sem, 3000)) {
-            USB_LOG_WRN("UVC transmission termination.\n");
-        }
-
-        if (g_running == 0) {
-            USB_LOG_DBG("video transfer interrupt close\n");
-            return -1;
-        }
-        remaining_len -= packet_size;
-    }
+    usb_osal_sem_take(g_uvc_video.tx_sem, 3000);
 
     return 0;
 }
@@ -562,11 +545,7 @@ static int camera_init(void)
     return 0;
 }
 
-#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-void usbd_comp_video_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
+static void usbd_dvp_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -593,14 +572,14 @@ void usbd_event_handler(uint8_t event)
     }
 }
 
-void usbd_video_open(uint8_t intf)
+void usbd_video_open(uint8_t busid, uint8_t intf)
 {
     USB_LOG_RAW("OPEN\r\n");
     iso_tx_busy = false;
     usb_osal_sem_give(g_uvc_video.stream_sem);
 }
 
-void usbd_video_close(uint8_t intf)
+void usbd_video_close(uint8_t busid, uint8_t intf)
 {
     USB_LOG_RAW("CLOSE\r\n");
     if (iso_tx_busy == true)
@@ -634,7 +613,7 @@ int usbd_comp_video_init(uint8_t *ep_table, void *data)
 int video_deinit(void)
 {
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    usbd_deinitialize();
+    usbd_deinitialize(0);
 #else
     usbd_comp_func_release(video_descriptor, "video");
 #endif
@@ -662,8 +641,24 @@ int video_deinit(void)
     return 0;
 }
 
+void video_dvp_desc_config()
+{
+    struct video_vc_input_terminal_bmcontrol_bitmap ct_bitmap = {0};
+    ct_bitmap.auto_exposure_mode = 1;
+    ct_bitmap.exposure_time_absolute = 1;
+    if (video_set_camera_terminal_control(&ct_bitmap, video_descriptor) < 0)
+        USB_LOG_ERR("Failed to set camera terminal.\n");
+
+    struct video_vc_processing_unit_bmcontrol_bitmap pu_bitmap = {0};
+    pu_bitmap.brightness = 1;
+    pu_bitmap.gain = 1;
+    if (video_set_processing_uint(&pu_bitmap, video_descriptor) < 0)
+        USB_LOG_ERR("Failed to set processing unit.\n");
+}
+
 int video_init(void)
 {
+    video_dvp_desc_config();
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     uint32_t max_frame_size = 0;
 
@@ -671,15 +666,15 @@ int video_init(void)
 
     max_frame_size = g_uvc_video.w * g_uvc_video.h * 2;
 
-    usbd_desc_register(video_descriptor);
-    usbd_add_interface(usbd_video_init_intf(&intf0, INTERVAL, max_frame_size, MAX_PAYLOAD_SIZE));
-    usbd_add_interface(usbd_video_init_intf(&intf1, INTERVAL, max_frame_size, MAX_PAYLOAD_SIZE));
-    usbd_add_endpoint(&video_in_ep);
+    usbd_desc_register(0, video_descriptor);
+    usbd_add_interface(0, usbd_video_init_intf(0, &intf0, INTERVAL, max_frame_size, MAX_PAYLOAD_SIZE));
+    usbd_add_interface(0, usbd_video_init_intf(0, &intf1, INTERVAL, max_frame_size, MAX_PAYLOAD_SIZE));
+    usbd_add_endpoint(0, &video_in_ep);
 
-    usbd_initialize();
+    usbd_initialize(0, USB_DEV_BASE, usbd_dvp_event_handler);
 #else
     usbd_comp_func_register(video_descriptor,
-                            usbd_comp_video_event_handler,
+                            usbd_dvp_event_handler,
                             usbd_comp_video_init, "video");
 #endif
     return 0;

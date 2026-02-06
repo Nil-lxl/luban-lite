@@ -19,6 +19,8 @@
 #include "aic_drv_gpio.h"
 #include "include/yydecoder.h"
 
+#include "bc_uart.h"
+
 #include "mpp_vin.h"
 #include "drv_camera.h"
 #include "artinchip_fb.h"
@@ -33,10 +35,12 @@
 #define VID_SCALE_OFFSET        0
 #define DATA_PREPARE_EVENT    1
 
+// LED
 #ifdef AIC_BARCODE_DEMO_LED
 u32 led_pin = 0;
 #endif
 
+// DISPLAY
 #define ENABLE_DISPLAY
 #ifdef ENABLE_DISPLAY
 #include "include/video_font_data.h"
@@ -49,6 +53,10 @@ unsigned char *g_ge_out_buffer = NULL;
 static struct mpp_fb *g_fb = NULL;
 static struct aicfb_screeninfo g_fb_info = {0};
 #endif
+
+// UART
+#define UART_PORT "uart2"
+static rt_device_t g_uart = RT_NULL;
 
 #define ALIGN_DOWM(x, align)    ((x) & ~(align - 1))
 
@@ -517,6 +525,7 @@ static void barcode_decode_thread(void *arg)
             usbd_keyboard_putnchar((char *)g_ddata.out_buffer, sizeof(g_ddata.out_buffer));
             usbd_keyboard_putnchar("\r\n", sizeof("\r\n"));
 #endif
+            uart_send_msg(g_uart, g_ddata.out_buffer, sizeof(g_ddata.out_buffer));
             show_frame_delay();
 
 #ifdef ENABLE_DISPLAY
@@ -680,6 +689,8 @@ static void cmd_barcode_demo(int argc, char **argv)
     }
 
     rt_pwm_set(pwm_dev, 1, 1000000, 500000);
+
+    uart_init(UART_PORT, &g_uart);
 
 #ifdef ENABLE_DISPLAY
     ret = init_screen_fb();

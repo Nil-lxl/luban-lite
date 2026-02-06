@@ -6,9 +6,8 @@
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  */
 
-#include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
+
 #include "aic_core.h"
 #include "mpp_ge.h"
 #include "lv_aic_stream.h"

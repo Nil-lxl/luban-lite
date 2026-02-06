@@ -7,18 +7,16 @@
  * Desc: audio_player_demo
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
-#include <unistd.h>
 #include <inttypes.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <getopt.h>
 #include <shell.h>
+
 #include <artinchip_fb.h>
 #include "mini_audio_player.h"
 #include "aic_audio_render_manager.h"
@@ -45,6 +43,7 @@ void play_wav(void *file_path)
     struct aic_parser *parser;
     char *wav_buff = NULL;
     int parser_ret = 0;
+    int volume = 100;
 
     create_params.dev_id = 0;
     create_params.mix_enable = 1;
@@ -76,6 +75,11 @@ void play_wav(void *file_path)
         __func__, __LINE__, attr.sample_rate, attr.bits_per_sample, attr.channels);
     if (aic_audio_render_control(render, AUDIO_RENDER_CMD_SET_ATTR, &attr)) {
         printf("aic_audio_render_set_attr fail\n");
+        goto free_parser;
+    }
+
+    if (aic_audio_render_control(render, AUDIO_RENDER_CMD_SET_SUB_TRACK_VOL, &volume)) {
+        printf("aic_audio_render_set_volume fail\n");
         goto free_parser;
     }
 

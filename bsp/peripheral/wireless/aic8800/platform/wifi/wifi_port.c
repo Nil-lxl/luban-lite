@@ -6,7 +6,6 @@
 
 #include "cli_al.h"
 #include "sys_al.h"
-#include "app_al.h"
 #include "wifi_al.h"
 #include "netif_al.h"
 #include "wifi_def.h"

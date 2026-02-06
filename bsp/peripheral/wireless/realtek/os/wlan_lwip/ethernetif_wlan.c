@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -132,10 +132,6 @@ int init_wlan_netif(ip4_addr_t *ipaddr, ip4_addr_t *mask, ip4_addr_t *gw)
 #else
     netif_add(netif, NULL, wlan_ethernetif_init, tcpip_input);
 #endif
-
-#if LWIP_NETIF_LINK_CALLBACK
-    netif_set_link_callback(netif, link_callback);
-#endif /* LWIP_NETIF_LINK_CALLBACK */
 
     netif_set_up(netif);
 #endif

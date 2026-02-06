@@ -18,6 +18,7 @@
 #include "../core/lv_global.h"
 
 #if LV_LOG_PRINTF
+    #include <sys/time.h>
     #include <stdio.h>
 #endif
 

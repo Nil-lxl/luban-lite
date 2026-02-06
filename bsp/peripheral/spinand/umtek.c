@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -45,7 +45,7 @@ const struct aic_spinand_info umtek_spinand_table[] = {
     /*GSS01GAK1*/
     { DEVID(0xBA), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "umtek 128MB: 2048+64@64@1024", cmd_cfg_table,
-      gss01ga_ecc_get_status, gss01ga_ooblayout_user },
+      gss01ga_ecc_get_status, gss01ga_ooblayout_user, 4 },
 };
 
 const struct aic_spinand_info *umtek_spinand_detect(struct aic_spinand *flash)

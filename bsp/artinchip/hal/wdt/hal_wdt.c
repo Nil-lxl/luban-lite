@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -40,6 +40,8 @@
 #define WDT_OP_WR_EN_CMD0       0xA1C99999
 #define WDT_OP_WR_EN_CMD1       0xA1C66666
 
+#define WDT_IRQ_STA_TIMEOUT     BIT(0)
+
 #define WDT_SEC_TO_CNT(n)       ((n) * 32000)
 #define WDT_CNT_TO_SEC(n)       ((n) / 32000)
 
@@ -48,6 +50,8 @@ enum aic_wdt_wr_mode {
     WDT_WR_DISABLE = 1, // Only can write WDT_REG_OP
     WDT_WR_DISABLE_ALL = 3 // Only can reset
 };
+
+static wdt_callback_t g_wdt_callback = NULL;
 
 void hal_wdt_op_clr(u32 thd)
 {
@@ -139,7 +143,10 @@ void hal_wdt_enable(u32 enable, u32 dbg_continue)
 
 void hal_wdt_irq_enable(u32 enable)
 {
-    writel(enable, WDT_REG_IRQ_EN);
+    if (enable)
+        writel(WDT_IRQ_STA_TIMEOUT, WDT_REG_IRQ_EN);
+    else
+        writel(0, WDT_REG_IRQ_EN);
 }
 
 int hal_wdt_irq_sta(void)
@@ -153,6 +160,26 @@ int hal_wdt_clr_int(void)
 
     writel(sta, WDT_REG_IRQ_STA);
     return sta;
+}
+
+irqreturn_t hal_wdt_irq(int irq, void *arg)
+{
+    u8 val = 0;
+
+    val = hal_wdt_clr_int();
+    pr_debug("IRQ status %#x\n", val);
+
+    if (val & WDT_IRQ_STA_TIMEOUT) {
+        if (g_wdt_callback)
+            g_wdt_callback();
+    }
+
+    return IRQ_HANDLED;
+}
+
+void hal_wdt_register_callback(wdt_callback_t callback)
+{
+    g_wdt_callback = callback;
 }
 
 #ifdef AIC_WDT_DRV_V11

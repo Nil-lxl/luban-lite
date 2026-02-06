@@ -11,7 +11,6 @@
 #ifndef __DFS_H__
 #define __DFS_H__
 
-#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +19,7 @@
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <sys/time.h>
+#include <stdio.h>
 #include <rtdevice.h>
 
 #ifdef __cplusplus

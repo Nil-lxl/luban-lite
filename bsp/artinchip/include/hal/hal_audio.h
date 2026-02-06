@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -11,6 +11,7 @@
 
 #include <aic_core.h>
 #include "hal_dma.h"
+#include "aic_dma_id.h"
 #include "aic_hal_gpio.h"
 #include "aic_hal_clk.h"
 #include "hal_audio_reg.h"
@@ -286,6 +287,16 @@ static inline void hal_audio_set_fade_volume(aic_audio_ctrl *codec, uint32_t vol
     reg_val &= ~(FADE_CTRL1_TARGET_VOL_MASK);
     reg_val |= FADE_CTRL1_TARGET_VOL(volume);
     writel(reg_val, codec->reg_base + FADE_CTRL1_REG);
+}
+
+static inline void hal_audio_set_fade_control(aic_audio_ctrl *codec, uint32_t speed, uint32_t step)
+{
+    uint32_t reg_val;
+
+    reg_val = readl(codec->reg_base + FADE_CTRL0_REG);
+    reg_val |= FADE_CTRL0_SPEED(speed);
+    reg_val |= FADE_CTRL0_STEP(step);
+    writel(reg_val, codec->reg_base + FADE_CTRL0_REG);
 }
 
 static inline void hal_audio_enable_dmic_adout_shift(aic_audio_ctrl *codec)

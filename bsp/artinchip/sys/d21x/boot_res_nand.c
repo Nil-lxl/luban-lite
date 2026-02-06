@@ -1,9 +1,11 @@
 /*
- * Copyright (C) 2023 ArtInChip Technology Co.,Ltd
+ * Copyright (C) 2023-2025 ArtInChip Technology Co.,Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
  * Author: Dehuang Wu <dehuang.wu@artinchip.com>
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <aic_common.h>

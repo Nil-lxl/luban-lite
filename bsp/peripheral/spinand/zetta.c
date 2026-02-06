@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -47,7 +47,7 @@ const struct aic_spinand_info zetta_spinand_table[] = {
     /*ZD35Q1GC-IB*/
     { DEVID(0x71), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "zetta 128MB: 2048+64@64@1024", cmd_cfg_table,
-      zd35q1gc_ecc_get_status, zd35q1gc_ooblayout_user },
+      zd35q1gc_ecc_get_status, zd35q1gc_ooblayout_user }, //This device has no enough Spare Area for user, we do not support it.
 };
 
 const struct aic_spinand_info *zetta_spinand_detect(struct aic_spinand *flash)

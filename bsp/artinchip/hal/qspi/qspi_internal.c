@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,6 +17,10 @@
 void qspi_reg_dump(u32 base)
 {
     u32 *p, i;
+
+#ifdef QEMU_RUN
+    return;
+#endif
 
     p = (void *)(unsigned long)base;
     for (i = 0; i < 40; i++) {
@@ -37,6 +41,10 @@ u32 qspi_calc_timeout(u32 bus_hz, u32 len)
 {
     u32 tmo_cnt, tmo_us;
     u32 tmo_speed = 100;
+
+#ifdef QEMU_RUN
+    return 1;
+#endif
 
     if (bus_hz < HAL_QSPI_MIN_FREQ_HZ)
         tmo_us = (1000000 * len * 8) / bus_hz;

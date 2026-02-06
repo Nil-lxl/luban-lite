@@ -243,7 +243,7 @@ void usbd_clear_buffer(void)
     }
 }
 
-void usbd_event_handler(uint8_t event)
+void usbd_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -269,27 +269,27 @@ void usbd_event_handler(uint8_t event)
     }
 }
 
-void usbd_midi_bulk_out(uint8_t ep, uint32_t nbytes)
+void usbd_midi_bulk_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     if (usbd_ms_decoder(read_buffer)) {
         USB_LOG_ERR("midi streaming decoder fail!\r\n");
         return;
     }
-    usbd_ep_start_read(MIDI_OUT_EP, read_buffer, MIDI_OUT_PACKET);
+    usbd_ep_start_read(0, MIDI_OUT_EP, read_buffer, MIDI_OUT_PACKET);
 }
 
-void usbd_midi_bulk_in(uint8_t ep, uint32_t nbytes)
+void usbd_midi_bulk_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     if (usbd_midi_input_buffer(write_buffer)) {
         USB_LOG_ERR("midi input buffer fail!\r\n");
         return;
     }
-    usbd_ep_start_write(MIDI_IN_EP, write_buffer, MIDI_OUT_PACKET);
+    usbd_ep_start_write(0, MIDI_IN_EP, write_buffer, MIDI_OUT_PACKET);
 }
 
 void usbd_midi_open(void)
 {
-    usbd_ep_start_read(MIDI_OUT_EP, read_buffer, MIDI_OUT_PACKET);
+    usbd_ep_start_read(0, MIDI_OUT_EP, read_buffer, MIDI_OUT_PACKET);
 }
 
 struct usbd_interface intf0;
@@ -307,13 +307,13 @@ struct usbd_endpoint midi_in_ep = {
 
 void midi_init(void)
 {
-    usbd_desc_register(midi_descriptor);
-    usbd_add_interface(usbd_midi_init_intf(&intf0));
-    usbd_add_interface(usbd_midi_init_intf(&intf1));
-    usbd_add_endpoint(&midi_out_ep);
-    usbd_add_endpoint(&midi_in_ep);
+    usbd_desc_register(0, midi_descriptor);
+    usbd_add_interface(0, usbd_midi_init_intf(0, &intf0));
+    usbd_add_interface(0, usbd_midi_init_intf(0, &intf1));
+    usbd_add_endpoint(0, &midi_out_ep);
+    usbd_add_endpoint(0, &midi_in_ep);
 
-    usbd_initialize();
+    usbd_initialize(0, USB_DEV_BASE, usbd_event_handler);
 }
 
 #if defined(KERNEL_RTTHREAD)

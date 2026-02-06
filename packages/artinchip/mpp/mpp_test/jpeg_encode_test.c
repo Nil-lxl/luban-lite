@@ -25,23 +25,38 @@
 #include "mpp_log.h"
 #include "mpp_mem.h"
 
-static void print_help(void)
+static void print_help(char *app)
 {
-    printf("Usage: jpeg_encode_test [OPTIONS] [SLICES PATH]\n\n"
+    printf("Usage: %s [OPTIONS]\n"
         "Options:\n"
-        " -i            input stream file name\n"
-        " -o            output file name\n"
-        " -q            set quality (value range: 0~100)\n"
-        " -w            width of input yuv data\n"
-        " -g            height of input yuv data\n"
-        " -h            help\n\n"
-        "End:\n");
+        "  -i\t\tinput stream file name\n"
+        "  -o\t\toutput stream file name\n"
+        "  -q\t\tset quality (value range: 0~100)\n"
+        "  -w\t\twidth of input yuv data\n"
+        "  -h\t\theight of input yuv data\n"
+        "  -u\t\tusage\n\n", app);
+}
+
+void gen_out_filename(char *ofile, char *ifile, int size)
+{
+    char *suffix = strrchr(ifile, '.');
+    char temp[128] = "";
+
+    if (!suffix) {
+        snprintf(ofile, size, "%s.jpg", ifile);
+        return;
+    }
+
+    strncpy(temp, ifile, suffix - ifile);
+    snprintf(ofile, size, "%s.jpg", temp);
 }
 
 int jpeg_encode_test(int argc, char **argv)
 {
     int i;
     int opt;
+    char ifile_name[128] = "";
+    char ofile_name[128] = "";
     int quality = 90;
     struct mpp_encoder *p_encoder = NULL;
     int phy_addr[3] = {0};
@@ -54,47 +69,52 @@ int jpeg_encode_test(int argc, char **argv)
     FILE* fp_save = NULL;
 
     if (argc < 2) {
-        print_help();
+        print_help(argv[0]);
         return -1;
     }
 
     optind = 0;
     while (1) {
-        opt = getopt(argc, argv, "i:q:w:g:o:h");
+        opt = getopt(argc, argv, "i:q:w:h:o:u");
         if (opt == -1) {
             break;
         }
         switch (opt) {
         case 'i':
-            logd("file path: %s", optarg);
-            fp = fopen(optarg, "rb");
-            if (fp == NULL) {
-                loge("open file failed");
-                return -1;
-            }
+            strncpy(ifile_name, optarg, 127);
             break;
         case 'w':
             width = atoi(optarg);
             break;
-        case 'g':
+        case 'h':
             height = atoi(optarg);
             break;
         case 'q':
             quality = atoi(optarg);
             break;
         case 'o':
-            fp_save = fopen(optarg, "wb");
+            strncpy(ofile_name, optarg, 127);
             break;
-        case 'h':
+        case 'u':
         default:
-            print_help();
+            print_help(argv[0]);
             return -1;
         }
     }
 
-    if (fp == NULL || fp_save == NULL) {
-        loge("input or output file is NULL");
-        print_help();
+    fp = fopen(ifile_name, "rb");
+    if (fp == NULL) {
+        loge("Failed to open input file: %s", ifile_name);
+        return -1;
+    }
+
+    if (!ofile_name[0])
+        gen_out_filename(ofile_name, ifile_name, 127);
+
+    fp_save = fopen(ofile_name, "wb");
+    if (fp_save == NULL) {
+        loge("Failed to open output file: %s", ofile_name);
+        fclose(fp);
         return -1;
     }
 
@@ -144,7 +164,12 @@ int jpeg_encode_test(int argc, char **argv)
         goto out;
     }
 
-    printf("jpeg encode len: %d\n", packet.len);
+    printf("Input file   : %s\n", ifile_name);
+    printf("Output file  : %s\n", ofile_name);
+    printf("Compress rate: %d%% (%d -> %d)\n",
+           (int)(100 * (1.0 - (float)packet.len / (float)(width * height * 1.5))),
+           (int)(width * height * 1.5), packet.len);
+
     fwrite(jpeg_vir_addr, 1, packet.len, fp_save);
 
 out:

@@ -66,16 +66,7 @@ lv_obj_t *aic_video_ui_init(void)
     lv_obj_t *aic_video_ui = lv_obj_create(NULL);
     lv_obj_clear_flag(aic_video_ui, LV_OBJ_FLAG_SCROLLABLE);
 
-#ifdef AIC_CHIP_D12X
-    extern void layer_sys_ui_visible(int flag);
-    layer_sys_ui_visible(0);
-    return aic_video_ui;
-#endif
-
     player.obj = lv_aic_player_create(aic_video_ui);
-#if LV_COLOR_DEPTH == 16
-    lv_aic_player_set_draw_layer(player.obj, LV_AIC_PLAYER_LAYER_UI_SINGLE_BUF);
-#endif
     player.list = media_list_create();
     media_list_init();
     media_list_get_info(player.list, &player.cur_info, MEDIA_TYPE_POS_OLDEST);

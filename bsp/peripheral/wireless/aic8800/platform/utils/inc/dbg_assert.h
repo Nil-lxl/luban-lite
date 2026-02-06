@@ -25,15 +25,15 @@
  ****************************************************************************************
  */
 
-#ifdef PLATFORM_ASR_THREADX
+#ifdef CONFIG_PLAT_THREADX
 #include "global_types.h"
 
 /// Assertions showing a critical error that could require a full system reset
 #define AIC_ASSERT_ERR(cond)  ASSERT(cond)
 #endif
 
-#ifdef  CONFIG_RTTHEAD_PLAT
-#include "ulog_def.h"
+#ifdef  CONFIG_PLAT_RTTHREAD
+#include "ulog.h"
 #define AIC_ASSERT_ERR  ASSERT
 #endif
 

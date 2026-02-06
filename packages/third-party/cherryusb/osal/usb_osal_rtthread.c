@@ -25,6 +25,8 @@ usb_osal_thread_t usb_osal_thread_create(const char *name, uint32_t stack_size, 
 void usb_osal_thread_delete(usb_osal_thread_t thread)
 {
     if (thread == NULL) {
+        rt_thread_t self = rt_thread_self();
+        rt_thread_control(self, RT_THREAD_CTRL_CLOSE, RT_NULL);
         return;
     }
 
@@ -229,4 +231,14 @@ void *usb_osal_malloc_align(uint32_t mem_type, size_t size, size_t align)
 void usb_osal_free_align(uint32_t mem_type, void *mem)
 {
     aicos_free_align(mem_type, mem);
+}
+
+void *usb_osal_malloc(size_t size)
+{
+    return rt_malloc(size);
+}
+
+void usb_osal_free(void *ptr)
+{
+    rt_free(ptr);
 }

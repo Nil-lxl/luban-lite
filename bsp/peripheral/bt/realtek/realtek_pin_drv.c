@@ -17,7 +17,7 @@ unsigned int bt_wake_pin = 0;
 unsigned int bt_rts_pin = 0;
 unsigned int bt_cts_pin = 0;
 
-#ifndef AIC_DEV_REALTEK_WLAN0_PWR_GPIO
+#ifndef AIC_WIRELESS_PWR_GPIO
 int realtek_bt_power_on(void)
 {
     unsigned int g;
@@ -129,7 +129,7 @@ int realtek_bt_wake_on(void)
 
 int realtek_bt_pin_init(void)
 {
-#ifndef AIC_DEV_REALTEK_WLAN0_PWR_GPIO
+#ifndef AIC_WIRELESS_PWR_GPIO
     bt_power_pin = hal_gpio_name2pin(AIC_DEV_REALTEK_BT_PWR_GPIO);
     if (bt_power_pin < 0) {
         pr_err("Not found bt power(%s) pin.\n", AIC_DEV_REALTEK_BT_PWR_GPIO);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -7,7 +7,6 @@
  * Desc: jpeg tables
  */
 
-#include <unistd.h>
 #include <stdint.h>
 
 /****************** Quant Table   *************************/

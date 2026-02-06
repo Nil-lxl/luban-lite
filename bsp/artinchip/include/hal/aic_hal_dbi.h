@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2020-2025 ArtInChip Technology Co., Ltd.
  * Authors:  matteo <duanmt@artinchip.com>
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -39,8 +39,25 @@
 
 #define SPI_MODE_NUM                0x3
 
+#ifdef AIC_DISP_MIPI_DBI_DRV_V13
+enum dbi_refresh_ctl {
+    DBI_REFRESH_LINE                   = BIT(0),
+    DBI_REFRESH_FRAME                  = BIT(1),
+};
+
+enum dbi_command_ctl {
+    DBI_COMMAND_INSERT_ALL_LINE        = BIT(2),
+    DBI_COMMAND_INSERT_ONLY_FIRST_LINE = BIT(3),
+    DBI_COMMAND_INSERT_NONE            = BIT(4),
+};
+
+#define DBI_CTL_REFERSE_CTL             BIT(13)
+#define DBI_CTL_CIMMAND_CTL_MASK        GENMASK(15, 14)
+#define DBI_CTL_CIMMAND_CTL(x)          (((x) & 0x3) << 14)
+#endif /* AIC_DISP_MIPI_DBI_DRV_V13 */
+
 #define DBI_CTL_TYPE_MASK               GENMASK(5, 4)
-#define DBI_CTL_TYPE(x)                 (((x)&0x3) << 4)
+#define DBI_CTL_TYPE(x)                 (((x) & 0x3) << 4)
 #define DBI_CTL_EN                      BIT(0)
 #define DBI_CTL_I8080_TYPE_MASK         GENMASK(19, 16)
 #define DBI_CTL_I8080_TYPE(x)           (((x) & 0xF) << 16)

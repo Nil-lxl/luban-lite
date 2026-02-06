@@ -69,23 +69,32 @@ struct aic_record_snapshot_info {
 
 enum aic_recorder_event {
     AIC_RECORDER_EVENT_NEED_NEXT_FILE = 0,
-    AIC_RECORDER_EVENT_COMPLETE, // when file_num > 0,record file_num then send this event
+    AIC_RECORDER_EVENT_COMPLETE,             // when file_num > 0,record file_num then send this event
     AIC_RECORDER_EVENT_NO_SPACE,
-    AIC_RECORDER_EVENT_RELEASE_VIDEO_BUFFER // notify app input_frame has used.
+
+    AIC_RECORDER_EVENT_GIVEBACK_FRAME = 0x80,// notify app input frame has used.
+    AIC_RECORDER_EVENT_GIVEBACK_PACKET,      // notify app input packet has used.
 };
 
 
 typedef s32 (*event_handler)(void *app_data, s32 event, s32 data1, s32 data2);
+typedef s32 (*giveback_buffer)(void *app_data, s32 event, void *buffer);
 
 struct aic_recorder *aic_recorder_create(void);
 
 s32 aic_recorder_destroy(struct aic_recorder *recorder);
 
-s32 aic_recorder_set_event_callback(struct aic_recorder *recorder, void *app_data, event_handler event_handle);
+s32 aic_recorder_set_event_callback(struct aic_recorder *recorder,
+    void *app_data, event_handler event_handle);
+
+s32 aic_recorder_set_giveback_buf_callback(struct aic_recorder *recorder,
+    giveback_buffer giveback_buf);
 
 s32 aic_recorder_set_input_file_path(struct aic_recorder *recorder, char *video_uri, char *audio_uri);
 
 s32 aic_recorder_set_output_file_path(struct aic_recorder *recorder, char *uri);
+
+s32 aic_recorder_send_frame(struct aic_recorder *recorder, struct mpp_frame *frame);
 
 s32 aic_recorder_init(struct aic_recorder *recorder, struct aic_recorder_config *recorder_config);
 

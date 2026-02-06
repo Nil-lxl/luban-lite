@@ -20,6 +20,9 @@
 #include "usb_hc.h"
 #include "usb_osal.h"
 #include "usbh_hub.h"
+#include "usb_memcpy.h"
+#include "usb_dcache.h"
+#include "usb_version.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,8 +45,8 @@ extern "C" {
 #elif defined(__GNUC__)
 #define CLASS_INFO_DEFINE __attribute__((section(".usbh_class_info"))) __USED __ALIGNED(1)
 #elif defined(__ICCARM__) || defined(__ICCRX__) || defined(__ICCRISCV__)
-#pragma section = "usbh_class_info"
-#define CLASS_INFO_DEFINE __attribute__((section("usbh_class_info"))) __USED __ALIGNED(1)
+#pragma section = ".usbh_class_info"
+#define CLASS_INFO_DEFINE __attribute__((section(".usbh_class_info"))) __USED __ALIGNED(1)
 #endif
 
 #define USBH_GET_URB_INTERVAL(interval, speed) (speed < USB_SPEED_HIGH ? interval : (1 << (interval - 1)))
@@ -53,19 +56,18 @@ extern "C" {
         ep = ep_desc;                                                        \
         USB_LOG_INFO("Ep=%02x Attr=%02u Mps=%d Interval=%02u Mult=%02u\r\n", \
                      ep_desc->bEndpointAddress,                              \
-                     USB_GET_ENDPOINT_TYPE(ep_desc->bmAttributes),           \
+                     ep_desc->bmAttributes,                                  \
                      USB_GET_MAXPACKETSIZE(ep_desc->wMaxPacketSize),         \
                      ep_desc->bInterval,                                     \
-                     USB_GET_MULT(ep_desc->bmAttributes));                   \
+                     USB_GET_MULT(ep_desc->wMaxPacketSize));                 \
     } while (0)
 
 struct usbh_class_info {
-    uint8_t match_flags; /* Used for product specific matches; range is inclusive */
-    uint8_t class;       /* Base device class code */
-    uint8_t subclass;    /* Sub-class, depends on base class. Eg. */
-    uint8_t protocol;    /* Protocol, depends on base class. Eg. */
-    uint16_t vid;        /* Vendor ID (for vendor/product specific devices) */
-    uint16_t pid;        /* Product ID (for vendor/product specific devices) */
+    uint8_t match_flags;           /* Used for product specific matches; range is inclusive */
+    uint8_t bInterfaceClass;       /* Base device class code */
+    uint8_t bInterfaceSubClass;    /* Sub-class, depends on base class. Eg. */
+    uint8_t bInterfaceProtocol;    /* Protocol, depends on base class. Eg. */
+    const uint16_t (*id_table)[2]; /* List of Vendor/Product ID pairs */
     const struct usbh_class_driver *class_driver;
 };
 
@@ -103,23 +105,24 @@ struct usbh_hubport {
     uint8_t port;     /* Hub port index */
     uint8_t dev_addr; /* device address */
     uint8_t speed;    /* device speed */
+    uint8_t depth;    /* distance from root hub */
+    uint8_t route;    /* route string */
+    uint8_t slot_id;  /* slot id */
     uint16_t raw_config_desc_len;
     struct usb_device_descriptor device_desc;
-    struct usbh_configuration config;
     const char *iManufacturer;
     const char *iProduct;
     const char *iSerialNumber;
     uint8_t *raw_config_desc;
     struct usb_setup_packet *setup;
     struct usbh_hub *parent;
+    struct usbh_hub *self; /* if this hubport is a hub */
     struct usbh_bus *bus;
-#ifdef CONFIG_USBHOST_XHCI
-    uint32_t protocol; /* port protocol, for xhci, some ports are USB2.0, others are USB3.0 */
-#endif
     struct usb_endpoint_descriptor ep0;
     struct usbh_urb ep0_urb;
     usb_osal_mutex_t mutex;
     usb_osal_event_t event;
+    struct usbh_configuration config;
 };
 
 struct usbh_hub {
@@ -128,13 +131,20 @@ struct usbh_hub {
     bool is_roothub;
     uint8_t index;
     uint8_t hub_addr;
-    struct usb_hub_descriptor hub_desc;
-    struct usbh_hubport child[CONFIG_USBHOST_MAX_EHPORTS];
+    uint8_t speed;
+    uint8_t nports;
+    uint8_t powerdelay;
+    uint8_t tt_think;
+    bool ismtt;
+    struct usb_hub_descriptor hub_desc; /* USB 2.0 only */
+    struct usb_hub_ss_descriptor hub_ss_desc; /* USB 3.0 only */
     struct usbh_hubport *parent;
     struct usbh_bus *bus;
     struct usb_endpoint_descriptor *intin;
     struct usbh_urb intin_urb;
     uint8_t *int_buffer;
+    struct usb_osal_timer *int_timer;
+    struct usbh_hubport child[CONFIG_USBHOST_MAX_EHPORTS];
 };
 
 struct usbh_devaddr_map {
@@ -150,9 +160,9 @@ struct usbh_devaddr_map {
 };
 
 struct usbh_hcd {
-    uint32_t reg_base;
+    uintptr_t reg_base;
     uint8_t hcd_id;
-    uint8_t roothub_intbuf[1];
+    uint8_t roothub_intbuf[2]; /* at most 15 roothub ports */
     struct usbh_hub roothub;
 };
 
@@ -222,6 +232,7 @@ static inline void usbh_int_urb_fill(struct usbh_urb *urb,
     urb->timeout = timeout;
     urb->complete = complete;
     urb->arg = arg;
+    urb->interval = USBH_GET_URB_INTERVAL(ep->bInterval, hport->speed);
 }
 
 /**

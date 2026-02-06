@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -518,7 +518,7 @@ static int do_fat_upg(int intf, char *const blktype)
 {
     int ret = 0;
 #if defined(LPKG_USING_DFS_ELMFAT)
-    struct dfs_fd fd;
+    struct dfs_fd fd = {0};
     char image_name[IMG_NAME_MAX_SIZ] = {0};
     char protection[PROTECTION_PARTITION_LEN] = {0};
     int actread, offset, bootlen;
@@ -547,8 +547,7 @@ static int do_fat_upg(int intf, char *const blktype)
 
         if (dfs_mount("udisk", "/", "elm", 0, DEVICE_TYPE_USB_DISK) < 0) {
             pr_err("Failed to mount udisk with FatFS\n");
-            ret = -1;
-            goto err;
+            return -1;
         } else {
             pr_info("mount udisk ok\n");
         }
@@ -568,8 +567,7 @@ static int do_fat_upg(int intf, char *const blktype)
 
         if (dfs_mount(devname, "/", "elm", 0, DEVICE_TYPE_SDMC_DISK) < 0) {
             pr_err("Failed to mount %s with FatFS\n", devname);
-            ret = -1;
-            goto err;
+            return -1;
         } else {
             pr_info("mount %s ok\n", devname);
         }
@@ -580,6 +578,11 @@ static int do_fat_upg(int intf, char *const blktype)
         return ret;
     }
 
+    if (dfs_file_open(&fd, "bootcfg.txt", O_RDONLY) < 0) {
+        printf("Open bootcfg.txt failed.\n");
+        return -1;
+    }
+
     file_buf = (char *)aicos_malloc_align(0, 2048, CACHE_LINE_SIZE);
     if (!file_buf) {
         pr_err("Error, malloc buf failed.\n");
@@ -587,12 +590,6 @@ static int do_fat_upg(int intf, char *const blktype)
         goto err;
     }
     memset((void *)file_buf, 0, 2048);
-
-    if (dfs_file_open(&fd, "bootcfg.txt", O_RDONLY) < 0) {
-        printf("Open bootcfg.txt failed.\n");
-        ret = -1;
-        goto err;
-    }
 
     actread = dfs_file_read(&fd, file_buf, 2048);
     if (actread <= 0) {
@@ -650,7 +647,8 @@ static int do_fat_upg(int intf, char *const blktype)
 err:
     if (file_buf)
         aicos_free_align(0, file_buf);
-    dfs_file_close(&fd);
+    if (fd.fops)
+        dfs_file_close(&fd);
 #endif
     return ret;
 }

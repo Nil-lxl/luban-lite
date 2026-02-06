@@ -8,6 +8,7 @@
 #include <aic_core.h>
 #include "aic_hal_clk.h"
 
+#define PLL_WAIT_TIMEOUT    10 //unit: ms
 #define to_clk_pll(_hw) container_of(_hw, struct aic_clk_pll_cfg, comm)
 
 /* ALL chips:
@@ -19,11 +20,13 @@ static const struct aic_pll_vco vco_arr[] = {
     {768000000, 1560000000,    "other"},
 };
 
+#ifndef AIC_CMU_DRV_V30
 static int clk_pll_wait_lock(void)
 {
     aic_udelay(200);
     return 0;
 }
+#endif
 
 static void clk_vco_select(struct aic_clk_pll_cfg *pll,
                            unsigned long *min, unsigned long *max)
@@ -58,6 +61,9 @@ static int clk_pll_enable(struct aic_clk_comm_cfg *comm_cfg)
 {
     struct aic_clk_pll_cfg *pll = to_clk_pll(comm_cfg);
     u32 val;
+#ifdef AIC_CMU_DRV_V30
+    u64 timeout = 0;
+#endif
 
     if (pll->flag & CLK_NO_CHANGE) {
         return 0;
@@ -65,10 +71,27 @@ static int clk_pll_enable(struct aic_clk_comm_cfg *comm_cfg)
 
 
     val = readl(cmu_reg(pll->offset_gen));
+#ifndef AIC_CMU_DRV_V30
     val |= (1 << PLL_OUT_SYS | 1 << PLL_EN_BIT);
+#else
+    val |= 1 << PLL_EN_BIT;
+    writel(val, cmu_reg(pll->offset_gen));
+    writel(0x7, cmu_reg(pll->offset_gen + 0xC));
+    timeout = PLL_WAIT_TIMEOUT + aic_get_time_ms();
+    while (!(readl(cmu_reg(pll->offset_gen + 0xC)) & 0x10)) {
+        if (aic_get_time_ms() >= timeout) {
+            hal_log_err("wait PLL stable timeout\n");
+            return -1;
+        }
+    }
+    val |= 1 << PLL_OUT_SYS;
+#endif
     writel(val, cmu_reg(pll->offset_gen));
 
-    return clk_pll_wait_lock();
+#ifndef AIC_CMU_DRV_V30
+    clk_pll_wait_lock();
+#endif
+    return 0;
 }
 
 static void clk_pll_disable(struct aic_clk_comm_cfg *comm_cfg)
@@ -305,6 +328,7 @@ static int clk_pll_set_rate(struct aic_clk_comm_cfg *comm_cfg,
         clk_pll_enable_sdm(pll, parent_rate, factor_n);
     }
 
+#ifndef AIC_CMU_DRV_V30
     reg_val = readl(cmu_reg(pll->offset_gen));
     reg_val |= (1 << PLL_OUT_SYS | 1 << PLL_EN_BIT);
     writel(reg_val, cmu_reg(pll->offset_gen));
@@ -315,6 +339,7 @@ static int clk_pll_set_rate(struct aic_clk_comm_cfg *comm_cfg,
         //pr_err("%d not lock\n", pll->id);
         return -EAGAIN;
     }
+#endif
 
     return 0;
 }

@@ -1,9 +1,11 @@
 /*
-* Copyright (C) 2020-2022 Artinchip Technology Co. Ltd
-*
-*  author: <qi.xu@artinchip.com>
-*  Desc: parse bitstream
-*/
+ * Copyright (C) 2020-2025 Artinchip Technology Co. Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ *  author: <qi.xu@artinchip.com>
+ *  Desc: parse bitstream
+ */
 
 #ifndef READ_BITS_H
 #define READ_BITS_H
@@ -19,12 +21,17 @@
 
 struct read_bit_context {
     const unsigned char *buffer, *buffer_end;
-
     int index;
     int size_in_bits;        // bit size in buffer
+    const unsigned char *current_ptr;
+    int bytes_remaining;
+    uint32_t cache;
+    int cache_bits;
+    int emulation_prevention_state;
+    int eptb_enable;
 };
 
-static inline int init_read_bits(struct read_bit_context* s, const unsigned char* buf, int bit_size)
+static inline int init_read_bits(struct read_bit_context* s, const unsigned char* buf, int bit_size, int eptb_enable)
 {
     int ret = 0;
     if (bit_size < 0 || !buf) {
@@ -39,8 +46,64 @@ static inline int init_read_bits(struct read_bit_context* s, const unsigned char
     s->size_in_bits = bit_size;
     s->buffer_end = buf + buffer_size;
     s->index = 0;
+    s->current_ptr = buf;
+    s->bytes_remaining = buffer_size;
+    s->cache = 0;
+    s->cache_bits = 0;
+    s->emulation_prevention_state = 0;
+    s->eptb_enable = eptb_enable;
 
     return ret;
+}
+
+static inline int get_next_byte(struct read_bit_context *s)
+{
+    while (s->bytes_remaining > 0) {
+        unsigned char byte = *s->current_ptr++;
+        s->bytes_remaining--;
+
+        if (!s->eptb_enable)
+                return byte;
+
+        switch (s->emulation_prevention_state) {
+            case 0:
+                if (byte == 0x00) {
+                    s->emulation_prevention_state = 1;
+                }
+                return byte;
+            case 1:
+                if (byte == 0x00) {
+                    s->emulation_prevention_state = 2;
+                } else {
+                    s->emulation_prevention_state = 0;
+                }
+                return byte;
+            case 2:
+                if (byte == 0x03) {
+                    s->emulation_prevention_state = 0;
+                    s->index += 8;
+                    continue;
+                } else {
+                    s->emulation_prevention_state = (byte == 0x00) ? 1 : 0;
+                    return byte;
+                }
+            default:
+                s->emulation_prevention_state = 0;
+                return byte;
+        }
+    }
+    return -1;
+}
+
+static inline void fill_cache(struct read_bit_context *s, int n)
+{
+    while (s->cache_bits < n && s->bytes_remaining > 0) {
+        int byte = get_next_byte(s);
+        if (byte == -1) break;
+
+        s->cache = (s->cache << 8) | byte;
+        s->cache_bits += 8;
+    }
 }
 
 /**
@@ -49,22 +112,34 @@ static inline int init_read_bits(struct read_bit_context* s, const unsigned char
 */
 static inline unsigned int read_bits(struct read_bit_context *s, int n)
 {
-    unsigned int re_index = s->index;
-    unsigned char* t = (unsigned char*)(s->buffer) + (re_index >> 3);
-    unsigned int re_cache = (t[0]<<24| t[1]<<16 | t[2]<<8| t[3]) << (re_index & 7);
-    unsigned int tmp = NEG_USR32(re_cache, n);
+    if (n <= 0) return 0;
 
-    re_index += n;
-    s->index = re_index;
+    fill_cache(s, n);
 
-    return tmp;
+    if (s->cache_bits < n) {
+        n = s->cache_bits;
+        if (n == 0) return 0;
+    }
+
+    unsigned int result = (s->cache >> (s->cache_bits - n)) & ((1 << n) - 1);
+    s->cache_bits -= n;
+    s->index += n;
+
+    return result;
 }
 
 static inline void skip_bits(struct read_bit_context *s, int n)
 {
-    unsigned int re_index = s->index;
-    re_index += n;
-    s->index = re_index;
+    if (n <= 0) return;
+
+    fill_cache(s, n);
+
+    if (s->cache_bits < n) {
+        n = s->cache_bits;
+    }
+
+    s->cache_bits -= n;
+    s->index += n;
 }
 
 /**
@@ -72,7 +147,8 @@ static inline void skip_bits(struct read_bit_context *s, int n)
 */
 static inline unsigned int show_bits(struct read_bit_context *s, int n)
 {
-    unsigned int re_index = (s)->index; unsigned int re_cache;
+    unsigned int re_index = (s)->index;
+    unsigned int re_cache;
     re_cache = BSWAP32((*((const uint32_t*)((s)->buffer + (re_index >> 3))))) << (re_index & 7);
 
     unsigned int tmp = NEG_USR32(re_cache, n);
@@ -97,11 +173,11 @@ static inline int read_bits_left(struct read_bit_context *s)
 }
 
 /**
- * Read 0-32 bits.(big edient)
+ * Read 0-32 bits.(big endian)
  */
 static inline unsigned int read_bits_long(struct read_bit_context *s, int n)
 {
-    if (!n) {
+    if (n <= 0) {
         return 0;
     } else if (n <= MIN_CACHE_BITS) {
         return read_bits(s, n);
@@ -109,7 +185,6 @@ static inline unsigned int read_bits_long(struct read_bit_context *s, int n)
         unsigned ret = read_bits(s, 16) << (n - 16);
         return ret | read_bits(s, n - 16);
     }
-
 }
 
 /**
@@ -140,9 +215,9 @@ static inline int read_ue_golomb(struct read_bit_context *gb)
     {
         val = read_bits(gb, 1);
         if(val == 0)
-		prefix_zero_cnt++;
+            prefix_zero_cnt++;
         else
-		break;
+            break;
     }
     prefix = (1 << prefix_zero_cnt) -1;
     for(i=0; i<prefix_zero_cnt; i++)

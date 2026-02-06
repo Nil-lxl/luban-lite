@@ -331,6 +331,9 @@ if GetDepend(['LPKG_LWIP_USING_DHCPD']):
 if GetDepend(['LPKG_LWIP_USING_HTTP']):
     src += lwiphttp_SRCS
 
+if GetDepend(['LPKG_LWIP_MDNS']):
+    src += lwipmdns_SRCS
+
 group = DefineGroup('lwIP', src, depend = ['LPKG_USING_LWIP'], CPPPATH = path)
 
 Return('group')

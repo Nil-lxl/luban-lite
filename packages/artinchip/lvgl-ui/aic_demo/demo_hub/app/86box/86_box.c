@@ -6,6 +6,7 @@
  * Authors:  Zequan Liang <zequan.liang@artinchip.com>
  */
 
+#include "aic_core.h"
 #include "aic_ui.h"
 #include "lvgl.h"
 
@@ -91,7 +92,6 @@ static void ui_86_box_cb(lv_event_t *e)
 {
     lv_event_code_t code = (lv_event_code_t)lv_event_get_code(e);
     if (code == LV_EVENT_SCREEN_UNLOAD_START) {
-        lv_img_cache_set_size(4);
         lv_timer_del(ui_home_timer);
         ui_86_box = NULL;
         ui_home = NULL;
@@ -100,9 +100,7 @@ static void ui_86_box_cb(lv_event_t *e)
     }
 
     if (code == LV_EVENT_DELETE) {;}
-    if (code == LV_EVENT_SCREEN_LOADED) {
-        lv_img_cache_set_size(5);
-    }
+    if (code == LV_EVENT_SCREEN_LOADED) {;}
 }
 
 static int get_random_value(int min, int max)

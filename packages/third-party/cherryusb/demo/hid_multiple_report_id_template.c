@@ -245,10 +245,10 @@ static const uint8_t hid_keyboard_report_desc[HID_KEYBOARD_REPORT_DESC_SIZE] = {
     0xc0        // END_COLLECTION
 };
 
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t write_buffer[64];
-USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t read_buffer[64];
+static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t write_buffer[64];
+static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t read_buffer[64];
 
-void usbd_event_handler(uint8_t event)
+static void usbd_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -262,7 +262,7 @@ void usbd_event_handler(uint8_t event)
         case USBD_EVENT_SUSPEND:
             break;
         case USBD_EVENT_CONFIGURED:
-            usbd_ep_start_read(HID_OUT_EP, read_buffer, HID_OUT_EP_SIZE);
+            usbd_ep_start_read(0, HID_OUT_EP, read_buffer, HID_OUT_EP_SIZE);
             break;
         case USBD_EVENT_SET_REMOTE_WAKEUP:
             break;
@@ -280,18 +280,18 @@ void usbd_event_handler(uint8_t event)
 /*!< hid state ! Data can be sent only when state is idle  */
 static volatile uint8_t hid_state = HID_STATE_IDLE;
 
-void usbd_hid_int_callback(uint8_t ep, uint32_t nbytes)
+void usbd_hid_int_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     if (hid_state == HID_STATE_BUSY) {
         memset(write_buffer, 0, HID_DATA_NUM);
         write_buffer[0] = TEST_REPORT_ID;
-        usbd_ep_start_write(HID_INT_EP, write_buffer, HID_DATA_NUM);
+        usbd_ep_start_write(0, HID_INT_EP, write_buffer, HID_DATA_NUM);
     }
 
     hid_state = HID_STATE_IDLE;
 }
 
-void usbd_hid_out_callback(uint8_t ep, uint32_t nbytes)
+void usbd_hid_out_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     int i = 0;
 
@@ -302,7 +302,7 @@ void usbd_hid_out_callback(uint8_t ep, uint32_t nbytes)
         printf("\n");
     }
 
-    usbd_ep_start_read(HID_OUT_EP, read_buffer, HID_OUT_EP_SIZE);
+    usbd_ep_start_read(0, HID_OUT_EP, read_buffer, HID_OUT_EP_SIZE);
 }
 
 static struct usbd_endpoint hid_in_ep = {
@@ -319,12 +319,12 @@ struct usbd_interface intf0;
 
 void hid_keyboard_init(void)
 {
-    usbd_desc_register(hid_descriptor);
-    usbd_add_interface(usbd_hid_init_intf(&intf0, hid_keyboard_report_desc, HID_KEYBOARD_REPORT_DESC_SIZE));
-    usbd_add_endpoint(&hid_in_ep);
-    usbd_add_endpoint(&hid_out_ep);
+    usbd_desc_register(0, hid_descriptor);
+    usbd_add_interface(0, usbd_hid_init_intf(0, &intf0, hid_keyboard_report_desc, HID_KEYBOARD_REPORT_DESC_SIZE));
+    usbd_add_endpoint(0, &hid_in_ep);
+    usbd_add_endpoint(0, &hid_out_ep);
 
-    usbd_initialize();
+    usbd_initialize(0, USB_DEV_BASE, usbd_event_handler);
 }
 
 void hid_keyboard_test(void)
@@ -332,7 +332,7 @@ void hid_keyboard_test(void)
     const uint8_t sendbuffer[HID_DATA_NUM] = { TEST_REPORT_ID, 0x00, 0x00, HID_KBD_USAGE_A, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
     memcpy(write_buffer, sendbuffer, HID_DATA_NUM);
-    int ret = usbd_ep_start_write(HID_INT_EP, write_buffer, HID_DATA_NUM);
+    int ret = usbd_ep_start_write(0, HID_INT_EP, write_buffer, HID_DATA_NUM);
     if (ret < 0) {
         return;
     }

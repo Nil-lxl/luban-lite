@@ -263,11 +263,11 @@ static void usb_otg_start_device(unsigned char on)
 
     if (on) {
 #ifdef LPKG_CHERRYUSB_DEVICE
-        usbd_initialize();
+        usbd_controller_init(0);
 #endif
     } else {
 #ifdef LPKG_CHERRYUSB_DEVICE
-        usbd_deinitialize();
+        usbd_controller_deinit(0);
 #endif
     }
 

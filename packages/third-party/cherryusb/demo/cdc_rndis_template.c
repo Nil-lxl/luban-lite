@@ -28,7 +28,7 @@
 #endif
 
 /*!< global descriptor */
-static const uint8_t cdc_descriptor[] = {
+static const uint8_t cdc_rndis_descriptor[] = {
     USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0xEF, 0x02, 0x01, USBD_VID, USBD_PID, 0x0100, 0x01),
     USB_CONFIG_DESCRIPTOR_INIT(USB_CONFIG_SIZE, 0x02, 0x01, USB_CONFIG_BUS_POWERED, USBD_MAX_POWER),
     CDC_RNDIS_DESCRIPTOR_INIT(0x00, CDC_INT_EP, CDC_OUT_EP, CDC_IN_EP, CDC_MAX_MPS, 0x02),
@@ -108,7 +108,7 @@ static const uint8_t cdc_descriptor[] = {
     0x00
 };
 
-static uint8_t mac[6] = { 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
+const uint8_t mac[6] = { 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
 /*Static IP ADDRESS: IP_ADDR0.IP_ADDR1.IP_ADDR2.IP_ADDR3 */
 #define IP_ADDR0 (uint8_t)192
 #define IP_ADDR1 (uint8_t)168
@@ -131,7 +131,6 @@ static uint8_t mac[6] = { 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <netif/ethernetif.h>
-#include <dhcp_server.h>
 
 const ip_addr_t ipaddr = IPADDR4_INIT_BYTES(IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
 const ip_addr_t netmask = IPADDR4_INIT_BYTES(NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
@@ -172,32 +171,20 @@ rt_err_t rt_usbd_rndis_eth_tx(rt_device_t dev, struct pbuf *p)
     return usbd_rndis_eth_tx(p);
 }
 
-void usbd_rndis_data_recv_done(void)
+void usbd_rndis_data_recv_done(uint32_t len)
 {
     eth_device_ready(&rndis_dev);
 }
 
-#ifdef RT_USING_DEVICE_OPS
-static const struct rt_device_ops aicusb_device_rndis_ops = {
-    .control = rt_usbd_rndis_control,
-};
-#endif
-
 void rt_usbd_rndis_init(void)
 {
-#ifdef RT_USING_DEVICE_OPS
-    rndis_dev.parent.ops = &aicusb_device_rndis_ops;
-#else
     rndis_dev.parent.control = rt_usbd_rndis_control;
-#endif
-
     rndis_dev.eth_rx = rt_usbd_rndis_eth_rx;
     rndis_dev.eth_tx = rt_usbd_rndis_eth_tx;
 
     eth_device_init(&rndis_dev, "u0");
 
     eth_device_linkchange(&rndis_dev, RT_FALSE);
-    dhcpd_start("u0");
 }
 #else
 #include "netif/etharp.h"
@@ -276,7 +263,7 @@ void rndis_lwip_init(void)
     // while (dnserv_init(&ipaddr, PORT_DNS, dns_query_proc)) {}
 }
 
-void usbd_rndis_data_recv_done(void)
+void usbd_rndis_data_recv_done(uint32_t len)
 {
 }
 
@@ -286,7 +273,7 @@ void rndis_input_poll(void)
 }
 #endif /* RT_USING_LWIP */
 
-void usbd_event_handler(uint8_t event)
+void usbd_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -317,17 +304,17 @@ void usbd_event_handler(uint8_t event)
 struct usbd_interface intf0;
 struct usbd_interface intf1;
 
-static int cdc_rndis_init(void)
+int cdc_rndis_init(void)
 {
 #ifdef RT_USING_LWIP
     rt_usbd_rndis_init();
 #else
     rndis_lwip_init();
 #endif
-    usbd_desc_register(cdc_descriptor);
-    usbd_add_interface(usbd_rndis_init_intf(&intf0, CDC_OUT_EP, CDC_IN_EP, CDC_INT_EP, mac));
-    usbd_add_interface(usbd_rndis_init_intf(&intf1, CDC_OUT_EP, CDC_IN_EP, CDC_INT_EP, mac));
-    usbd_initialize();
+    usbd_desc_register(0, cdc_rndis_descriptor);
+    usbd_add_interface(0, usbd_rndis_init_intf(&intf0, CDC_OUT_EP, CDC_IN_EP, CDC_INT_EP, (uint8_t *)mac));
+    usbd_add_interface(0, usbd_rndis_init_intf(&intf1, CDC_OUT_EP, CDC_IN_EP, CDC_INT_EP, (uint8_t *)mac));
+    usbd_initialize(0, USB_DEV_BASE, usbd_event_handler);
 
     return 0;
 }

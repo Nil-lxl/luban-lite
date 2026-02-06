@@ -81,6 +81,7 @@ struct rt_mtd_nand_driver_ops {
                                 rt_uint32_t block);
     rt_err_t (*map_user)(struct rt_mtd_nand_device *device, rt_uint8_t *oobbuf, rt_uint8_t *buf, rt_base_t start, rt_base_t nbytes);
     rt_err_t (*unmap_user)(struct rt_mtd_nand_device *device, rt_uint8_t *dst, rt_uint8_t *src, rt_base_t start, rt_base_t nbytes);
+    rt_err_t (*report_bitflip)(struct rt_mtd_nand_device *device, rt_off_t page);
 };
 
 rt_err_t rt_mtd_nand_register_device(const char *name,
@@ -104,5 +105,6 @@ rt_err_t rt_mtd_nand_read_cont(struct rt_mtd_nand_device *device, rt_off_t page,
                                rt_uint8_t *data, rt_uint32_t data_len);
 rt_err_t rt_mtd_nand_map_user(struct rt_mtd_nand_device *device, rt_uint8_t *oobbuf, rt_uint8_t *buf, rt_base_t start, rt_base_t nbytes);
 rt_err_t rt_mtd_nand_unmap_user(struct rt_mtd_nand_device *device, rt_uint8_t *oobbuf, rt_uint8_t *buf, rt_base_t start, rt_base_t nbytes);
+rt_err_t rt_mtd_nand_report_bitflip(struct rt_mtd_nand_device *device, rt_off_t page);
 
 #endif /* MTD_NAND_H_ */

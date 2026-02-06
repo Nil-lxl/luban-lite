@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,6 +17,10 @@
 #include "hal_rtc.h"
 
 #define AIC_RTC_NAME            "aic-rtc"
+
+#define AIC_RTC_EPOCH           1589932800ULL /* 2020-05-20 00:00:00 */
+#define RTC_MAX_SEC             0xFFFFFFFFULL
+#define SEC_PER_YEAR            (365 * 24 * 3600)
 
 #undef pr_debug
 #ifdef AIC_RTC_DRV_DEBUG
@@ -47,29 +51,42 @@ static rt_err_t rtc_ops_init(void)
 static rt_err_t rtc_ops_get_secs(time_t *sec)
 {
     struct tm tm = {0};
+    u32 rtc_sec = 0;
 
-    hal_rtc_read_time((u32 *)sec);
+    hal_rtc_read_time(&rtc_sec);
+    *sec = rtc_sec + AIC_RTC_EPOCH;
 
     /* Only for debug log */
     gmtime_r(sec, &tm);
     pr_debug("Get RTC time: %04d-%02d-%02d %02d:%02d:%02d\n",
-        tm.tm_year, tm.tm_mon + 1, tm.tm_mday,
+        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
         tm.tm_hour, tm.tm_min, tm.tm_sec);
     return RT_EOK;
 }
 
 static rt_err_t rtc_ops_set_secs(time_t *sec)
 {
+    s32 remain_year = 0;
     struct tm tm = {0};
+    u32 rtc_sec = 0;
 
-    gmtime_r(sec, &tm);
-    if (tm.tm_year < 100)
+    if (*sec < AIC_RTC_EPOCH || *sec > (time_t)(RTC_MAX_SEC + AIC_RTC_EPOCH)) {
+        pr_err("RTC time is out of range: %ld\n", *sec);
         return -RT_EINVAL;
+    }
 
-    hal_rtc_set_time(*(u32 *)sec);
-    pr_debug("Set RTC time: %04d-%02d-%02d %02d:%02d:%02d\n",
-        tm.tm_year, tm.tm_mon + 1, tm.tm_mday,
-        tm.tm_hour, tm.tm_min, tm.tm_sec);
+    rtc_sec = (u32)(*sec - AIC_RTC_EPOCH);
+    remain_year = (RTC_MAX_SEC - rtc_sec) / SEC_PER_YEAR;
+    if (remain_year < 5)
+        pr_warn("RTC approaching the time limit! Remaining %d years\n", remain_year);
+
+    hal_rtc_set_time(rtc_sec);
+
+    /* Only for debug log */
+    gmtime_r(sec, &tm);
+    pr_debug("Set RTC time: %04d-%02d-%02d %02d:%02d:%02d (remain %d years)\n",
+        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+        tm.tm_hour, tm.tm_min, tm.tm_sec, remain_year);
 
 #ifdef RT_USING_ALARM
     rt_alarm_update(&aic_rtc.parent, 1);
@@ -95,13 +112,14 @@ static rt_err_t rtc_ops_get_alarm(struct rt_rtc_wkalarm *alarm)
     struct tm tm = {0};
 
     alarm->enable = hal_rtc_read_alarm((u32 *)&alarm_sec);
+    alarm_sec += AIC_RTC_EPOCH;
     gmtime_r(&alarm_sec, &tm);
 
     alarm->tm_sec  = tm.tm_sec;
     alarm->tm_min  = tm.tm_min;
     alarm->tm_hour = tm.tm_hour;
     pr_debug("Get alarm time: %04d-%02d-%02d %02d:%02d:%02d\n",
-        tm.tm_year, tm.tm_mon + 1, tm.tm_mday,
+        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
         tm.tm_hour, tm.tm_min, tm.tm_sec);
     return RT_EOK;
 #else
@@ -134,9 +152,9 @@ static rt_err_t rtc_ops_set_alarm(struct rt_rtc_wkalarm *alarm)
     tm.tm_sec  = alarm->tm_sec;
 
     hal_rtc_register_callback(rtc_alarm_event);
-    hal_rtc_set_alarm((u32)timegm(&tm));
+    hal_rtc_set_alarm((u32)(timegm(&tm) - AIC_RTC_EPOCH));
     pr_debug("Set a alarm(%d): %04d-%02d-%02d %02d:%02d:%02d\n",
-             alarm->enable, tm.tm_year, tm.tm_mon + 1, tm.tm_mday,
+             alarm->enable, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
              tm.tm_hour, tm.tm_min, tm.tm_sec);
     return RT_EOK;
 #else

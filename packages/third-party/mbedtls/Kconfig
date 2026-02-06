@@ -85,7 +85,7 @@ if LPKG_USING_MBEDTLS
 
     config MBEDTLS_SSL_MAX_CONTENT_LEN
         int "Maxium fragment length in bytes"
-        default 3584
+        default 8192
 
     config LPKG_USING_MBEDTLS_EXAMPLE
         bool "Enable a mbedtls client example"

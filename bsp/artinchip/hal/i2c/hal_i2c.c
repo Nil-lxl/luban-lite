@@ -279,20 +279,18 @@ int32_t hal_i2c_master_send_msg(aic_i2c_ctrl *i2c_dev,
     if (!size)
     {
         hal_i2c_transmit_data_with_stop_bit(i2c_dev, 0);
+        uint64_t start_time = aic_get_time_ms();
         while (1)
         {
             reg_val = readl(i2c_dev->reg_base + I2C_INTR_RAW_STAT);
-            if (reg_val & I2C_INTR_STOP_DET)
-            {
+            if (reg_val & I2C_INTR_STOP_DET) {
                 if (reg_val & I2C_INTR_TX_ABRT)
-                {
                     return -1;
-                }
                 else
-                {
                     return 0;
-                }
             }
+            if ((aic_get_time_ms() - start_time) >= 10)
+                return -1;
         }
     }
 

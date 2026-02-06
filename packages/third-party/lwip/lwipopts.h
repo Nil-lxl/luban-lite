@@ -22,6 +22,7 @@
 #define LWIP_TIMERS_CUSTOM              0
 #define LWIP_MPU_COMPATIBLE             0
 
+#define LWIP_NETIF_LINK_CALLBACK        1
 /*
    ----------- Core locking -----------
 */
@@ -207,8 +208,16 @@ MEM_SIZE and MEMP_NUM_XXX will be invalid */
 #define LWIP_DNS_SECURE (LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | LWIP_DNS_SECURE_RAND_SRC_PORT)
 #define DNS_LOCAL_HOSTLIST              0
 #define DNS_LOCAL_HOSTLIST_IS_DYNAMIC   0
-#define LWIP_DNS_SUPPORT_MDNS_QUERIES   0
 
+#ifdef LPKG_LWIP_MDNS
+#define LWIP_DNS_SUPPORT_MDNS_QUERIES   1
+#define LWIP_MDNS_RESPONDER             1
+#define LWIP_NUM_NETIF_CLIENT_DATA      1
+#else
+#define LWIP_DNS_SUPPORT_MDNS_QUERIES   0
+#define LWIP_MDNS_RESPONDER             0
+#define LWIP_NUM_NETIF_CLIENT_DATA      0
+#endif
 /*
    ---------- UDP options ----------
 */
@@ -651,6 +660,12 @@ MEM_SIZE and MEMP_NUM_XXX will be invalid */
 #else
 #define TCP_RST_DEBUG                   LWIP_DBG_OFF
 #endif
+#ifdef LPKG_LWIP_MDNS_DEBUG
+#define MDNS_DEBUG                       LWIP_DBG_ON
+#else
+#define MDNS_DEBUG                       LWIP_DBG_OFF
+#endif
+
 #endif /* LWIP_DEBUG */
 #define LWIP_DBG_MIN_LEVEL              LWIP_DBG_LEVEL_ALL
 #define LWIP_DBG_TYPES_ON               (LWIP_DBG_ON|LWIP_DBG_TRACE|LWIP_DBG_STATE|LWIP_DBG_FRESH|LWIP_DBG_HALT)

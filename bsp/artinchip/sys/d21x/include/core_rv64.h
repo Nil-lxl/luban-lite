@@ -13,6 +13,7 @@
 #ifndef __CORE_RV64_H_GENERIC
 #define __CORE_RV64_H_GENERIC
 
+#include <sys/time.h>
 #include <stdio.h>
 #include <stdint.h>
 

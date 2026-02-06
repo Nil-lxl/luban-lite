@@ -18,6 +18,9 @@ if GetDepend('LV_SPI_ST77912'):
 if GetDepend('LV_SPI_ST7789'):
     src += Glob('lv_st7789.c')
 
+if GetDepend('LV_SPI_ST77903'):
+    src += Glob('lv_st77903.c')
+
 if GetDepend('LV_SPI_GC9D01N'):
     src += Glob('lv_gc9d01n.c')
 

@@ -1,9 +1,8 @@
 {
 	"psram": {
-
 		"cfg0": { //OPI APS3208K 8M PSRAM
 			"common": {
-				"clock":      "198000000",
+				"clock":      "192000000",
 				"cs0_pins":   "0x0",
 				"cs1_pins":   "0x0",
 				"xspi_ctl":   "0x116d",
@@ -32,7 +31,7 @@
 			},
 			"init": {
 				"proto0": "0xc0000002", //cmd: byte[0]=0xc0; dummy: byte[1]=0x00; addr: byte[2]=0x00; len: byte[3]=0x02;
-				"buf0":   "0x19000000",
+				"buf0":   "0x1a000000",
 				"proto1": "0xc0000402",
 				"buf1":   "0x80000000",
 				"proto2": "0xffffffff",
@@ -47,9 +46,67 @@
 				"rd_buf":   "0xffffffff",
 			},
 			"backup": {
-				"buf0": "0xAA55AA55", // training_value1
-				"buf1": "0x55AA55AA", // training_value2
-				"buf2": "0x02080100", //byte0:read_hold (0x02); byte1:write_hold (0x08); byte3:axi_read_first(0x01); byte4: bit mode
+				"buf0": "0xAA55AA55",
+				"buf1": "0x55AA55AA",
+				"buf2": "0x04080100", //byte0:read_hold (0x04); byte1:write_hold (0x08); byte3:axi_read_first(0x01); byte4: bit mode
+				"buf3": "0xFFFFFF04",
+				"buf4": "0xFFFFFF05",
+				"buf5": "0xFFFFFF06",
+				"buf6": "0xFFFFFF07",
+				"buf7": "0xFFFFFF08",
+				"buf8": "0xFFFFFF09",
+				"buf9": "0xFFFFFF00",
+			},
+		},
+		"cfg1": { //OPI APS3208K 4M PSRAM
+			"common": {
+				"clock":      "192000000",
+				"cs0_pins":   "0x0",
+				"cs1_pins":   "0x0",
+				"xspi_ctl":   "0x116d",
+				"xspi_tcr":   "0x280011",
+				"xspi_cfg":   "0x01020001",
+				"xspi_ldo":   "0x17", //1.92V
+				"psram_cfg0": "0x03030303",
+				"psram_cfg1": "0x00400001",
+				"xspi_cs0_iocfg1": "0x02020202",
+				"xspi_cs0_iocfg2": "0x02020202",
+				"xspi_cs0_iocfg3": "0x36060503",
+				"xspi_cs0_iocfg4": "0x26",
+				"xspi_cs1_iocfg1": "0x02020202",
+				"xspi_cs1_iocfg2": "0x02020202",
+				"xspi_cs1_iocfg3": "0x36060503",
+				"xspi_cs1_iocfg4": "0x26",
+			},
+			"reset": {
+				"proto": "0xff000001",
+				"buf":   "0x00ffffff",
+			},
+			"getid": {
+				"proto": "0x40030204",
+				"id":    "0x80c980c9",
+				"buf":   "0xffffffff",
+			},
+			"init": {
+				"proto0": "0xc0000002", //cmd: byte[0]=0xc0; dummy: byte[1]=0x00; addr: byte[2]=0x00; len: byte[3]=0x02;
+				"buf0":   "0x1a000000",
+				"proto1": "0xc0000402",
+				"buf1":   "0x80000000",
+				"proto2": "0xffffffff",
+				"buf2":   "0xffffffff",
+				"proto3": "0xffffffff",
+				"buf3":   "0xffffffff",
+			},
+			"xip_cfg": {
+				"wr_proto": "0x80020002",
+				"wr_buf":   "0xffffffff",
+				"rd_proto": "0x00060003",
+				"rd_buf":   "0xffffffff",
+			},
+			"backup": {
+				"buf0": "0xAA55AA55",
+				"buf1": "0x55AA55AA",
+				"buf2": "0x04080100", //byte0:read_hold (0x04); byte1:write_hold (0x08); byte3:axi_read_first(0x01); byte4: bit mode
 				"buf3": "0xFFFFFF04",
 				"buf4": "0xFFFFFF05",
 				"buf5": "0xFFFFFF06",
@@ -60,7 +117,7 @@
 			},
 		},
 
-        "cfg1": { // XCCELA AP12816 16M PSRAM
+        "cfg2": { // XCCELA AP12816 16M PSRAM
 			"common": {
 				"clock":      "198000000",
 				"cs0_pins":   "0x0",
@@ -120,7 +177,7 @@
 			},
 		},
 
-		"cfg2": { // XCCELA UnilC SCKW18X12816 16M PSRAM
+		"cfg3": { // XCCELA UnilC SCKW18X12816 16M PSRAM
 			"common": {
 				"clock":      "198000000",
 				"cs0_pins":   "0x0",
@@ -199,11 +256,6 @@
 				"uart_rx_pin_cfg_reg": "0x18700084", // PA1
 				"uart_rx_pin_cfg_val": "0x335",
 
-				// "uart_id": "0", // UART0 for log output
-				// "uart_tx_pin_cfg_reg": "0x18700E88", // PN2
-				// "uart_tx_pin_cfg_val": "0x324",
-				// "uart_rx_pin_cfg_reg": "0x18700E8C", // PN3
-				// "uart_rx_pin_cfg_val": "0x324",
 
 				// "uart_id": "1", // UART1 for log output
 				// "uart_tx_pin_cfg_reg": "0x18700090", // PA4
@@ -211,23 +263,6 @@
 				// "uart_rx_pin_cfg_reg": "0x18700094", // PA5
 				// "uart_rx_pin_cfg_val": "0x325",
 
-				// "uart_id": "3", // UART3 for log output
-				// "uart_tx_pin_cfg_reg": "0x187004B8", // PE14
-				// "uart_tx_pin_cfg_val": "0x325",
-				// "uart_rx_pin_cfg_reg": "0x187004BC", // PE15
-				// "uart_rx_pin_cfg_val": "0x325",
-
-				// "uart_id": "4", // UART4 for log output
-				// "uart_tx_pin_cfg_reg": "0x18700198", // PB6
-				// "uart_tx_pin_cfg_val": "0x325",
-				// "uart_rx_pin_cfg_reg": "0x1870019C", // PB7
-				// "uart_rx_pin_cfg_val": "0x325",
-
-				// "uart_id": "5", // UART5 for log output
-				// "uart_tx_pin_cfg_reg": "0x18700490", // PE4
-				// "uart_tx_pin_cfg_val": "0x325",
-				// "uart_rx_pin_cfg_reg": "0x18700494", // PE5
-				// "uart_rx_pin_cfg_val": "0x325",
 			},
 		},
 		"jtag": {

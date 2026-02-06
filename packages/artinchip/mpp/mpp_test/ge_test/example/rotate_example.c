@@ -37,14 +37,39 @@ typedef struct {
 static void usage(char *app)
 {
     printf("Usage: %s [Options]: \n", app);
-    printf("\t-c  --rotate center x\n");
-    printf("\t-d  --rotate center y\n");
-    printf("\t-x  --dst x\n");
-    printf("\t-y  --dst y\n");
-    printf("\t-a  --angle_degrees(0-360.0)\n\n");
+    printf("\t-i  --src_path      Source BMP image path.\n");
+    printf("\t-c  --center_x      Rotation center X in source image.\n");
+    printf("\t-d  --center_y      Rotation center Y in source image.\n");
+    printf("\t-x  --dst_x         Destination X on screen.\n");
+    printf("\t-y  --dst_y         Destination Y on screen.\n");
+    printf("\t-a  --angle         Rotation angle in degrees (0-360.0).\n");
+    printf("\t-u  --usage         Show this message.\n\n");
 
     printf("\tfor example:\n");
-    printf("\tge_rotate_example -i /data/singer_alpha.bmp -a 90.0 -c 50 -d 50 -x 600 - y 300 \n");
+    printf("\tge_rotate_example -i /data/singer_alpha.bmp -a 90.0 -c 50 -d 50 -x 600 -y 300 \n");
+}
+
+static int check_parameters_validity(rotate_example_para *para,
+                                     struct bmp_header *bmp_head,
+                                     struct aicfb_screeninfo *screen_info)
+{
+    if (para->angle_sin == 0 && para->angle_cos == 0) {
+        printf("Error: Invalid rotation angle (sin=0, cos=0). Please specify a valid angle with -a.\n");
+        return -1;
+    }
+
+    if (para->center_x >= bmp_head->width || para->center_y >= abs(bmp_head->height)) {
+        printf("Error: Rotation center (%u, %u) is outside the source image (%dx%d).\n",
+               para->center_x, para->center_y, bmp_head->width, abs(bmp_head->height));
+        return -1;
+    }
+
+    if (para->dst_x >= screen_info->width || para->dst_y >= screen_info->height) {
+        printf("Warning: Destination position (%u, %u) is outside the screen (%dx%d). The image may be clipped.\n",
+               para->dst_x, para->dst_y, screen_info->width, screen_info->height);
+    }
+
+    return 0;
 }
 
 static int match_parameters(int argc, char **argv, rotate_example_para *para)
@@ -53,7 +78,7 @@ static int match_parameters(int argc, char **argv, rotate_example_para *para)
     const char sopts[] = "ui:c:d:x:y:a:";
     const struct option lopts[] = {
         {"usage",       no_argument,       NULL, 'u'},
-        {"src_src" ,    required_argument, NULL, 'i'},
+        {"src_path" ,   required_argument, NULL, 'i'},
         {"center_x",    required_argument, NULL, 'c'},
         {"center_y",    required_argument, NULL, 'd'},
         {"dst_x",       required_argument, NULL, 'x'},
@@ -64,6 +89,9 @@ static int match_parameters(int argc, char **argv, rotate_example_para *para)
 
     memset(para, 0, sizeof(rotate_example_para));
     strncpy(para->src_src, "/sdcard/image/singer_alpha.bmp", 128 - 1);
+
+    para->angle_cos = 4096;
+    para->angle_sin = 0;
 
     optind = 0;
     int ret = 0;
@@ -88,8 +116,8 @@ static int match_parameters(int argc, char **argv, rotate_example_para *para)
             angle = strtof(optarg, NULL);
             while(angle < 0) angle += 360.0;
             while(angle >= 360) angle -= 360.0;
-            para->angle_sin = SIN((double)angle) * 4096;
-            para->angle_cos = COS((double)angle) * 4096;
+            para->angle_sin = (int)(SIN((double)angle) * 4096.0);
+            para->angle_cos = (int)(COS((double)angle) * 4096.0);
             break;
         case 'u':
             usage(argv[0]);
@@ -143,7 +171,7 @@ static int rotate_to_framebuffer(struct mpp_ge *ge, struct ge_buf *src_buffer,
 
     int ret = mpp_ge_rotate(ge, &rot);
     if (ret < 0) {
-        printf("bitblt task failed\n");
+        printf("rotate task failed\n");
         return ret;
     }
 
@@ -217,7 +245,27 @@ static int ge_rotate_example(int argc, char **argv)
         goto EXIT;
     }
 
+    if (rotate_para.center_x == 0 && rotate_para.center_y == 0) {
+        printf("Info: Rotation center not specified, using image center (%d, %d).\n",
+               bmp_head.width / 2, abs(bmp_head.height) / 2);
+        rotate_para.center_x = bmp_head.width / 2;
+        rotate_para.center_y = abs(bmp_head.height) / 2;
+    }
+
+    if (rotate_para.dst_x == 0 && rotate_para.dst_y == 0) {
+        printf("Info: Destination position not specified, using screen center (%d, %d).\n",
+               screen_info.width / 2, screen_info.height / 2);
+        rotate_para.dst_x = screen_info.width / 2;
+        rotate_para.dst_y = screen_info.height / 2;
+    }
+
+    if (check_parameters_validity(&rotate_para, &bmp_head, &screen_info) < 0) {
+        ret = -1;
+        goto EXIT;
+    }
+
     rotate_to_framebuffer(ge, src_buffer, &screen_info, &rotate_para);
+
 EXIT:
     if (bmp_fd > 0)
         bmp_close(bmp_fd);
@@ -231,6 +279,6 @@ EXIT:
     if (src_buffer)
         ge_buf_free(src_buffer);
 
-    return 0;
+    return ret;
 }
 MSH_CMD_EXPORT_ALIAS(ge_rotate_example, ge_rotate_example, ge rotate base example);

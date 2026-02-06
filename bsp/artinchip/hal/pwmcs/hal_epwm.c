@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -600,7 +600,7 @@ int hal_epwm_init(void)
 
 #if defined (AIC_EPWM_DRV_V11)
     u32 clk_id = CLK_PWMCS_SDFM;
-#elif defined (AIC_EPWM_DRV_V10)
+#elif defined (AIC_EPWM_DRV_V10) || defined (AIC_EPWM_DRV_V12)
     u32 clk_id = CLK_PWMCS;
 #endif
 

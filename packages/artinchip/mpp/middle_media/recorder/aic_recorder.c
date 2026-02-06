@@ -51,6 +51,7 @@ struct aic_recorder {
     mm_handle aenc_handle;
     struct aic_recorder_config config;
     event_handler event_handle;
+    giveback_buffer giveback_buffer;
     void *app_data;
     char uri[512];
     int state;
@@ -84,19 +85,17 @@ static s32 component_event_handler(
     return error;
 }
 
-s32 component_giveback_buffer(
-    mm_handle h_component,
-    void *p_app_data,
-    mm_buffer *p_buffer)
+s32 component_giveback_buffer(mm_handle h_component,
+                              void *p_app_data,
+                              mm_buffer *p_buffer)
 {
     s32 error = MM_ERROR_NONE;
 
-    u64 tmp = (u64)(unsigned long)p_buffer->p_buffer;
     struct aic_recorder *recorder = (struct aic_recorder *)p_app_data;
     if (h_component == recorder->venc_handle) {
-        recorder->event_handle(recorder->app_data,
-                               AIC_RECORDER_EVENT_RELEASE_VIDEO_BUFFER,
-                               (u32)tmp, 0);
+        recorder->giveback_buffer(recorder->app_data,
+                                 AIC_RECORDER_EVENT_GIVEBACK_FRAME,
+                                 p_buffer->p_buffer);
     }
     return error;
 }
@@ -106,7 +105,7 @@ static mm_callback component_event_callbacks = {
     .giveback_buffer = component_giveback_buffer,
 };
 
-
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
 static s32 _set_vin_type(enum aic_recorder_vin_type type)
 {
     if (type == AIC_RECORDER_VIN_DVP) {
@@ -119,6 +118,7 @@ static s32 _set_vin_type(enum aic_recorder_vin_type type)
 
     return MM_VIDEO_IN_SOURCE_UNKNOWN;
 }
+#endif
 
 struct aic_recorder *aic_recorder_create(void)
 {
@@ -151,6 +151,12 @@ s32 aic_recorder_set_event_callback(struct aic_recorder *recorder,
 {
     recorder->event_handle = event_handle;
     recorder->app_data = app_data;
+    return 0;
+}
+s32 aic_recorder_set_giveback_buf_callback(struct aic_recorder *recorder,
+                                           giveback_buffer giveback_buffer)
+{
+    recorder->giveback_buffer = giveback_buffer;
     return 0;
 }
 
@@ -192,6 +198,7 @@ s32 aic_recorder_init(struct aic_recorder *recorder,
     }
     // video
     if (recorder->config.has_video) {
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
         // create vin
         if (MM_ERROR_NONE != mm_get_handle(&recorder->vin_handle,
                                            MM_COMPONENT_VIN_NAME,
@@ -201,6 +208,7 @@ s32 aic_recorder_init(struct aic_recorder *recorder,
             ret = -1;
             goto _EXIT;
         }
+#endif
 
         // create venc
         if (MM_ERROR_NONE != mm_get_handle(&recorder->venc_handle,
@@ -269,6 +277,7 @@ s32 aic_recorder_init(struct aic_recorder *recorder,
             goto _EXIT;
         }
 
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
         port_define.format.video.frame_width = recorder->config.video_config.out_width;
         port_define.format.video.frame_height = recorder->config.video_config.out_height;
         port_define.format.video.framerate = recorder->config.video_config.out_frame_rate;
@@ -281,7 +290,7 @@ s32 aic_recorder_init(struct aic_recorder *recorder,
             ret = -1;
             goto _EXIT;
         }
-
+#endif
         // setup bind VENC_PORT_OUT_INDEX--->MUX_PORT_VIDEO_INDEX
         if (MM_ERROR_NONE != mm_set_bind(recorder->venc_handle,
                                          VENC_PORT_OUT_INDEX,
@@ -291,7 +300,7 @@ s32 aic_recorder_init(struct aic_recorder *recorder,
             ret = -1;
             goto _EXIT;
         }
-
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
         // setup bind VIN_PORT_OUT_INDEX--->VENC_PORT_VIDEO_INDEX
         if (MM_ERROR_NONE != mm_set_bind(recorder->vin_handle,
                                          VIN_PORT_OUT_INDEX,
@@ -301,6 +310,7 @@ s32 aic_recorder_init(struct aic_recorder *recorder,
             ret = -1;
             goto _EXIT;
         }
+#endif
     }
 
     // audio
@@ -313,9 +323,11 @@ s32 aic_recorder_init(struct aic_recorder *recorder,
     if (recorder->venc_handle) {
         mm_send_command(recorder->venc_handle, MM_COMMAND_STATE_SET, MM_STATE_IDLE, NULL);
     }
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
     if (recorder->vin_handle) {
         mm_send_command(recorder->vin_handle, MM_COMMAND_STATE_SET, MM_STATE_IDLE, NULL);
     }
+#endif
     if (recorder->aenc_handle) {
         mm_send_command(recorder->aenc_handle, MM_COMMAND_STATE_SET, MM_STATE_IDLE, NULL);
     }
@@ -332,10 +344,12 @@ _EXIT:
         mm_free_handle(recorder->venc_handle);
         recorder->venc_handle = NULL;
     }
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
     if (recorder->vin_handle) {
         mm_free_handle(recorder->vin_handle);
         recorder->vin_handle = NULL;
     }
+#endif
     if (recorder->aenc_handle) {
         mm_free_handle(recorder->aenc_handle);
         recorder->aenc_handle = NULL;
@@ -345,9 +359,11 @@ _EXIT:
 
 s32 aic_recorder_start(struct aic_recorder *recorder)
 {
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
     if (recorder->config.has_video && recorder->vin_handle) {
         mm_send_command(recorder->vin_handle, MM_COMMAND_STATE_SET, MM_STATE_EXECUTING, NULL);
     }
+#endif
     if (recorder->config.has_video && recorder->venc_handle) {
         mm_send_command(recorder->venc_handle, MM_COMMAND_STATE_SET, MM_STATE_EXECUTING, NULL);
     }
@@ -382,12 +398,14 @@ s32 aic_recorder_stop(struct aic_recorder *recorder)
             mm_send_command(recorder->venc_handle, MM_COMMAND_STATE_SET, MM_STATE_LOADED, NULL);
             wait_state(recorder->venc_handle, MM_STATE_LOADED);
         }
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
         if (recorder->vin_handle) {
             mm_send_command(recorder->vin_handle, MM_COMMAND_STATE_SET, MM_STATE_IDLE, NULL);
             wait_state(recorder->vin_handle, MM_STATE_IDLE);
             mm_send_command(recorder->vin_handle, MM_COMMAND_STATE_SET, MM_STATE_LOADED, NULL);
             wait_state(recorder->vin_handle, MM_STATE_LOADED);
         }
+#endif
     }
 
     if (recorder->config.has_video) {
@@ -395,10 +413,12 @@ s32 aic_recorder_stop(struct aic_recorder *recorder)
             mm_set_bind(recorder->venc_handle, VENC_PORT_OUT_INDEX, NULL, 0);
             mm_set_bind(NULL, 0, recorder->muxer_handle, MUX_PORT_VIDEO_INDEX);
         }
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
         if (recorder->venc_handle && recorder->vin_handle) {
             mm_set_bind(recorder->vin_handle, VENC_PORT_OUT_INDEX, NULL, 0);
             mm_set_bind(NULL, 0, recorder->venc_handle, MUX_PORT_VIDEO_INDEX);
         }
+#endif
     }
 
 _FREE_HANDLE_:
@@ -410,10 +430,12 @@ _FREE_HANDLE_:
         mm_free_handle(recorder->venc_handle);
         recorder->venc_handle = NULL;
     }
-     if (recorder->vin_handle) {
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
+    if (recorder->vin_handle) {
         mm_free_handle(recorder->vin_handle);
         recorder->vin_handle = NULL;
     }
+#endif
     if (recorder->aenc_handle) {
         mm_free_handle(recorder->aenc_handle);
         recorder->aenc_handle = NULL;
@@ -443,6 +465,7 @@ s32 aic_recorder_set_output_file_path(struct aic_recorder *recorder, char *uri)
 
 s32 aic_recorder_set_input_file_path(struct aic_recorder *recorder, char *video_uri, char *audio_uri)
 {
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
     int bytes;
     mm_param_content_uri *uri_param;
 
@@ -458,6 +481,7 @@ s32 aic_recorder_set_input_file_path(struct aic_recorder *recorder, char *video_
     strcpy((char *)uri_param->content_uri, recorder->uri);
     mm_set_parameter(recorder->vin_handle, MM_INDEX_PARAM_CONTENT_URI, uri_param);
     mpp_free(uri_param);
+#endif
     return 0;
 }
 
@@ -486,6 +510,27 @@ s32 aic_recorder_snapshot(struct aic_recorder *recorder, struct aic_record_snaps
     return 0;
 }
 
+s32 aic_recorder_send_frame(struct aic_recorder *recorder, struct mpp_frame *frame)
+{
+    mm_buffer mbuf;
+    s32 ret = 0;
+
+    if (!recorder || !recorder->venc_handle || !frame)
+        return -1;
+
+    mbuf.p_buffer = (u8*)frame;
+    mbuf.buffer_size = sizeof(struct mpp_frame);
+    mbuf.data_type = MM_BUFFER_DATA_FRAME;
+
+    ret = mm_send_buffer(recorder->venc_handle, (mm_buffer *)&mbuf);
+    if (ret != MM_ERROR_NONE) {
+        loge("send buffer failed\n");
+        return -1;
+    }
+
+    return 0;
+}
+
 s32 aic_recorder_print_debug_info(struct aic_recorder *recorder)
 {
     if (!recorder) {
@@ -493,9 +538,11 @@ s32 aic_recorder_print_debug_info(struct aic_recorder *recorder)
         return -1;
     }
 
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
     if (recorder->vin_handle) {
         mm_set_parameter(recorder->vin_handle, MM_INDEX_PARAM_PRINT_DEBUG_INFO, NULL);
     }
+#endif
 
     if (recorder->venc_handle) {
         mm_set_parameter(recorder->venc_handle, MM_INDEX_PARAM_PRINT_DEBUG_INFO, NULL);

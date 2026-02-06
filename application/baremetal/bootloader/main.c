@@ -24,7 +24,6 @@
 #include <boot_time.h>
 #include <aic_clk_id.h>
 #include <hal_syscfg.h>
-#include <boot_rom.h>
 #include <ram_param.h>
 #include <hal_axicfg.h>
 #ifdef AICUPG_LOG_BUFFER_SUPPORT
@@ -147,7 +146,11 @@ int main(void)
     console_init();
     console_set_usrname("aic");
 
-    ctrlc = console_get_ctrlc();
+    for (int check = 0; check < 4; check++) {
+        ctrlc = console_get_ctrlc();
+        if (ctrlc > 0)
+            break;
+    }
     if (ctrlc < 0) {
 #ifdef AICUPG_SUPPORT
         cont_boot = bl_upgmode_detect(bd);

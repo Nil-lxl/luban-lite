@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -814,6 +814,8 @@ static int qspi_master_can_dma(struct qspi_master_state *qspi,
                                struct qspi_transfer *t)
 {
     if (qspi->dma_rx == NULL || qspi->dma_tx == NULL)
+        return 0;
+    if (t->data_len % AIC_DMA_ALIGN_SIZE)
         return 0;
     if (t->data_len <= QSPI_FIFO_DEPTH)
         return 0;

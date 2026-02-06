@@ -39,6 +39,7 @@ struct aic_dvp {
     struct list_head        active_list;
     unsigned int            sequence;
     unsigned int            streaming;
+    aicos_sem_t             finished;
 };
 
 int aic_dvp_set_in_fmt(struct mpp_video_fmt *fmt);

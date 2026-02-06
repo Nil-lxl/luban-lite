@@ -13,10 +13,11 @@
 
 /* Register definition of GPAI Controller */
 #if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
-#define GPAI_MCR            0x000
-#define GPAI_INTR           0x004
+#define GPAI_CONTROLLER_V1
 #endif
 
+#define GPAI_MCR            0x000
+#define GPAI_INTR           0x004
 
 #define GPAI_CHnCR(n)       (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x00)
 #define GPAI_CHnINT(n)      (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x04)
@@ -28,7 +29,6 @@
 #define GPAI_CHnDATA(n)     (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x24)
 #define GPAI_VERSION        0xFFC
 
-#if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
 #define GPAI_MCR_CH0_EN                 BIT(8)
 #define GPAI_MCR_CH_EN(n)               (GPAI_MCR_CH0_EN << (n))
 #define GPAI_MCR_EN                     BIT(0)
@@ -37,8 +37,6 @@
 #define GPAI_INTR_CH_INT_FLAG(n)        (GPAI_INTR_CH0_INT_FLAG << (n))
 #define GPAI_INTR_CH0_INT_EN            BIT(0)
 #define GPAI_INTR_CH_INT_EN(n)          (GPAI_INTR_CH0_INT_EN << (n))
-#endif
-
 
 
 
@@ -119,7 +117,6 @@ static u32 gpai_ms2itv(u32 pclk_rate, u32 us)
     return tmp;
 }
 
-#if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
 static void gpai_reg_enable(int offset, int bit, int enable)
 {
     int tmp = gpai_readl(offset);
@@ -141,13 +138,12 @@ void aich_gpai_ch_enable(u32 ch, int enable)
 {
     gpai_reg_enable(GPAI_MCR, GPAI_MCR_CH_EN(ch), enable);
 }
-#endif
 
 
 
 static void gpai_int_enable(u32 ch, u32 enable, u32 detail)
 {
-#if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
+
     u32 val = 0;
     val = gpai_readl(GPAI_INTR);
     if (enable) {
@@ -158,7 +154,6 @@ static void gpai_int_enable(u32 ch, u32 enable, u32 detail)
         gpai_writel(0, GPAI_CHnINT(ch));
     }
     gpai_writel(val, GPAI_INTR);
-#endif
 
 }
 
@@ -267,19 +262,15 @@ int aich_gpai_ch_init(struct aic_gpai_ch *chan, u32 pclk)
 void aich_gpai_status_show(struct aic_gpai_ch *chan)
 {
     int version = gpai_readl(GPAI_VERSION);
-
-#if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
     int mcr = gpai_readl(GPAI_MCR);
 
-    printf("In GPAI V%d.%02d:\n"
+    printf("In GPAI V%s:\n"
                "Ch Mode Enable Value  LTA  HTA\n"
                "%2d %4s %6d %5d %4d %4d\n",
-               version >> 8, version & 0xff,
+               EXPAND_BCD_VER(version),
                chan->id, chan->mode ? "P" : "S",
                mcr & GPAI_MCR_CH_EN(chan->id) ? 1 : 0,
                chan->avg_data, chan->lla_thd, chan->hla_thd);
-#endif
-
 }
 
 static int hal_gpai_irq_read_fifo(struct aic_gpai_ch *chan)
@@ -315,11 +306,9 @@ int hal_gpai_read_poll(u32 ch, u16 *val, u32 timeout)
     struct aic_gpai_ch *chan = NULL;
 
     while (1) {
-#if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
         ch_flag = gpai_readl(GPAI_INTR);
         if (!(ch_flag & GPAI_INTR_CH_INT_FLAG(ch)))
             continue;
-#endif
 
         chan = hal_gpai_ch_is_valid(ch);
         if (!chan)
@@ -327,14 +316,12 @@ int hal_gpai_read_poll(u32 ch, u16 *val, u32 timeout)
         ch_int = gpai_readl(GPAI_CHnINT(ch));
         gpai_writel(ch_int, GPAI_CHnINT(ch));
 
-#if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
         if (ch_int & GPAI_CHnINT_DRDY_FLG) {
             hal_gpai_irq_read_fifo(chan);
             if (val)
                 val[0] = chan->avg_data;
             break;
         }
-#endif
     }
 
     return 0;
@@ -403,23 +390,17 @@ irqreturn_t aich_gpai_isr(int irq, void *arg)
     int i;
     struct aic_gpai_ch *chan = NULL;
 
-#if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
     ch_flag = gpai_readl(GPAI_INTR);
-#endif
-
 
     for (i = 0; i < AIC_GPAI_CH_NUM; i++) {
-#if defined(AIC_GPAI_DRV_V10) || defined(AIC_GPAI_DRV_V11)
         if (!(ch_flag & GPAI_INTR_CH_INT_FLAG(i)))
             continue;
-#endif
 
         chan = hal_gpai_ch_is_valid(i);
         if (!chan)
             return IRQ_NONE;
 
         ch_int = gpai_readl(GPAI_CHnINT(i));
-        gpai_writel(ch_int, GPAI_CHnINT(i));
         if (ch_int & GPAI_CHnINT_DRDY_FLG) {
             hal_gpai_irq_read_fifo(chan);
             chan->irq_count++;
@@ -428,6 +409,7 @@ irqreturn_t aich_gpai_isr(int irq, void *arg)
             if (chan->irq_info.callback)
                 chan->irq_info.callback(chan->irq_info.callback_param);
         }
+        gpai_writel(ch_int, GPAI_CHnINT(i));
 
         if (ch_int & GPAI_CHnINT_LLA_VALID_FLAG)
             pr_warn("LLA: ch%d %d!\n", i, chan->avg_data);
@@ -482,5 +464,4 @@ void hal_gpai_set_ch_num(u32 num)
 {
     aic_gpai_ch_num = num;
 }
-
 

@@ -2,6 +2,10 @@ Import('AIC_ROOT')
 Import('PRJ_KERNEL')
 from building import *
 
+if not GetDepend('LPKG_USING_CHERRYUSB_V1_5_0'):
+    group = []
+    Return('group')
+
 cwd = GetCurrentDir()
 path = [cwd + '/common']
 path += [cwd + '/core']
@@ -15,7 +19,7 @@ path += [cwd + '/class/video']
 path += [cwd + '/class/wireless']
 path += [cwd + '/class/dfu']
 path += [cwd + '/class/hub']
-path += [cwd + '/class/vender']
+path += [cwd + '/class/vendor/vender_class']
 path += [cwd + '/third_party/cherrymp']
 path += [cwd + '/third_party/cherryrb']
 path += [cwd]
@@ -46,7 +50,7 @@ if GetDepend(['LPKG_CHERRYUSB_DEVICE']) and GetDepend(['AIC_USB_DEVICE_DRV']):
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_CLASS_AIC']):
         src += Glob('class/aic/usbd_aicupg.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_CDC']):
-        src += Glob('class/cdc/usbd_cdc.c')
+        src += Glob('class/cdc/usbd_cdc_acm.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_HID']):
         src += Glob('class/hid/usbd_hid.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_MSC']):
@@ -64,9 +68,10 @@ if GetDepend(['LPKG_CHERRYUSB_DEVICE']) and GetDepend(['AIC_USB_DEVICE_DRV']):
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_MIDI']):
         src += Glob('class/midi/usbd_midi.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_VENDER']):
-        src += Glob('class/vender/usbd_vender.c')
+        src += Glob('class/vendor/vender_class/usbd_vender.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_ECM']):
         src += Glob('class/cdc/usbd_cdc_ecm.c')
+
 
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_AICUPG_FOR_USB']):
         src += Glob('demo/aicupg_for_usb.c')
@@ -98,6 +103,10 @@ if GetDepend(['LPKG_CHERRYUSB_DEVICE']) and GetDepend(['AIC_USB_DEVICE_DRV']):
         src += Glob('demo/audio_v2_mic_speaker_multichan_template.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER_V2_TEMPLATE']):
         src += Glob('demo/audio_v2_speaker_multichan_template.c')
+    if GetDepend(['LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_V2_TEMPLATE']):
+        src += Glob('demo/audio_v2_mic_multichan_template.c')
+    if GetDepend(['LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_V1_TEMPLATE']):
+        src += Glob('demo/audio_v1_mic_multichan_template.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_VIDEO_MJPEG_TEMPLATE']):
         src += Glob('demo/video_static_mjpeg_template.c')
     if GetDepend(['LPKG_CHERRYUSB_DEVICE_VIDEO_YUYV_TEMPLATE']):
@@ -178,7 +187,7 @@ if GetDepend(['LPKG_CHERRYUSB_HOST']) and GetDepend(['AIC_USB_HOST_EHCI_DRV']):
     if GetDepend(['LPKG_CHERRYUSB_HOST_CDC']):
         src += Glob('class/cdc/usbh_cdc_acm.c')
     if GetDepend(['LPKG_CHERRYUSB_HOST_SERIAL']):
-        src += Glob('class/vender/usbh_serial.c')
+        src += Glob('class/vendor/serial/usbh_serial.c')
     if GetDepend(['LPKG_CHERRYUSB_HOST_HID']):
         src += Glob('class/hid/usbh_hid.c')
     if GetDepend(['LPKG_CHERRYUSB_HOST_HID_DRV_RTT']):
@@ -266,6 +275,17 @@ if GetDepend(['LPKG_CHERRYUSB_HOST']) and GetDepend(['AIC_USB_HOST_EHCI_DRV']):
     if GetDepend(['LPKG_CHERRYUSB_HOST_UVC_TEMPLATE']):
         src += Glob('demo/usbh_video_template.c')
 
+# USB Vendor Driver
+if GetDepend(['LPKG_CHERRYUSB_HOST_VENDEOR']):
+    if GetDepend(['LPKG_CHERRYUSB_VENDOR_CH34x']):
+        src += Glob('class/vendor/serial/usbh_ch34x.c')
+    if GetDepend(['LPKG_CHERRYUSB_VENDOR_CP210x']):
+        src += Glob('class/vendor/serial/usbh_cp210x.c')
+    if GetDepend(['LPKG_CHERRYUSB_VENDOR_FTDI']):
+        src += Glob('class/vendor/serial/usbh_ftdi.c')
+    if GetDepend(['LPKG_CHERRYUSB_VENDOR_PL2303']):
+        src += Glob('class/vendor/serial/usbh_pl2303.c')
+
 # USB Third_party
 if GetDepend(['LPKG_CHERRYUSB_THIRD_PARTY']):
     if GetDepend(['LPKG_CHERRYUSB_MEMORY_POOL']):
@@ -279,7 +299,7 @@ if GetDepend(['LPKG_CHERRYUSB_THIRD_PARTY']):
     if GetDepend(['LPKG_CHERRYUSB_RINGBUFFER']):
         src += Glob('third_party/cherryrb/*.c')
 
-group = DefineGroup('CherryUSB', src, depend = ['LPKG_USING_CHERRYUSB'], CPPPATH = path, CPPDEFINES = CPPDEFINES, LIBS = libs, LIBPATH = lib_path)
+group = DefineGroup('CherryUSB', src, depend = ['LPKG_USING_CHERRYUSB_V1_5_0'], CPPPATH = path, CPPDEFINES = CPPDEFINES, LIBS = libs, LIBPATH = lib_path)
 
 Return('group')
 

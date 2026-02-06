@@ -42,7 +42,7 @@ choice
     config AIC_USING_JYX68_RGB01
         bool "JYX68_RGB01"
         depends on AIC_CHIP_D13X
-        
+
     config AIC_USING_JYX68_MIPI01
         bool "JYX68_MIPI01"
         depends on AIC_CHIP_D13X
@@ -50,12 +50,28 @@ choice
     config AIC_USING_HOT68_DEMO_A01_V0
         bool "HOT68_DEMO_A01_V0"
         depends on AIC_CHIP_D13X
-    
+
     config AIC_USING_HT68_DEMO_A02_V0
         bool "HT68_DEMO_A02_V0"
         depends on AIC_CHIP_D13X
 
 endchoice
+
+choice
+    prompt "Toolchain"
+    depends on ARCH_RISCV
+    default PRJ_RV_TOOLCHAIN_V2_6_1
+
+    config PRJ_RV_TOOLCHAIN_V2_6_1
+        bool "RISC-V Toolchain V2.6.1"
+    config PRJ_RV_TOOLCHAIN_V3_2_0
+        bool "RISC-V Toolchain V3.2.0"
+endchoice
+
+config PRJ_TOOLCHAIN_VER
+    string
+    default "V2.6.1" if PRJ_RV_TOOLCHAIN_V2_6_1
+    default "V3.2.0" if PRJ_RV_TOOLCHAIN_V3_2_0
 
 endmenu
 

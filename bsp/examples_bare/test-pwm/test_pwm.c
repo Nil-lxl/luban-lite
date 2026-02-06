@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -77,7 +77,7 @@ static int cmd_test_pwm(int argc, char **argv)
     if (hal_pwm_enable(ch))
         return -1;
 
-    if (hal_pwm_set(ch, duty, period))
+    if (hal_pwm_set(ch, duty, period, PWM_SET_CMPA_CMPB))
         return -1;
 
     return 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -94,3 +94,14 @@ void cmd_reboot(int argc, char **argv)
 
 MSH_CMD_EXPORT_ALIAS(cmd_reboot, reboot, Reboot the system);
 #endif /* RT_USING_FINSH */
+
+#ifdef QEMU_RUN
+void cmd_poweroff(int argc, char **argv)
+{
+    printf("QEMU will exit after 1sec ...\n");
+    aicos_msleep(1000);
+    *(int *)0x10002000 = 88;
+}
+
+MSH_CMD_EXPORT_ALIAS(cmd_poweroff, poweroff, Exit the QEMU system);
+#endif

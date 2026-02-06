@@ -41,11 +41,6 @@ if PKG_USING_AGILE_UPGRADE
         default n
         select PKG_USING_FASTLZ
 
-    config AGILE_UPGRADE_ENABLE_QUICKLZ
-        bool "Enable quicklz decompress"
-        default n
-        select PKG_USING_QUICKLZ
-
     config AGILE_UPGRADE_ENABLE_FAL
         bool "Enable fal adapter"
         default n

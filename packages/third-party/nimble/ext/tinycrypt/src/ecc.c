@@ -612,7 +612,7 @@ void vli_mmod_fast_secp256r1(unsigned int *result, unsigned int*product)
 		}
 		while (carry < 0);
 	} else  {
-		while (carry || 
+		while (carry ||
 		       uECC_vli_cmp_unsafe(curve_secp256r1.p, result, NUM_ECC_WORDS) != 1) {
 			carry -= uECC_vli_sub(result, result, curve_secp256r1.p, NUM_ECC_WORDS);
 		}
@@ -663,7 +663,7 @@ void XYcZ_add(uECC_word_t * X1, uECC_word_t * Y1,
 	      uECC_Curve curve)
 {
 	/* t1 = X1, t2 = Y1, t3 = X2, t4 = Y2 */
-	uECC_word_t t5[NUM_ECC_WORDS];
+	uECC_word_t __attribute__((unused)) t5[NUM_ECC_WORDS] = { 0 };
 	wordcount_t num_words = curve->num_words;
 
 	uECC_vli_modSub(t5, X2, X1, curve->p, num_words); /* t5 = x2 - x1 */
@@ -693,9 +693,9 @@ static void XYcZ_addC(uECC_word_t * X1, uECC_word_t * Y1,
 		      uECC_Curve curve)
 {
 	/* t1 = X1, t2 = Y1, t3 = X2, t4 = Y2 */
-	uECC_word_t t5[NUM_ECC_WORDS];
-	uECC_word_t t6[NUM_ECC_WORDS];
-	uECC_word_t t7[NUM_ECC_WORDS];
+	uECC_word_t __attribute__((unused)) t5[NUM_ECC_WORDS] = { 0 };
+	uECC_word_t __attribute__((unused)) t6[NUM_ECC_WORDS] = { 0 };
+	uECC_word_t __attribute__((unused)) t7[NUM_ECC_WORDS] = { 0 };
 	wordcount_t num_words = curve->num_words;
 
 	uECC_vli_modSub(t5, X2, X1, curve->p, num_words); /* t5 = x2 - x1 */
@@ -729,7 +729,7 @@ static void XYcZ_addC(uECC_word_t * X1, uECC_word_t * Y1,
 void EccPoint_mult(uECC_word_t * result, const uECC_word_t * point,
 		   const uECC_word_t * scalar,
 		   const uECC_word_t * initial_Z,
-		   bitcount_t num_bits, uECC_Curve curve) 
+		   bitcount_t num_bits, uECC_Curve curve)
 {
 	/* R0 and R1 */
 	uECC_word_t Rx[2][NUM_ECC_WORDS];

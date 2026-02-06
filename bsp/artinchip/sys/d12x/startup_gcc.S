@@ -160,22 +160,6 @@ save_boot_params_ret:
 
 #endif /* QEMU_RUN */
 
-    /* Load data section */
-#if defined(QEMU_RUN)
-    la      a0, __erodata
-    la      a1, __data_start__
-    la      a2, __data_end__
-    bgeu    a1, a2, 2f
-1:
-    lw      t0, (a0)
-    sw      t0, (a1)
-    addi    a0, a0, 4
-    addi    a1, a1, 4
-    bltu    a1, a2, 1b
-2:
-    jal dcache_clean
-#endif
-
     /* Clear bss section */
     la      a0, __bss_start__
     la      a1, __bss_end__

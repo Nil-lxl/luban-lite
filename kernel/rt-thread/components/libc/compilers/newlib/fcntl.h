@@ -11,6 +11,7 @@
 #ifndef __FCNTL_H__
 #define __FCNTL_H__
 
+#include <sys/time.h>
 #include <sys/_default_fcntl.h>
 
 #ifndef O_DIRECTORY

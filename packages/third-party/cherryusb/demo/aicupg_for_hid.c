@@ -87,6 +87,21 @@ static const uint8_t hid_descriptor[] = {
     'c', 0x00,                  /* wcChar18 */
     'e', 0x00,                  /* wcChar19 */
     0x00, 0x00,                 /* wcChar20 */
+    ///////////////////////////////////////
+    /// string3 descriptor
+    ///////////////////////////////////////
+    0x16,                       /* bLength */
+    USB_DESCRIPTOR_TYPE_STRING, /* bDescriptorType */
+    '2', 0x00,                  /* wcChar0 */
+    '0', 0x00,                  /* wcChar1 */
+    '2', 0x00,                  /* wcChar2 */
+    '2', 0x00,                  /* wcChar3 */
+    '1', 0x00,                  /* wcChar4 */
+    '2', 0x00,                  /* wcChar5 */
+    '3', 0x00,                  /* wcChar6 */
+    '4', 0x00,                  /* wcChar7 */
+    '5', 0x00,                  /* wcChar8 */
+    '6', 0x00,                  /* wcChar9 */
 #ifdef CONFIG_USB_HS
     ///////////////////////////////////////
     /// device qualifier descriptor
@@ -170,14 +185,14 @@ static struct aicupg_trans_info trans_info;
 static uint32_t usbd_hid_ep_start_read(uint8_t *data, uint32_t data_len)
 {
     trans_info.transfer_len = data_len;
-    usbd_ep_start_read(HID_OUT_EP, data, HID_OUT_EP_SIZE);
+    usbd_ep_start_read(0, HID_OUT_EP, data, HID_OUT_EP_SIZE);
     return HID_OUT_EP_SIZE;
 }
 
 static uint32_t usbd_hid_ep_start_write(uint8_t *data, uint32_t data_len)
 {
     trans_info.transfer_len = data_len;
-    usbd_ep_start_write(HID_IN_EP, data, HID_IN_EP_SIZE);
+    usbd_ep_start_write(0, HID_IN_EP, data, HID_IN_EP_SIZE);
     return HID_IN_EP_SIZE;
 }
 
@@ -236,12 +251,12 @@ static struct usbd_interface intf0;
 
 int hid_init(void)
 {
-    usbd_desc_register(hid_descriptor);
-    usbd_add_interface(usbd_hid_init_intf(&intf0, hid_report_desc, HID_REPORT_DESC_SIZE));
+    usbd_desc_register(0, hid_descriptor);
+    usbd_add_interface(0, usbd_hid_init_intf(&intf0, hid_report_desc, HID_REPORT_DESC_SIZE));
     intf0.notify_handler = usbd_hid_notify_handler;
 
-    usbd_add_endpoint(&hid_in_ep);
-    usbd_add_endpoint(&hid_out_ep);
+    usbd_add_endpoint(0, &hid_in_ep);
+    usbd_add_endpoint(0, &hid_out_ep);
 
     memset((uint8_t *)&trans_info, 0, sizeof(struct aicupg_trans_info));
 
@@ -251,12 +266,12 @@ int hid_init(void)
     trans_info.cbw = aicupg_malloc_align(HID_OUT_EP_SIZE, CACHE_LINE_SIZE);
     trans_info.csw = aicupg_malloc_align(HID_IN_EP_SIZE, CACHE_LINE_SIZE);
 
-    usbd_initialize();
+    usbd_initialize(0, USB_DEV_BASE, NULL);
     return 0;
 }
 
 int hid_deinit(void)
 {
-    usbd_deinitialize();
+    usbd_deinitialize(0);
     return 0;
 }

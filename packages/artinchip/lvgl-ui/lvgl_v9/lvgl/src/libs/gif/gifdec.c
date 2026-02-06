@@ -746,7 +746,7 @@ void
 gd_close_gif(gd_GIF * gif)
 {
     f_gif_close(gif);
-    lv_free(gif);
+    aicos_free(MEM_CMA, gif);
 }
 
 static bool f_gif_open(gd_GIF * gif, const void * path, bool is_file)

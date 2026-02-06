@@ -30,6 +30,9 @@ static rt_err_t drv_gpai_enabled(struct rt_adc_device *dev,
 {
     struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(ch);
 
+    if (!chan)
+        return -RT_EINVAL;
+
     hal_gpai_clk_get(chan);
     if (!chan)
         return -RT_EINVAL;
@@ -57,10 +60,10 @@ static rt_err_t drv_gpai_convert(struct rt_adc_device *dev, rt_uint32_t ch,
 {
     struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(ch);
 
-    *value = 0;
-
     if (!chan)
         return -RT_EINVAL;
+
+    *value = 0;
 
     return hal_gpai_get_data(chan, (u16 *)value, AIC_GPAI_TIMEOUT);
 }
@@ -69,6 +72,9 @@ static rt_err_t drv_gpai_get_ch_info(struct rt_adc_device *dev, void *chan_info)
 {
     struct aic_gpai_ch_info *info = (struct aic_gpai_ch_info *)chan_info;
     struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(info->chan_id);
+
+    if (!chan)
+        return -RT_EINVAL;
 
     hal_gpai_get_data(chan, info->adc_values, AIC_GPAI_TIMEOUT);
     info->fifo_valid_cnt = chan->fifo_valid_cnt;
@@ -112,6 +118,9 @@ static rt_err_t drv_gpai_irq_callback(struct rt_adc_device *dev,
     struct aic_gpai_irq_info *irq_info;
     irq_info = (struct aic_gpai_irq_info *)chan_irq_info;
     struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(irq_info->chan_id);
+
+    if (!chan)
+        return -RT_EINVAL;
 
     chan->irq_info.callback = irq_info->callback;
     chan->irq_info.callback_param = irq_info->callback_param;

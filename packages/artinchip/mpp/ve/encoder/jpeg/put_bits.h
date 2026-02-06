@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -11,7 +11,6 @@
 #define __PUT_BITS_H_
 #include <stdlib.h>
 #include <inttypes.h>
-#include <unistd.h>
 #include "mpp_log.h"
 
 static const int BUF_BITS = 8 * sizeof(uint32_t);

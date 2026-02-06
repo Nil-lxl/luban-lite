@@ -34,6 +34,24 @@ static struct aic_qep_data g_qep_info[] = {
 #ifdef AIC_USING_QEP3
     {.id = 3,},
 #endif
+#ifdef AIC_USING_QEP4
+    {.id = 4,},
+#endif
+#ifdef AIC_USING_QEP5
+    {.id = 5,},
+#endif
+#ifdef AIC_USING_QEP6
+    {.id = 6,},
+#endif
+#ifdef AIC_USING_QEP7
+    {.id = 7,},
+#endif
+#ifdef AIC_USING_QEP8
+    {.id = 8,},
+#endif
+#ifdef AIC_USING_QEP9
+    {.id = 9,},
+#endif
 };
 
 static rt_err_t aic_qep_init(struct rt_pulse_encoder_device *qep)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -26,6 +26,23 @@ static int gd5f1gm7ue_ecc_get_status(struct aic_spinand *flash, u8 status)
             return -SPINAND_ERR_ECC;
         case STATUS_ECC_MASK:
             return 8;
+        default:
+            break;
+    }
+
+    return -SPINAND_ERR;
+}
+
+static int gd5fxgq5ue_ecc_get_status(struct aic_spinand *flash, u8 status)
+{
+    switch (status & STATUS_ECC_MASK) {
+        case STATUS_ECC_NO_BITFLIPS:
+            return 0;
+        case STATUS_ECC_HAS_1_4_BITFLIPS:
+            return 4;
+        case STATUS_ECC_UNCOR_ERROR:
+            return -SPINAND_ERR_ECC;
+
         default:
             break;
     }
@@ -63,27 +80,27 @@ const struct aic_spinand_info gigadevice_spinand_table[] = {
     /*GD5F2GM7UE*/
     { DEVID(0x92), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64), PLANENUM(1),
       DIE(0), "GIGADEVICE 256MB: 2048+128@64@2048", cmd_cfg_table,
-      NULL, gd5f2g_ooblayout_user },
+      gd5f1gm7ue_ecc_get_status, gd5f2g_ooblayout_user, 8 },
     /*GD5F4GM8UE*/
     { DEVID(0x95), PAGESIZE(2048), OOBSIZE(128), BPL(4096), PPB(64), PLANENUM(1),
       DIE(0), "GIGADEVICE 512MB: 2048+128@64@4096", cmd_cfg_table,
-      NULL, gd5f2g_ooblayout_user },
+      gd5f1gm7ue_ecc_get_status, gd5f2g_ooblayout_user, 8 },
     /*GD5F1GQ5UE*/
     { DEVID(0x51), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "GIGADEVICE 128MB: 2048+128@64@1024", cmd_cfg_table,
-      NULL, gd5f1g_ooblayout_user },
+      gd5fxgq5ue_ecc_get_status, gd5f1g_ooblayout_user, 4 },
     /*GD5F1GM7UE*/
     { DEVID(0x91), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "GIGADEVICE 128MB: 2048+128@64@1024", cmd_cfg_table,
-      gd5f1gm7ue_ecc_get_status, gd5f2g_ooblayout_user},
+      gd5f1gm7ue_ecc_get_status, gd5f2g_ooblayout_user, 8 },
     /*GD5F2GQ5UE*/
     { DEVID(0x52), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64), PLANENUM(1),
       DIE(0), "GIGADEVICE 256MB: 2048+128@64@2048", cmd_cfg_table,
-      NULL, gd5f1g_ooblayout_user },
+      gd5fxgq5ue_ecc_get_status, gd5f1g_ooblayout_user, 4 },
     /*GD5F1GQ5REYIGR*/
     { DEVID(0x41), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "GIGADEVICE 128MB: 2048+128@64@1024", cmd_cfg_table,
-      NULL, gd5f1g_ooblayout_user },
+      gd5fxgq5ue_ecc_get_status, gd5f1g_ooblayout_user, 4 },
 };
 
 const struct aic_spinand_info *

@@ -132,17 +132,17 @@ int mpp_dvp_ioctl(int cmd, void *arg)
         return 0;
 
     case DVP_STREAM_OFF:
-        camera_stop(g_camera_dev);
         if (aic_dvp_stream_off())
             return -1;
         if (aic_dvp_close())
             return -1;
+        camera_stop(g_camera_dev);
         return 0;
 
     case DVP_STREAM_PAUSE:
-        camera_pause(g_camera_dev);
-        aicos_msleep(50);
         aic_dvp_stream_pause();
+        aicos_msleep(50);
+        camera_pause(g_camera_dev);
         return 0;
 
     case DVP_STREAM_RESUME:

@@ -1,0 +1,3 @@
+config AIC_NAND_REFRESH_SUPPORT
+    bool "Aic NAND Refresh support"
+    default n

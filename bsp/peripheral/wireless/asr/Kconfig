@@ -4,7 +4,7 @@
 
 menu "asr wlan Parameter"
 
-    config AIC_DEV_ASR_RST_GPIO
+    config AIC_WIRELESS_PWR_GPIO
         string "asr wlan0 reset on gpio"
 
 endmenu

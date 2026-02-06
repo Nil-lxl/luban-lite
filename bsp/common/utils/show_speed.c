@@ -6,9 +6,9 @@
  * Authors: Wu Dehuang <dehuang.wu@artinchip.com>
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <aic_core.h>
 #include <aic_utils.h>
 #include <aic_common.h>
 

@@ -45,6 +45,32 @@ struct timezone
 
 #ifndef _TIMEVAL_DEFINED
 #define _TIMEVAL_DEFINED
+
+#ifndef _TIME_T_DECLARED
+typedef long time_t;
+#define _TIME_T_DECLARED
+#endif
+#ifndef _TIMER_T_DECLARED
+typedef long timer_t;
+#define _TIMER_T_DECLARED
+#endif
+#ifndef _SUSECONDS_T_DECLARED
+typedef long suseconds_t;
+#define _SUSECONDS_T_DECLARED
+#endif
+#ifndef _PID_T_DECLARED
+typedef int pid_t;
+#define _PID_T_DECLARED
+#endif
+#ifndef _CLOCKID_T_DECLARED
+typedef int32_t clockid_t;
+#define _CLOCKID_T_DECLARED
+#endif
+#ifndef _CLOCK_T_DECLARED
+typedef long clock_t;
+#define _CLOCK_T_DECLARED
+#endif
+
 struct timeval
 {
     time_t      tv_sec;     /* seconds */

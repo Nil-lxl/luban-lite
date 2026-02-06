@@ -13,7 +13,7 @@
 #include "aic_plat_log.h"
 #include "aic_plat_time.h"
 
-#if defined(CONFIG_RTTHEAD_PLAT)
+#if defined(CONFIG_PLAT_RTTHREAD)
 #include <rtdbg.h>
 #define AIC_PLAT_PRINTF_API         rt_kprintf
 #endif
@@ -267,9 +267,12 @@ rtos_task_handle rtos_get_current_task(void)
 
 char * rtos_get_task_name(void* ref)
 {
-	rtos_task_handle th = (rtos_task_handle)ref;
-
-	return th->name;
+    rtos_task_handle th = (rtos_task_handle)ref;
+    #if (RTTHREAD_VERSION >= RT_VERSION_CHECK(5, 0, 2))
+    return th->parent.name;
+    #else
+    return th->name;
+    #endif
 }
 
 int rtos_task_create(rtos_task_fct func,
@@ -584,117 +587,88 @@ int rtos_semaphore_signal(rtos_semaphore semaphore, bool isr)
     return rt_sem_release(semaphore);
 }
 
-#if 0
-int rtos_timer_create(rtos_timer *timer,char* name)
+int rtos_timer_create(const char * const name,
+                      rtos_timer *timer,
+                      const uint32_t ms,
+                      const uint8_t periodic,
+                      void * const args,
+                      rtos_timer_fct func)
 {
-
-	int ret = 0;
-	OsResSt st;
-
-	if(ret == 0)
-	{
-		OsResInit(&st, (char*)name, *timer);
-		st.type = RES_TYPE_TIME;
-		rtos_res_list_push(&st);
-	}
-
-	return ret;
-}
-
-int rtos_timer_create2(rtos_timer *timer,char* name,rtos_timer_fct func,void*para,uint32_t to)
-{
-	int ret = 0;
-	OsResSt st;
-    uint8_t flag;
-
-    flag = RT_TIMER_FLAG_DEACTIVATED;
-    flag |= RT_TIMER_FLAG_ONE_SHOT;
-    flag |=RT_TIMER_FLAG_SOFT_TIMER;
-
-	*timer = rt_timer_create(name,func,para,to,flag);
-
-	if(*timer != NULL)
-	{
-		OsResInit(&st, (char*)name, *timer);
-		st.type = RES_TYPE_TIME;
-		rtos_res_list_push(&st);
-	}
-	else
-	{
-		ret = AIC_RTOS_ERR;
-	}
-
-	return ret;
-}
-
-int rtos_timer_start(rtos_timer timer, uint32_t initialTime, uint32_t rescheduleTime, rtos_timer_fct func, void * const args)
-{
-    if (timer == NULL) {
-        aic_dbg("%s: NULL timer\n", __func__);
+    int ret = 0;
+    rt_uint8_t flag;
+    if (!timer) {
+        AIC_LOG_PRINTF("[rtos] null timer: %s\n", name);
         return -1;
     }
-
-   return 0;
+    flag = RT_TIMER_FLAG_SOFT_TIMER;
+    if (periodic) {
+        flag |= RT_TIMER_FLAG_PERIODIC;
+    } else {
+        flag |= RT_TIMER_FLAG_ONE_SHOT;
+    }
+    *timer = rt_timer_create(name,
+                             func,
+                             args,
+                             rt_tick_from_millisecond(ms),
+                             flag);
+    return ret;
 }
 
-int rtos_timer_start2(rtos_timer timer, uint32_t to)
+int rtos_timer_start(rtos_timer timer, const uint32_t ms)
 {
-	rtos_err ret = 0;
-
+    rt_err_t err;
     if (timer == NULL) {
-        aic_dbg("%s: NULL timer\n", __func__);
+        AIC_LOG_PRINTF("[rtos] null timer\n");
         return -1;
     }
-
-	ret = rt_timer_control(timer,RT_TIMER_CTRL_SET_TIME,to);
-    if (ret != AIC_RTOS_SUCCESS) {
-        aic_dbg("%s: control fail\n", __func__);
-        return -2;
+    if (ms) {
+        rt_tick_t tick = rt_tick_from_millisecond(ms);
+        err = rt_timer_control(timer, RT_TIMER_CTRL_SET_TIME, &tick);
+        if (err) {
+            AIC_LOG_PRINTF("[rtos] timer ctrl fail, err=%d\n", err);
+            return -2;
+        }
     }
-
-	ret = rt_timer_start(timer);
-    if (ret != AIC_RTOS_SUCCESS) {
-        aic_dbg("%s: start fail\n", __func__);
+    err = rt_timer_start(timer);
+    if (err) {
+        AIC_LOG_PRINTF("[rtos] timer start fail, err=%d\n", err);
         return -3;
     }
-
-   return 0;
+    return 0;
 }
-
-
 
 int rtos_timer_get_status(rtos_timer timer, rtos_timer_status *timer_status)
 {
-	#if 0
-    uint8_t flag;
-	*status = 0;
-
+    rt_err_t err;
+    rt_uint32_t cur_state;
     if (timer == NULL) {
-        aic_dbg("%s: NULL timer\n", __func__);
+        AIC_LOG_PRINTF("[rtos] null timer\n");
         return -1;
     }
-
-	rtos_critical_enter();
-	flag = timer->parent.flag;
-	rtos_critical_exit();
-
-   if(flag & RT_TIMER_FLAG_ACTIVATED)
-		*status = AIC_RTOS_TIMER_ACT;
-	else if(flag & RT_TIMER_FLAG_DEACTIVATED)
-		*status = AIC_RTOS_TIMER_DACT;
-    #endif
-
-	return 0;
+    err = rt_timer_control(timer, RT_TIMER_CTRL_GET_STATE, &cur_state);
+    if (err) {
+        AIC_LOG_PRINTF("[rtos] timer ctrl fail, err=%d\n", err);
+        return -2;
+    }
+    if (timer_status) {
+        *timer_status = (cur_state == RT_TIMER_FLAG_DEACTIVATED) ? AIC_RTOS_TIMER_DACT : AIC_RTOS_TIMER_ACT;
+    }
+    return 0;
 }
 
 int rtos_timer_stop(rtos_timer timer)
 {
+    rt_err_t err;
     if (timer == NULL) {
-        aic_dbg("%s: NULL timer\n", __func__);
+        AIC_LOG_PRINTF("[rtos] null timer\n");
         return -1;
     }
-
-    return rt_timer_stop(timer);
+    err = rt_timer_stop(timer);
+    if (err) {
+        AIC_LOG_PRINTF("[rtos] timer stop fail, err=%d\n", err);
+        return -2;
+    }
+    return 0;
 }
 
 int rtos_timer_stop_isr(rtos_timer timer)
@@ -705,16 +679,18 @@ int rtos_timer_stop_isr(rtos_timer timer)
 
 int rtos_timer_delete(rtos_timer timer)
 {
+    rt_err_t err;
     if (timer == NULL) {
-        aic_dbg("%s: NULL timer\n", __func__);
+        AIC_LOG_PRINTF("[rtos] null timer\n");
         return -1;
     }
-
-	rtos_res_list_release(timer,RES_TYPE_TASK);
-
-	return 0;
+    err = rt_timer_delete(timer);
+    if (err) {
+        AIC_LOG_PRINTF("[rtos] timer del fail, err=%d\n", err);
+        return -2;
+    }
+    return 0;
 }
-#endif
 
 int rtos_mutex_create(rtos_mutex *mutex, const char * const name)
 {

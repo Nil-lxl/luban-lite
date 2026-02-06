@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2020-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -32,10 +32,7 @@
 #define JPG_STATUS_REG  (0x2004)
 #define PNG_STATUS_REG  (0xC04)
 #define AVC_STATUS_REG  (0x128)
-#elif defined(AIC_VE_DRV_V30)
-#define JPG_STATUS_REG  (0x204)
-#define PNG_STATUS_REG  (0x104)
-#elif defined(AIC_VE_DRV_V40)
+#else
 #define JPG_STATUS_REG  (0x204)
 #define PNG_STATUS_REG  (0x104)
 #endif
@@ -149,9 +146,9 @@ int hal_ve_probe(void)
     aicos_irq_enable(VE_IRQn);
     pr_debug("++++ aich_ve_probe, client: %p", &client);
 
-#ifdef AIC_VE_DRV_V40
+#if defined(AIC_VE_DRV_V40) || defined(AIC_VE_DRV_V31)
     // switch system sram to VE
-    writel(1, SYSCFG_BASE + VE_SRAM_MAP);
+    writel(1 | (0xa1c<<20), SYSCFG_BASE + VE_SRAM_MAP);
 #endif
     return 0;
 }

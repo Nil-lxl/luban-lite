@@ -38,7 +38,8 @@ config CPU_BASE
 
 config CPU_PSRAM_BASE
     hex
-    default 0x40000000
+    default 0x40000000 if !QEMU_RUN
+    default 0x20000000 if QEMU_RUN
     depends on AIC_CHIP_D12X
 
 config CPU_SRAM_BASE
@@ -289,21 +290,29 @@ config AIC_DE_DRV_V12
     bool
     default y if AIC_DE_DRV
 
-config AIC_DE_DRV_VER
-    string
-    default "12" if AIC_DE_DRV_V12
-
 #--------------------------------------------
 # Display interface driver global option
 #--------------------------------------------
 
+config AIC_DISP_HW_RGB
+    bool
+    default y
+
+config AIC_DISP_HW_MIPI_DBI
+    bool
+    default y
+
+config AIC_DISP_HW_MIPI_DSI
+    bool
+    default y
+
 config AIC_DISP_RGB_DRV_V12
     bool
-    default y if AIC_DISP_RGB_DRV
+    default y
 
-config AIC_RGB_DRV_VER
-    string
-    default "12" if AIC_RGB_DRV_V12
+config AIC_DISP_MIPI_DBI_DRV_V12
+    bool
+    default y
 
 #---------------------------
 # GE driver global option

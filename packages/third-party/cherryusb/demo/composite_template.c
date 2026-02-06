@@ -13,8 +13,12 @@
 #include "composite_template.h"
 
 // #define USBD_VID           0x18D1 // Google
-#define USBD_VID           0x33C3 // Display
-#define USBD_PID           0x0E01
+#define USBD_VID           0x33C3
+#ifdef LPKG_CHERRYUSB_DEVICE_DISPLAY
+#define USBD_PID           0x0E04 // Display
+#else
+#define USBD_PID           0x0F01
+#endif
 #define USBD_MAX_POWER     250
 #define USBD_LANGID_STRING 1033
 
@@ -53,8 +57,8 @@ struct function_intf_t {
     uint8_t intf[MAX_FUNC_INTF_NUM];
     uint8_t ep_num;
     uint8_t ep[MAX_FUNC_EP_NUM];
-    uint8_t class_name[10];
-    void (*event_handler)(uint8_t event);
+    uint8_t class_name[12];
+    void (*event_handler)(uint8_t busid, uint8_t event);
     int (*comp_class_init)(void);
     int (*comp_class_deinit)(void);
     int (*comp_class_init_cb)(uint8_t *ep_table, void *data);
@@ -142,13 +146,13 @@ static struct function_intf_t vender_dev = {
 
 #if defined(LPKG_USING_COMP_VIDEO_TABLE1) || defined(LPKG_USING_COMP_VIDEO_TABLE2)
 extern int video_init(void);
-extern int video_deinit(void);
+// extern int video_deinit(void);
 static struct function_intf_t video_dev = {
     .dev_class = USB_DEVICE_CLASS_VIDEO,
     .class_name = "video",
     .data = NULL,
     .comp_class_init = video_init,
-    .comp_class_deinit = video_deinit,
+    // .comp_class_deinit = video_deinit,
 };
 #endif
 
@@ -601,7 +605,7 @@ static int _check_comp_device_status()
 }
 
 void usbd_comp_func_register(const uint8_t *desc,
-                                void (*event_handler)(uint8_t event),
+                                void (*event_handler)(uint8_t busid, uint8_t event),
                                 int (*comp_class_init_cb)(uint8_t *ep_table, void *data),
                                 void *data)
 {
@@ -612,8 +616,11 @@ void usbd_comp_func_register(const uint8_t *desc,
 
     rt_mutex_take(c->usbd_comp_mutex, RT_WAITING_FOREVER);
 
-    if (_check_comp_device_status() < 0)
+    if (_check_comp_device_status() < 0) {
+        rt_mutex_release(c->usbd_comp_mutex);
         return;
+    }
+
 
     intf_desc = (struct usb_interface_descriptor *)
                     _get_desc(desc, USB_DESCRIPTOR_TYPE_INTERFACE, 0);
@@ -622,6 +629,7 @@ void usbd_comp_func_register(const uint8_t *desc,
 
     if (intf_desc == NULL || cfg_desc == NULL) {
         USB_LOG_ERR("COMP: Failed to find the usb device desc!\n");
+        rt_mutex_release(c->usbd_comp_mutex);
         return;
     }
 
@@ -632,6 +640,7 @@ void usbd_comp_func_register(const uint8_t *desc,
     if (index < 0) {
         USB_LOG_ERR("COMP: Failed to find the usb device class!(%#x)\n",
                     intf_desc->bInterfaceClass);
+        rt_mutex_release(c->usbd_comp_mutex);
         return;
     }
 
@@ -676,6 +685,7 @@ void usbd_comp_func_release(const uint8_t *desc, void *data)
 
     if (intf_desc == NULL || cfg_desc == NULL) {
         USB_LOG_ERR("COMP: Failed to find the usb device desc!\n");
+        rt_mutex_release(c->usbd_comp_mutex);
         return;
     }
 
@@ -683,6 +693,7 @@ void usbd_comp_func_release(const uint8_t *desc, void *data)
     if (index < 0) {
         USB_LOG_ERR("COMP: Failed to find the usb device class!(%#x)\n",
                     intf_desc->bInterfaceClass);
+        rt_mutex_release(c->usbd_comp_mutex);
         return;
     }
 
@@ -881,7 +892,7 @@ uint8_t *make_comp_desc(uint8_t *dest, struct usbd_comp_desc_t *src)
     return dest;
 }
 
-void usbd_event_handler(uint8_t event)
+static void usbd_comp_event_handler(uint8_t busid, uint8_t event)
 {
     struct usbd_comp_dev_t *c = get_usbdcomp_dev();
     if (usbd_composite_is_inited() == false)
@@ -893,7 +904,7 @@ void usbd_event_handler(uint8_t event)
             c->func_table[i]->event_handler == NULL)
             continue;
 
-        c->func_table[i]->event_handler(event);
+        c->func_table[i]->event_handler(busid, event);
     }
 }
 
@@ -989,9 +1000,9 @@ int usbd_composite_dev_load(void)
 
     if (c->max_dev_num == 0 || c->dev_num == c->max_dev_num) {
         make_comp_desc(c->comp_desc, &c->desc);
-        usbd_desc_register(c->comp_desc);
+        usbd_desc_register(0, c->comp_desc);
         usbd_composite_add_intf();
-        usbd_initialize();
+        usbd_initialize(0, USB_DEV_BASE, usbd_comp_event_handler);
         c->is_finished = true;
         USB_LOG_INFO("COMP: Composite device loaded.(%d - %d)\n", c->dev_num, c->max_dev_num);
     }
@@ -1004,7 +1015,7 @@ int usbd_composite_dev_unload(void)
     struct usbd_comp_dev_t *c = get_usbdcomp_dev();
 
     if (c->is_finished == true) {
-        usbd_deinitialize();
+        usbd_deinitialize(0);
         c->is_finished = false;
         USB_LOG_INFO("COMP: Composite device unloaded.(%d)\n", c->dev_num);
     }
@@ -1183,7 +1194,7 @@ static int _list_comp_device(void)
         if (c->func_table[i] == NULL)
             continue;
 
-        if ((char *)c->func_table[i]->class_name != NULL)
+        if (c->func_table[i]->class_name[0] != 0)
             printf("      %-7s\t", (char *)c->func_table[i]->class_name);
         else
             printf("\tno name\t");

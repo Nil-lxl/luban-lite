@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -18,6 +18,10 @@
 #include <mtd.h>
 #include <partition_table.h>
 #include <spienc.h>
+
+#ifdef AIC_NAND_REFRESH_SUPPORT
+#include <spinand_refresh.h>
+#endif
 
 static int mtd_spinand_read(struct mtd_dev *mtd, u32 offset, u8 *data, u32 len)
 {
@@ -392,6 +396,23 @@ struct aic_spinand *spinand_probe(u32 spi_bus)
     part = mtd_parts_parse(partstr, spi_bus);
     if (partstr)
         free(partstr);
+
+#ifdef AIC_NAND_REFRESH_SUPPORT
+    p = part;
+    while (p) {
+        if (strcmp(p->name, "refresh") == 0) {
+            if (spinand_register_report_bitflip_cb(flash, spinand_refresh_report_bitflip)) {
+                pr_err("spinand_register_report_bitflip_cb error\n");
+                break;
+            }
+
+            spinand_refresh_init(flash, p->start, p->size);
+            break;
+        }
+        p = p->next;
+    }
+#endif
+
     p = part;
     while (p) {
         if (partition_nftl_is_exist(p->name, nftl_parts)) {

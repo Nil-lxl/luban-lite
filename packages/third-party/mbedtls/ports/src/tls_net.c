@@ -18,6 +18,7 @@
  *
  *  This file is part of mbed TLS (https://tls.mbed.org)
  */
+#if defined(RT_USING_LWIP) || defined(LPKG_USING_LWIP)
 #include <rtthread.h>
 #include <sys/time.h>
 
@@ -654,5 +655,5 @@ void mbedtls_net_free( mbedtls_net_context *ctx )
     closesocket( ctx->fd );
     ctx->fd = -1;
 }
-
+#endif  // #if defined(RT_USING_LWIP) || defined(LPKG_USING_LWIP)
 

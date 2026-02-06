@@ -35,6 +35,8 @@ int panel_dsi_dcs_set_display_off(struct aic_panel *panel);
 int panel_dsi_dcs_exit_sleep_mode(struct aic_panel *panel);
 int panel_dsi_dcs_enter_sleep_mode(struct aic_panel *panel);
 
+int panel_dsi_set_maximum_return_packet_size(struct aic_panel *panel, u16 value);
+
 void panel_dsi_send_perpare(struct aic_panel *panel);
 void panel_dsi_setup_realmode(struct aic_panel *panel);
 

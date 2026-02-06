@@ -296,15 +296,25 @@ static rt_int32_t hgic_sdio_probe_rtt(struct rt_mmcsd_card *card)
 {
     rt_int32_t ret = 0;
     sdio_func_t *func = card->sdio_function[1];
-    sdio_device_id_t id;
+    int i = 0;
+    struct rt_sdio_device_id *id = NULL;
 
-    id.manufacturer = card->sdio_function[1]->manufacturer;
-    id.product = card->sdio_function[1]->product;
-
-    ret = hgic_sdio_probe(func, &id);
-    if (ret)
-        hgic_dbg("sdio probe faile!\n");
-
+    for(i = 0; i < (sizeof(hgic_sdio_wdev_ids)/sizeof(hgic_sdio_wdev_ids[0]));i++) {
+        if((card->sdio_function[1]->manufacturer == hgic_sdio_wdev_ids[i].manufacturer)
+            && (card->sdio_function[1]->product == hgic_sdio_wdev_ids[i].product)) {
+            id = &hgic_sdio_wdev_ids[i];
+            break;
+        }
+    }
+    if(!id) {
+        hgic_err("Can not find vendor:0x%x,device 0x%x\n",card->sdio_function[1]->manufacturer,
+            card->sdio_function[1]->product);
+        return -1;
+    }
+    ret = hgic_sdio_probe(func, (void *)id);
+    if (ret) {
+        hgic_err("sdio probe faile!\n");                
+    }
     return ret;
 }
 

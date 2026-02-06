@@ -33,8 +33,8 @@
 //#define os_sleep_ms(ms) rt_thread_sleep((rt_tick_from_millisecond((ms))) + 1)
 #define os_sleep_ms(ms) rt_thread_mdelay(ms)
 
-extern unsigned int sys_disable_irq(void);
-extern void sys_enable_irq(unsigned int f);
+extern unsigned long sys_disable_irq(void);
+extern void sys_enable_irq(unsigned long f);
 
 char *strdup(const char *s);
 #define print_lock()

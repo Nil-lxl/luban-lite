@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -68,6 +68,7 @@ struct mjpeg_dec_ctx {
     enum mpp_pixel_format out_pix_fmt;
     int yuv2rgb;
     int uv_interleave;
+    int yuva;
 
     const uint8_t *raw_scan_buffer;
     size_t         raw_scan_buffer_size;

@@ -725,12 +725,28 @@ static void mm_venc_event_notify(mm_venc_data *p_venc_data, MM_EVENT_TYPE event,
 {
     if (p_venc_data && p_venc_data->p_callback &&
         p_venc_data->p_callback->event_handler) {
-        p_venc_data->p_callback->event_handler(
-            p_venc_data->h_self,
-            p_venc_data->p_app_data, event,
-            data1, data2, p_event_data);
+        p_venc_data->p_callback->event_handler(p_venc_data->h_self,
+                                               p_venc_data->p_app_data,
+                                               event, data1, data2,
+                                               p_event_data);
     }
 }
+
+#ifdef AIC_MPP_RECORDER_USING_EXTRA_FRAME
+static s32 mm_venc_event_giveback_buffer(mm_venc_data *p_venc_data, void *p_data)
+{
+    s32 ret = MM_ERROR_UNDEFINED;
+
+    if (p_venc_data && p_venc_data->p_callback &&
+        p_venc_data->p_callback->giveback_buffer) {
+        ret = p_venc_data->p_callback->giveback_buffer(p_venc_data->h_self,
+                                                       p_venc_data->p_app_data,
+                                                       p_data);
+    }
+
+    return ret;
+}
+#endif
 
 static void mm_venc_state_change_to_invalid(mm_venc_data *p_venc_data)
 {
@@ -953,7 +969,11 @@ static void *mm_venc_component_thread(void *p_thread_data)
                                                 mm_venc_in_frame, list);
             pthread_mutex_unlock(&p_venc_data->in_frame_lock);
             venc_buffer.p_buffer = (u8 *)&p_frame_node->frame;
+#ifdef AIC_MPP_RECORDER_USING_EXTRA_FRAME
+            ret = mm_venc_event_giveback_buffer(p_venc_data, &venc_buffer);
+#else
             ret = mm_giveback_buffer(p_venc_data->in_port_bind.p_bind_comp, &venc_buffer);
+#endif
             if (ret != 0) {
                 loge("give back frame to vin fail\n");
                 p_venc_data->giveback_frame_fail_num++;
@@ -993,7 +1013,11 @@ static void *mm_venc_component_thread(void *p_thread_data)
             if (!p_pkt_node || p_pkt_node->phy_addr == 0) {
                 logw("Empty packet, then drop one frame!!!");
                 venc_buffer.p_buffer = (u8 *)&p_frame_node->frame;
+#ifdef AIC_MPP_RECORDER_USING_EXTRA_FRAME
+                ret = mm_venc_event_giveback_buffer(p_venc_data, &venc_buffer);
+#else
                 ret = mm_giveback_buffer(p_venc_data->in_port_bind.p_bind_comp, &venc_buffer);
+#endif
                 if (ret != 0) {
                     logw("give back frame to vin fail\n");
                     p_venc_data->giveback_frame_fail_num++;

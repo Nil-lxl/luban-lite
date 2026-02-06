@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -34,15 +34,14 @@ extern "C" {
  *      INCLUDES
  *********************/
 #include "lvgl.h"
+#include "./player_backend/player_backend_map.h"
 #if defined(AIC_MPP_PLAYER_INTERFACE)
 #include "aic_player.h"
 #endif
 /*********************
  *      DEFINES
  *********************/
-#if LVGL_VERSION_MAJOR == 8
-#define lv_image_align_t uint8_t
-#endif
+
 /**********************
  *      TYPEDEFS
  **********************/
@@ -50,18 +49,17 @@ extern const lv_obj_class_t lv_aic_player_class;
 extern const lv_obj_class_t lv_aic_slave_class;
 
 typedef struct {
-#if LVGL_VERSION_MAJOR == 8
-    lv_img_t img;
-#elif LVGL_VERSION_MAJOR == 9
     lv_image_t image;
-#endif
     uint16_t draw_layer;              /* draw mode */
     bool auto_restart;
+    uint32_t width;
+    uint32_t height;
     uint32_t cur_frame_index;
     lv_obj_t *group;                  /* player group object */
     lv_ll_t slave_players;
     lv_timer_t * timer;
     void * ctx;
+    float playback_rate;
 } lv_aic_player_t;
 
 typedef struct {
@@ -71,11 +69,7 @@ typedef struct {
 } lv_aic_player_group_t;
 
 typedef struct {
-#if LVGL_VERSION_MAJOR == 8
-    lv_img_t img;
-#elif LVGL_VERSION_MAJOR == 9
     lv_image_t image;
-#endif
     lv_obj_t *master;
 } lv_aic_slave_player_t;
 
@@ -84,7 +78,7 @@ typedef enum {
     LV_AIC_PLAYER_CMD_STOP,           /* data type is NULL * */
     LV_AIC_PLAYER_CMD_PAUSE,          /* data type is NULL * */
     LV_AIC_PLAYER_CMD_RESUME,         /* data type is NULL * */
-    LV_AIC_PLAYER_CMD_PLAY_END,       /* data type is NULL * */
+    LV_AIC_PLAYER_CMD_PLAY_END,       /* data type is bool * */
     LV_AIC_PLAYER_CMD_GET_MEDIA_INFO, /* data type is struct av_media_info * */
     LV_AIC_PLAYER_CMD_SET_VOLUME,     /* data type is s32 *, rang: 0 ~ 100 */
     LV_AIC_PLAYER_CMD_GET_VOLUME,     /* data type is s32 *, rang: 0 ~ 100 */
@@ -92,6 +86,8 @@ typedef enum {
     LV_AIC_PLAYER_CMD_GET_PLAY_TIME,  /* data type is u64 *, unite: microsecond */
     LV_AIC_PLAYER_CMD_ATTACH_SLAVE, /* data type is slave player */
     LV_AIC_PLAYER_CMD_ATTACH_GROUP,   /* data is lv_obj_t *, group object, auto frame sync */
+    LV_AIC_PLAYER_CMD_SET_PLAYBACK_RATE, /* data type is float *, range: 0.1 ~ 10.0 */
+    LV_AIC_PLAYER_CMD_GET_PLAYBACK_RATE, /* data type is float * */
 } lv_aic_player_cmd_t;
 
 typedef enum {

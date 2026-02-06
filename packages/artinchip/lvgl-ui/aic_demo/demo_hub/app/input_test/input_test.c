@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -36,7 +36,11 @@ static void read_adc_and_sent_event(lv_timer_t * timer)
     obj_index = - btn_id;
 
     btn = lv_obj_get_child(input_test_ui, obj_index);
+#if LVGL_VERSION_MAJOR == 8
+    lv_event_send(btn, btn_state, NULL);
+#else
     lv_obj_send_event(btn, btn_state, NULL);
+#endif
 }
 #endif
 

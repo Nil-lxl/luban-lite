@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -77,10 +77,12 @@ extern void lv_user_gui_init(void);
 
 extern void show_version(void);
 
+#ifndef AIC_IN_SUSPEND_ENV
 void show_banner(void)
 {
     printf("%s\n", BANNER);
 }
+#endif
 
 static int board_init(void)
 {
@@ -89,9 +91,9 @@ static int board_init(void)
     aic_hw_board_init();
 
     hal_syscfg_probe();
-
+#ifndef AIC_IN_SUSPEND_ENV
     aicos_local_irq_enable();
-
+#endif
     cons_uart = AIC_BAREMETAL_CONSOLE_UART;
     uart_init(cons_uart);
     stdio_set_uart(cons_uart);
@@ -99,7 +101,9 @@ static int board_init(void)
 #ifdef AIC_USING_SID
     efuse_init();
 #endif
+#ifndef AIC_IN_SUSPEND_ENV
     show_banner();
+#endif
 
 #ifdef AIC_CONSOLE_BARE_DRV
     show_version();
@@ -324,6 +328,7 @@ int main(void)
 #ifdef AIC_ADCIM_DRV
     hal_adcim_probe();
 #endif
+
 
 #ifdef AIC_CONSOLE_BARE_DRV
     /* Console shell loop */

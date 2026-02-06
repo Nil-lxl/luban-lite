@@ -4,7 +4,7 @@
 
 # wlan0 parameter
 menu "Wlan0 Parameter"
-    config HUGEIC_TXW901_PWR_GPIO
+    config AIC_WIRELESS_PWR_GPIO
         string "txw901 power on gpio"
         default "PD.17"
 

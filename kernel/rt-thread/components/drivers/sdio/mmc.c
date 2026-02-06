@@ -10,6 +10,7 @@
 
 #include <drivers/mmcsd_core.h>
 #include <drivers/mmc.h>
+#include <drivers/sdio_mgr.h>
 
 #define DBG_TAG               "SDIO"
 #ifdef RT_SDIO_DEBUG
@@ -603,6 +604,8 @@ rt_int32_t init_mmc(struct rt_mmcsd_host *host, rt_uint32_t ocr)
     if (err)
         goto remove_card;
     mmcsd_host_lock(host);
+
+    rt_sdio_mgr_notify_init_complete(DEVICE_TYPE_MMC_CARD, RT_EOK);
 
     return 0;
 

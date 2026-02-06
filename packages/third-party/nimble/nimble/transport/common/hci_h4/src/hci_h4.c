@@ -55,7 +55,7 @@ struct hci_h4_input_buffer {
     uint16_t len;
 };
 
-static void
+static int
 hci_h4_frame_start(struct hci_h4_sm *rxs, uint8_t pkt_type)
 {
     rxs->pkt_type = pkt_type;
@@ -75,9 +75,9 @@ hci_h4_frame_start(struct hci_h4_sm *rxs, uint8_t pkt_type)
         break;
     default:
         /* XXX sync loss */
-        assert(0);
-        break;
+        return -1;
     }
+    return 0;
 }
 
 static int
@@ -280,10 +280,14 @@ hci_h4_sm_rx(struct hci_h4_sm *h4sm, const uint8_t *buf, uint16_t len)
         rc = 0;
         switch (h4sm->state) {
         case HCI_H4_SM_W4_PKT_TYPE:
-            hci_h4_frame_start(h4sm, ib.buf[0]);
+            /* If the pkt_type don't match, discard the current byte */
+            if (hci_h4_frame_start(h4sm, ib.buf[0])) {
+                hci_h4_ib_consume(&ib, 1);
+                break;
+            }
             hci_h4_ib_consume(&ib, 1);
             h4sm->state = HCI_H4_SM_W4_HEADER;
-        /* no break */
+            break;
         case HCI_H4_SM_W4_HEADER:
             rc = hci_h4_sm_w4_header(h4sm, &ib);
             assert(rc >= 0);

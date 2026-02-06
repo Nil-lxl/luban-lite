@@ -1,14 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2022-2025, ArtInChip Technology Co., Ltd
+# Copyright (C) 2022-2026, ArtInChip Technology Co., Ltd
 
 import os
 import platform
 from aic_build import get_config
 
 # toolchains options
-# CPUNAME = e906/e906f/e906fd/e906p/e906fp/e906fdp
-# CPUNAME = e907/e907f/e907fd/e907p/e907fp/e907fdp
 # CPUNAME = c906/c906d/c906fd/c906fdv/c906v
 SOC         ='d21x'
 ARCH        ='risc-v'
@@ -75,38 +73,44 @@ if PLATFORM == 'gcc':
     LD_SCRIPT       = 'gcc_aic.ld'
     QEMU_LD_SCRIPT  = 'gcc_qemu.ld'
 
-    if CPUNAME == 'e906fdp' or CPUNAME == 'e907fdp':
-        DEVICE = ' -march=rv32imafdcpzpsfoperand_xtheade -mabi=ilp32d -mcmodel=medlow'
-    if CPUNAME == 'e906fp' or CPUNAME == 'e907fp':
-        DEVICE = ' -march=rv32imafcpzpsfoperand_xtheade -mabi=ilp32f -mcmodel=medlow'
-    if CPUNAME == 'e906p' or CPUNAME == 'e907p':
-        DEVICE = ' -march=rv32imacpzpsfoperand_xtheade -mabi=ilp32 -mcmodel=medlow'
-    if CPUNAME == 'e906fd' or CPUNAME == 'e907fd':
-        DEVICE = ' -march=rv32imafdc_xtheade -mabi=ilp32d -mcmodel=medlow'
-    if CPUNAME == 'e906f' or CPUNAME == 'e907f':
-        DEVICE = ' -march=rv32imafc_xtheade -mabi=ilp32f -mcmodel=medlow'
-    if CPUNAME == 'e906' or CPUNAME == 'e907':
-        DEVICE = ' -march=rv32imac_xtheade -mabi=ilp32 -mcmodel=medlow'
+    PRJ_TOOLCHAIN_VER = os.getenv('PRJ_TOOLCHAIN_VER')
+    if not PRJ_TOOLCHAIN_VER:
+        PRJ_TOOLCHAIN_VER = 'V2.6.1'
+    else:
+        PRJ_TOOLCHAIN_VER = PRJ_TOOLCHAIN_VER.replace('"', '')
+
+    if PRJ_TOOLCHAIN_VER == 'V2.6.1':
+        ISA_TAG = ''
+    else:
+        ISA_TAG = '_zifencei'
+
     if CPUNAME == 'c906':
-        DEVICE = ' -march=rv64imac_xtheadc -mabi=lp64 -mcmodel=medlow'
+        DEVICE = ' -march=rv64imac' + ISA_TAG + '_xtheadc -mabi=lp64 -mcmodel=medlow'
     if CPUNAME == 'c906d':
-        DEVICE = ' -march=rv64imafdc_xthead -mabi=lp64d -mcmodel=medlow'
+        DEVICE = ' -march=rv64imafdc' + ISA_TAG + '_xtheadc -mabi=lp64d -mcmodel=medlow'
     if CPUNAME == 'c906fd':
-        DEVICE = ' -march=rv64imafdc_xtheadc -mabi=lp64d -mcmodel=medany'
-        TOOLCHAIN_LIB = 'rv64imafdc_zfh_xtheadc'
+        DEVICE = ' -march=rv64imafdc' + ISA_TAG + '_xtheadc -mabi=lp64d -mcmodel=medany'
+        TOOLCHAIN_LIB = 'rv64imafdc_zfh' + ISA_TAG + '_xtheadc'
         M_DEVICE = ' -march=rv64imafdc -mabi=lp64d -mcmodel=medany'
         M_TOOLCHAIN_LIB = 'rv64imafdc'
     if CPUNAME == 'c906fdv':
-        DEVICE = ' -march=rv64imafdcv0p7_zfh_xtheadc -mabi=lp64d -mcmodel=medany'
+        DEVICE = ' -march=rv64imafdcv0p7_zfh' + ISA_TAG + '_xtheadc -mabi=lp64d -mcmodel=medany'
     if CPUNAME == 'c906v':
-        DEVICE = ' -march=rv64imafdcv_xtheadc -mabi=lp64dv -mcmodel=medany'
+        DEVICE = ' -march=rv64imafdcv' + ISA_TAG + '_xtheadc -mabi=lp64dv -mcmodel=medany'
 
     B_CFLAGS += ' -c -g -ffunction-sections -fdata-sections -Wall'
     B_AFLAGS += ' -c' + ' -x assembler-with-cpp' + ' -D__ASSEMBLY__'
     CFLAGS = DEVICE + B_CFLAGS + CFLAGS_DBG + ' -mno-dup-loop-header'
     AFLAGS = DEVICE + B_AFLAGS + AFLAGS_DBG
     CXXFLAGS = CFLAGS
+    CFLAGS_GCC14 = ' -Wno-error=implicit-function-declaration -Wno-error=int-conversion \
+                    -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch \
+                    -Wno-error=declaration-missing-parameter-type -Wno-error=implicit-int'
+    if PRJ_TOOLCHAIN_VER == 'V2.6.1':
+        CFLAGS_GCC14 = ''
+    CFLAGS += CFLAGS_GCC14
     LFLAGS += DEVICE
+
     PRJ_KERNEL = os.getenv('PRJ_KERNEL')
     if PRJ_KERNEL == 'rt-thread':
         LFLAGS += ' -nostartfiles -Wl,--no-whole-archive -lgcc -Wl,-gc-sections '
@@ -131,6 +135,7 @@ if PLATFORM == 'gcc':
     M_CFLAGS = M_DEVICE + B_CFLAGS + CFLAGS_DBG + ' -fPIC -shared'
     M_AFLAGS = M_DEVICE + B_AFLAGS + AFLAGS_DBG
     M_CXXFLAGS = M_CFLAGS
+    M_CFLAGS += CFLAGS_GCC14
     M_LFLAGS = M_DEVICE + ' -Wl,--gc-sections,-z,max-page-size=0x4'
     M_LFLAGS += ' -shared -fPIC -nostartfiles -nostdlib -static-libgcc'
     M_POST_ACTION = M_STRIP + ' -R .hash $TARGET\n' + M_SIZE + ' $TARGET \n'

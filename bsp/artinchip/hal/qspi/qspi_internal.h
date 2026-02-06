@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -23,6 +23,7 @@ extern "C" {
 #define QSPI_WORK_MODE_SYNC_DUPLEX_DMA      7
 #define QSPI_WORK_MODE_ASYNC_DUPLEX_CPU     8
 #define QSPI_WORK_MODE_ASYNC_DUPLEX_DMA     9
+#define QSPI_WORK_MODE_FLUSH_DISPLAY        10
 
 #define HAL_QSPI_STATUS_INTERNAL_MSK        (0xFFFFUL << 16)
 #define HAL_QSPI_STATUS_ASYNC_TDONE         (0x1UL << 16)

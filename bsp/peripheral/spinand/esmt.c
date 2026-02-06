@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,7 +29,7 @@ const struct aic_spinand_info esmt_spinand_table[] = {
     /*F50L1G*/
     { DEVID(0x01), PAGESIZE(2048), OOBSIZE(64), BPL(1024), PPB(64), PLANENUM(1),
       DIE(0), "esmt 128MB: 2048+64@64@1024", cmd_cfg_table,
-      NULL, f50l1g_ooblayout_user },
+      NULL, f50l1g_ooblayout_user, 1 },
 };
 
 const struct aic_spinand_info *esmt_spinand_detect(struct aic_spinand *flash)

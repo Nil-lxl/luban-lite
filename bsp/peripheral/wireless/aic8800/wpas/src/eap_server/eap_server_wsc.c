@@ -15,7 +15,7 @@
 #include "p2p/p2p.h"
 #include "wps/wps.h"
 
-#ifdef PLATFORM_ASR_THREADX
+#ifdef CONFIG_PLAT_THREADX
 #undef FAIL
 #endif
 

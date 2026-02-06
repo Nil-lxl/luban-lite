@@ -6,7 +6,6 @@
  * Authors: dwj <weijie.ding@artinchip.com>
  */
 
-#include <stdio.h>
 #include <rtdevice.h>
 #include <rtthread.h>
 #include <aic_core.h>
@@ -34,6 +33,7 @@ struct aic_audio
 
 static struct aic_audio snd_dev;
 static void drv_audio_callback(aic_audio_ctrl *pcodec, void *arg);
+static bool is_first_play = true;
 
 rt_err_t drv_audio_init(struct rt_audio_device *audio)
 {
@@ -138,12 +138,18 @@ rt_err_t drv_audio_start(struct rt_audio_device *audio, int stream)
             rt_audio_tx_complete(audio);
             hal_audio_playback_start(pcodec);
         }
-        /* Enable PA */
-#ifdef AIC_AUDIO_EN_PIN_HIGH
-        hal_gpio_set_output(group, pin);
-#else
-        hal_gpio_clr_output(group, pin);
-#endif
+
+        if (is_first_play) {
+            /* Enable PA */
+            #ifdef AIC_AUDIO_EN_PIN_HIGH
+            hal_gpio_set_output(group, pin);
+            #else
+            hal_gpio_clr_output(group, pin);
+            #endif
+            /* Wait power amplifier stable */
+            rt_thread_mdelay(200);
+            is_first_play = false;
+        }
     }
     else
     {
@@ -158,28 +164,14 @@ rt_err_t drv_audio_stop(struct rt_audio_device *audio, int stream)
 {
     struct aic_audio *p_snd_dev;
     aic_audio_ctrl *pcodec;
-    unsigned int group, pin;
 
     p_snd_dev = (struct aic_audio *)audio;
     pcodec = &p_snd_dev->codec;
-    group = GPIO_GROUP(p_snd_dev->gpio_pa);
-    pin = GPIO_GROUP_PIN(p_snd_dev->gpio_pa);
 
-    if (stream == AUDIO_STREAM_REPLAY)
-    {
-        /* Disable PA first */
-        #ifdef AIC_AUDIO_EN_PIN_HIGH
-            hal_gpio_clr_output(group, pin);
-        #else
-            hal_gpio_set_output(group, pin);
-        #endif
+    if (stream == AUDIO_STREAM_REPLAY) {
         hal_audio_playback_stop(pcodec);
         hal_audio_disable_fade(pcodec);
-        /* Delay 50ms to prevent pop */
-        rt_thread_mdelay(50);
-    }
-    else
-    {
+    } else {
         hal_log_err("stream error\n");
         return -RT_EINVAL;
     }
@@ -515,6 +507,8 @@ int rt_hw_sound_init(void)
     hal_gpio_set_output(group, pin);
 #endif
     hal_audio_set_fade_volume(&snd_dev.codec, FADE_MAX_CONTROL);
+    hal_audio_set_fade_control(&snd_dev.codec,
+                                FADE_CTRL0_DEFAULT_SPEED, FADE_CTRL0_DEFAULT_STEP);
 
     ret = rt_audio_register(&snd_dev.audio, "sound0",
                             RT_DEVICE_FLAG_WRONLY, &snd_dev);

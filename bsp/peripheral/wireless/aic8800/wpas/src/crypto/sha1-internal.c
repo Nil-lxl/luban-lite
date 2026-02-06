@@ -14,7 +14,7 @@
 #include "md5.h"
 #include "crypto.h"
 
-#ifdef PLATFORM_ASR_THREADX
+#ifdef CONFIG_PLAT_THREADX
 #undef R1
 #undef R2
 #undef R3

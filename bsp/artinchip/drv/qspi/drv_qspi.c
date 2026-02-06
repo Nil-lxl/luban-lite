@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -557,6 +557,69 @@ static void qspi_set_rxdelay_mode(struct rt_spi_device *device, rt_uint32_t mode
     hal_qspi_master_set_rxdelay_mode(&qspi->handle, mode);
 }
 
+#if defined(AIC_QSPI_DRV_V11) || defined(AIC_QSPI_DRV_V12)
+static void spi_disp_control(struct rt_spi_device *device, struct spi_disp_config *spi_disp)
+{
+    struct aic_qspi *qspi;
+    struct spi_display_init_config hal_disp_config;
+    struct spi_display_param hal_disp_param;
+
+    rt_memset(&hal_disp_config, 0, sizeof(hal_disp_config));
+    rt_memset(&hal_disp_param, 0, sizeof(hal_disp_param));
+
+    qspi = (struct aic_qspi *)device->bus;
+
+    if (spi_disp == NULL || spi_disp->disp_config == NULL || spi_disp->disp_param == NULL) {
+        pr_err("spi_disp_control: invalid parameters\n");
+        return;
+    }
+
+    hal_disp_config.dma_en = spi_disp->disp_config->dma_en;
+    hal_disp_config.spi_mode = spi_disp->disp_config->spi_mode;
+    hal_disp_config.disp_on = spi_disp->disp_config->disp_on;
+
+    hal_disp_param.mtw = spi_disp->disp_param->mtw;
+    hal_disp_param.vsw_en = spi_disp->disp_param->vsw_en;
+    hal_disp_param.vbp_en = spi_disp->disp_param->vbp_en;
+    hal_disp_param.vfp_en = spi_disp->disp_param->vfp_en;
+
+    hal_disp_param.len_stride = spi_disp->disp_param->len_stride;
+    hal_disp_param.len = spi_disp->disp_param->len;
+
+    hal_disp_param.hvbp = spi_disp->disp_param->hvbp;
+    hal_disp_param.hvld = spi_disp->disp_param->hvld;
+    hal_disp_param.hvfp = spi_disp->disp_param->hvfp;
+
+    hal_disp_param.cmd_vsw = spi_disp->disp_param->cmd_vsw;
+    hal_disp_param.cmd_vbp = spi_disp->disp_param->cmd_vbp;
+    hal_disp_param.cmd_vld = spi_disp->disp_param->cmd_vld;
+    hal_disp_param.cmd_vfp = spi_disp->disp_param->cmd_vfp;
+
+    hal_disp_param.count = spi_disp->disp_param->count;
+
+    hal_spi_disp_init(&qspi->handle, &hal_disp_config);
+    hal_spi_disp_set_mode(&qspi->handle, &hal_disp_param);
+}
+
+static void spi_disp_trans_data(struct rt_spi_device *device, struct drv_spi_trans_data *spi_disp_trans)
+{
+    struct aic_qspi *qspi;
+    struct spi_display_data hal_disp_data;
+
+    rt_memset(&hal_disp_data, 0, sizeof(hal_disp_data));
+
+    qspi = (struct aic_qspi *)device->bus;
+
+    rt_completion_init(qspi->completion);
+
+    hal_disp_data.tx_buf  = spi_disp_trans->tx_buf;
+    hal_disp_data.en      = spi_disp_trans->en;
+    hal_disp_data.frm_cnt = spi_disp_trans->frm_cnt;
+
+    hal_spi_disp_restart(&qspi->handle, &hal_disp_data);
+}
+#endif
+
 static rt_err_t qspi_wait_completion(struct rt_spi_device *device)
 {
     rt_err_t result = RT_EOK;
@@ -616,6 +679,10 @@ static const struct rt_spi_ops aic_qspi_ops = {
     .gstatus = spi_get_transfer_status,
     .delaymode = qspi_set_rxdelay_mode,
     .wait_completion = qspi_wait_completion,
+#if defined(AIC_QSPI_DRV_V11) || defined(AIC_QSPI_DRV_V12)
+    .spi_disp = spi_disp_control,
+    .spi_trans_data = spi_disp_trans_data,
+#endif
 };
 
 static int rt_hw_qspi_bus_init(void)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -56,13 +56,13 @@ const struct aic_spinand_info micron_spinand_table[] = {
     /*MT29F1G01ABAFD*/
     { DEVID(0x14), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
       PLANENUM(1), DIE(0), "micron 128MB: 2048+128@64@1024", cmd_cfg_table,
-      mt29f1g01_ecc_get_status, mt29f1g_ooblayout_user},
+      mt29f1g01_ecc_get_status, mt29f1g_ooblayout_user, 8},
     /*MT29F2G01ABAGD*/
     /*ZD35Q2GC-IB*/
     /*XT26G02E*/
     { DEVID(0x24), PAGESIZE(2048), OOBSIZE(128), BPL(2048), PPB(64),
       PLANENUM(2), DIE(0), "micron 256MB: 2048+128@64@2048", cmd_cfg_table,
-      mt29f1g01_ecc_get_status, mt29f1g_ooblayout_user },
+      mt29f1g01_ecc_get_status, mt29f1g_ooblayout_user, 8 },
 };
 
 const struct aic_spinand_info *micron_spinand_detect(struct aic_spinand *flash)

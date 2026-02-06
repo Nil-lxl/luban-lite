@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -115,6 +115,10 @@ void hal_audio_set_samplerate(aic_audio_ctrl *codec, uint32_t samplerate)
     unsigned int pclk_id;
 
     hw_rate = hal_audio_get_hw_rate(codec, samplerate);
+    if (hw_rate < 0) {
+        hal_log_err("AudioCodec not support this samplerate: %u!!!\n", (unsigned int)samplerate);
+        return;
+    }
     /* Set playback samplerate */
     reg_val = readl(codec->reg_base + TX_PLAYBACK_CTRL_REG);
     reg_val &= ~TX_FS_OUT_MASK;
@@ -353,19 +357,19 @@ void hal_audio_playback_start(aic_audio_ctrl *codec)
 
     config.direction = DMA_MEM_TO_DEV;
     config.dst_addr = codec->reg_base + TXFIFO_DATA_REG;
-    config.slave_id = 14;
+    config.slave_id = DMA_ID_AUDIO_DMIC;
     config.src_maxburst = 1;
     config.dst_maxburst = 1;
 
     /* AudioCodec only support 16bit sample width */
     if (codec->config.channel == 2)
     {
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
     }
     else if (codec->config.channel == 1)
     {
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
     }
 
@@ -387,8 +391,6 @@ void hal_audio_playback_start(aic_audio_ctrl *codec)
                              info->buf_info.buf_len, info->buf_info.period_len,
                              DMA_MEM_TO_DEV);
     hal_dma_chan_start(info->dma_chan);
-    /* flush TXFIFO */
-    hal_audio_flush_tx_fifo(codec);
     /* Enable TX global */
     hal_audio_enable_tx_global(codec);
     /* Enable AUDOUT DRQ */
@@ -402,7 +404,7 @@ void hal_audio_playback_start_single(aic_audio_ctrl *codec)
 
     config.direction = DMA_MEM_TO_DEV;
     config.dst_addr = codec->reg_base + TXFIFO_DATA_REG;
-    config.slave_id = 14;
+    config.slave_id = DMA_ID_AUDIO_DMIC;
     config.src_maxburst = 1;
     config.dst_maxburst = 1;
 
@@ -442,8 +444,6 @@ void hal_audio_playback_start_single(aic_audio_ctrl *codec)
     hal_dma_chan_start(info->dma_chan);
 
     if (codec->start_flag == 0) {
-        /* flush TXFIFO */
-        hal_audio_flush_tx_fifo(codec);
         /* Enable TX global */
         hal_audio_enable_tx_global(codec);
         /* Enable AUDOUT DRQ */

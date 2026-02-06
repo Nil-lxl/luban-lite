@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -143,6 +143,11 @@ static int do_spinand_write_read()
         return -1;
 
     printf("\n === 3. test write read speed ===\n");
+    start_us = aic_get_time_us();
+    ret = spinand_block_erase(s_spinand_flash, 0);
+    show_speed("block erase speed", s_spinand_flash->info->page_size * s_spinand_flash->info->pages_per_eraseblock,
+                aic_get_time_us() - start_us);
+
     start_us = aic_get_time_us();
     ret = spinand_write_page(s_spinand_flash, page, s_write_buf, s_spinand_flash->info->page_size, NULL, 0);
     show_speed("page write speed", s_spinand_flash->info->page_size, aic_get_time_us() - start_us);

@@ -406,7 +406,6 @@ static rt_err_t drv_uart_control(struct rt_serial_device *serial, int cmd, void 
 {
     usart_handle_t uart;
     aic_usart_priv_t *uart_data;
-    unsigned int group, pin;
 
 
     RT_ASSERT(serial != RT_NULL);
@@ -432,16 +431,12 @@ static rt_err_t drv_uart_control(struct rt_serial_device *serial, int cmd, void 
 
     case AIC_UART_485_CTL_SOFT_MODE0:
         hal_usart_rts_ctl_soft_mode_clr(uart);
-        group = GPIO_GROUP(uart_rts_dev[uart_data->idx].uart_rts_pin);
-        pin = GPIO_GROUP_PIN(uart_rts_dev[uart_data->idx].uart_rts_pin);
-        hal_gpio_clr_output(group, pin);
+        rt_pin_write(uart_rts_dev[uart_data->idx].uart_rts_pin, PIN_LOW);
         break;
 
     case AIC_UART_485_CTL_SOFT_MODE1:
         hal_usart_rts_ctl_soft_mode_set(uart);
-        group = GPIO_GROUP(uart_rts_dev[uart_data->idx].uart_rts_pin);
-        pin = GPIO_GROUP_PIN(uart_rts_dev[uart_data->idx].uart_rts_pin);
-        hal_gpio_set_output(group, pin);
+        rt_pin_write(uart_rts_dev[uart_data->idx].uart_rts_pin, PIN_HIGH);
         break;
 
      case AIC_UART_232_RESUME_DATA:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,29 +22,12 @@
 #define PNG_IHDR_CHINK_SIZE 25
 #define PNG_FCTL_CHUNK_SIZE 38
 #define PNG_IEND_CHUNK_SIZE 12
-#define DEFAULT_FRAME_DURATION 100
 #define IS_FFMPEG_CONVERTED_CHUNK(chunk) ((chunk) && (chunk)->length == 6)
 
-#if LVGL_VERSION_MAJOR == 8
-#define LV_IMAGE_SRC_FILE       LV_IMG_SRC_FILE
-#define lv_disp_rotation_t      lv_disp_rot
-#define lv_image_t              lv_img_t
-#define lv_image_dsc_t          lv_img_dsc_t
-#define lv_image_src_t          lv_img_src_t
-#define lv_image_src_get_type   lv_img_src_get_type
-#define lv_image_get_rotation   lv_img_get_angle
-#define lv_malloc               lv_mem_alloc
-#define lv_free                 lv_mem_free
-
-static void *lv_malloc_zeroed(size_t size)
-{
-    void *buffer = lv_mem_alloc(size);
-    if (!buffer)
-        return NULL;
-    lv_memset(buffer, 0, size);
-    return buffer;
-}
-#endif
+/**********************
+ *      DEFINITIONS
+ **********************/
+#define PNG_DUMPING_IMAGE 0
 
 /**********************
  *      TYPEDEFS
@@ -110,6 +93,7 @@ struct png_player_ctx {
     /* Playback control */
     uint32_t last_frame_time;
     uint32_t status;
+    float playback_rate;
 
     /* Frame management */
     uint32_t num_frames;
@@ -122,8 +106,10 @@ struct png_player_ctx {
     struct mpp_decoder *dec;
     uint32_t package_size;
     uint8_t *addr[2];
+    uint8_t *align_addr[2];
     uint8_t *image_data;
     void *image_src;
+    struct mpp_buf buf; /* only used by v8 for drawing images */
 
     uint8_t is_normal_png;
 
@@ -184,6 +170,13 @@ static int alloc_player_frame_buffer(struct frame_allocator *p, struct mpp_frame
 static int free_player_frame_buffer(struct frame_allocator *p, struct mpp_frame *frame);
 static int close_allocator(struct frame_allocator *p);
 
+/* auxiliary functions */
+static void convert_to_lvgl_path(const char *path, char *lv_path, uint16_t max_len);
+#if PNG_DUMPING_IMAGE
+static void png_debug_save_frame(uint8_t *data, uint32_t len, uint16_t frame_index, const char* suffix, char *path);
+static void png_debug_save_bmp_frame(PNG_Bitmap *bitmap, uint16_t frame_index, char *path);
+#endif
+
 static struct alloc_ops frame_buffer_alloc_ops = {
     .alloc_frame_buffer = alloc_player_frame_buffer,
     .free_frame_buffer = free_player_frame_buffer,
@@ -230,6 +223,7 @@ static void *png_player_backend_create(void)
     ops->ctx = png_ctx;
     png_ctx->status = PLAYER_STATUS_IDLE;
     png_ctx->is_normal_png = true;
+    png_ctx->playback_rate = 1.0f;
 
     return ops;
 }
@@ -260,25 +254,13 @@ static lv_res_t png_player_backend_set_src(void *ctx, const char *src)
     char lvgl_path[256] = {0};
     lv_res_t res = LV_RES_OK;
     PNG_Bitmap bitmap = {0};
-    PNG_Chunk chunk = {0};
-    char prefix[10] = {0};
-    long chunk_pos = -1;
     uint32_t size = 0;
-#if LVGL_VERSION_MAJOR == 8
-    LV_LOG_WARN("In v8, it does not support the AIC private APNG format player");
-    return LV_RES_INV;
-#endif
+
     /* cleanup old resources */
     png_player_cleanup(png_ctx);
 
     /* Convert path to LVGL format */
-    snprintf(prefix, sizeof(prefix), "%c:", LV_FS_POSIX_LETTER);
-    if (strncmp(src, prefix, strlen(prefix)) != 0) {
-        snprintf(lvgl_path, sizeof(lvgl_path), "%s%s", prefix, src);
-    } else {
-        snprintf(lvgl_path, sizeof(lvgl_path), "%s", src);
-    }
-    lvgl_path[sizeof(lvgl_path)-1] = '\0';
+    convert_to_lvgl_path(src, lvgl_path, sizeof(lvgl_path));
 
     /* Open the file */
     res = lv_fs_open(&png_ctx->file, lvgl_path, LV_FS_MODE_RD);
@@ -301,25 +283,10 @@ static lv_res_t png_player_backend_set_src(void *ctx, const char *src)
         goto set_src_err;
     }
 
-    /* Check for private APNG chunks */
-    chunk_pos = png_read_chunk(png_ctx, &chunk);
-    if (chunk_pos < 0) {
-        LV_LOG_ERROR("Failed to read PNG chunk at position %ld, type: %.4s", chunk_pos, chunk.type);
-        goto set_src_err;
-    }
-
-    /* Read private chunk */
-    if (memcmp(chunk.type, "dcTL", 4) == 0) {
-        png_parse_dctl(&png_ctx->dcTL, &chunk);
-        png_ctx->is_normal_png = false;
-    } else {
+    png_scan_apng_header(png_ctx);
+    if (png_ctx->is_normal_png == true) {
         LV_LOG_WARN("APNG is not AIC's proprietary format, assuming normal PNG");
     }
-    lv_free(chunk.data);
-
-    /* Read acTL chunk */
-    if (png_ctx->is_normal_png == false)
-        png_scan_apng_header(png_ctx);
 
     /* Allocate image source structure */
     png_ctx->image_src = lv_malloc(sizeof(lv_image_dsc_t));
@@ -356,14 +323,17 @@ static lv_res_t png_player_backend_set_src(void *ctx, const char *src)
         }
     }
 
-    png_ctx->bitmap.data = png_ctx->addr[0];
-    png_ctx->image_data = (uint8_t *)png_ctx->addr[0];
+    png_ctx->align_addr[0] = (uint8_t *)ALIGN_UP((uintptr_t)png_ctx->addr[0], 16);
+    png_ctx->align_addr[1] = (uint8_t *)ALIGN_UP((uintptr_t)png_ctx->addr[1], 16);
+
+    png_ctx->bitmap.data = png_ctx->align_addr[0];
+    png_ctx->image_data = (uint8_t *)png_ctx->align_addr[0];
 
     /* draw buffer is black */
     for (int i = 0; i < 2; i++) {
         memcpy(&bitmap, &png_ctx->bitmap, sizeof(PNG_Bitmap));
-        bitmap.data = png_ctx->addr[i];
-        if (png_ctx->addr[i] == NULL)
+        bitmap.data = png_ctx->align_addr[i];
+        if (png_ctx->align_addr[i] == NULL)
             break;
     }
 
@@ -387,9 +357,6 @@ static lv_res_t png_player_backend_set_src(void *ctx, const char *src)
     return LV_RES_OK;
 
 set_src_err:
-    if (chunk.data)
-        lv_free(chunk.data);
-
     png_player_cleanup(png_ctx);
 
     return LV_RES_INV;
@@ -400,10 +367,7 @@ static lv_res_t png_player_backend_control(void *ctx, player_cmd_t cmd, void *da
     player_backend_ops_t *ops = (player_backend_ops_t *)ctx;
     struct png_player_ctx *png_ctx = ops->ctx;
     lv_res_t res = LV_RES_OK;
-#if LVGL_VERSION_MAJOR == 8
-    LV_LOG_WARN("LVGL v8 detected: AIC private APNG format is not supported, falling back to normal PNG");
-    return LV_RES_INV;
-#endif
+
     switch(cmd) {
         case PLAYER_CMD_START:
             png_ctx->status = PLAYER_STATUS_RUNNING;
@@ -447,6 +411,20 @@ static lv_res_t png_player_backend_control(void *ctx, player_cmd_t cmd, void *da
                 return LV_RES_INV;
             }
             memcpy(data, &png_ctx->media_info, sizeof(struct av_media_info));
+            res = LV_RES_OK;
+            break;
+        case PLAYER_CMD_SET_PLAYBACK_RATE:
+            if (!data) {
+                LV_LOG_WARN("PLAYER_CMD_SET_PLAYBACK_RATE: data is NULL");
+                return LV_RES_INV;
+            }
+            float rate = *(float *)data;
+            if (rate < 0.1f || rate > 10.0f) {
+                LV_LOG_ERROR("Invalid playback rate: %.2f (valid range: 0.1 to 10.0)", rate);
+                return LV_RES_INV;
+            }
+            png_ctx->playback_rate = rate;
+            LV_LOG_INFO("Playback rate set to: %.2fx", rate);
             res = LV_RES_OK;
             break;
         default:
@@ -602,8 +580,8 @@ static void png_parse_fctl(fcTL_Chunk *fcTL, PNG_Chunk *chunk)
     fcTL->delay_den = png_get_be16(chunk->data + 22);
     fcTL->dispose_op = (APNG_Dispose_Op)chunk->data[24];
     fcTL->blend_op = (APNG_Blend_Op)chunk->data[25];
-    LV_LOG_INFO("fcTL: serial_number = %d, width = %d, height = %d, x= %d, y = %d, delay_num = %d, delay_den = %d, dispose_op = %d, blend_op = %d",
-                 (int)fcTL->serial_number, (int)fcTL->width, (int)fcTL->height, (int)fcTL->x, (int)fcTL->y, (int)fcTL->delay_num, (int)fcTL->delay_den, (int)fcTL->dispose_op, (int)fcTL->blend_op);
+    // LV_LOG_INFO("fcTL: serial_number = %d, width = %d, height = %d, x= %d, y = %d, delay_num = %d, delay_den = %d, dispose_op = %d, blend_op = %d",
+    //              (int)fcTL->serial_number, (int)fcTL->width, (int)fcTL->height, (int)fcTL->x, (int)fcTL->y, (int)fcTL->delay_num, (int)fcTL->delay_den, (int)fcTL->dispose_op, (int)fcTL->blend_op);
 }
 
 static bool png_should_cache_auxiliary_chunk(const char *chunk_type)
@@ -654,14 +632,19 @@ static void png_scan_apng_header(struct png_player_ctx *ctx)
             continue;
         }
 
-        if (memcmp(chunk.type, "acTL", 4) == 0)
-        {
+        if (memcmp(chunk.type, "acTL", 4) == 0) {
             png_parse_actl(&ctx->num_frames, &ctx->num_plays, &chunk);
+        } else if (memcmp(chunk.type, "dcTL", 4) == 0) {
+            png_parse_dctl(&ctx->dcTL, &chunk);
+            ctx->is_normal_png = false;
         } else if (memcmp(chunk.type, "fcTL", 4) == 0) {
             ctx->first_frame_pos = chunk_pos;
             if (lv_fs_seek(&ctx->file, ctx->first_frame_pos, LV_FS_SEEK_SET) != LV_FS_RES_OK) {
                 LV_LOG_ERROR("seek to %d fail", (int)ctx->first_frame_pos);
             }
+            lv_free(chunk.data);
+            return;
+        } else if (memcmp(chunk.type, "IDAT", 4) == 0) {
             lv_free(chunk.data);
             return;
         } else {
@@ -685,7 +668,6 @@ cleanup_aux_chunks:
 /* Frame processing functions */
 static lv_res_t process_normal_png_frame(struct png_player_ctx *ctx)
 {
-    lv_image_dsc_t *image_dst = NULL;
     struct mpp_packet packet = {0};
     struct mpp_frame frame = {0};
     uint32_t bytes_read = 0;
@@ -703,10 +685,8 @@ static lv_res_t process_normal_png_frame(struct png_player_ctx *ctx)
     lv_fs_read(&ctx->file, packet.data, ctx->package_size, &bytes_read);
     if (bytes_read != ctx->package_size) {
         LV_LOG_ERROR("Failed to read PNG file data, size = %d", (int)ctx->package_size);
-        ctx->frame_duration = 0xffffffff;
-        ctx->status = PLAYER_CMD_STOP;
         mpp_decoder_put_packet(ctx->dec, &packet);
-        return LV_RES_INV;
+        goto png_frame_ret;
     }
 
     mpp_decoder_put_packet(ctx->dec, &packet);
@@ -715,16 +695,14 @@ static lv_res_t process_normal_png_frame(struct png_player_ctx *ctx)
         LV_LOG_ERROR("PNG frame decode failed: frame=%d, width=%d, height=%d, format=%d",
              (int)ctx->frame_count, (int)ctx->bitmap.width, (int)ctx->bitmap.height, (int)ctx->bitmap.format);
         mpp_decoder_put_packet(ctx->dec, &packet);
-        return LV_RES_INV;
+        goto png_frame_ret;
     }
 
     mpp_decoder_get_frame(ctx->dec, &frame);
 
     mpp_decoder_put_frame(ctx->dec, &frame);
 
-    image_dst = (lv_image_dsc_t *)ctx->image_src;
-    image_dst->data = (uint8_t *)(uintptr_t)frame.buf.phy_addr[0];
-
+png_frame_ret:
     png_destroy_decoder(ctx);
 
     ctx->frame_duration = 0xffffffff;
@@ -799,7 +777,6 @@ static lv_res_t process_apng_frame(struct png_player_ctx *ctx, uint32_t cur_fram
     PNG_Chunk fcTL = {0};
     PNG_Chunk IEND = {0};
     uint32_t offset = 0;
-    int ret = -1;
 
     if (cur_frame == 0) {
         png_destroy_decoder(ctx);
@@ -825,7 +802,7 @@ static lv_res_t process_apng_frame(struct png_player_ctx *ctx, uint32_t cur_fram
                     PNG_FCTL_CHUNK_SIZE + (12 + IDATs.length); // fcTL + fdAT
     get_packet_ret = mpp_decoder_get_packet(ctx->dec, &packet, package_size);
     if (get_packet_ret != 0) {
-        LV_LOG_ERROR("decoder get packet failed, size = %d, ret = %d", (int)package_size, ret);
+        LV_LOG_ERROR("decoder get packet failed, size = %d", (int)package_size);
         goto failed_get_apng_frame;
     }
     packet.size = package_size;
@@ -870,12 +847,27 @@ static lv_res_t process_apng_frame(struct png_player_ctx *ctx, uint32_t cur_fram
 
     lv_free(fcTL.data);
 
+#if PNG_DUMPING_IMAGE
+    png_debug_save_frame(packet.data, packet.size, cur_frame, "png", "/sdcard/frame");
+#endif
+
     mpp_decoder_put_packet(ctx->dec, &packet);
     if (mpp_decoder_decode(ctx->dec) < 0) {   // return packet and then decode
         LV_LOG_ERROR("Failed to decode APNG frame");
         goto failed_get_apng_frame;
     }
     mpp_decoder_get_frame(ctx->dec, &frame);
+
+#if PNG_DUMPING_IMAGE
+    PNG_Bitmap decoded = {
+        .data = (uint8_t *)(uintptr_t)frame.buf.phy_addr[0],
+        .width = fcTL_data.width,
+        .height = fcTL_data.height,
+        .stride = frame.buf.stride[0],
+        .format = frame.buf.format
+    };
+    png_debug_save_bmp_frame(&decoded, cur_frame, "/sdcard/bmp_decode");
+#endif
     if (ctx->dcTL.has_blend_over == 0)
         mpp_decoder_put_frame(ctx->dec, &frame);
     else if (ctx->dcTL.has_blend_over == 1 && cur_frame != 0)
@@ -898,7 +890,9 @@ static lv_res_t process_apng_frame(struct png_player_ctx *ctx, uint32_t cur_fram
     int den = fcTL_data.delay_den > 0 ? fcTL_data.delay_den : 100;
     ctx->frame_duration = (fcTL_data.delay_num * 1000 + den / 2) / den;
 
-    LV_LOG_INFO("frame duration = %d", (int)ctx->frame_duration);
+#if PNG_DUMPING_IMAGE
+    png_debug_save_bmp_frame(&ctx->bitmap, cur_frame, "/sdcard/bmp_render");
+#endif
     return LV_RES_OK;
 
 failed_get_apng_frame:
@@ -1053,7 +1047,7 @@ static int png_blend_bitmaps_hardware(PNG_Bitmap *dst, PNG_Bitmap *src, uint32_t
 
     ge = mpp_ge_open();
     if (!ge) {
-        printf("open ge device error\n");
+        LV_LOG_ERROR("open ge device error\n");
         return -1;
     }
 
@@ -1166,22 +1160,29 @@ static lv_res_t player_handle_get_frame(void *ctx)
         return LV_RES_INV;
     }
 
+    /* Calculate adjusted frame duration based on playback rate */
+    uint32_t adjusted_duration = png_ctx->frame_duration;
+    if (png_ctx->playback_rate > 0.0f) {
+        adjusted_duration = (uint32_t)(png_ctx->frame_duration / png_ctx->playback_rate);
+        if (adjusted_duration < 1) {
+            adjusted_duration = 1;
+        }
+    }
+
+    if (cur_time - png_ctx->last_frame_time < adjusted_duration) {
+        return LV_RES_INV;
+    }
+
     if (png_ctx->is_normal_png) {
         return process_normal_png_frame(png_ctx);
-    }
-
-    if (cur_time - png_ctx->last_frame_time < png_ctx->frame_duration) {
-        return LV_RES_INV;
-    }
-
-    if (png_ctx->frame_count == png_ctx->num_frames) {
-        png_ctx->status = PLAYER_STATUS_END;
-        return LV_RES_INV;
-    }
-
-    lv_res_t res = process_apng_frame(png_ctx, png_ctx->frame_count);
-    if (res != LV_RES_OK) {
-        return res;
+    } else {
+        if (png_ctx->frame_count == png_ctx->num_frames) {
+            png_ctx->status = PLAYER_STATUS_END;
+            return LV_RES_INV;
+        }
+        if (process_apng_frame(png_ctx, png_ctx->frame_count) != LV_RES_OK) {
+            return LV_RES_INV;
+        }
     }
 
     /* Update frame counter */
@@ -1199,7 +1200,7 @@ static int alloc_player_frame_buffer(struct frame_allocator *p, struct mpp_frame
 {
     struct png_player_ctx *ctx = (struct png_player_ctx *)p;
     int alloc_buffer_times = ctx->allocated_frame_count;
-    if (ctx->addr[alloc_buffer_times] == 0) {
+    if (ctx->align_addr[alloc_buffer_times] == 0) {
         return 0;
     }
 
@@ -1208,12 +1209,12 @@ static int alloc_player_frame_buffer(struct frame_allocator *p, struct mpp_frame
     frame->buf.size.height = ctx->bitmap.height;
     frame->buf.stride[0] = ctx->bitmap.stride;
     frame->buf.buf_type = MPP_PHY_ADDR;
-    frame->buf.phy_addr[0] = (unsigned long)ctx->addr[alloc_buffer_times];
+    frame->buf.phy_addr[0] = (unsigned long)ctx->align_addr[alloc_buffer_times];
     ctx->allocated_frame_count++;
 
     LV_LOG_INFO("alloc buffer: w = %d, h = %d, stride = %d, fmt = %d, data = %p",
                  (int)ctx->bitmap.width, (int)ctx->bitmap.height,
-                 (int)ctx->bitmap.stride, (int)ctx->bitmap.format, ctx->addr[alloc_buffer_times]);
+                 (int)ctx->bitmap.stride, (int)ctx->bitmap.format, ctx->align_addr[alloc_buffer_times]);
     return 0;
 }
 
@@ -1235,11 +1236,18 @@ static void png_update_image_desc(struct png_player_ctx *ctx)
     /* Setup LVGL image descriptor */
     lv_image_dsc_t *image_dst = (lv_image_dsc_t *)ctx->image_src;
 #if LVGL_VERSION_MAJOR == 8
+    ctx->buf.buf_type = MPP_PHY_ADDR;
+    ctx->buf.size.width = ctx->bitmap.width;
+    ctx->buf.size.height = ctx->bitmap.height;
+    ctx->buf.format = ctx->bitmap.format;
+    ctx->buf.stride[0] = ctx->bitmap.stride;
+    ctx->buf.phy_addr[0] = (unsigned int)(uintptr_t)ctx->image_data;
+
+    image_dst->header.always_zero = 0;
     image_dst->header.w = ctx->bitmap.width;
     image_dst->header.h = ctx->bitmap.height;
-    image_dst->header.cf = backend_fmt_mpp_to_lv(ctx->bitmap.format);
-    image_dst->data = ctx->image_data;
-    image_dst->data_size = ctx->bitmap.stride * ctx->bitmap.height;
+    image_dst->header.cf = LV_IMG_CF_RESERVED_16;
+    image_dst->data = (uint8_t *)&ctx->buf;
 #elif LVGL_VERSION_MAJOR == 9
     image_dst->header.w = ctx->bitmap.width;
     image_dst->header.h = ctx->bitmap.height;
@@ -1278,4 +1286,271 @@ static uint32_t png_get_package_size(struct png_player_ctx *ctx)
     }
     return package_size;
 }
+
+static void convert_to_lvgl_path(const char *path, char *lv_path, uint16_t max_len)
+{
+    char prefix[10] = {0};
+    snprintf(prefix, sizeof(prefix), "%c:", LV_FS_POSIX_LETTER);
+    if (strncmp(path, prefix, strlen(prefix)) != 0) {
+        snprintf(lv_path, max_len, "%s%s", prefix, path);
+    } else {
+        snprintf(lv_path, max_len, "%s", path);
+    }
+    lv_path[max_len -1] = '\0';
+}
+
+#if PNG_DUMPING_IMAGE
+#include <sys/stat.h>
+#include <unistd.h>
+
+static void create_directory_if_not_exists(const char *path)
+{
+    struct stat st = {0};
+
+    if (stat(path, &st) == -1) {
+        char tmp[256] = {0};
+        char *p = NULL;
+        size_t len;
+
+        snprintf(tmp, sizeof(tmp), "%s", path);
+        len = strlen(tmp);
+        if (tmp[len - 1] == '/')
+            tmp[len - 1] = 0;
+
+        for (p = tmp + 1; *p; p++) {
+            if (*p == '/') {
+                *p = 0;
+                if (stat(tmp, &st) == -1) {
+                    mkdir(tmp, 0755);
+                }
+                *p = '/';
+            }
+        }
+
+        if (stat(tmp, &st) == -1) {
+            mkdir(tmp, 0755);
+        }
+    }
+}
+
+static void png_debug_save_frame(uint8_t *data, uint32_t len, uint16_t frame_index, const char* suffix, char *path)
+{
+    lv_fs_file_t file = {0};
+    char lvgl_path[256] = {0};
+    char full_path[256] = {0};
+    char filename[32] = {0};
+    lv_fs_res_t res = LV_FS_RES_OK;
+
+    if (!data || !path) {
+        LV_LOG_ERROR("Invalid parameters: data=%p, path=%p", data, path);
+        return;
+    }
+
+    if (len == 0) {
+        LV_LOG_WARN("Frame data length is zero, frame_index=%d", (int)frame_index);
+        return;
+    }
+
+    create_directory_if_not_exists(path);
+
+    if (suffix == NULL) {
+        suffix = "bin";
+    }
+
+    snprintf(filename, sizeof(filename), "frame_%04d.%s", frame_index, suffix);
+
+    snprintf(full_path, sizeof(full_path), "%s/%s", path, filename);
+
+    convert_to_lvgl_path((const char *)full_path, lvgl_path, sizeof(lvgl_path));
+
+    res = lv_fs_open(&file, lvgl_path, LV_FS_MODE_WR);
+    if (res != LV_FS_RES_OK) {
+        LV_LOG_ERROR("Failed to open file for writing: path=%s, error=%d", lvgl_path, res);
+        return;
+    }
+
+    uint32_t written = 0;
+    res = lv_fs_write(&file, data, len, &written);
+    if (res != LV_FS_RES_OK || written != len) {
+        LV_LOG_ERROR("Failed to write frame data: path=%s, error=%d", lvgl_path, res);
+        lv_fs_close(&file);
+        return;
+    }
+
+    lv_fs_close(&file);
+
+    LV_LOG_INFO("save %s file success: path=%s", suffix, lvgl_path);
+}
+
+static int lv_fmt_to_mpp_fmt(lv_color_format_t cf)
+{
+    switch(cf) {
+    case LV_COLOR_FORMAT_RGB565: return MPP_FMT_RGB_565;
+    case LV_COLOR_FORMAT_RGB888: return MPP_FMT_RGB_888;
+    case LV_COLOR_FORMAT_ARGB8888: return MPP_FMT_ARGB_8888;
+    default:
+        LV_LOG_ERROR("unsupported format:%d", (int)cf);
+        return -1;
+    }
+}
+
+static int mpp_fmt_to_lv_fmt(enum mpp_pixel_format cf)
+{
+    switch(cf) {
+    case MPP_FMT_RGB_565: return LV_COLOR_FORMAT_RGB565;
+    case MPP_FMT_RGB_888: return LV_COLOR_FORMAT_RGB888;
+    case MPP_FMT_ARGB_8888: return LV_COLOR_FORMAT_ARGB8888;
+    default:
+        LV_LOG_ERROR("unsupported format:%d", (int)cf);
+        return -1;
+    }
+}
+
+static int lv_fmt_to_bpp(lv_color_format_t cf)
+{
+    switch(cf) {
+    case LV_COLOR_FORMAT_RGB565:    return 16;
+    case LV_COLOR_FORMAT_RGB888:    return 24;
+    case LV_COLOR_FORMAT_ARGB8888:  return 32;
+    default:
+        LV_LOG_ERROR("unsupported format:%d", (int)cf);
+        return -1;
+    }
+}
+
+static int lv_image_save_as_bmp(const char* path, lv_image_dsc_t *dsc)
+{
+    lv_fs_res_t res = LV_FS_RES_OK;
+    uint8_t file_header[14] = {0};
+    uint8_t info_header[40] = {0};
+    uint32_t pixel_data_size = 0;
+    lv_fs_file_t file = {0};
+    int bytes_per_pixel = 0;
+    uint32_t file_size = 0;
+    uint32_t written = 0;
+    int is_rgb565 = 0;
+    int row_size = 0;
+    int bpp = 0;
+
+    LV_UNUSED(lv_fmt_to_mpp_fmt);
+
+    bpp = lv_fmt_to_bpp(dsc->header.cf);
+    if (bpp < 0) {
+        LV_LOG_ERROR("unsupported format:%d", (int)dsc->header.cf);
+        return -1;
+    }
+
+    is_rgb565 = (dsc->header.cf == LV_COLOR_FORMAT_RGB565);
+    bytes_per_pixel = bpp / 8;
+    row_size = (dsc->header.w * bytes_per_pixel + 3) & ~3;
+    pixel_data_size = dsc->header.h * (uint32_t)row_size;
+    file_size = 54 + pixel_data_size;
+
+    file_header[0] = 'B';
+    file_header[1] = 'M';
+    file_header[2] = (uint8_t)(file_size);
+    file_header[3] = (uint8_t)(file_size >> 8);
+    file_header[4] = (uint8_t)(file_size >> 16);
+    file_header[5] = (uint8_t)(file_size >> 24);
+    file_header[10] = 54;
+
+    info_header[0] = 40;  // header size
+    info_header[4] = (uint8_t)(dsc->header.w);
+    info_header[5] = (uint8_t)(dsc->header.w >> 8);
+    info_header[6] = (uint8_t)(dsc->header.w >> 16);
+    info_header[7] = (uint8_t)(dsc->header.w >> 24);
+    info_header[8] = (uint8_t)(dsc->header.h);
+    info_header[9] = (uint8_t)(dsc->header.h >> 8);
+    info_header[10] = (uint8_t)(dsc->header.h >> 16);
+    info_header[11] = (uint8_t)(dsc->header.h >> 24);
+    info_header[12] = 1;  // planes
+    info_header[13] = 0;
+    info_header[14] = (uint8_t)(bpp);
+    info_header[15] = (uint8_t)(bpp >> 8);
+    info_header[16] = is_rgb565 ? 3 : 0;  // compression: BI_RGB
+    info_header[17] = is_rgb565 ? 0 : 0;
+    info_header[18] = 0;
+    info_header[19] = 0;
+    info_header[20] = (uint8_t)(pixel_data_size);
+    info_header[21] = (uint8_t)(pixel_data_size >> 8);
+    info_header[22] = (uint8_t)(pixel_data_size >> 16);
+    info_header[23] = (uint8_t)(pixel_data_size >> 24);
+
+    res = lv_fs_open(&file, path, LV_FS_MODE_WR);
+    if (res != LV_FS_RES_OK) {
+        LV_LOG_ERROR("Failed to open file for writing: path=%s, error=%d", path, res);
+        return -1;
+    }
+
+    res = lv_fs_write(&file, file_header, 14, &written);
+    if (res != LV_FS_RES_OK || written != 14) {
+        LV_LOG_ERROR("Failed to write frame data: path=%s, error=%d", path, res);
+        lv_fs_close(&file);
+        return -1;
+    }
+
+    res = lv_fs_write(&file, info_header, 40, &written);
+    if (res != LV_FS_RES_OK || written != 40) {
+        LV_LOG_ERROR("Failed to write BMP info header: path=%s, error=%d", path, res);
+        lv_fs_close(&file);
+        return -1;
+    }
+
+    int row_bytes = dsc->header.w * bytes_per_pixel;
+    int padding = (4 - (row_bytes % 4)) % 4;
+    uint8_t *row_buffer = lv_malloc(row_bytes + padding);
+
+    for (int y = dsc->header.h - 1; y >= 0; y--) {
+        uint8_t *src_row = (uint8_t *)dsc->data + y * dsc->header.stride;
+
+        memcpy(row_buffer, src_row, row_bytes);
+        memset(row_buffer + row_bytes, 0, padding);
+
+        res = lv_fs_write(&file, row_buffer, row_bytes + padding, &written);
+        if (res != LV_FS_RES_OK || written != row_bytes + padding) {
+            LV_LOG_ERROR("Failed to write BMP row data");
+            break;
+        }
+    }
+    lv_free(row_buffer);
+
+    lv_fs_close(&file);
+
+    LV_LOG_INFO("save bmp file success: path=%s", path);
+
+    return 0;
+}
+
+static void png_debug_save_bmp_frame(PNG_Bitmap *bitmap, uint16_t frame_index, char *path)
+{
+    lv_image_dsc_t bmp_dsc = {0};
+    char lvgl_path[256] = {0};
+    char full_path[256] = {0};
+    char filename[32] = {0};
+    int ret = 0;
+
+    if (!bitmap || !path) {
+        LV_LOG_ERROR("Invalid parameters: data=%p, path=%p", bitmap, path);
+        return;
+    }
+
+    create_directory_if_not_exists(path);
+
+    bmp_dsc.data = bitmap->data;
+    bmp_dsc.header.w = bitmap->width;
+    bmp_dsc.header.h = bitmap->height;
+    bmp_dsc.header.stride = bitmap->stride;
+    bmp_dsc.header.cf = mpp_fmt_to_lv_fmt(bitmap->format);
+    bmp_dsc.data_size = bitmap->stride * bitmap->height;
+
+    snprintf(filename, sizeof(filename), "frame_%04d.bmp", frame_index);
+    snprintf(full_path, sizeof(full_path), "%s/%s", path, filename);
+    convert_to_lvgl_path((const char *)full_path, lvgl_path, sizeof(lvgl_path));
+
+    ret = lv_image_save_as_bmp(lvgl_path, &bmp_dsc);
+    if (ret < 0) {
+        LV_LOG_ERROR("create bmp file error\n");
+    }
+}
+#endif
 #endif /* LV_USE_AIC_SIMULATOR == 0 */

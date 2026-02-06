@@ -29,8 +29,13 @@
 #include <dfs_fs.h>
 #include <dfs_file.h>
 #include <dfs_elm.h>
+#include "dirents_cache.h"
+#include "diskio.h"
 
 static rt_device_t disk[FF_VOLUMES] = {0};
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+static dirent_cache_t disk_cache[FF_VOLUMES] = {0};
+#endif
 
 static int elm_result_to_dfs(FRESULT result)
 {
@@ -96,6 +101,42 @@ static int get_disk(rt_device_t id)
     return -1;
 }
 
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+static dirent_cache_t dfs_elm_dirent_cache_init(int drv, unsigned int sector_size)
+{
+    unsigned int start_sect, bytelen;
+    unsigned int *sect_id_list = NULL;
+    dirent_cache_t cache = NULL;
+    unsigned char *buff = NULL;
+    int ret = 0;
+    UINT sect_cnt;
+
+    buff = (void *)rt_malloc(512);
+    if ((buff != NULL) && disk_read(drv, buff, 0, 1) == RES_OK) {
+        /* Read cache sector info from file system */
+        ret = f_dirent_cache_get_sector_info(buff, &start_sect, &bytelen);
+        if (buff) {
+            rt_free(buff);
+            buff = NULL;
+        }
+        if (ret == 0) {
+            sect_cnt = (bytelen + sector_size - 1) / sector_size;
+            sect_id_list = (unsigned int *)rt_malloc(sect_cnt * sector_size);
+            if (disk_read(drv, (BYTE *)sect_id_list, start_sect, sect_cnt) == RES_OK)
+                cache = f_dirent_cache_init(sect_id_list, bytelen / 4, sector_size);
+            if (sect_id_list)
+                rt_free(sect_id_list);
+        }
+        if (cache)
+            return cache;
+    }
+    /* Error, no cache */
+    if (buff)
+        rt_free(buff);
+    return NULL;
+}
+#endif
+
 int dfs_elm_mount(struct dfs_filesystem *fs, unsigned long rwflag, const void *data)
 {
     FATFS *fat;
@@ -126,6 +167,9 @@ int dfs_elm_mount(struct dfs_filesystem *fs, unsigned long rwflag, const void *d
     if (fat == RT_NULL)
     {
         disk[index] = RT_NULL;
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+        disk_cache[index] = RT_NULL;
+#endif
         return -ENOMEM;
     }
 
@@ -142,6 +186,9 @@ int dfs_elm_mount(struct dfs_filesystem *fs, unsigned long rwflag, const void *d
         {
             f_mount(RT_NULL, (const TCHAR *)logic_nbr, 1);
             disk[index] = RT_NULL;
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+            disk_cache[index] = RT_NULL;
+#endif
             rt_free_align(fat);
             return -ENOMEM;
         }
@@ -152,6 +199,16 @@ int dfs_elm_mount(struct dfs_filesystem *fs, unsigned long rwflag, const void *d
         if (result != FR_OK)
             goto __err;
 
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+        if (rwflag & MS_RDONLY) {
+            unsigned int sector_size = 512;
+
+#if FF_MAX_SS != FF_MIN_SS
+            sector_size = fat->ssize;
+#endif
+            disk_cache[index] = dfs_elm_dirent_cache_init(index, sector_size);
+        }
+#endif
         /* mount succeed! */
         fs->data = fat;
         return 0;
@@ -160,6 +217,9 @@ int dfs_elm_mount(struct dfs_filesystem *fs, unsigned long rwflag, const void *d
 __err:
     f_mount(RT_NULL, (const TCHAR *)logic_nbr, 1);
     disk[index] = RT_NULL;
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+    disk_cache[index] = RT_NULL;
+#endif
     rt_free_align(fat);
     return elm_result_to_dfs(result);
 }
@@ -187,6 +247,10 @@ int dfs_elm_unmount(struct dfs_filesystem *fs)
 
     fs->data = RT_NULL;
     disk[index] = RT_NULL;
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+    f_dirent_cache_free(disk_cache[index]);
+    disk_cache[index] = RT_NULL;
+#endif
     rt_free_align(fat);
 
     return RT_EOK;
@@ -881,9 +945,23 @@ DRESULT disk_read(BYTE drv, BYTE *buff, LBA_t sector, UINT count)
     rt_size_t result;
     rt_device_t device = disk[drv];
 
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+    int ret = DIRENT_DATA_NOT_FOUND;
+    if (disk_cache[drv]) {
+        ret = f_dirent_cache_read(disk_cache[drv], sector, buff, count);
+        if (ret == count) {
+            return RES_OK;
+        }
+    }
+#endif
     result = rt_device_read(device, sector, buff, count);
     if (result == count)
     {
+#ifdef AIC_USING_DIRENT_CACHE_FOR_READ_ONLY_FATFS
+        if (disk_cache[drv] && ret == DIRENT_DATA_MISSED) {
+            f_dirent_cache_set(disk_cache[drv], sector, buff, count);
+        }
+#endif
         return RES_OK;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,7 +16,7 @@ const struct aic_spinand_info quanxing_spinand_table[] = {
     is_die_select*/
     /*QXS99ML01G3*/
     { DEVID(0x15), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
-      PLANENUM(1), DIE(0), "quanxing 128MB: 2048+64@64@1024", cmd_cfg_table },
+      PLANENUM(1), DIE(0), "quanxing 128MB: 2048+64@64@1024", cmd_cfg_table }, //This device lacks internal ECC, we do not support it.
 };
 
 const struct aic_spinand_info *

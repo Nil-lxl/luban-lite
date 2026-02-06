@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Author: <jun.ma@artinchip.com>
+ * Author: <che.jiang@artinchip.com>
  * Desc: mp4 muxer
  */
 
@@ -793,6 +793,8 @@ const struct codec_tag codec_mp4_tags[] = {
 	{ CODEC_ID_NONE,               0 },
 };
 
+static const struct codec_tag* const codec_tag_table[] = {codec_mp4_tags, NULL};
+
 static unsigned int mov_find_codec_tag(struct aic_mov_muxer *s, struct mov_track *track)
 {
 	int i = 0;
@@ -807,10 +809,15 @@ static unsigned int mov_find_codec_tag(struct aic_mov_muxer *s, struct mov_track
 	return CODEC_ID_NONE;
 }
 
-s32 mp4_init(struct aic_mov_muxer *s,struct aic_av_media_info *info)
+
+s32 mp4_init(struct aic_mov_muxer *s, struct aic_av_media_info *info)
 {
 	int i = 0;
 
+	if (!s || !info) {
+		loge("mov muxer or media info is null");
+		return -1;
+	}
 	if (info->has_video) {
 		s->nb_streams++;
 	}
@@ -826,10 +833,9 @@ s32 mp4_init(struct aic_mov_muxer *s,struct aic_av_media_info *info)
 		loge("mpp_alloc fail");
 		return -1;
 	}
-	memset(s->tracks,0x00,s->nb_streams * sizeof(*s->tracks));
+	memset(s->tracks, 0x00, s->nb_streams * sizeof(*s->tracks));
 	s->mode = MODE_MP4;
-	//s->codec_tag = codec_mp4_tags;
-	s->codec_tag = (const struct codec_tag* const[]) {codec_mp4_tags, 0};
+	s->codec_tag = codec_tag_table;
 	/*init track */
 	if (info->has_video) {
 		s->tracks[i].codec_para.codec_type = MPP_MEDIA_TYPE_VIDEO;

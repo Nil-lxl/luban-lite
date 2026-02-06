@@ -60,6 +60,8 @@ if not %errorlevel% equ 0 (
 	goto exit_label
 )
 
+call checkout_binary.bat
+
 :: (2) Build app
 call scons --apply-def=%app_defconfig% -C %SDK_PRJ_TOP_DIR%
 

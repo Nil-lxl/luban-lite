@@ -60,6 +60,8 @@
 #define RT_SERIAL_RB_BUFSZ              64
 #endif
 
+#define RT_SERIAL_FIFO_SIZE             256
+
 #define RT_SERIAL_EVENT_RX_IND          0x01    /* Rx indication */
 #define RT_SERIAL_EVENT_TX_DONE         0x02    /* Tx complete   */
 #define RT_SERIAL_EVENT_RX_DMADONE      0x03    /* Rx DMA transfer done */

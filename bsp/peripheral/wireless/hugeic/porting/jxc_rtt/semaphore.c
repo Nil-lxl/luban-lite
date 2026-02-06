@@ -1,7 +1,7 @@
 #include "os_porting.h"
 #include <rtthread.h> 
 
-int os_sem_new(unsigned int *sem_hdl,int val)
+int os_sem_new(uintptr_t *sem_hdl,int val)
 {
     rt_sem_t sem = NULL;
     static unsigned char index = 0;
@@ -15,13 +15,13 @@ int os_sem_new(unsigned int *sem_hdl,int val)
         return -1;
     } else {
         if(sem_hdl) {
-            *sem_hdl = sem;
+            *sem_hdl = (uintptr_t)sem;
         }
         return 0;
     }
 }
 
-void os_sem_free(unsigned int sem_hdl)
+void os_sem_free(uintptr_t sem_hdl)
 {
     rt_sem_t sem = (rt_sem_t)sem_hdl;
     if(sem == NULL) {
@@ -31,7 +31,7 @@ void os_sem_free(unsigned int sem_hdl)
     rt_sem_delete(sem);
 }
 
-int os_sem_take(unsigned int sem_hdl,unsigned int timeout)
+int os_sem_take(uintptr_t sem_hdl,unsigned int timeout)
 {
     rt_sem_t sem = (rt_sem_t)sem_hdl;
     int ret = 0;
@@ -47,7 +47,7 @@ int os_sem_take(unsigned int sem_hdl,unsigned int timeout)
     }
 }
 
-void os_sem_release(unsigned int sem_hdl)
+void os_sem_release(uintptr_t sem_hdl)
 {
     rt_sem_t sem = (rt_sem_t)sem_hdl;
     int ret = 0;

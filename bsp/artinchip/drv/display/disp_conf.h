@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -119,7 +119,7 @@
  *         N/P
  *
  * example 1
- *         PD23/PD22
+ *         PD22/PD23
  *         P/N
  */
 #define CLK_INVERSE      0

@@ -9,7 +9,7 @@
 #include "fhost_cntrl.h"
 #include "netif_port.h"
 #include "aic_plat_log.h"
-#include"aic_plat_sock.h"
+#include "netal_sock.h"
 
 #define ERR_OK                  (0)
 
@@ -207,7 +207,7 @@ err_t net_eth_receive(unsigned char *pdata, unsigned short len, net_if_t *netif)
     if (!filter)
         return -1;
 
-    if (lwip_send(filter->link->sock_send, pdata, len, 0) < 0)
+    if (netal_send(filter->link->sock_send, pdata, len, 0) < 0)
     {
         AIC_LOG_PRINTF("Err: %s len %d\n", __func__, len);
         return -1;

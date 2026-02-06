@@ -13,6 +13,8 @@
 
 #include <rtthread.h>
 
+#include <stdio.h>
+
 #if defined(__ARMCC_VERSION)
 extern void $Super$$__cpp_initialize__aeabi_(void);
 /* we need to change the cpp_initialize order */

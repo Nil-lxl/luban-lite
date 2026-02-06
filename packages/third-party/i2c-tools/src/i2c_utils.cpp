@@ -6,6 +6,11 @@
 
 #include "i2c_utils.h"
 
+#ifdef I2C_TOOLS_USING_AIC_SOFT_I2C
+#include <drivers/i2c-bit-ops.h>
+#include <drivers/i2c.h>
+#endif
+
 #ifdef I2C_TOOLS_USE_SW_I2C
     #include "SoftwareI2C.h"
     SoftwareI2C softwarei2c;
@@ -90,7 +95,11 @@ int i2c_probe(char addr)
     msgs[1].buf = buffer;
     msgs[1].len = 1;
 
+#ifdef I2C_TOOLS_USING_AIC_SOFT_I2C
+    if (i2c_bit_xfer(i2c_bus, msgs, 2) == 2)
+#else
     if (rt_i2c_transfer(i2c_bus, msgs, 2) == 2)
+#endif
     {
         return GET_ACK;
     }
@@ -105,7 +114,11 @@ int i2c_probe(char addr)
     msgs.buf = cmd;
     msgs.len = 0;
 
+#ifdef I2C_TOOLS_USING_AIC_SOFT_I2C
+    return i2c_bit_xfer(i2c_bus, &msgs, 1);
+#else
     return rt_i2c_transfer(i2c_bus, &msgs, 1);
+#endif
 #endif
 #endif
 }
@@ -123,7 +136,11 @@ rt_bool_t i2c_write(char addr, rt_uint8_t* data, int len)
         msgs.flags = RT_I2C_WR;
         msgs.buf = data;
         msgs.len = len;
+#ifdef I2C_TOOLS_USING_AIC_SOFT_I2C
+        return (i2c_bit_xfer(i2c_bus, &msgs, 1) == 1);
+#else
         return (rt_i2c_transfer(i2c_bus, &msgs, 1) == 1);
+#endif
     #endif
 }
 
@@ -155,7 +172,11 @@ rt_uint8_t i2c_read(rt_uint8_t addr, rt_uint8_t reg, rt_uint8_t* buffer, rt_uint
         msgs[1].buf = buffer;
         msgs[1].len = len;
 
+#ifdef I2C_TOOLS_USING_AIC_SOFT_I2C
+        if (i2c_bit_xfer(i2c_bus, msgs, 2) == 2)
+#else
         if (rt_i2c_transfer(i2c_bus, msgs, 2) == 2)
+#endif
         {
             return len;
         }
@@ -169,7 +190,7 @@ rt_uint8_t i2c_read(rt_uint8_t addr, rt_uint8_t reg, rt_uint8_t* buffer, rt_uint
 rt_uint8_t i2c_read16(rt_uint8_t addr, rt_uint16_t reg, rt_uint8_t *buffer, rt_uint8_t len)
 {
     if (rt_i2c_read_reg16(i2c_bus, addr, reg, buffer, len) != len) {
-        printf("Failed to read I2C dev 0x%02x - reg 0x%04x\n", addr, reg);
+        rt_kprintf("Failed to read I2C dev 0x%02x - reg 0x%04x\n", addr, reg);
         return 0;
     }
     return len;

@@ -10,10 +10,12 @@ choice
     default AIC_GE_NORMAL
     depends on AIC_GE_DRV
 
+if !AIC_CHIP_D21X
 config AIC_GE_CMDQ
     bool "CMD queue mode"
     help
       Enable CMA queue
+endif
 
 config AIC_GE_NORMAL
     bool "normal mode"

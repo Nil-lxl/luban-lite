@@ -215,7 +215,8 @@ int32_t hal_usart_config_fifo(usart_handle_t handle)
         addr->FCR = FCR_TX_FIFO_RST | FCR_RX_FIFO_RST;
         addr->FCR = AIC_UART_DMA_MODE(1) | FRC_TX_FIFO_SET(3) | FRC_RX_FIFO_SET(2) | FCR_FIFO_EN;
     } else {
-        addr->FCR = FCR_FIFO_EN | FCR_RX_FIFO_RST | FCR_TX_FIFO_RST | FRC_RX_FIFO_SET(3);
+        addr->FCR = FCR_FIFO_EN | FCR_RX_FIFO_RST |
+                    FCR_TX_FIFO_RST | FRC_RX_FIFO_SET(3) | FRC_TX_FIFO_SET(3);
     }
 
     return 0;
@@ -1333,8 +1334,10 @@ int32_t hal_usart_set_interrupt(usart_handle_t handle, usart_intr_type_e type, i
         case USART_INTR_WRITE:
             if (flag == 0) {
                 addr->IER &= ~IER_THRE_INT_ENABLE;
+                addr->IER &= ~IER_PTIME_INT_ENABLE;
             } else if (flag == 1) {
                 addr->IER |= IER_THRE_INT_ENABLE;
+                addr->IER |= IER_PTIME_INT_ENABLE;
             } else {
                 return ERR_USART(DRV_ERROR_PARAMETER);
             }

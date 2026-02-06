@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -172,11 +172,17 @@ const static struct rt_device_ops udisk_device_ops =
 int udisk_init(void)
 {
     rt_uint8_t *sector = NULL;
-    rt_err_t ret = 0;
     rt_uint8_t i;
+    int ret = 0;
+
+    ret = usbh_msc_scsi_init(active_msc_class);
+    if (ret < 0) {
+        USB_LOG_RAW("scsi_init error,ret:%d\r\n", ret);
+        return -RT_EIO;
+    }
 
     /* get the first sector to read partition table */
-    sector = (rt_uint8_t *)rt_malloc(512);
+    sector = (rt_uint8_t *)usb_osal_malloc_align(0, 512, CONFIG_USB_ALIGN_SIZE);
     if (sector == RT_NULL) {
         pr_err("allocate partition sector buffer failed!");
 
@@ -243,7 +249,7 @@ _finish:
 
 free_res:
     if (sector)
-        rt_free(sector);
+        usb_osal_free_align(0, sector);
     return ret;
 }
 
@@ -353,6 +359,12 @@ int udisk_init(void)
     uint8_t *sector = NULL;
     int ret = 0;
     int i;
+
+    ret = usbh_msc_scsi_init(active_msc_class);
+    if (ret < 0) {
+        pr_err("scsi_init error,ret:%d\r\n", ret);
+        return -ENXIO;
+    }
 
     /* get the first sector to read partition table */
     sector = (uint8_t *)aicos_malloc(0, 512);

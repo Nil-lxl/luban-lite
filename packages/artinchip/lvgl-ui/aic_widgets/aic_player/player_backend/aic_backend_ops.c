@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,6 +16,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdatomic.h>
 
 #include "mpp_ge.h"
 #include "mpp_fb.h"
@@ -24,37 +25,9 @@
 #include "frame_allocator.h"
 #include "backend_common.h"
 
+#define FRAME_TIMEOUT         200
 #define DECODER_NOT_CREATED   4099
 #define FRAME_CAPTURE_TIMEOUT 4100
-
-#if LVGL_VERSION_MAJOR == 8
-#define LV_DISP_ROTATION_0      LV_DISP_ROT_0
-#define LV_DISP_ROTATION_90     LV_DISP_ROT_90
-#define LV_DISP_ROTATION_180    LV_DISP_ROT_180
-#define LV_DISP_ROTATION_270    LV_DISP_ROT_270
-
-#define LV_IMAGE_SRC_FILE       LV_IMG_SRC_FILE
-#define lv_disp_rotation_t      lv_disp_rot_t
-
-#define lv_image_t     lv_img_t
-#define lv_image_dsc_t lv_img_dsc_t
-#define lv_image_src_t lv_img_src_t
-#define lv_image_src_get_type lv_img_src_get_type
-
-#define lv_image_get_rotation lv_img_get_angle
-#define lv_image_get_pivot    lv_img_get_pivot
-#define lv_malloc             lv_mem_alloc
-#define lv_free               lv_mem_free
-
-static void *lv_malloc_zeroed(size_t size)
-{
-    void *buffer = lv_mem_alloc(size);
-    if (!buffer)
-        return NULL;
-    lv_memset(buffer, 0, size);
-    return buffer;
-}
-#endif
 
 #define CHECK_DATA_OR_RETURN(data, cmd) \
     do { \
@@ -72,7 +45,7 @@ struct aic_player_ctx {
     struct aic_player *player;
     struct av_media_info media_info;
 
-    player_status_t status;
+    atomic_int status;
     uint16_t draw_layer;
 
     bool keep_last_frame;
@@ -85,12 +58,16 @@ struct aic_player_ctx {
     void *image_src;
     uint8_t *image_data;
     struct aicfb_screeninfo screen_info;
+    struct mpp_buf buf; /* only used by v8 for drawing images */
 
     /* backend decoding sync, only used in draw mode performance */
-    volatile uint8_t decoding;
-    volatile bool stop_thread;
+    uint8_t decoding;
+    bool stop_thread;
+    bool has_new_request;
 
     lv_area_t area;
+    int16_t image_rotation;
+    int16_t disp_rotation;
     pthread_cond_t frame_cond;
     pthread_mutex_t frame_mutex;
     pthread_t frame_thread;
@@ -131,7 +108,7 @@ static void *player_decode_entry(void *ptr);
 
 /* Player command handlers */
 static lv_res_t player_handle_update_display_area(void *ctx);
-static lv_res_t player_handle_get_frame(void *ctx, bool wait_en);
+static lv_res_t player_handle_get_frame(void *ctx);
 
 const player_backend_ops_t aic_backend_ops_template  = {
     .name = "aic_player",
@@ -191,7 +168,7 @@ static void * aic_player_backend_create(void)
 
     _lv_ll_init(&aic_ctx->frame_ll, sizeof(struct mpp_frame));
 
-    aic_ctx->status = PLAYER_STATUS_IDLE;
+    atomic_store(&aic_ctx->status, PLAYER_STATUS_IDLE);
 
     return ops;
 
@@ -210,9 +187,14 @@ static void aic_player_backend_destroy(void *ctx)
     player_backend_ops_t *ops = (player_backend_ops_t *)ctx;
     struct aic_player_ctx *aic_ctx = ops->ctx;
 
+    player_decode_thread_destroy(aic_ctx);
+
     player_resource_cleanup(aic_ctx);
 
-    player_decode_thread_destroy(aic_ctx);
+    if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_VIDEO && aic_ctx->keep_last_frame) {
+        int enable = 0;
+        aic_player_control(aic_ctx->player, AIC_PLAYER_CMD_SET_VIDEO_RENDER_KEEP_LAST_FRAME, &enable);
+    }
 
     if (aic_ctx->player)
         aic_player_destroy(aic_ctx->player);
@@ -222,6 +204,8 @@ static void aic_player_backend_destroy(void *ctx)
 
     if (ops)
         lv_mem_free(ops);
+
+    aic_ctx->image_data = NULL;
 }
 
 static lv_res_t aic_player_backend_set_src(void *ctx, const char *src)
@@ -237,7 +221,7 @@ static lv_res_t aic_player_backend_set_src(void *ctx, const char *src)
     }
 
     /* cleanup old resources */
-    aic_ctx->status = PLAYER_STATUS_IDLE;
+    atomic_store(&aic_ctx->status, PLAYER_STATUS_IDLE);
     player_resource_cleanup(aic_ctx);
 
     /* skip the driver letter and the possible : after the letter */
@@ -309,7 +293,7 @@ static lv_res_t aic_player_backend_set_src(void *ctx, const char *src)
         }
     }
 
-    aic_ctx->status = PLAYER_STATUS_READY;
+    atomic_store(&aic_ctx->status, PLAYER_STATUS_READY);
 
     return LV_RES_OK;
 
@@ -341,19 +325,15 @@ static lv_res_t aic_player_backend_control(void *ctx, player_cmd_t cmd, void *da
     switch(cmd) {
         case PLAYER_CMD_START:
             res = aic_player_start(aic_ctx->player) ? LV_RES_INV : LV_RES_OK;
-            aic_ctx->status = PLAYER_STATUS_RUNNING;
-            break;
-        case PLAYER_CMD_STOP:
-            res = aic_player_stop(aic_ctx->player) ? LV_RES_INV : LV_RES_OK;
-            aic_ctx->status = PLAYER_STATUS_STOP;
+            atomic_store(&aic_ctx->status, PLAYER_STATUS_RUNNING);
             break;
         case PLAYER_CMD_PAUSE:
             res = aic_player_pause(aic_ctx->player) ? LV_RES_INV : LV_RES_OK;
-            aic_ctx->status = PLAYER_STATUS_PAUSE;
+            atomic_store(&aic_ctx->status, PLAYER_STATUS_PAUSE);
             break;
         case PLAYER_CMD_RESUME:
             res = aic_player_play(aic_ctx->player) ? LV_RES_INV : LV_RES_OK;
-            aic_ctx->status = PLAYER_STATUS_RUNNING;
+            atomic_store(&aic_ctx->status, PLAYER_STATUS_RUNNING);
             break;
         case PLAYER_CMD_PLAY_END:
             CHECK_DATA_OR_RETURN(data, PLAYER_CMD_PLAY_END);
@@ -376,7 +356,12 @@ static lv_res_t aic_player_backend_control(void *ctx, player_cmd_t cmd, void *da
         case PLAYER_CMD_SET_PLAY_TIME:
             CHECK_DATA_OR_RETURN(data, PLAYER_CMD_SET_PLAY_TIME);
             res = aic_player_seek(aic_ctx->player, *(u64 *)data) ? LV_RES_INV : LV_RES_OK;
-            aic_ctx->status = PLAYER_STATUS_RUNNING;
+            if (res == LV_RES_INV) {
+                LV_LOG_ERROR("seek err, set player status idle");
+                atomic_store(&aic_ctx->status, PLAYER_STATUS_IDLE);
+                return LV_RES_INV;
+            }
+            atomic_store(&aic_ctx->status, PLAYER_STATUS_RUNNING);
             break;
         case PLAYER_CMD_GET_PLAY_TIME:
             CHECK_DATA_OR_RETURN(data, PLAYER_CMD_GET_PLAY_TIME);
@@ -384,7 +369,7 @@ static lv_res_t aic_player_backend_control(void *ctx, player_cmd_t cmd, void *da
             res = (*(u64 *)data < 0) ? LV_RES_INV : LV_RES_OK;
             break;
         case PLAYER_CMD_GET_FRAME:
-            return player_handle_get_frame(ctx, *(bool *)data);
+            return player_handle_get_frame(ctx);
         case PLAYER_CMD_UPDATE_DISPLAY_AREA:
             return player_handle_update_display_area(ctx);
         case PLAYER_CMD_GET_IMAGE_SRC:
@@ -393,6 +378,9 @@ static lv_res_t aic_player_backend_control(void *ctx, player_cmd_t cmd, void *da
             }
             *(void **)data = aic_ctx->image_src;
             return LV_RES_OK;
+        case PLAYER_CMD_SET_PLAYBACK_RATE:
+            LV_LOG_WARN("AIC backend does not support playback rate control");
+            return LV_RES_INV;
         default:
             LV_LOG_ERROR("Error cmd: %d", cmd);
             res = LV_RES_INV;
@@ -408,27 +396,27 @@ static int check_player_configuration(uint32_t layer)
     /* check the configuration */
     if (layer == LV_AIC_PLAYER_LAYER_UI_SINGLE_BUF ||
         layer == LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF) {
-#ifndef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         LV_LOG_ERROR("Setting src is wrong, the configuration is incorrect.\n"
                      "Please use command scons --menuconfig, and open the configuration according to the path:\n"
                      "-----------------ArtInChip Luban-Lite SDK Configuration------------ \n"
                      "Local packages options  ---> \n"
                      "  ArtInChip packages options  ---> \n"
                      "    [*] aic-mpp  ---> \n"
-                     "      [*] Enable player ve use fill fb \n"
+                     "      [*] Enable player using external video render \n"
                      "------------------------------------------------------------------ \n");
         return -1;
 #endif
     }
     if (layer == LV_AIC_PLAYER_LAYER_VIDEO) {
-#ifdef AIC_MPP_PLAYER_VE_USE_FILL_FB
+#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
         LV_LOG_ERROR("Setting src is wrong, the configuration is incorrect.\n"
                      "Please use command scons --menuconfig, and close the configuration according to the path:\n"
                      "-----------------ArtInChip Luban-Lite SDK Configuration------------ \n"
                      "Local packages options  ---> \n"
                      "  ArtInChip packages options  ---> \n"
                      "    [*] aic-mpp  ---> \n"
-                     "      [ ] Enable player ve use fill fb \n"
+                     "      [ ] Enable player using external video render\n"
                      "------------------------------------------------------------------ \n");
         return -1;
 #endif
@@ -500,11 +488,18 @@ static int player_alloc_image_buf(struct aic_player_ctx *aic_ctx)
     /* decode into screen format */
     image_dst = (lv_image_dsc_t *)aic_ctx->image_src;
 #if LVGL_VERSION_MAJOR == 8
+    aic_ctx->buf.buf_type = MPP_PHY_ADDR;
+    aic_ctx->buf.size.width = width;
+    aic_ctx->buf.size.height = height;
+    aic_ctx->buf.format = screen_format;
+    aic_ctx->buf.stride[0] = stride;
+    aic_ctx->buf.phy_addr[0] = (unsigned int)(uintptr_t)img_data;
+
+    image_dst->header.always_zero = 0;
     image_dst->header.w = width;
     image_dst->header.h = height;
-    image_dst->header.cf = backend_fmt_mpp_to_lv(screen_format);
-    image_dst->data = img_data;
-    image_dst->data_size = stride * height;
+    image_dst->header.cf = LV_IMG_CF_RESERVED_16;
+    image_dst->data = (uint8_t *)&aic_ctx->buf;
 #elif LVGL_VERSION_MAJOR == 9
     image_dst->header.w = width;
     image_dst->header.h = height;
@@ -559,6 +554,7 @@ static int player_alloc_frame_buffer(struct aic_player_ctx *aic_ctx)
                              (void *)&ext_frame_buffer_num);
     if (ret != 0) {
         LV_LOG_ERROR("player set vdec ext frame num failed %d", ret);
+        player_free_frame_buffer(aic_ctx);
         return -1;
     }
 
@@ -568,6 +564,7 @@ static int player_alloc_frame_buffer(struct aic_player_ctx *aic_ctx)
                              (void *)aic_ctx);
     if (ret != 0) {
         LV_LOG_ERROR("player set vdec ext frame alloc failed %d", ret);
+        player_free_frame_buffer(aic_ctx);
         return -1;
     }
 
@@ -641,13 +638,14 @@ static int player_check_hw_capability(uint32_t rotate, uint32_t scale_x, uint32_
 
 static void player_resource_cleanup(struct aic_player_ctx * aic_ctx)
 {
-    while (aic_ctx->decoding == true) {
-        aicos_msleep(3);
-    }
+    while (1) {
+        player_thread_lock(aic_ctx);
+        bool is_decoding = aic_ctx->decoding;
+        player_thread_unlock(aic_ctx);
 
-    if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_VIDEO && aic_ctx->keep_last_frame) {
-        int enable = 0;
-        aic_player_control(aic_ctx->player, AIC_PLAYER_CMD_SET_VIDEO_RENDER_KEEP_LAST_FRAME, &enable);
+        if (!is_decoding)
+            break;
+        aicos_msleep(3);
     }
 
     player_put_frame_all(aic_ctx);
@@ -685,11 +683,11 @@ static int player_get_frame(struct aic_player_ctx *aic_ctx)
     int ret = 0;
     bool ready = true;
     int result = -1;
-    uint32_t frame_start = 0;
+    uint32_t start_time = 0;
     struct mpp_frame frame = {0};
     struct mpp_frame *p_frame = NULL;
 
-    if (aic_ctx->status != PLAYER_STATUS_RUNNING) {
+    if (atomic_load(&aic_ctx->status) != PLAYER_STATUS_RUNNING) {
         return -1;
     }
 
@@ -699,16 +697,18 @@ static int player_get_frame(struct aic_player_ctx *aic_ctx)
 
     player_put_frame(aic_ctx);
 
-    frame_start = lv_tick_get();
+    start_time = lv_tick_get();
     do {
-        if (lv_tick_elaps(frame_start) > 200) {
-            LV_LOG_ERROR("get frame timeout");
+        if (lv_tick_elaps(start_time) > FRAME_TIMEOUT) {
+            LV_LOG_WARN("get frame timeout: %d", (int)lv_tick_elaps(start_time));
             break;
         }
 
         ret = aic_player_get_frame(aic_ctx->player, (void *)&frame); /* will block the thread */
         if (!ret) {
+            player_thread_lock(aic_ctx);
             p_frame = (struct mpp_frame *)_lv_ll_ins_tail(&aic_ctx->frame_ll);
+            player_thread_unlock(aic_ctx);
             if (!p_frame) {
                 LV_LOG_ERROR("Failed to allocate frame node");
                 break;
@@ -720,7 +720,7 @@ static int player_get_frame(struct aic_player_ctx *aic_ctx)
                        p_frame->id);
 
             if (frame.flags & FRAME_FLAG_EOS) {
-                aic_ctx->status = PLAYER_STATUS_END;
+                atomic_store(&aic_ctx->status, PLAYER_STATUS_END);
             }
             result = 0;
             break;
@@ -734,7 +734,7 @@ static int player_get_frame(struct aic_player_ctx *aic_ctx)
             aicos_msleep(3);
             continue;
         }
-    } while (0);
+    } while (1);
 
     player_thread_lock(aic_ctx);
     if (result == 0 && p_frame) {
@@ -748,7 +748,10 @@ static int player_get_frame(struct aic_player_ctx *aic_ctx)
 
 static int player_get_frame_send_signal(struct aic_player_ctx * aic_ctx)
 {
+    pthread_mutex_lock(&aic_ctx->frame_mutex);
+    aic_ctx->has_new_request = true;
     pthread_cond_signal(&aic_ctx->frame_cond);
+    pthread_mutex_unlock(&aic_ctx->frame_mutex);
     return 0;
 }
 
@@ -763,6 +766,7 @@ static int player_put_frame(struct aic_player_ctx *aic_ctx)
     if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF)
         push_frame_num = 2;
 
+    player_thread_lock(aic_ctx);
     if (_lv_ll_get_len(&aic_ctx->frame_ll) >= push_frame_num) {
         p_frame = (struct mpp_frame *)_lv_ll_get_head(&aic_ctx->frame_ll);
         ret = aic_player_put_frame(aic_ctx->player, (void *)p_frame);
@@ -773,12 +777,15 @@ static int player_put_frame(struct aic_player_ctx *aic_ctx)
         _lv_ll_remove(&aic_ctx->frame_ll, p_frame);
         lv_free(p_frame);
     }
+    player_thread_unlock(aic_ctx);
     return 0;
 }
 
 static int player_put_frame_all(struct aic_player_ctx * aic_ctx)
 {
     s32 ret;
+
+    player_thread_lock(aic_ctx);
     while (_lv_ll_is_empty(&aic_ctx->frame_ll) == false) {
         struct mpp_frame *p_frame = _lv_ll_get_head(&aic_ctx->frame_ll);
         ret = aic_player_put_frame(aic_ctx->player, (void *)p_frame);
@@ -789,6 +796,7 @@ static int player_put_frame_all(struct aic_player_ctx * aic_ctx)
         _lv_ll_remove(&aic_ctx->frame_ll, p_frame);
         lv_free(p_frame);
     }
+    player_thread_unlock(aic_ctx);
 
     return 0;
 }
@@ -827,7 +835,10 @@ mutex_cleanup:
 
 static void player_decode_thread_destroy(struct aic_player_ctx *aic_ctx)
 {
+    pthread_mutex_lock(&aic_ctx->frame_mutex);
     aic_ctx->stop_thread = true;
+    pthread_mutex_unlock(&aic_ctx->frame_mutex);
+
     pthread_cond_signal(&aic_ctx->frame_cond);
     pthread_join(aic_ctx->frame_thread, NULL);
     pthread_mutex_destroy(&aic_ctx->frame_mutex);
@@ -847,13 +858,24 @@ static void player_thread_unlock(struct aic_player_ctx *aic_ctx)
 static void *player_decode_entry(void *ptr)
 {
     struct aic_player_ctx *aic_ctx = (struct aic_player_ctx *)ptr;
+    bool stop_thread = false;
 
-    while (!aic_ctx->stop_thread) {
+    while (1) {
         pthread_mutex_lock(&aic_ctx->frame_mutex);
-        pthread_cond_wait(&aic_ctx->frame_cond, &aic_ctx->frame_mutex);
+
+        while(!aic_ctx->has_new_request && !aic_ctx->stop_thread) {
+            pthread_cond_wait(&aic_ctx->frame_cond, &aic_ctx->frame_mutex);
+        }
+
+        if (aic_ctx->stop_thread) {
+            pthread_mutex_unlock(&aic_ctx->frame_mutex);
+            break;
+        }
+
+        aic_ctx->has_new_request = false;
         pthread_mutex_unlock(&aic_ctx->frame_mutex);
 
-        if (aic_ctx->stop_thread)
+        if (stop_thread)
             break;
 
         player_get_frame(aic_ctx);
@@ -869,7 +891,8 @@ static int aic_player_event_callback(void *ctx, int event_type, int param1, int 
 
     switch(event_type) {
         case AIC_PLAYER_EVENT_PLAY_END:
-            aic_ctx->status = PLAYER_STATUS_END;
+            if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_VIDEO)
+                atomic_store(&aic_ctx->status, PLAYER_STATUS_END);
             break;
         case AIC_PLAYER_EVENT_PLAY_TIME:
             break;
@@ -1019,10 +1042,14 @@ static lv_res_t player_handle_update_display_area(void *ctx)
                                        image->scale_y, &pivot_px);
 #endif
     lv_area_move(&real_area, area.x1, area.y1);
-    if (aic_ctx->area.x1 == real_area.x1 && aic_ctx->area.x2 == real_area.x2 &&
+    if (aic_ctx->image_rotation == lv_image_get_rotation(obj) &&
+        aic_ctx->disp_rotation == lv_disp_get_rotation(lv_disp_get_default()) &&
+        aic_ctx->area.x1 == real_area.x1 && aic_ctx->area.x2 == real_area.x2 &&
         aic_ctx->area.y1 == real_area.y1 && aic_ctx->area.y2 == real_area.y2) {
         return LV_RES_INV;
     }
+    aic_ctx->image_rotation = lv_image_get_rotation(obj);
+    aic_ctx->disp_rotation = lv_disp_get_rotation(lv_disp_get_default());
     lv_memcpy(&aic_ctx->area, &real_area, sizeof(lv_area_t));
 
     int alpha_en = 0;
@@ -1055,12 +1082,45 @@ static lv_res_t player_handle_update_display_area(void *ctx)
     return LV_RES_OK;
 }
 
-static lv_res_t player_handle_get_frame(void *ctx, bool wait_en)
+static void player_handle_first_frame_double_buffer(void *ctx)
 {
     const player_backend_ops_t *player_ctx = (player_backend_ops_t *)ctx;
     struct aic_player_ctx *aic_ctx = player_ctx->ctx;
+    bool decoding_status = 0;
+    uint32_t start_time = 0;
 
-    if (aic_ctx->status != PLAYER_STATUS_RUNNING)
+    player_thread_lock(aic_ctx);
+    aic_ctx->decoding = true;
+    player_thread_unlock(aic_ctx);
+
+    player_get_frame_send_signal(aic_ctx);
+
+    start_time = lv_tick_get();
+
+    while (1) {
+        if (lv_tick_elaps(start_time) > FRAME_TIMEOUT) {
+            LV_LOG_WARN("get first frame timeout: %d", (int)lv_tick_elaps(start_time));
+            break;
+        }
+
+        player_thread_lock(aic_ctx);
+        decoding_status = aic_ctx->decoding;
+        player_thread_unlock(aic_ctx);
+        if (decoding_status == false)
+            break;
+
+        aicos_msleep(3);
+    }
+}
+
+static lv_res_t player_handle_get_frame(void *ctx)
+{
+    const player_backend_ops_t *player_ctx = (player_backend_ops_t *)ctx;
+    struct aic_player_ctx *aic_ctx = player_ctx->ctx;
+    bool is_first_frame = false;
+    bool decoding_status = 0;
+
+    if (atomic_load(&aic_ctx->status) != PLAYER_STATUS_RUNNING)
         return LV_RES_INV;
 
     if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_UI_SINGLE_BUF) {
@@ -1068,24 +1128,36 @@ static lv_res_t player_handle_get_frame(void *ctx, bool wait_en)
             return LV_RES_INV;
     } else if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF) {
         /* first frame */
+        player_thread_lock(aic_ctx);
         if (_lv_ll_get_len(&aic_ctx->frame_ll) == 0) {
-            if (player_get_frame(aic_ctx) < 0)
-                return LV_RES_INV;
+            is_first_frame = true;
+        }
+        decoding_status = aic_ctx->decoding;
+        player_thread_unlock(aic_ctx);
+
+        if (is_first_frame) {
+            player_handle_first_frame_double_buffer(ctx);
         }
 
-        if (aic_ctx->decoding == true)
+        if (decoding_status == true) {
             return LV_RES_OK;
+        }
 
         player_get_frame_send_signal(aic_ctx);
     } else {
         return LV_RES_INV;
     }
 
+    player_thread_lock(aic_ctx);
     uint8_t * img_data = player_get_image_date(aic_ctx);
 
+#if LVGL_VERSION_MAJOR == 8
+    aic_ctx->buf.phy_addr[0] = (unsigned int)(uintptr_t)img_data;
+#elif LVGL_VERSION_MAJOR == 9
     lv_image_dsc_t *image_dst = (lv_image_dsc_t *)aic_ctx->image_src;
-
     image_dst->data = img_data;
+#endif
+    player_thread_unlock(aic_ctx);
 
     return LV_RES_OK;
 }

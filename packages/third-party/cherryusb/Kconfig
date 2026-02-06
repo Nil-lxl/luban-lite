@@ -1,6 +1,12 @@
 # Kconfig file for package CherryUSB
+config LPKG_USING_CHERRYUSB_V1_5_0
+    bool
+    default y
+
 menuconfig LPKG_USING_CHERRYUSB
     bool "CherryUSB: tiny and portable USB host/device stack for embedded system with USB IP"
+    help
+        CherryUSB version: 1.5.0
     default n
     select RT_USING_LIBC
 
@@ -263,7 +269,6 @@ if LPKG_USING_CHERRYUSB
                 default n
             config LPKG_USING_COMP_UAC_TABLE1
                 select LPKG_CHERRYUSB_DEVICE_AUDIO
-                select LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
                 bool "Using UAC composite"
                 default n
             config LPKG_USING_COMP_HID_TABLE1
@@ -400,6 +405,10 @@ if LPKG_USING_CHERRYUSB
                 config HID_TOUCHPAD_MODE
                     depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
                     bool "HID_TOUCHPAD_MODE"
+                    default n
+                config HID_TOUCHMOUSE_MODE
+                    depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
+                    bool "HID_TOUCHMOUSE_MODE"
                     default n
                 menu "Hid Touch Parameter"
                     depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
@@ -568,7 +577,7 @@ if LPKG_USING_CHERRYUSB
                 menuconfig LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
                 bool
                 prompt "Use audio speaker template"
-                default n
+                default y
 
                 if LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER
                     choice
@@ -576,6 +585,22 @@ if LPKG_USING_CHERRYUSB
                         default LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER_V2_TEMPLATE
                         config LPKG_CHERRYUSB_DEVICE_AUDIO_SPEAKER_V2_TEMPLATE
                             bool "UAC2.0"
+                    endchoice
+                endif
+
+                menuconfig LPKG_CHERRYUSB_DEVICE_AUDIO_MIC
+                bool
+                prompt "Use audio microphone template"
+                default n
+
+                if LPKG_CHERRYUSB_DEVICE_AUDIO_MIC
+                    choice
+                        prompt "Use audio microphone template"
+                        default LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_V2_TEMPLATE
+                        config LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_V2_TEMPLATE
+                            bool "UAC2.0"
+                        config LPKG_CHERRYUSB_DEVICE_AUDIO_MIC_V1_TEMPLATE
+                            bool "UAC1.0"
                     endchoice
                 endif
             endif
@@ -959,6 +984,33 @@ if LPKG_USING_CHERRYUSB
             config LPKG_CHERRYUSB_HOST_UAC_TEMPLATE
                 bool
                 prompt "Use uac template"
+                default n
+        endif
+
+        if LPKG_CHERRYUSB_HOST_UAC
+            config LPKG_CHERRYUSB_HOST_UAC_TEMPLATE
+                bool
+                prompt "Use uac template"
+                default n
+        endif
+
+        menuconfig LPKG_CHERRYUSB_HOST_VENDEOR
+            bool
+            prompt "Enable usb vendor driver"
+            default n
+
+        if LPKG_CHERRYUSB_HOST_VENDEOR
+            config LPKG_CHERRYUSB_VENDOR_CH34x
+                bool "using ch34x driver"
+                default n
+            config LPKG_CHERRYUSB_VENDOR_CP210x
+                bool "using cp210x driver"
+                default n
+            config LPKG_CHERRYUSB_VENDOR_FTDI
+                bool "using ftdi driver"
+                default n
+            config LPKG_CHERRYUSB_VENDOR_PL2303
+                bool "using pl2303 driver"
                 default n
         endif
 

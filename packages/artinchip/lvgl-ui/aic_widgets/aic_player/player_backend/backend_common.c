@@ -14,6 +14,13 @@
 #include "mpp_ge.h"
 #include "mpp_mem.h"
 
+#include "frame_allocator.h"
+#if __linux__
+#include <linux/dma-buf.h>
+#include <linux/fb.h>
+#include <video/artinchip_fb.h>
+#endif
+
 void backend_draw_color_buffer(lv_image_dsc_t *image_dst, uint32_t color)
 {
     int ret = 0;
@@ -22,15 +29,8 @@ void backend_draw_color_buffer(lv_image_dsc_t *image_dst, uint32_t color)
 
     fill.dst_buf.buf_type = MPP_PHY_ADDR;
 #if LVGL_VERSION_MAJOR == 8
-    int width = image_dst->header.w;
-    int screen_format = backend_fmt_lv_to_mpp(image_dst->header.cf);
-    int stride = backend_align_stride(width, screen_format);
-
-    fill.dst_buf.phy_addr[0] = (unsigned int)(uintptr_t)image_dst->data;
-    fill.dst_buf.stride[0] = stride;
-    fill.dst_buf.size.width = image_dst->header.w;
-    fill.dst_buf.size.height = image_dst->header.h;
-    fill.dst_buf.format = backend_fmt_lv_to_mpp(image_dst->header.cf);
+    struct mpp_buf *buf = (struct mpp_buf *)image_dst->data;
+    memcpy(&fill.dst_buf, buf, sizeof(struct mpp_buf));
 #elif LVGL_VERSION_MAJOR == 9
     fill.dst_buf.phy_addr[0] = (unsigned int)(uintptr_t)image_dst->data;
     fill.dst_buf.stride[0] = image_dst->header.stride;
@@ -74,20 +74,7 @@ uint32_t backend_fmt_mpp_to_lv(int cf)
 {
     uint32_t fmt = 0;
 
-#if LVGL_VERSION_MAJOR == 8
-    switch(cf) {
-        case MPP_FMT_RGB_565:
-            fmt = LV_IMG_CF_TRUE_COLOR;
-            break;
-        case MPP_FMT_ARGB_8888:
-            fmt = LV_IMG_CF_TRUE_COLOR_ALPHA;
-            break;
-        default:
-            LV_LOG_ERROR("unsupported format:%d", (int)cf);
-            break;
-    }
-
-#elif LVGL_VERSION_MAJOR == 9
+#if LVGL_VERSION_MAJOR == 9
     switch(cf) {
         case MPP_FMT_RGB_565:
             fmt = LV_COLOR_FORMAT_RGB565;
@@ -112,20 +99,7 @@ uint32_t backend_fmt_mpp_to_lv(int cf)
 int backend_fmt_lv_to_mpp(uint32_t cf)
 {
     enum mpp_pixel_format fmt = MPP_FMT_ARGB_8888;
-#if LVGL_VERSION_MAJOR == 8
-    switch(cf) {
-        case LV_IMG_CF_TRUE_COLOR:
-            fmt = MPP_FMT_RGB_565;
-            break;
-        case LV_IMG_CF_TRUE_COLOR_ALPHA:
-            fmt = MPP_FMT_ARGB_8888;
-            break;
-        default:
-            LV_LOG_ERROR("unsupported format:%d", (int)cf);
-            break;
-    }
-
-#elif LVGL_VERSION_MAJOR == 9
+#if LVGL_VERSION_MAJOR == 9
     switch(cf) {
     case LV_COLOR_FORMAT_RGB565:
         fmt = MPP_FMT_RGB_565;
@@ -174,6 +148,36 @@ int backend_align_stride(int width, int fmt)
 
 int backend_get_screen_info(void *info)
 {
+#if __linux__
+    struct aicfb_screeninfo *screen_info = (struct aicfb_screeninfo *)info;
+
+    struct fb_fix_screeninfo fix;
+    struct fb_var_screeninfo var;
+    int fb_fd = open("/dev/fb0", O_RDWR);
+    if (fb_fd == -1) {
+        LV_LOG_ERROR("open %s", "/dev/fb0");
+        return;
+    }
+
+    if (ioctl(fb_fd, FBIOGET_FSCREENINFO, &fix) < 0) {
+        LV_LOG_ERROR("ioctl FBIOGET_FSCREENINFO");
+        close(fb_fd);
+        return;
+    }
+
+    if (ioctl(fb_fd, FBIOGET_VSCREENINFO, &var) < 0) {
+        LV_LOG_ERROR("ioctl FBIOGET_VSCREENINFO");
+        close(fb_fd);
+        return;
+    }
+
+    screen_info.width = var.xres;
+    screen_info.height = var.yres;
+    screen_info.smem_len = fix.smem_len;
+    screen_info.stride = fix.line_length;
+
+    close(fb_fd);
+#else
     struct aicfb_screeninfo *screen_info = (struct aicfb_screeninfo *)info;
     struct mpp_fb *fb = mpp_fb_open();
     if (!fb) {
@@ -189,5 +193,81 @@ int backend_get_screen_info(void *info)
 
     mpp_fb_close(fb);
     return 0;
+#endif
+}
+
+int backend_dma_buf_alloc(backend_cma_buf_t *buf, uint32_t size)
+{
+    if (buf == NULL)
+        return -1;
+
+    buf->fd = -1;
+    buf->phy_addr = 0;
+    buf->size = size;
+    buf->data = NULL;
+#if __linux__
+    int dma_dev_fd = dmabuf_device_open();
+    if (dma_dev_fd < 0) {
+        LV_LOG_ERROR("open dmabuf device failed", (int)size);
+        return -1;
+    }
+
+    buf->fd = dmabuf_alloc(dma_dev_fd, size);
+    if (buf->fd < 0) {
+        LV_LOG_ERROR("malloc cma buffer failed, size = %d", (int)size);
+        return -1;
+    }
+
+    int ret = ioctl(buf->fd, DMA_BUF_IOCTL_GET_PHY_ADDR, &buf->phy_addr);
+    if (ret < 0) {
+        goto alloc_error;
+    }
+
+    buf->data = dmabuf_mmap(buf->dma_fd, size);
+    if (buf->data == MAP_FAILED) {
+        goto alloc_error;
+    }
+
+    dmabuf_device_close(dma_dev_fd);
+    return 0;
+
+alloc_error:
+    if (dma_fd > 0) {
+        dmabuf_device_close(dma_fd);
+    }
+    if (buf->data != MAP_FAILED && buf->data) {
+        dmabuf_munmap((unsigned char*)buf->phy_addr[0], size);
+        buf->data = NULL;
+        dmabuf_free(buf->fd[0]);
+    }
+
+    return -1;
+#else
+    buf->data = aicos_malloc_try_cma(size);
+    if (!buf->data) {
+        LV_LOG_ERROR("malloc cma buffer failed, size = %d", (int)size);
+        return -1;
+    }
+    buf->size = size;
+    buf->phy_addr = (uint32_t)(uintptr_t)(buf->data);
+    return 0;
+#endif
+}
+
+void backend_dma_buf_free(backend_cma_buf_t *buf)
+{
+    if (buf == NULL)
+        return;
+#if __linux__
+    if (buf->data != MAP_FAILED && buf->data) {
+        dmabuf_munmap((unsigned char*)buf->phy_addr, buf->size);
+    }
+    if (buf->fd >= 0) {
+        dmabuf_free(buf->fd);
+    }
+#else
+    if (buf->phy_addr)
+        aicos_free(MEM_CMA, (void*)(unsigned long)buf->phy_addr);
+#endif
 }
 #endif

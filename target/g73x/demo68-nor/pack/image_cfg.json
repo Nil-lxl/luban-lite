@@ -1,6 +1,6 @@
 {
     "spi-nor": { // Device, The name should be the same with string in image:info:media:type
-        "size": "2m", // Size of SPI NAND
+        "size": "2m", // Size of SPI NOR
         "partitions": {
             "spl":        { "size": "512k" },
             "env":        { "size": "128k" },

@@ -6,9 +6,8 @@
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  */
 
-#include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
+
 #include "aic_core.h"
 #include "lv_aic_stream.h"
 #include "lv_mpp_dec.h"
@@ -40,13 +39,13 @@ read_err:
 
 lv_result_t lv_bmp_decoder_info(const char *src, lv_image_header_t *header, uint32_t size, bool is_file)
 {
-    lv_fs_res_t res;
-    uint32_t read_num;
-    uint8_t buf[64];
-    lv_stream_t stream;
-    int32_t w;
-    int32_t h;
-    int32_t bpp;
+    lv_fs_res_t res = LV_FS_RES_OK;
+    uint32_t read_num = 0;
+    uint8_t buf[64] = { 0 };
+    lv_stream_t stream= { 0 };
+    int32_t w = 0;
+    int32_t h = 0;
+    uint16_t bpp = 0;
 
     if (is_file)
         res = lv_aic_stream_open_file(&stream, src);

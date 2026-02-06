@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -241,6 +241,7 @@ static int do_mtd_write(int argc, char *argv[])
     char *name;
     unsigned long addr, offset, size;
     u64 start_us;
+    u32 write_len = 0;
 
     if (argc < 4) {
         mtd_help();
@@ -266,7 +267,18 @@ static int do_mtd_write(int argc, char *argv[])
     }
 
     start_us = aic_get_time_us();
-    err = mtd_write(mtd, offset, data, size);
+    while (write_len < size) {
+        err = mtd_write_oob(mtd, offset + write_len, data + write_len, mtd->writesize, NULL, 0);
+        if (err) {
+            printf("Write mtd at offset 0x%lx error, mark it.\n", offset + write_len);
+            err = mtd_block_markbad(mtd, ALIGN_DOWN(offset + write_len, mtd->erasesize));
+            if (err)
+                printf("Mark block bad error.\n");
+
+            return err;
+        }
+        write_len += mtd->writesize;
+    }
     show_speed("mtd_write speed", size, aic_get_time_us() - start_us);
 
     return err;

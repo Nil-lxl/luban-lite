@@ -35,7 +35,12 @@ src += Glob('crypto/src/*.c')
 src += Glob('wifidrv/src/edrv/*.c')
 src += Glob('certificate_test/sdio_loopback/*.c')
 
-LOCAL_CCFLAGS = ' -w'
+if GetDepend(['PRJ_RV_TOOLCHAIN_V2_6_1']):
+    LOCAL_CCFLAGS = ' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types'
+elif GetDepend(['PRJ_RV_TOOLCHAIN_V3_2_0']):
+    LOCAL_CCFLAGS = ' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch'
+else:
+    LOCAL_CCFLAGS = ' -w'
 
 wifi_name = 'asr5505s'
 lib_name = 'wlan_' + wifi_name + '_'+ rtconfig.CPUNAME

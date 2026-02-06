@@ -16,9 +16,16 @@
 
 #define AIC_TSEN_TIMEOUT    3000
 
+#ifdef AIC_TSEN_DRV_V12
+#define TSEN_SHARE_ACQ
+#endif
+
 /* Register definition of Thermal Sensor Controller */
 #define TSEN_MCR        0x000
 #define TSEN_INTR       0x004
+#ifdef TSEN_SHARE_ACQ
+#define TSEN_ACQ        0x010
+#endif
 #define TSENn_CFG(n)    (0x100 + (((n) & 0x3) << 5))
 #define TSENn_ITV(n)    (0x100 + (((n) & 0x3) << 5) + 0x4)
 #define TSENn_FIL(n)    (0x100 + (((n) & 0x3) << 5) + 0x8)
@@ -26,14 +33,18 @@
 #define TSENn_INT(n)    (0x100 + (((n) & 0x3) << 5) + 0x10)
 #define TSENn_HTAV(n)   (0x100 + (((n) & 0x3) << 5) + 0x14)
 #define TSENn_LTAV(n)   (0x100 + (((n) & 0x3) << 5) + 0x18)
+#ifndef AIC_TSEN_DRV_V10
 #define TSENn_OTPV(n)   (0x100 + (((n) & 0x3) << 5) + 0x1C)
+#endif
 #define TSEN_VERSION    0xFFC
 
 #define TSEN_MCR_CTLX_EN(n)     (BIT(20) << (n))
 #define TSEN_MCR_TSEN_EN(n)     (BIT(16) << n)
 
+#ifndef TSEN_SHARE_ACQ
 #define TSEN_MCR_ACQ_SHIFT      8
 #define TSEN_MCR_ACQ_MASK       GENMASK(15, 8)
+#endif
 #define TSEN_MCR_MAX_SHIFT      4
 #define TSEN_MCR_MAX_MASK       GENMASK(5, 4)
 #define TSEN_MCR_EN             BIT(0)
@@ -43,9 +54,11 @@
 
 #define TSENn_CFG_DIFF_MODE_SELECT  BIT(31)
 #define TSENn_CFG_INVERTED_SELECT   BIT(27)
+#ifndef TSEN_SHARE_ACQ
 #define TSENn_CFG_ADC_ACQ_VAL       0xff
 #define TSENn_CFG_ADC_ACQ_SHIFT     8
 #define TSENn_CFG_ADC_ACQ_MASK      GENMASK(15, 8)
+#endif
 #define TSENn_CFG_HIGH_ADC_PRIORITY BIT(4)
 #define TSENn_CFG_PERIOD_SAMPLE_EN  BIT(1)
 #define TSENn_CFG_SINGLE_SAMPLE_EN  BIT(0)
@@ -481,7 +494,12 @@ void hal_tsen_enable(int enable)
     else
         mcr &= ~TSEN_MCR_EN;
 
+#ifdef TSEN_SHARE_ACQ
+    if (enable)
+        tsen_writel(0x30199, TSEN_ACQ);
+#else
     mcr |= TSEN_MCR_ACQ_MASK;
+#endif
     tsen_writel(mcr, TSEN_MCR);
 }
 
@@ -516,16 +534,23 @@ static void tsen_int_enable(u32 ch, u32 enable, u32 detail)
     tsen_writel(val, TSEN_INTR);
 }
 
-static void tsen_single_mode(u32 ch)
+static void tsen_ch_acq_set(u32 ch)
 {
+#ifndef TSEN_SHARE_ACQ
     u32 val = 0;
-
-    tsen_writel(TSENn_FIL_8_POINTS, TSENn_FIL(ch));
 
     val = tsen_readl(TSENn_CFG(ch));
     val &= ~TSENn_CFG_ADC_ACQ_MASK;
     val |= TSENn_CFG_ADC_ACQ_VAL << TSENn_CFG_ADC_ACQ_SHIFT;
     tsen_writel(val, TSENn_CFG(ch));
+#endif
+}
+
+static void tsen_single_mode(u32 ch)
+{
+    tsen_writel(TSENn_FIL_8_POINTS, TSENn_FIL(ch));
+
+    tsen_ch_acq_set(ch);
 
     tsen_writel(TSENn_CFG_SINGLE_SAMPLE_EN | tsen_readl(TSENn_CFG(ch)),
            TSENn_CFG(ch));
@@ -556,11 +581,13 @@ static void tsen_period_mode(struct aic_tsen_ch *chan, u32 pclk)
         tsen_writel(val, TSENn_LTAV(chan->id));
     }
 
+#ifndef AIC_TSEN_DRV_V10
     if (chan->otp_enable) {
         detail |= TSENn_INT_OTP_RESET;
         val = TSENn_OTPV_EN | (chan->otp_thd & TSENn_OTPV_VAL_MASK);
         tsen_writel(val, TSENn_OTPV(chan->id));
     }
+#endif
     tsen_int_enable(chan->id, 1, detail);
 
     tsen_writel(TSENn_FIL_8_POINTS, TSENn_FIL(chan->id));
@@ -568,10 +595,7 @@ static void tsen_period_mode(struct aic_tsen_ch *chan, u32 pclk)
     val = tsen_sec2itv(pclk, chan->smp_period);
     tsen_writel(val << TSENn_ITV_SHIFT | 0xFFFF, TSENn_ITV(chan->id));
 
-    val = tsen_readl(TSENn_CFG(chan->id));
-    val &= ~TSENn_CFG_ADC_ACQ_MASK;
-    val |= TSENn_CFG_ADC_ACQ_VAL << TSENn_CFG_ADC_ACQ_SHIFT;
-    tsen_writel(val, TSENn_CFG(chan->id));
+    tsen_ch_acq_set(chan->id);
 
     tsen_writel(tsen_readl(TSENn_CFG(chan->id)) | TSENn_CFG_PERIOD_SAMPLE_EN,
            TSENn_CFG(chan->id));
@@ -601,6 +625,10 @@ int hal_tsen_ch_init(struct aic_tsen_ch *chan, u32 pclk)
     if (chan->mode == AIC_TSEN_MODE_PERIOD)
         tsen_period_mode(chan, pclk);
 
+#ifdef AIC_ADCIM_DM_DRV
+    chan->inverted = 1;
+#endif
+
     if (chan->diff_mode || chan->inverted)
         tsen_diff_mode(chan->id, chan->diff_mode, chan->inverted);
 
@@ -617,9 +645,11 @@ int hal_tsen_get_temp(struct aic_tsen_ch *chan, s32 *val)
         return -ENODATA;
     }
 
-#ifndef CONFIG_ARTINCHIP_ADCIM_DM
-    if (chan->mode == AIC_TSEN_MODE_PERIOD)
-        return hal_tsen_data2temp(chan);
+#ifndef AIC_ADCIM_DM_DRV
+    if (chan->mode == AIC_TSEN_MODE_PERIOD) {
+        *val = hal_tsen_data2temp(chan);
+        return 0;
+    }
 #endif
 
     tsen_single_mode(chan->id);
@@ -644,17 +674,15 @@ void hal_tsen_status_show(struct aic_tsen_ch *chan)
     int mcr = tsen_readl(TSEN_MCR);
     int version = tsen_readl(TSEN_VERSION);
 
-    printf("In Thermal Sensor V%d.%02d:\n"
+    printf("In Thermal Sensor V%s:\n"
                "Ch Name          Mode Diff Inv Enable Value  LTA  HTA  OTP\n"
                "%d  %-13s %4s %4d %3d %6d %5d %4d %4d %4d\n",
-               version >> 8, version & 0xff,
+               EXPAND_BCD_VER(version),
                chan->id, chan->name, chan->mode ? "P" : "S",
                chan->diff_mode, chan->inverted,
                mcr & TSEN_MCR_TSEN_EN(chan->id) ? 1 : 0,
                chan->latest_data, chan->lta_thd, chan->hta_thd, chan->otp_thd);
 }
-
-// TODO: irq_handle() should get 'struct aic_tsen_ch *' from 'void *arg'
 
 irqreturn_t hal_tsen_irq_handle(int irq, void *arg)
 {
@@ -672,7 +700,6 @@ irqreturn_t hal_tsen_irq_handle(int irq, void *arg)
             continue;
 
         detail = tsen_readl(TSENn_INT(i));
-        tsen_writel(detail, TSENn_INT(i));
         hal_log_debug("ch%d IRQ status: %#x\n", i, detail);
         if (detail & TSENn_INT_DAT_RDY_FLAG) {
             chan->latest_data = tsen_readl(TSENn_DATA(i));
@@ -681,6 +708,7 @@ irqreturn_t hal_tsen_irq_handle(int irq, void *arg)
             if (chan->mode == AIC_TSEN_MODE_SINGLE)
                 aicos_sem_give(chan->complete);
         }
+        tsen_writel(detail, TSENn_INT(i));
 
         if (detail & TSENn_INT_LTA_VALID_FLAG)
             hal_log_warn("LTA: ch%d %d(%d)!\n", i,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -204,33 +204,33 @@ const struct romfs_dirent romfs_root =
 #endif
 const struct dfs_mount_tbl mount_table[] = {
 #ifdef RT_USING_DFS_ROMFS
-    {RT_NULL, "/", "rom", 0, &romfs_root, 0},
+    {RT_NULL, "/", "rom", 0, &romfs_root, DFS_MOUNT_PRIO_EARLY},
 #endif
 #ifdef LPKG_RAMDISK_TYPE_INITDATA
-    {"ramdisk0", "/ram", "elm", 0, 0, 0},
+    {"ramdisk0", "/ram", "elm", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
 #ifndef AIC_AB_SYSTEM_INTERFACE
-#if defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0) || defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1)
-    {"blk_rodata", "/rodata", "elm", 0, 0, 0},
+#if (defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_0) || defined(AIC_USING_FS_IMAGE_TYPE_FATFS_FOR_1))
+    {"blk_rodata", "/rodata", "elm", MS_RDONLY, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
 #endif
 #ifdef LPKG_USING_LITTLEFS
-    {"data", "/data", "lfs", 0, 0, 0},
+    {"data", "/data", "lfs", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
 #ifdef LPKG_USING_DFS_UFFS
-    {"data", "/data", "uffs", 0, 0, 1},
+    {"data", "/data", "uffs", 0, 0, DFS_MOUNT_PRIO_LATE},
 #endif
 #ifdef AIC_USING_SDMC1
-    {"sd1", "/sdcard", "elm", 0, 0, 0},
+    {"sd1", "/sdcard", "elm", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
 #if (defined(AIC_USING_USB0_HOST) || defined(AIC_USING_USB0_OTG) || defined(AIC_USING_USB1_HOST))
     {"udisk", "/udisk", "elm", 0, 0, 0xFF},
 #endif
 #ifdef AIC_SECONED_FLASH_NOR
-    {"extra", "/extra", "lfs", 0, 0, 0},
+    {"extra", "/extra", "lfs", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
 #ifdef AIC_SECONED_FLASH_NAND
-    {"blk_extra", "/extra", "elm", 0, 0, 0},
+    {"blk_extra", "/extra", "elm", 0, 0, DFS_MOUNT_PRIO_EARLY},
 #endif
     {0}
 };

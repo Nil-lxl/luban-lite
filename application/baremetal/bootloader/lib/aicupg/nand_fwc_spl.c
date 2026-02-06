@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -411,7 +411,7 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
 #ifdef AIC_USING_SPIENC
     spienc_set_bypass(AIC_SPIENC_BYPASS_ENABLE);
 #endif
-    ret = mtd_write(spl->mtd, offset, page_data, PAGE_TABLE_USE_SIZE);
+    ret = mtd_write_oob(spl->mtd, offset, page_data, PAGE_TABLE_USE_SIZE, NULL, 0);
 #ifdef AIC_USING_SPIENC
     spienc_set_bypass(AIC_SPIENC_BYPASS_DISABLE);
 #endif
@@ -442,7 +442,7 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
 
         offset = pa * spl->mtd->writesize;
         pr_debug("Write data to blk %d pa 0x%x, offset 0x%x\n", blkidx, pa, (u32)offset);
-        ret = mtd_write(spl->mtd, offset, page_data, slice_size);
+        ret = mtd_write_oob(spl->mtd, offset, page_data, slice_size, NULL, 0);
         if (ret) {
             pr_err("Write SPL page %d failed.\n", pgidx);
             ret = -1;

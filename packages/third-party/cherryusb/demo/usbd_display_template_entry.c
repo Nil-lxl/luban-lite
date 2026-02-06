@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -19,6 +19,8 @@
 #include "mpp_mem.h"
 #include "mpp_log.h"
 #include "mpp_ge.h"
+#include "msh.h"
+#include <boot_param.h>
 
 #define USB_DISP_ROTATE_FULLSCREEN_MASK       (0x1<<0)
 #define USB_DISP_ROTATE_UI_MASK               (0x1<<1)
@@ -27,6 +29,9 @@
 #define PIXEL_ENCODE_JPEG       0x10
 #define PIXEL_ENCODE_H264       0x11
 #define PIXEL_ENCODE_AUTO       0xFF
+#define UPG_TYPE_ENTER_AICUPG   0x00
+#define UPG_TYPE_OTA_START      0x01
+#define UPG_TYPE_IMG_VERSION    0x02
 
 #if defined(LPKG_CHERRYUSB_USB_TRANSFER_AUTO)
 uint8_t usbdisp_encode_format = PIXEL_ENCODE_AUTO;
@@ -359,14 +364,12 @@ void aic_panel_backlight_disable(void)
 
 #ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
 #include "composite_template.h"
-void usbd_comp_disp_event_handler(uint8_t event)
-#else
-void usbd_event_handler(uint8_t event)
-#endif
+void usbd_disp_event_handler(uint8_t busid, uint8_t event)
 {
-    extern void usbd_display_event_handler(uint8_t event);
-    usbd_display_event_handler(event);
+    extern void usbd_display_event_handler(uint8_t busid, uint8_t event);
+    usbd_display_event_handler(busid, event);
 }
+#endif
 
 void usb_display_init(void)
 {
@@ -374,7 +377,7 @@ void usb_display_init(void)
     extern int usbd_comp_disp_init(uint8_t *ep_table, void *data);
     extern uint8_t graphic_vendor_descriptor[];
     usbd_comp_func_register(graphic_vendor_descriptor,
-                            usbd_comp_disp_event_handler,
+                            usbd_disp_event_handler,
                             usbd_comp_disp_init, "disp");
 #else
     extern void usb_nocomp_display_init(void);
@@ -390,8 +393,8 @@ int usbd_display_deinit(void)
 #ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     extern uint8_t graphic_vendor_descriptor[];
     usbd_comp_func_release(graphic_vendor_descriptor, "disp");
-#endif
     return 0;
+#endif
     usbd_usb_display_deinit();
 
     return 0;
@@ -412,6 +415,45 @@ int usbd_display_init(void)
     return 0;
 }
 
+
+void disp_vendor_upgrade_get_version(uint8_t **data, uint32_t *len)
+{
+    struct boot_args *boot_args;
+
+    if (*data == NULL || len == NULL) {
+        USB_LOG_ERR("*data or len ptr is null.\n");
+        return;
+    }
+
+    boot_args = aic_get_boot_args();
+    memcpy(*data, boot_args->image_version, strlen(boot_args->image_version));
+    *len = strlen(boot_args->image_version) + 1;
+
+    USB_LOG_INFO("get image version: %s, len:%d.\n", *data, *len);
+}
+
+int disp_vendor_upgrade_handler_cb(int upg_type, uint8_t **data, uint32_t *len)
+{
+    switch (upg_type) {
+        case UPG_TYPE_ENTER_AICUPG:
+            msh_exec("aicupg", strlen("aicupg"));
+            break;
+
+        case UPG_TYPE_OTA_START:
+            break;
+
+        case UPG_TYPE_IMG_VERSION:
+            disp_vendor_upgrade_get_version(data, len);
+            break;
+
+        default:
+            USB_LOG_ERR("Unknown upgrade type %02x.\n", upg_type);
+            return -1;
+    }
+
+    return 0;
+}
+
 #if defined(LPKG_CHERRYUSB_AIC_DISP_DR)
 #include <rtthread.h>
 #include <rtdevice.h>
@@ -422,14 +464,19 @@ rt_sem_t usbd_comp_disp_sem = NULL;
 
 void usbd_disp_comp_udisk_mode(void *parameter)
 {
-    if (rt_sem_take(usbd_comp_disp_sem, 2000) != -RT_ETIMEOUT)
+retry:
+    if (usb_device_is_configured(0) == false) {
+        rt_thread_mdelay(500);
+        goto retry;
+    }
+
+    if (rt_sem_take(usbd_comp_disp_sem, 13000) != -RT_ETIMEOUT)
         goto finish;
 
     usbd_compsite_device_start(COMP_USING_DISP_MSC);
 
     while(1) {
         rt_sem_take(usbd_comp_disp_sem, RT_WAITING_FOREVER);
-
         usbd_compsite_device_start(COMP_USING_DISP_UAC_TOUCH);
 
         break;
@@ -440,6 +487,7 @@ finish:
         rt_sem_delete(usbd_comp_disp_sem);
 
     usbd_comp_disp_sem = NULL;
+    usbd_comp_disp_tid = NULL;
 }
 
 int disp_configured_event_cb(void)
@@ -453,9 +501,7 @@ int disp_configured_event_cb(void)
             USB_LOG_ERR("create disp semaphore failed.\n");
             return -1;
         }
-    }
 
-    if (usbd_comp_disp_tid == NULL) {
         usbd_comp_disp_tid = rt_thread_create("usbd_disp_udsik_setup",
                                     usbd_disp_comp_udisk_mode, RT_NULL,
                                     4096, RT_THREAD_PRIORITY_MAX - 2, 20);
@@ -531,3 +577,117 @@ int lcd_sw_key_init(void)
 
 INIT_APP_EXPORT(lcd_sw_key_init);
 #endif
+
+#ifdef LPKG_USING_CHERRYUSB_V1_5_0
+uint8_t usb_disp_busid = 1;
+int usbd_ep_start_read_no_id(const uint8_t ep, uint8_t *data, uint32_t data_len)
+{
+    return usbd_ep_start_read(0, ep, data, data_len);
+}
+
+int usbd_ep_start_write_no_id(const uint8_t ep, uint8_t *data, uint32_t data_len)
+{
+    return usbd_ep_start_write(0, ep, data, data_len);
+}
+
+void usbd_desc_register_no_id(const uint8_t *desc)
+{
+    usbd_desc_register(0, desc);
+}
+
+void usbd_add_interface_no_id(struct usbd_interface *intf)
+{
+    usbd_add_interface(0, intf);
+}
+
+void usbd_add_endpoint_no_id(struct usbd_endpoint *ep)
+{
+    usbd_add_endpoint(0, ep);
+}
+
+int usbd_initialize_no_id(void)
+{
+    return usbd_initialize(0, USB_DEV_BASE, NULL);
+}
+
+int usbd_deinitialize_no_id(void)
+{
+    return usbd_deinitialize(0);
+}
+
+extern int _graphic_class_interface_request_handler(struct usb_setup_packet *setup, uint8_t **data, uint32_t *len);
+extern void _usbd_graphic_bulk_out(uint8_t ep, uint32_t nbytes);
+extern void _usbd_graphic_bulk_in(uint8_t ep, uint32_t nbytes);
+
+int graphic_class_interface_request_handler(uint8_t busid, struct usb_setup_packet *setup, uint8_t **data, uint32_t *len)
+{
+    return _graphic_class_interface_request_handler(setup, data, len);
+}
+
+void usbd_graphic_bulk_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
+{
+    _usbd_graphic_bulk_out(ep, nbytes);
+}
+
+void usbd_graphic_bulk_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
+{
+    _usbd_graphic_bulk_in(ep, nbytes);
+}
+
+struct usbd_interface disp_intf0 = {
+    .class_interface_handler = NULL,
+    .class_endpoint_handler = NULL,
+    .vendor_handler = graphic_class_interface_request_handler,
+    .notify_handler = NULL
+};
+
+/*!< endpoint call back */
+struct usbd_endpoint graphic_out_ep = {
+    .ep_addr = 0x81,
+    .ep_cb = usbd_graphic_bulk_out
+};
+
+struct usbd_endpoint graphic_in_ep = {
+    .ep_addr = 0x01,
+    .ep_cb = usbd_graphic_bulk_in
+};
+
+#else // ifdef LPKG_USING_CHERRYUSB_V1_5_0
+
+uint8_t usb_disp_busid = 0;
+
+int usbd_ep_start_read_no_id(const uint8_t ep, uint8_t *data, uint32_t data_len)
+{
+    return usbd_ep_start_read(ep, data, data_len);
+}
+
+int usbd_ep_start_write_no_id(const uint8_t ep, uint8_t *data, uint32_t data_len)
+{
+    return usbd_ep_start_write(ep, data, data_len);
+}
+
+void usbd_desc_register_no_id(const uint8_t *desc)
+{
+    usbd_desc_register(desc);
+}
+
+void usbd_add_interface_no_id(struct usbd_interface *intf)
+{
+    usbd_add_interface(intf);
+}
+
+void usbd_add_endpoint_no_id(struct usbd_endpoint *ep)
+{
+    usbd_add_endpoint(ep);
+}
+
+int usbd_initialize_no_id(void)
+{
+    return usbd_initialize();
+}
+
+int usbd_deinitialize_no_id(void)
+{
+    return usbd_deinitialize();
+}
+#endif // ifdef LPKG_USING_CHERRYUSB_V1_5_0

@@ -1,3 +1,145 @@
+# V1.2.3 #
+## 新增 ##
+- LVGL：
+  - 支持APNG格式
+  - 增加FreeType的cache管理接口
+  - SPI屏增加旋转功能
+  - 播放器适配了V8版本
+  - 播放器增加dump调试功能
+  - 播放器支持播放速度的设置
+- MPP：
+  - 混音播放时，支持每一路单独设置音量
+  - 增加GE的简化版示例
+  - 增加parser的测试示例
+  - D21x的视频播放也支持ext render方式，支持循环播放
+  - 增加更多的调试命令
+- USB副屏：
+  - 启用新的PID管理机制
+  - MacOS驱动更新为V1.0.0
+  - Linux驱动更新为V1.1.2
+  - 支持获取Device的镜像版本号
+  - 支持将触屏模拟为鼠标
+- USB：
+  - USBD：支持slave模式使用专用FIFO
+  - USBD：UVC：增加控制接口的描述配置
+  - USBH：增加TD buffer的管理机制
+  - USBH：支持对不同串口外设的管理
+- Display：
+  - 支持双SPI屏幕的显示
+  - 读取DSI屏幕支持设置最大的数据size
+- CherryUSB：升级为V1.5，原V1.0.0继续保留（可手动切换）
+- 编译：增加V3.2.0版本的工具链，可支持更完善的C++特性
+- FS：再增加一个User FS分区的配置项
+- SDIO：增加SDIO manage模块，增强初始化流程的并发管理
+- G73：增加XIP模式的方案配置
+- XIP：支持运行时的写Flash操作
+- DFS：支持块设备挂载的优先级管理
+- littlefs：支持挂载多个设备
+- 扫码Demo：支持从UART输出扫码结果
+- OTA：增加读数据的校验接口
+- RTT LwIP：支持MQTT功能
+- SPIENC：支持检查Key的CRC32值
+- OneStep：‘buildall’命令中会显示方案序号，方便查看整体进度
+- test_audio：增加I2S同时播放和录音的示例
+- test_dvp：增加wait模式（不再新创建测试线程）
+- i2c-tools：支持软件I2C模式
+- 烧写：增加对2个plane的Flash支持
+- 编译：内置cmake工具，增强Linux和Windows环境的一致性
+- 新增软件组件：aic-profiler
+- 新增器件：
+- WiFi：txw901（64bit）
+- NAND：ZB35Q01/02/04CYIG、XCSP1xXPK-IT
+- Panel：gc9108
+- Touch：ili2117
+- Audio Codec：es8311、jy6311
+- Camera：xs9950
+
+## 优化
+- LVGL：
+  - 优化播放器的帧同步处理
+  - 优化SPI发送timeout的处理
+  - lv-demo：优化导航页面的流畅度
+  - 增强对缩放比例的有效性检查
+- MPP：
+  - 录像功能：完善功能、并优化性能
+  - 优化LVGL播放时的尾帧处理
+  - 优化延时控制测试以避免丢帧
+  - 优化VE对eptb的兼容处理
+  - 优化MOV解析的异常处理
+  - 完善APNG格式解码的兼容处理
+  - 优化ge_test的内存管理的异常分析方法
+  - 完善jpeg_encode_test中的异常处理流程
+- NAND：
+  - 增强数据出错时的容错处理
+  - 增强对只读分区的数据安全处理
+- USB副屏：
+  - 优化复合设备的并发保护
+  - 优化U盘模式的切换逻辑
+- USB：
+  - 优化MSC的初始化流程
+  - USBD：优化UVC的数据传输性能
+  - 优化一些特殊外设的兼容性处理
+  - USBH：增强描述符的保护检查
+- XIP：优化rodata分区的数据处理
+- FatFS：优化目录扫描的性能
+- UART：增强FIFO配置参数的有效性检查
+- QSPI：
+  - 优化初始化、发送的中断处理流程
+  - 增强DMA传输时的数据对齐检查
+- NFTL：优化OOB、ECC的兼容处理
+- SDMC：
+  - 优化频繁插拔卡的处理流程
+  - 优化相位参数的配置流程
+- DVP：优化DVP的关闭流程
+- Audio：优化某些情况的pop音处理
+- OTA：优化配置文件的解析处理
+- RTC：
+  - 起始时间从1970-1-1改为2020-5-20，增加50年的范围
+  - 优化低电压模式下的供电配置
+- D12x：优化eMMC方案中的PSRAM配置参数
+- PBP：优化不同型号PSRAM参数的管理方法
+- Watchdog：优化中断回调的调用方式
+- GPIO：优化GPIO中断的处理流程
+- AiPQ：简化测试功能
+- LwIP：优化DHCPD时的DNS释放处理
+- WiFi：
+  - 优化对SAL接口的兼容处理
+  - hugeic：优化内存的释放处理；支持SDIO的重复初始化
+  - aic8800：支持WLAN dev可配置；支持重复初始化
+- 打包：
+- 完善对分区大小的有效性检查
+- 完善对loader的异常检查
+- 打包FatFS的使用情况信息
+- 启动：完善对Ctrl+C按键的检测流程
+- cpu_load：支持线程的动态销毁情况
+
+## 修改
+- LVGL：
+  - AiUIBuilder更名为UIBuilder
+  - V9：修正BMP某些情况下的小概率出错
+  - V9：修正GIF解码的资源释放流程
+  - demo-hub：默认打开播放器相关功能
+  - 修正APNG播放器的DMA操作流程
+  - 修正电梯Demo的显示异常
+  - 修正播放器某些情况下的视频size处理错误
+  - 修正播放器的一处内存泄漏
+  - 修正播放器UI线程中的一处死锁风险
+  - 修正播放器的播放区域异常
+  - 修正播放器stop操作的概率性异常
+  - 修正播放器在某些情况下的视频卡死问题
+  - 修正lv_table的异常处理
+  - 修正资源释放的处理流程
+  - 解决snapshot功能某些情况下的卡死问题
+  - 删除 vscode_simulator demo
+- MPP：
+  - 修正高度为1时的VE处理流程
+  - 修正MJPEG解码中的crop处理
+  - 修正JPEG解码在旋转场景中的裁剪处理
+- NAND：修正GD5FxGM 系列的ECC参数
+- NOR： 使用FatFS时禁止写功能
+- UART：修正Tx 发送时的参数配置
+- WRI：修正reboot命令执行中对BOOT_INFO的处理
+
 # V1.2.2 #
 ## 新增 ##
 - USB副屏：

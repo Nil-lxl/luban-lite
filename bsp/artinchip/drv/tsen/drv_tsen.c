@@ -77,7 +77,7 @@ static rt_size_t aic_tsen_fetch(struct rt_sensor_device *sensor,
 #ifdef AIC_SID_DRV
     hal_tsen_curve_fitting(chan);
 #else
-    pr_warn("The eFuse is not enabled\n");
+    pr_debug("The eFuse is not enabled\n");
 #endif
     data->type = RT_SENSOR_CLASS_TEMP;
     data->timestamp = rt_sensor_get_ts();

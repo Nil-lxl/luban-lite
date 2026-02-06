@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -49,12 +49,18 @@
 INCLUDE rom_api.lds
 #endif
 
+#ifdef AIC_USING_PM
+    #define AIC_PM_SRAM_RESERVE_SIZE 0x200
+#else
+    #define AIC_PM_SRAM_RESERVE_SIZE 0
+#endif
+
 MEMORY
 {
     BROM      : ORIGIN = 0x30000000                                            , LENGTH = 32K
     SRAM_SW   : ORIGIN = 0x30040000                                            , LENGTH = AIC_SRAM_SW_SIZE
-    SRAM_CMA  : ORIGIN = 0x30040000 + AIC_SRAM_SW_SIZE                         , LENGTH = AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE
-    PSRAM_SW  : ORIGIN = 0x40000000                                            , LENGTH = AIC_PSRAM_SW_SIZE
+    SRAM_CMA  : ORIGIN = 0x30040000 + AIC_SRAM_SW_SIZE                         , LENGTH = AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE - AIC_PM_SRAM_RESERVE_SIZE
+    PSRAM_SW  : ORIGIN = 0x40000000 + AIC_XIP_RAMCODE_SIZE                     , LENGTH = AIC_PSRAM_SW_SIZE - AIC_XIP_RAMCODE_SIZE
     PSRAM_CMA : ORIGIN = 0x40000000 + AIC_PSRAM_SW_SIZE                        , LENGTH = AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE
 #ifdef FPGA_BOARD_ARTINCHIP
     PSRAM_ext : ORIGIN = 0x40000000 + AIC_PSRAM_SIZE                           , LENGTH = 64M - AIC_PSRAM_SIZE
@@ -69,7 +75,9 @@ PROVIDE (__sram_end                = 0x30040000 + AIC_SRAM_SIZE);
 PROVIDE (__sram_sw_start           = 0x30040000);
 PROVIDE (__sram_sw_end             = 0x30040000 + AIC_SRAM_SW_SIZE);
 PROVIDE (__sram_cma_start          = __sram_sw_end);
-PROVIDE (__sram_cma_end            = 0x30040000 + AIC_SRAM_SIZE);
+PROVIDE (__sram_cma_end            = 0x30040000 + AIC_SRAM_SIZE - AIC_PM_SRAM_RESERVE_SIZE);
+PROVIDE (__sram_pm_start           = __sram_cma_end);
+PROVIDE (__sram_pm_end             = __sram_pm_start + AIC_PM_SRAM_RESERVE_SIZE);
 PROVIDE (__psram_start             = 0x40000000);
 PROVIDE (__psram_end               = 0x40000000 + AIC_PSRAM_SIZE);
 PROVIDE (__psram_sw_start          = __psram_start);
@@ -96,11 +104,10 @@ REGION_ALIAS("REGION_PSRAM_SW"     , PSRAM_SW);
 
 #ifdef AIC_XIP
 REGION_ALIAS("REGION_TEXT"         , FLASH_XIP);
-REGION_ALIAS("REGION_RODATA"       , FLASH_XIP);
 #else
 REGION_ALIAS("REGION_TEXT"         , PSRAM_SW);
-REGION_ALIAS("REGION_RODATA"       , PSRAM_SW);
 #endif
+REGION_ALIAS("REGION_RODATA"       , PSRAM_SW);
 REGION_ALIAS("REGION_DATA"         , PSRAM_SW);
 REGION_ALIAS("REGION_BSS"          , PSRAM_SW);
 

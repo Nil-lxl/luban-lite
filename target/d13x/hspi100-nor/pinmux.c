@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -120,7 +120,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_UP, 3, "PC.11"},
 #endif
 #ifdef AIC_WIRELESS_LAN
-    {1, PIN_PULL_DIS, 3, "PC.7"},  // WIFI_PWR_ON
+    {1, PIN_PULL_DIS, 3, AIC_WIRELESS_PWR_GPIO},  // WIFI_PWR_ON
 #endif
 #ifdef AIC_PANEL_ENABLE_GPIO
     {1, PIN_PULL_DIS, 3, AIC_PANEL_ENABLE_GPIO},

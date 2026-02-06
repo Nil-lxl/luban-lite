@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024, sakumisu
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-
 #include "usbd_core.h"
-#include "usbd_cdc.h"
+#include "usbd_cdc_acm.h"
 
 #define WCID_VENDOR_CODE 0x17
 
@@ -80,7 +79,7 @@ __ALIGN_BEGIN const uint8_t WINUSB_WCIDDescriptor[64] __ALIGN_END = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,             /* bReserved_6 */
 };
 #endif
-__ALIGN_BEGIN const uint8_t WINUSB_IF0_WCIDProperties[142] __ALIGN_END = {
+__ALIGN_BEGIN const uint8_t WINUSB_IF0_WCIDProperties [142] __ALIGN_END = {
   ///////////////////////////////////////
   /// WCID property descriptor
   ///////////////////////////////////////
@@ -115,7 +114,7 @@ __ALIGN_BEGIN const uint8_t WINUSB_IF0_WCIDProperties[142] __ALIGN_END = {
   '6', 0x00, '}', 0x00, 0x00, 0x00,                 /* wcData_39 */
 };
 #define  WINUSB_IF1_WCID_PROPERTIES_SIZE  (142)
-__ALIGN_BEGIN const uint8_t WINUSB_IF1_WCIDProperties[142] __ALIGN_END = {
+__ALIGN_BEGIN const uint8_t WINUSB_IF1_WCIDProperties [142] __ALIGN_END = {
   ///////////////////////////////////////
   /// WCID property descriptor
   ///////////////////////////////////////
@@ -152,24 +151,22 @@ __ALIGN_BEGIN const uint8_t WINUSB_IF1_WCIDProperties[142] __ALIGN_END = {
 
 const uint8_t *WINUSB_IFx_WCIDProperties[] = {
     WINUSB_IF0_WCIDProperties,
+#if DOUBLE_WINUSB == 1
     WINUSB_IF1_WCIDProperties,
+#endif
 };
 
 struct usb_msosv1_descriptor msosv1_desc = {
     .string = WCID_StringDescriptor_MSOS,
     .vendor_code = WCID_VENDOR_CODE,
     .compat_id = WINUSB_WCIDDescriptor,
-#if DOUBLE_WINUSB == 0
     .comp_id_property = WINUSB_IFx_WCIDProperties,
-#else
-    .comp_id_property = WINUSB_IFx_WCIDProperties,
-#endif
 };
 
 #define WINUSB_IN_EP  0x81
 #define WINUSB_OUT_EP 0x02
 
-#define USBD_VID           0x33C3
+#define USBD_VID           0xefff
 #define USBD_PID           0xffff
 #define USBD_MAX_POWER     100
 #define USBD_LANGID_STRING 1033
@@ -191,6 +188,79 @@ struct usb_msosv1_descriptor msosv1_desc = {
 #define WINUSB_EP_MPS 64
 #endif
 
+#ifdef CONFIG_USBDEV_ADVANCE_DESC
+static const uint8_t device_descriptor[] = {
+    USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0x00, 0x00, 0x00, USBD_VID, USBD_PID, 0x0001, 0x01)
+};
+
+static const uint8_t config_descriptor[] = {
+    USB_CONFIG_DESCRIPTOR_INIT(USB_CONFIG_SIZE, INTF_NUM, 0x01, USB_CONFIG_BUS_POWERED, USBD_MAX_POWER),
+    USB_INTERFACE_DESCRIPTOR_INIT(0x00, 0x00, 0x02, 0xff, 0xff, 0x00, 0x04),
+    USB_ENDPOINT_DESCRIPTOR_INIT(WINUSB_IN_EP, 0x02, WINUSB_EP_MPS, 0x00),
+    USB_ENDPOINT_DESCRIPTOR_INIT(WINUSB_OUT_EP, 0x02, WINUSB_EP_MPS, 0x00),
+#if DOUBLE_WINUSB == 1
+    USB_INTERFACE_DESCRIPTOR_INIT(0x01, 0x00, 0x02, 0xff, 0xff, 0x00, 0x05),
+    USB_ENDPOINT_DESCRIPTOR_INIT(WINUSB_IN_EP2, 0x02, WINUSB_EP_MPS, 0x00),
+    USB_ENDPOINT_DESCRIPTOR_INIT(WINUSB_OUT_EP2, 0x02, WINUSB_EP_MPS, 0x00),
+#endif
+};
+
+static const uint8_t device_quality_descriptor[] = {
+    ///////////////////////////////////////
+    /// device qualifier descriptor
+    ///////////////////////////////////////
+    0x0a,
+    USB_DESCRIPTOR_TYPE_DEVICE_QUALIFIER,
+    0x00,
+    0x02,
+    0x00,
+    0x00,
+    0x00,
+    0x40,
+    0x00,
+    0x00,
+};
+
+static const char *string_descriptors[] = {
+    (const char[]){ 0x09, 0x04 }, /* Langid */
+    "CherryUSB",                  /* Manufacturer */
+    "CherryUSB WINUSB DEMO",      /* Product */
+    "2022123456",                 /* Serial Number */
+    "CherryUSB WINUSB DEMO 1",    /* STRING4 */
+    "CherryUSB WINUSB DEMO 2",    /* STRING5 */
+};
+
+static const uint8_t *device_descriptor_callback(uint8_t speed)
+{
+    return device_descriptor;
+}
+
+static const uint8_t *config_descriptor_callback(uint8_t speed)
+{
+    return config_descriptor;
+}
+
+static const uint8_t *device_quality_descriptor_callback(uint8_t speed)
+{
+    return device_quality_descriptor;
+}
+
+static const char *string_descriptor_callback(uint8_t speed, uint8_t index)
+{
+    if (index > 5) {
+        return NULL;
+    }
+    return string_descriptors[index];
+}
+
+const struct usb_descriptor winusb_descriptor = {
+    .device_descriptor_callback = device_descriptor_callback,
+    .config_descriptor_callback = config_descriptor_callback,
+    .device_quality_descriptor_callback = device_quality_descriptor_callback,
+    .string_descriptor_callback = string_descriptor_callback,
+    .msosv1_descriptor = &msosv1_desc
+};
+#else
 const uint8_t winusb_descriptor[] = {
     USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0x00, 0x00, 0x00, USBD_VID, USBD_PID, 0x0001, 0x01),
     USB_CONFIG_DESCRIPTOR_INIT(USB_CONFIG_SIZE, INTF_NUM, 0x01, USB_CONFIG_BUS_POWERED, USBD_MAX_POWER),
@@ -255,12 +325,12 @@ const uint8_t winusb_descriptor[] = {
     '0', 0x00,                  /* wcChar1 */
     '2', 0x00,                  /* wcChar2 */
     '1', 0x00,                  /* wcChar3 */
-    '0', 0x00,                  /* wcChar4 */
-    '3', 0x00,                  /* wcChar5 */
-    '1', 0x00,                  /* wcChar6 */
-    '0', 0x00,                  /* wcChar7 */
-    '0', 0x00,                  /* wcChar8 */
-    '0', 0x00,                  /* wcChar9 */
+    '1', 0x00,                  /* wcChar4 */
+    '2', 0x00,                  /* wcChar5 */
+    '3', 0x00,                  /* wcChar6 */
+    '4', 0x00,                  /* wcChar7 */
+    '5', 0x00,                  /* wcChar8 */
+    '6', 0x00,                  /* wcChar9 */
     ///////////////////////////////////////
     /// string4 descriptor
     ///////////////////////////////////////
@@ -287,7 +357,7 @@ const uint8_t winusb_descriptor[] = {
     'E', 0x00,                  /* wcChar18 */
     'M', 0x00,                  /* wcChar19 */
     'O', 0x00,                  /* wcChar20 */
-        ' ', 0x00,                  /* wcChar16 */
+    ' ', 0x00,                  /* wcChar16 */
     '1', 0x00,                  /* wcChar21 */
     ///////////////////////////////////////
     /// string5 descriptor
@@ -315,7 +385,7 @@ const uint8_t winusb_descriptor[] = {
     'E', 0x00,                  /* wcChar18 */
     'M', 0x00,                  /* wcChar19 */
     'O', 0x00,                  /* wcChar20 */
-        ' ', 0x00,                  /* wcChar16 */
+    ' ', 0x00,                  /* wcChar16 */
     '2', 0x00,                  /* wcChar21 */
 #ifdef CONFIG_USB_HS
     ///////////////////////////////////////
@@ -325,22 +395,23 @@ const uint8_t winusb_descriptor[] = {
     USB_DESCRIPTOR_TYPE_DEVICE_QUALIFIER,
     0x00,
     0x02,
-    0x02,
-    0x02,
-    0x01,
+    0x00,
+    0x00,
+    0x00,
     0x40,
-    0x01,
+    0x00,
     0x00,
 #endif
     0x00
 };
+#endif
 
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t read_buffer[2048];
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t write_buffer[2048];
 
 volatile bool ep_tx_busy_flag = false;
 
-void usbd_event_handler(uint8_t event)
+static void usbd_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -354,10 +425,11 @@ void usbd_event_handler(uint8_t event)
         case USBD_EVENT_SUSPEND:
             break;
         case USBD_EVENT_CONFIGURED:
+            ep_tx_busy_flag = false;
             /* setup first out ep read transfer */
-            usbd_ep_start_read(WINUSB_OUT_EP, read_buffer, 2048);
+            usbd_ep_start_read(busid, WINUSB_OUT_EP, read_buffer, 2048);
 #if DOUBLE_WINUSB == 1
-            usbd_ep_start_read(WINUSB_OUT_EP2, read_buffer, 2048);
+            usbd_ep_start_read(busid, WINUSB_OUT_EP2, read_buffer, 2048);
 #endif
             break;
         case USBD_EVENT_SET_REMOTE_WAKEUP:
@@ -370,25 +442,25 @@ void usbd_event_handler(uint8_t event)
     }
 }
 
-void usbd_winusb_out(uint8_t ep, uint32_t nbytes)
+void usbd_winusb_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     USB_LOG_RAW("actual out len:%d\r\n", (unsigned int)nbytes);
     // for (int i = 0; i < 100; i++) {
     //     printf("%02x ", read_buffer[i]);
     // }
     // printf("\r\n");
-    usbd_ep_start_write(WINUSB_IN_EP, read_buffer, nbytes);
+    usbd_ep_start_write(busid, WINUSB_IN_EP, read_buffer, nbytes);
     /* setup next out ep read transfer */
-    usbd_ep_start_read(WINUSB_OUT_EP, read_buffer, 2048);
+    usbd_ep_start_read(busid, WINUSB_OUT_EP, read_buffer, 2048);
 }
 
-void usbd_winusb_in(uint8_t ep, uint32_t nbytes)
+void usbd_winusb_in(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     USB_LOG_RAW("actual in len:%d\r\n", (unsigned int)nbytes);
 
     if ((nbytes % WINUSB_EP_MPS) == 0 && nbytes) {
         /* send zlp */
-        usbd_ep_start_write(WINUSB_IN_EP, NULL, 0);
+        usbd_ep_start_write(busid, WINUSB_IN_EP, NULL, 0);
     } else {
         ep_tx_busy_flag = false;
     }
@@ -408,25 +480,25 @@ struct usbd_interface intf0;
 
 #if DOUBLE_WINUSB == 1
 
-void usbd_winusb_out2(uint8_t ep, uint32_t nbytes)
+void usbd_winusb_out2(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
-    USB_LOG_RAW("actual out len:%d\r\n", nbytes);
+    USB_LOG_RAW("actual out len:%d\r\n", (unsigned int)nbytes);
     // for (int i = 0; i < 100; i++) {
     //     printf("%02x ", read_buffer[i]);
     // }
     // printf("\r\n");
-    usbd_ep_start_write(WINUSB_IN_EP2, read_buffer, nbytes);
+    usbd_ep_start_write(busid, WINUSB_IN_EP2, read_buffer, nbytes);
     /* setup next out ep read transfer */
-    usbd_ep_start_read(WINUSB_OUT_EP2, read_buffer, 2048);
+    usbd_ep_start_read(busid, WINUSB_OUT_EP2, read_buffer, 2048);
 }
 
-void usbd_winusb_in2(uint8_t ep, uint32_t nbytes)
+void usbd_winusb_in2(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
-    USB_LOG_RAW("actual in len:%d\r\n", nbytes);
+    USB_LOG_RAW("actual in len:%d\r\n", (unsigned int)nbytes);
 
-    if ((nbytes % WINUSB_EP_MPS) == 0 && nbytes) {
+    if ((nbytes % usbd_get_ep_mps(busid, ep)) == 0 && nbytes) {
         /* send zlp */
-        usbd_ep_start_write(WINUSB_IN_EP2, NULL, 0);
+        usbd_ep_start_write(busid, WINUSB_IN_EP2, NULL, 0);
     } else {
         ep_tx_busy_flag = false;
     }
@@ -446,30 +518,36 @@ struct usbd_interface intf1;
 
 #endif
 
-void winusb_init(void)
+void winusb_init(uint8_t busid, uintptr_t reg_base)
 {
-    usbd_desc_register(winusb_descriptor);
-    usbd_msosv1_desc_register(&msosv1_desc);
-    usbd_add_interface(&intf0);
-    usbd_add_endpoint(&winusb_out_ep1);
-    usbd_add_endpoint(&winusb_in_ep1);
-#if DOUBLE_WINUSB == 1
-    usbd_add_interface(&intf1);
-    usbd_add_endpoint(&winusb_out_ep2);
-    usbd_add_endpoint(&winusb_in_ep2);
+#ifdef CONFIG_USBDEV_ADVANCE_DESC
+    usbd_desc_register(busid, &winusb_descriptor);
+#else
+    usbd_desc_register(busid, winusb_descriptor);
 #endif
-    usbd_initialize();
+#ifndef CONFIG_USBDEV_ADVANCE_DESC
+    usbd_msosv1_desc_register(busid, &msosv1_desc);
+#endif
+    usbd_add_interface(busid, &intf0);
+    usbd_add_endpoint(busid, &winusb_out_ep1);
+    usbd_add_endpoint(busid, &winusb_in_ep1);
+#if DOUBLE_WINUSB == 1
+    usbd_add_interface(busid, &intf1);
+    usbd_add_endpoint(busid, &winusb_out_ep2);
+    usbd_add_endpoint(busid, &winusb_in_ep2);
+#endif
+    usbd_initialize(busid, reg_base, usbd_event_handler);
 }
+
 #if defined(KERNEL_RTTHREAD)
 #include <rtthread.h>
 #include <rtdevice.h>
 
 int usbd_winusb_init(void)
 {
-    winusb_init();
+    winusb_init(0, USB_DEV_BASE);
     return 0;
 }
 
 INIT_DEVICE_EXPORT(usbd_winusb_init);
 #endif
-

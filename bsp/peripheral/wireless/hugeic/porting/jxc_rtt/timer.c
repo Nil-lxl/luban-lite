@@ -10,7 +10,7 @@ struct hgic_timer_param {
     void *timer_param;
 };
 
-int os_timer_create(unsigned int *tmr,void *param, timer_func_t func,int ms)
+int os_timer_create(uintptr_t *tmr,void *param, timer_func_t func,int ms)
 {
     struct hgic_timer_param *timer = NULL;
     static unsigned char index = 0;
@@ -41,13 +41,13 @@ int os_timer_create(unsigned int *tmr,void *param, timer_func_t func,int ms)
     }
 
     if(tmr) {
-        *tmr = (unsigned int *)timer->timer;
+        *tmr = (uintptr_t)timer->timer;
     }
     return 0;
 }
 
 
-void os_timer_stop(unsigned int timer)
+void os_timer_stop(uintptr_t timer)
 {
     rt_timer_t tmr = (rt_timer_t)timer;
     if(tmr == NULL) {
@@ -56,7 +56,7 @@ void os_timer_stop(unsigned int timer)
     rt_timer_stop(tmr);
 }
 
-void os_timer_start(unsigned int timer)
+void os_timer_start(uintptr_t timer)
 {
     rt_timer_t tmr = (rt_timer_t)timer;
     if(tmr == NULL) {
@@ -75,7 +75,7 @@ static void os_timer_callback(void *priv)
     timer->cb(timer->timer_param);
 }
 
-int os_timer_change(unsigned int timer,unsigned int ms)
+int os_timer_change(uintptr_t timer,unsigned int ms)
 {
     rt_timer_t tmr = (rt_timer_t)timer;
     unsigned int msec = ms > 10 ? ms : 10;
@@ -86,7 +86,7 @@ int os_timer_change(unsigned int timer,unsigned int ms)
     return rt_timer_control(tmr,  RT_TIMER_CTRL_SET_TIME, &msec);
 }
 
-void os_timer_free(unsigned int timer)
+void os_timer_free(uintptr_t timer)
 {
     rt_timer_t tmr = (rt_timer_t)timer;
     if(tmr == NULL) {

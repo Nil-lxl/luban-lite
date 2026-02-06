@@ -23,13 +23,15 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-#if defined(AIC_MPP_PLAYER_VE_USE_FILL_FB)
-#define PLAYER_DEMO_USE_VE_FILL_FB
+#if defined(AIC_MPP_PLAYER_VIDEO_EXT_RENDER)
+#define PLAYER_DEMO_VIDEO_EXT_RENDER
 #endif
 
-s32 player_vdec_share_frame_init(struct aic_player *player);
+s32 player_video_ext_render_init(struct aic_player *player);
 
-s32 player_vdec_share_frame_deinit();
+s32 player_video_ext_render_deinit();
+
+void player_video_ext_render_debug(bool debug_en);
 
 #ifdef __cplusplus
 #if __cplusplus

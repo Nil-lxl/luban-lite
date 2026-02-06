@@ -1040,6 +1040,7 @@ void rwnx_rx_handle_msg(struct rwnx_hw *rwnx_hw, struct e2a_msg *msg)
 {
 //    RWNX_DBG(RWNX_FN_ENTRY_STR);
     //aic_dbg("T %d, I %d\r\n", MSG_T(msg->id), MSG_I(msg->id));
+    DBG_MACIF_VRB("RxM,%x\n", msg->id);
     rwnx_hw->cmd_mgr.msgind(&rwnx_hw->cmd_mgr, msg,
                             msg_hdlrs[MSG_T(msg->id)][MSG_I(msg->id)]);
 }

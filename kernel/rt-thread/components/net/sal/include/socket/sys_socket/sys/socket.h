@@ -35,6 +35,8 @@ int listen(int s, int backlog);
 int recv(int s, void *mem, size_t len, int flags);
 int recvfrom(int s, void *mem, size_t len, int flags,
       struct sockaddr *from, socklen_t *fromlen);
+int recvmsg(int s, struct msghdr *message, int flags);
+int sendmsg(int s, const struct msghdr *message, int flags);
 int send(int s, const void *dataptr, size_t size, int flags);
 int sendto(int s, const void *dataptr, size_t size, int flags,
     const struct sockaddr *to, socklen_t tolen);
@@ -53,8 +55,10 @@ int ioctlsocket(int s, long cmd, void *arg);
 #define listen(s, backlog)                                 sal_listen(s, backlog)
 #define recv(s, mem, len, flags)                           sal_recvfrom(s, mem, len, flags, NULL, NULL)
 #define recvfrom(s, mem, len, flags, from, fromlen)        sal_recvfrom(s, mem, len, flags, from, fromlen)
+#define recvmsg(s, message, flags)                         sal_recvmsg(s, message, flags)
 #define send(s, dataptr, size, flags)                      sal_sendto(s, dataptr, size, flags, NULL, NULL)
 #define sendto(s, dataptr, size, flags, to, tolen)         sal_sendto(s, dataptr, size, flags, to, tolen)
+#define sendmsg(s, message, flags)                         sal_sendmsg(s, message, flags)
 #define socket(domain, type, protocol)                     sal_socket(domain, type, protocol)
 #define closesocket(s)                                     sal_closesocket(s)
 #define ioctlsocket(s, cmd, arg)                           sal_ioctlsocket(s, cmd, arg)

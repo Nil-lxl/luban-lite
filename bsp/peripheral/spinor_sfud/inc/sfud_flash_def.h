@@ -61,8 +61,10 @@ typedef struct {
     uint8_t capacity_id;                         /**< capacity ID */
     uint32_t capacity;                           /**< flash capacity (bytes) */
     uint16_t write_mode;                         /**< write mode @see sfud_write_mode */
-    uint32_t erase_gran;                         /**< erase granularity (bytes) */
-    uint8_t erase_gran_cmd;                      /**< erase granularity size block command */
+    struct {
+        uint32_t size;                           /**< erase sector size (bytes). 0x00: not available */
+        uint8_t cmd;                             /**< erase command */
+    } eraser[2];
 } sfud_flash_chip;
 
 #ifdef SFUD_USING_QSPI
@@ -210,40 +212,40 @@ typedef struct {
 /* SFUD supported flash chip information table. If the flash not support JEDEC JESD216 standard,
  * then the SFUD will find the flash chip information by this table. You can add other flash to here then
  *  notice me for update it. The configuration information name and index reference the sfud_flash_chip structure.
- * | name | mf_id | type_id | capacity_id | capacity | write_mode | erase_gran | erase_gran_cmd |
+ * | name | mf_id | type_id | capacity_id | capacity | write_mode | eraser[2] |
  */
 #define SFUD_FLASH_CHIP_TABLE                                                                                       \
 {                                                                                                                   \
-    {"AT45DB161E", SFUD_MF_ID_ATMEL, 0x26, 0x00, 2L*1024L*1024L, SFUD_WM_BYTE|SFUD_WM_DUAL_BUFFER, 512, 0x81},      \
-    {"W25Q40BV", SFUD_MF_ID_WINBOND, 0x40, 0x13, 512L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                        \
-    {"W25X40CL", SFUD_MF_ID_WINBOND, 0x30, 0x13, 512L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                        \
-    {"W25X16AV", SFUD_MF_ID_WINBOND, 0x30, 0x15, 2L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                    \
-    {"W25Q16BV", SFUD_MF_ID_WINBOND, 0x40, 0x15, 2L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                    \
-    {"W25Q32BV", SFUD_MF_ID_WINBOND, 0x40, 0x16, 4L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                    \
-    {"W25Q64CV", SFUD_MF_ID_WINBOND, 0x40, 0x17, 8L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                    \
-    {"W25Q64DW", SFUD_MF_ID_WINBOND, 0x60, 0x17, 8L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                    \
-    {"W25Q128BV", SFUD_MF_ID_WINBOND, 0x40, 0x18, 16L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                  \
-    {"W25Q256FV", SFUD_MF_ID_WINBOND, 0x40, 0x19, 32L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                  \
-    {"MX25L25635E", SFUD_MF_ID_MACRONIX, 0x20, 0x19, 32L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},               \
-    {"SST25VF080B", SFUD_MF_ID_SST, 0x25, 0x8E, 1L*1024L*1024L, SFUD_WM_BYTE|SFUD_WM_AAI, 4096, 0x20},              \
-    {"SST25VF016B", SFUD_MF_ID_SST, 0x25, 0x41, 2L*1024L*1024L, SFUD_WM_BYTE|SFUD_WM_AAI, 4096, 0x20},              \
-    {"M25P32", SFUD_MF_ID_MICRON, 0x20, 0x16, 4L*1024L*1024L, SFUD_WM_PAGE_256B, 64L*1024L, 0xD8},                  \
-    {"M25P80", SFUD_MF_ID_MICRON, 0x20, 0x14, 1L*1024L*1024L, SFUD_WM_PAGE_256B, 64L*1024L, 0xD8},                  \
-    {"M25P40", SFUD_MF_ID_MICRON, 0x20, 0x13, 512L*1024L, SFUD_WM_PAGE_256B, 64L*1024L, 0xD8},                      \
-    {"EN25Q32B", SFUD_MF_ID_EON, 0x30, 0x16, 4L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                        \
-    {"GD25Q64B", SFUD_MF_ID_GIGADEVICE, 0x40, 0x17, 8L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                 \
-    {"GD25Q16B", SFUD_MF_ID_GIGADEVICE, 0x40, 0x15, 2L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                 \
-    {"GD25Q32C", SFUD_MF_ID_GIGADEVICE, 0x40, 0x16, 4L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                 \
-    {"GD25Q128E", SFUD_MF_ID_GIGADEVICE, 0x40, 0x18, 16L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},               \
-    {"GD25Q256E", SFUD_MF_ID_GIGADEVICE, 0x40, 0x19, 32L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},               \
-    {"S25FL216K", SFUD_MF_ID_CYPRESS, 0x40, 0x15, 2L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                   \
-    {"S25FL032P", SFUD_MF_ID_CYPRESS, 0x02, 0x15, 4L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                   \
-    {"A25L080", SFUD_MF_ID_AMIC, 0x30, 0x14, 1L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                        \
-    {"F25L004", SFUD_MF_ID_ESMT, 0x20, 0x13, 512L*1024L, SFUD_WM_BYTE|SFUD_WM_AAI, 4096, 0x20},                     \
-    {"PCT25VF016B", SFUD_MF_ID_SST, 0x25, 0x41, 2L*1024L*1024L, SFUD_WM_BYTE|SFUD_WM_AAI, 4096, 0x20},              \
-    {"NM25Q128EVB", SFUD_MF_ID_NOR_MEM, 0x21, 0x18, 16L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                \
-    {"ZD25Q64B", SFUD_MF_ID_ZETTA, 0x32, 0x17, 8L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},                      \
-    {"EFM25F128A", SFUD_MF_ID_FUDANMICRO, 0xBA, 0x18, 16L*1024L*1024L, SFUD_WM_PAGE_256B, 4096, 0x20},              \
+    {"AT45DB161E", SFUD_MF_ID_ATMEL, 0x26, 0x00, 2L*1024L*1024L, SFUD_WM_BYTE|SFUD_WM_DUAL_BUFFER, {{512, 0x81}, {0}}},      \
+    {"W25Q40BV", SFUD_MF_ID_WINBOND, 0x40, 0x13, 512L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                        \
+    {"W25X40CL", SFUD_MF_ID_WINBOND, 0x30, 0x13, 512L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                        \
+    {"W25X16AV", SFUD_MF_ID_WINBOND, 0x30, 0x15, 2L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                    \
+    {"W25Q16BV", SFUD_MF_ID_WINBOND, 0x40, 0x15, 2L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                    \
+    {"W25Q32BV", SFUD_MF_ID_WINBOND, 0x40, 0x16, 4L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                    \
+    {"W25Q64CV", SFUD_MF_ID_WINBOND, 0x40, 0x17, 8L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                    \
+    {"W25Q64DW", SFUD_MF_ID_WINBOND, 0x60, 0x17, 8L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                    \
+    {"W25Q128BV", SFUD_MF_ID_WINBOND, 0x40, 0x18, 16L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                  \
+    {"W25Q256FV", SFUD_MF_ID_WINBOND, 0x40, 0x19, 32L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                  \
+    {"MX25L25635E", SFUD_MF_ID_MACRONIX, 0x20, 0x19, 32L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},               \
+    {"SST25VF080B", SFUD_MF_ID_SST, 0x25, 0x8E, 1L*1024L*1024L, SFUD_WM_BYTE|SFUD_WM_AAI, {{4096, 0x20}, {0}}},              \
+    {"SST25VF016B", SFUD_MF_ID_SST, 0x25, 0x41, 2L*1024L*1024L, SFUD_WM_BYTE|SFUD_WM_AAI, {{4096, 0x20}, {0}}},              \
+    {"M25P32", SFUD_MF_ID_MICRON, 0x20, 0x16, 4L*1024L*1024L, SFUD_WM_PAGE_256B, {{65536, 0xd8}, {0}}},                  \
+    {"M25P80", SFUD_MF_ID_MICRON, 0x20, 0x14, 1L*1024L*1024L, SFUD_WM_PAGE_256B, {{65536, 0xd8}, {0}}},                  \
+    {"M25P40", SFUD_MF_ID_MICRON, 0x20, 0x13, 512L*1024L, SFUD_WM_PAGE_256B, {{65536, 0xd8}, {0}}},                      \
+    {"EN25Q32B", SFUD_MF_ID_EON, 0x30, 0x16, 4L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                        \
+    {"GD25Q64B", SFUD_MF_ID_GIGADEVICE, 0x40, 0x17, 8L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                 \
+    {"GD25Q16B", SFUD_MF_ID_GIGADEVICE, 0x40, 0x15, 2L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                 \
+    {"GD25Q32C", SFUD_MF_ID_GIGADEVICE, 0x40, 0x16, 4L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                 \
+    {"GD25Q128E", SFUD_MF_ID_GIGADEVICE, 0x40, 0x18, 16L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},               \
+    {"GD25Q256E", SFUD_MF_ID_GIGADEVICE, 0x40, 0x19, 32L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},               \
+    {"S25FL216K", SFUD_MF_ID_CYPRESS, 0x40, 0x15, 2L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                   \
+    {"S25FL032P", SFUD_MF_ID_CYPRESS, 0x02, 0x15, 4L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                   \
+    {"A25L080", SFUD_MF_ID_AMIC, 0x30, 0x14, 1L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                        \
+    {"F25L004", SFUD_MF_ID_ESMT, 0x20, 0x13, 512L*1024L, SFUD_WM_BYTE|SFUD_WM_AAI, {{4096, 0x20}, {0}}},                     \
+    {"PCT25VF016B", SFUD_MF_ID_SST, 0x25, 0x41, 2L*1024L*1024L, SFUD_WM_BYTE|SFUD_WM_AAI, {{4096, 0x20}, {0}}},              \
+    {"NM25Q128EVB", SFUD_MF_ID_NOR_MEM, 0x21, 0x18, 16L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                \
+    {"ZD25Q64B", SFUD_MF_ID_ZETTA, 0x32, 0x17, 8L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {0}}},                      \
+    {"EFM25F128A", SFUD_MF_ID_FUDANMICRO, 0xBA, 0x18, 16L*1024L*1024L, SFUD_WM_PAGE_256B, {{4096, 0x20}, {65536, 0xd8}}},              \
 }
 #endif /* SFUD_USING_FLASH_INFO_TABLE */
 

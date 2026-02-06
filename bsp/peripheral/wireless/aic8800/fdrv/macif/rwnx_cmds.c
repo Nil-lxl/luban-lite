@@ -224,6 +224,7 @@ int rwnx_msg_push(struct lmac_msg *msg, uint16_t len)
     uint8_t *buffer;
 
     //AIC_LOG_PRINTF("%s, enter\n", __func__);
+    DBG_MACIF_VRB("TxM,%x\n", msg->id);
 
     if (buffer_unaligned == NULL) {
         aic_dbg("Error: cmd buf malloc fail\n");

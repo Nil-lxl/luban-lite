@@ -408,6 +408,7 @@ u32 adaptivity_patch_tbl_8800d80[][2] = {
 };
 
 u32 patch_tbl_8800d80[][2] = {
+    //{0x00b0, 0x9D0a0100}, //debug_mask
 	#ifdef USE_5G
 	{0x00b4, 0xf3010001},
 	#else
@@ -994,7 +995,11 @@ int rwnx_fdrv_init(struct rwnx_hw *rwnx_hw)
     }
 
     // read & set base mac address
+    #ifdef CONFIG_USE_LOCAL_MAC_ADDR
+    rwnx_read_local_mac();
+    #else
     rwnx_read_efuse_mac(rwnx_hw);
+    #endif
 
     /* Reset FW */
     ret = rwnx_send_reset(rwnx_hw);
@@ -1069,6 +1074,29 @@ int rwnx_read_efuse_mac(struct rwnx_hw *rwnx_hw)
     return 0;
 }
 
+int rwnx_read_local_mac(void)
+{
+    int ret = 0;
+    uint8_t mac_addr_local[ETH_ALEN] = {0x00,};
+    uint8_t *mac_addr_ptr = NULL;
+
+    //ret = get_local_mac_addr(mac_addr_local);
+    if (ret) {
+        AIC_LOG_PRINTF("get mac req fail:%d\n",ret);
+        return -1;
+    }
+
+    AIC_LOG_PRINTF("get local mac %02x:%02x:%02x:%02x:%02x:%02x\n", mac_addr_local[0],mac_addr_local[1],
+           mac_addr_local[2],mac_addr_local[3],mac_addr_local[4],mac_addr_local[5]);
+
+    if (mac_addr_local[0] | mac_addr_local[1] | mac_addr_local[2] |
+        mac_addr_local[3] | mac_addr_local[4] | mac_addr_local[5]) {
+        mac_addr_ptr = mac_addr_local;
+    }
+    set_mac_address(mac_addr_ptr);
+    return 0;
+}
+
 // reset fdrv env
 int rwnx_fdrv_deinit(struct rwnx_hw *rwnx_hw)
 {
@@ -1078,8 +1106,6 @@ int rwnx_fdrv_deinit(struct rwnx_hw *rwnx_hw)
 
 	rwnx_platform_off(rwnx_hw);
 	rwnx_platform_deinit(rwnx_hw);
-	RTOS_RES_NULL(apm_staloss_queue);
-	RTOS_RES_NULL(apm_staloss_task_hdl);
 
 	return 0;
 }

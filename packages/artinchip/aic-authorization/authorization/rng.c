@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -153,6 +153,7 @@ err:
 static int aic_rng_do_one_req(struct rng_request *req)
 {
     struct aic_rng_req_ctx *rctx;
+    u32 timeout = 300 * 1000;
 
     pr_debug("%s\n", __func__);
     rctx = rng_request_ctx(req);
@@ -168,8 +169,9 @@ static int aic_rng_do_one_req(struct rng_request *req)
     hal_crypto_init();
     hal_crypto_irq_enable(ALG_HASH_ACCELERATOR);
     hal_crypto_start_hash(rctx->task);
-    while (!hal_crypto_poll_finish(ALG_HASH_ACCELERATOR)) {
-        continue;
+    if (hal_crypto_poll_finish(ALG_HASH_ACCELERATOR, timeout)) {
+        pr_err("HASH ACCELERATOR run timeout.\n");
+        return -ETIMEDOUT;
     }
     hal_crypto_pending_clear(ALG_HASH_ACCELERATOR);
 

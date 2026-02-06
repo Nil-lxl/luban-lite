@@ -12,6 +12,8 @@ if GetDepend('RT_USING_FINSH'):
             src += Glob('fal_power_loss_protection.c')
     if GetDepend('RT_USING_SFUD') and GetDepend('RT_USING_SPI'):
         src += Glob('test_sfud.c')
+    if GetDepend('AIC_XIP_FLASH_WRITE'):
+        src += Glob('test_xip_ramcode.c')
 
 group = DefineGroup('test-spinor', src, depend = [''], CPPPATH = CPPPATH)
 

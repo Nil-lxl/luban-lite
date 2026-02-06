@@ -13,6 +13,8 @@
 #include <rtdevice.h>
 #include "spinand_parts.h"
 
+
+#define INVALID_PAGE        (0xFFFFFFFF)
 #ifndef AIC_SPINAND_BLOCK_CACHE_SIZE
 #define BLOCK_CACHE_SIZE    512
 #else

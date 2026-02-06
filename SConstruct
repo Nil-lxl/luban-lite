@@ -9,7 +9,7 @@ aic_script_path = os.path.join(AIC_ROOT, 'tools/scripts/')
 sys.path.append(aic_script_path)
 from aic_build import *
 chk_prj_config(AIC_ROOT)
-PRJ_CHIP,PRJ_BOARD,PRJ_KERNEL,PRJ_APP,PRJ_DEFCONFIG_NAME,PRJ_CUSTOM_LDS = get_prj_config(AIC_ROOT)
+PRJ_CHIP,PRJ_BOARD,PRJ_KERNEL,PRJ_APP,PRJ_DEFCONFIG_NAME,PRJ_CUSTOM_LDS,PRJ_TOOLCHAIN_VER = get_prj_config(AIC_ROOT)
 PRJ_NAME = PRJ_DEFCONFIG_NAME.replace('_defconfig','')
 PRJ_OUT_DIR = 'output/' + PRJ_NAME + '/images/'
 AIC_SCRIPT_DIR = aic_script_path
@@ -28,6 +28,7 @@ Export('PRJ_APP')
 Export('PRJ_NAME')
 Export('PRJ_DEFCONFIG_NAME')
 Export('PRJ_OUT_DIR')
+Export('PRJ_TOOLCHAIN_VER')
 # Var tranfer to Kconfig 'option env=xxx'
 os.environ["AIC_ROOT"]           = AIC_ROOT
 os.environ["AIC_SCRIPT_DIR"]     = AIC_SCRIPT_DIR
@@ -40,6 +41,7 @@ os.environ["PRJ_APP"]            = PRJ_APP
 os.environ["PRJ_NAME"]           = PRJ_NAME
 os.environ["PRJ_DEFCONFIG_NAME"] = PRJ_DEFCONFIG_NAME
 os.environ["PRJ_OUT_DIR"]        = PRJ_OUT_DIR
+os.environ["PRJ_TOOLCHAIN_VER"]  = PRJ_TOOLCHAIN_VER
 
 # rtconfig
 chip_path = os.path.join(AIC_ROOT, 'bsp/artinchip/sys/' + PRJ_CHIP)

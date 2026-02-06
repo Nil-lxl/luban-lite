@@ -105,6 +105,9 @@ if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AI
 if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_FB_TEST']) :
     src += Glob('./mpp_test/mpp_fb/*.c')
 
+if GetDepend(['KERNEL_RTTHREAD']) and GetDepend(['LPKG_MPP']) and GetDepend(['AIC_MPP_PARSER_TEST']) :
+    src += Glob('./middle_media/base/test/test_parser.c')
+
 if GetDepend(['AIC_MPP_PLAYER_INTERFACE']):
     #audio decoder
     src += Glob('middle_media/audio_decoder/decoder/*.c')
@@ -144,7 +147,7 @@ if GetDepend(['AIC_MPP_PLAYER_INTERFACE']):
     src += Glob('middle_media/mini_audio_player/mini_audio_player.c')
     src += Glob('middle_media/mini_audio_player/mini_audio_player_demo.c')
 
-if GetDepend(['AIC_MPP_PLAYER_VE_USE_FILL_FB']):
+if GetDepend(['AIC_MPP_PLAYER_VIDEO_EXT_RENDER']):
     src += Glob('middle_media/player/test/player_video_test.c')
 
 if GetDepend(['AIC_MPP_PLAYER_AUDIO_RENDER_SHARE_TEST']):

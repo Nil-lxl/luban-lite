@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -36,6 +36,11 @@ struct aic_wdt {
     u32 irq_thd;
     u32 rst_thd;
 };
+
+typedef s32 (*wdt_callback_t)(void);
+
+void hal_wdt_register_callback(wdt_callback_t callback);
+irqreturn_t hal_wdt_irq(int irq, void *arg);
 
 void hal_wdt_op_clr(u32 thd);
 s32 hal_wdt_is_running(void);

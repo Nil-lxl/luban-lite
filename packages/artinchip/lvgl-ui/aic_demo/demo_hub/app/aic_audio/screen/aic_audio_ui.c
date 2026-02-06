@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include "aic_lv_ffmpeg.h"
+#include "lv_aic_player.h"
 #include "media_list.h"
 #include "aic_audio_ui.h"
 #include "demo_hub.h"
@@ -33,7 +33,7 @@
 #define ANIMA_DELAY_TIME_MS  100
 
 typedef struct _easy_player {
-    lv_obj_t *ffmpeg;
+    lv_obj_t *player;
     media_list_t *list;
     media_info_t cur_info;
     int cur_pos;
@@ -86,11 +86,7 @@ lv_obj_t *aic_audio_ui_init(void)
     lv_obj_t *aic_audio_ui = lv_obj_create(NULL);
     lv_obj_clear_flag(aic_audio_ui, LV_OBJ_FLAG_SCROLLABLE);
 
-#ifdef AIC_CHIP_D12X
-    return aic_audio_ui;
-#endif
-
-    player.ffmpeg = lv_ffmpeg_player_create(aic_audio_ui);
+    player.player = lv_aic_player_create(aic_audio_ui);
 
     player.list = media_list_create();
 
@@ -99,8 +95,8 @@ lv_obj_t *aic_audio_ui_init(void)
 
     aic_audio_ui_impl(aic_audio_ui, &player);
 
-    lv_ffmpeg_player_set_src(player.ffmpeg, player.cur_info.source);
-    lv_ffmpeg_player_set_cmd_ex(player.ffmpeg, LV_FFMPEG_PLAYER_CMD_START, NULL);
+    lv_aic_player_set_src(player.player, player.cur_info.source);
+    lv_aic_player_set_cmd(player.player, LV_AIC_PLAYER_CMD_START, NULL);
 
     play_time_timer = lv_timer_create(play_time_update_cb, 100 , &player);
     cover_rotate_timer = lv_timer_create(cover_rotate_cb, 30 , &player);
@@ -114,8 +110,8 @@ static void get_media_info_from_src(easy_player_t *player, const char *src_path,
 {
     struct av_media_info av_media;
 
-    lv_ffmpeg_player_set_src(player->ffmpeg, src_path);
-    lv_ffmpeg_player_set_cmd_ex(player->ffmpeg, LV_FFMPEG_PLAYER_CMD_GET_MEDIA_INFO_EX, &av_media);
+    lv_aic_player_set_src(player->player, src_path);
+    lv_aic_player_set_cmd(player->player, LV_AIC_PLAYER_CMD_GET_MEDIA_INFO, &av_media);
 
     info->duration_ms = av_media.duration / 1000;
     info->file_size_bytes = av_media.file_size;
@@ -295,14 +291,14 @@ static void play_mode_cb(lv_event_t *e)
         play_cb->mode = play_cb->mode > PLAY_MODE_CIRCLE_ONE ? PLAY_MODE_CIRCLE : play_cb->mode;
         if (play_cb->mode == PLAY_MODE_CIRCLE) {
             lv_img_set_src(play_mode, LVGL_PATH(aic_audio/circle.png));
-            lv_ffmpeg_player_set_auto_restart(play_cb->ffmpeg, false);
+            lv_aic_player_set_auto_restart(play_cb->player, false);
         } else if (play_cb->mode == PLAY_MODE_RANDOM) {
             lv_img_set_src(play_mode, LVGL_PATH(aic_audio/random.png));
             media_list_set_randomly(play_cb->list);
-            lv_ffmpeg_player_set_auto_restart(play_cb->ffmpeg, false);
+            lv_aic_player_set_auto_restart(play_cb->player, false);
         } else {
             lv_img_set_src(play_mode, LVGL_PATH(aic_audio/circle_one.png));
-            lv_ffmpeg_player_set_auto_restart(play_cb->ffmpeg, true);
+            lv_aic_player_set_auto_restart(play_cb->player, true);
         }
     }
 }
@@ -321,12 +317,12 @@ static void play_continue_pause_cb(lv_event_t *e)
             lv_timer_resume(play_time_timer);
             lv_timer_resume(cover_rotate_timer);
             lv_img_set_src(play_control, LVGL_PATH(aic_audio/pause.png));
-            lv_ffmpeg_player_set_cmd_ex(play_cb->ffmpeg, LV_FFMPEG_PLAYER_CMD_RESUME, NULL);
+            lv_aic_player_set_cmd(play_cb->player, LV_AIC_PLAYER_CMD_RESUME, NULL);
         } else {
             lv_timer_pause(play_time_timer);
             lv_timer_pause(cover_rotate_timer);
             lv_img_set_src(play_control, LVGL_PATH(aic_audio/play.png));
-            lv_ffmpeg_player_set_cmd_ex(play_cb->ffmpeg, LV_FFMPEG_PLAYER_CMD_PAUSE, NULL);
+            lv_aic_player_set_cmd(play_cb->player, LV_AIC_PLAYER_CMD_PAUSE, NULL);
         }
     }
 
@@ -373,7 +369,7 @@ static void play_next_cb(lv_event_t *e)
             play_cb->cur_pos = 0;
 
         play_status_update(play_cb, ANIMA_COVER_IN);
-        lv_ffmpeg_player_set_src(play_cb->ffmpeg, play_cb->cur_info.source);
+        lv_aic_player_set_src(play_cb->player, play_cb->cur_info.source);
     }
 }
 
@@ -401,7 +397,7 @@ static void play_time_update_cb(lv_timer_t * timer)
     int seconds = 0;
     bool play_end = false;
 
-    lv_ffmpeg_player_set_cmd_ex(play_cb->ffmpeg, LV_FFMPEG_PLAYER_CMD_PLAY_END_EX, &play_end);
+    lv_aic_player_set_cmd(play_cb->player, LV_AIC_PLAYER_CMD_PLAY_END, &play_end);
     if (play_end && (play_cb->mode != PLAY_MODE_CIRCLE_ONE)) {
 #if LVGL_VERSION_MAJOR == 8
         lv_event_send(play_control_next, LV_EVENT_CLICKED, play_cb); /* play next */
@@ -411,7 +407,7 @@ static void play_time_update_cb(lv_timer_t * timer)
         return;
     }
 
-    lv_ffmpeg_player_set_cmd_ex(play_cb->ffmpeg, LV_FFMPEG_PLAYER_CMD_GET_PLAY_TIME_EX, &escap_time);
+    lv_aic_player_set_cmd(play_cb->player, LV_AIC_PLAYER_CMD_GET_PLAY_TIME, &escap_time);
     minute = (escap_time / (1000 * 1000)) / 60;
     seconds = (escap_time / (1000 * 1000)) % 60;
 
@@ -475,7 +471,7 @@ static void ui_anim_start_play_and_free(lv_anim_t *a)
 
     play_cb->play_status = 0;
     lv_img_set_src(play_control, LVGL_PATH(aic_audio/pause.png));
-    lv_ffmpeg_player_set_cmd_ex(play_cb->ffmpeg, LV_FFMPEG_PLAYER_CMD_START, NULL);
+    lv_aic_player_set_cmd(play_cb->player, LV_AIC_PLAYER_CMD_START, NULL);
     lv_timer_resume(play_time_timer);
     lv_timer_resume(cover_rotate_timer);
 

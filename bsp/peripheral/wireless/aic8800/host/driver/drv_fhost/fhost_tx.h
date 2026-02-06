@@ -258,6 +258,7 @@ struct fhost_tx_env_tag
     struct fhost_tx_sta_traffic traffic[STA_MAX];
 #endif
     uint8_t       to_times;
+    uint8_t tx_task_terminate;
 
 };
 

@@ -69,9 +69,15 @@ if LPKG_USING_LWIP
         default n
 
     config LPKG_LWIP_DNS
-        bool "Enble DNS for name resolution"
+        bool "Enable DNS for name resolution"
         select LPKG_LWIP_UDP
         default y
+
+    config LPKG_LWIP_MDNS
+        bool "Enable MDNS for name resolution"
+        select LPKG_LWIP_UDP
+        select LPKG_LWIP_IGMP
+        default n
 
     config LPKG_LWIP_DHCP
         bool "Enable alloc ip address through DHCP"
@@ -297,6 +303,10 @@ if LPKG_USING_LWIP
             bool "Enable Debugging of DNS"
             default n
 
+        config LPKG_LWIP_MDNS_DEBUG
+            bool "Enable debugging for MDNS"
+            default n
+
         config LPKG_LWIP_AUTOIP_DEBUG
             bool "Enable Debugging of autoip.c"
             default n
@@ -360,7 +370,6 @@ if LPKG_USING_LWIP
         config LPKG_LWIP_TCP_RST_DEBUG
             bool "Enable debugging for TCP with the RST message"
             default n
-
     endif
 
 endif

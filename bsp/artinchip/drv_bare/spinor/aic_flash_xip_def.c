@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -98,6 +98,35 @@ static struct xip_device xip_flashs[] = {
                 },
         },
     }, //.name = "ZB25VQ64",
+    {
+        .name = "ZB25VQ16", // verify ok.
+        .flash_id = 0X5E4015,
+        .proto_support = CMD_PROTO_QIO|CMD_PROTO_CACHE_EN|CMD_PROTO_CACHE_DIS,
+        .burst_cfg = {
+                .cmd_set_burst = 0x77,
+                .cmd_dummy_byte = 3,
+                .cmd_bits_width = XIP_C0_BITS_WIDTH_4, // Only need when use cmd 0xC0
+                .wrap_en = XIP_BURST_WRAPPED_WITH_FIXED_LEN,
+                .wrap = {
+                        .fixed_len = 0x40,
+                        .disable = 0x10,
+                        .auto_wl64 = 0x60,
+                        .auto_wl32 = 0x40,
+                        .auto_wl16 = 0x20,
+                        .auto_wl8 = 0x00,
+                },
+        },
+        .read_cfg = {
+                .read_cmd = 0xEB,
+                .dummy_byte = 2,
+                .addr_mode = SPINOR_ADDR_MODE_3BYTE,
+                .read_cmd_bypass_en = 0,
+                .mode = {
+                        .bypass = 0xf0,
+                        .normal = 0x00,
+                },
+        },
+    }, //.name = "ZB25VQ16",
     {
         .name = "W25Q64CV", //verify ok //W25Q64jv
         .flash_id = 0xef4017,

@@ -1,18 +1,17 @@
 /*
-* Copyright (C) 2020-2022 Artinchip Technology Co. Ltd
-*
-*  author: qi.xu@artinchip.com
-*  Desc: ve module
-*/
+ * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ *  author: qi.xu@artinchip.com
+ *  Desc: ve module
+ */
 
 #define LOG_TAG "ve"
 
-#include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-//#include <pthread.h>
-//#include "hal_ve.h"
+
 #include "aic_core.h"
 #include "ve.h"
 #include "mpp_log.h"

@@ -916,10 +916,15 @@ static int mov_read_default(struct aic_mov_parser *c, struct mov_atom atom)
         total_size += a.size;
     }
 
-    if (total_size < atom.size && atom.size < 0x7ffff)
+    if (total_size < atom.size && atom.size < 0x7ffff) {
         aic_stream_skip(c->stream, atom.size - total_size);
+        total_size = atom.size;
+    }
 
     c->atom_depth --;
+    if (total_size >= atom.size)
+        return 1;
+
     return 0;
 }
 
@@ -1188,7 +1193,7 @@ int mov_read_header(struct aic_mov_parser *c)
     atom.size = aic_stream_size(c->stream);
     do {
         err = mov_read_default(c, atom);
-        if(err < 0) {
+        if(err) {
             loge("error reading header");
             return -1;
         }

@@ -1,34 +1,29 @@
 /*
-* Copyright (C) 2020-2022 Artinchip Technology Co. Ltd
+* Copyright (C) 2020-2025 Artinchip Technology Co. Ltd
 *
+* SPDX-License-Identifier: Apache-2.0
 *  author: <qi.xu@artinchip.com>
 *  Desc: the  ve top register
 */
 
 #ifndef VE_TOP_REGISTER_H
 #define VE_TOP_REGISTER_H
-#include <stdio.h>
+
 #include "aic_io.h"
 #include "mpp_log.h"
 
 #define	read_reg_u32(offset)	readl(offset)
 #define	write_reg_u32(offset,v)	writel(v, offset)
 
-#ifdef AIC_VE_DRV_V30
-    #define PNG_REG_OFFSET_ADDR	0x100
-    #define JPG_REG_OFFSET_ADDR	0x200
-    #define PIC_INFO_START_REG	0x600
-#elif defined(AIC_VE_DRV_V40)
-    #define PNG_REG_OFFSET_ADDR	0x100
-    #define JPG_REG_OFFSET_ADDR	0x200
-    #define PIC_INFO_START_REG	0x600
-#elif defined(AIC_VE_DRV_V10)
+#ifdef AIC_VE_DRV_V10
     #define PNG_REG_OFFSET_ADDR	0xC00
     #define JPG_REG_OFFSET_ADDR	0x2000
     #define PIC_INFO_START_REG	0x1400
-	#define PIC_INFO_END_REG	0x167C
+    #define PIC_INFO_END_REG	0x167C
 #else
-    #error "not define ve version"
+    #define PNG_REG_OFFSET_ADDR	0x100
+    #define JPG_REG_OFFSET_ADDR	0x200
+    #define PIC_INFO_START_REG	0x600
 #endif
 
 // [0]: clock enable

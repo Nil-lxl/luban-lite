@@ -351,7 +351,8 @@ int mmc_block_deinit(struct aic_sdmc *host);
 
 void mmc_set_rx_phase(void *priv, u32 phase);
 void mmc_set_rx_delay(void *priv, u32 delay);
-
+void mmc_set_tx_phase(void *priv, u32 phase);
+void mmc_set_tx_delay(void *priv, u32 delay);
 
 int mmc_rpmb_get_counter(struct aic_sdmc *host, unsigned long *pcounter);
 int mmc_rpmb_set_key(struct aic_sdmc *host, void *key);

@@ -77,8 +77,9 @@ extern struct aic_panel dbi_st7789v;
 extern struct aic_panel dbi_ili9327;
 extern struct aic_panel dbi_co5300;
 extern struct aic_panel dbi_st77916;
-extern struct aic_panel dbi_gc9d01n;
+extern struct aic_panel dbi_gc9108;
 extern struct aic_panel dbi_st77912;
+extern struct aic_panel spi_general;
 
 /*
  * RGB Panel SPI Init
@@ -89,6 +90,8 @@ extern struct aic_panel rgb_st7703;
 extern struct aic_panel rgb_gc9a01a;
 extern struct aic_panel rgb_nt35560;
 extern struct aic_panel rgb_st77922;
+extern struct aic_panel rgb_st77916;
+extern struct aic_panel rgb_jd9855;
 extern struct aic_panel rgb_h024a13;
 extern struct aic_panel rgb_h028a19;
 extern struct aic_panel rgb_h030a10;
@@ -138,11 +141,16 @@ struct panel_spi_device {
     struct gpio_desc cs;
     struct gpio_desc sdi;
     struct gpio_desc scl;
+    struct gpio_desc dc;
 };
 
 void panel_spi_data_wr(u8 data);
 void panel_spi_cmd_wr(u8 cmd);
+#ifndef AIC_SPI_EMULATION_WITH_DC
 void panel_spi_device_emulation(char *cs, char *sdi, char *scl);
+#else
+void panel_spi_device_emulation(char *cs, char *sdi, char *scl, char *dc);
+#endif
 
 #define panel_spi_send_seq(command, seq...) do {                    \
         static const u8 d[] = { seq };                              \

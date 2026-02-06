@@ -57,11 +57,12 @@ enum dvp_state {
 
 static enum dvp_state g_dvp_status = DVP_STATUS_INIT;
 
-static const char sopts[] = "f:c:a:h";
+static const char sopts[] = "f:c:a:wh";
 static const struct option lopts[] = {
     {"format",        required_argument, NULL, 'f'},
     {"capture",       required_argument, NULL, 'c'},
     {"angle",         required_argument, NULL, 'a'},
+    {"wait",          required_argument, NULL, 'w'},
     {"usage",               no_argument, NULL, 'h'},
     {0, 0, 0, 0}
 };
@@ -676,8 +677,9 @@ static int dvp_play_ctrl(char *action)
 
 static int cmd_test_dvp(int argc, char **argv)
 {
-    int c;
     aicos_thread_t thid = NULL;
+    bool wait = false;
+    int c;
 
     if (g_dvp_status != DVP_STATUS_INIT) {
         /* DVP is running, so just do play control */
@@ -710,6 +712,10 @@ static int cmd_test_dvp(int argc, char **argv)
             g_vdata.rotation = (str2int(optarg) % 360) / 90;
             break;
 #endif
+
+        case 'w':
+            wait = true;
+            break;
 
         case 'h':
             usage(argv[0]);
@@ -756,10 +762,14 @@ static int cmd_test_dvp(int argc, char **argv)
     if (dvp_cfg() < 0)
         goto error_out;
 
-    thid = aicos_thread_create("test_dvp", 4096, 0, test_dvp_thread, NULL);
-    if (thid == NULL) {
-        pr_err("Failed to create DVP thread\n");
-        return -1;
+    if (wait) {
+        test_dvp_thread(NULL);
+    } else {
+        thid = aicos_thread_create("test_dvp", 4096, 0, test_dvp_thread, NULL);
+        if (thid == NULL) {
+            pr_err("Failed to create DVP thread\n");
+            return -1;
+        }
     }
     return 0;
 

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2022, sakumisu
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -16,13 +17,13 @@ extern "C" {
  * @brief init device controller registers.
  * @return On success will return 0, and others indicate fail.
  */
-int usb_dc_init(void);
+int usb_dc_init(uint8_t busid);
 
 /**
  * @brief deinit device controller registers.
  * @return On success will return 0, and others indicate fail.
  */
-int usb_dc_deinit(void);
+int usb_dc_deinit(uint8_t busid);
 
 /**
  * @brief Set USB device address
@@ -31,23 +32,23 @@ int usb_dc_deinit(void);
  *
  * @return On success will return 0, and others indicate fail.
  */
-int usbd_set_address(const uint8_t addr);
+int usbd_set_address(uint8_t busid, const uint8_t addr);
 
 /**
  * @brief Set remote wakeup feature
  *
  * @return On success will return 0, and others indicate fail.
  */
-int usbd_set_remote_wakeup(void);
+int usbd_set_remote_wakeup(uint8_t busid);
 
 /**
  * @brief Get USB device speed
  *
- * @param[in] port port index
+ * @param[in] busid bus index
  *
  * @return port speed, USB_SPEED_LOW or USB_SPEED_FULL or USB_SPEED_HIGH
  */
-uint8_t usbd_get_port_speed(const uint8_t port);
+uint8_t usbd_get_port_speed(uint8_t busid);
 
 /**
  * @brief configure and enable endpoint.
@@ -56,7 +57,7 @@ uint8_t usbd_get_port_speed(const uint8_t port);
  *
  * @return On success will return 0, and others indicate fail.
  */
-int usbd_ep_open(const struct usb_endpoint_descriptor *ep);
+int usbd_ep_open(uint8_t busid, const struct usb_endpoint_descriptor *ep);
 
 /**
  * @brief Disable the selected endpoint
@@ -65,7 +66,7 @@ int usbd_ep_open(const struct usb_endpoint_descriptor *ep);
  *
  * @return On success will return 0, and others indicate fail.
  */
-int usbd_ep_close(const uint8_t ep);
+int usbd_ep_close(uint8_t busid, const uint8_t ep);
 
 /**
  * @brief Set stall condition for the selected endpoint
@@ -75,7 +76,7 @@ int usbd_ep_close(const uint8_t ep);
  *
  * @return On success will return 0, and others indicate fail.
  */
-int usbd_ep_set_stall(const uint8_t ep);
+int usbd_ep_set_stall(uint8_t busid, const uint8_t ep);
 
 /**
  * @brief Clear stall condition for the selected endpoint
@@ -85,7 +86,7 @@ int usbd_ep_set_stall(const uint8_t ep);
  *
  * @return On success will return 0, and others indicate fail.
  */
-int usbd_ep_clear_stall(const uint8_t ep);
+int usbd_ep_clear_stall(uint8_t busid, const uint8_t ep);
 
 /**
  * @brief Check if the selected endpoint is stalled
@@ -96,7 +97,7 @@ int usbd_ep_clear_stall(const uint8_t ep);
  *
  * @return On success will return 0, and others indicate fail.
  */
-int usbd_ep_is_stalled(const uint8_t ep, uint8_t *stalled);
+int usbd_ep_is_stalled(uint8_t busid, const uint8_t ep, uint8_t *stalled);
 
 /**
  * @brief Setup in ep transfer setting and start transfer.
@@ -115,7 +116,7 @@ int usbd_ep_is_stalled(const uint8_t ep, uint8_t *stalled);
  *                       be zero for a zero length status packet.
  * @return 0 on success, negative errno code on fail.
  */
-int usbd_ep_start_write(const uint8_t ep, const uint8_t *data, uint32_t data_len);
+int usbd_ep_start_write(uint8_t busid, const uint8_t ep, const uint8_t *data, uint32_t data_len);
 int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, uint8_t cache_align);
 
 /**
@@ -135,41 +136,43 @@ int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, u
  *
  * @return 0 on success, negative errno code on fail.
  */
-int usbd_ep_start_read(const uint8_t ep, uint8_t *data, uint32_t data_len);
+int usbd_ep_start_read(uint8_t busid, const uint8_t ep, uint8_t *data, uint32_t data_len);
 int usbd_ep_start_read_raw(const uint8_t ep, uint8_t *data, uint32_t data_len, uint8_t cache_align);
+void usbd_ep0_start_read_zlp(void);
 
 /* usb dcd irq callback */
+void usbd_event_sof_handler(uint8_t busid);
 
 /**
  * @brief Usb connect irq callback.
  */
-void usbd_event_connect_handler(void);
+void usbd_event_connect_handler(uint8_t busid);
 
 /**
  * @brief Usb disconnect irq callback.
  */
-void usbd_event_disconnect_handler(void);
+void usbd_event_disconnect_handler(uint8_t busid);
 
 /**
  * @brief Usb resume irq callback.
  */
-void usbd_event_resume_handler(void);
+void usbd_event_resume_handler(uint8_t busid);
 
 /**
  * @brief Usb suspend irq callback.
  */
-void usbd_event_suspend_handler(void);
+void usbd_event_suspend_handler(uint8_t busid);
 
 /**
  * @brief Usb reset irq callback.
  */
-void usbd_event_reset_handler(void);
+void usbd_event_reset_handler(uint8_t busid);
 
 /**
  * @brief Usb setup packet recv irq callback.
  * @param[in]  psetup  setup packet.
  */
-void usbd_event_ep0_setup_complete_handler(uint8_t *psetup);
+void usbd_event_ep0_setup_complete_handler(uint8_t busid, uint8_t *psetup);
 
 /**
  * @brief In ep transfer complete irq callback.
@@ -177,7 +180,7 @@ void usbd_event_ep0_setup_complete_handler(uint8_t *psetup);
  *                       listed in the device configuration table
  * @param[in]  nbytes    How many nbytes have transferred.
  */
-void usbd_event_ep_in_complete_handler(uint8_t ep, uint32_t nbytes);
+void usbd_event_ep_in_complete_handler(uint8_t busid, uint8_t ep, uint32_t nbytes);
 
 /**
  * @brief Out ep transfer complete irq callback.
@@ -185,7 +188,7 @@ void usbd_event_ep_in_complete_handler(uint8_t ep, uint32_t nbytes);
  *                       listed in the device configuration table
  * @param[in]  nbytes    How many nbytes have transferred.
  */
-void usbd_event_ep_out_complete_handler(uint8_t ep, uint32_t nbytes);
+void usbd_event_ep_out_complete_handler(uint8_t busid, uint8_t ep, uint32_t nbytes);
 
 void usbd_req_test_mode(uint8_t test_mode);
 

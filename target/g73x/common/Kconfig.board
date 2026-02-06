@@ -870,7 +870,6 @@ menu "SRAM parameter"
 endmenu
 
 # 2. psram region
-
 menu "PSRAM parameter"
     config AIC_PSRAM_SIZE
         hex "PSRAM size"
@@ -904,7 +903,22 @@ menu "XIP parameter"
     config AIC_XIP_FW_OFFSET
     hex "XIP fw start addr"
     default 0x0
+
+config AIC_XIP_FLASH_WRITE
+    bool "Enable XIP Flash Write"
+    default n
+    help
+        Write Flash during XIP, but it will cause system low performence. Every time flash erasing
+	and writing need to work in critical section, system disable interrupt and scheduling.
+
 endmenu
+
+# AIC_XIP_RAMCODE_SIZE please put out of AIC_XIP, because Enable/Disable XIP all need this option
+# in rtconfig.h
+config AIC_XIP_RAMCODE_SIZE
+    hex
+    default 0x0 if !AIC_XIP_FLASH_WRITE
+    default 0x1000 if AIC_XIP_FLASH_WRITE
 
 # 4. Sections memory location
 

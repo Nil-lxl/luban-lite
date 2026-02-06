@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -56,7 +56,7 @@ const struct aic_spinand_info fudanmicro_spinand_table[] = {
     /*FM25S01BI3 device*/
     { DEVID(0xD4), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
       PLANENUM(1), DIE(0), "fudanmicro 128MB: 2048+128@64@1024", cmd_cfg_table,
-      fudanmicro_ecc_get_status, fm25s01b_ooblayout_user },
+      fudanmicro_ecc_get_status, fm25s01b_ooblayout_user, 8 },
 };
 
 const struct aic_spinand_info *

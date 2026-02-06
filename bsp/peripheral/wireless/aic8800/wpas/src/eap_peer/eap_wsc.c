@@ -15,7 +15,7 @@
 #include "wps/wps.h"
 #include "wps/wps_defs.h"
 
-#ifdef PLATFORM_ASR_THREADX
+#ifdef CONFIG_PLAT_THREADX
 #undef FAIL
 #endif
 

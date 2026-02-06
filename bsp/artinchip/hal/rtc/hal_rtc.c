@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,14 +17,10 @@
 #define RTC_REG_INIT                    (0x0004)
 #define RTC_REG_IRQ_EN                  (0x0008)
 #define RTC_REG_IRQ_STA                 (0x000C)
-#if defined(AIC_RTC_DRV_V10) || defined(AIC_RTC_DRV_V11)
 #define RTC_REG_TIME0                   (0x0020)
 #define RTC_REG_TIME1                   (0x0024)
 #define RTC_REG_TIME2                   (0x0028)
 #define RTC_REG_TIME3                   (0x002C)
-#elif defined(AIC_RTC_DRV_V12)
-#define RTC_REG_TIME                    (0x0820)
-#endif
 #define RTC_REG_ALARM0                  (0x0030)
 #define RTC_REG_ALARM1                  (0x0034)
 #define RTC_REG_ALARM2                  (0x0038)
@@ -84,6 +80,10 @@
 #define RTC_ANA1_LDO11_VOL_080          6
 
 #define RTC_ANA2_XTAL32K_DRV_MASK       GENMASK(3, 0)
+
+#ifdef AIC_RTC_DRV_V20
+#define RTC_ANA2_XTAL32K_EN             BIT(0)
+#endif
 
 #define RTC_ANA3_LDO12_XTAL32K_SW       BIT(1)
 #define RTC_ANA3_XTAL32K_EN             BIT(0)
@@ -152,7 +152,7 @@ static void aic_rtc_set_32k_drv(u8 drv)
 void hal_rtc_cali(s32 clk_rate)
 {
     /* calibrate: (1024*1024+cval)/(freq/32) = 1024 */
-    s32 cval = 0;
+    s64 cval = 0;
 
     if (clk_rate == RTC_32K_FREQ)
         return; /* It's perfect, need not calibrate */
@@ -170,7 +170,7 @@ void hal_rtc_cali(s32 clk_rate)
     else
         cval = -cval;
 
-    RTC_WRITEB(cval >> 8, RTC_REG_CALI1);
+    RTC_WRITEB((cval >> 8) & 0xFF, RTC_REG_CALI1);
     RTC_WRITEB(cval & 0xFF, RTC_REG_CALI0);
 }
 
@@ -193,12 +193,12 @@ void hal_rtc_read_time(u32 *sec)
 
 void hal_rtc_set_time(u32 sec)
 {
-    hal_rtc_enable(0);
-#if defined(AIC_RTC_DRV_V10) || defined(AIC_RTC_DRV_V11)
-    RTC_WRITEL(sec, RTC_REG_TIME0);
-#elif defined(AIC_RTC_DRV_V12)
-    writel(sec, RTC_BASE + RTC_REG_TIME);
+#ifdef AIC_RTC_DRV_V12
+    //must clear TCNT_INIT before setting time in RTC V1.2
+    RTC_WRITEB(0, RTC_REG_INIT);
 #endif
+    hal_rtc_enable(0);
+    RTC_WRITEL(sec, RTC_REG_TIME0);
     RTC_WRITEB(1, RTC_REG_INIT);
     hal_rtc_enable(1);
 }
@@ -313,6 +313,9 @@ irqreturn_t hal_rtc_irq(int irq, void *arg)
 s32 hal_rtc_init(void)
 {
     s32 ret = 0;
+#if defined(AIC_RTC_DRV_V10) || defined(AIC_RTC_DRV_V20)
+    u8 val = 0;
+#endif
 
     if (aich_rtc.inited) {
         hal_log_info("RTC is already inited.\n");
@@ -333,6 +336,16 @@ s32 hal_rtc_init(void)
         if (ret & RTC_IRQ_STA_ALARM_IO)
             hal_log_info("Powered by RTC alarm.\n");
     }
+
+#if defined(AIC_RTC_DRV_V10)
+    val = RTC_READB(RTC_REG_ANALOG1);
+    val |= RTC_ANA1_LDO11_LPEN;
+    RTC_WRITEB(val, RTC_REG_ANALOG1);
+#elif defined(AIC_RTC_DRV_V20)
+    val = RTC_READB(RTC_REG_ANALOG2);
+    val |= RTC_ANA2_XTAL32K_EN;
+    RTC_WRITEB(val, RTC_REG_ANALOG2);
+#endif
 
     aich_rtc.inited = 1;
     hal_rtc_enable(1);

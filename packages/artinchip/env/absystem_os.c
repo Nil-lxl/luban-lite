@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -248,7 +248,7 @@ int aic_absystem_mount_fs(unsigned int prio)
             aic_get_rodata_to_mount(target);
             printf("Mount APP in blk %s\n", target);
 
-            if (dfs_mount(target, "/rodata", "elm", 0, 0) < 0)
+            if (dfs_mount(target, "/rodata", "elm", MS_RDONLY, 0) < 0)
                 printf("Failed to mount elm\n");
 
         } else {
@@ -274,5 +274,5 @@ int aic_absystem_mount_fs_prio1(void)
 }
 
 INIT_ENV_EXPORT(aic_absystem_mount_fs_prio0);
-INIT_LATE_APP_EXPORT(aic_absystem_mount_fs_prio1);
+INIT_APP_LEVEL_EXPORT(aic_absystem_mount_fs_prio1, 1);
 #endif

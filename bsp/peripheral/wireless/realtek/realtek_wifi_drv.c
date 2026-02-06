@@ -104,7 +104,7 @@ struct rt_sdio_driver realtek_drv = {
 
 void realtek_pin_init()
 {
-    wifi_power_pin = hal_gpio_name2pin(AIC_DEV_REALTEK_WLAN0_PWR_GPIO);
+    wifi_power_pin = hal_gpio_name2pin(AIC_WIRELESS_PWR_GPIO);
     if (wifi_power_pin < 0)
         return;
 

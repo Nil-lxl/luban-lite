@@ -91,15 +91,15 @@ static void hgic_assert(unsigned int arg, char *func, unsigned int line)
 #endif
 
 #ifndef ZALLOC
-#define ZALLOC(size)                    osal_zalloc(size)
+#define ZALLOC(size)                    hgic_zalloc(size)
 #endif
 
 #ifndef STRDUP
-#define STRDUP(s)                       osal_strdup(s)
+#define STRDUP(s)                       hgic_strdup(s)
 #endif
 
 #ifndef REALLOC
-#define REALLOC(p,s)                    osal_realloc(p,s)
+#define REALLOC(p,s)                    hgic_realloc(p,s)
 #endif
 
 typedef struct {

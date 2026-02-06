@@ -31,6 +31,7 @@ menu "GPAI0 Parameter"
         int
         default 1     if AIC_GPAI0_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI0_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI0_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -81,6 +82,7 @@ menu "GPAI1 Parameter"
         int
         default 1     if AIC_GPAI1_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI1_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI1_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -131,6 +133,7 @@ menu "GPAI2 Parameter"
         int
         default 1     if AIC_GPAI2_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI2_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI2_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -181,6 +184,7 @@ menu "GPAI3 Parameter"
         int
         default 1     if AIC_GPAI3_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI3_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI3_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -231,6 +235,7 @@ menu "GPAI4 Parameter"
         int
         default 1     if AIC_GPAI4_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI4_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI4_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -281,6 +286,7 @@ menu "GPAI5 Parameter"
         int
         default 1     if AIC_GPAI5_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI5_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI5_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -331,6 +337,7 @@ menu "GPAI6 Parameter"
         int
         default 1     if AIC_GPAI6_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI6_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI6_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -381,6 +388,7 @@ menu "GPAI7 Parameter"
         int
         default 1     if AIC_GPAI7_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI7_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI7_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -431,6 +439,7 @@ menu "GPAI8 Parameter"
         int
         default 1     if AIC_GPAI8_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI8_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI8_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -481,6 +490,7 @@ menu "GPAI9 Parameter"
         int
         default 1     if AIC_GPAI9_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI9_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI9_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -531,6 +541,7 @@ menu "GPAI10 Parameter"
         int
         default 1     if AIC_GPAI10_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI10_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI10_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -581,6 +592,7 @@ menu "GPAI11 Parameter"
         int
         default 1     if AIC_GPAI11_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI11_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI11_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -631,6 +643,7 @@ menu "GPAI12 Parameter"
         int
         default 1     if AIC_GPAI12_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI12_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI12_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -681,6 +694,7 @@ menu "GPAI13 Parameter"
         int
         default 1     if AIC_GPAI13_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI13_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI13_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -731,6 +745,7 @@ menu "GPAI14 Parameter"
         int
         default 1     if AIC_GPAI14_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI14_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI14_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -781,6 +796,7 @@ menu "GPAI15 Parameter"
         int
         default 1     if AIC_GPAI15_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI15_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI15_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -831,6 +847,7 @@ menu "GPAI16 Parameter"
         int
         default 1     if AIC_GPAI16_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI16_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI16_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -881,6 +898,7 @@ menu "GPAI17 Parameter"
         int
         default 1     if AIC_GPAI17_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI17_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI17_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -931,6 +949,7 @@ menu "GPAI18 Parameter"
         int
         default 1     if AIC_GPAI18_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI18_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI18_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -981,6 +1000,7 @@ menu "GPAI19 Parameter"
         int
         default 1     if AIC_GPAI19_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI19_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI19_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -1031,6 +1051,7 @@ menu "GPAI20 Parameter"
         int
         default 1     if AIC_GPAI20_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI20_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI20_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -1081,6 +1102,7 @@ menu "GPAI21 Parameter"
         int
         default 1     if AIC_GPAI21_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI21_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI21_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -1131,6 +1153,7 @@ menu "GPAI22 Parameter"
         int
         default 1     if AIC_GPAI22_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI22_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI22_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"
@@ -1181,6 +1204,7 @@ menu "GPAI23 Parameter"
         int
         default 1     if AIC_GPAI23_OBTAIN_DATA_BY_CPU
         default 3     if AIC_GPAI23_OBTAIN_DATA_BY_POLL
+        default 4     if AIC_GPAI23_OBTAIN_DATA_BY_DO
 
     choice
         prompt "period mode"

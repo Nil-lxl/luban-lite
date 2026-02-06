@@ -186,7 +186,7 @@ static void rtt_sdio_release_host(struct sdio_func *func)
 static unsigned char rtt_sdio_readb(struct sdio_func *func,
                                         unsigned int addr, int *err_ret)
 {
-    return sdio_io_readb(rtt_sdio_func, addr, err_ret);
+    return sdio_io_readb(rtt_sdio_func, addr, (rt_int32_t *)err_ret);
 }
 
 static unsigned short rtt_sdio_readw(struct sdio_func *func,

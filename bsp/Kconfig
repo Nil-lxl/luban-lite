@@ -384,7 +384,7 @@ config AIC_RTP_TEST
 config AIC_PWM_TEST
     bool "Enable PWM driver test command"
     default n
-    depends on RT_USING_PWM
+    depends on RT_USING_PWM || DRIVER_BARE_DRV_EN
 
 config AIC_CAP_DRV_TEST
     bool "Enable CAP driver test command"
@@ -405,6 +405,11 @@ config AIC_MONKEY_TEST
     bool "Enable Monkey test command"
     default n
     depends on AIC_USING_TOUCH
+
+config AIC_SDIO_MGR_TEST
+    bool "Enable SDIO mgr test command"
+    default n
+    depends on RT_USING_SDIO && !DRIVER_BARE_DRV_EN
 
 config AIC_WIFI_TEST
     bool "Enable Wi-Fi test command"
@@ -435,14 +440,13 @@ if AIC_WIFI_TEST
       endmenu
 endif
 
-if LPKG_USING_LWIP
+if LPKG_USING_LWIP || RT_USING_LWIP
 
     menu "LwIP examples"
 
     config AIC_MQTT_LWIP_TEST
         bool "Enable MQTT protocol test command"
         default n
-        depends on LPKG_LWIP_USING_MQTT
 
     config AIC_IPERF_LWIP_TEST
         bool "Enable iperf test command"

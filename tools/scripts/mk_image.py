@@ -630,7 +630,7 @@ def aic_boot_gen_header_bytes(cfg, filesizes):
     enc_algo = 0
     iv_data_offset = 0
     iv_data_length = 0
-    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc" and loader_length != 0:
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc":
         enc_algo = 1
         iv_data_offset = next_res_offset
         iv_data_length = 16
@@ -784,7 +784,6 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
 
     loader_ext_offset = 0
     if aic_boot_with_ext_loader(cfg):
-        loader_length = 0
         loader_ext_offset = img_len
         # ensure ext loader start position is aligned to 512
         loader_ext_offset = round_up(img_len, META_ALIGNED_SIZE)
@@ -843,7 +842,7 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
     enc_algo = 0
     iv_data_offset = 0
     iv_data_length = 0
-    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc" and loader_length != 0:
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc":
         enc_algo = 1
         iv_data_offset = next_res_offset
         iv_data_length = 16
@@ -1390,7 +1389,10 @@ struct nand_page_table_head {
     char magic[4]; /* AICP: AIC Page table */
     u32 entry_cnt;
     u16 page_size;
-    u8 pad[10];   /* Padding it to fit size 20 bytes */
+    u8 pages_per_block;
+    u8 blocks; /* Block number in SPI NAND */
+    u8 planes; /* Plane number in SPI NAND: Max 2 in market avaialbe devices */
+    u8 pad[7]; /* Padding it to fit size 20 bytes */
 };
 
 struct nand_page_table_entry {
@@ -1416,12 +1418,23 @@ def img_gen_page_table(binfile, cfg, datadir):
     """
     page_size = 0
     page_cnt = 64
+    planes = 1
 
     if "array_organization" in cfg["image"]["info"]["media"]:
         orglist = cfg["image"]["info"]["media"]["array_organization"]
         for item in orglist:
             page_size = int(re.sub(r"[^0-9]", "", item["page"]))
             block_size = int(re.sub(r"[^0-9]", "", item["block"]))
+
+    if "planes" in cfg["image"]["info"]["media"]:
+        val = cfg["image"]["info"]["media"]["planes"]
+        if isinstance(val, str):
+            planes = int(val)
+        else:
+            planes = val
+        if planes > 2:
+            print("Error, planes should not be greater than 2.")
+            sys.exit(1)
 
     spl_file = cfg["image"]["target"]["spl"]["file"]
     filesize = round_up(cfg["image"]["target"]["spl"]["filesize"], DATA_ALIGNED_SIZE)
@@ -1441,7 +1454,10 @@ def img_gen_page_table(binfile, cfg, datadir):
     buff = str_to_nbytes("AICP", 4)
     buff = buff + int_to_uint32_bytes(entry_page)
     buff = buff + int_to_uint16_bytes(page_size * 1024)
-    buff = buff + gen_bytes(0xFF, 10)
+    buff = buff + int_to_uint8_bytes(page_per_blk)
+    buff = buff + int_to_uint8_bytes(0xFF)
+    buff = buff + int_to_uint8_bytes(planes)
+    buff = buff + gen_bytes(0xFF, 7)
 
     with open(path, "rb") as fwcfile:
         pageaddr1 = 0

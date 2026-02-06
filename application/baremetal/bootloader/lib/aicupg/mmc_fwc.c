@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -34,10 +34,56 @@ struct aicupg_mmc_priv {
     int is_sparse;
 };
 
-int mmc_is_exist()
+int mmc_is_exist(u32 id)
 {
+    struct aic_sdmc *host;
+
+    host = find_mmc_dev_by_index(id);
+    if (host != NULL) {
+        return 1;
+    }
     return 0;
 }
+
+s32 mmc_get_geometry(u32 id, struct storage_geometry *geo)
+{
+    struct aic_sdmc *host;
+    if (geo == NULL)
+        return -1;
+
+    host = find_mmc_dev_by_index(id);
+    if (host != NULL) {
+        geo->total_size = host->dev->card_capacity * 2;
+        geo->write_size = 512;
+        geo->erase_size = host->dev->erase_grp_size;
+        geo->oob_size = 0;
+        return 0;
+    }
+    return -1;
+}
+
+s32 mmc_storage_erase(u32 id, struct storage_erase *erase)
+{
+    struct aic_sdmc *host;
+    u32 start, cnt, ret = 0;
+
+    if (erase == NULL)
+        return -1;
+
+    host = find_mmc_dev_by_index(id);
+    if (host != NULL) {
+        /* The start sector and sector count of MMC */
+        start = erase->start;
+        cnt = erase->size;
+        ret = mmc_berase(host, start, cnt);
+        if (ret != cnt)
+            return -1;
+        return 0;
+    }
+
+    return -1;
+}
+
 
 s32 mmc_fwc_prepare(struct fwc_info *fwc, u32 mmc_id)
 {
