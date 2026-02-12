@@ -118,16 +118,18 @@ void timer_cb(lv_timer_t *timer) {
             break;
         case 6:
             lv_obj_hide(img1);
-            lv_obj_show(container);
-            lv_set_bg_color(LV_COLOR_BLACK);
+            lv_obj_show(img2);
+            // lv_set_bg_color(LV_COLOR_BLACK);
             break;
         case 7:
             lv_obj_hide(img2);
-            lv_obj_show(container);
+            lv_obj_show(img3);
             lv_set_bg_color(LV_COLOR_BLACK);
             break;
         case 8:
             lv_obj_hide(img3);
+            lv_obj_show(container);
+            lv_set_bg_color(LV_COLOR_BLACK);
             break;
         case 9:
             // lv_obj_show(player);
@@ -137,12 +139,12 @@ void timer_cb(lv_timer_t *timer) {
         default:
             break;
     }
-#define UI_MAX_COUNT    6
+#define UI_MAX_COUNT    9
 #if TEST_DEMO_USE_DEFAULT_CONTROL
-    if (count == 3) {                      //在第x个画面停止
+    if (count == 9) {                      //在第x个画面停止
         lv_timer_pause(timer);
     }
-    count = (count + 1) % 7;    //在第x个画面结束一轮循环
+    count = (count + 1) % 9;    //在第x个画面结束一轮循环
 #endif
 }
 
@@ -194,17 +196,17 @@ void test_ui_init() {
     lv_obj_hide(gray_block);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit360x360.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit1920x1200.jpg));
     img2 = lv_img_create(scr);
-    lv_img_set_src(img2, LVGL_IMAGE_PATH(fruit640x480.jpg));
+    lv_img_set_src(img2, LVGL_IMAGE_PATH(img1920x1200.jpg));
     img3 = lv_img_create(scr);
-    lv_img_set_src(img3, LVGL_IMAGE_PATH(img400x1280_3.jpg));
+    lv_img_set_src(img3, LVGL_IMAGE_PATH(img1920x1200_1.jpg));
     lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
 
 #if TEST_DEMO_USE_DEFAULT_CONTROL
-    timer = lv_timer_create(timer_cb, 2000, NULL);
+    timer = lv_timer_create(timer_cb, 1500, NULL);
 #else 
     timer = lv_timer_create(timer_cb, 300, NULL);
 #endif
