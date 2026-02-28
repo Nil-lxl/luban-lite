@@ -78,6 +78,30 @@ aic_suspend_resume:
     or      t1, t1, t2
     sw      t1, 0x20(t0)
 
+    /* After the freq of XSPI is changed, the DLL of XSPI must be reset */
+    li      t0, XSPI_BASE
+    lw      t1, 0x14(t0)
+    li      t2, 0xFFFFFFFE
+    and     t1, t1, t2
+    sw      t1, 0x14(t0)
+
+    lw      t1, 0x1C(t0)
+    li      t2, 0xFFFFFFFE
+    and     t1, t1, t2
+    sw      t1, 0x1C(t0)
+
+    delay_100us
+
+    lw      t1, 0x14(t0)
+    ori     t1, t1, 1
+    sw      t1, 0x14(t0)
+
+    lw      t1, 0x1C(t0)
+    ori     t1, t1, 1
+    sw      t1, 0x1C(t0)
+
+    delay_100us
+
     lw      s0, (a0)
     lw      s1, 0x4(a0)
     lw      s2, 0x8(a0)

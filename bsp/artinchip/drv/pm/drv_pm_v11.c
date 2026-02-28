@@ -67,7 +67,7 @@ void aic_pm_enter_light_sleep(void)
 
 void aic_pm_enter_deep_sleep(void)
 {
-    uint32_t save_context[12];
+    uint32_t save_context_addr;
 
     /* change bus frequency to 24M */
     hal_clk_set_parent(CLK_AXI0, CLK_OSC24M);
@@ -91,7 +91,8 @@ void aic_pm_enter_deep_sleep(void)
     aic_suspend_resume_fn = (void *)&__sram_pm_start;
     aicos_icache_invalid();
     aicos_dcache_clean_invalid();
-    aic_suspend_resume_fn(&save_context);
+    save_context_addr = RT_ALIGN((uint32_t)&__sram_pm_start + aic_suspend_resume_size, 4);
+    aic_suspend_resume_fn((void *)save_context_addr);
 
     /* wakeup flow */
     /* enable PLL_INT0: cpu pll */
