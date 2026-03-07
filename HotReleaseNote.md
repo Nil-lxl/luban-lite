@@ -7,6 +7,14 @@
     - H050A21
     - H068b06
     - H070A20
+  - RGB+SPI I/F :
+    - H030A8
+    - H034A02
+    - H035A24
+    - H040A18
+    - H048A02
+    - H052A01
+    - H062A01
   - MIPI I/F Display:
     - H013A08
     - H034A01

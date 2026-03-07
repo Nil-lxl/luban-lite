@@ -266,13 +266,33 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
+    config AIC_PANEL_RGB_H030A8
+        bool "Hotlcd RGB H030A8 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
     config AIC_PANEL_RGB_H030A10
         bool "Hotlcd RGB H030A10 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
+    config AIC_PANEL_RGB_H034A02
+        bool "Hotlcd RGB H034A02 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
     config AIC_PANEL_RGB_H035A17
         bool "Hotlcd RGB H035A17 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+    
+    config AIC_PANEL_RGB_H035A24
+        bool "Hotlcd RGB H035A24 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H040A18
+        bool "Hotlcd RGB H040A18 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
@@ -286,8 +306,23 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
+    config AIC_PANEL_RGB_H048A02
+        bool "Hotlcd RGB H048A02 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
     config AIC_PANEL_RGB_H050A12
         bool "Hotlcd RGB H050A12 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H052A01
+        bool "Hotlcd RGB H052A01 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H062A01
+        bool "Hotlcd RGB H062A01 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 

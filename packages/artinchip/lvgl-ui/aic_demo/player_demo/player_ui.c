@@ -30,7 +30,7 @@ void player_ui_init() {
     scr = lv_scr_act();
     // lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
 
-#if 1
+#if 0
     // gif = lv_gif_create(scr);
     // lv_gif_set_src(gif, LVGL_PATH(black360.gif));
     // lv_gif_set_loop_count(gif, 1);

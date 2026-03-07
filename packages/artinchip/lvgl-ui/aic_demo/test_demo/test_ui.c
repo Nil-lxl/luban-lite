@@ -118,7 +118,7 @@ void timer_cb(lv_timer_t *timer) {
             break;
         case 6:
             lv_obj_hide(img1);
-            lv_obj_show(img2);
+            lv_obj_show(container);
             // lv_set_bg_color(LV_COLOR_BLACK);
             break;
         case 7:
@@ -144,7 +144,7 @@ void timer_cb(lv_timer_t *timer) {
     if (count == 9) {                      //在第x个画面停止
         lv_timer_pause(timer);
     }
-    count = (count + 1) % 9;    //在第x个画面结束一轮循环
+    count = (count + 1) % 7;    //在第x个画面结束一轮循环
 #endif
 }
 
@@ -196,7 +196,7 @@ void test_ui_init() {
     lv_obj_hide(gray_block);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit1920x1200.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit480x640.jpg));
     img2 = lv_img_create(scr);
     lv_img_set_src(img2, LVGL_IMAGE_PATH(img1920x1200.jpg));
     img3 = lv_img_create(scr);
