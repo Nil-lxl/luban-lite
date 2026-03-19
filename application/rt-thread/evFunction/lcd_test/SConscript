@@ -1,0 +1,17 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+src += Glob('*.c')
+CPPPATH = [cwd]
+
+ins_dst= 'rodata/lcd_test'
+ins_src= 'assets/'
+
+install=[(ins_src, ins_dst)]
+
+group = DefineGroup('lcd_test', src, depend = ['APP_USE_LCD_TEST'], CPPPATH = CPPPATH, INSTALL = install)
+
+Return('group')

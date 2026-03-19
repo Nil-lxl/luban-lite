@@ -1,6 +1,12 @@
 menu "Custom App Config"
+
+    config APP_USE_LCD_TEST
+        bool "USE LCD TEST"
+        default n
+        depends on AIC_USING_DE
+
     config APP_USE_DRAW_LINE_TEST
-        bool "USE DRAW LINE TEST"
+        bool "USE LCD TOUCH TEST"
         default n
         depends on AIC_USING_TOUCH
         depends on !LPKG_USING_LVGL
@@ -46,8 +52,6 @@ menu "Custom App Config"
         bool "Use CAN TEST"
         default n
         depends on AIC_USING_CAN0 || AIC_USING_CAN1
-
-        
-
+    
 
 endmenu 

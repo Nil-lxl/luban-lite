@@ -33,6 +33,10 @@ void FunctionImp(void) {
     // rt_thread_mdelay(1000);    
     LOG_I("--------------Function Implement--------------\n");
 
+#ifdef APP_USE_LCD_TEST
+    lcd_test_start();
+#endif
+
 #ifdef APP_USE_DRAW_LINE_TEST
     panel_draw_start();
 #endif

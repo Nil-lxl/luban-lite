@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 enum log_level {
-	MPP_LOGL_ERROR = 0,
+	MPP_LOGL_ERROR = 3,
 	MPP_LOGL_WARNING,
 	MPP_LOGL_INFO,
 	MPP_LOGL_DEBUG,

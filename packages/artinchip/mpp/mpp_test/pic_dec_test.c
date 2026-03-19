@@ -647,17 +647,17 @@ void pic_test(int argc, char **argv)
             if (!strcmp(ptr, ".aicp")) {
                 type = MPP_CODEC_VIDEO_DECODER_AICP;
             }
-            logd("decode type: 0x%02X", type);
-            logd("optarg: %s", optarg);
+            LOG_I("decode type: 0x%02X", type);
+            LOG_I("optarg: %s", optarg);
 
             input_fd = open(optarg, O_RDONLY);
             if(input_fd < 0) {
-                loge("open file(%s) failed, %d", optarg, input_fd);
+                LOG_I("open file(%s) failed, %d", optarg, input_fd);
                 return;
             }
 
             file_len = get_file_size(input_fd, optarg);
-            logi("Read image from %s, length %d", optarg, file_len);
+            LOG_I("Read image from %s, length %d", optarg, file_len);
             continue;
 
         case 'a':

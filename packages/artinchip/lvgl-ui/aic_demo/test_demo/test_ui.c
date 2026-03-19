@@ -27,6 +27,10 @@
 #define TEST_DEMO_USE_KEYADC_CONTROL    0       //使用外部按键切换
 #define TEST_DEMO_USE_CIR_CONTROL       0       //使用红外遥控切换
 
+#define TEST_AUTO_PLAY_EN        1                       // 自动轮播
+#define TEST_INTERVAL_MS         1000                    // 每页显示时间
+#define TEST_STOP_AT_INDEX       8                       // 停止在第几页 (-1=不停止)
+
 #ifdef AIC_PANEL_CUSTOM_RESOLUTION
 #define LCD_HOR_RES PANEL_HACTIVE
 #define LCD_VER_RES PANEL_VACTIVE
@@ -59,16 +63,46 @@ static lv_obj_t *gray_block;
 static lv_obj_t *container;
 static lv_timer_t *timer;
 
-static lv_obj_t *img1;
-static lv_obj_t *img2;
-static lv_obj_t *img3;
+static lv_obj_t *img1, *img2, *img3, *img4, *img5;
 static lv_obj_t *player;
 
-#if TEST_DEMO_USE_DEFAULT_CONTROL
-static int count = 0;
-#else 
-static int count = -1;
-#endif
+// 测试类型枚举
+typedef enum {
+    TEST_BORDER,   // 边框
+    TEST_COLOR,    // 纯色
+    TEST_GRAY,     // 灰阶
+    TEST_IMG1,      // 图片1
+    TEST_IMG2,      // 图片2
+    TEST_IMG3,      // 图片3
+    TEST_IMG4,      // 图片4
+    TEST_IMG5,      // 图片5
+
+} test_type_t;
+
+// 每个测试项的结构
+typedef struct {
+    test_type_t type;
+    uint32_t color;          // 颜色测试用
+    const void *img_src;     // 图片测试用
+} test_item_t;
+
+// 测试列表：改顺序只动这里
+static  test_item_t test_table[] = {
+    {TEST_COLOR, 0xFF0000, NULL},        // 红
+    {TEST_COLOR, 0x00FF00, NULL},        // 绿
+    {TEST_COLOR, 0x0000FF, NULL},        // 蓝
+    {TEST_COLOR, 0xFFFFFF, NULL},        // 白
+    {TEST_GRAY, 0, NULL},                // 灰阶
+    {TEST_IMG1, 0, LVGL_IMAGE_PATH(fruit480x1120.jpg)},
+    {TEST_IMG2, 0, LVGL_IMAGE_PATH(red.jpg)},
+    {TEST_IMG3, 0, LVGL_IMAGE_PATH(green.jpg)},
+    {TEST_IMG4, 0, LVGL_IMAGE_PATH(blue.jpg)},
+    {TEST_IMG5, 0, LVGL_IMAGE_PATH(img4.jpg)},
+    {TEST_BORDER, 0, NULL},           // 边框
+};
+
+#define ITEM_COUNT    (sizeof(test_table)/sizeof(test_table[0]))
+static int current_idx = 0;
 
 rt_err_t cir_rx_cb(rt_device_t dev, rt_size_t size) {
     rt_sem_release(cir_sem);
@@ -79,73 +113,49 @@ static void lv_set_bg_color(int color_hex) {
     lv_obj_set_style_bg_color(scr, lv_color_hex(color_hex), 0);
 }
 
-void lv_obj_hide(lv_obj_t *obj) {
+static void lv_obj_hide(lv_obj_t *obj) {
     lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
 }
 
-void lv_obj_show(lv_obj_t *obj) {
+static void lv_obj_show(lv_obj_t *obj) {
     if (lv_obj_has_flag(obj, LV_OBJ_FLAG_HIDDEN)) {
         lv_obj_clear_flag(obj, LV_OBJ_FLAG_HIDDEN);
     }
 }
 
+static void lv_hide_all_item(void) {
+    lv_obj_hide(img1);
+    lv_obj_hide(img2);
+    lv_obj_hide(img3);
+    lv_obj_hide(img4);
+    lv_obj_hide(img5);
+    lv_obj_hide(gray_block);
+    lv_obj_hide(container);
+    lv_obj_hide(player);
+}
+
+static void show_test_item(test_item_t *item) {
+    lv_hide_all_item();
+    switch (item->type) {
+        case TEST_COLOR: lv_set_bg_color(item->color); break;
+        case TEST_GRAY: lv_obj_show(gray_block); break;
+        case TEST_IMG1: lv_obj_show(img1); break;
+        case TEST_IMG2: lv_obj_show(img2); break;
+        case TEST_IMG3: lv_obj_show(img3); break;
+        case TEST_IMG4: lv_obj_show(img4); break;
+        case TEST_IMG5: lv_obj_show(img5);  break;
+        case TEST_BORDER: lv_obj_show(container); break;
+        default: break;
+    }
+
+}
+
 void timer_cb(lv_timer_t *timer) {
-    switch (count) {
-        case 0:
-            lv_obj_hide(img1);
-            // lv_obj_show(container);
-            lv_obj_hide(container);
-            lv_set_bg_color(LV_COLOR_RED);
-            break;
-        case 1:
-            lv_set_bg_color(LV_COLOR_GREEN);
-            break;
-        case 2:
-            lv_set_bg_color(LV_COLOR_BLUE);
-            break;
-        case 3:
-            lv_obj_hide(gray_block);
-            lv_set_bg_color(LV_COLOR_WHITE);
-            break;
-        case 4:
-            lv_obj_show(gray_block);
-            lv_obj_hide(img1);
-            break;
-        case 5:
-            lv_obj_show(img1);
-            lv_obj_hide(gray_block);
-            lv_obj_hide(img2);
-            break;
-        case 6:
-            lv_obj_hide(img1);
-            lv_obj_show(container);
-            // lv_set_bg_color(LV_COLOR_BLACK);
-            break;
-        case 7:
-            lv_obj_hide(img2);
-            lv_obj_show(img3);
-            lv_set_bg_color(LV_COLOR_BLACK);
-            break;
-        case 8:
-            lv_obj_hide(img3);
-            lv_obj_show(container);
-            lv_set_bg_color(LV_COLOR_BLACK);
-            break;
-        case 9:
-            // lv_obj_show(player);
-            // lv_aic_player_set_auto_restart(player, true);
-            // lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
-            break;
-        default:
-            break;
+    if (current_idx >= ITEM_COUNT) {
+        current_idx = 0;
     }
-#define UI_MAX_COUNT    9
-#if TEST_DEMO_USE_DEFAULT_CONTROL
-    if (count == 9) {                      //在第x个画面停止
-        lv_timer_pause(timer);
-    }
-    count = (count + 1) % 7;    //在第x个画面结束一轮循环
-#endif
+    show_test_item(&test_table[current_idx]);
+    current_idx++;
 }
 
 extern void test_control(void);
@@ -196,21 +206,24 @@ void test_ui_init() {
     lv_obj_hide(gray_block);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit480x1120.jpg));
     img2 = lv_img_create(scr);
-    lv_img_set_src(img2, LVGL_IMAGE_PATH(img1920x1200.jpg));
     img3 = lv_img_create(scr);
-    lv_img_set_src(img3, LVGL_IMAGE_PATH(img1920x1200_1.jpg));
+    img4 = lv_img_create(scr);
+    img5 = lv_img_create(scr);
+
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit480x1120.jpg));
+    lv_img_set_src(img2, LVGL_IMAGE_PATH(red.jpg));
+    lv_img_set_src(img3, LVGL_IMAGE_PATH(green.jpg));
+    lv_img_set_src(img4, LVGL_IMAGE_PATH(blue.jpg));
+    lv_img_set_src(img5, LVGL_IMAGE_PATH(face.jpg));
+
     lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(img3, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(img4, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(img5, LV_OBJ_FLAG_HIDDEN);
 
-#if TEST_DEMO_USE_DEFAULT_CONTROL
-    timer = lv_timer_create(timer_cb, 1500, NULL);
-#else 
-    timer = lv_timer_create(timer_cb, 300, NULL);
-#endif
-
+    timer = lv_timer_create(timer_cb, TEST_INTERVAL_MS, NULL);
 #endif
 }
 
