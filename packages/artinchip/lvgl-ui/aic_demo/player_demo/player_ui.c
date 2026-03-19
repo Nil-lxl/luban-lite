@@ -24,6 +24,26 @@ static lv_obj_t *scr;
 static lv_obj_t *player;
 static lv_obj_t *gif;
 static lv_obj_t *img;
+static lv_timer_t *timer;
+lv_obj_t *img1;
+lv_obj_t *img2;
+static int count = 0;
+
+void timer_cb(lv_timer_t *timer) {
+    switch (count) {
+        case 0:
+            lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(img1, LV_OBJ_FLAG_HIDDEN);
+            break;
+        case 1:
+            lv_obj_add_flag(img1, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(img2, LV_OBJ_FLAG_HIDDEN);
+            break;
+        default:
+            break;
+    }
+    count = (count + 1) % 2;    //在第x个画面结束一轮循环
+}
 
 void player_ui_init() {
     aicos_msleep(1500);     //等待sdcard挂载成功
@@ -39,13 +59,22 @@ void player_ui_init() {
     lv_img_set_src(img, LVGL_IMAGE_PATH(fruit540x540.jpg));
     lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
 #else
-    player = lv_aic_player_create(scr);
-    lv_obj_center(player);
-    lv_aic_player_set_src(player, SD_VIDEO_PATH(video.mp4));
+    // player = lv_aic_player_create(scr);
+    // lv_obj_center(player);
+    // lv_aic_player_set_src(player, SD_VIDEO_PATH(video.mp4));
 
-    lv_aic_player_set_auto_restart(player, true);
-    lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
+    // lv_aic_player_set_auto_restart(player, true);
+    // lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);
 #endif
+
+    img1 = lv_img_create(scr);
+    img2 = lv_img_create(scr);
+
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(img1.png));
+    lv_img_set_src(img2, LVGL_IMAGE_PATH(img2.png));
+    lv_obj_add_flag(img2, LV_OBJ_FLAG_HIDDEN);
+
+    timer = lv_timer_create(timer_cb, 3000, NULL);
 
 }
 

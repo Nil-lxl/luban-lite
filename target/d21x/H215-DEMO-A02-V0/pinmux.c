@@ -70,7 +70,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PA.8"}, // SCK
     {4, PIN_PULL_DIS, 3, "PA.9"}, // SDA
 #endif
-#ifdef AIC_USING_I2C3
+#if defined AIC_USING_I2C3 && !defined AIC_USING_RTP
     {4, PIN_PULL_DIS, 3, "PA.10"}, // SCK
     {4, PIN_PULL_DIS, 3, "PA.11"}, // SDA
 #endif
