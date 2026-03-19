@@ -146,16 +146,8 @@ static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf, rt
             read_id = touch_id[read_index];
             pre_id[read_index] = read_id;
 
-#ifdef AIC_TOUCH_PANEL_ILI2511
-            input_x = ((read_buf[off_set + 1] & 0x3f) << 8) | read_buf[off_set + 2];
-            input_y = ((read_buf[off_set + 3] & 0x3f) << 8) | read_buf[off_set + 4];
-#elif defined(AIC_TOUCH_PANEL_ILI2117)
-            input_x = ((read_buf[off_set + 1] & 0xf0) << 4) | read_buf[off_set + 2];
-            input_y = ((read_buf[off_set + 1] & 0x0f) << 8) | read_buf[off_set + 3];
-#else
-            input_x = ((read_buf[off_set + 3] & 0x3f) << 8) | read_buf[off_set + 2];
-            input_y = ((read_buf[off_set + 5] & 0x3f) << 8) | read_buf[off_set + 4];
-#endif
+            input_y = ((read_buf[off_set + 1] & 0x3f) << 8) | read_buf[off_set + 2];
+            input_x = ((read_buf[off_set + 3] & 0x3f) << 8) | read_buf[off_set + 4];
 
             aic_touch_flip(&input_x, &input_y);
             aic_touch_rotate(&input_x, &input_y);
@@ -163,7 +155,7 @@ static rt_size_t ili2511_read_point(struct rt_touch_device *touch, void *buf, rt
             if (!aic_touch_crop(&input_x, &input_y))
                 continue;
 
-            ili2511_touch_down(buf, read_id, input_x, input_y);
+            ili2511_touch_down(buf, read_id, (int16_t)(input_x/(9600.0/720)), (int16_t)1280-(input_y/(9600.0/1280)));
         }
     } else if (pre_touch) {
         for (read_index = 0; read_index < pre_touch; read_index++) {

@@ -196,7 +196,7 @@ void test_ui_init() {
     lv_obj_hide(gray_block);
 
     img1 = lv_img_create(scr);
-    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit480x640.jpg));
+    lv_img_set_src(img1, LVGL_IMAGE_PATH(fruit480x1120.jpg));
     img2 = lv_img_create(scr);
     lv_img_set_src(img2, LVGL_IMAGE_PATH(img1920x1200.jpg));
     img3 = lv_img_create(scr);

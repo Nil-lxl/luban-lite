@@ -253,7 +253,7 @@ static struct panel_rgb rgb = {
     .mode = PRGB,
     .format = PRGB_24BIT,
     .clock_phase = DEGREE_90,
-    .data_order = BGR,
+    .data_order = RGB,
     .data_mirror = 0,
 };
 

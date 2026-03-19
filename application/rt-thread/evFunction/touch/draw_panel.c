@@ -153,30 +153,53 @@ void touch_init(void) {
 }
 
 void touch_read_point(void *param) {
-    touch_init();
-    rt_device_control(touch_device, RT_TOUCH_CTRL_ENABLE_INT, &touch_info);
+    touch_init();   /* 初始化触摸设备 */
+    rt_device_control(touch_device, RT_TOUCH_CTRL_ENABLE_INT, &touch_info); /* 使能触摸设备中断 */
+
     prev_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * touch_info.point_num);
     touch_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * touch_info.point_num);
+
+    if (prev_data && touch_data) {
+        /* 初始化上一次的触摸数据为无效坐标和事件 */
+        for (int i = 0;i < touch_info.point_num;i++) {
+            prev_data[i].x_coordinate = -1;
+            prev_data[i].y_coordinate = -1;
+            prev_data[i].event = RT_TOUCH_EVENT_NONE;
+        }
+        memset(prev_data, 0, sizeof(struct rt_touch_data) * touch_info.point_num);
+        memset(touch_data, 0, sizeof(struct rt_touch_data) * touch_info.point_num);
+    } else {
+        LOG_E("malloc touch data failed!");
+        return;
+    }
+
     while (1) {
+        /* 等待信号量：未接收到新坐标数据则不处理 */
         rt_sem_take(touch_sem, RT_WAITING_FOREVER);
 
         rt_size_t read_size = rt_device_read(touch_device, 0, touch_data, touch_info.point_num);
         if (read_size > 0) {
             for (rt_uint8_t i = 0;i < touch_info.point_num;i++) {
-                if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
-                    touch_data[i].event == RT_TOUCH_EVENT_MOVE ||
-                    touch_data[i].event == RT_TOUCH_EVENT_UP) {
+                if (touch_data[i].event == RT_TOUCH_EVENT_DOWN || touch_data[i].event == RT_TOUCH_EVENT_MOVE) {
+                    // LOG_W("%d %d %d %d", prev_data[i].track_id,
+                    //     prev_data[i].x_coordinate,
+                    //     prev_data[i].y_coordinate,
+                    //     prev_data[i].event);
                     // LOG_I("%d %d %d %d", touch_data[i].track_id,
                     //     touch_data[i].x_coordinate,
                     //     touch_data[i].y_coordinate,
                     //     touch_data[i].event);
+                } else if (touch_data[i].event == RT_TOUCH_EVENT_UP) {
+                    prev_data[i].x_coordinate = -1;
+                    prev_data[i].y_coordinate = -1;
+                    touch_data[i].event = RT_TOUCH_EVENT_NONE;
+                    // LOG_I("point %d up", touch_data[i].track_id);
                 }
-                rt_thread_delay(1);
+                rt_thread_mdelay(1);
 
             }
             /* 获取上一次的触摸数据 */
             rt_memcpy(prev_data, touch_data, sizeof(struct rt_touch_data) * touch_info.point_num);
-
         }
         rt_device_control(touch_device, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
     }
@@ -184,8 +207,6 @@ void touch_read_point(void *param) {
 
 
 void panel_draw_lines(void *param) {
-    rt_thread_mdelay(200);
-
     struct frame_buffer_info fb_info = {
         .frame_buffer_format = screen_info.format,
         .frame_buffer_width = screen_info.width,
@@ -193,12 +214,23 @@ void panel_draw_lines(void *param) {
         .frame_buffer = (uint8_t *)screen_info.framebuffer,
     };
 
-    char *fb_buf = (char *)screen_info.framebuffer;
+    /* 初始化屏幕为白色 */
 
+    char *fb_buf = (char *)screen_info.framebuffer;
+    if (fb_buf == NULL) {
+        pr_err("Invalid framebuffer\n");
+        return -1;
+    }
+    // memset(fb_buf, 0, screen_info.smem_len);
     int pixel_size = screen_info.bits_per_pixel >> 3;
     int color = 0xFFFFFFFF;
 
-    printf("Framebuf: size %d, width %d, height %d, bits per pixel %d\n", screen_info.smem_len, screen_info.width, screen_info.height, screen_info.bits_per_pixel);
+    for (int i = 0;i < screen_info.height;i++) {
+        memset(fb_buf, color, screen_info.width * pixel_size);
+        fb_buf += screen_info.stride;
+    }
+
+    aicos_dcache_clean_range(fb_buf, screen_info.smem_len);
 
     for (int i = 0;i < screen_info.width;i++) {
         for (int j = 0;j < screen_info.height;j++) {
@@ -209,7 +241,21 @@ void panel_draw_lines(void *param) {
 
     aicos_dcache_clean_range(fb_buf, screen_info.smem_len);
 
-#if 1   //show display border
+    printf("Framebuf: size %d, width %d, height %d, bits per pixel %d\n", screen_info.smem_len, screen_info.width, screen_info.height, screen_info.bits_per_pixel);
+
+    /* 屏幕左上角方向标识 */
+    struct line_dsc mark[1];
+    mark[0].x1 = 0;
+    mark[0].y1 = 0;
+    mark[0].x2 = 50;
+    mark[0].y2 = 50;
+
+    mark[0].color = 0xff8800;
+    mark[0].width = 50;
+    draw_line(&mark[0], &fb_info);
+
+    /* 显示屏幕边框 */
+#if 1 
     struct line_dsc border[4];
 
     border[0].x1 = 0;
@@ -244,7 +290,7 @@ void panel_draw_lines(void *param) {
 
         for (int i = 0;i < touch_info.point_num;i++) {
             if (touch_data[i].event == RT_TOUCH_EVENT_DOWN ||
-                touch_data[i].event == RT_TOUCH_EVENT_MOVE ) {
+                touch_data[i].event == RT_TOUCH_EVENT_MOVE) {
                 if (prev_data[i].x_coordinate != 0 || prev_data[i].y_coordinate != 0) {
 
                     line[i].x1 = prev_data[i].x_coordinate;
@@ -259,18 +305,12 @@ void panel_draw_lines(void *param) {
                     line[3].color = 0xf44336;
                     line[4].color = 0xffc107;
 
-                    // LOG_W("point1: %d,%d", line[i].x1, line[i].y1);
-                    // LOG_W("point2: %d,%d", line[i].x2, line[i].y2);
+                    // LOG_W("point1: %d,%d, point2: %d,%d", line[i].x1, line[i].y1, line[i].x2, line[i].y2);
                     draw_line(&line[i], &fb_info);
                 }
-                aicos_dcache_clean_range((unsigned long *)screen_info.framebuffer, screen_info.smem_len);
             }
         }
         aicos_dcache_clean_range((unsigned long *)screen_info.framebuffer, screen_info.smem_len);
-
-        if (fb) {
-            mpp_fb_close(fb);
-        }
     }
 }
 
@@ -280,15 +320,16 @@ void panel_draw_start() {
 
     set_bg_color();
 
-    touch_read_thread = rt_thread_create("touch_read", touch_read_point, RT_NULL, 2 * 1024, 20, 5);
+    draw_thread = rt_thread_create("draw_line", panel_draw_lines, RT_NULL, 4 * 1024, 16, 5);
+    if (draw_thread != RT_NULL) {
+        rt_thread_startup(draw_thread);
+    }
+
+    touch_read_thread = rt_thread_create("touch_read", touch_read_point, RT_NULL, 4 * 1024, 15, 5);
     if (touch_read_thread != RT_NULL) {
         rt_thread_startup(touch_read_thread);
     }
 
-    draw_thread = rt_thread_create("draw_line", panel_draw_lines, RT_NULL, 2 * 1024, 21, 5);
-    if (draw_thread != RT_NULL) {
-        rt_thread_startup(draw_thread);
-    }
 }
 
 MSH_CMD_EXPORT(panel_draw_start, touch draw panel);
