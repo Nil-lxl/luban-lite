@@ -1,0 +1,153 @@
+/*
+ * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "panel_com.h"
+#include <aic_hal.h>
+
+#define RESET_PIN      "PD.13"
+
+#define SCL_PIN        "PC.4"
+#define DC_PIN         "PC.5"
+#define CS_PIN         "PC.7"
+#define SDI_PIN        "PD.16"
+
+#define IM0_PIN        "PD.15"
+#define IM1_PIN        "PD.14"
+
+static struct gpio_desc reset_gpio;
+static struct gpio_desc im0_gpio;
+static struct gpio_desc im1_gpio;
+
+static void panel_gpio_init(void)
+{
+    panel_get_gpio(&reset_gpio, RESET_PIN);
+    panel_get_gpio(&im0_gpio, IM0_PIN);
+    panel_get_gpio(&im1_gpio, IM1_PIN);
+
+    panel_get_gpio(&im0_gpio, IM0_PIN);
+    panel_get_gpio(&im1_gpio, IM1_PIN);
+
+    panel_gpio_set_value(&im0_gpio, 1);
+    panel_gpio_set_value(&im1_gpio, 0);
+
+    panel_gpio_set_value(&reset_gpio, 1);
+    aic_delay_ms(20);
+    panel_gpio_set_value(&reset_gpio, 0);
+    aic_delay_ms(10);
+    panel_gpio_set_value(&reset_gpio, 1);
+    aic_delay_ms(120);
+}
+
+static int panel_enable(struct aic_panel *panel)
+{
+    panel_gpio_init();
+
+    panel_spi_device_emulation(CS_PIN, SDI_PIN, SCL_PIN, DC_PIN);
+
+    panel_spi_send_seq(0x11);
+    aic_delay_ms(120);
+    panel_spi_send_seq(0xDE, 0x00);
+    panel_spi_send_seq(0xDF, 0x98, 0x55);
+
+    panel_spi_send_seq(0xCE, 0x0D, 0x00);
+    panel_spi_send_seq(0xB2, 0x1F);
+    panel_spi_send_seq(0xB7, 0x01, 0x2D, 0x01, 0x55);
+    panel_spi_send_seq(0xBB, 0x1B, 0x64, 0xC4, 0x0E, 0x3E, 0xF5);
+    panel_spi_send_seq(0xBC, 0x03, 0x22, 0xF3, 0xC0);
+    panel_spi_send_seq(0xC0, 0x22, 0xA4);
+    panel_spi_send_seq(0xC3, 0x00, 0x02, 0x2A, 0x0B, 0x08, 0x48, 0x08, 0x04, 0x62, 0x30, 0x30);
+    panel_spi_send_seq(0xC4, 0x40, 0x00, 0xAD, 0x68, 0x43, 0x07, 0x04, 0x16, 0x43, 0x07, 0x04);
+
+    panel_spi_send_seq(0xC8, 0x3F, 0x31, 0x28, 0x25, 0x25, 0x27, 0x22, 0x22, 0x20, 0x1F, 0x1C,
+    0x12, 0x0F, 0x0B, 0x02, 0x02, 0x3F, 0x31, 0x28, 0x25, 0x25, 0x27, 0x22, 0x22, 0x20, 0x1F,
+    0x1C, 0x12, 0x0F, 0x0B, 0x02, 0x02);
+    panel_spi_send_seq(0xD3, 0x28, 0x13);
+    panel_spi_send_seq(0xD7, 0x00, 0x30);
+    panel_spi_send_seq(0xD9, 0x00, 0x00, 0xFF, 0x00, 0xF0, 0x00);
+    panel_spi_send_seq(0xDE, 0x01);
+    panel_spi_send_seq(0xB7, 0x13, 0xE7, 0x64, 0x39, 0x06, 0x36, 0x19, 0x1C);
+    panel_spi_send_seq(0xBE, 0x00);
+    panel_spi_send_seq(0xC1, 0x05, 0x4A, 0x80);
+    panel_spi_send_seq(0xC2, 0x00, 0x16, 0xDA, 0xE7);
+    panel_spi_send_seq(0xC7, 0x00, 0x00, 0x00, 0x38, 0x08, 0x08, 0x00, 0x01);
+    panel_spi_send_seq(0xC8, 0x00, 0x00, 0x00, 0x00, 0x15, 0x3B);
+    panel_spi_send_seq(0xC9, 0x06, 0x04, 0x0A, 0x08, 0x1E);
+    panel_spi_send_seq(0xCA, 0x00, 0x35, 0x15, 0x1F, 0x1F);
+    panel_spi_send_seq(0xCB, 0x07, 0x05, 0x0B, 0x09, 0x1E);
+    panel_spi_send_seq(0xCC, 0x01, 0x35, 0x15, 0x1F, 0x1F);
+    panel_spi_send_seq(0xCD, 0x09, 0x0B, 0x05, 0x07, 0x1E);
+    panel_spi_send_seq(0xCE, 0x01, 0x35, 0x1F, 0x15, 0x1F);
+    panel_spi_send_seq(0xCF, 0x08, 0x0A, 0x04, 0x06, 0x1E);
+    panel_spi_send_seq(0xD0, 0x00, 0x35, 0x1F, 0x15, 0x1F);
+    panel_spi_send_seq(0xD1, 0x02, 0x30);
+    panel_spi_send_seq(0xD2, 0x02, 0x03, 0x52, 0xDF, 0xDD);
+    panel_spi_send_seq(0xD3, 0x3B, 0x04, 0x48);
+    panel_spi_send_seq(0xD5, 0x10, 0x10, 0x07, 0x07, 0x0F, 0x94, 0x26);
+    panel_spi_send_seq(0xD6, 0x00, 0x00, 0x40);
+    panel_spi_send_seq(0xD7, 0x00, 0x00, 0x20);
+    panel_spi_send_seq(0xDE, 0x02);
+    panel_spi_send_seq(0xB6, 0x1C);
+    panel_spi_send_seq(0xDE, 0x00);
+    panel_spi_send_seq(0x4D, 0x00);
+    panel_spi_send_seq(0x4E, 0x00);
+    panel_spi_send_seq(0x4F, 0x00);
+    panel_spi_send_seq(0x4C, 0x01);
+    aic_delay_ms(10);
+    panel_spi_send_seq(0x4C, 0x00);
+    panel_spi_send_seq(0x36, 0x00);
+    panel_spi_send_seq(0x35);
+    panel_spi_send_seq(0x2A, 0x00, 0x00, 0x01, 0x68);
+    panel_spi_send_seq(0x2B, 0x00, 0x00, 0x01, 0x68);
+    panel_spi_send_seq(0x3A, 0x55);
+    panel_spi_send_seq(0x11);
+    aic_delay_ms(120);
+
+    panel_spi_send_seq(0x29);
+    aic_delay_ms(10);
+
+    panel_di_enable(panel, 0);
+    panel_de_timing_enable(panel, 0);
+    panel_backlight_enable(panel, 0);
+
+    return 0;
+}
+
+static struct aic_panel_funcs jd9855_funcs = {
+    .disable = panel_default_disable,
+    .unprepare = panel_default_unprepare,
+    .prepare = panel_default_prepare,
+    .enable = panel_enable,
+    .register_callback = panel_register_callback,
+};
+
+static struct display_timing jd9855_timing = {
+    .pixelclock = 8000000,
+    .hactive = 360,
+    .hfront_porch = 60,
+    .hback_porch = 30,
+    .hsync_len = 30,
+    .vactive = 360,
+    .vfront_porch = 8,
+    .vback_porch = 4,
+    .vsync_len = 4,
+};
+
+static struct panel_rgb rgb = {
+    .mode = SRGB,
+    .format = SRGB_8BIT,
+    .clock_phase = DEGREE_0,
+    .data_order = RGB,
+    .data_mirror = 0,
+};
+
+struct aic_panel rgb_jd9855 = {
+    .name = "panel-jd9855",
+    .timings = &jd9855_timing,
+    .funcs = &jd9855_funcs,
+    .rgb = &rgb,
+    .connector_type = AIC_RGB_COM,
+};
+

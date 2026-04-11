@@ -1,0 +1,14 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('KERNEL_BAREMETAL') or GetDepend('KERNEL_FREERTOS'):
+    if GetDepend('AIC_GPTIMER_DRV_BARE_TEST'):
+        src = Glob('*.c')
+
+group = DefineGroup('test-gptimer', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

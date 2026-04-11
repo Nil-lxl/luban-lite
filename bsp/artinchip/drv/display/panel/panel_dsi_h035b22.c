@@ -1,0 +1,124 @@
+/*
+ * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "panel_com.h"
+#include "panel_dsi.h"
+#include <aic_hal.h>
+#include "disp_gpio.h"
+
+static struct gpio_desc reset_gpio;
+
+static void panel_gpio_init(struct aic_panel *panel) {
+    panel_get_gpio(&reset_gpio, RESET_PIN);
+
+    panel_gpio_set_value(&reset_gpio, 1);
+    aic_delay_ms(10);
+    panel_gpio_set_value(&reset_gpio, 0);
+    aic_delay_ms(20);
+    panel_gpio_set_value(&reset_gpio, 1);
+    aic_delay_ms(120);
+}
+
+static int panel_enable(struct aic_panel *panel) {
+    int ret;
+
+    panel_gpio_init(panel);
+
+    panel_di_enable(panel, 0);
+    panel_dsi_send_perpare(panel);
+
+    panel_dsi_generic_send_seq(panel, 0xff, 0x77, 0x01, 0x00, 0x00, 0x13);
+    panel_dsi_generic_send_seq(panel, 0xef, 0x08);
+    panel_dsi_generic_send_seq(panel, 0xff, 0x77, 0x01, 0x00, 0x00, 0x10);
+    panel_dsi_generic_send_seq(panel, 0xc0, 0x63, 0x00);
+    panel_dsi_generic_send_seq(panel, 0xc1, 0x14, 0x0C);
+    panel_dsi_generic_send_seq(panel, 0xc2, 0x37, 0x02);
+    panel_dsi_generic_send_seq(panel, 0xcc, 0x10);
+    panel_dsi_generic_send_seq(panel, 0xB0, 0xC5, 0x11, 0x1B, 0x0D, 0x11, 0x07, 0x0A, 0x09, 0x08, 0x24, 0x05, 0x12, 0x10, 0xA9, 0x32, 0xDF);
+    panel_dsi_generic_send_seq(panel, 0xB1, 0xC5, 0x19, 0x21, 0x0B, 0x0E, 0x03, 0x0C, 0x07, 0x07, 0x26, 0x04, 0x12, 0x11, 0xAA, 0x32, 0xDF);
+    panel_dsi_generic_send_seq(panel, 0xff, 0x77, 0x01, 0x00, 0x00, 0x11);
+    panel_dsi_generic_send_seq(panel, 0xb0, 0x4D);
+    panel_dsi_generic_send_seq(panel, 0xb1, 0x59);//0x56
+    panel_dsi_generic_send_seq(panel, 0xb2, 0x81);
+    panel_dsi_generic_send_seq(panel, 0xb3, 0x80);
+    panel_dsi_generic_send_seq(panel, 0xb5, 0x4E);
+    panel_dsi_generic_send_seq(panel, 0xb7, 0x85);
+    panel_dsi_generic_send_seq(panel, 0xb8, 0x32);
+    panel_dsi_generic_send_seq(panel, 0xBB, 0x03);
+    panel_dsi_generic_send_seq(panel, 0xc1, 0x08);
+    panel_dsi_generic_send_seq(panel, 0xc2, 0x08);
+    panel_dsi_generic_send_seq(panel, 0xd0, 0x88);
+    panel_dsi_generic_send_seq(panel, 0xe0, 0x00, 0x00, 0x02);
+    panel_dsi_generic_send_seq(panel, 0xE1, 0x06, 0x28, 0x08, 0x28, 0x05, 0x28, 0x07, 0x28, 0x0E, 0x33, 0x33);
+    panel_dsi_generic_send_seq(panel, 0xE2, 0x30, 0x30, 0x33, 0x33, 0x34, 0x00, 0x00, 0x00, 0x34, 0x00, 0x00, 0x00);
+    panel_dsi_generic_send_seq(panel, 0xe3, 0x00, 0x00, 0x33, 0x33);
+    panel_dsi_generic_send_seq(panel, 0xe4, 0x44, 0x44);
+    panel_dsi_generic_send_seq(panel, 0xE5, 0x09, 0x2F, 0x2C, 0x8C, 0x0B, 0x31, 0x2C, 0x8C, 0x0D, 0x33, 0x2C, 0x8C, 0x0F, 0x35, 0x2C, 0x8C);
+    panel_dsi_generic_send_seq(panel, 0xE6, 0x00, 0x00, 0x33, 0x33);
+    panel_dsi_generic_send_seq(panel, 0xE7, 0x44, 0x44);
+    panel_dsi_generic_send_seq(panel, 0xE8, 0x08, 0x2E, 0x2C, 0x8C, 0x0A, 0x30, 0x2C, 0x8C, 0x0C, 0x32, 0x2C, 0x8C, 0x0E, 0x34, 0x2C, 0x8C);
+    panel_dsi_generic_send_seq(panel, 0xE9, 0x36, 0x00);
+    panel_dsi_generic_send_seq(panel, 0xEB, 0x00, 0x01, 0xE4, 0xE4, 0x44, 0x88, 0x40);
+    panel_dsi_generic_send_seq(panel, 0xED, 0xFF, 0xFC, 0xB2, 0x45, 0x67, 0xFA, 0x01, 0xFF, 0xFF, 0x10, 0xAF, 0x76, 0x54, 0x2B, 0xCF, 0xFF);
+    panel_dsi_generic_send_seq(panel, 0xef, 0x08, 0x08, 0x08, 0x45, 0x3f, 0x54);
+    panel_dsi_generic_send_seq(panel, 0xff, 0x77, 0x01, 0x00, 0x00, 0x13);
+    panel_dsi_generic_send_seq(panel, 0xe8, 0x00, 0x0e);
+    panel_dsi_generic_send_seq(panel, 0x11, 0x00);
+    aic_delay_ms(120);
+    panel_dsi_generic_send_seq(panel, 0xe8, 0x00, 0x0c);
+    aic_delay_ms(120);
+    panel_dsi_generic_send_seq(panel, 0xe8, 0x00, 0x00);
+
+    // panel_dsi_generic_send_seq(panel, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x12);
+    // panel_dsi_generic_send_seq(panel, 0xD1, 0x81, 0x08, 0x03, 0x20, 0x08, 0x01, 0xA0, 0x01, 0xE0, 0xA0, 0x01, 0xE0, 0x03, 0x56);
+    // panel_dsi_generic_send_seq(panel, 0xD2, 0x08, 0x08, 0x90, 0x0A, 0x08);//选择图片彩条画面（图片表格从左上角开始 0x00，最右下角 0x0f
+
+    panel_dsi_generic_send_seq(panel, 0xff, 0x77, 0x01, 0x00, 0x00, 0x00);
+    panel_dsi_generic_send_seq(panel, 0x36, 0x00);
+    panel_dsi_generic_send_seq(panel, 0x29, 0x00);
+    aic_delay_ms(100);
+
+    panel_dsi_setup_realmode(panel);
+
+    panel_de_timing_enable(panel, 0);
+    panel_backlight_enable(panel, 0);
+    return 0;
+}
+
+static struct aic_panel_funcs panel_funcs = {
+    .disable = panel_default_disable,
+    .unprepare = panel_default_unprepare,
+    .prepare = panel_default_prepare,
+    .enable = panel_enable,
+    .register_callback = panel_register_callback,
+};
+
+static struct display_timing h035b22_timing = {
+    .pixelclock = 30 * 1000 * 1000,
+    .hactive = 480,
+    .hfront_porch = 48,
+    .hback_porch = 48,
+    .hsync_len = 10,
+    .vactive = 800,
+    .vfront_porch = 20,
+    .vback_porch = 20,
+    .vsync_len = 10,
+};
+
+struct panel_dsi dsi = {
+    .mode = DSI_MOD_VID_BURST,
+    .format = DSI_FMT_RGB888,
+    .lane_num = 2,
+};
+
+struct aic_panel dsi_h035b22 = {
+    .name = "panel-h035b22",
+    .timings = &h035b22_timing,
+    .funcs = &panel_funcs,
+    .dsi = &dsi,
+    .connector_type = AIC_MIPI_COM,
+};
+

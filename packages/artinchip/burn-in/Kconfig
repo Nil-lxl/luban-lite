@@ -1,0 +1,21 @@
+
+# Kconfig file for package adbd
+menuconfig LPKG_BURN_IN
+    bool "burn-in test"
+    default n
+
+if LPKG_BURN_IN
+    config LPKG_BURN_IN_PLAYER_ENABLE
+        bool "test player"
+        default n
+        depends on AIC_MPP_PLAYER_INTERFACE
+    if LPKG_BURN_IN_PLAYER_ENABLE
+        config LPKG_BURN_IN_PLAYER_LOOP
+            int "set play file/dir loop num"
+            default 10000000
+        config LPKG_BURN_IN_PLAYER_LOG_TO_SERIAL
+            bool "output log to serial interface"
+            default y
+    endif
+endif
+

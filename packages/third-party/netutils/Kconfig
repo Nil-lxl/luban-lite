@@ -1,0 +1,11 @@
+menuconfig LPKG_USING_NETUTILS
+    bool "netutils: Networking utilities for RT-Thread"
+    default n
+
+if LPKG_USING_NETUTILS
+
+    config LPKG_NETUTILS_IPERF
+        bool "Enable iperf-liked network performance tool"
+        default n
+
+endif

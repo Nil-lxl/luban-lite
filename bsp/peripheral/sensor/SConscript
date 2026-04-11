@@ -1,0 +1,35 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+CPPPATH = []
+
+if GetDepend('AIC_USE_SENSOR_DHT11'):
+    CPPPATH.append(cwd + 'dht11/')
+    src += Glob('dht11/*.c')
+
+if GetDepend('AIC_USE_SENSOR_PHOTOSENSITIVE'):
+    CPPPATH.append(cwd + 'photosensitive/')
+    src += Glob('photosensitive/*.c')
+
+if GetDepend('AIC_USE_SENSOR_FLAME'):
+    CPPPATH.append(cwd + 'flame/')
+    src += Glob('flame/*.c')
+
+if GetDepend('AIC_USE_SENSOR_BMP180'):
+    CPPPATH.append(cwd + 'bmp180/')
+    src += Glob('bmp180/*.c')
+    
+if GetDepend('AIC_USE_SENSOR_MQ135'):
+    CPPPATH.append(cwd + 'mq-135/')
+    src += Glob('mq-135/*.c')
+    
+if GetDepend('AIC_USE_SENSOR_US016'):
+    CPPPATH.append(cwd + 'us-016/')
+    src += Glob('us-016/*.c')
+
+group = DefineGroup('sensor', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

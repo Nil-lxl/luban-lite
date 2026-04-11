@@ -1,0 +1,19 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = []
+src = []
+if GetDepend('AIC_FILE_SYSTEM_TEST') and GetDepend('RT_USING_FINSH'):
+    src += Glob('test_fs_thread.c')
+    if GetDepend('RT_USING_POSIX_FS'):
+        src += Glob('test_filesystem.c')
+
+if GetDepend('AIC_EXAMPLE') and GetDepend('RT_USING_FINSH'):
+    src += Glob('posix_fs_example.c')
+    src += Glob('c_fs_example.c')
+
+group = DefineGroup('test-filesystem', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

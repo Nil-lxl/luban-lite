@@ -1,0 +1,33 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('rtconfig')
+
+from building import *
+import os
+build_lib = False
+cwd = GetCurrentDir()
+cpp_path = [cwd]
+
+cc_flages = ""
+src = Glob('*.c')
+group = []
+library_name = ''
+library_path = ''
+
+cur_dir_name = os.path.basename(cwd)
+cpp_path.append(cwd + '/')
+
+if build_lib == True:
+    library_path = cwd + '/'
+    library_name = cur_dir_name + '_' + rtconfig.CPUNAME
+    lib_src = Glob('/*.c')
+    src += Glob('./player_backend/*.c')
+    DefineGroup(library_path + library_name + '.a', lib_src, depend = ['LPKG_USING_LVGL', 'AIC_MPP_PLAYER_INTERFACE'], LIBRARY='')
+else:
+    src += Glob('/*.c')
+    src += Glob('./player_backend/*.c')
+
+group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL', 'AIC_MPP_PLAYER_INTERFACE'],
+                    CPPPATH = cpp_path, CFLAGS = cc_flages,
+                    LIBS = [library_name], LIBPATH = [library_path])
+Return('group')

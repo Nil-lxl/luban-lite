@@ -1,0 +1,15 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+CPPPATH = []
+
+if GetDepend('AIC_RGB_LED_WS2812B'):
+    CPPPATH.append(cwd + 'ws2812b/')
+    src += Glob('ws2812b/*.c')
+
+group = DefineGroup('rgb_led', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

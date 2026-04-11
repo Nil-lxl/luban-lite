@@ -1,0 +1,15 @@
+
+# Kconfig file for package zipfs
+menuconfig LPKG_USING_ZIPFS
+    bool "zipfs: A file system for zip file"
+    select LPKG_USING_MINIZ
+    default n
+    depends on PRJ_KERNEL="rt-thread"
+
+if LPKG_USING_ZIPFS
+
+    config LPKG_ZIPFS_DEMO
+        bool "Enable zipfs demo"
+        default n
+
+endif

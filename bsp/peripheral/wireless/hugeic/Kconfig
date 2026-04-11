@@ -1,0 +1,25 @@
+#-----------------------------
+# txw901 wlan devices local parameter
+#-----------------------------
+
+# wlan0 parameter
+menu "Wlan0 Parameter"
+    config AIC_WIRELESS_PWR_GPIO
+        string "txw901 power on gpio"
+        default "PD.17"
+
+    choice
+        prompt "txw901 BLE provisioning"
+        default TXW901_MANUAL_PROV_MODE
+        config TXW901_MANUAL_PROV_MODE
+            bool "select manual provisioning mode"
+        config TXW901_BLE_BROADCAST_PROV_MODE
+            bool "select BLE broadcast provisioning mode"
+        config TXW901_BLE_CONNECT_PROV_MODE
+            bool "select BLE connect provisioning mode"
+    endchoice
+
+    config HUGEIC_TXW901_DEBUG_LOG
+        bool "enable txw901 debug messages"
+        default y
+endmenu

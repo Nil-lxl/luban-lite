@@ -1,0 +1,33 @@
+
+menuconfig AIC_NFTL_SUPPORT
+    bool "Aic NFTL support"
+    default n
+
+if AIC_NFTL_SUPPORT
+    config AIC_NFLT_USED_LIB
+        depends on AIC_NFTL_SUPPORT
+        bool "Aic NFTL use lib"
+        default n
+
+    config AIC_NFLT_TEST
+        depends on AIC_NFTL_SUPPORT
+        bool "Enable NFTL test command"
+        default n
+
+    choice
+        prompt "Enable NFTL OOB data verify"
+        default AIC_NFTL_DISABLE_OOB_VERIFY
+        help
+            This option has minimal effect on performance since it only validates the OOB data format.
+            A disturbance on the SPI signal lines will lock the Flash from writing, requiring a reboot to recover.
+        config AIC_NFTL_DISABLE_OOB_VERIFY
+            bool "disable"
+        config AIC_NFTL_ENABLE_OOB_VERIFY
+            bool "enable"
+    endchoice
+
+    config AIC_NFTL_OOB_VERIFY
+        int
+        default 0 if AIC_NFTL_DISABLE_OOB_VERIFY
+        default 1 if AIC_NFTL_ENABLE_OOB_VERIFY
+endif

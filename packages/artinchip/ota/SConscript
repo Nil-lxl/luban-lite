@@ -1,0 +1,16 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = [cwd]
+
+src = []
+group = []
+
+if GetDepend('LPKG_USING_OTA_DOWNLOADER'):
+    src = Glob('*.c')
+
+    group = DefineGroup('ota', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

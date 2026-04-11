@@ -1,0 +1,27 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = [cwd, cwd + '/include']
+
+src = []
+
+if GetDepend('LPKG_USING_USERID'):
+    src = Glob('userid.c')
+if GetDepend('KERNEL_BAREMETAL') and GetDepend('USERID_IN_SPINOR'):
+    src += Glob('spinor_bare.c')
+if GetDepend('KERNEL_RTTHREAD') and GetDepend('USERID_IN_SPINOR'):
+    src += Glob('spinor_rtt.c')
+if GetDepend('KERNEL_BAREMETAL') and GetDepend('USERID_IN_SPINAND'):
+    src += Glob('spinand_bare.c')
+if GetDepend('KERNEL_RTTHREAD') and GetDepend('USERID_IN_SPINAND'):
+    src += Glob('spinand_rtt.c')
+if GetDepend('KERNEL_BAREMETAL') and GetDepend('USERID_IN_MMC'):
+    src += Glob('mmc_bare.c')
+if GetDepend('KERNEL_RTTHREAD') and GetDepend('USERID_IN_MMC'):
+    src += Glob('mmc_rtt.c')
+
+group = DefineGroup('userid', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

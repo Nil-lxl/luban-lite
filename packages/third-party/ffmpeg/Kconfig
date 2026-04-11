@@ -1,0 +1,9 @@
+
+menuconfig LPKG_USING_FFMPEG
+    bool "FFmpeg is a collection of libraries and tools to process multimedia content"
+    default n
+
+config LPKG_FFMPEG_MEM_USING_CMA
+    bool "Enable ffmpeg private data memory using cma"
+    default n
+    depends on LPKG_USING_FFMPEG

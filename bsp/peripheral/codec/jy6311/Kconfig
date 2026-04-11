@@ -1,0 +1,15 @@
+menu "JY6311 codec options"
+
+config AIC_I2S_CODEC_JY6311_I2C
+    string "JY6311 i2c port select"
+    default "i2c0"
+
+config AIC_I2S_CODEC_MCLK_NFS
+    int "MCLK NFS"
+    default 256
+
+config AIC_I2S_CODEC_SCLK_NFS
+    int "SCLK NFS"
+    default 64
+
+endmenu

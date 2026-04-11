@@ -1,0 +1,19 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob('*.c')
+if not GetDepend('AIC_IN_SUSPEND_ENV'):
+    src += Glob('partition/*.c')
+src += Glob('private_param/*.c')
+if not GetDepend('AIC_IN_SUSPEND_ENV'):
+    if not GetDepend('LPKG_USING_ZLIB'):
+        src += Glob('crc32/*.c')
+if not GetDepend('AIC_IN_SUSPEND_ENV'):
+    src += Glob('utils/*.c')
+CPPPATH = [cwd + '/include', ]
+
+group = DefineGroup('aic_driver_common', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

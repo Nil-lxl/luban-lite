@@ -1,0 +1,41 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+# ... existing code ...
+cwd = GetCurrentDir()
+all_src = Glob('core/*.c')
+
+if GetDepend('LPKG_USING_CHERRYUSB_V1_5_0'):
+    exclude_patterns = ['adbcherryusb.c']
+
+if GetDepend('LPKG_USING_CHERRYUSB_V1_0_0'):
+    exclude_patterns = ['adbcherryusb_v150.c']
+
+src = [file for file in all_src if os.path.basename(str(file)) not in exclude_patterns]
+
+CPPPATH = [cwd + '/inc']
+
+
+CPPPATH = [cwd + '/inc']
+
+CPPPATH += [cwd + '/services']
+
+if GetDepend('LPKG_ADB_SERVICE_SHELL_ENABLE'):
+    src += ['services/shell_service.c']
+
+if GetDepend('LPKG_ADB_SERVICE_FILE_ENABLE'):
+    src += ['services/file_sync_service.c']
+
+if GetDepend('LPKG_ADB_EXTERNAL_MOD_ENABLE'):
+    src += ['services/file_exmod.c']
+
+if GetDepend('LPKG_ADB_FILESYNC_MOD_ENABLE'):
+    src += ['services/file_sync_mod.c']
+
+if GetDepend('LPKG_ADB_FILELIST_MOD_ENABLE'):
+    src += ['services/file_list_mod.c']
+
+group = DefineGroup('adb', src, depend = ['LPKG_USING_ADBD'], CPPPATH = CPPPATH)
+
+Return('group')

@@ -1,0 +1,23 @@
+# RT-Thread building script for component
+
+import os
+import shutil
+
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+CPPPATH = []
+
+CPPPATH += [cwd + '/common/inc']
+
+if GetDepend('LPKG_USING_LEVELX') and GetDepend('AIC_SPINOR_DRV'):
+    src += Glob('common/src/*lx_nor*.c') + Glob('*.cpp')
+    src += Glob('aic-levelx/*nor*.c') + Glob('*.cpp')
+
+if GetDepend('LPKG_USING_LEVELX') and GetDepend('AIC_SPINAND_DRV'):
+    src += Glob('common/src/*lx_nand*.c') + Glob('*.cpp')
+
+group = DefineGroup('levelX', src, depend = ['LPKG_USING_LEVELX'], CPPPATH = CPPPATH)
+
+Return('group')

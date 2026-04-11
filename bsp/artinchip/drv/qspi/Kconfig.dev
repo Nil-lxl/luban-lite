@@ -1,0 +1,17 @@
+#-----------------------------
+# SPI devices local parameter
+#-----------------------------
+
+config AIC_SUPPORT_SPI_IN_BIT_MODE
+    bool "Enable SPI bit mode"
+    default n
+    depends on AIC_QSPI_DRV
+
+config AIC_SUPPORT_SPI_X_WIRE_IN_BIT_MODE
+    int "SPI bit mode is 3-WIRE or STD"
+    depends on AIC_SUPPORT_SPI_IN_BIT_MODE
+    default 3
+    range 3 4
+
+source "bsp/artinchip/drv/spinor/Kconfig.dev"
+source "bsp/artinchip/drv/spinand/Kconfig.dev"

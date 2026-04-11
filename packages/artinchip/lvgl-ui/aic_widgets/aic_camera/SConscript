@@ -1,0 +1,34 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('rtconfig')
+from building import *
+import os
+
+cwd = GetCurrentDir()
+cpp_path = [cwd]
+cc_flages = ""
+src = Glob('*.c')
+group = []
+lvgl_version = ''
+library_name = ''
+library_path = ''
+
+if GetDepend(['LVGL_V_8']):
+    lvgl_version = 'v8'
+
+if GetDepend(['LVGL_V_9']):
+    lvgl_version = 'v9'
+
+if os.path.exists(cwd + '/' + lvgl_version):
+    cur_dir_name = os.path.basename(cwd)
+
+    cpp_path.append(cwd + '/' + lvgl_version)
+    if GetDepend(['AIC_USING_BARCODE_DEMO']):
+        cc_flages += ' -DAIC_CAMERA_USE_BARCODE=1'
+
+    src += Glob(lvgl_version + '/*.c')
+
+group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL'],
+                    CPPPATH = cpp_path, CFLAGS = cc_flages,
+                    LIBS = [library_name], LIBPATH = [library_path])
+Return('group')

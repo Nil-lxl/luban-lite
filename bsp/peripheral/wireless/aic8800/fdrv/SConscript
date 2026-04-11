@@ -1,0 +1,31 @@
+Import('rtconfig')
+from building import *
+
+cwd = GetCurrentDir()
+list = os.listdir(cwd)
+
+include_path =[]
+src = []
+
+include_path +=[cwd + '/fw']
+include_path +=[cwd + '/macif']
+include_path +=[cwd + '/aicbt_bsp']
+include_path +=[cwd + '/layer_abstract/inc']
+include_path +=[cwd + '/layer_common/inc']
+
+src += Glob('fw/*.c')
+src += Glob('macif/*.c')
+src += Glob('aicbt_bsp/*.c')
+src += Glob('layer_abstract/src/*.c')
+src += Glob('layer_common/src/*.c')
+
+if GetDepend(['PRJ_RV_TOOLCHAIN_V2_6_1']):
+    myccflags = (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types')
+elif GetDepend(['PRJ_RV_TOOLCHAIN_V3_2_0']):
+    myccflags = (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch')
+else:
+    myccflags = (' -w')
+
+group = DefineGroup('aic8800', src, depend = ['AIC_WLAN_AIC8800D40L'], CPPPATH = include_path, LOCAL_CFLAGS=myccflags)
+
+Return('group')

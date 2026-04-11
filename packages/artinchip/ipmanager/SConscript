@@ -1,0 +1,15 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = [cwd + '/inc']
+
+src = []
+
+if GetDepend('AIC_USING_IPMANAGER'):
+    src = Glob('src/*.c')
+
+group = DefineGroup('aic_ipmanager', src, depend = ['AIC_USING_IPMANAGER'], CPPPATH = CPPPATH)
+
+Return('group')

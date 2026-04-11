@@ -1,0 +1,47 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('rtconfig')
+from building import *
+import os
+
+build_lib = False
+cwd = GetCurrentDir()
+cpp_path = [cwd]
+cc_flages = ""
+src = []
+group = []
+lvgl_version = ''
+library_name = ''
+library_path = ''
+src_exist = False
+
+if GetDepend(['LVGL_V_8']):
+    lvgl_version = 'v8'
+
+if GetDepend(['LVGL_V_9']):
+    lvgl_version = 'v9'
+
+cpp_path.append(cwd + '/' + lvgl_version)
+
+cur_dir_name = os.path.basename(cwd)
+library_path = cwd + '/'
+library_name = cur_dir_name + '_' + lvgl_version + '_' + rtconfig.CPUNAME
+
+src += Glob('*.c')
+
+if os.path.exists(cwd + '/' + lvgl_version + '/lv_aic_canvas.c'):
+    src_exist = True
+    src += Glob(lvgl_version + '/*.c')
+    if build_lib == True:
+        lib_src = Glob(lvgl_version + '/*.c')
+        DefineGroup(library_path + library_name + '.a', lib_src, depend = ['LPKG_USING_LVGL'], LIBRARY='')
+
+if src_exist == False:
+    group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL'],
+                    CPPPATH = cpp_path, CFLAGS = cc_flages,
+                    LIBS = [library_name], LIBPATH = [library_path])
+else:
+    group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL'],
+                    CPPPATH = cpp_path, CFLAGS = cc_flages)
+
+Return('group')

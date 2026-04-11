@@ -1,0 +1,96 @@
+
+#searchForm > div {
+  width: 100%;
+}
+
+.wh_search_input {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+.wh_top_menu_and_indexterms_link {
+    flex-grow: .9;
+}
+
+.wh_search_textfield {
+    height: 2em;
+}
+
+.wh_search_button {
+    height: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+@media only screen and (min-width : 768px) {
+    .wh_top_menu_and_indexterms_link.navbar-collapse {
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: end;
+    }
+
+    .wh_header_flex_container {
+        flex-wrap: nowrap;
+    }
+
+    .wh_header_flex_container .wh_search_input {
+        padding-left: 1em;
+        min-width: 150px;
+    }
+    
+    .wh_publication_title {
+        min-width: 150px;
+    }
+}
+
+.ui-autocomplete {
+  z-index: 10000;
+}
+
+
+.after-search {
+  padding-left: 10px;
+}
+
+
+/* 语言选择框样式 */
+        .language-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #fff;
+            border: 1px #ccc;
+            border-radius: 4px;
+            color: #333;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 8px 10px 8px 8px;
+            width: 100px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path fill="%23333" d="M0 0l5 6 5-6z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            transition: border-color 0.3s ease;
+            
+        }
+
+        /* 鼠标悬停时的样式 */
+        .language-select:hover {
+            border-color: #999;
+        }
+
+        /* 聚焦时的样式 */
+        .language-select:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        /* 选项样式 */
+        .language-select option {
+            padding: 8px 15px;
+        }

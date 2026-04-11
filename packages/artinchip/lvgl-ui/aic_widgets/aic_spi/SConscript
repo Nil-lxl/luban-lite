@@ -1,0 +1,35 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+src = []
+CPPPATH = [cwd]
+
+if GetDepend('AIC_LVGL_SPI_WIDGET'):
+    src += Glob('lv_aic_spi.c')
+
+if GetDepend('LV_SPI_ST77916'):
+    src += Glob('lv_st77916.c')
+
+if GetDepend('LV_SPI_ST77912'):
+    src += Glob('lv_st77912.c')
+
+if GetDepend('LV_SPI_ST7789'):
+    src += Glob('lv_st7789.c')
+
+if GetDepend('LV_SPI_ST77903'):
+    src += Glob('lv_st77903.c')
+
+if GetDepend('LV_SPI_GC9D01N'):
+    src += Glob('lv_gc9d01n.c')
+
+list = os.listdir(cwd)
+for d in list:
+    path = os.path.join(cwd, d)
+    if os.path.isfile(os.path.join(path, 'SConscript')):
+        group = group + SConscript(os.path.join(d, 'SConscript'))
+
+group = group + DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL'], CPPPATH = CPPPATH)
+
+Return('group')

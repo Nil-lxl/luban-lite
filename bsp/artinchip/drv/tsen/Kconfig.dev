@@ -1,0 +1,63 @@
+#-----------------------------
+# Tsensor devices local parameter
+#-----------------------------
+
+menu "TSEN_CPU Parameter"
+    depends on AIC_USING_TSEN_CPU
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_TSEN0_SOFT_MODE_SINGLE_INTER
+        help
+            Select the obtaning data mode
+
+        config AIC_TSEN0_SOFT_MODE_SINGLE_INTER
+            bool "single interrupt mode"
+        config AIC_TSEN0_SOFT_MODE_SINGLE_POLL
+            bool "polling mode"
+
+    endchoice
+
+    config AIC_TSEN0_SOFT_MODE
+        int
+        default 0     if AIC_TSEN0_SOFT_MODE_SINGLE_INTER
+        default 1     if AIC_TSEN0_SOFT_MODE_PERIOD_INTER
+        default 2     if AIC_TSEN0_SOFT_MODE_SINGLE_POLL
+
+    config AIC_TSEN0_MODE
+        int
+        default 0     if AIC_TSEN0_SOFT_MODE_SINGLE_INTER
+        default 1     if AIC_TSEN0_SOFT_MODE_PERIOD_INTER
+        default 0     if AIC_TSEN0_SOFT_MODE_SINGLE_POLL
+
+endmenu
+
+menu "TSEN_GPAI Parameter"
+    depends on AIC_USING_TSEN_GPAI
+
+    choice
+        prompt "obtaning data mode"
+        default AIC_TSEN1_SOFT_MODE_SINGLE_INTER
+        help
+            Select the obtaning data mode
+
+        config AIC_TSEN1_SOFT_MODE_SINGLE_INTER
+            bool "single interrupt mode"
+        config AIC_TSEN1_SOFT_MODE_SINGLE_POLL
+            bool "polling mode"
+
+    endchoice
+
+    config AIC_TSEN1_SOFT_MODE
+        int
+        default 0     if AIC_TSEN1_SOFT_MODE_SINGLE_INTER
+        default 1     if AIC_TSEN1_SOFT_MODE_PERIOD_INTER
+        default 2     if AIC_TSEN1_SOFT_MODE_SINGLE_POLL
+
+    config AIC_TSEN1_MODE
+        int
+        default 0     if AIC_TSEN1_SOFT_MODE_SINGLE_INTER
+        default 1     if AIC_TSEN1_SOFT_MODE_PERIOD_INTER
+        default 0     if AIC_TSEN1_SOFT_MODE_SINGLE_POLL
+
+endmenu

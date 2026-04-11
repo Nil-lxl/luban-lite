@@ -1,0 +1,46 @@
+from building import *
+Import('rtconfig')
+
+src   = []
+cwd   = GetCurrentDir()
+libs = []
+lib_path = []
+CPPPATH = []
+CPPDEFINES = []
+LOCAL_CFLAGS = ''
+
+CPPPATH += [cwd + '/inc']
+
+if GetDepend(['AIC_NAND_REFRESH_SUPPORT']):
+    sources = []
+    refresh_src = os.path.join(cwd, 'refresh_common.c')
+    spinand_src = os.path.join(cwd, 'spinand_refresh.c')
+
+    if os.path.exists(refresh_src):
+        sources.append(refresh_src)
+    if os.path.exists(spinand_src):
+        sources.append(spinand_src)
+
+    lib_demo_path = cwd
+    prj_chip=GetDepend('PRJ_CHIP').strip('"')
+    lib_display_name = 'spinand_refresh_' + prj_chip + '.a'
+    lib_full_path = os.path.join(lib_demo_path, lib_display_name)
+
+    if sources and not os.path.exists(lib_full_path):
+        DefineGroup(
+            os.path.join(lib_demo_path, lib_display_name), 
+            sources, 
+            depend=['AIC_NAND_REFRESH_SUPPORT'], 
+            CPPPATH=CPPPATH, 
+            CPPDEFINES=CPPDEFINES, 
+            LIBRARY=''
+        )
+    libs.append('spinand_refresh_' + prj_chip)
+    lib_path.append(lib_demo_path)
+
+# add src and include to group.
+group = DefineGroup('spinand_refresh', src, depend = ['AIC_NAND_REFRESH_SUPPORT'], 
+                   CPPPATH = CPPPATH, LOCAL_CFLAGS = LOCAL_CFLAGS, 
+                   LIBS = libs, LIBPATH = lib_path)
+
+Return('group')

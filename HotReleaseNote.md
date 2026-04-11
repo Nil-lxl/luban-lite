@@ -1,0 +1,82 @@
+# 2025-3-25 #
+## 新增 ##
+
+- Display Driver:
+  - RGB:
+    - H050A18
+  - MIPI:
+    - H028A29
+    - H070B13
+- 新增lcd_test显示屏测试程序
+- APP新增RTP校准例程
+
+## 删除 ##
+- 删除lv_demo中的test_demo程序,不再使用该应用测试,使用lcd_test
+
+## 修改 ##
+- HT68-DEMO-A02_V0演示板配置替换为HT68-DEMO-A02_V1 
+- 修改电容触摸屏draw_panel触摸画线测试函数
+
+
+# 2025-1-28 #
+## 新增 ##
+- Demo Board:
+  - HT68-DEMO-A02_V0 演示板
+- Display Driver:
+  - 添加自定义RGB Display默认屏参:
+    - H050A21
+    - H068b06
+    - H070A20
+  - RGB+SPI I/F :
+    - H030A8
+    - H034A02
+    - H035A24
+    - H040A18
+    - H048A02
+    - H052A01
+    - H062A01
+  - MIPI I/F Display:
+    - H013A08
+    - H034A01
+    - H043A8
+  - 添加spi控制器代替de驱动spi显示屏初始化代码
+    - H011A1
+    - H027A28
+- 使用UiBuilder开发的LVGL demo
+- 配置RTL8733蓝牙通讯
+- 新增DHT11、BMP180等传感器驱动和kconfig
+- 新增WS2812彩灯控制驱动(spi)
+## 修改 ##
+
+
+# 2025-12-18 #
+## 新增 ##
+- Demo Board:
+  - HOT68-DEMO-A01_V0 MIPI测试板
+- Display Driver:
+  - MIPI I/F:
+    - H016A01
+    - H028B23
+    - H030B07
+    - H034A01
+    - H035A27
+    - H035B16
+    - H035B22
+    - H040B24
+    - H055A03
+    - H080A11
+    - H080D16 (MIPI convert dual LVDS)
+  - RGB I/F:
+    - H035A17
+    - H043A7
+    - H068B06
+- Touch Driver:
+  - ST7123 Touch Screen Controller
+
+## 修改 ##
+- gif_demo修改为player_demo
+- test_demo屏幕测试程序加入灰阶画面
+- 无线网RTL8733配置
+- 修改ili2511驱动代码,gt911上电时序
+- display背光使能gpio打开/关闭
+

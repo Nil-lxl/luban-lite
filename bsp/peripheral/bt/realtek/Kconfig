@@ -1,0 +1,28 @@
+#-------------------------------------------
+# realtek bluetooth devices local parameter
+#-------------------------------------------
+
+# bluetooth parameter
+
+config AIC_USING_REALTEK_BT
+    bool
+    default n
+
+menu "realtek bluetooth Parameter"
+
+    config AIC_DEV_REALTEK_BT_PWR_GPIO
+        string "realtek bt power on gpio"
+
+    config AIC_DEV_REALTEK_BT_RST_GPIO
+        string "realtek bt reset gpio"
+
+    config AIC_DEV_REALTEK_BT_CTS_GPIO
+        string "realtek bt cts gpio"
+
+    config AIC_DEV_REALTEK_BT_RTS_GPIO
+        string "realtek bt rts gpio"
+
+    config AIC_DEV_REALTEK_BT_WAKE_GPIO
+        string "realtek bt wake on gpio"
+
+endmenu

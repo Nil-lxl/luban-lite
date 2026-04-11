@@ -1,0 +1,4 @@
+
+menuconfig LPKG_USING_MHZ
+    bool "mhz: calculate clock rate and megahertz"
+    default n

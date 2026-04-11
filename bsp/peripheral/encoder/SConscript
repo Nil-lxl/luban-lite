@@ -1,0 +1,16 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob('*.c')
+CPPPATH = []
+
+if GetDepend('AIC_ENCODER_HEC40'):
+    CPPPATH.append(cwd)
+    CPPPATH.append(cwd + '/hec40')
+    src += Glob('hec40/*.c')
+
+group = DefineGroup('encoder', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

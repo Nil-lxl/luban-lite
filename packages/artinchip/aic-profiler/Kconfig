@@ -1,0 +1,26 @@
+menuconfig AIC_USING_PROFILER
+    bool "ArtInChip profiler"
+    default n
+
+if AIC_USING_PROFILER
+    config AIC_PROFILER_BUF_SIZE
+        int "Profiler buffer size (in bytes)"
+        default 524288
+        help
+        Size of the internal buffer used by the profiler to store trace items.
+        Default is 512KB (524288 bytes). Must be large enough to hold profiler items.
+
+    config AIC_PROFILER_IRQ_MODE
+        bool "Enable IRQ-safe mode for profiler(default using double buffer)"
+        default n
+        help
+        Enable double buffering and background flush thread to support
+        calling profiler from interrupt context.
+
+    config AIC_PROFILER_OUTPUT_FILENAME
+        string "Profiler output filename"
+        default "/udisk/profiler.systrace"
+        help
+        The file path where profiler logs will be written.
+        If not set or cannot be opened, logs may fallback to stdout.
+endif

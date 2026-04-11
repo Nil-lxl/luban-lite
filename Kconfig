@@ -1,0 +1,93 @@
+mainmenu "ArtInChip Luban-Lite SDK Configuration"
+
+menu "Project options"
+
+config PRJ_DEFCONFIG_FILENAME
+    string "Project defconfig file name"
+
+comment "-- Important: If following options have been changed, you need save & rerun menuconfig before changing any other options."
+
+config PRJ_CHIP
+    string "Chip name"
+    #option env="PRJ_CHIP"
+    # Don't set default value to make defconfig contain CONFIG_PRJ_CHIP option
+
+config PRJ_BOARD
+    string "Board name"
+    #option env="PRJ_BOARD"
+
+config PRJ_KERNEL
+    string "Kernel name"
+    #option env="PRJ_KERNEL"
+
+config PRJ_APP
+    string "Application name"
+    #option env="PRJ_APP"
+
+choice
+    prompt "Select a board"
+    default n
+    config AIC_USING_D213ECV_EzUIX1_DEMO_V0
+        bool "D213ECV_EzUIX1_DEMO_V0"
+        depends on AIC_CHIP_D21X
+
+    config AIC_USING_D213ECV_EzUIX1_DEMO_V1
+        bool "D213ECV_EzUIX1_DEMO_V1"
+        depends on AIC_CHIP_D21X
+
+    config AIC_USING_H215_DEMO_A02_V0
+        bool "H215_DEMO_A02_V0"
+        depends on AIC_CHIP_D21X
+
+    config AIC_USING_JYX68_RGB01
+        bool "JYX68_RGB01"
+        depends on AIC_CHIP_D13X
+
+    config AIC_USING_JYX68_MIPI01
+        bool "JYX68_MIPI01"
+        depends on AIC_CHIP_D13X
+
+    config AIC_USING_HOT68_DEMO_A01_V0
+        bool "HOT68_DEMO_A01_V0"
+        depends on AIC_CHIP_D13X
+
+    config AIC_USING_HT68_DEMO_A02_V1
+        bool "HT68_DEMO_A02_V1"
+        depends on AIC_CHIP_D13X
+
+endchoice
+
+choice
+    prompt "Toolchain"
+    depends on ARCH_RISCV
+    default PRJ_RV_TOOLCHAIN_V2_6_1
+
+    config PRJ_RV_TOOLCHAIN_V2_6_1
+        bool "RISC-V Toolchain V2.6.1"
+    config PRJ_RV_TOOLCHAIN_V3_2_0
+        bool "RISC-V Toolchain V3.2.0"
+endchoice
+
+config PRJ_TOOLCHAIN_VER
+    string
+    default "V2.6.1" if PRJ_RV_TOOLCHAIN_V2_6_1
+    default "V3.2.0" if PRJ_RV_TOOLCHAIN_V3_2_0
+
+endmenu
+
+config PLATFORM_LUBANLITE
+    bool
+    default y
+
+config PKGS_DIR
+    string
+    default "tools/env/packages"
+	help
+        packages directory for RT-Thread online packages
+
+if ! AIC_BOOTLOADER
+source "application/Kconfig"
+endif
+source ".Kconfig.prj"
+source "packages/Kconfig"
+source "bsp/Kconfig"

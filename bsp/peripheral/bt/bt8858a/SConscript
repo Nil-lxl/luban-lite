@@ -1,0 +1,23 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('rtconfig')
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob('bt_main.c')
+CPPPATH = []
+
+CPPPATH.append(cwd)
+CPPPATH.append(cwd + '/bt_core')
+
+src += Glob('bt_os_rtt.c')
+src += Glob('bt_os.c')
+src += Glob('bt_core/*.c')
+src += Glob('hid_control.c')
+
+CPPDEFINES = ['RTT']
+myccflags = (' -w')
+
+group = DefineGroup("bt8858a", src, depend = ['AIC_BT_BT8858A'], CPPPATH = CPPPATH, CPPDEFINES=CPPDEFINES, LOCAL_CFLAGS=myccflags)
+
+Return('group')

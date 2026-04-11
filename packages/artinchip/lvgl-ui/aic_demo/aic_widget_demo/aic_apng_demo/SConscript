@@ -1,0 +1,27 @@
+from building import *
+import os
+
+group = []
+src = []
+
+cwd = GetCurrentDir()
+src = Glob('*.c')
+CPPPATH = [cwd]
+
+if GetDepend(['LVGL_STORAGE_PATH']):
+    ins_dst = GetDepend('LVGL_STORAGE_PATH').strip('"/')
+else:
+    ins_dst='rodata/lvgl_data'
+
+ins_src = 'assets/'
+install = [(ins_src, ins_dst)]
+
+list = os.listdir(cwd)
+for d in list:
+    path = os.path.join(cwd, d)
+    if os.path.isfile(os.path.join(path, 'SConscript')):
+        group = group + SConscript(os.path.join(d, 'SConscript'))
+
+group = group + DefineGroup('LVGL-port', src, depend = ['AIC_APNG_DEMO'], CPPPATH = CPPPATH, INSTALL = install)
+
+Return('group')

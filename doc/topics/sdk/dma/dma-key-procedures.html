@@ -1,0 +1,240 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-cn" lang="zh-cn" data-whc_version="26.1">
+    <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="本节介绍了 DMA 模块的关键流程。 初始化流程 DMA 驱动的初始化接口通过 INIT_BOARD_EXPORT(drv_dma_init) 完成注册，其中主要步骤有： 初始化模块的 clk。 初始化 DMA 通道、任务描述符管理信息。 注册中断。 DMA Client 的调用流程 作为 DMA 用户，调用流程如下： 图 1 . DMA Client 调用流程 在 DMA Client 调用流程 ..."/><meta name="DC.rights.owner" content="(C) 版权 2025"/><meta name="copyright" content="(C) 版权 2025"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="concept"/><meta name="DC.relation" content="../../../topics/sdk/dma/dma-design-guide-lite.html"/><meta name="DC.relation" content="../../../topics/sdk/dma/dma-design-guide-lite.html"/><meta name="DC.relation" content="../../../topics/sdk/dma/dma-data-structure.html"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.contributor" content="yan.wang"/><meta name="DC.date.modified" content="2025-05-16"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="concept_mvx_yn3_pzb"/><meta name="DC.language" content="zh-CN"/><title>关键流程设计</title><!--  Generated with build number 2025051600.  --><meta name="wh-path2root" content="../../../"/><meta name="wh-toc-id" content="concept_mvx_yn3_pzb-d3752e3003"/><meta name="wh-source-relpath" content="topics/sdk/dma/dma-key-procedures.dita"/><meta name="wh-out-relpath" content="topics/sdk/dma/dma-key-procedures.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/commons.css?buildId=2024041900"/>
+    <link rel="stylesheet" type="text/css" href="../../../webhelp/app/topic.css?buildId=2024041900"/>
+
+    <script src="../../../webhelp/app/options/properties.js?buildId=20250519091401"></script>
+    <script src="../../../webhelp/app/localization/strings.js?buildId=2024041900"></script>
+    <script src="../../../webhelp/app/search/index/keywords.js?buildId=20250519091401"></script>
+    <script defer="defer" src="../../../webhelp/app/commons.js?buildId=2024041900"></script>
+    <script defer="defer" src="../../../webhelp/app/topic.js?buildId=2024041900"></script>
+<link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-styles-web-internal.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/notes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-common.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-images.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/footnote.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/aic-highlight-changes.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/search-in-header.css?buildId=2024041900"/><link rel="stylesheet" type="text/css" href="../../../webhelp/template/css/topic-body-list.css?buildId=2024041900"/></head>
+
+    <body id="concept_mvx_yn3_pzb" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            跳转到主要内容
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="https://www.artinchip.com" class=" wh_logo d-none d-sm-block "><img src="../../../company-logo.png" alt="  RTOS SDK 使用指南  SDK 指南文件  "/></a>
+                    <div class=" wh_publication_title "><a href="../../../index.html"><span class="booktitle">  <span class="ph mainbooktitle">RTOS SDK 使用指南</span>  <span class="ph booktitlealt">SDK 指南文件</span>  </span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../../../search.html"><div><input type="search" placeholder="搜索 " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="搜索查询" required="required"/><button type="submit" class="wh_search_button" aria-label="搜索"><span class="search_input_text">搜索</span></button></div></form>
+            
+            
+            
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../../../index.html"><span>主页</span></a></span></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div></li><li><div class="topicref" data-id="chapter-system"><div class="title"><a href="../../../topics/chapter-title/chapter-system.html">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div></li><li><div class="topicref" data-id="concept_or5_kn3_pzb"><div class="title"><a href="../../../topics/sdk/dma/dma-user-guide.html">DMA 使用指南</a></div></div></li><li><div class="topicref" data-id="id"><div class="title"><a href="../../../topics/sdk/dma/dma-design-guide-lite.html">设计说明</a></div></div></li><li class="active"><div class="topicref" data-id="concept_mvx_yn3_pzb"><div class="title"><a href="../../../topics/sdk/dma/dma-key-procedures.html">关键流程设计</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="切换搜索突出显示" title="切换搜索突出显示"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="折叠截面" title="折叠截面"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../../../topics/sdk/dma/dma-design-guide-lite.html" title="设计说明" aria-label="上一主题: 设计说明" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../../../topics/sdk/dma/dma-data-structure.html" title="数据结构设计" aria-label="下一主题: 数据结构设计" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="打印此页" aria-label="打印此页"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="revinfo_linux-d3752e463" class="topicref" data-id="revinfo_linux" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/revinfo/revinfo_rtos.html" id="revinfo_linux-d3752e463-link">修订记录</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e480" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e480-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/env/sdk-compile.html" id="id-d3752e480-link">SDK 编译</a><div class="wh-tooltip"><p class="shortdesc">介绍不同编译环境下 SDK 的详细编译流程。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e604" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e604-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/advanced/sdk-usage.html" id="id-d3752e604-link">使用指南</a><div class="wh-tooltip"><p class="shortdesc">命令详解，编译选项，镜像和分区配置，添加应用和驱动等的详细使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_rcx_czh_pzb-d3752e1004" class="topicref" data-id="concept_rcx_czh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_rcx_czh_pzb-d3752e1004-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-app.html" id="concept_rcx_czh_pzb-d3752e1004-link">应用场景</a><div class="wh-tooltip"><p class="shortdesc">描述了 SDK 在不同应用场景中的配置和使用，包括系统更新、OTA、安全方案等。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e1848" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e1848-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/peripheral/peripheral-intro.html" id="id-d3752e1848-link">外设移植</a><div class="wh-tooltip"><p class="shortdesc"><span class="ph">CTP、U 盘、SD             卡、有线和无线网络</span>等外设的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e2022" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e2022-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/bringup/chapter-bringup.html" id="id-d3752e2022-link">BringUp</a><div class="wh-tooltip"><p class="shortdesc">主要描述板卡的各项配置，使 SDK 的环境和板卡匹配，并确保 SDK 编译后的固件能够在板子上正常运行。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e2418" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e2418-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/chapter-advanced-app.html" id="id-d3752e2418-link">高级应用</a><div class="wh-tooltip"><p class="shortdesc">系统、存储、多媒体、接口、安全等模块的详细配置和设计说明。</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="_0-d3752e2435" class="topicref" data-id="_0" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action _0-d3752e2435-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/boot/lite_boot_direct.html" id="_0-d3752e2435-link">启动引导</a><div class="wh-tooltip"><p class="shortdesc">启动引导程序 Bootloader 可以实现加载启动应用程序、 烧录和升级功能。</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chapter-system-d3752e2619" class="topicref" data-id="chapter-system" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chapter-system-d3752e2619-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-system.html" id="chapter-system-d3752e2619-link">系统</a><div class="wh-tooltip"><p class="shortdesc"></p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3752e2635" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3752e2635-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mem/memory-user-guide.html" id="chapter-memory-d3752e2635-link">Memory 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="system_interrupt_user_guide-d3752e2775" class="topicref" data-id="system_interrupt_user_guide" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action system_interrupt_user_guide-d3752e2775-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/interrupt/interrupt-user-guide.html" id="system_interrupt_user_guide-d3752e2775-link">Interrupt 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="cmu-d3752e2817" class="topicref" data-id="cmu" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action cmu-d3752e2817-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/cmu/cmu-introduction.html" id="cmu-d3752e2817-link">CMU 使用指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="concept_or5_kn3_pzb-d3752e2931" class="topicref" data-id="concept_or5_kn3_pzb" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action concept_or5_kn3_pzb-d3752e2931-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-user-guide.html" id="concept_or5_kn3_pzb-d3752e2931-link">DMA 使用指南</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="concept_s3d_bl3_pzb-d3752e2947" class="topicref" data-id="concept_s3d_bl3_pzb" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-configuration.html" id="concept_s3d_bl3_pzb-d3752e2947-link">DMA 配置</a></div></div></li><li role="treeitem"><div data-tocid="concept_l2x_zrf_h1c-d3752e2961" class="topicref" data-id="concept_l2x_zrf_h1c" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-debug-guide.html" id="concept_l2x_zrf_h1c-d3752e2961-link">调试指南</a></div></div></li><li role="treeitem"><div data-tocid="id-d3752e2975" class="topicref" data-id="id" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-test-guide-lite.html" id="id-d3752e2975-link">测试指南</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="id-d3752e2989" class="topicref" data-id="id" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action id-d3752e2989-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-design-guide-lite.html" id="id-d3752e2989-link">设计说明</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="concept_mvx_yn3_pzb-d3752e3003" class="topicref" data-id="concept_mvx_yn3_pzb" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-key-procedures.html" id="concept_mvx_yn3_pzb-d3752e3003-link">关键流程设计</a></div></div></li><li role="treeitem"><div data-tocid="dma_data_structure-d3752e3017" class="topicref" data-id="dma_data_structure" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-data-structure.html" id="dma_data_structure-d3752e3017-link">数据结构设计</a></div></div></li><li role="treeitem"><div data-tocid="concept_lws_bsf_h1c-d3752e3031" class="topicref" data-id="concept_lws_bsf_h1c" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-interface-design-lite.html" id="concept_lws_bsf_h1c-d3752e3031-link">接口设计</a></div></div></li><li role="treeitem"><div data-tocid="demo-d3752e3045" class="topicref" data-id="demo" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/dma/dma-demo-lite.html" id="demo-d3752e3045-link">Demo</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e3059" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e3059-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/hrtimer/hrtimer-user-guide.html" id="id-d3752e3059-link">HRTimer 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e3143" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e3143-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/mtop/mtop_user_guide.html" id="id-d3752e3143-link">MTOP 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_n2p_sn3_pzb-d3752e3213" class="topicref" data-id="concept_n2p_sn3_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_n2p_sn3_pzb-d3752e3213-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/rtc/rtc-user-guide.html" id="concept_n2p_sn3_pzb-d3752e3213-link">RTC 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="id-d3752e3355" class="topicref" data-id="id" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action id-d3752e3355-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/pm/pm_introduction.html" id="id-d3752e3355-link">Power Management 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="tsensor-d3752e3439" class="topicref" data-id="tsensor" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action tsensor-d3752e3439-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/tsensor/tsensor-user-guide.html" id="tsensor-d3752e3439-link">TSensor 使用指南</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="watchdog-d3752e3581" class="topicref" data-id="watchdog" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action watchdog-d3752e3581-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/sdk/watchdog/watchdog-user-guide.html" id="watchdog-d3752e3581-link">Watchdog 使用指南</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-memory-d3752e3709" class="topicref" data-id="chapter-memory" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-memory-d3752e3709-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-memory-sdk.html" id="chapter-memory-d3752e3709-link">存储</a><div class="wh-tooltip"><p class="shortdesc">SDMC、<span class="ph">PSRAM、</span>SPI NAND、SPI NOR         等存储模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_mcc_32s_nbc-d3752e4043" class="topicref" data-id="concept_mcc_32s_nbc" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_mcc_32s_nbc-d3752e4043-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-multi-media-sdk.html" id="concept_mcc_32s_nbc-d3752e4043-link">多媒体</a><div class="wh-tooltip"><p class="shortdesc">GE、VE、Display、DVP、MPP、MPP 播放器等多媒体模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="concept_nww_hzh_pzb-d3752e5544" class="topicref" data-id="concept_nww_hzh_pzb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action concept_nww_hzh_pzb-d3752e5544-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-interface-sdk.html" id="concept_nww_hzh_pzb-d3752e5544-link">接口</a><div class="wh-tooltip"><p class="shortdesc">CAN<span class="ph">、CAP</span>、CIR、GPAI、GPIO、I2C、PSADC、PWM         等接口模块的介绍和使用说明。</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chapter-safety-d3752e6799" class="topicref" data-id="chapter-safety" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chapter-safety-d3752e6799-link" class="wh-expand-btn"></span><div class="title"><a href="../../../topics/chapter-title/chapter-safety-sdk.html" id="chapter-safety-d3752e6799-link">安全</a><div class="wh-tooltip"><p class="shortdesc">SPI ENC、CE、eFuse 等安全模块的介绍和使用说明。</p></div></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic concept/concept topic concept" role="article" aria-labelledby="ariaid-title1">
+    <span class="edit-link" style="font-size:12px; opacity:0.6; text-align:right; vertical-align:middle"><a target="_blank" href="http://aicdocco/taskstopics/sdk/dma/dma-key-procedures.dita">Edit online</a></span><h1 class="- topic/title title topictitle1" id="ariaid-title1">关键流程设计</h1>
+    
+    <div class="date inPage">16 May 2025</div><div style="color: gray;">
+                    Read time: 1 minute(s)
+                </div>
+    <div class="- topic/body concept/conbody body conbody">
+        <p class="- topic/p p" data-ofbid="d203325e33__20250519091528">本节介绍了 DMA 模块的关键流程。</p>
+        
+        <section class="- topic/section section topic" id="concept_mvx_yn3_pzb__id5" data-ofbid="concept_mvx_yn3_pzb__id5"><h2 class="- topic/title title sectiontitle">初始化流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d203325e41__20250519091528">DMA 驱动的初始化接口通过 <span class="+ topic/keyword pr-d/apiname keyword apiname">INIT_BOARD_EXPORT(drv_dma_init)</span> 完成注册，其中主要步骤有：</p>
+            <ol class="- topic/ol ol arabic simple" id="concept_mvx_yn3_pzb__ol_kqc_33d_bdc" data-ofbid="concept_mvx_yn3_pzb__ol_kqc_33d_bdc">
+                <li class="- topic/li li" data-ofbid="d203325e49__20250519091528">
+                    <p class="- topic/p p" data-ofbid="d203325e51__20250519091528">初始化模块的 clk。</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d203325e55__20250519091528">
+                    <p class="- topic/p p" data-ofbid="d203325e57__20250519091528">初始化 DMA 通道、任务描述符管理信息。</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d203325e61__20250519091528">
+                    <p class="- topic/p p" data-ofbid="d203325e63__20250519091528">注册中断。</p>
+                </li>
+            </ol>
+        </section>
+        <section class="- topic/section section" id="concept_mvx_yn3_pzb__section_vwr_sms_c1c" data-ofbid="concept_mvx_yn3_pzb__section_vwr_sms_c1c"><h2 class="- topic/title title sectiontitle">DMA Client 的调用流程</h2>
+            
+            <p class="- topic/p p" data-ofbid="d203325e74__20250519091528">作为 DMA  用户，调用流程如下：</p>
+            <figure class="- topic/fig fig fignone" id="concept_mvx_yn3_pzb__fig_kbf_yms_c1c" data-ofbid="concept_mvx_yn3_pzb__fig_kbf_yms_c1c">
+                
+                <div class="- topic/p p" data-ofbid="d203325e82__20250519091528"><br/><div class="imagecenter"><img class="- topic/image image imagecenter" id="concept_mvx_yn3_pzb__image_wwr_sms_c1c" src="../../../images/dma/client_flow.png" alt="client_flow1"/></div><br/></div>
+            <figcaption data-caption-side="bottom" class="- topic/title title figcap"><span class="figtitleprefix fig--title-label">图<span class="fig--title-label-number"> 1</span><span class="fig--title-label-punctuation">. </span></span><span class="fig--title">DMA Client 调用流程</span></figcaption></figure>
+            <p class="- topic/p p" data-ofbid="d203325e90__20250519091528">在 <a class="- topic/xref xref" href="dma-key-procedures.html#concept_mvx_yn3_pzb__fig_kbf_yms_c1c">DMA Client 调用流程</a>中：</p>
+            <ul class="- topic/ul ul" id="concept_mvx_yn3_pzb__ul_xwr_sms_c1c" data-ofbid="concept_mvx_yn3_pzb__ul_xwr_sms_c1c">
+                <li class="- topic/li li" data-ofbid="d203325e99__20250519091528">
+                    <p class="- topic/p p" data-ofbid="d203325e101__20250519091528"><span class="+ topic/keyword pr-d/apiname keyword apiname">dmaengine_submit()</span>：将传输请求提交到 DMA Engine 的缓存中，但不开始传输数据。</p>
+                </li>
+                <li class="- topic/li li" data-ofbid="d203325e107__20250519091528">
+                    <p class="- topic/p p" data-ofbid="d203325e109__20250519091528"><span class="+ topic/keyword pr-d/apiname keyword apiname">dma_async_issue pending()</span>：将传输请求加入到 DMA Device
+                        的请求队列中，接下来才会启动数据传输。</p>
+                </li>
+            </ul>
+        </section>
+        <section class="- topic/section section" id="concept_mvx_yn3_pzb__section_ywr_sms_c1c" data-ofbid="concept_mvx_yn3_pzb__section_ywr_sms_c1c"><h2 class="- topic/title title sectiontitle">中断处理流程</h2>
+            
+            
+            
+            <div class="- topic/div div">
+                <p class="- topic/p p" data-ofbid="d203325e127__20250519091528">DMA 中断处理流程可以确保数据高效传输并合理配置系统资源。当 DMA 传输完成或遇到错误时，中断机制会触发相应的处理程序。中断处理流程如下所示：</p>
+                <ol class="- topic/ol ol arabic simple" id="concept_mvx_yn3_pzb__ol_nqc_33d_bdc" data-ofbid="concept_mvx_yn3_pzb__ol_nqc_33d_bdc">
+                    <li class="- topic/li li" data-ofbid="d203325e132__20250519091528">
+                        <p class="- topic/p p" data-ofbid="d203325e134__20250519091528">读取 DMA 完成寄存器，获取已完成的传输数量信息，并逐个查看每个 DMA 通道的完成状态。</p>
+                        <p class="- topic/p p" data-ofbid="d203325e137__20250519091528">在处理完中断后，需要清除相应通道的中断标志位，以免再次触发相同的中断。</p>
+                    </li>
+                    <li class="- topic/li li" data-ofbid="d203325e141__20250519091528">
+                        <p class="- topic/p p" data-ofbid="d203325e143__20250519091528">如果通道有任务传输完成，就调用相应 DMA client 注册的回调函数，进行后续数据处理或其它操作。</p>
+                        <p class="- topic/p p" data-ofbid="d203325e146__20250519091528">每个 DMA 通道在初始化时都会注册一个回调函数，当该通道的传输任务完成时，就会调用这个回调函数。</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+    </div>
+</article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">在本页上</div><ul><li class="section-item"><div class="section-title"><a href="#concept_mvx_yn3_pzb__id5" data-tocid="concept_mvx_yn3_pzb__id5">初始化流程</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_mvx_yn3_pzb__section_vwr_sms_c1c" data-tocid="concept_mvx_yn3_pzb__section_vwr_sms_c1c">DMA Client 的调用流程</a></div></li><li class="section-item"><div class="section-title"><a href="#concept_mvx_yn3_pzb__section_ywr_sms_c1c" data-tocid="concept_mvx_yn3_pzb__section_ywr_sms_c1c">中断处理流程</a></div></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <title>footer def</title>
+    <style>
+.p1 {
+  font-family: FangZhengShuSong, Times, serif;
+}
+.p2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.p3 {
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+    </style>
+  <div class="webhelp.fragment.footer">
+    <p class="p1">Copyright © 2019-2025 广东匠芯创科技有限公司. All rights reserved.</p>
+  </div>
+  <div>
+    <div class="generation_time">
+      Update Time: 2025-05-19
+    </div>        
+  </div> 
+  
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+    <script src="${pd}/publishing/publishing-styles-AIC-template/js/custom.js" defer="defer"></script>
+
+        
+    </body>
+</html>

@@ -1,0 +1,15 @@
+
+# Kconfig file for package zlib
+menuconfig LPKG_USING_ZLIB
+    bool "zlib: general purpose data compression library"
+    default n
+
+if LPKG_USING_ZLIB
+
+    config LPKG_ZLIB_USING_SAMPLE
+        bool "Enable using zlib sample"
+        select RT_USING_DFS      if RT_VER_NUM < 0x40100
+        select RT_USING_POSIX_FS if RT_VER_NUM >= 0x40100
+        default n
+
+endif

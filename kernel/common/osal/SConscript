@@ -1,0 +1,21 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+Import('rtconfig')
+from building import *
+import os
+
+cwd = GetCurrentDir()
+src = Glob('*.c')
+CPPPATH = [cwd + '/../include/osal', ]
+
+SRC_NAME = 'aicos_memcpy.S'
+asm_src = Glob(SRC_NAME)
+PATH = AIC_ROOT + '/kernel/common/osal/'
+lib_name = 'aic-mem_' + rtconfig.CPUNAME + '.a'
+if os.path.exists(PATH + SRC_NAME):
+    DefineGroup(PATH + lib_name, asm_src, depend = [''], LIBRARY='')
+
+group = DefineGroup('aic_osal', src, depend = [''], CPPPATH = CPPPATH, LIBS =
+        ['aic-mem_' + rtconfig.CPUNAME], LIBPATH = [PATH])
+
+Return('group')

@@ -1,0 +1,595 @@
+menu "Display Panels"
+
+    choice
+        prompt "ArtInChip Panel Drivers"
+        default AIC_SIMPLE_PANEL
+
+#
+# Simple Panel
+#
+    config AIC_SIMPLE_PANEL
+        bool "ArtInChip SIMPLE panel"
+        depends on AIC_DISP_RGB || AIC_DISP_LVDS
+        help
+            Simple Panel support general RGB or LVDS LCD
+
+if !AIC_DISP_PQ_TOOL
+#
+# MIPI-DSI Panel
+#
+    config AIC_PANEL_DSI_XM91080
+        bool "ArtInChip MIPI DSI XM91080 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_ST7797
+        bool "ArtInChip MIPI DSI ST7797 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_ST7703
+        bool "ArtInChip MIPI DSI ST7703 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+     config AIC_PANEL_DSI_ST77922
+        bool "ArtInChip MIPI DSI ST77922 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_ILI9881C
+        bool "ArtInChip MIPI DSI ILI9881C panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_HX8394
+        bool "ArtInChip MIPI DSI HX8394 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_JD9365
+        bool "ArtInChip MIPI DSI JD9365 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_AXS15231B
+        bool "ArtInChip MIPI DSI AXS15231B panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_NV3051
+        bool "ArtInChip MIPI DSI NV3051 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_FL7707
+        bool "ArtInChip MIPI DSI FL7707 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_FT8201
+        bool "ArtInChip MIPI DSI FT8201 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H013A08
+        bool "Hotlcd MIPI DSI H013A08 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H016A01
+        bool "Hotlcd MIPI DSI H016A01 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H024B12
+        bool "Hotlcd MIPI DSI H024B12 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H028B23
+        bool "Hotlcd MIPI DSI H028B23 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H028A29
+        bool "Hotlcd MIPI DSI H028A29 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H030B07
+        bool "Hotlcd MIPI DSI H030B07 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H034A01
+        bool "Hotlcd MIPI DSI H034A01 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H035A27
+        bool "Hotlcd MIPI DSI H035A27 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H035B16
+        bool "Hotlcd MIPI DSI H035B16 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H035B22
+        bool "Hotlcd MIPI DSI H035B22 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H040B24
+        bool "Hotlcd MIPI DSI H040B24 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H043A8
+        bool "Hotlcd MIPI DSI H043A8 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H050A20
+        bool "Hotlcd MIPI DSI H050A20 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H055A03
+        bool "Hotlcd MIPI DSI H055A03 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H070B13
+        bool "Hotlcd MIPI DSI H070B13 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H070A21
+        bool "Hotlcd MIPI DSI H070A21 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H078B06
+        bool "Hotlcd MIPI DSI H078B06 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H080A11
+        bool "Hotlcd MIPI DSI H080A11 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H080D16
+        bool "Hotlcd MIPI DSI H080D16 panel(Conversion)"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H103W01
+        bool "Hotlcd MIPI DSI H103W01 panel"
+        depends on AIC_DISP_MIPI_DSI
+#
+# MIPI-DBI Type B I8080 Panel
+#
+    config AIC_PANEL_DBI_ILI9488
+        bool "ArtInChip MIPI DBI ILI9488 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type B, I8080_RGB666_16BIT_3CYCLE
+
+    config AIC_PANEL_DBI_ILI9486L
+        bool "ArtInChip MIPI DBI ILI9486L panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type B, I8080_RGB666_8BIT
+
+    config AIC_PANEL_DBI_ST7789
+        bool "ArtInChip MIPI DBI ST7789 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type B, I8080_RGB565_8BIT
+
+    config AIC_PANEL_DBI_H040A12
+        bool "Hotlcd MIPI DBI H040A12 panel"
+        depends on AIC_DISP_MIPI_DBI
+
+    config AIC_PANEL_DBI_H040A27
+        bool "Hotlcd MIPI DBI H040A27 panel"
+        depends on AIC_DISP_MIPI_DBI
+#
+# MIPI-DBI Type C SPI Panel
+#
+    config AIC_PANEL_DBI_ILI9341
+        bool "ArtInChip MIPI DBI ILI9341 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4LINE_RGB888
+
+    config AIC_PANEL_DBI_ST77903
+        bool "ArtInChip MIPI DBI ST77903 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4SDA_RGB666
+
+    config AIC_PANEL_DBI_ILI9327
+        bool "ArtInChip MIPI DBI ILI9327 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4LINE_RGB565
+
+    config AIC_PANEL_DBI_CO5300
+        bool "ArtInChip MIPI DBI CO5300 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4DA_RGB888
+
+    config AIC_PANEL_DBI_ST77916
+        bool "ArtInChip MIPI DBI ST77916 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4LINE_RGB565
+
+    config AIC_PANEL_DBI_GC9108
+        bool "ArtInChip MIPI DBI GC9108 panel"
+        depends on AIC_DISP_MIPI_DBI
+        depends on AIC_DISP_MIPI_DBI_DRV_V13
+        help
+            MIPI-DBI Type C, SPI_4LINE_RGB565
+
+    config AIC_PANEL_DBI_ST77912
+        bool "ArtInChip MIPI DBI ST77912 panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type C, SPI_4LINE_RGB565
+
+    config AIC_PANEL_SPI_GENERAL
+        bool "ArtInChip SPI General panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            Use SPI Controller refresh SPI LCD Peripheral
+#
+# RGB Panel SPI Init
+#
+    config AIC_PANEL_RGB_ST7701S
+        bool "ArtInChip RGB ST7701S panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_ST77916
+        bool "ArtInChip RGB ST77916 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+        select AIC_SPI_EMULATION_WITH_DC
+
+    config AIC_PANEL_RGB_JD9855
+        bool "ArtInChip RGB JD9855 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+        select AIC_SPI_EMULATION_WITH_DC
+
+    config AIC_PANEL_RGB_NV3052
+        bool "ArtInChip RGB NV3052 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_ST7703
+        bool "ArtInChip RGB ST7703 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_GC9A01A
+        bool "ArtInChip RGB GC9A01A panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_NT35560
+        bool "ArtInChip RGB NT35560 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_ST77922
+        bool "ArtInChip RGB ST77922 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H024A13
+        bool "Hotlcd RGB H024A13 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H028A19
+        bool "Hotlcd RGB H028A19 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H030A8
+        bool "Hotlcd RGB H030A8 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H030A10
+        bool "Hotlcd RGB H030A10 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H034A02
+        bool "Hotlcd RGB H034A02 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H035A17
+        bool "Hotlcd RGB H035A17 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+    
+    config AIC_PANEL_RGB_H035A24
+        bool "Hotlcd RGB H035A24 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H040A18
+        bool "Hotlcd RGB H040A18 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H043A7
+        bool "Hotlcd RGB H043A7 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H043B32
+        bool "Hotlcd RGB H043B32 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H048A02
+        bool "Hotlcd RGB H048A02 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H050A12
+        bool "Hotlcd RGB H050A12 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+    
+    config AIC_PANEL_RGB_H050A18
+        bool "Hotlcd RGB H050A18 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H052A01
+        bool "Hotlcd RGB H052A01 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H062A01
+        bool "Hotlcd RGB H062A01 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H068A04
+        bool "Hotlcd RGB H068A04 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H068B06
+        bool "Hotlcd RGB H068B06 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H070A18
+        bool "Hotlcd RGB H070A18 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+#
+# SRGB Panel
+#
+    config AIC_PANEL_SRGB_HX8238
+        bool "ArtInChip SRGB HX8238 panel"
+        depends on AIC_DISP_RGB
+
+#
+# RGB Panel IIC Init
+#
+    config AIC_PANEL_LCOS_HX7033
+        bool "ArtInChip RGB HX7033 panel"
+        depends on AIC_I2C_DRV && AIC_DISP_RGB
+
+#
+# Bridge Panel
+#
+    config AIC_PANEL_BRIDGE_LT8911
+        bool "ArtInChip LT8911 LVDS-eDP bridge"
+        depends on AIC_DISP_LVDS
+
+    config AIC_PANEL_DSI_EDP_LT9811EXB
+        bool "ArtInChip MIPI DSI bridge eDP LT8911EXB"
+        depends on AIC_DISP_MIPI_DSI
+endif
+    endchoice
+
+config AIC_PANEL_CUSTOM_RESOLUTION
+    bool "Custom Display Timing"
+    depends on AIC_SIMPLE_PANEL
+    default n
+
+choice
+        prompt "Classic Resolution List"
+        depends on AIC_SIMPLE_PANEL
+        depends on !AIC_PANEL_CUSTOM_RESOLUTION
+        default AIC_PANEL_1024X600
+
+    config AIC_PANEL_480X272
+        bool "480x272"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_800X480
+        bool "800x480"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_1024X600
+        bool "1024x600"
+        depends on AIC_DISP_RGB || AIC_DISP_LVDS
+
+    config AIC_PANEL_H050A21
+        bool "h050a21"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_H068B06
+        bool "h068b06"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_H070A20
+        bool "h070a20"
+        depends on AIC_DISP_RGB
+    
+    config AIC_PANEL_H086A01
+        bool "h086a01"
+        depends on AIC_DISP_RGB
+
+    config AIC_PANEL_1920X1080_RESOLUTION
+        bool "1920x1080"
+        depends on AIC_DISP_LVDS
+endchoice
+
+config RGB_PANEL_MATCH_ID
+    int
+    default 0 if AIC_PANEL_1024X600
+    default 1 if AIC_PANEL_800X480
+    default 2 if AIC_PANEL_480X272
+    default 3 if AIC_PANEL_H050A21
+    default 4 if AIC_PANEL_H068B06
+    default 5 if AIC_PANEL_H070A20
+    default 6 if AIC_PANEL_H086A01
+    default 7 if AIC_PANEL_CUSTOM_RESOLUTION
+
+
+config LVDS_PANEL_MATCH_ID
+    int
+    default 0 if AIC_PANEL_1024X600
+    default 1 if AIC_PANEL_1920X1080_RESOLUTION
+    default 2 if AIC_PANEL_CUSTOM_RESOLUTION
+
+choice
+    prompt "ILI9881C Match Table"
+    depends on AIC_PANEL_DSI_ILI9881C
+    default ILI9881C_DEFAULT
+
+    config ILI9881C_DEFAULT
+        bool "default 4 lane 800x1280"
+    config TFT050BP071_DEFAULT
+        bool "tft050bp071 2 lane 720"
+endchoice
+
+config ILI9881C_MATCH_ID
+    int
+    default 0 if ILI9881C_DEFAULT
+    default 1 if TFT050BP071_DEFAULT
+
+choice
+    prompt "ST7789 Match Table"
+    depends on AIC_PANEL_DBI_ST7789
+    default ST7789_P3
+
+    config ST7789_P3
+        bool "P3 I8080 240x320"
+    config ST7789_T3
+        bool "T3 SPI 4LINE 240x320"
+    config ST7789_V3
+        bool "V3 SPI 4LINE 240x320"
+endchoice
+
+config ST7789_MATCH_ID
+    int
+    default 0 if ST7789_P3
+    default 1 if ST7789_T3
+    default 2 if ST7789_V3
+
+config ST7789_PANEL_RESET
+    string "ST7789 display panel reset pin"
+    depends on AIC_PANEL_DBI_ST7789
+    default "PD.23"
+
+choice
+    prompt "LT9811EXB Resolution List"
+    depends on AIC_PANEL_DSI_EDP_LT9811EXB
+    default LT9811EXB_1920X1080
+
+    config LT9811EXB_1920X1200
+        bool "1920x1200"
+    config LT9811EXB_1920X1080
+        bool "1920x1080"
+    config LT9811EXB_1366X768
+        bool "1366x768"
+endchoice
+
+config LT9811EXB_RESOLUTION
+    depends on AIC_PANEL_DSI_EDP_LT9811EXB
+    int
+    default 0 if LT9811EXB_1920X1200
+    default 1 if LT9811EXB_1920X1080
+    default 2 if LT9811EXB_1366X768
+
+if AIC_PANEL_SPI_GENERAL
+config SPI_GENERAL_WIDTH
+    int "SPI LCD Width"
+    default 160
+
+config SPI_GENERAL_HEIGHT
+    int "SPI LCD Height"
+    default 160
+endif
+
+if AIC_PANEL_CUSTOM_RESOLUTION && !AIC_DISP_PQ_TOOL
+source "bsp/artinchip/drv/display/panel/Kconfig.timing"
+endif
+
+
+config PANEL_HACTIVE_RES
+    int
+    default 480 if AIC_PANEL_480X272
+    default 1024 if AIC_PANEL_1024X600
+    default 1920 if AIC_PANEL_1920X1080_RESOLUTION
+    default 800 if AIC_PANEL_H050A21
+    default 1024 if AIC_PANEL_H070A20
+    default 600 if AIC_PANEL_H086A01
+    default 320 if AIC_PANEL_DBI_H040A12
+    default 320 if AIC_PANEL_DBI_H040A27
+    default 720 if AIC_PANEL_RGB_NV3052
+    default 480 if AIC_PANEL_RGB_H030A10
+    default 640 if AIC_PANEL_RGB_H035A17
+    default 480 if AIC_PANEL_RGB_H043A7
+    default 480 if AIC_PANEL_RGB_H048A02
+    default 480 if AIC_PANEL_RGB_H050A12
+    default 480 if AIC_PANEL_RGB_H068A04
+    default 480 if AIC_PANEL_RGB_H068B06
+    default 320 if AIC_PANEL_DSI_ST7797
+    default 360 if AIC_PANEL_DSI_H013A08
+    default 400 if AIC_PANEL_DSI_H016A01
+    default 480 if AIC_PANEL_DSI_H028B23
+    default 240 if AIC_PANEL_DSI_H024B12
+    default 800 if AIC_PANEL_DSI_H034A01
+    default 320 if AIC_PANEL_DSI_H035A27
+    default 640 if AIC_PANEL_DSI_H035B16
+    default 720 if AIC_PANEL_DSI_H040B24
+    default 480 if AIC_PANEL_DSI_H035B22
+    default 720 if AIC_PANEL_DSI_H050A20
+    default 720 if AIC_PANEL_DSI_H055A03
+    default 800 if AIC_PANEL_DSI_H070B13
+    default 280 if AIC_PANEL_DSI_H070A21
+    default 400 if AIC_PANEL_DSI_H078B06
+    default 800 if AIC_PANEL_DSI_H080A11
+    default 1920 if AIC_PANEL_DSI_H080D16
+
+
+
+config PANEL_VACTIVE_RES
+    int
+    default 272 if AIC_PANEL_480X272
+    default 600 if AIC_PANEL_1024X600
+    default 1080 if AIC_PANEL_1920X1080_RESOLUTION
+    default 480 if AIC_PANEL_H050A21
+    default 600 if AIC_PANEL_H070A20
+    default 1600 if AIC_PANEL_H086A01
+    default 320 if AIC_PANEL_DBI_H040A12
+    default 480 if AIC_PANEL_DBI_H040A27
+    default 720 if AIC_PANEL_RGB_NV3052
+    default 854 if AIC_PANEL_RGB_H030A10
+    default 480 if AIC_PANEL_RGB_H035A17
+    default 800 if AIC_PANEL_RGB_H043A7
+    default 854 if AIC_PANEL_RGB_H050A12
+    default 1280 if AIC_PANEL_RGB_H068A04
+    default 1280 if AIC_PANEL_RGB_H068B06
+    default 480 if AIC_PANEL_DSI_ST7797
+    default 360 if AIC_PANEL_DSI_H013A08
+    default 400 if AIC_PANEL_DSI_H016A01
+    default 320 if AIC_PANEL_DSI_H024B12
+    default 640 if AIC_PANEL_DSI_H028B23
+    default 800 if AIC_PANEL_DSI_H034A01
+    default 480 if AIC_PANEL_DSI_H035A27
+    default 480 if AIC_PANEL_DSI_H035B16
+    default 800 if AIC_PANEL_DSI_H035B22
+    default 720 if AIC_PANEL_DSI_H040B24
+    default 1120 if AIC_PANEL_RGB_H048A02
+    default 1280 if AIC_PANEL_DSI_H050A20
+    default 1280 if AIC_PANEL_DSI_H055A03
+    default 1280 if AIC_PANEL_DSI_H070B13
+    default 1424 if AIC_PANEL_DSI_H070A21
+    default 1280 if AIC_PANEL_DSI_H078B06
+    default 1280 if AIC_PANEL_DSI_H080A11
+    default 1200 if AIC_PANEL_DSI_H080D16
+
+
+endmenu

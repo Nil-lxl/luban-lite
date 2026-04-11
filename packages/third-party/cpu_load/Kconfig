@@ -1,0 +1,7 @@
+
+# Kconfig file for package cpu_load
+config LPKG_USING_CPU_LOAD
+    bool "CPU_LOAD: Rt-Thread CPU usage statistics tool for thread."
+    default n
+
+

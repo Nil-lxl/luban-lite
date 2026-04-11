@@ -1,0 +1,42 @@
+Import('rtconfig')
+from building import *
+
+cwd = GetCurrentDir()
+list = os.listdir(cwd)
+
+include_path =[]
+src = []
+
+include_path +=[cwd]
+include_path +=[cwd + '/../include']
+include_path +=[cwd + '/jxc_rtt']
+
+src += Glob('./jxc_rtt/*.c')
+
+wifi_name = 'hugeic'
+if GetDepend('HUGEIC_TXW901_DEBUG_LOG'):
+    local_lib = 'wlan_' + wifi_name + '_log_' + rtconfig.CPUNAME
+    mac80211_lib = 'wlan_' + wifi_name + '_mac80211_log_' + rtconfig.CPUNAME
+else:
+    local_lib = 'wlan_' + wifi_name + '_' + rtconfig.CPUNAME
+    mac80211_lib = 'wlan_' + wifi_name + '_mac80211_' + rtconfig.CPUNAME
+
+LIBS = [local_lib, mac80211_lib]
+LIBPATH = [cwd + "/lib/"]
+
+if GetDepend(['PRJ_RV_TOOLCHAIN_V2_6_1']):
+    myccflags = (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types')
+elif GetDepend(['PRJ_RV_TOOLCHAIN_V3_2_0']):
+    myccflags = (' -w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch')
+else:
+    myccflags = (' -w')
+
+mycppdefs = ['__RTOS__', 'JXC_RTT', 'jxc_rtt', 'CONFIG_HGIC_SDIO', 'SDIO_DRIVER_EXT',
+          'CONFIG_HGIC_2G', 'CONFIG_HGIC_UMAC', '__HGIC_SMAC__', 'CONFIG_SDIO_REINIT']
+
+#src = []
+#LIBS = []
+#LIBPATH =[]
+group = DefineGroup('hugeic', src, depend = ['AIC_WLAN_HUGEIC'], CPPDEFINES=mycppdefs, CPPPATH = include_path, LIBS=LIBS, LIBPATH=LIBPATH, LOCAL_CFLAGS=myccflags)
+
+Return('group')

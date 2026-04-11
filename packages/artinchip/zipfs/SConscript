@@ -1,0 +1,24 @@
+from building import *
+Import('rtconfig')
+
+src   = []
+cwd   = GetCurrentDir()
+install = []
+
+if GetDepend('LPKG_USING_ZIPFS'):
+    src += Glob('src/*.c')
+    if GetDepend('LPKG_ZIPFS_DEMO'):
+        src += Glob('zip_reader_demo.c')
+        src += Glob('zip_fs_demo.c')
+        ins_dst = 'rodata/zipfs_test'
+        ins_src = 'test_zip_files/'
+        install = [(ins_src, ins_dst)]
+
+# add include path.
+path  = [cwd + '/inc']
+
+# add src and include to group.
+group = DefineGroup('zipfs', src, depend = ['LPKG_USING_ZIPFS'], CPPPATH = path,
+                    INSTALL = install)
+
+Return('group')

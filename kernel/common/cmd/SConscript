@@ -1,0 +1,15 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+if GetDepend('AIC_IN_SUSPEND_ENV'):
+    src = []
+else:
+    src = Glob('*.c') + Glob("*.S")
+
+cwd = GetCurrentDir()
+CPPPATH = [cwd + '/../include/', ]
+
+group = DefineGroup('aic_debug', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')
