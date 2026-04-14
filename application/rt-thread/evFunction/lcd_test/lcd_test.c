@@ -485,13 +485,13 @@ static void fill_gray_level(lcd_test_param_t param) {
  */
 static const lcd_test_item_t test_items[] = {
     // {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      1000, true},
-    {"红色",       fill_color,          .param.color = { RED, 0, 0 },             1000, true},
-    {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           1000, true},
-    {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            1000, true},
-    {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
-    {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           1000, true},
+    // {"红色",       fill_color,          .param.color = { RED, 0, 0 },             1000, true},
+    // {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           1000, true},
+    // {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            1000, true},
+    // {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
+    // {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           1000, true},
     // {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
-    // {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/img1024x600_1.jpg", 1000, true},
+    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/img412x960.jpg", 3000, true},
     // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/img1024x600_2.jpg", 1000, true},
     // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/f1024x600.jpg", 1000, true},
 

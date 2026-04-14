@@ -12,11 +12,11 @@
 static struct gpio_desc reset_gpio;
 static void panel_gpio_init(void) {
     panel_get_gpio(&reset_gpio, RESET_PIN);
-    aic_delay_ms(1);
+    aic_delay_ms(10);
     panel_gpio_set_value(&reset_gpio, 0);
     aic_delay_ms(20);
     panel_gpio_set_value(&reset_gpio, 1);
-    aic_delay_ms(120);
+    aic_delay_ms(1500);
 }
 #endif
 
@@ -774,6 +774,9 @@ static int panel_enable(struct aic_panel *panel) {
 
     panel_spi_cmd_wr(0x36);
     panel_spi_data_wr(0x08);
+
+    panel_spi_cmd_wr(0x3A);
+    panel_spi_data_wr(0x55);
 
     panel_spi_cmd_wr(0x11);
     aic_delay_ms(200);

@@ -18,6 +18,7 @@
 
 #include <unistd.h>
 
+#ifdef AIC_USING_RTP
 #define AIC_POINT_NUM                   5
 #define AIC_CROSS_LENGTH                50
 #define AIC_CROSS_WIDTH                 25
@@ -461,3 +462,5 @@ void rtp_draw_panel(void) {
 
 
 }
+
+#endif

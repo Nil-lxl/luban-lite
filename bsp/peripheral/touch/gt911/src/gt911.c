@@ -324,7 +324,7 @@ static rt_size_t gt911_read_point(struct rt_touch_device *touch, void *buf,
                         continue;
             }
 
-            gt911_touch_down(buf, read_id, input_x, input_y, input_w);
+            gt911_touch_down(buf, read_id, input_x+60, input_y, input_w);
         }
     } else if (pre_touch) {
         for (read_index = 0; read_index < pre_touch; read_index++) {

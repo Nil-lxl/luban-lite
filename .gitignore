@@ -21,6 +21,7 @@ tools/env/tools/ConEmu
 packages/packages.dbsqlite
 packages/pkgs_error.json
 packages/pkgs.json
+packages/artinchip/lvgl-ui/aic_demo/ui_builder
 .clang-format
 .commit
 .editorconfig

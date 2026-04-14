@@ -111,9 +111,18 @@
 #define LV_FONT_MONTSERRAT_18       1
 #define LV_FONT_MONTSERRAT_20       1
 #define LV_FONT_MONTSERRAT_22       1
-#define LV_FONT_MONTSERRAT_24       1
+
 #define LV_FONT_SIMSUN_16_CJK       1
 #endif /* LV_USE_DEMO_MUSIC */
+
+#define LV_FONT_MONTSERRAT_26       0
+#define LV_FONT_MONTSERRAT_28       0
+#define LV_FONT_MONTSERRAT_30       0
+#define LV_FONT_MONTSERRAT_32       0
+#define LV_FONT_MONTSERRAT_34       0
+#define LV_FONT_MONTSERRAT_36       0
+#define LV_FONT_MONTSERRAT_38       0
+#define LV_FONT_MONTSERRAT_40       0
 
 /*FreeType library*/
 #define LV_USE_FREETYPE 0
