@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -364,6 +364,10 @@ int vin_vb_init(struct vb_queue *q, const struct vb_ops *ops)
         q->done = aicos_sem_create(0);
 
     g_vb_ops = ops;
+
+#ifdef AIC_DVP_SUPPORT_DEMUX
+    q->ch = g_mpp_vin_ch;
+#endif
     return 0;
 }
 

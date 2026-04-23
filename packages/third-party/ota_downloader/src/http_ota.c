@@ -22,7 +22,7 @@
 #include <absystem_os.h>
 
 #ifdef LPKG_USING_HTTP_OTA
-
+#define OTA_BUFF_LEN      2048 //Need to be less than OTA_BURN_LEN
 #define GET_HEADER_BUFSZ  512
 #define GET_RESP_BUFSZ    512
 #define HTTP_OTA_DL_DELAY (10 * RT_TICK_PER_SECOND)

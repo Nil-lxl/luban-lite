@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /*
- * Copyright (C) 2021 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2026 ArtInChip Technology Co., Ltd.
  */
 #include <stdio.h>
 #include <drivers/pin.h>
@@ -123,13 +123,13 @@ void wifi_sdio_remove(struct rt_mmcsd_card *card)
 
 static int rtt_sdio_bus_probe(void)
 {
-    realtek_reset();
+    // realtek_reset();
 
     return 0;
 }
 static int rtt_sdio_bus_remove(void)
 {
-    realtek_power_off();
+    // realtek_power_off();
 
     return 0;
 }

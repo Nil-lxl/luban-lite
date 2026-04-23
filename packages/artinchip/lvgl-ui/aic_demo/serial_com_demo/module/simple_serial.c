@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -28,7 +28,7 @@ int simple_serial_init(char *uart, int boaud, int data_bits, int stop_bits, int 
 {
     g_rx_mq = rt_mq_create("uart_rx_mq", sizeof(struct rx_msg), UART_MQ_SIZE, RT_IPC_FLAG_FIFO);
     if (!g_rx_mq) {
-        printf("rt mq create failed, msq size = %d\n", sizeof(struct rx_msg)  * UART_MQ_SIZE);
+        printf("rt mq create failed, msq size = %d\n", (int)(sizeof(struct rx_msg)  * UART_MQ_SIZE));
         return -1;
     }
 
@@ -41,6 +41,12 @@ int simple_serial_init(char *uart, int boaud, int data_bits, int stop_bits, int 
 
     /* config */
     struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT;
+
+    if (rt_device_control(g_serial, RT_SERIAL_GET_CONFIG, &config) != RT_EOK) {
+        rt_kprintf("uart get configure parameter fail!\n");
+        return -1;
+    }
+
     config.baud_rate = boaud;
     config.data_bits = data_bits;
     config.stop_bits = stop_bits;
@@ -81,7 +87,7 @@ int simple_serial_recv(unsigned char *data, int max_len)
     if (rt_mq_recv(g_rx_mq, &msg, sizeof(msg), RT_WAITING_FOREVER) == 0) {
         if (msg.size >= max_len - 1) {
             len = rt_device_read(msg.dev, 0, data, max_len - 1);
-            printf("The %s receive buffer is configured too small. config size = %d, recv size = %d", g_serial->parent.name, max_len, msg.size);
+            printf("The %s receive buffer is configured too small. config size = %d, recv size = %d", g_serial->parent.name, (int)max_len, (int)msg.size);
         } else {
             len = rt_device_read(msg.dev, 0, data, msg.size);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2024-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -7,12 +7,6 @@
  */
 
 #define AIC_PSADC_NAME      "psadc"
-
-struct aic_psadc_dev {
-    struct rt_adc_device *dev;
-    struct aic_psadc_ch *chan;
-    struct aic_psadc_queue *queue;
-};
 
 #ifdef AIC_PSADC_DRV_V11
 #define AIC_PSADC_CLK_RATE    40000000   /* 40MHz */
@@ -149,7 +143,7 @@ struct aic_psadc_ch aic_psadc_chs[] = {
 #endif
 };
 
-struct aic_psadc_queue aic_psadc_queues[] = {
+struct aic_psadc_dev aic_psadc_queues[] = {
     {
         .id = 0,
         .type = AIC_PSADC_QC,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,6 +16,14 @@ extern "C" {
 #include "rtdef.h"
 
 #define CAMERA_DEV_NAME     "camera"
+
+#ifdef AIC_CHIP_D12P
+#define CAMERA_CLK_OUT      CLK_OUT0
+#define CAMERA_CLK_FREQ     AIC_CLK_OUT0_FREQ
+#else
+#define CAMERA_CLK_OUT      CLK_OUT1
+#define CAMERA_CLK_FREQ     AIC_CLK_OUT1_FREQ
+#endif
 
 /* ioctl command of Camera device */
 

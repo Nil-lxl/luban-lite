@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -352,6 +352,16 @@ static int de_set_video_tile_format(struct aic_de_comp *comp, struct aicfb_layer
         de_update_csc(comp, disp_prop, color_space);
     }
 
+    if (!scaler_w) {
+        scaler_w = in_w;
+        layer_data->scale_size.width = in_w;
+    }
+
+    if (!scaler_h) {
+        scaler_h = in_h;
+        layer_data->scale_size.height = in_h;
+    }
+
     de_set_scaler0_channel(comp->regs, in_w, in_h,
                    scaler_w, scaler_h, 0);
 
@@ -610,6 +620,16 @@ static int de_set_video_planar_format(struct aic_de_comp *comp, struct aicfb_lay
             de_update_csc(comp, disp_prop, color_space);
         }
 
+        if (!scaler_w) {
+            scaler_w = in_w;
+            layer_data->scale_size.width = in_w;
+        }
+
+        if (!scaler_h) {
+            scaler_h = in_h;
+            layer_data->scale_size.height = in_h;
+        }
+
         de_set_scaler0_channel(comp->regs, in_w, in_h,
                        scaler_w, scaler_h, 0);
 
@@ -690,6 +710,16 @@ static int de_set_video_packed_format(struct aic_de_comp *comp, struct aicfb_lay
         de_update_csc(comp, disp_prop, color_space);
     }
 
+    if (!scaler_w) {
+        scaler_w = in_w;
+        layer_data->scale_size.width = in_w;
+    }
+
+    if (!scaler_h) {
+        scaler_h = in_h;
+        layer_data->scale_size.height = in_h;
+    }
+
     de_set_scaler0_channel(comp->regs, in_w, in_h,
                    scaler_w, scaler_h, 0);
 
@@ -705,24 +735,6 @@ static int de_set_video_packed_format(struct aic_de_comp *comp, struct aicfb_lay
     de_video_layer_enable(comp->regs, 1);
 
     return 0;
-}
-
-static void de_convert_scaler_size(struct aicfb_layer_data *layer_data)
-{
-    u32 in_w = (u32)layer_data->buf.size.width;
-    u32 in_h = (u32)layer_data->buf.size.height;
-    u32 scaler_w = layer_data->scale_size.width;
-    u32 scaler_h = layer_data->scale_size.height;
-
-    if (!scaler_w) {
-        scaler_w = in_w;
-        layer_data->scale_size.width = in_w;
-    }
-
-    if (!scaler_h) {
-        scaler_h = in_h;
-        layer_data->scale_size.height = in_h;
-    }
 }
 
 static int de_vi_layer_config_format(struct aic_de_comp *comp,
@@ -768,8 +780,6 @@ int config_video_layer(struct aic_de_comp *comp,
         pr_err("invalid buf type: %d\n", layer_data->buf.buf_type);
         return -EINVAL;
     };
-
-    de_convert_scaler_size(layer_data);
 
     format_info = de_convert_vi_format(format);
     if (!format_info) {

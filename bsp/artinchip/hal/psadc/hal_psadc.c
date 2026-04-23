@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -8,6 +8,8 @@
 
 #include "aic_core.h"
 #include "hal_psadc.h"
+#include "hal_dma.h"
+#include "aic_dma_id.h"
 #include <string.h>
 
 /* Register definition of PSADC Controller */
@@ -60,7 +62,6 @@
 #define PSADC_Q2FDR_DATA            BIT(0)
 
 extern struct aic_psadc_ch aic_psadc_chs[];
-extern struct aic_psadc_queue aic_psadc_queues[];
 static u32 g_psadc_ch_num = 0; // the number of available channel
 static u32 g_psadc_ch_data[AIC_PSADC_CH_NUM] = {0};
 
@@ -118,8 +119,13 @@ static void psadc_fifo1_flush(void)
 
 static void psadc_fifo_init(void)
 {
-    u32 val = PSADC_FCR_FIFO_ERRIE | PSADC_FCR_FIFO_RDYIE;
+    u32 val = PSADC_FCR_FIFO_ERRIE;
 
+#if defined(AIC_PSADC_DRV_DMA)
+    val |= PSADC_FCR_FIFO_DRQE;
+#elif defined(AIC_PSADC_DRV_INT)
+    val |= PSADC_FCR_FIFO_RDYIE;
+#endif
     val |= g_psadc_ch_num << PSADC_FCR_DRTH_SHIFT;
     psadc_writel(val, PSADC_Q1FCR);
     psadc_writel(val, PSADC_Q2FCR);
@@ -144,11 +150,73 @@ int hal_psadc_set_queue_node(int queue, int ch, int node_ordinal)
     return 0;
 }
 
-int  hal_psadc_ch_init(void)
+#ifdef AIC_PSADC_DRV_DMA
+int hal_psadc_active_dma(struct aic_psadc_dev *queue,
+                         struct aic_psadc_dma_info *dma_info)
+{
+    int ret = 0;
+
+    if (queue->dma_chan == NULL) {
+        pr_err("Has not been config dma yet.");
+        return -EINVAL;
+    }
+
+    hal_dma_chan_register_cb(queue->dma_chan, dma_info->callback,
+                             (void *)queue);
+    ret = hal_dma_chan_prep_device(queue->dma_chan, (ulong)dma_info->buf,
+                                   PSADC_BASE + PSADC_Q1FDR,
+                                   dma_info->buf_size,
+                                   DMA_DEV_TO_MEM);
+    if (ret) {
+        pr_err("Failed to prepare dma.\n");
+        return ret;
+    }
+#ifdef AIC_PSADC_TRIG_BY_SOFT
+    hal_psadc_sw_trigger();
+#endif
+    return hal_dma_chan_start(queue->dma_chan);
+}
+
+static int psadc_request_dma(struct aic_psadc_dev *queue)
+{
+    struct dma_slave_config config = {0};
+    u32 dma_id = DMA_ID_PSADC_Q1;
+
+    if (queue->type == AIC_PSADC_Q2)
+        dma_id = DMA_ID_PSADC_Q2;
+    config.direction = DMA_DEV_TO_MEM;
+    config.src_addr = PSADC_BASE + PSADC_Q1FDR;
+    config.slave_id = dma_id;
+    config.src_maxburst = 1;
+    config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+
+    queue->dma_chan = hal_request_dma_chan();
+    if (!queue->dma_chan) {
+        pr_err("PSADC request dma channel error\n");
+        return -ENODEV;
+    }
+    hal_dma_chan_config(queue->dma_chan, &config);
+    return 0;
+}
+
+static int psadc_release_dma(struct aic_psadc_dev *queue)
+{
+    if (queue->dma_chan) {
+        hal_dma_chan_stop(queue->dma_chan);
+        hal_release_dma_chan(queue->dma_chan);
+    }
+    queue->dma_chan = NULL;
+    return 0;
+}
+#endif
+
+int hal_psadc_init(struct aic_psadc_dev *queue)
 {
     int val = 0;
-    struct aic_psadc_queue *queue  = &aic_psadc_queues[AIC_PSADC_QC];
 
+#ifdef AIC_PSADC_DRV_DMA
+    psadc_request_dma(queue);
+#endif
     psadc_fifo_init();
     if (queue->type == AIC_PSADC_QC) {
         val = queue->nodes_num - 1;
@@ -157,6 +225,14 @@ int  hal_psadc_ch_init(void)
 
     hal_psadc_qc_irq_enable(true);
     return 0;
+}
+
+void hal_psadc_deinit(struct aic_psadc_dev *queue)
+{
+    hal_psadc_qc_irq_enable(false);
+#ifdef AIC_PSADC_DRV_DMA
+    psadc_release_dma(queue);
+#endif
 }
 
 void aich_psadc_status_show(void)
@@ -212,16 +288,21 @@ struct aic_psadc_ch *hal_psadc_ch_is_valid(u32 ch)
     return NULL;
 }
 
-int hal_psadc_read(u32 *val, u32 timeout)
+void hal_psadc_sw_trigger(void)
 {
-    int ret = 0;
-    struct aic_psadc_queue *queue  = &aic_psadc_queues[AIC_PSADC_QC];
-
-    RT_ASSERT(queue->complete != NULL);
-
-#ifdef AIC_PSADC_TRIG_BY_SOFT
     psadc_fifo1_flush();
     psadc_reg_enable(PSADC_MCR, PSADC_MCR_Q1_TRIGS, 1);
+}
+
+int hal_psadc_read(struct aic_psadc_dev *queue, u32 *val, u32 timeout)
+{
+    int ret = 0;
+
+    if (queue->complete == NULL)
+        return -EINVAL;
+
+#ifdef AIC_PSADC_TRIG_BY_SOFT
+    hal_psadc_sw_trigger();
 #endif
 
     ret = aicos_sem_take(queue->complete, timeout);
@@ -242,16 +323,14 @@ int hal_psadc_read(u32 *val, u32 timeout)
     return 0;
 }
 
-int hal_psadc_read_poll(u32 *val, u32 timeout)
+int hal_psadc_read_poll(struct aic_psadc_dev *queue, u32 *val, u32 timeout)
 {
     u32 q_flag = 0;
     int get_data_flag = 0;
     int time_count = 0;
-    struct aic_psadc_queue *queue  = &aic_psadc_queues[AIC_PSADC_QC];
 
 #ifdef AIC_PSADC_TRIG_BY_SOFT
-    psadc_fifo1_flush();
-    psadc_reg_enable(PSADC_MCR, PSADC_MCR_Q1_TRIGS, 1);
+    hal_psadc_sw_trigger();
 #endif
 
     while (1) {
@@ -284,7 +363,7 @@ int hal_psadc_read_poll(u32 *val, u32 timeout)
 irqreturn_t hal_psadc_isr(int irq, void *arg)
 {
     u32 q_flag = 0, fifo_cnt = 0;
-    struct aic_psadc_queue *queue  = &aic_psadc_queues[AIC_PSADC_QC];
+    struct aic_psadc_dev *queue = (struct aic_psadc_dev *)arg;
 
     q_flag = psadc_readl(PSADC_MSR);
     if (q_flag & PSADC_MSR_Q1_INT) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -54,7 +54,7 @@ static int read_userid(struct rt_mtd_nand_device *mtd, size_t offset, u8 *buf, s
         }
 
         page_id = offset / mtd->page_size;
-        if (rt_mtd_nand_read(mtd, page_id, ptr, mtd->page_size, RT_NULL, 0))
+        if (rt_mtd_nand_read(mtd, page_id, ptr, mtd->page_size, RT_NULL, 0) < 0)
             return 1;
 
         offset += mtd->page_size;

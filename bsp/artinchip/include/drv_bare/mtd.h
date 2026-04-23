@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -59,6 +59,7 @@ struct mtd_drv_ops {
     int (*cont_read)(struct mtd_dev *mtd, u32 offset, u8 *data, u32 size);
     int (*map_user)(struct mtd_dev *mtd, u8 *oobbuf, u8 *buf, int start, int nbytes);
     int (*unmap_user)(struct mtd_dev *mtd, u8 *dst, u8* src, int start, int nbytes);
+    u32 (*la2pa)(struct mtd_dev *mtd, u32 offset);
 };
 
 struct mtd_dev {
@@ -94,6 +95,7 @@ void mtd_parts_free(struct mtd_partition *head);
 int mtd_contread(struct mtd_dev *mtd, u32 offset, u8 *data, u32 len);
 int mtd_unmap_oob_user_region(struct mtd_dev *mtd, u8 *dst, u8* src, int start, int nbytes);
 int mtd_map_oob_user_region(struct mtd_dev *mtd, u8 *oobbuf, u8 *buf, int start, int nbytes);
+u32 mtd_trans_lga_to_pha(struct mtd_dev *mtd, u32 offset);
 
 struct nftl_mtd *build_nftl_list(char *nftlvols);
 void free_nftl_list(struct nftl_mtd *nftl);

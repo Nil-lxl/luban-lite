@@ -136,7 +136,7 @@ void hal_audio_set_samplerate(aic_audio_ctrl *codec, uint32_t samplerate)
     writel(reg_val, codec->reg_base + ADC_IF_CTRL_REG);
     module_freq = hal_audio_get_module_freq(codec, samplerate);
     pclk_id = hal_clk_get_parent(codec->clk_id);
-#ifdef AIC_AUDIO_DRV_V10
+#if defined(AIC_AUDIO_DRV_V10) || defined(AIC_AUDIO_DRV_V13)
     /* Set AudioCodec parent clock rate */
     hal_clk_set_freq(pclk_id, module_freq * 20);
     /* Set AudioCodec module clock rate */
@@ -411,12 +411,12 @@ void hal_audio_playback_start_single(aic_audio_ctrl *codec)
     /* AudioCodec only support 16bit sample width */
     if (codec->config.channel == 2)
     {
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
     }
     else if (codec->config.channel == 1)
     {
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
     }
 
@@ -466,12 +466,12 @@ void hal_audio_dmic_start(aic_audio_ctrl *codec)
     /* AudioCodec only support 16bit sample width */
     if (codec->config.channel == 2)
     {
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
     }
     else if (codec->config.channel == 1)
     {
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
     }
 
@@ -515,7 +515,7 @@ void hal_audio_amic_start(aic_audio_ctrl *codec)
     config.dst_maxburst = 1;
 
     /* amic only support mono */
-    config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+    config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
     config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
 
     info = &codec->amic_info;
@@ -551,9 +551,9 @@ void hal_audio_playback_stop(aic_audio_ctrl *codec)
 
     info = &codec->tx_info;
 
-    hal_audio_tx_disable_drq(codec);
     hal_dma_chan_stop(info->dma_chan);
     hal_release_dma_chan(info->dma_chan);
+    hal_audio_tx_disable_drq(codec);
     codec->start_flag = 0;
 }
 
@@ -563,10 +563,10 @@ void hal_audio_dmic_stop(aic_audio_ctrl *codec)
 
     info = &codec->dmic_info;
 
-    hal_audio_dmic_disable_drq(codec);
-    hal_audio_disable_rx_global(codec);
     hal_dma_chan_stop(info->dma_chan);
     hal_release_dma_chan(info->dma_chan);
+    hal_audio_dmic_disable_drq(codec);
+    hal_audio_disable_rx_global(codec);
 }
 
 void hal_audio_amic_stop(aic_audio_ctrl *codec)
@@ -575,10 +575,10 @@ void hal_audio_amic_stop(aic_audio_ctrl *codec)
 
     info = &codec->amic_info;
 
-    hal_audio_amic_disable_drq(codec);
-    hal_audio_disable_rx_global(codec);
     hal_dma_chan_stop(info->dma_chan);
     hal_release_dma_chan(info->dma_chan);
+    hal_audio_amic_disable_drq(codec);
+    hal_audio_disable_rx_global(codec);
 }
 
 void hal_audio_attach_callback(aic_audio_ctrl *codec, audio_callback callback,

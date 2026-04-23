@@ -128,15 +128,26 @@ const uint8_t mac[6] = { 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
 #define GW_ADDR3 (uint8_t)1
 
 #ifdef RT_USING_LWIP
+
+#ifndef RT_LWIP_DHCP
+#error cdc_ecm must enable RT_LWIP_DHCP
+#endif
+
+#ifndef LWIP_USING_DHCPD
+#error cdc_ecm must enable LWIP_USING_DHCPD
+#endif
+
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <netif/ethernetif.h>
+#include <dhcp_server.h>
 
 const ip_addr_t ipaddr = IPADDR4_INIT_BYTES(IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
 const ip_addr_t netmask = IPADDR4_INIT_BYTES(NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
 const ip_addr_t gateway = IPADDR4_INIT_BYTES(GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
 
 struct eth_device rndis_dev;
+static usb_osal_sem_t usbd_rndis_txok_sem;
 
 static rt_err_t rt_usbd_rndis_control(rt_device_t dev, int cmd, void *args)
 {
@@ -168,7 +179,13 @@ struct pbuf *rt_usbd_rndis_eth_rx(rt_device_t dev)
 
 rt_err_t rt_usbd_rndis_eth_tx(rt_device_t dev, struct pbuf *p)
 {
-    return usbd_rndis_eth_tx(p);
+    int ret = 0;
+    ret = usbd_rndis_eth_tx(p);
+
+    if (!ret) {
+        ret = usb_osal_sem_take(usbd_rndis_txok_sem, USB_OSAL_WAITING_FOREVER);
+    }
+    return ret;
 }
 
 void usbd_rndis_data_recv_done(uint32_t len)
@@ -176,16 +193,41 @@ void usbd_rndis_data_recv_done(uint32_t len)
     eth_device_ready(&rndis_dev);
 }
 
+void usbd_rndis_data_send_done(uint32_t len)
+{
+    usb_osal_sem_give(usbd_rndis_txok_sem);
+}
+
+#ifdef RT_USING_DEVICE_OPS
+static const struct rt_device_ops aicusb_device_rndis_ops = {
+    .control = rt_usbd_rndis_control,
+};
+#endif
+
 void rt_usbd_rndis_init(void)
 {
+#ifdef RT_USING_DEVICE_OPS
+    rndis_dev.parent.ops = &aicusb_device_rndis_ops;
+#else
     rndis_dev.parent.control = rt_usbd_rndis_control;
+#endif
     rndis_dev.eth_rx = rt_usbd_rndis_eth_rx;
     rndis_dev.eth_tx = rt_usbd_rndis_eth_tx;
+
+    usbd_rndis_txok_sem = usb_osal_sem_create(0);
+    if (usbd_rndis_txok_sem ==NULL)
+    {
+        USB_LOG_ERR("Failed to create eth_tx semaphore\r\n");
+        return;
+    }
 
     eth_device_init(&rndis_dev, "u0");
 
     eth_device_linkchange(&rndis_dev, RT_FALSE);
+
+    dhcpd_start("u0");
 }
+
 #else
 #include "netif/etharp.h"
 #include "lwip/init.h"
@@ -281,6 +323,9 @@ void usbd_event_handler(uint8_t busid, uint8_t event)
         case USBD_EVENT_CONNECTED:
             break;
         case USBD_EVENT_DISCONNECTED:
+#ifdef RT_USING_LWIP
+            usb_osal_sem_reset(usbd_rndis_txok_sem);
+#endif
             break;
         case USBD_EVENT_RESUME:
             break;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -104,7 +104,7 @@ typedef struct mm_vin_data {
     })
 
 static void *mm_vin_component_thread(void *p_thread_data);
-static void mm_vin_component_count_print(mm_vin_data *p_vin_data);
+static void mm_vin_show_debug_info(mm_vin_data *p_vin_data);
 
 static s32 mm_vin_dvp_init(mm_vin_data *p_vin_data)
 {
@@ -381,7 +381,7 @@ static s32 mm_vin_set_parameter(mm_handle h_component, MM_INDEX_TYPE index, void
         break;
 
     case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
-        mm_vin_component_count_print(p_vin_data);
+        mm_vin_show_debug_info(p_vin_data);
         break;
     default:
         break;
@@ -934,18 +934,15 @@ static s32 mm_vin_component_capture_file_frame(mm_vin_data *p_vin_data, mm_vin_f
     return MM_ERROR_NONE;
 }
 
-static void mm_vin_component_count_print(mm_vin_data *p_vin_data)
+void mm_vin_show_debug_info(mm_vin_data *p_vin_data)
 {
-    printf("[%s:%d]caputure_frame_ok_num:%u,caputure_frame_fail_num:%u,"
-           "send_frame_ok_num:%u,send_frame_fail_num:%u,"
-           "giveback_frame_ok_num:%u,giveback_frame_fail_num:%u\n",
-           __FUNCTION__, __LINE__,
-           p_vin_data->caputure_frame_ok_num,
-           p_vin_data->caputure_frame_fail_num,
-           p_vin_data->send_frame_ok_num,
-           p_vin_data->send_frame_fail_num,
-           p_vin_data->giveback_frame_ok_num,
-           p_vin_data->giveback_frame_fail_num);
+    printf("****************************Vin comp info****************************\n");
+    printf("cap_ok    cap_fail    send_ok    send_fail    give_ok    give_fail\n");
+    printf("%6u    %8u    %7u    %8u    %7u    %9u\n",
+        p_vin_data->caputure_frame_ok_num, p_vin_data->caputure_frame_fail_num,
+        p_vin_data->send_frame_ok_num, p_vin_data->send_frame_fail_num,
+        p_vin_data->giveback_frame_ok_num, p_vin_data->giveback_frame_fail_num);
+    printf("\nstate: %s\n\n", mm_component_sta_to_str(p_vin_data->state));
 }
 
 static void *mm_vin_component_thread(void *p_thread_data)

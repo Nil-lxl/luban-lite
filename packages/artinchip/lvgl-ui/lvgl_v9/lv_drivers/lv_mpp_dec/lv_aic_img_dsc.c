@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -79,15 +79,32 @@ static lv_result_t lv_mpp_dec_frame(struct mpp_buf *buf, const char *src, uint32
             res = lv_png_decoder_info(src, &header, 0, true);
             type = MPP_CODEC_VIDEO_DECODER_PNG;
         } else if (image_suffix_is_jpg(ptr)) {
-            res = lv_jpeg_decoder_info(src, &header, 0, true);
+            res = lv_jpeg_decoder_info(src, &header, 0, true, false);
             type = MPP_CODEC_VIDEO_DECODER_MJPEG;
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+        } else if (image_suffix_is_aicp(ptr)) {
+            res = lv_jpeg_decoder_info(src, &header, 0, true, true);
+            type = MPP_CODEC_VIDEO_DECODER_AICP;
+#endif
         } else {
             LV_LOG_ERROR("unsupported format:%s", src);
             goto out;
         }
     } else {
-        res = lv_jpeg_decoder_info(src, &header, size, false);
-        type = MPP_CODEC_VIDEO_DECODER_MJPEG;
+        bool is_aicp_data = false;
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+        // Check for AICP header
+        if (size >= 4 && memcmp(src, "AICP", 4) == 0) {
+            is_aicp_data = true;
+        }
+#endif
+        res = lv_jpeg_decoder_info(src, &header, size, false, is_aicp_data);
+        if (is_aicp_data) {
+            type = MPP_CODEC_VIDEO_DECODER_AICP;
+        } else {
+            type = MPP_CODEC_VIDEO_DECODER_MJPEG;
+        }
+
         if (res != LV_RESULT_OK) {
             res = lv_png_decoder_info(src, &header, size, false);
             type = MPP_CODEC_VIDEO_DECODER_PNG;
@@ -124,8 +141,9 @@ static lv_result_t lv_mpp_dec_frame(struct mpp_buf *buf, const char *src, uint32
 
     int size_shift = 0;
 #if defined(MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE)
-    if (type == MPP_CODEC_VIDEO_DECODER_MJPEG)
+    if (type == MPP_CODEC_VIDEO_DECODER_MJPEG) {
         size_shift = header.reserved_2;
+    }
 #endif
     lv_set_frame_buf_size(&dec_frame, buf_size, 0);
     if (size_shift > 0) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -354,6 +354,7 @@ int fit_image_get_hash_md5(const void *fit, int noffset, u32 *md5)
 static int spl_read(struct spl_load_info *info, ulong offset, void *buf, int size)
 {
     int rdlen = 0;
+    u8 *p = buf;
 
     //determines whether the read length is 0
     if (!size)
@@ -363,7 +364,13 @@ static int spl_read(struct spl_load_info *info, ulong offset, void *buf, int siz
 #if defined(AIC_MTD_BARE_DRV)
         struct mtd_dev *mtd = (struct mtd_dev *)info->dev;
 
-        rdlen = mtd_read(mtd, offset, buf, size);
+        if (info->dev_type == DEVICE_SPINAND)
+            offset = mtd_trans_lga_to_pha(mtd, offset);
+
+        if (offset == UINT32_MAX)
+            return -1;
+
+        rdlen = mtd_read(mtd, offset, p, size);
 #endif
     } else if (info->dev_type == DEVICE_MMC) {
 #if defined(AIC_SDMC_DRV)
@@ -375,18 +382,15 @@ static int spl_read(struct spl_load_info *info, ulong offset, void *buf, int siz
         blkoffset = offset / info->bl_len;
         byte_offset = offset % info->bl_len;
         blkcnt = ALIGN_UP(size, info->bl_len)  / info->bl_len;
-        blkcnt = mmc_bread(host, blkstart + blkoffset, blkcnt, (u8 *)(buf - byte_offset));
+        blkcnt = mmc_bread(host, blkstart + blkoffset, blkcnt, p - byte_offset);
         rdlen = info->bl_len * blkcnt;
         rdlen = min(rdlen, size);
 #endif
     } else if (info->dev_type == DEVICE_XIPNOR || info->dev_type == DEVICE_RAM) {
-        ulong addr_base = (ulong)info->priv;
-        int i;
-
-        for (i = 0; i < size; i++)
-            *(u8 *)(buf + i) = *(u8 *)(addr_base + offset + i);
-
-        rdlen = size;
+        if (info->priv) {
+            memcpy(p, ((u8 *)info->priv) + offset, size);
+            rdlen = size;
+        }
     }
 
     return rdlen;
@@ -400,7 +404,9 @@ int spl_load_fit_image(struct spl_load_info *info, struct spl_fit_info *ctx, int
     const void *fit = ctx->fit;
     bool external_data = false;
     u64 start_us;
+#ifdef LPKG_USING_FDTLIB_CRC32_VERIFY
     u32 crc1, crc2;
+#endif
 
     if (fit_image_get_load(fit, node, &load_addr))
     {
@@ -408,9 +414,11 @@ int spl_load_fit_image(struct spl_load_info *info, struct spl_fit_info *ctx, int
         return -1;
     }
 
+#ifdef LPKG_USING_FDTLIB_CRC32_VERIFY
     ret = fit_image_get_hash_crc32(fit, node, &crc1);
     if (ret < 0)
         crc1 = 0;
+#endif
 
     if (!fit_image_get_data_position(fit, node, &offset))
     {
@@ -446,6 +454,7 @@ int spl_load_fit_image(struct spl_load_info *info, struct spl_fit_info *ctx, int
                 printf("spl read external_data error\n");
                 return -1;
             }
+#ifdef LPKG_USING_FDTLIB_CRC32_VERIFY
             if (crc1 != 0) {
                 crc2 = crc32(0, (u8 *)load_addr, length);
                 if (crc2 != crc1) {
@@ -454,6 +463,9 @@ int spl_load_fit_image(struct spl_load_info *info, struct spl_fit_info *ctx, int
                 }
                 printf("CRC32 verify OK.\n");
             }
+#else
+            printf("CRC32 verify is disabled.\n");
+#endif
         }
     }
     else

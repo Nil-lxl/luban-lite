@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -112,6 +112,12 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_DSI_H103W01
     &dsi_h103w01,
+#endif
+#ifdef AIC_PANEL_DSI_ST7701S
+    &dsi_st7701s,
+#endif
+#ifdef AIC_PANEL_DSI_JD9366TC
+    &dsi_jd9366tc,
 #endif
 #ifdef AIC_PANEL_DSI_EDP_LT9811EXB
     &dsi_edp_lt9811exb,
@@ -229,6 +235,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_RGB_H070A18
     &rgb_h070a18,
 #endif
+#ifdef AIC_PANEL_RGB_ST7102
+    &rgb_st7102,
+#endif
 #ifdef AIC_PANEL_SRGB_HX8238
     &srgb_hx8238,
 #endif
@@ -249,6 +258,9 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_DBI_GC9108
     &dbi_gc9108,
+#endif
+#ifdef AIC_PANEL_DBI_GC9B72NA
+    &dbi_gc9b72na,
 #endif
 };
 
@@ -381,11 +393,48 @@ void panel_backlight_disable(struct aic_panel *panel, u32 ms)
 
 int panel_default_prepare(void)
 {
+#ifdef AIC_SIMPLE_PANEL_POWER_GPIO
+    unsigned int g, p;
+    long pin;
+
+    pin = hal_gpio_name2pin(AIC_SIMPLE_PANEL_POWER_GPIO_PIN);
+
+    g = GPIO_GROUP(pin);
+    p = GPIO_GROUP_PIN(pin);
+
+    hal_gpio_set_func(g, p, 1);
+    hal_gpio_set_bias_pull(g, p, 0);
+    hal_gpio_set_drive_strength(g, p, 3);
+    hal_gpio_direction_output(g, p);
+
+#ifdef AIC_SIMPLE_PANEL_POWER_GPIO_LOW_ACTIVE
+    hal_gpio_clr_output(g, p);
+#else
+    hal_gpio_set_output(g, p);
+#endif
+
+    aic_delay_ms(AIC_SIMPLE_PANEL_POWER_DELAY_MS);
+#endif /* AIC_SIMPLE_PANEL_POWER_GPIO */
     return 0;
 }
 
 int panel_default_unprepare(void)
 {
+#ifdef AIC_SIMPLE_PANEL_POWER_GPIO
+    unsigned int g, p;
+    long pin;
+
+    pin = hal_gpio_name2pin(AIC_SIMPLE_PANEL_POWER_GPIO_PIN);
+
+    g = GPIO_GROUP(pin);
+    p = GPIO_GROUP_PIN(pin);
+
+#ifdef AIC_SIMPLE_PANEL_POWER_GPIO_LOW_ACTIVE
+    hal_gpio_set_output(g, p);
+#else
+    hal_gpio_clr_output(g, p);
+#endif
+#endif /* AIC_SIMPLE_PANEL_POWER_GPIO */
     return 0;
 }
 

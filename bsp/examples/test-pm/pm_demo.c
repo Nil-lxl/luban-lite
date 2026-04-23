@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,6 +13,7 @@
 #include <aic_drv.h>
 #include <string.h>
 #include <aic_osal.h>
+#include <hal_rtc.h>
 #if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
 #include <drv_fb.h>
 #endif
@@ -22,6 +23,16 @@
 #define TOUCH_TIMEOUT       (1 << 2)
 struct rt_event pm_event;
 rt_timer_t touch_timer;
+
+#ifdef AIC_RTC_DRV_V121
+int pm_rtc_io_irq_callback(void)
+{
+    rt_pm_default_set(PM_SLEEP_MODE_DEEP);
+
+    rt_event_send(&pm_event, BUTTON_FLAG);
+    return 0;
+}
+#endif
 
 void pm_key_irq_callback(void *args)
 {
@@ -124,12 +135,33 @@ void pm_key_init(void)
     rt_pm_set_pin_wakeup_source(pin);
 }
 
+#ifdef AIC_RTC_DRV_V121
+void pm_rtc_io_init(void)
+{
+#define RTC_CTL_IO0_WAKE_HIZ_SLEEP_LOW  3
+#define RTC_IO1_TRIG_RISING_EDGE        3
+    rt_uint32_t en = 1;
+
+    /* config the rtc io */
+    hal_rtc_io_cfg(RTC_CTL_IO0_WAKE_HIZ_SLEEP_LOW);
+    /* config the rtc io1 */
+    hal_rtc_io1_cfg(en, en, RTC_IO1_TRIG_RISING_EDGE);
+    /* regist the rtc io1 callback */
+    hal_rtc_io1_register_callback(pm_rtc_io_irq_callback);
+    /* enable the rtc io1 irq */
+    hal_rtc_io1_irq_en(en);
+}
+#endif
+
 int pm_demo(void)
 {
     rt_err_t ret;
     rt_thread_t thread;
 
     pm_key_init();
+#ifdef AIC_RTC_DRV_V121
+    pm_rtc_io_init();
+#endif
     touch_timer_init();
 
     ret = rt_event_init(&pm_event, "pm_event", RT_IPC_FLAG_PRIO);

@@ -8,58 +8,58 @@ CPPPATH = []
 LOCAL_CFLAGS = ''
 
 if GetDepend('SPI_NAND_DOSILICON'):
-    src += ['dosilicon.c']
+    src += Glob('dosilicon.c')
 
 if GetDepend('SPI_NAND_ETRON'):
-    src += ['etron.c']
+    src += Glob('etron.c')
 
 if GetDepend('SPI_NAND_MACRONIX'):
-    src += ['macronix.c']
+    src += Glob('macronix.c')
 
 if GetDepend('SPI_NAND_WINBOND'):
-    src += ['winbond.c']
+    src += Glob('winbond.c')
 
 if GetDepend('SPI_NAND_GIGADEVICE'):
-    src += ['gigadevice.c']
+    src += Glob('gigadevice.c')
 
 if GetDepend('SPI_NAND_TOSHIBA'):
-    src += ['toshiba.c']
+    src += Glob('toshiba.c')
 
 if GetDepend('SPI_NAND_FORESEE'):
-    src += ['foresee.c']
+    src += Glob('foresee.c')
 
 if GetDepend('SPI_NAND_XTX'):
-    src += ['xtx.c']
+    src += Glob('xtx.c')
 
 if GetDepend('SPI_NAND_ZETTA'):
-    src += ['zetta.c']
+    src += Glob('zetta.c')
 
 if GetDepend('SPI_NAND_MICRON'):
-    src += ['micron.c']
+    src += Glob('micron.c')
 
 if GetDepend('SPI_NAND_ZBIT'):
-    src += ['zbit.c']
+    src += Glob('zbit.c')
 
 if GetDepend('SPI_NAND_ESMT'):
-    src += ['esmt.c']
+    src += Glob('esmt.c')
 
 if GetDepend('SPI_NAND_UMTEK'):
-    src += ['umtek.c']
+    src += Glob('umtek.c')
 
 if GetDepend('SPI_NAND_QUANXING'):
-    src += ['quanxing.c']
+    src += Glob('quanxing.c')
 
 if GetDepend('SPI_NAND_XINCUN'):
-    src += ['xincun.c']
+    src += Glob('xincun.c')
 
 if GetDepend('SPI_NAND_FUDANMICRO'):
-    src += ['fudanmicro.c']
+    src += Glob('fudanmicro.c')
 
 if GetDepend('LPKG_USING_SPINAND'):
-    src += ['spinand.c']
-    src += ['bbt.c']
-    src += ['spinand_ooblayout.c']
-    src += ['spinand_bbt.c']
+    src += Glob('spinand.c')
+    src += Glob('bbt.c')
+    src += Glob('spinand_ooblayout.c')
+    src += Glob('spinand_bbt.c')
     CPPPATH += [cwd + '/inc']
 
     if rtconfig.PLATFORM in ['gcc', 'armclang']:

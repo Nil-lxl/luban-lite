@@ -12,11 +12,13 @@ menu "SID Parameter"
 	int "set efuse max word"
 	default 16 if AIC_CHIP_D12X
 	default 64 if AIC_CHIP_D21X || AIC_CHIP_D13X || AIC_CHIP_G73X
+	default 64 if AIC_CHIP_D12P
 
     config EFUSE_TIMING_VALUE
 	hex "set timing value"
 	default 0x0402FFD8 if AIC_CHIP_D21X
 	default 0x0402FFD8 if AIC_CHIP_D13X || AIC_CHIP_G73X
 	default 0x04021FF1 if AIC_CHIP_D12X
+	default 0x04021FF1 if AIC_CHIP_D12P
 endmenu
 

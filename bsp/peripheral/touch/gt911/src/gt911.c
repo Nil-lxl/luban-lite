@@ -145,7 +145,9 @@ static rt_err_t gt911_power_up(struct rt_touch_device *touch)
     rt_pin_write(touch->config.irq_pin.pin, PIN_HIGH);
     rt_thread_mdelay(10);
     rt_pin_mode(touch->config.irq_pin.pin, PIN_MODE_INPUT);
-    rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
+
+    if (touch->parent.open_flag & RT_DEVICE_OFLAG_OPEN)
+        rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
 
     return RT_EOK;
 }

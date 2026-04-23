@@ -28,8 +28,7 @@
 #endif
 
 #define CDC_ECM_ETH_STATISTICS_BITMAP 0x00000000
-/* Ethernet Maximum Segment size, typically 1514 bytes */
-#define CONFIG_CDC_ECM_ETH_MAX_SEGSZE 1536U
+
 /* str idx = 4 is for mac address: aa:bb:cc:dd:ee:ff*/
 #define CDC_ECM_MAC_STRING_INDEX      4
 
@@ -134,12 +133,6 @@ static const uint8_t cdc_eth_descriptor[] = {
 };
 
 const uint8_t mac[6] = { 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
-volatile bool cdc_ecm_tx_done = false;
-
-void usbd_cdc_ecm_data_send_done(uint32_t len)
-{
-    cdc_ecm_tx_done = true;
-}
 
 #ifdef RT_USING_LWIP
 
@@ -157,7 +150,7 @@ void usbd_cdc_ecm_data_send_done(uint32_t len)
 #include <dhcp_server.h>
 
 struct eth_device cdc_ecm_dev;
-
+static usb_osal_sem_t usbd_ecm_txok_sem;
 static rt_err_t rt_usbd_cdc_ecm_control(rt_device_t dev, int cmd, void *args)
 {
     switch (cmd) {
@@ -190,22 +183,38 @@ rt_err_t rt_usbd_cdc_ecm_eth_tx(rt_device_t dev, struct pbuf *p)
 {
     int ret;
 
-    cdc_ecm_tx_done = false;
     ret = usbd_cdc_ecm_eth_tx(p);
-    if (ret == 0) {
-        while (!cdc_ecm_tx_done) {
-        }
-        return RT_EOK;
-    } else {
-        return -RT_ERROR;
+
+    if (!ret) {
+        ret = usb_osal_sem_take(usbd_ecm_txok_sem, USB_OSAL_WAITING_FOREVER);
     }
+
+    return ret;
 }
+
+#ifdef RT_USING_DEVICE_OPS
+static const struct rt_device_ops aicusb_device_ecm_ops = {
+    .control = rt_usbd_cdc_ecm_control,
+};
+#endif
 
 void cdc_ecm_lwip_init(void)
 {
+#ifdef RT_USING_DEVICE_OPS
+    cdc_ecm_dev.parent.ops = &aicusb_device_ecm_ops;
+#else
     cdc_ecm_dev.parent.control = rt_usbd_cdc_ecm_control;
+#endif
+
     cdc_ecm_dev.eth_rx = rt_usbd_cdc_ecm_eth_rx;
     cdc_ecm_dev.eth_tx = rt_usbd_cdc_ecm_eth_tx;
+
+    usbd_ecm_txok_sem = usb_osal_sem_create(0);
+    if (usbd_ecm_txok_sem ==NULL)
+    {
+        USB_LOG_ERR("Failed to create eth_tx semaphore\r\n");
+        return;
+    }
 
     eth_device_init(&cdc_ecm_dev, "u0");
 
@@ -216,6 +225,11 @@ void cdc_ecm_lwip_init(void)
 void usbd_cdc_ecm_data_recv_done(uint32_t len)
 {
     eth_device_ready(&cdc_ecm_dev);
+}
+
+void usbd_cdc_ecm_data_send_done(uint32_t len)
+{
+    usb_osal_sem_give(usbd_ecm_txok_sem);
 }
 
 #else
@@ -323,7 +337,7 @@ void cdc_ecm_input_poll(void)
 }
 #endif
 
-void usbd_event_handler(uint8_t busid, uint8_t event)
+static void usbd_event_handler(uint8_t busid, uint8_t event)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -331,6 +345,9 @@ void usbd_event_handler(uint8_t busid, uint8_t event)
         case USBD_EVENT_CONNECTED:
             break;
         case USBD_EVENT_DISCONNECTED:
+#ifdef RT_USING_LWIP
+            usb_osal_sem_reset(usbd_ecm_txok_sem);
+#endif
             break;
         case USBD_EVENT_RESUME:
             break;

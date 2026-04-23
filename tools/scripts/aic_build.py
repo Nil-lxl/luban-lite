@@ -8,12 +8,15 @@ import os
 import re
 import sys
 import glob
+import json
 import platform
 import shutil
 import tarfile
 import hashlib
 import operator
 from SCons.Script import *
+from collections import namedtuple
+from collections import OrderedDict
 # from building import *
 
 COLOR_BEGIN = "\033["
@@ -1432,6 +1435,39 @@ def get_post_build_bat(aic_root_n, post_objcopy, post_build_cmd):
         f.write('pause\n')
 
 
+def parse_image_cfg(cfgfile):
+    """ Load configuration file
+    Args:
+        cfgfile: Configuration file name
+    """
+    with open(cfgfile, "r") as f:
+        lines = f.readlines()
+        jsonstr = ""
+        for line in lines:
+            sline = line.strip()
+            if sline.startswith("//"):
+                continue
+            slash_start = sline.find("//")
+            if slash_start > 0:
+                jsonstr += sline[0:slash_start].strip()
+            else:
+                jsonstr += sline
+        # Use OrderedDict is important, we need to iterate FWC in order.
+        jsonstr = jsonstr.replace(",}", "}").replace(",]", "]")
+        cfg = json.loads(jsonstr, object_pairs_hook=OrderedDict)
+    return cfg
+
+
+def has_private2(data):
+    if isinstance(data, dict) and 'private2' in data:
+        return True
+    elif isinstance(data, dict):
+        for key, value in data.items():
+            if has_private2(value):
+                return True
+    return False
+
+
 def mkimage_prebuild(aic_root, prj_chip, prj_board, prj_kernel, prj_app, prj_defconfig, fsinstall):
     global prj_root_dir
     global aic_script_dir
@@ -1512,13 +1548,17 @@ def mkimage_prebuild(aic_root, prj_chip, prj_board, prj_kernel, prj_app, prj_def
             POST_ACTION += MKFS_ACTION
         # packaged ddr files
         POST_ACTION += '@cp -r ' + aic_pack_dir + '* ' + prj_out_dir + '\n'
+        if os.path.exists(aic_common_dir + '/pbp_cfg.json'):
+            POST_ACTION += '@cp -r ' + aic_common_dir + '/pbp_cfg.json ' + prj_out_dir + '\n'
         if os.path.exists(aic_pack_dir + '.image_cfg.json.tmp'):
             POST_ACTION += '@cp ' + aic_pack_dir + '.image_cfg.json.tmp ' \
                     + prj_out_dir + 'image_cfg.json\n'
         if platform.system() == 'Linux':
             MAKE_DDR_TOOL = 'python3 ' + aic_script_dir + 'mk_private_resource.py'
+            MAKE_PBP_TOOL = 'python3 ' + aic_script_dir + 'mk_prebootprog.py'
         elif platform.system() == 'Windows':
             MAKE_DDR_TOOL = aic_script_dir + 'mk_private_resource.exe'
+            MAKE_PBP_TOOL = 'python3 ' + aic_script_dir + 'mk_prebootprog.exe'
         DDR_JSON = prj_out_dir + 'ddr_init.json'
         PART_JSON = prj_out_dir + 'partition.json'
         DDR_BIN = prj_out_dir + 'ddr_init.bin'
@@ -1530,8 +1570,15 @@ def mkimage_prebuild(aic_root, prj_chip, prj_board, prj_kernel, prj_app, prj_def
         PBP_BIN = prj_out_dir + 'pbp_cfg.bin'
         MAKE_PBP_ACTION = MAKE_DDR_TOOL + \
             ' -v -l {},{} -o {}\n'.format(PBP_JSON, PART_JSON, PBP_BIN)
-        if os.path.exists(aic_pack_dir + 'pbp_cfg.json'):
+        MAKE_PRIV_ACTION = MAKE_PBP_TOOL + \
+            ' -m {} -i {} -o {}\n'.format("PDAT", PBP_BIN, PBP_BIN)
+        if os.path.exists(aic_common_dir + '/pbp_cfg.json') \
+            or os.path.exists(aic_pack_dir + '/pbp_cfg.json'):
             POST_ACTION += MAKE_PBP_ACTION
+            cfg = {}
+            cfg = parse_image_cfg(aic_pack_dir + 'image_cfg.json')
+            if has_private2(cfg):
+                POST_ACTION += MAKE_PRIV_ACTION
         # pack image files
         if mkimage_check_file_exist(aic_pack_dir, '*.pbp'):
             POST_ACTION += '@cp -r ' + aic_pack_dir + '/*.pbp ' + prj_out_dir + '\n'

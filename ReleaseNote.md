@@ -1,3 +1,84 @@
+# V1.3.0 #
+## 新增 ##
+- LVGL：
+  - 新增OTA demo
+  - V9：支持使用thorvg绘制向量
+  - lv_spi：支持多个SPI屏幕
+  - V9：增加aicp解码格式的支持
+  - 新增AI眼睛的Demo
+- MPP：
+  - 支持YUVA格式图像的解码处理
+  - AVI：支持解析AAC extradata
+  - Player：运行时可查看Debug信息
+- USB副屏：支持初始化时关闭背光
+- Display：
+  - 增加SPI屏幕的框架
+  - UI layer支持设置背景图的blend
+  - 增加Vsync期间修改寄存器的接口
+- PM：
+  - 休眠期间支持保持console可用
+  - I2S：新增休眠唤醒接口
+  - DMA：增加休眠唤醒接口
+- 打包：支持在menuconfig中配置CRC32
+- MTD：支持逻辑地址和物理地址的转换
+- 编译:OneStep：buildall结果中显示统计数据
+- 开发环境:OneClick：支持一键部署
+- Camera：支持切换CLK_OUT0/1
+- XS9950：支持彩色模式
+- 新增SoC：D11x
+- 新增方案：d13x_demo88-nopsram-xip
+- 新增第三方器件：
+- Panel：ST7102、JD9366、GC9B72NA、JD9365DA
+- NAND：XT26G01F
+- Camera：BF3A03
+- 新增第三方包：pahomqtt
+
+## 优化 ##
+- LVGL：
+  - 优化图片缩放的计算精度
+  - v9:优化Scale配置的跨平台处理
+- MPP：
+  - Player：优化多线程环境下的seek处理
+  - 录像：优化DVP的Buf处理
+- AiCast:
+  - 兼容CherryUSB 1.0.0和1.5.0
+  - 优化触屏的旋转处理
+  - 优化触屏事件的上报逻辑
+  - Linux:V1.2.0：优化Linux版本兼容性
+- Display：
+  - 调整Crop配置的默认参数
+  - DSI：提供一组默认的参数
+- NAND：
+  - NFTL：优化OOB数据的有效性检查
+  - 优化坏块管理策略
+  - 优化refresh参数的兼容性
+- CherryUSB：优化ECM、NCM、RNDIS的版本兼容
+- DMA：优化DMA的状态判断逻辑
+- PM：
+  - 优化XSPI的频率设置流程
+  - 优化触屏作为唤醒源的休眠流程
+  - 优化启动后的第一次超时唤醒逻辑
+  - LittleFS：优化读速度
+- OTA：优化OTA的写Flash速度
+- WiFi：统一模组pins的使用方式
+- RTT：优化clock_gettime()的tick翻转处理
+- 打包：优化SPL的分区填充处理
+
+## 修改 ##
+- LVGL:Serial Demo：修正UART配置方法
+- MPP：
+  - Player：MJPEG默认使用VE做旋转
+  - Player：解决多音轨混合时无法退出的问题
+- 烧录：
+  - 解决U盘烧录失败的问题
+  - 解决AiBurnPro烧写过程中的设备断线问题
+- GT911：修正唤醒后的概率性触摸失效问题
+- d13x_hspi100：默认打开WiFi
+- aic-authorization：修正Buf的刷Cache处理
+- Heap：调整heap_def_t定义到公共头文件中
+- log：增加有效的时间戳信息
+- Baremetal：UART：修正DMA的Buf处理
+
 # V1.2.3 #
 ## 新增 ##
 - LVGL：

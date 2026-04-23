@@ -31,6 +31,7 @@ for root, dirs, files in os.walk(lvgl_src_cwd):
         current_path = os.path.join(root, dir)
         rela_path = current_path.replace(lvgl_cwd, '')
         src = src + Glob(rela_path + '/*.c') # add all .c files
+        src = src + Glob(rela_path + '/*.cpp') # add all .cpp files
         if check_h_hpp_exist(current_path): # add .h and .hpp path
             inc = inc + [current_path]
 

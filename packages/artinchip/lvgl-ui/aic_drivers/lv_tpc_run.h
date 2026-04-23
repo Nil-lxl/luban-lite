@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -50,7 +50,10 @@ void rtp_get_calibrate_point(rtp_cal_point_dir_t dir, int *x, int *y);
 int rtp_get_recalibrate_status(void);
 int rtp_get_cur_recalibrate_adc_value(int *x, int *y);
 
+#ifdef AIC_USING_TOUCH
 void rtp_store_recalibrate_data(rt_device_t rtp_dev, struct rt_touch_data *data);
+#endif
+
 void rtp_update_recalibrate(void);
 int rtp_is_recalibrate_started(void);
 int rtp_is_recalibrate_all_data_stored(void);

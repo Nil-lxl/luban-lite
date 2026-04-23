@@ -29,10 +29,6 @@ choice
 endchoice
 
 menu "realtek wlan Parameter"
-
-    config AIC_WIRELESS_PWR_GPIO
-        string "realtek wlan0 power on gpio"
-
     config AIC_DEV_REALTEK_WLAN0_IPADDR
         string "wlan0 ip addr"
         default "192.168.1.200"

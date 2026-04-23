@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -176,6 +176,8 @@ struct de_funcs {
     int (*get_ccm_config)(struct aicfb_ccm_config *ccm);
     int (*set_gamma_config)(struct aicfb_gamma_config *gamma);
     int (*get_gamma_config)(struct aicfb_gamma_config *gamma);
+    int (*update_bg_blend_ui_config)(u32 en);
+    int (*get_bg_blend_ui_config)(u32 *en);
 };
 
 struct di_funcs {

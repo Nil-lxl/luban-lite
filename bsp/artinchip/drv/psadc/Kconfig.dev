@@ -1,6 +1,17 @@
-config AIC_PSADC_DRV_POLL
-    default n
-    bool "Enable poll mode"
+
+choice
+    prompt "IO mode"
+        default AIC_PSADC_DRV_INT
+
+    config AIC_PSADC_DRV_INT
+        bool "Enable interrupt mode"
+
+    config AIC_PSADC_DRV_POLL
+        bool "Enable poll mode"
+
+    config AIC_PSADC_DRV_DMA
+        bool "Enable dma mode"
+endchoice
 
 choice
     prompt "Select trigger source"

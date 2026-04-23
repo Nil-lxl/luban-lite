@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -88,7 +88,8 @@ static void print_help(const char* prog)
         "Example1(test single file for 1 time): player_demo -i /mnt/video/test.mp4 \n"
         "Example2(test single file for 3 times): player_demo -i /mnt/video/test.mp4 -l 3 \n"
         "Example3(test dir for 1 time ) : player_demo -t /mnt/video \n"
-        "Example4(test dir for 3 times ): player_demo -t /mnt/video -l 3 \n");
+        "Example4(test dir for 3 times ): player_demo -t /mnt/video -l 3 \n"
+        "Example5(test audio mix ): player_demo -i x.mp4 -w x.wav  player_cmd -w\n");
 }
 
 static void print_cmd_help(const char* prog)
@@ -723,7 +724,7 @@ static int player_demo(int argc, char **argv)
     if (parse_options(ctx,argc,argv)) {
         goto _EXIT_;
     }
-    player_thid = aicos_thread_create("player_demo", 8192, 30,
+    player_thid = aicos_thread_create("player_demo", 8192, 23,
                                       player_thread_entry, ctx);
     if (!player_thid) {
         loge("create player_demo failed\n");

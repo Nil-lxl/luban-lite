@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Author: <jun.ma@artinchip.com>
+ * Author: <che.jiang@artinchip.com>
  * Desc: middle media demuxer component
  */
 
@@ -70,6 +70,8 @@ typedef struct mm_demuxer_data {
     u32 get_audio_pkt_ok_num;
     u32 put_audio_pkt_ok_num;
     u32 put_audio_pkt_fail_num;
+    s64 tm_video_read_start;
+    s64 tm_video_read_end;
 
     s32 seek_flag;
     s32 need_peek;
@@ -81,6 +83,7 @@ typedef struct mm_demuxer_data {
 
 static void *mm_demuxer_component_thread(void *p_thread_data);
 static void mm_demuxer_show_debug_info(mm_demuxer_data *p_demuxer_data);
+static void mm_demuxer_show_media_info(mm_demuxer_data *p_demuxer_data);
 static s32 mm_demuxer_send_command(mm_handle h_component, MM_COMMAND_TYPE cmd,
                                    u32 param, void *p_cmd_data)
 {
@@ -218,7 +221,7 @@ mm_demuxer_audio_format_trans(enum aic_audio_codec_type audio_type)
     } else if (audio_type == MPP_CODEC_AUDIO_DECODER_WMA) {
         ret = MM_AUDIO_CODING_WMA;
     } else {
-        loge("unsp_port codec!!!\n");
+        loge("unsupport audio codec!!!\n");
         ret = MM_AUDIO_CODING_MAX;
     }
 
@@ -234,7 +237,7 @@ mm_demuxer_video_format_trans(enum mpp_codec_type nVideoType)
     } else if (nVideoType == MPP_CODEC_VIDEO_DECODER_MJPEG) {
         ret = MM_VIDEO_CODING_MJPEG;
     } else {
-        loge("unsp_port codec!!!\n");
+        loge("unsupport video codec!!!\n");
         ret = MM_VIDEO_CODING_MAX;
     }
     return ret;
@@ -504,6 +507,7 @@ static s32 mm_demuxer_set_parameter(mm_handle h_component, MM_INDEX_TYPE index,
 
         case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
             p_demuxer_data->debug_en = ((mm_param_u32 *)p_param)->u32;
+            mm_demuxer_show_media_info(p_demuxer_data);
             mm_demuxer_show_debug_info(p_demuxer_data);
             break;
 
@@ -1036,15 +1040,48 @@ static int mm_demuxer_component_uri_is_exist(mm_demuxer_data *p_demuxer_data)
     return is_exist;
 }
 
+static void mm_demuxer_show_video_perf(mm_demuxer_data *p_demuxer_data, int size)
+{
+    static s64 total_read_tm = 0;
+    static u64 last_read_tm = 0;
+    static u64 total_size = 0;
+    static u32 total_cnt = 0;
+
+    s64 time_diff = p_demuxer_data->tm_video_read_end - p_demuxer_data->tm_video_read_start;
+    if (time_diff > 50000) //50ms
+        printf("\tdemuxer:read one video packet cost too much time %lld ms\n", time_diff);
+
+    if (!p_demuxer_data->debug_en)
+        return;
+
+    total_read_tm += time_diff;
+    total_size += size;
+    total_cnt++;
+    if (total_read_tm >= MM_MEDIA_PERF_PERIOD_TIME) {
+        if (p_demuxer_data->tm_video_read_start - last_read_tm > 0) {
+            printf("video demuxer perf info:\n");
+            printf("\tAvgReadTm(ms)    FPS    Bitrate(KB/S)    Count    Period(ms)    CurReadTm(ms)\n");
+            printf("\t%13lld    %3lld    %13lld    %5u   %10lld    %13lld\n\n",
+                total_read_tm / (total_cnt * 1000),
+                (total_cnt * 1000000 / (p_demuxer_data->tm_video_read_start - last_read_tm)),
+                (total_size * 1000000) / (total_read_tm * 1024),
+                total_cnt, total_read_tm / 1000, time_diff / 1000);
+        }
+
+        total_cnt = 0;
+        total_size = 0;
+        total_read_tm = 0;
+        last_read_tm = p_demuxer_data->tm_video_read_start;
+    }
+}
+
 static int
 mm_demuxer_component_process_video_pkt(mm_demuxer_data *p_demuxer_data,
                                        struct aic_parser_packet *p_pkt)
 {
     s32 ret = MM_ERROR_NONE;
-    long diff = 0;
     struct mpp_packet pkt = { 0 };
     struct mpp_decoder *p_decoder = NULL;
-    struct timespec before = { 0 }, after = { 0 };
 
     /*Get video decoder handle*/
     mm_component *h_vdec_comp =
@@ -1112,16 +1149,9 @@ mm_demuxer_component_process_video_pkt(mm_demuxer_data *p_demuxer_data,
     p_demuxer_data->get_video_pkt_ok_num++;
     /*Read video data from parser and fill it to decoder packet*/
     p_pkt->data = pkt.data;
-    clock_gettime(CLOCK_REALTIME, &before);
+    p_demuxer_data->tm_video_read_start = aic_get_time_us();
     ret = aic_parser_read(p_demuxer_data->p_parser, p_pkt);
-    clock_gettime(CLOCK_REALTIME, &after);
-    diff = (after.tv_sec - before.tv_sec) * 1000 * 1000 +
-           (after.tv_nsec - before.tv_nsec) / 1000;
-    if (diff > 42 * 1000) {
-        printf("[%s:%d]:aic_parser_read video %ld us, pkt_size:%d\n",
-            __FUNCTION__, __LINE__, diff, p_pkt->size);
-    }
-
+    p_demuxer_data->tm_video_read_end = aic_get_time_us();
 
     logi("video aic_parser_read,pts:%lld,type = %d,size:%d,flag:0x%x\n",
          p_pkt->pts, p_pkt->type, p_pkt->size, p_pkt->flag);
@@ -1150,6 +1180,8 @@ mm_demuxer_component_process_video_pkt(mm_demuxer_data *p_demuxer_data,
         p_demuxer_data->put_video_pkt_ok_num++;
     }
 
+    mm_demuxer_show_video_perf(p_demuxer_data, p_pkt->size);
+
     return ret;
 }
 
@@ -1158,10 +1190,8 @@ mm_demuxer_component_process_audio_pkt(mm_demuxer_data *p_demuxer_data,
                                        struct aic_parser_packet *p_pkt)
 {
     s32 ret = MM_ERROR_NONE;
-    long diff = 0;
     struct mpp_packet pkt = { 0 };
     struct aic_audio_decoder *p_decoder = NULL;
-    struct timespec before = { 0 }, after = { 0 };
 
     /*Get audio decoder handle*/
     mm_component *h_adec_comp =
@@ -1228,14 +1258,7 @@ mm_demuxer_component_process_audio_pkt(mm_demuxer_data *p_demuxer_data,
     p_demuxer_data->get_audio_pkt_ok_num++;
     /*Read audio data from parser and fill it to decoder packet*/
     p_pkt->data = pkt.data;
-    clock_gettime(CLOCK_REALTIME, &before);
     ret = aic_parser_read(p_demuxer_data->p_parser, p_pkt);
-    clock_gettime(CLOCK_REALTIME, &after);
-    diff = (after.tv_sec - before.tv_sec) * 1000 * 1000 +
-           (after.tv_nsec - before.tv_nsec) / 1000;
-    if (diff > 42 * 1000) {
-        printf("[%s:%d]:%ld\n", __FUNCTION__, __LINE__, diff);
-    }
 
     logi("audio aic_parser_read,pts:%lld,type = %d,size:%d,flag:0x%x\n",
          p_pkt->pts, p_pkt->type, p_pkt->size, p_pkt->flag);
@@ -1267,24 +1290,51 @@ mm_demuxer_component_process_audio_pkt(mm_demuxer_data *p_demuxer_data,
     return ret;
 }
 
+static void mm_demuxer_show_media_info(mm_demuxer_data *p_demuxer_data)
+{
+    if (!p_demuxer_data->debug_en)
+        return;
+
+    int codec_type = p_demuxer_data->s_media_info.video_stream.codec_type;
+    printf("**************************Demuxer media info***************************\n");
+    printf("Video media info:\n");
+    printf("\tvideo_type    width    height    bitrate    fps\n");
+    printf("\t%10s    %5d    %6d    %7d    %3d\n",
+        mm_component_video_type_to_str(mm_demuxer_video_format_trans(codec_type)),
+        p_demuxer_data->s_media_info.video_stream.width,
+        p_demuxer_data->s_media_info.video_stream.height,
+        p_demuxer_data->s_media_info.video_stream.bit_rate,
+        p_demuxer_data->s_media_info.video_stream.frame_rate);
+    printf("\nAudio media info:\n");
+    codec_type = p_demuxer_data->s_media_info.audio_stream.codec_type;
+    printf("\taudio_type    channel    sample_rate    bitwidth\n");
+    printf("\t%10s    %7d    %11d    %8d\n\n",
+        mm_component_audio_type_to_str(mm_demuxer_audio_format_trans(codec_type)),
+        p_demuxer_data->s_media_info.audio_stream.nb_channel,
+        p_demuxer_data->s_media_info.audio_stream.sample_rate,
+        p_demuxer_data->s_media_info.audio_stream.bits_per_sample);
+}
+
 static void mm_demuxer_show_debug_info(mm_demuxer_data *p_demuxer_data)
 {
     if (!p_demuxer_data->debug_en)
         return;
 
     printf("**************************Demuxer comp info***************************\n");
-    printf("video:  pkt_num    get_ok    put_ok    put_fail\n");
+    printf("Video packet info:\n");
+    printf("\tpkt_num    get_ok    put_ok    put_fail\n");
     printf("\t%7u    %6u    %6u   %8u\n",
-           p_demuxer_data->video_pkt_num,
-           p_demuxer_data->get_video_pkt_ok_num,
-           p_demuxer_data->put_video_pkt_ok_num,
-           p_demuxer_data->put_video_pkt_fail_num);
-    printf("audio:  pkt_num    get_ok    put_ok    put_fail\n");
+        p_demuxer_data->video_pkt_num,
+        p_demuxer_data->get_video_pkt_ok_num,
+        p_demuxer_data->put_video_pkt_ok_num,
+        p_demuxer_data->put_video_pkt_fail_num);
+    printf("Audio packet info:\n");
+    printf("\tpkt_num    get_ok    put_ok    put_fail\n");
     printf("\t%7u    %6u    %6u   %8u\n",
-            p_demuxer_data->audio_pkt_num,
-            p_demuxer_data->get_audio_pkt_ok_num,
-            p_demuxer_data->put_audio_pkt_ok_num,
-            p_demuxer_data->put_audio_pkt_fail_num);
+        p_demuxer_data->audio_pkt_num,
+        p_demuxer_data->get_audio_pkt_ok_num,
+        p_demuxer_data->put_audio_pkt_ok_num,
+        p_demuxer_data->put_audio_pkt_fail_num);
     printf("\nstate: %s\n\n", mm_component_sta_to_str(p_demuxer_data->state));
 }
 

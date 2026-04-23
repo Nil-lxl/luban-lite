@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -28,9 +28,28 @@
 #define BULK_MAX_MPS 64
 #endif
 
+#define AICUPG_USB_DEVICE_DESCRIPTOR_INIT(bcdUSB, bDeviceClass,         \
+                                   bDeviceSubClass, bDeviceProtocol,    \
+                                   idVendor, idProduct, bcdDevice,      \
+                                   bNumConfigurations)                  \
+    0x12,                       /* bLength */                           \
+    USB_DESCRIPTOR_TYPE_DEVICE, /* bDescriptorType */                   \
+    WBVAL(bcdUSB),              /* bcdUSB */                            \
+    bDeviceClass,               /* bDeviceClass */                      \
+    bDeviceSubClass,            /* bDeviceSubClass */                   \
+    bDeviceProtocol,            /* bDeviceProtocol */                   \
+    0x40,                       /* bMaxPacketSize */                    \
+    WBVAL(idVendor),            /* idVendor */                          \
+    WBVAL(idProduct),           /* idProduct */                         \
+    WBVAL(bcdDevice),           /* bcdDevice */                         \
+    USB_STRING_MFC_INDEX,       /* iManufacturer */                     \
+    USB_STRING_PRODUCT_INDEX,   /* iProduct */                          \
+    0,    /* iSerial */                           \
+    bNumConfigurations          /* bNumConfigurations */
+
 /*!< global descriptor */
 static const uint8_t usb_upg_descriptor[] = {
-    USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0, 0, 0, USBD_VID, USBD_PID, 0x101, 1),
+    AICUPG_USB_DEVICE_DESCRIPTOR_INIT(USB_2_0, 0, 0, 0, USBD_VID, USBD_PID, 0x101, 1),
     USB_CONFIG_DESCRIPTOR_INIT(USB_CONFIG_SIZE, 1, 1, USB_CONFIG_BUS_POWERED, 0xFA),
     USB_INTERFACE_DESCRIPTOR_INIT(0, 0, 2, 0xFF, 0xFF, 0xFF, 0),
     USB_ENDPOINT_DESCRIPTOR_INIT(BULK_IN_EP, USB_ENDPOINT_TYPE_BULK, BULK_MAX_MPS, 0),

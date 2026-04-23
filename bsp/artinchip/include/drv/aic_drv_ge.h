@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -143,6 +143,18 @@ struct ge_fillrect {
 	struct ge_ctrl         ctrl;
 };
 
+struct ge_scale_phase {
+    int  scale_phase_en;
+    int  scaler_en;
+    int  channel_num;
+    int  dx_16[2];
+    int  dy_16[2];
+    int  h_phase_16[2];
+    int  v_phase_16[2];
+    int  in_w_ch1;
+    int  in_h_ch1;
+};
+
 /**
  * struct ge_bitblt - ge bitblt
  * @src_buf: the source buffer
@@ -153,6 +165,7 @@ struct ge_bitblt {
 	struct mpp_buf   src_buf;
 	struct mpp_buf   dst_buf;
 	struct ge_ctrl   ctrl;
+    struct ge_scale_phase scale_phase;
 };
 
 /**

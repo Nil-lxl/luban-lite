@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -160,6 +160,7 @@ typedef struct {
 
 /* USBINTSTS/USBINTMSK interrupt register */
 #define INT_RESUME                      (1u << 31)
+#define INT_DATA_FET_STOP_INT           (0x1 << 21)
 #define INT_INCOMP_ISO_OUT_INT          (0x1 << 21)
 #define INT_INCOMP_ISO_IN_INT           (0x1 << 20)
 #define INT_OUT_EP                      (0x1 << 19)
@@ -173,6 +174,14 @@ typedef struct {
 #define INT_NP_TX_FIFO_EMPTY            (0x1 << 5)
 #define INT_RX_FIFO_NOT_EMPTY           (0x1 << 4)
 #define INT_SOF                         (0x1 << 3)
+
+/* USB THR CTL */
+#define TX_THR_LEN(x)                   (((x) & 0x7FE) << 2)
+#define ISO_THR_EN                      (0x1 << 1)
+#define NON_ISO_THR_EN                  (0x1 << 0)
+
+#define PLL_COM                         (CONFIG_USB_AIC_DC_BASE + 0x8078)
+#define PLL_LOCKED                      BIT(23)
 
 #define FULL_SPEED_CONTROL_PKT_SIZE     8
 #define FULL_SPEED_BULK_PKT_SIZE        64
@@ -203,12 +212,22 @@ typedef struct {
 #define AIC_PERIOD_TX_FIFO2_SIZE        0xDD
 #endif
 #else
+#ifdef LPKG_CHERRYUSB_DEVICE_VIDEO_DVP_TEMPLATE
+/* using fifo with threshold */
+#define AIC_RX_FIFO_SIZE                   0x119 /* rx fifo must be greater than the MPS of out ep */
+#define AIC_DEDICATED_TX_FIFO0_SIZE        0x10
+#define AIC_DEDICATED_TX_FIFO1_SIZE        0x180 /* high-bandwith 2k/3k  & AHB bus needs to operate at 240Mhz */
+#define AIC_DEDICATED_TX_FIFO2_SIZE        0x80
+#define AIC_DEDICATED_TX_FIFO3_SIZE        0x80
+#define AIC_DEDICATED_TX_FIFO4_SIZE        0x00
+#else
 #define AIC_RX_FIFO_SIZE                   0x119
 #define AIC_DEDICATED_TX_FIFO0_SIZE        0x20
-#define AIC_DEDICATED_TX_FIFO1_SIZE        0x80
+#define AIC_DEDICATED_TX_FIFO1_SIZE        0x80 /* to achieve the highest performance, it is best for FIFO to be twice the MPS */
 #define AIC_DEDICATED_TX_FIFO2_SIZE        0x80
 #define AIC_DEDICATED_TX_FIFO3_SIZE        0x80
 #define AIC_DEDICATED_TX_FIFO4_SIZE        0x80
+#endif
 #endif
 #define DEPCTL_TXFNUM_0                 (0x0 << 22)
 #define DEPCTL_TXFNUM_1                 (0x1 << 22)

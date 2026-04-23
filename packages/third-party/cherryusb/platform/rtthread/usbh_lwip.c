@@ -48,9 +48,9 @@
 #error RT_LWIP_TCPTHREAD_STACKSIZE must be >= 2048
 #endif
 
-// #define CONFIG_USBHOST_PLATFORM_CDC_ECM
-// #define CONFIG_USBHOST_PLATFORM_CDC_RNDIS
-// #define CONFIG_USBHOST_PLATFORM_CDC_NCM
+#define CONFIG_USBHOST_PLATFORM_CDC_ECM
+#define CONFIG_USBHOST_PLATFORM_CDC_RNDIS
+#define CONFIG_USBHOST_PLATFORM_CDC_NCM
 // #define CONFIG_USBHOST_PLATFORM_ASIX
 // #define CONFIG_USBHOST_PLATFORM_RTL8152
 
@@ -96,8 +96,7 @@ void usbh_lwip_eth_input_common(struct netif *netif, uint8_t *buf, uint32_t len)
 #include "usbh_cdc_ecm.h"
 
 static struct eth_device g_cdc_ecm_dev;
-
-static rt_err_t rt_usbh_cdc_ecm_control(rt_device_t dev, int cmd, void *args)
+rt_err_t rt_usbh_cdc_ecm_control(rt_device_t dev, int cmd, void *args)
 {
     struct usbh_cdc_ecm *cdc_ecm_class = (struct usbh_cdc_ecm *)dev->user_data;
 
@@ -138,11 +137,20 @@ void usbh_cdc_ecm_eth_input(uint8_t *buf, uint32_t buflen)
     usbh_lwip_eth_input_common(g_cdc_ecm_dev.netif, buf, buflen);
 }
 
+#ifdef RT_USING_DEVICE_OPS
+static const struct rt_device_ops aicusb_host_ecm_ops = {
+    .control = rt_usbh_cdc_ecm_control,
+};
+#endif
 void usbh_cdc_ecm_run(struct usbh_cdc_ecm *cdc_ecm_class)
 {
     memset(&g_cdc_ecm_dev, 0, sizeof(struct eth_device));
 
+#ifdef RT_USING_DEVICE_OPS
+    g_cdc_ecm_dev.parent.ops = &aicusb_host_ecm_ops;
+#else
     g_cdc_ecm_dev.parent.control = rt_usbh_cdc_ecm_control;
+#endif
     g_cdc_ecm_dev.eth_rx = NULL;
     g_cdc_ecm_dev.eth_tx = rt_usbh_cdc_ecm_eth_tx;
     g_cdc_ecm_dev.parent.user_data = cdc_ecm_class;
@@ -166,6 +174,7 @@ void usbh_cdc_ecm_stop(struct usbh_cdc_ecm *cdc_ecm_class)
 
 static struct eth_device g_rndis_dev;
 
+#if 0
 static rt_timer_t keep_timer = RT_NULL;
 
 static void rndis_dev_keepalive_timeout(void *parameter)
@@ -181,10 +190,11 @@ static void timer_init(struct usbh_rndis *rndis_class)
                                  rndis_class,
                                  5000,
                                  RT_TIMER_FLAG_PERIODIC |
-                                     RT_TIMER_FLAG_SOFT_TIMER);
+                                 RT_TIMER_FLAG_SOFT_TIMER);
 
     rt_timer_start(keep_timer);
 }
+#endif
 
 static rt_err_t rt_usbh_rndis_control(rt_device_t dev, int cmd, void *args)
 {
@@ -227,11 +237,20 @@ void usbh_rndis_eth_input(uint8_t *buf, uint32_t buflen)
     usbh_lwip_eth_input_common(g_rndis_dev.netif, buf, buflen);
 }
 
+#ifdef RT_USING_DEVICE_OPS
+static const struct rt_device_ops aicusb_host_rndis_ops = {
+    .control = rt_usbh_rndis_control,
+};
+#endif
 void usbh_rndis_run(struct usbh_rndis *rndis_class)
 {
     memset(&g_rndis_dev, 0, sizeof(struct eth_device));
 
+#ifdef RT_USING_DEVICE_OPS
+    g_rndis_dev.parent.ops = &aicusb_host_rndis_ops;
+#else
     g_rndis_dev.parent.control = rt_usbh_rndis_control;
+#endif
     g_rndis_dev.eth_rx = NULL;
     g_rndis_dev.eth_tx = rt_usbh_rndis_eth_tx;
     g_rndis_dev.parent.user_data = rndis_class;
@@ -299,11 +318,21 @@ void usbh_cdc_ncm_eth_input(uint8_t *buf, uint32_t buflen)
     usbh_lwip_eth_input_common(g_cdc_ncm_dev.netif, buf, buflen);
 }
 
+#ifdef RT_USING_DEVICE_OPS
+static const struct rt_device_ops aicusb_host_ncm_ops = {
+    .control = rt_usbh_cdc_ncm_control,
+};
+#endif
 void usbh_cdc_ncm_run(struct usbh_cdc_ncm *cdc_ncm_class)
 {
     memset(&g_cdc_ncm_dev, 0, sizeof(struct eth_device));
 
+#ifdef RT_USING_DEVICE_OPS
+    g_cdc_ncm_dev.parent.ops = &aicusb_host_ncm_ops;
+#else
     g_cdc_ncm_dev.parent.control = rt_usbh_cdc_ncm_control;
+#endif
+
     g_cdc_ncm_dev.eth_rx = NULL;
     g_cdc_ncm_dev.eth_tx = rt_usbh_cdc_ncm_eth_tx;
     g_cdc_ncm_dev.parent.user_data = cdc_ncm_class;

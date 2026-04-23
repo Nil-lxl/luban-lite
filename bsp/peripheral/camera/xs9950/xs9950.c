@@ -28,6 +28,8 @@
 #define XS9950_I2C_SLAVE_ID 0x30                    // I2C slave address (from manual 4.1.4)
 #define XS9950_CHIP_ID      0x9950                  // Chip ID (custom, needs adjustment based on actual)
 #define XS9950_REG_ADDR_LEN 2                       // I2C register address length (16bit)
+#define XS9950_DEVICE_ID_H  0x40f0
+#define XS9950_DEVICE_ID_L  0x40f1
 // #define XS9950_INTERRUPT
 
 // Video channel enum (supports 4-channel input, manual 3.1.3.7)
@@ -306,17 +308,17 @@ static void xs9950_bt656_init(void)
     xs9950_write_reg(0x4200, 0x02);
 
     // 720p@25fps
+    xs9950_write_reg(0x060b, 0x00);
+    xs9950_write_reg(0x0627, 0x14);
     xs9950_write_reg(0x010c, 0x00);
-    xs9950_write_reg(0x0800, 0x07);
-    xs9950_write_reg(0x0805, 0x07);
-    xs9950_write_reg(0x0800, 0x07);
     xs9950_write_reg(0x0800, 0x05);
     xs9950_write_reg(0x0805, 0x05);
     xs9950_write_reg(0x0b50, 0x08);
     xs9950_write_reg(0x0e08, 0x00);
-    xs9950_write_reg(0x010d, 0x00);
+    xs9950_write_reg(0x010d, 0x40);
     xs9950_write_reg(0x010c, 0x01);
-    xs9950_write_reg(0x0121, 0x5a);
+    xs9950_write_reg(0x0121, 0x6a);
+    xs9950_write_reg(0x0122, 0x5b);
     xs9950_write_reg(0x0130, 0x10);
     xs9950_write_reg(0x01a9, 0x00);
     xs9950_write_reg(0x01aa, 0x04);
@@ -327,46 +329,107 @@ static void xs9950_bt656_init(void)
     xs9950_write_reg(0x0102, 0x40);
     xs9950_write_reg(0x0116, 0x3c);
     xs9950_write_reg(0x0117, 0x23);
-    xs9950_write_reg(0x012d, 0x3f);
-    xs9950_write_reg(0x012f, 0x8c);
     xs9950_write_reg(0x01e2, 0x03);
-    xs9950_write_reg(0x420b, 0x21);
+    xs9950_write_reg(0x420b, 0x2f);  // clamp
+    xs9950_write_reg(0x0100, 0x38);
     xs9950_write_reg(0x0106, 0x80);
     xs9950_write_reg(0x0107, 0x00);
     xs9950_write_reg(0x0108, 0x80);
     xs9950_write_reg(0x0109, 0x00);
-    xs9950_write_reg(0x010a, 0x88);
-    xs9950_write_reg(0x010a, 0x08);
-    xs9950_write_reg(0x010b, 0x00);
+    xs9950_write_reg(0x010a, 0x20);
     xs9950_write_reg(0x010b, 0x00);
     xs9950_write_reg(0x011d, 0x17);
     xs9950_write_reg(0x0e08, 0x01);
-    xs9950_write_reg(0x4201, 0x00);
-    xs9950_write_reg(0x4203, 0x00);
-    xs9950_write_reg(0x4202, 0x00);
-    xs9950_write_reg(0x4204, 0x00);
-    xs9950_write_reg(0x0147, 0x00);
-    xs9950_write_reg(0x0102, 0x40);
-    xs9950_write_reg(0x0105, 0xe1);
-    xs9950_write_reg(0x0108, 0x80);
     xs9950_write_reg(0x0a60, 0x04);
-    xs9950_write_reg(0x0a5c, 0xae);
-    xs9950_write_reg(0x0a5d, 0xd7);
-    xs9950_write_reg(0x0a5e, 0xc7);
-    xs9950_write_reg(0x0a5f, 0x31);
-    xs9950_write_reg(0x01a9, 0x00);
-    xs9950_write_reg(0x01aa, 0x04);
+    xs9950_write_reg(0x0a5c, 0xf6);
+    xs9950_write_reg(0x0a5d, 0xc0);
+    xs9950_write_reg(0x0a5e, 0x2d);
+    xs9950_write_reg(0x0a5f, 0x1b);
+    xs9950_write_reg(0x0156, 0x50);
+    xs9950_write_reg(0x0157, 0x07);
+    xs9950_write_reg(0x011d, 0x17);
+    xs9950_write_reg(0x0156, 0x00);
+    xs9950_write_reg(0x0157, 0x08);
+    xs9950_write_reg(0x0158, 0x01);
     xs9950_write_reg(0x0503, 0x00);
-    xs9950_write_reg(0x015a, 0x00);
-    xs9950_write_reg(0x015b, 0x24);
+    xs9950_write_reg(0x015a, 0x8b);
+    xs9950_write_reg(0x015b, 0x0e);
     xs9950_write_reg(0x015c, 0x80);
     xs9950_write_reg(0x015d, 0x16);
     xs9950_write_reg(0x015e, 0xd0);
     xs9950_write_reg(0x015f, 0x02);
     xs9950_write_reg(0x0160, 0xee);
     xs9950_write_reg(0x0161, 0x02);
-    xs9950_write_reg(0x0165, 0x00);
+    xs9950_write_reg(0x0165, 0x40);
     xs9950_write_reg(0x0166, 0x0f);
+    xs9950_write_reg(0x0A00, 0xFD);
+    xs9950_write_reg(0x0A01, 0xFF);
+    xs9950_write_reg(0x0A02, 0x00);
+    xs9950_write_reg(0x0A03, 0x00);
+    xs9950_write_reg(0x0A04, 0x04);
+    xs9950_write_reg(0x0A05, 0x00);
+    xs9950_write_reg(0x0A06, 0x01);
+    xs9950_write_reg(0x0A07, 0x00);
+    xs9950_write_reg(0x0A08, 0xFB);
+    xs9950_write_reg(0x0A09, 0xFF);
+    xs9950_write_reg(0x0A0A, 0xFE);
+    xs9950_write_reg(0x0A0B, 0xFF);
+    xs9950_write_reg(0x0A0C, 0x07);
+    xs9950_write_reg(0x0A0D, 0x00);
+    xs9950_write_reg(0x0A0E, 0x03);
+    xs9950_write_reg(0x0A0F, 0x00);
+    xs9950_write_reg(0x0A10, 0xF7);
+    xs9950_write_reg(0x0A11, 0xFF);
+    xs9950_write_reg(0x0A12, 0xFA);
+    xs9950_write_reg(0x0A13, 0xFF);
+    xs9950_write_reg(0x0A14, 0x0B);
+    xs9950_write_reg(0x0A15, 0x00);
+    xs9950_write_reg(0x0A16, 0x0A);
+    xs9950_write_reg(0x0A17, 0x00);
+    xs9950_write_reg(0x0A18, 0xF3);
+    xs9950_write_reg(0x0A19, 0xFF);
+    xs9950_write_reg(0x0A1A, 0xF1);
+    xs9950_write_reg(0x0A1B, 0xFF);
+    xs9950_write_reg(0x0A1C, 0x0F);
+    xs9950_write_reg(0x0A1D, 0x00);
+    xs9950_write_reg(0x0A1E, 0x18);
+    xs9950_write_reg(0x0A1F, 0x00);
+    xs9950_write_reg(0x0A20, 0xEE);
+    xs9950_write_reg(0x0A21, 0xFF);
+    xs9950_write_reg(0x0A22, 0xDC);
+    xs9950_write_reg(0x0A23, 0xFF);
+    xs9950_write_reg(0x0A24, 0x14);
+    xs9950_write_reg(0x0A25, 0x00);
+    xs9950_write_reg(0x0A26, 0x39);
+    xs9950_write_reg(0x0A27, 0x00);
+    xs9950_write_reg(0x0A28, 0xEB);
+    xs9950_write_reg(0x0A29, 0xFF);
+    xs9950_write_reg(0x0A2A, 0x98);
+    xs9950_write_reg(0x0A2B, 0xFF);
+    xs9950_write_reg(0x0A2C, 0x16);
+    xs9950_write_reg(0x0A2D, 0x00);
+    xs9950_write_reg(0x0A2E, 0x45);
+    xs9950_write_reg(0x0A2F, 0x01);
+    xs9950_write_reg(0x0A30, 0xEA);
+    xs9950_write_reg(0x0A31, 0x01);
+    xs9950_write_reg(0x0A60, 0x01);
+    xs9950_write_reg(0x0336, 0x7e);
+    xs9950_write_reg(0x033b, 0x03);
+
+    xs9950_write_reg(0x0AA7, 0x7A);
+    xs9950_write_reg(0x0AA8, 0x18);
+    xs9950_write_reg(0x0AA9, 0xC0);
+    xs9950_write_reg(0x0AAA, 0x01);
+    xs9950_write_reg(0x0AAB, 0xC2);
+    xs9950_write_reg(0x0AAC, 0x01);
+    xs9950_write_reg(0x0AAD, 0x80);
+    xs9950_write_reg(0x0AAE, 0x43);
+    xs9950_write_reg(0x0AAF, 0x00);
+    xs9950_write_reg(0x0AB0, 0x70);
+    xs9950_write_reg(0x0AB1, 0x00);
+    xs9950_write_reg(0x0AB2, 0x1B);
+    xs9950_write_reg(0x0A88, 0x30);
+
     LOG_I("BT656 init done: mode=standard 8bit");
 }
 
@@ -470,13 +533,11 @@ static void xs9950_sensor_init(enum tp_vin_ch ch, enum tp_fmt fmt, enum tp_std s
  * @brief Chip ID check
  * @return 0 success, -1 failure
  */
-#define XS9950_DEVICE_ID_1 0x40f0
-#define XS9950_DEVICE_ID_0 0x40f1
 static int xs9950_chipid_check(struct xs9950_dev *sensor)
 {
     u8 id_h = 0, id_l = 0;
-    id_h = xs9950_read_reg(XS9950_DEVICE_ID_1);      // Chip ID high 8 bits
-    id_l = xs9950_read_reg(XS9950_DEVICE_ID_0);      // Chip ID low 8 bits
+    id_h = xs9950_read_reg(XS9950_DEVICE_ID_H);      // Chip ID high 8 bits
+    id_l = xs9950_read_reg(XS9950_DEVICE_ID_L);      // Chip ID low 8 bits
     if ((id_h << 8 | id_l) != XS9950_CHIP_ID) {
         LOG_E("Invalid Chip ID: 0x%02x%02x (expect 0x%04x)", id_h, id_l, XS9950_CHIP_ID);
         return -1;
@@ -586,6 +647,10 @@ static rt_err_t xs9950_open(rt_device_t dev, rt_uint16_t oflag)
     }
 #endif
     sensor->streaming = true;
+
+    xs9950_write_reg(0x010c, 0x00);// xs9950_write_reg(0x010c, 0x01);
+    rt_thread_mdelay(1000);  // Power-on stabilization delay
+
     LOG_I("XS9950 device open done");
     return RT_EOK;
 }

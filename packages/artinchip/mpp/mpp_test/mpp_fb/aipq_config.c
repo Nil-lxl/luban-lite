@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -230,7 +230,11 @@ static void aicpq_print_config(struct aicfb_pq_config *config, int connector_typ
             }
             case AIC_MIPI_COM:
             {
+                unsigned int ln_assign[4] = { 0x0123, 0x1032, 0x2103, 0x3210 };
                 struct panel_dsi *dsi = config->data;
+
+                if (!dsi->ln_assign)
+                    dsi->ln_assign = ln_assign[dsi->lane_num - 1];
 
                 printf("dsi info:\n"
                         "\tmode:%d\n"

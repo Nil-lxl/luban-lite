@@ -142,6 +142,16 @@ config AIC_TOUCH_270_DEGREE_ROTATION
     default n
     depends on AIC_USING_CTP
 
+config AIC_SCREEN_RELATIVE_ROTATION_DEGREE
+    int "Screen rotate degree relative to touch"
+    default 0
+    depends on AIC_USING_CTP
+
+config AIC_CTP_POLLING_MODE
+    bool "Using touch polling mode instead of irq mode"
+    default 0
+    depends on AIC_USING_CTP
+
 config AIC_TOUCH_CROP
     bool "Enable touch crop"
     default n

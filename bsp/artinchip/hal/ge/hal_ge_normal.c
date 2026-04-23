@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -578,6 +578,24 @@ static int ge_config_scaler(struct aic_ge_data *data,
         out_h = blt->dst_buf.crop.height;
     }
 
+    if(blt->scale_phase.scale_phase_en) {
+        channel_num = blt->scale_phase.channel_num;
+        scaler_en = blt->scale_phase.scaler_en;
+        dx[0] = blt->scale_phase.dx_16[0];
+        dy[0] = blt->scale_phase.dy_16[0];
+        h_phase[0] = blt->scale_phase.h_phase_16[0];
+        v_phase[0] = blt->scale_phase.v_phase_16[0];
+        if(channel_num == 2) {
+            dx[1] = blt->scale_phase.dx_16[1];
+            dy[1] = blt->scale_phase.dy_16[1];
+            h_phase[1] = blt->scale_phase.h_phase_16[1];
+            v_phase[1] = blt->scale_phase.v_phase_16[1];
+            in_w[1] = blt->scale_phase.in_w_ch1;
+            in_h[1] = blt->scale_phase.in_h_ch1;
+        }
+        goto set_scaler;
+    }
+
     switch (format) {
     case MPP_FMT_ARGB_8888:
     case MPP_FMT_ABGR_8888:
@@ -696,6 +714,7 @@ static int ge_config_scaler(struct aic_ge_data *data,
         return -1;
     }
 
+set_scaler:
     if (scaler_en) {
         if (is_rgb(format) &&
                 (in_w[0] < 4 || in_h[0] < 4)) {

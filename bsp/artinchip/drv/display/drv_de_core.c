@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -705,26 +705,48 @@ static int aic_de_get_gamma_config(struct aicfb_gamma_config *gamma)
     return 0;
 }
 
-struct de_funcs aic_de_funcs = {
-    .set_mode                 = aic_de_set_mode,
-    .clk_enable               = aic_de_clk_enable,
-    .clk_disable              = aic_de_clk_disable,
-    .timing_enable            = aic_de_timing_enable,
-    .timing_disable           = aic_de_timing_disable,
-    .wait_for_vsync           = aic_de_wait_for_vsync,
-    .get_alpha_config         = aic_de_get_alpha_config,
-    .update_alpha_config      = aic_de_update_alpha_config,
-    .get_ck_config            = aic_de_get_ck_config,
-    .update_ck_config         = aic_de_update_ck_config,
-    .get_layer_config         = aic_de_get_layer_config,
-    .update_layer_config      = aic_de_update_layer_config,
-    .update_layer_config_list = aic_de_update_layer_config_list,
-    .set_display_prop         = aic_de_set_display_prop,
-    .get_display_prop         = aic_de_get_display_prop,
-    .set_ccm_config           = aic_de_set_ccm_config,
-    .get_ccm_config           = aic_de_get_ccm_config,
-    .set_gamma_config         = aic_de_set_gamma_config,
-    .get_gamma_config         = aic_de_get_gamma_config,
+static int aic_de_update_bg_blend_ui_config(u32 enable)
+{
+    struct aic_de_comp *comp = aic_de_request_drvdata();
+
+    de_ui_bg_blending_enable(comp->regs, enable);
+    comp->bg_blend_ui_en = enable;
+
+    aic_de_release_drvdata();
+    return 0;
+}
+
+static int aic_de_get_bg_blend_ui_config(u32 *enable)
+{
+    struct aic_de_comp *comp = aic_de_request_drvdata();
+
+    *enable = comp->bg_blend_ui_en;
+    aic_de_release_drvdata();
+    return 0;
+}
+
+struct de_funcs aic_de_funcs   = {
+    .set_mode                  = aic_de_set_mode,
+    .clk_enable                = aic_de_clk_enable,
+    .clk_disable               = aic_de_clk_disable,
+    .timing_enable             = aic_de_timing_enable,
+    .timing_disable            = aic_de_timing_disable,
+    .wait_for_vsync            = aic_de_wait_for_vsync,
+    .get_alpha_config          = aic_de_get_alpha_config,
+    .update_alpha_config       = aic_de_update_alpha_config,
+    .get_ck_config             = aic_de_get_ck_config,
+    .update_ck_config          = aic_de_update_ck_config,
+    .get_layer_config          = aic_de_get_layer_config,
+    .update_layer_config       = aic_de_update_layer_config,
+    .update_layer_config_list  = aic_de_update_layer_config_list,
+    .set_display_prop          = aic_de_set_display_prop,
+    .get_display_prop          = aic_de_get_display_prop,
+    .set_ccm_config            = aic_de_set_ccm_config,
+    .get_ccm_config            = aic_de_get_ccm_config,
+    .set_gamma_config          = aic_de_set_gamma_config,
+    .get_gamma_config          = aic_de_get_gamma_config,
+    .update_bg_blend_ui_config = aic_de_update_bg_blend_ui_config,
+    .get_bg_blend_ui_config    = aic_de_get_bg_blend_ui_config,
 };
 
 static const struct aicfb_layer_num layer_num = {

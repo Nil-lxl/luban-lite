@@ -501,6 +501,58 @@ struct rt_audio_ops aic_i2s_ops =
     .direct_transfer = drv_i2s_sound_direct_transfer,
 };
 
+#ifdef RT_USING_PM
+static int aic_i2s_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_i2s_sound *p_snd_dev;
+
+    p_snd_dev = rt_container_of(device, struct aic_i2s_sound, audio.parent);
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        if (hal_clk_is_enabled(CLK_I2S0 + p_snd_dev->i2s_idx))
+            hal_clk_disable(CLK_I2S0 + p_snd_dev->i2s_idx);
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_i2s_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_i2s_sound *p_snd_dev;
+
+    p_snd_dev = rt_container_of(device, struct aic_i2s_sound, audio.parent);
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        if (!hal_clk_is_enabled(CLK_I2S0 + p_snd_dev->i2s_idx))
+            hal_clk_enable(CLK_I2S0 + p_snd_dev->i2s_idx);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_i2s_pm_ops =
+{
+    SET_LATE_DEVICE_PM_OPS(aic_i2s_suspend, aic_i2s_resume)
+    NULL,
+};
+#endif
+
 int rt_hw_i2s_sound_init(void)
 {
     rt_err_t ret = RT_EOK;
@@ -520,6 +572,9 @@ int rt_hw_i2s_sound_init(void)
 
         ret = rt_audio_register(&snd_dev[i].audio, snd_dev[i].name,
                             RT_DEVICE_FLAG_RDWR, &snd_dev[i]);
+#ifdef RT_USING_PM
+        rt_pm_device_register(&snd_dev[i].audio.parent, &aic_i2s_pm_ops);
+#endif
     }
 
     return ret;

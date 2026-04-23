@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,6 +22,7 @@ extern "C" {
 #define MM_CLOCK_PORT1 0x00000002
 #define MM_CLOCK_PORT2 0x00000004
 #define MM_VIDEO_SYNC_DIFF_TIME (20 * 1000)
+#define MM_MEDIA_PERF_PERIOD_TIME (3 * 1000 * 1000)
 
 typedef void *mm_handle;
 
@@ -126,6 +127,11 @@ typedef enum MM_TIME_REF_CLOCK_TYPE {
     MM_TIME_REF_CLOCK_VIDEO,
     MM_TIME_REF_CLOCK_MAX = 0x7FFFFFFF
 } MM_TIME_REF_CLOCK_TYPE;
+
+typedef struct mm_codec_type_tbl {
+    s32   type;
+    char  type_str[16];
+}mm_codec_type_tbl;
 
 typedef struct mm_param_content_uri {
     /* size of the structure in bytes, including actual URI name */
@@ -348,6 +354,56 @@ static inline char* mm_component_sta_to_str(MM_STATE_TYPE state)
         return "Unknown";
 
     return g_state_str[state];
+}
+
+static struct mm_codec_type_tbl mm_audio_type_tbl[] =
+{
+    {MM_AUDIO_CODING_MP3,  "MP3"},
+    {MM_AUDIO_CODING_AAC,  "AAC"},
+    {MM_AUDIO_CODING_APE,  "APE"},
+    {MM_AUDIO_CODING_FLAC, "FLAC"},
+    {MM_AUDIO_CODING_WMA,  "WMA"}
+};
+
+static struct mm_codec_type_tbl mm_video_type_tbl[] =
+{
+    {MM_VIDEO_CODING_MPEG2, "MPEG-2"},
+    {MM_VIDEO_CODING_H263,  "H.263"},
+    {MM_VIDEO_CODING_MPEG4, "MPEG-4"},
+    {MM_VIDEO_CODING_AVC,   "H.264"},
+    {MM_VIDEO_CODING_MJPEG, "MJPEG"}
+};
+
+static inline char* mm_component_audio_type_to_str(MM_AUDIO_CODING_TYPE type)
+{
+    int elm_size = sizeof(mm_audio_type_tbl) / sizeof((mm_audio_type_tbl)[0]);
+    int i = 0;
+
+    for (i = 0; i < elm_size; i++) {
+        if (mm_audio_type_tbl[i].type == type)
+            break;
+    }
+    if (i >=  elm_size) {
+        return "Unknown";
+    }
+
+    return mm_audio_type_tbl[i].type_str;
+}
+
+static inline char* mm_component_video_type_to_str(MM_VIDEO_CODING_TYPE type)
+{
+    int elm_size = sizeof(mm_video_type_tbl) / sizeof((mm_video_type_tbl)[0]);
+    int i = 0;
+
+    for (i = 0; i < elm_size; i++) {
+        if (mm_video_type_tbl[i].type == type)
+            break;
+    }
+    if (i >= elm_size) {
+        return "Unknown";
+    }
+
+    return mm_video_type_tbl[i].type_str;
 }
 
 #ifdef __cplusplus

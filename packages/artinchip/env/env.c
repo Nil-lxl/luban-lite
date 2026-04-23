@@ -491,7 +491,7 @@ static int rtt_spinand_load_env_simple(void *buf, size_t size)
         }
 
         ret = rt_mtd_nand_read(mtd, page_id, buf, mtd->page_size, RT_NULL, 0);
-        if (ret) {
+        if (ret < 0) {
             pr_err("Failed to read page data from NAND.\n");
             ret = -RT_ERROR;
             goto rtt_spinand_load_env_simple_exit;
@@ -508,7 +508,7 @@ static int rtt_spinand_load_env_simple(void *buf, size_t size)
 rtt_spinand_load_env_simple_exit:
     rt_device_close(dev);
 
-    return ret;
+    return ret < 0 ? ret : 0;
 }
 
 static int rtt_spinand_save_env_simple(void *buf, size_t size)

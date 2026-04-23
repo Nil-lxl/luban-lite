@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -44,6 +44,7 @@ void play_wav(void *file_path)
     char *wav_buff = NULL;
     int parser_ret = 0;
     int volume = 100;
+    int n;
 
     create_params.dev_id = 0;
     create_params.mix_enable = 1;
@@ -106,13 +107,23 @@ void play_wav(void *file_path)
     }
 
     if (1 == create_params.mix_enable) {
+        n = 0;
+        unsigned long last_remain = 0;
+        unsigned long remain = 0;
         while (1) {
-            unsigned long remain = 0;
             aic_audio_render_control(render, AUDIO_RENDER_CMD_GET_SUB_TRACK_REMAIN_DATA, &remain);
             // printf("ramain:%ld\n", remain);
             if (remain < 1024) {
                 break;
             }
+            if (last_remain == remain) {
+                if (++n > 50) {
+                    break;
+                }
+            } else {
+                n = 0;
+            }
+            last_remain = remain;
             usleep(10000);
         }
     }
@@ -150,7 +161,9 @@ static void print_help(const char* prog)
         "('r'): resume \n"
         "('+'): volum+5 \n"
         "('-'): volum-5 \n"
-        "('e'): eixt app \n");
+        "('w'): audio mix \n"
+        "('e'): eixt app \n"
+        "Example1(test audio mix): audio_player_demo -i x.mp3 -w x.wav (then press w to mix)\n");
 }
 
 static int read_dir(char* path, struct audio_file_list *files)

@@ -29,6 +29,8 @@
 #define XT26G01B_STATUS_ECC_MASK        (0xF << 2)
 #define XT26G01B_STATUS_ECC_BITS_CORRECTED(a) ((a & XT26G01B_STATUS_ECC_MASK) >> 2)
 
+#define XT26G01F_STATUS_ECC_BITS_CORRECTED(a) ((a & XT26G01C_STATUS_ECC_MASK) >> 4)
+
 int xt26g01c_ecc_get_status(struct aic_spinand *flash, u8 status)
 {
     switch (status & XT26G01C_STATUS_ECC_MASK) {
@@ -80,6 +82,20 @@ int xt26g11c_ecc_get_status(struct aic_spinand *flash, u8 status)
     }
 
     return status & XT26G02D_STATUS_ECC_MASK;
+}
+
+int xt26g01f_ecc_get_status(struct aic_spinand *flash, u8 status)
+{
+    switch (status & XT26G01C_STATUS_ECC_MASK) {
+        case XT26G01C_STATUS_ECC_NO_BITFLIPS:
+            return 0;
+        case XT26G01C_STATUS_ECC_MASK:
+            return -SPINAND_ERR_ECC;
+        default:
+            break;
+    }
+
+    return XT26G01F_STATUS_ECC_BITS_CORRECTED(status);
 }
 
 int xt26g01b_ecc_get_status(struct aic_spinand *flash, u8 status)
@@ -181,6 +197,10 @@ const struct aic_spinand_info xtx_spinand_table[] = {
     { DEVID(0x15), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
       PLANENUM(1), DIE(0), "XTX 128MB: 2048+128@64@1024", cmd_cfg_table,
       xt26g11c_ecc_get_status, xt26g11c_ooblayout_user, 14 },
+    /*XT26G01F device*/
+    { DEVID(0x71), PAGESIZE(2048), OOBSIZE(128), BPL(1024), PPB(64),
+      PLANENUM(1), DIE(0), "XTX 128MB: 2048+128@64@1024", cmd_cfg_table,
+      xt26g01f_ecc_get_status, xt26g02d_ooblayout_user, 8 },
 };
 
 const struct aic_spinand_info *xtx_spinand_detect(struct aic_spinand *flash)

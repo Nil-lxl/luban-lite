@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -13,61 +13,6 @@
 #include "card.h"
 #include "wifi_io.h"
 #include "rtconfig.h"
-
-unsigned int wifi_power_pin = 0;
-
-int realtek_reset(void)
-{
-    unsigned int g;
-    unsigned int p;
-
-    if (wifi_power_pin < 0)
-        return -1;
-
-    /* power on pin */
-    g = GPIO_GROUP(wifi_power_pin);
-    p = GPIO_GROUP_PIN(wifi_power_pin);
-
-    /* reset */
-    hal_gpio_set_value(g, p, 0);
-    aicos_msleep(10);
-    hal_gpio_set_value(g, p, 1);
-    aicos_msleep(10);
-
-    return 0;
-}
-
-int realtek_power_on(void)
-{
-    unsigned int g;
-    unsigned int p;
-
-    /* power on pin */
-    g = GPIO_GROUP(wifi_power_pin);
-    p = GPIO_GROUP_PIN(wifi_power_pin);
-
-    /* power on */
-    hal_gpio_set_value(g, p, 1);
-    aicos_msleep(10);
-
-    return 0;
-}
-
-int realtek_power_off(void)
-{
-    unsigned int g;
-    unsigned int p;
-
-    /* power on pin */
-    g = GPIO_GROUP(wifi_power_pin);
-    p = GPIO_GROUP_PIN(wifi_power_pin);
-
-    /* power off */
-    hal_gpio_set_value(g, p, 0);
-    aicos_msleep(10);
-
-    return 0;
-}
 
 static rt_int32_t realtek_probe(struct rt_mmcsd_card *card)
 {
@@ -102,24 +47,10 @@ struct rt_sdio_driver realtek_drv = {
     realtex_id,
 };
 
-void realtek_pin_init()
-{
-    wifi_power_pin = hal_gpio_name2pin(AIC_WIRELESS_PWR_GPIO);
-    if (wifi_power_pin < 0)
-        return;
 
-    hal_gpio_direction_output(GPIO_GROUP(wifi_power_pin),
-                                GPIO_GROUP_PIN(wifi_power_pin));
-
-    realtek_reset();
-}
 
 int realtek_init(void)
 {
-#ifndef RT_USING_LWIP
-    realtek_pin_init();
-#endif
-
     printf("wifi device id == 0x%x\n", realtek_drv.id->product);
     sdio_register_driver(&realtek_drv);
 

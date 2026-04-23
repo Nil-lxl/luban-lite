@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -138,6 +138,9 @@ static rt_err_t drv_rtp_control(struct rt_touch_device *touch,
         drv_rtp_plate_check(&g_rtp_dev, arg);
         break;
 
+    case RT_TOUCH_CTRL_POWER_ON:
+    case RT_TOUCH_CTRL_POWER_OFF:
+        return -RT_EINVAL;
     default:
         LOG_I("Unsupported cmd: 0x%x", cmd);
         return -RT_EINVAL;

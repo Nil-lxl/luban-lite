@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -163,7 +163,7 @@ static void aic_dbi_refresh_cfg(struct aic_dbi_comp *comp, struct panel_dbi *dbi
 #endif
 }
 
-static int aic_dbi_enable(void)
+int aic_dbi_enable(void)
 {
     struct aic_dbi_comp *comp = aic_dbi_request_drvdata();
     struct panel_dbi *dbi = comp->dbi;

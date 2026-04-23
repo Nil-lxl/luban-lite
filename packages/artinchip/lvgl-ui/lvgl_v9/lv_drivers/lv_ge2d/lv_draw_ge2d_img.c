@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2025-2026 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -37,6 +37,8 @@ typedef struct {
 static void ge2d_img_draw_core(lv_draw_unit_t *draw_unit, const lv_draw_image_dsc_t *draw_dsc,
                                const lv_image_decoder_dsc_t *decoder_dsc, lv_draw_image_sup_t *sup,
                                const lv_area_t *img_coords, const lv_area_t *clipped_img_area);
+extern void lv_draw_ge2d_scale(lv_draw_unit_t *draw_unit, const lv_draw_sw_blend_dsc_t *blend_dsc, const lv_draw_image_dsc_t *draw_dsc,
+                               const lv_area_t *clipped_area, const lv_draw_buf_t *decoded);
 
 #define _draw_info LV_GLOBAL_DEFAULT()->draw_info
 
@@ -361,22 +363,31 @@ static void image_buf_get_inverse_transform(lv_area_t *in_area, lv_area_t *out_a
                                             uint16_t scale_x, uint16_t scale_y, const lv_point_t *pivot,
                                             int32_t src_w, int32_t src_h)
 {
-    point_transform_t tr_dsc;
+    int32_t angle_low = 0;
+    int32_t angle_high = 0;
+    int32_t angle_rem = 0;
+    int32_t s1 = 0;
+    int32_t s2 = 0;
+    int32_t c1 = 0;
+    int32_t c2 = 0;
+    point_transform_t tr_dsc = { 0 };
+    lv_point_t out_p[4] = { 0 };
+
     tr_dsc.angle = -rotation;
     tr_dsc.scale_x = scale_x;
     tr_dsc.scale_y = scale_y;
     tr_dsc.pivot.x = pivot->x;
     tr_dsc.pivot.y = pivot->y;
 
-    int32_t angle_low = tr_dsc.angle / 10;
-    int32_t angle_high = angle_low + 1;
-    int32_t angle_rem = tr_dsc.angle  - (angle_low * 10);
+    angle_low = tr_dsc.angle / 10;
+    angle_high = angle_low + 1;
+    angle_rem = tr_dsc.angle  - (angle_low * 10);
 
-    int32_t s1 = lv_trigo_sin(angle_low);
-    int32_t s2 = lv_trigo_sin(angle_high);
+    s1 = lv_trigo_sin(angle_low);
+    s2 = lv_trigo_sin(angle_high);
 
-    int32_t c1 = lv_trigo_sin(angle_low + 90);
-    int32_t c2 = lv_trigo_sin(angle_high + 90);
+    c1 = lv_trigo_sin(angle_low + 90);
+    c2 = lv_trigo_sin(angle_high + 90);
 
     tr_dsc.sinma = (s1 * (10 - angle_rem) + s2 * angle_rem) / 10;
     tr_dsc.cosma = (c1 * (10 - angle_rem) + c2 * angle_rem) / 10;
@@ -384,8 +395,6 @@ static void image_buf_get_inverse_transform(lv_area_t *in_area, lv_area_t *out_a
     tr_dsc.cosma = tr_dsc.cosma >> (LV_TRIGO_SHIFT - 10);
     tr_dsc.pivot_x_256 = tr_dsc.pivot.x * 256;
     tr_dsc.pivot_y_256 = tr_dsc.pivot.y * 256;
-
-    lv_point_t out_p[4] = { 0 };
 
     transform_point_inverse(&tr_dsc, in_area->x1, in_area->y1,
                             &out_p[0].x, &out_p[0].y, src_w, src_h);
@@ -397,18 +406,18 @@ static void image_buf_get_inverse_transform(lv_area_t *in_area, lv_area_t *out_a
                             &out_p[3].x, &out_p[3].y, src_w, src_h);
 
     out_area->x1 = LV_MIN4(out_p[0].x, out_p[1].x, out_p[2].x, out_p[3].x);
-    out_area->x2 = LV_MAX4(out_p[0].x, out_p[1].x, out_p[2].x, out_p[3].x) - 1;
+    out_area->x2 = LV_MAX4(out_p[0].x, out_p[1].x, out_p[2].x, out_p[3].x);
     out_area->y1 = LV_MIN4(out_p[0].y, out_p[1].y, out_p[2].y, out_p[3].y);
-    out_area->y2 = LV_MAX4(out_p[0].y, out_p[1].y, out_p[2].y, out_p[3].y) - 1;
+    out_area->y2 = LV_MAX4(out_p[0].y, out_p[1].y, out_p[2].y, out_p[3].y);
 }
 
 void lv_draw_ge2d_transform(lv_draw_unit_t *draw_unit, const lv_draw_sw_blend_dsc_t *blend_dsc,
-                            const lv_draw_image_dsc_t *draw_dsc, const lv_area_t *clipped_area)
+                            const lv_draw_image_dsc_t *draw_dsc, const lv_area_t *clipped_area, const lv_draw_buf_t *decoded)
 {
-    int32_t src_w;
-    int32_t src_h;
-    lv_area_t in_area;
-    lv_area_t out_area;
+    int32_t src_w = 0;
+    int32_t src_h = 0;
+    lv_area_t in_area = { 0 };
+    lv_area_t out_area = { 0 };
 
     lv_layer_t *layer = draw_unit->target_layer;
     lv_color_format_t dst_color_format = layer->color_format;
@@ -441,6 +450,14 @@ void lv_draw_ge2d_transform(lv_draw_unit_t *draw_unit, const lv_draw_sw_blend_ds
     int32_t src_y = out_area.y1;
     int32_t dst_x = clipped_area->x1 - layer->buf_area.x1;
     int32_t dst_y = clipped_area->y1 - layer->buf_area.y1;
+
+    if (src_x + src_w > decoded->header.w) {
+        src_w = decoded->header.w - src_x;
+    }
+
+    if (src_y + src_h > decoded->header.w) {
+        src_h = decoded->header.h - src_y;
+    }
 
     struct mpp_ge *ge2d_dev = get_ge2d_device();
     struct ge_bitblt blt = { 0 };
@@ -641,7 +658,7 @@ static void ge2d_img_draw_core(lv_draw_unit_t *draw_unit, const lv_draw_image_ds
 
     bool scaled = draw_dsc->scale_x != LV_SCALE_NONE || draw_dsc->scale_y != LV_SCALE_NONE ? true : false;
     bool transformed = draw_dsc->rotation != 0 || scaled ? true : false;
-    bool fix_rotated = draw_dsc->rotation == 900 || draw_dsc->rotation == 1800 || draw_dsc->rotation == 2700;
+    bool fix_rotated = draw_dsc->rotation % 900 == 0;
 
     // mpp buffer already flushed cached, so only flush other type buffer
     if (decoded->header.flags & LV_IMAGE_FLAGS_MODIFIABLE) {
@@ -655,7 +672,11 @@ static void ge2d_img_draw_core(lv_draw_unit_t *draw_unit, const lv_draw_image_ds
 
         lv_draw_ge2d_blit(draw_unit, &blend_dsc);
     } else if (fix_rotated || scaled) {
-        lv_draw_ge2d_transform(draw_unit, &blend_dsc, draw_dsc, clipped_img_area);
+        if ((!lv_fmt_is_yuv(decoded->header.cf)) && scaled && draw_dsc->rotation == 0) {
+            lv_draw_ge2d_scale(draw_unit, &blend_dsc, draw_dsc, clipped_img_area, decoded);
+        } else {
+            lv_draw_ge2d_transform(draw_unit, &blend_dsc, draw_dsc, clipped_img_area, decoded);
+        }
     } else {
         lv_draw_ge2d_rotate_any_degree(draw_unit, &blend_dsc, draw_dsc, clipped_img_area);
     }

@@ -19,7 +19,10 @@ if GetDepend('AICUPG_SUPPORT'):
         src     += Glob('mmc_fwc.c')
     if GetDepend('AICUPG_NAND_ARTINCHIP'):
         src     += Glob('nand_fwc.c')
-        src     += Glob('nand_fwc_spl.c')
+        if GetDepend('AICUPG_NAND_SPL_PT_VER_20'):
+            src += Glob('nand_fwc_spl_v20.c')
+        else:
+            src += Glob('nand_fwc_spl.c')
     if GetDepend('AICUPG_NOR_ARTINCHIP'):
         src     += Glob('nor_fwc.c')
     if GetDepend('LPKG_USING_DFS_ELMFAT'):

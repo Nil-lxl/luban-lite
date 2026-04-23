@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -45,12 +45,26 @@ extern "C" {
 #define AIC_LOG_RUN_LVL AIC_LOG_LEVEL
 #endif
 
+#ifdef SHOW_PRINT_TIME
+unsigned long long aic_get_time_us(void);
+#define aic_log(level, tag, fmt, ...)                               \
+    do {                                                            \
+        if (level <= AIC_LOG_RUN_LVL) {                             \
+            unsigned long long us = aic_get_time_us();              \
+            (void)us;                                               \
+            PRINTF_API("[%4ld.%03ld] [%s]%s()%d " fmt,              \
+                       (long)(us/1000000), (long)(us%1000000/1000), \
+                       tag, __func__, __LINE__, ##__VA_ARGS__);     \
+        }                                                           \
+    } while (0)
+#else
 #define aic_log(level, tag, fmt, ...)                               \
     do {                                                            \
         if (level <= AIC_LOG_RUN_LVL)                               \
-            PRINTF_API("[%s] %s()%d " fmt, tag, __func__, __LINE__, \
-                       ##__VA_ARGS__);                              \
+            PRINTF_API("[%s]%s()%d " fmt,                           \
+                       tag, __func__, __LINE__, ##__VA_ARGS__);     \
     } while (0)
+#endif
 
 #define hal_log_err(fmt, ...)   aic_log(AIC_LOG_ERR, "E", fmt, ##__VA_ARGS__)
 #define hal_log_warn(fmt, ...)  aic_log(AIC_LOG_WARN, "W", fmt, ##__VA_ARGS__)

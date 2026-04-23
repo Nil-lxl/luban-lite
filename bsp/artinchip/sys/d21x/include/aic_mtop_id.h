@@ -1,13 +1,13 @@
 /*
- * Copyright (c) 2022, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Authors: dwj <weijie.ding@artinchip.com>
  */
 
-#ifndef _ARTINCHIP_HAL_MTOP_SPEC_DEF_V10H_
-#define _ARTINCHIP_HAL_MTOP_SPEC_DEF_V10H_
+#ifndef _ARTINCHIP_HAL_MTOP_SPEC_DEF_H_
+#define _ARTINCHIP_HAL_MTOP_SPEC_DEF_H_
 
 /* Each group is 8 bits */
 #define PORT_BITMAP		     0x10F

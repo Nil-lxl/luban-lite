@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -297,6 +297,8 @@ void fb_color_block(struct aicfb_info *fbi, size_t fb_size)
     case 32:
     {
         for (i = 0; i < height; i++) {
+            pos = (unsigned char *)fbi->fb_start + i * fbi->stride;
+
             for (j = 0; j < width; j++) {
                 index = (i / 100 + j / 100) % 5;
 
@@ -313,6 +315,8 @@ void fb_color_block(struct aicfb_info *fbi, size_t fb_size)
     case 24:
     {
         for (i = 0; i < height; i++) {
+            pos = (unsigned char *)fbi->fb_start + i * fbi->stride;
+
             for (j = 0; j < width; j++) {
                 index = (i / 100 + j / 100) % 5;
 
@@ -328,6 +332,8 @@ void fb_color_block(struct aicfb_info *fbi, size_t fb_size)
     case 16:
     {
         for (i = 0; i < height; i++) {
+            pos = (unsigned char *)fbi->fb_start + i * fbi->stride;
+
             for (j = 0; j < width; j++) {
                 index = (i / 100 + j / 100) % 5;
 

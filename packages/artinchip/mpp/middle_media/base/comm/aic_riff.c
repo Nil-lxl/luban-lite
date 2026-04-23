@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -103,7 +103,8 @@ int aic_get_wav_header(struct aic_stream *pb, struct aic_codec_param *par, int s
             cbSize -= 22;
             size -= 22;
         }
-        if (get_extradata) {
+        /*mp3: if include extradata base on get_extradata var*/
+        if (get_extradata || par->codec_id != CODEC_ID_MP3) {
             if (cbSize > 0) {
                 if (aic_get_extradata(par, pb, cbSize) < 0)
                     return -1;

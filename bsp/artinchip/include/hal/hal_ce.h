@@ -24,13 +24,16 @@
 #define AES256_KEY_LEN   32
 #define DES64_KEY_LEN    8
 
+#define SM3_DIGEST_SIZE     32
 #define MD5_DIGEST_SIZE     16
 #define SHA1_DIGEST_SIZE    20
 #define SHA224_DIGEST_SIZE  28
 #define SHA256_DIGEST_SIZE  32
 #define SHA384_DIGEST_SIZE  48
 #define SHA512_DIGEST_SIZE  64
+#define CE_MAX_DIGEST_SIZE  64
 
+#define SM3_BLOCK_SIZE      64
 #define MD5_BLOCK_SIZE      64
 #define SHA1_BLOCK_SIZE     64
 #define SHA224_BLOCK_SIZE	64
@@ -55,6 +58,14 @@
 #define BE_SHA1_H2   0xfedcba98UL
 #define BE_SHA1_H3   0x76543210UL
 #define BE_SHA1_H4   0xf0e1d2c3UL
+#define BE_SM3_IVA   0x6f168073UL
+#define BE_SM3_IVB   0xb9b21449UL
+#define BE_SM3_IVC   0xd7422417UL
+#define BE_SM3_IVD   0x00068adaUL
+#define BE_SM3_IVE   0xbc306fa9UL
+#define BE_SM3_IVF   0xaa383116UL
+#define BE_SM3_IVG   0x4dee8de3UL
+#define BE_SM3_IVH   0x4e0efbb0UL
 #define BE_SHA224_H0 0xd89e05c1UL
 #define BE_SHA224_H1 0x07d57c36UL
 #define BE_SHA224_H2 0x17dd7030UL
@@ -100,11 +111,18 @@
 #define ALG_AES_CTR           (0x02)
 #define ALG_AES_XTS           (0x03)
 #define ALG_AES_CTS           (0x04)
+#define ALG_SM4_ECB           (0x05)
+#define ALG_SM4_CBC           (0x06)
+#define ALG_SM4_CTR           (0x07)
 #define ALG_DES_ECB           (0x10)
 #define ALG_DES_CBC           (0x11)
 #define ALG_TDES_ECB          (0x20)
 #define ALG_TDES_CBC          (0x21)
 #define ALG_RSA               (0x30)
+#define ALG_SM2_ENC           (0x31)
+#define ALG_SM2_DEC           (0x32)
+#define ALG_SM2_SIGN          (0x33)
+#define ALG_SM2_VERI          (0x34)
 #define ALG_SHA1              (0x40)
 #define ALG_SHA224            (0x41)
 #define ALG_SHA256            (0x42)
@@ -113,6 +131,7 @@
 #define ALG_MD5               (0x45)
 #define ALG_HMAC_SHA1         (0x46)
 #define ALG_HMAC_SHA256       (0x47)
+#define ALG_SM3               (0x48)
 #define ALG_TRNG              (0x50)
 
 #define CTR_BIT_WIDTH_16       (0)
@@ -145,8 +164,10 @@
 #define SECURE_SRAM_SIZE (1024)
 #define SECURE_SRAM_BASE (0x10021000)
 
+#define CE_CIPHER_MAX_DATA_SIZE 0x3FF00
+
 #define uaddr u64
-#define PTR2U32(ptr) ((u32)(uaddr)(ptr))
+#define PTR2U32(ptr) ((u32)(uintptr_t)(ptr))
 
 struct aes_ecb_desc {
     u32 alg_tag   : 8; /* bit[7:0] */
@@ -171,6 +192,56 @@ struct aes_cbc_desc {
     u8 r2[24]; /* Pad to 36 bytes */
 };
 
+struct aes_ctr_desc {
+    u32 alg_tag   : 8; /* bit[7:0] */
+    u32 direction : 1; /* bit[8] */
+    u32 r0        : 5; /* bit[13:9] */
+    u32 ctr_width : 2; /* bit[15:14] */
+    u32 key_src   : 4; /* bit[19:16] */
+    u32 key_siz   : 4; /* bit[23:20] */
+    u32 r1        : 8; /* bit[31:24] */
+    u32 key_addr;
+    u32 ctr_in_addr;
+    u32 ctr_out_addr;
+    u8 r2[20]; /* Pad to 36 bytes */
+};
+
+struct sm4_ecb_desc {
+    u32 alg_tag   : 8; /* bit[7:0] */
+    u32 direction : 1; /* bit[8] */
+    u32 r0        : 7; /* bit[15:9] */
+    u32 key_src   : 4; /* bit[19:16] */
+    u32 key_siz   : 4; /* bit[23:20] */
+    u32 r1        : 8; /* bit[31:24] */
+    u32 key_addr;
+    u8 r2[28]; /* Pad to 36 bytes */
+};
+
+struct sm4_cbc_desc {
+    u32 alg_tag   : 8; /* bit[7:0] */
+    u32 direction : 1; /* bit[8] */
+    u32 r0        : 7; /* bit[15:9] */
+    u32 key_src   : 4; /* bit[19:16] */
+    u32 key_siz   : 4; /* bit[23:20] */
+    u32 r1        : 8; /* bit[31:24] */
+    u32 key_addr;
+    u32 iv_addr;
+    u8 r2[24]; /* Pad to 36 bytes */
+};
+
+struct sm4_ctr_desc {
+    u32 alg_tag   : 8; /* bit[7:0] */
+    u32 direction : 1; /* bit[8] */
+    u32 r0        : 7; /* bit[15:9] */
+    u32 key_src   : 4; /* bit[19:16] */
+    u32 key_siz   : 4; /* bit[23:20] */
+    u32 r1        : 8; /* bit[31:24] */
+    u32 key_addr;
+    u32 ctr_in_addr;
+    u32 ctr_out_addr;
+    u8 r2[20]; /* Pad to 36 bytes */
+};
+
 /*
  * CTS-CBC-CS3(Kerberos)
  */
@@ -184,20 +255,6 @@ struct aes_cts_desc {
     u32 key_addr;
     u32 iv_addr;
     u8 r2[24]; /* Pad to 36 bytes */
-};
-
-struct aes_ctr_desc {
-    u32 alg_tag   : 8; /* bit[7:0] */
-    u32 direction : 1; /* bit[8] */
-    u32 r0        : 5; /* bit[13:9] */
-    u32 ctr_width : 2; /* bit[15:14] */
-    u32 key_src   : 4; /* bit[19:16] */
-    u32 key_siz   : 4; /* bit[23:20] */
-    u32 r1        : 8; /* bit[31:24] */
-    u32 key_addr;
-    u32 ctr_in_addr;
-    u32 ctr_out_addr;
-    u8 r2[20]; /* Pad to 36 bytes */
 };
 
 struct aes_xts_desc {
@@ -245,6 +302,63 @@ struct rsa_alg_desc {
     u8 r2[24]; /* Pad to 36 bytes */
 };
 
+struct sm2_enc_alg_desc {
+    u32 alg_tag : 8; /* bit[7:0] */
+    u32 r0      : 12;/* bit[19:8] */
+    u32 op_siz  : 4; /* bit[23:20] */
+    u32 r1      : 8; /* bit[31:24] */
+    u32 p_addr;
+    u32 G_addr;
+    u32 a_addr;
+    u32 Q_addr;
+    u32 k_addr;
+    u32 h_addr;
+    u8  r2[8]; /* Pad to 36 bytes */
+};
+
+struct sm2_dec_alg_desc {
+    u32 alg_tag : 8; /* bit[7:0] */
+    u32 r0      : 12;/* bit[19:8] */
+    u32 op_siz  : 4; /* bit[23:20] */
+    u32 r1      : 8; /* bit[31:24] */
+    u32 p_addr;
+    u32 R_addr;
+    u32 a_addr;
+    u8  r2[8];
+    u32 h_addr;
+    u8  r3[4];
+    u32 d_addr; /* Pad to 36 bytes */
+};
+
+struct sm2_sign_alg_desc {
+    u32 alg_tag : 8; /* bit[7:0] */
+    u32 r0      : 12;/* bit[19:8] */
+    u32 op_siz  : 4; /* bit[23:20] */
+    u32 r1      : 8; /* bit[31:24] */
+    u32 p_addr;
+    u32 G_addr;
+    u32 a_addr;
+    u8  r2[4];
+    u32 k_addr;
+    u8  r3[4];
+    u32 n_addr;
+    u32 d_addr; /* Pad to 36 bytes */
+};
+
+struct sm2_veri_alg_desc {
+    u32 alg_tag : 8; /* bit[7:0] */
+    u32 r0      : 12;/* bit[19:8] */
+    u32 op_siz  : 4; /* bit[23:20] */
+    u32 r1      : 8; /* bit[31:24] */
+    u32 p_addr;
+    u32 G_addr;
+    u32 a_addr;
+    u32 Q_addr;
+    u32 r_addr;
+    u32 s_addr;
+    u32 n_addr; /* Pad to 36 bytes */
+};
+
 struct hash_alg_desc {
     u32 alg_tag : 8;  /* bit[7:0] */
     u32 r0      : 1;  /* bit[8] */
@@ -266,11 +380,18 @@ union alg_desc {
     struct aes_ecb_desc aes_ecb;
     struct aes_cbc_desc aes_cbc;
     struct aes_ctr_desc aes_ctr;
+    struct sm4_ecb_desc sm4_ecb;
+    struct sm4_cbc_desc sm4_cbc;
+    struct sm4_ctr_desc sm4_ctr;
     struct aes_cts_desc aes_cts;
     struct aes_xts_desc aes_xts;
     struct des_ecb_desc des_ecb;
     struct des_cbc_desc des_cbc;
     struct rsa_alg_desc rsa;
+    struct sm2_enc_alg_desc sm2_enc;
+    struct sm2_dec_alg_desc sm2_dec;
+    struct sm2_sign_alg_desc sm2_sign;
+    struct sm2_veri_alg_desc sm2_veri;
     struct hash_alg_desc hash;
     struct hash_alg_desc hmac;
     struct trng_alg_desc trng;
@@ -308,6 +429,7 @@ bool hal_crypto_is_start();
 s32 hal_crypto_poll_finish(u32 alg_unit, u32 timeout_us);
 void hal_crypto_pending_clear(u32 alg_unit);
 u32 hal_crypto_get_err(u32 alg_unit);
+void hal_crypto_err_clear(u32 alg_unit);
 s32 hal_crypto_bignum_byteswap(u8 *bn, u32 len);
 s32 hal_crypto_bignum_le2be(u8 *src, u32 slen, u8 *dst, u32 dlen);
 s32 hal_crypto_bignum_be2le(u8 *src, u32 slen, u8 *dst, u32 dlen);

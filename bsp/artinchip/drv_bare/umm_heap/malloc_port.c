@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2025 ArtInChip Technology Co.,Ltd
+ * Copyright (C) 2023-2026 ArtInChip Technology Co.,Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -47,16 +47,9 @@
 #endif
 #endif
 
-typedef struct {
-    char * name;
-    aic_mem_region_t type;
-    size_t start;
-    size_t end;
-} heap_def_t;
-
 static struct umm_heap_config heap[MAX_MEM_REGION];
 
-static heap_def_t heap_def[MAX_MEM_REGION] = {
+heap_def_t heap_def[MAX_MEM_REGION] = {
     {
         .name = "sys",
         .type = MEM_DEFAULT,

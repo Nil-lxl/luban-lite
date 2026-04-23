@@ -11,6 +11,59 @@
 
 #define ST77903_RST_PIN  "PD.19"
 
+#define SPI_VSW_CMD         (0xD8006100)
+#define SPI_VBP_CMD         (0xD8006000)
+#define SPI_VLD_CMD         (0xDE006000)
+#define SPI_VFP_CMD         (0xD8006000)
+
+#define DATA_MODE_SINGLE    0x0
+#define DATA_MODE_DUAL      0x1
+#define DATA_MODE_QUAD      0x2
+
+static struct drv_spi_display_param disp_param = {
+    .mtw = 0,
+    .vsw_en = 1,
+    .vbp_en = 1,
+    .vfp_en = 1,
+    .len_stride = 400 * 3,
+    .len = 400 * 3,
+    .hvbp = 6,
+    .hvld = 400,
+    .hvfp = 6,
+    .cmd_vsw = SPI_VSW_CMD,
+    .cmd_vbp = SPI_VBP_CMD,
+    .cmd_vld = SPI_VLD_CMD,
+    .cmd_vfp = SPI_VFP_CMD,
+    .count = 60 * 48,
+};
+
+static struct drv_spi_display_config disp_config = {
+    .dma_en = 1,
+    .spi_mode = DATA_MODE_QUAD,
+    .disp_on = 1,
+};
+
+static struct spi_disp_config spi_disp = {
+    .disp_param = &disp_param,
+    .disp_config = &disp_config,
+};
+
+static const struct qspi_disp_priv st77903 = {
+    .spi_disp = &spi_disp,
+    .instruction = {
+        .cmd_content = 0xDE002C00,
+        .flush_content = 0x32002C00,
+        .qspi_lines = 1,
+    },
+    .data_lines = 4,
+};
+
+void lv_qspi_disp_mode_init(struct lv_spi_dev *spi_dev)
+{
+    spi_dev->qspi_disp_mode = true;
+    spi_dev->qspi_priv = &st77903;
+}
+
 void lv_spi_panel_enable(struct lv_spi_dev *dev)
 {
     u32 rst_pin;

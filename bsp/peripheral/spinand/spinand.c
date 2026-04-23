@@ -723,15 +723,12 @@ exit_spinand_read_page:
 
 bool spinand_isbad(struct aic_spinand *flash, u16 blk)
 {
-    int result;
     u32 page;
     u8 marker = 0;
 
     page = blk * flash->info->pages_per_eraseblock;
 
-    result = spinand_read_page(flash, page, NULL, 0, &marker, 1);
-    if (result < 0)
-        return result;
+    spinand_read_page(flash, page, NULL, 0, &marker, 1);
 
     if (marker != 0xFF) {
         pr_info("bad block page = %d, marker = 0x%x.\n", page, marker);
@@ -979,17 +976,12 @@ exit_spinand_write_page:
 int spinand_block_markbad(struct aic_spinand *flash, u16 blk)
 {
     u8 badblockmarker = 0xF0;
-    int result = SPINAND_SUCCESS;
     u32 page;
 
     if (!flash) {
         pr_err("flash is NULL\r\n");
         return -SPINAND_ERR;
     }
-
-    result = spinand_block_isbad(flash, blk);
-    if (result)
-        return 0;
 
     page = blk * flash->info->pages_per_eraseblock;
 

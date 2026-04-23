@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -42,6 +42,7 @@ struct aic_de_comp {
 
     const struct display_timing *timing;
     aicos_wqueue_t vsync_queue;
+    unsigned int bg_blend_ui_en;
     unsigned int accum_line;
     u32 scaler_active;
 

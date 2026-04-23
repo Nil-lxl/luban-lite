@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,11 +15,13 @@
 #include "syscfg_hw_v1.1.h"
 #elif defined(AIC_SYSCFG_DRV_V12)
 #include "syscfg_hw_v1.2.h"
+#elif defined(AIC_SYSCFG_DRV_V16)
+#include "syscfg_hw_v1.6.h"
 #else
 #include "syscfg_hw_v1.0.h"
 #endif
 
-#define RES_CAL_VAL_DEF             0x40
+#define RES_CAL_VAL_DEF             0x60
 
 #define GMAC_INIT_NUM0              0
 #define GMAC_INIT_NUM1              1
@@ -39,6 +41,17 @@ void hal_syscfg_usb_phy0_sw_host(s32 host_mode)
 #endif
 }
 
+void hal_syscfg_usb_pll_en(void)
+{
+#if defined(AIC_SYSCFG_DRV_V16)
+    uint32_t reg_val = readl(USB_PLL_COM);
+    if (!(reg_val & USB_PLL_GEN_EN)) {
+        reg_val |= USB_PLL_GEN_EN;
+        writel(reg_val, USB_PLL_COM);
+    }
+#endif
+}
+
 #ifndef AIC_SYSCFG_DRV_V12
 static s32 syscfg_usb_init(void)
 {
@@ -47,6 +60,7 @@ static s32 syscfg_usb_init(void)
     return 0;
 }
 
+#ifndef AIC_SYSCFG_DRV_V16
 const u32 gmac_init_table[] = {
 #ifdef AIC_USING_GMAC0
     GMAC_INIT_NUM0,
@@ -63,6 +77,7 @@ static void syscfg_gmac_init(void)
         syscfg_hw_gmac_init(gmac_init_table[i]);
     }
 }
+#endif  /* nodef AIC_SYSCFG_DRV_V16 */
 #endif  /* nodef AIC_SYSCFG_DRV_V12 */
 
 static void syscfg_sip_flash_init(void)
@@ -80,7 +95,7 @@ static void syscfg_ldo25_xspi_init(void)
 }
 #endif
 
-#if defined(AIC_SYSCFG_DRV_V11) || defined(AIC_SYSCFG_DRV_V12)
+#if defined(AIC_SYSCFG_DRV_V11) || defined(AIC_SYSCFG_DRV_V12) || defined(AIC_SYSCFG_DRV_V16)
 static void syscfg_ldo1x_init(void)
 {
 #ifdef AIC_SYSCFG_LDO1X_ENABLE
@@ -108,14 +123,16 @@ s32 hal_syscfg_probe(void)
     syscfg_sip_flash_init();
 #ifndef AIC_SYSCFG_DRV_V12
     syscfg_usb_init();
+#ifndef AIC_SYSCFG_DRV_V16
     syscfg_gmac_init();
-#endif
+#endif  /* nodef AIC_SYSCFG_DRV_V16 */
+#endif  /* nodef AIC_SYSCFG_DRV_V12 */
 
 #if defined(AIC_SYSCFG_DRV_V11) && defined(AIC_XSPI_DRV)
     syscfg_ldo25_xspi_init();
 #endif
 
-#if defined(AIC_SYSCFG_DRV_V11) || defined(AIC_SYSCFG_DRV_V12)
+#if defined(AIC_SYSCFG_DRV_V11) || defined(AIC_SYSCFG_DRV_V12) || defined(AIC_SYSCFG_DRV_V16)
     syscfg_ldo1x_init();
 #endif
 

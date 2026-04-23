@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "usbd_core.h"
 #include "usbd_hid.h"
+#include "usbd_display.h"
 #include "aic_core.h"
 #include "aic_drv.h"
 #include "mpp_fb.h"
@@ -19,6 +20,8 @@
 #include "mpp_mem.h"
 #include "mpp_log.h"
 #include "mpp_ge.h"
+#include "msh.h"
+#include <boot_param.h>
 
 #define USB_DISP_ROTATE_FULLSCREEN_MASK       (0x1<<0)
 #define USB_DISP_ROTATE_UI_MASK               (0x1<<1)
@@ -27,6 +30,9 @@
 #define PIXEL_ENCODE_JPEG       0x10
 #define PIXEL_ENCODE_H264       0x11
 #define PIXEL_ENCODE_AUTO       0xFF
+#define UPG_TYPE_ENTER_AICUPG   0x00
+#define UPG_TYPE_OTA_START      0x01
+#define UPG_TYPE_IMG_VERSION    0x02
 
 #if defined(LPKG_CHERRYUSB_USB_TRANSFER_AUTO)
 uint8_t usbdisp_encode_format = PIXEL_ENCODE_AUTO;
@@ -135,6 +141,29 @@ uint8_t usb_large_transfer = 0;
 #else
 uint8_t usb_large_transfer = 1;
 #endif
+
+#ifdef AIC_USB_DISP_ASYNC_MODE
+uint8_t usb_disp_async_mode = 1;
+#else
+uint8_t usb_disp_async_mode = 0;
+#endif
+
+#ifdef AIC_USB_DISP_HEARTBEAT
+uint8_t usb_disp_heartbeat_en = 1;
+uint32_t usb_disp_heartbeat_timeout = 10000; //ms
+#else
+uint8_t usb_disp_heartbeat_en = 0;
+uint32_t usb_disp_heartbeat_timeout = 0;
+#endif
+
+uint32_t usb_disp_cal_degree = AIC_USB_DISP_CALIBRATION_DEGREE;
+
+#ifdef AIC_USB_DISP_DISABLE_BACKLIGHT_AT_INIT
+uint8_t usb_disp_disable_backlight_at_init = 1;
+#else
+uint8_t usb_disp_disable_backlight_at_init = 0;
+#endif
+
 uint8_t usb_disp_debug_en = 0;
 
 uint8_t usb_disp_host_power_state = 0;
@@ -194,6 +223,7 @@ uint8_t usb_pm_suspend_en = 0;
 #endif
 
 extern int usb_display_rotate(unsigned int rotate_angle);
+extern void usb_display_show_debug();
 
 static void usage_fps(char * program)
 {
@@ -248,6 +278,8 @@ static int test_usb_display_dbg(int argc, char *argv[])
         usb_disp_debug_en = 1;
     } else if (strcmp(argv[1], "off") == 0) {
         usb_disp_debug_en = 0;
+    } else if (strcmp(argv[1], "info") == 0) {
+        usb_display_show_debug();
     } else {
         usage_display_dbg(argv[0]);
         return -RT_EINVAL;
@@ -299,9 +331,66 @@ static int test_usb_display_rotate(int argc, char *argv[])
     return 0;
 }
 
+static int test_usb_display_rect(int argc, char *argv[])
+{
+    struct mpp_rect rect;
+    bool enable;
+
+    if (argc != 2 && argc != 6) {
+        USB_LOG_INFO("Usage: usb_display_rect <enable> <x> <y> <width> <height>");
+        return -RT_EINVAL;
+    }
+    enable = atoi(argv[1]);
+    if (enable) {
+        usb_display_rect_enable(true);
+        rect.x = atoi(argv[2]);
+        rect.y = atoi(argv[3]);
+        rect.width = atoi(argv[4]);
+        rect.height = atoi(argv[5]);
+
+        //set user display rect
+        if (usb_display_rect_set(&rect) < 0) {
+            USB_LOG_ERR("set display rect failed");
+            return -RT_EINVAL;
+        }
+
+        //get user display rect
+        memset(&rect, 0, sizeof(rect));
+        if (usb_display_rect_get(&rect) < 0) {
+            USB_LOG_ERR("get display rect failed");
+            return -RT_EINVAL;
+        }
+
+        USB_LOG_INFO("Display rect: (%d,%d,%d,%d)\n",
+            rect.x, rect.y, rect.width, rect.height);
+    } else {
+        usb_display_rect_enable(false);
+    }
+
+
+    return 0;
+}
+
+static int test_usb_display_enable(int argc, char *argv[])
+{
+    if (argc != 2) {
+        USB_LOG_INFO("Usage: usb_display_enable 0 | 1");
+        return -RT_EINVAL;
+    }
+
+    if (strcmp(argv[1], "0") == 0)
+        usb_display_disable();
+    else
+        usb_display_enable();
+
+    return 0;
+}
+
 MSH_CMD_EXPORT_ALIAS(test_usb_fps, usb_fps, usb display fps);
 MSH_CMD_EXPORT_ALIAS(test_usb_display_dbg, usb_display_dbg, usb display debug info);
 MSH_CMD_EXPORT_ALIAS(test_usb_display_rotate, usb_display_rotate, usb display rotate);
+MSH_CMD_EXPORT_ALIAS(test_usb_display_enable, usb_display_enable, usb display enable);
+MSH_CMD_EXPORT_ALIAS(test_usb_display_rect, usb_display_rect, usb display rect);
 
 void aic_panel_backlight_enable(void)
 {
@@ -359,25 +448,34 @@ void aic_panel_backlight_disable(void)
 
 #ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
 #include "composite_template.h"
+#ifdef LPKG_USING_CHERRYUSB_V1_5_0
+void usbd_comp_disp_event_handler(uint8_t busid, uint8_t event)
+#else
 void usbd_comp_disp_event_handler(uint8_t event)
+#endif
+#else
+#ifdef LPKG_USING_CHERRYUSB_V1_5_0
+void usbd_disp_event_handler(uint8_t busid, uint8_t event)
 #else
 void usbd_event_handler(uint8_t event)
+#endif
 #endif
 {
     extern void usbd_display_event_handler(uint8_t event);
     usbd_display_event_handler(event);
 }
 
+int usbd_comp_disp_init(uint8_t *ep_table, void *data);
+void usb_nocomp_display_init(void);
+extern uint8_t graphic_vendor_descriptor[];
+
 void usb_display_init(void)
 {
 #ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    extern int usbd_comp_disp_init(uint8_t *ep_table, void *data);
-    extern uint8_t graphic_vendor_descriptor[];
     usbd_comp_func_register(graphic_vendor_descriptor,
                             usbd_comp_disp_event_handler,
                             usbd_comp_disp_init, "disp");
 #else
-    extern void usb_nocomp_display_init(void);
     usb_nocomp_display_init();
 #endif
 }
@@ -388,7 +486,6 @@ extern int usbd_usb_display_deinit(void);
 int usbd_display_deinit(void)
 {
 #ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
-    extern uint8_t graphic_vendor_descriptor[];
     usbd_comp_func_release(graphic_vendor_descriptor, "disp");
     return 0;
 #endif
@@ -412,6 +509,45 @@ int usbd_display_init(void)
     return 0;
 }
 
+
+void disp_vendor_upgrade_get_version(uint8_t **data, uint32_t *len)
+{
+    struct boot_args *boot_args;
+
+    if (*data == NULL || len == NULL) {
+        USB_LOG_ERR("*data or len ptr is null.\n");
+        return;
+    }
+
+    boot_args = aic_get_boot_args();
+    memcpy(*data, boot_args->image_version, strlen(boot_args->image_version));
+    *len = strlen(boot_args->image_version) + 1;
+
+    USB_LOG_INFO("get image version: %s, len:%d.\n", *data, *len);
+}
+
+int disp_vendor_upgrade_handler_cb(int upg_type, uint8_t **data, uint32_t *len)
+{
+    switch (upg_type) {
+        case UPG_TYPE_ENTER_AICUPG:
+            msh_exec("aicupg", strlen("aicupg"));
+            break;
+
+        case UPG_TYPE_OTA_START:
+            break;
+
+        case UPG_TYPE_IMG_VERSION:
+            disp_vendor_upgrade_get_version(data, len);
+            break;
+
+        default:
+            USB_LOG_ERR("Unknown upgrade type %02x.\n", upg_type);
+            return -1;
+    }
+
+    return 0;
+}
+
 #if defined(LPKG_CHERRYUSB_AIC_DISP_DR)
 #include <rtthread.h>
 #include <rtdevice.h>
@@ -423,7 +559,11 @@ rt_sem_t usbd_comp_disp_sem = NULL;
 void usbd_disp_comp_udisk_mode(void *parameter)
 {
 retry:
+#ifdef LPKG_USING_CHERRYUSB_V1_5_0
+    if (usb_device_is_configured(0) == false) {
+#else
     if (usb_device_is_configured() == false) {
+#endif
         rt_thread_mdelay(500);
         goto retry;
     }
@@ -536,6 +676,10 @@ int lcd_sw_key_init(void)
 INIT_APP_EXPORT(lcd_sw_key_init);
 #endif
 
+/*!< endpoint address */
+#define VENDOR_IN_EP  0x81
+#define VENDOR_OUT_EP 0x01
+
 #ifdef LPKG_USING_CHERRYUSB_V1_5_0
 uint8_t usb_disp_busid = 1;
 int usbd_ep_start_read_no_id(const uint8_t ep, uint8_t *data, uint32_t data_len)
@@ -565,7 +709,11 @@ void usbd_add_endpoint_no_id(struct usbd_endpoint *ep)
 
 int usbd_initialize_no_id(void)
 {
+#ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     return usbd_initialize(0, USB_DEV_BASE, NULL);
+#else
+    return usbd_initialize(0, USB_DEV_BASE, usbd_disp_event_handler);
+#endif
 }
 
 int usbd_deinitialize_no_id(void)
@@ -601,12 +749,12 @@ struct usbd_interface disp_intf0 = {
 
 /*!< endpoint call back */
 struct usbd_endpoint graphic_out_ep = {
-    .ep_addr = 0x81,
+    .ep_addr = VENDOR_OUT_EP,
     .ep_cb = usbd_graphic_bulk_out
 };
 
 struct usbd_endpoint graphic_in_ep = {
-    .ep_addr = 0x01,
+    .ep_addr = VENDOR_IN_EP,
     .ep_cb = usbd_graphic_bulk_in
 };
 
@@ -658,6 +806,16 @@ int graphic_class_interface_request_handler(struct usb_setup_packet *setup, uint
     return _graphic_class_interface_request_handler(setup, data, len);
 }
 
+struct usbd_interface *usbd_graphic_init_intf(struct usbd_interface *intf)
+{
+    intf->class_interface_handler = NULL;
+    intf->class_endpoint_handler = NULL;
+    intf->vendor_handler = graphic_class_interface_request_handler;
+    intf->notify_handler = NULL;
+
+    return intf;
+}
+
 void usbd_graphic_bulk_out(uint8_t ep, uint32_t nbytes)
 {
     _usbd_graphic_bulk_out(ep, nbytes);
@@ -668,4 +826,45 @@ void usbd_graphic_bulk_in(uint8_t ep, uint32_t nbytes)
     _usbd_graphic_bulk_in(ep, nbytes);
 }
 
+struct usbd_interface disp_intf0;
+
+/*!< endpoint call back */
+struct usbd_endpoint graphic_out_ep = {
+    .ep_addr = VENDOR_OUT_EP,
+    .ep_cb = usbd_graphic_bulk_out
+};
+
+struct usbd_endpoint graphic_in_ep = {
+    .ep_addr = VENDOR_IN_EP,
+    .ep_cb = usbd_graphic_bulk_in
+};
+
 #endif // ifdef LPKG_USING_CHERRYUSB_V1_5_0
+
+int usbd_comp_disp_init(uint8_t *ep_table, void *data)
+{
+    graphic_in_ep.ep_addr = ep_table[0];
+    graphic_out_ep.ep_addr = ep_table[1];
+#ifdef LPKG_USING_CHERRYUSB_V1_5_0
+    usbd_add_interface_no_id(&disp_intf0);
+#else
+    usbd_add_interface_no_id(usbd_graphic_init_intf(&disp_intf0));
+#endif
+    usbd_add_endpoint_no_id(&graphic_out_ep);
+    usbd_add_endpoint_no_id(&graphic_in_ep);
+    return 0;
+}
+
+void usb_nocomp_display_init(void)
+{
+    usbd_desc_register_no_id(graphic_vendor_descriptor);
+#ifdef LPKG_USING_CHERRYUSB_V1_5_0
+    usbd_add_interface_no_id(&disp_intf0);
+#else
+    usbd_add_interface_no_id(usbd_graphic_init_intf(&disp_intf0));
+#endif
+    usbd_add_endpoint_no_id(&graphic_out_ep);
+    usbd_add_endpoint_no_id(&graphic_in_ep);
+    usbd_initialize_no_id();
+}
+

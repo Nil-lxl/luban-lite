@@ -83,8 +83,7 @@ INT32 UAP_PktFwd_Ctl(uap_pkt_fwd_ctl *param)
     if(GET_ACTION != param->action && SET_ACTION != param->action)
         return -1;
 
-    struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
 
@@ -129,8 +128,7 @@ INT32 UAP_PktFwd_Ctl(uap_pkt_fwd_ctl *param)
 
 INT32 UAP_GetCurrentChannel(void)
 {
-    struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
 
@@ -160,8 +158,7 @@ INT32 UAP_Scan_Channels_Config(uap_config_scan_chan *param)
     if(GET_ACTION != param->action && SET_ACTION != param->action)
         return -1;
 
-    struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
 
@@ -234,7 +231,7 @@ INT32 UAP_Scan_Channels_Config(uap_config_scan_chan *param)
 INT32 UAP_Sta_Deauth(uap_802_11_mac_addr mac)
 {
     struct uwifi_ap_peer_info *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
@@ -283,8 +280,7 @@ INT32 UAP_Sta_Deauth(uap_802_11_mac_addr mac)
 
 INT32 UAP_Black_List_Onoff( uint8_t onoff)
 {
-    struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
 
@@ -314,7 +310,7 @@ INT32 UAP_Black_List_Onoff( uint8_t onoff)
  INT32 UAP_Black_List_Get(blacklist *black_l)
  {
     struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0,i = 0 ;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
@@ -368,7 +364,7 @@ INT32 UAP_Black_List_Onoff( uint8_t onoff)
 INT32 UAP_Black_List_Add( uap_802_11_mac_addr blackmac)
 {
     struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0,list_len=0;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
@@ -419,7 +415,7 @@ INT32 UAP_Black_List_Add( uap_802_11_mac_addr blackmac)
 INT32 UAP_Black_List_Del( uap_802_11_mac_addr blackmac)
 {
     struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
@@ -464,9 +460,7 @@ INT32 UAP_Black_List_Del( uap_802_11_mac_addr blackmac)
 
 INT32 UAP_Black_List_Clear(void)
 {
-
-    struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
@@ -501,8 +495,7 @@ INT32 UAP_Black_List_Clear(void)
 
 INT32 UAP_White_List_Onoff(uint8_t onoff)
 {
-    struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
 
@@ -532,7 +525,7 @@ INT32 UAP_White_List_Onoff(uint8_t onoff)
  INT32 UAP_White_List_Get(whitelist *white_l)
  {
     struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0,i = 0 ;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
@@ -586,7 +579,7 @@ INT32 UAP_White_List_Onoff(uint8_t onoff)
 INT32 UAP_White_List_Add( uap_802_11_mac_addr whitemac)
 {
     struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0,list_len=0;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
@@ -637,7 +630,7 @@ INT32 UAP_White_List_Add( uap_802_11_mac_addr whitemac)
 INT32 UAP_White_List_Del( uap_802_11_mac_addr whitemac)
 {
     struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();
@@ -682,9 +675,7 @@ INT32 UAP_White_List_Del( uap_802_11_mac_addr whitemac)
 
 INT32 UAP_White_List_Clear(void)
 {
-
-    struct list_mac *cur,*tmp;
-    struct asr_vif *asr_vif;
+    struct asr_vif *asr_vif = NULL;
     uint8_t found = 0;
 
     struct asr_hw *asr_hw = uwifi_get_asr_hw();

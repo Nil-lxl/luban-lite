@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -12,6 +12,7 @@
 #include <aic_common.h>
 #include <boot_param.h>
 #include <private_param.h>
+#include <aic_image.h>
 
 char private_params_stash[1024] __attribute__((section(".data")));
 
@@ -34,8 +35,11 @@ void reloc_private_params(void)
 
 static u32 *find_section(void *start, u32 type)
 {
-    u32 *p = start, data_type, data_len;
+    u32 *p, data_type, data_len, offset = 0;
 
+    if (!image_verify_magic((u8 *)start, AIC_PDAT_MAGIC))
+        offset = sizeof(struct aux_header);
+    p = start + offset;
     while (1) {
         data_type = *p;
         if (data_type == type) {

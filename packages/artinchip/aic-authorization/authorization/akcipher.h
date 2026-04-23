@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -31,7 +31,7 @@ struct aic_akcipher_handle {
     struct akcipher_request *req;
 };
 
-struct crypto_alg {
+struct akcipher_crypto_alg {
     u32 cra_flags;
     unsigned int cra_blocksize;
     unsigned int cra_ctxsize;
@@ -44,7 +44,7 @@ struct crypto_alg {
 
     int (*cra_init)(struct aic_akcipher_handle *handle);
     void (*cra_exit)(struct aic_akcipher_handle *handle);
-    void (*cra_destroy)(struct crypto_alg *alg);
+    void (*cra_destroy)(struct akcipher_crypto_alg *alg);
 };
 
 struct akcipher_alg {
@@ -61,8 +61,61 @@ struct akcipher_alg {
     void (*exit)(struct aic_akcipher_handle *handle);
 
     unsigned int reqsize;
-    struct crypto_alg base;
+    struct akcipher_crypto_alg base;
 };
+
+
+
+#define FLG_ENC  BIT(0)
+#define FLG_DEC  BIT(1)
+#define FLG_SIGN BIT(2)
+#define FLG_VERI BIT(3)
+#define FLG_RSA  BIT(4)
+#define FLG_SM2  BIT(5)
+
+#define FLG_KEYOFFSET (16)
+#define FLG_KEYMASK   GENMASK(19, 16) /* eFuse Key ID */
+
+struct aic_akcipher_alg {
+    struct akcipher_alg alg;
+};
+
+struct aic_akcipher_rsa_alg_ctx {
+    unsigned char *n;
+    unsigned char *e;
+    unsigned char *d;
+    unsigned int n_sz;
+    unsigned int e_sz;
+    unsigned int d_sz;
+};
+
+struct aic_akcipher_sm2_alg_ctx {
+    unsigned char *x;
+    unsigned char *y;
+    unsigned char *d;
+    unsigned int x_sz;
+    unsigned int y_sz;
+    unsigned int d_sz;
+};
+
+union aic_akcipher_alg_ctx {
+    struct aic_akcipher_rsa_alg_ctx rsa;
+    struct aic_akcipher_sm2_alg_ctx sm2;
+};
+
+struct aic_akcipher_tfm_ctx {
+    union aic_akcipher_alg_ctx alg_ctx;
+};
+
+struct aic_akcipher_req_ctx {
+    struct crypto_task *task;
+    unsigned char *wbuf;
+    unsigned int ssram_addr;
+    int tasklen;
+    unsigned int wbuf_size;
+    unsigned long flags;
+};
+
 
 /*
  * Transform internal helpers.
@@ -114,6 +167,42 @@ static inline int aic_akcipher_setprivkey(struct aic_akcipher_handle *handle,
         ret = handle->tfm->alg->set_priv_key(handle, key, keylen);
         if (!ret)
             return handle->tfm->alg->max_size(handle);
+    }
+    return -1;
+}
+
+static inline int aic_akcipher_sign(struct aic_akcipher_handle *handle,
+                                    const unsigned char *in, size_t inlen,
+                                    unsigned char *out, size_t outlen)
+{
+    int ret;
+
+    handle->req->src = (void *)in;
+    handle->req->dst = (void *)out;
+    handle->req->src_len = inlen;
+    handle->req->dst_len = outlen;
+    if (handle->tfm->alg->sign) {
+        ret = handle->tfm->alg->sign(handle);
+        if (!ret)
+            return handle->req->dst_len;
+    }
+    return -1;
+}
+
+static inline int aic_akcipher_verify(struct aic_akcipher_handle *handle,
+                                    const unsigned char *in, size_t inlen,
+                                    unsigned char *out, size_t outlen)
+{
+    int ret;
+
+    handle->req->src = (void *)in;
+    handle->req->dst = (void *)out;
+    handle->req->src_len = inlen;
+    handle->req->dst_len = outlen;
+    if (handle->tfm->alg->verify) {
+        ret = handle->tfm->alg->verify(handle);
+        if (!ret)
+            return handle->req->dst_len;
     }
     return -1;
 }

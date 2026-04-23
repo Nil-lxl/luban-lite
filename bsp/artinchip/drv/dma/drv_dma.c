@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -12,12 +12,48 @@
 #include "hal_dma.h"
 #include "drv_dma.h"
 
+#ifdef KERNEL_RTTHREAD
+#include <rtthread.h>
+#include <rtdevice.h>
+#endif
+
 #if defined(AIC_USING_DMA0)
 #define CLK_DMA    CLK_DMA0
 #elif defined(AIC_USING_DMA1)
 #define CLK_DMA    CLK_DMA1
 #elif defined(AIC_USING_DMA2)
 #define CLK_DMA    CLK_DMA2
+#endif
+
+#ifdef AIC_USING_PM
+static int aic_dma_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+
+    hal_wait_dma_chans_finish();
+    hal_clk_disable(CLK_DMA);
+
+    return 0;
+}
+static void aic_dma_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        hal_clk_enable(CLK_DMA);
+        break;
+    default:
+        break;
+    }
+}
+static struct rt_device_pm_ops aic_dma_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_dma_suspend, aic_dma_resume)
+    NULL
+};
 #endif
 
 void drv_dma_deinit(void)
@@ -28,7 +64,23 @@ void drv_dma_deinit(void)
 
 int drv_dma_init(void)
 {
+    
     s32 ret = 0;
+#ifdef KERNEL_RTTHREAD
+    struct rt_device *device = NULL;
+
+    device = (struct rt_device *)rt_malloc(sizeof(struct rt_device));
+    if (!device) {
+        pr_err("Failed to alloc memory for device\n");
+        return -1;
+    }
+    rt_memset(device, 0, sizeof(struct rt_device));
+    rt_device_register(device, "aic_dma", RT_DEVICE_FLAG_DEACTIVATE);
+
+#ifdef AIC_USING_PM
+    rt_pm_device_register(device, &aic_dma_pm_ops);
+#endif
+#endif
 
     if (hal_clk_is_enabled(CLK_DMA))
         drv_dma_deinit();
@@ -52,6 +104,7 @@ int drv_dma_init(void)
 #else
     aicos_request_irq(DMA_IRQn, hal_dma_irq, 0, NULL, NULL);
 #endif
+
     pr_info("ArtInChip DMA loaded\n");
     return 0;
 }

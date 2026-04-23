@@ -130,7 +130,10 @@ static void my_profiler_init(void)
 
 static void lvgl_thread_entry(void *parameter)
 {
+#ifdef RT_USING_DFS
     lv_wait_fs_mounted();
+#endif
+
 #if LV_USE_LOG
     lv_log_register_print_cb(lv_rt_log);
 #endif /* LV_USE_LOG */

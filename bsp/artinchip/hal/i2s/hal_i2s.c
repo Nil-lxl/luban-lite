@@ -1,7 +1,7 @@
 /*
  * I2S driver of ArtInChip SoC
  *
- * Copyright (C) 2020-2024 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2020-2026 ArtInChip Technology Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -403,19 +403,19 @@ void hal_i2s_playback_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
     switch (format->width)
     {
     case 8:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
         break;
     case 16:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
         break;
     case 24:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_3_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_3_BYTES;
         break;
     case 32:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
         break;
     default:
@@ -470,19 +470,19 @@ void hal_i2s_playback_start_single(aic_i2s_ctrl *i2s, i2s_format_t *format)
     switch (format->width)
     {
     case 8:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
         break;
     case 16:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
         break;
     case 24:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_3_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_3_BYTES;
         break;
     case 32:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
         break;
     default:
@@ -543,19 +543,19 @@ void hal_i2s_record_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
     switch (format->width)
     {
     case 8:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
         break;
     case 16:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
         break;
     case 24:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_3_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_3_BYTES;
         break;
     case 32:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
         break;
     default:

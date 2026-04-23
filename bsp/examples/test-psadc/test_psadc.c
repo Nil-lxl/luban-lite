@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,6 +15,7 @@
 #include "aic_core.h"
 #include "aic_log.h"
 #include "rtdevice.h"
+#include "drv_psadc.h"
 #include "hal_psadc.h"
 #ifdef AIC_SYSCFG_DRV
 #include "hal_syscfg.h"
@@ -26,6 +27,12 @@
 #define AIC_PSADC_DEFAULT_VOLTAGE    3
 #define AIC_PSADC_QC_MODE            0
 #define AIC_PSADC_VOLTAGE_ACCURACY   10000
+#define AIC_PSADC_BIT_MASK           0xFFF
+
+struct psadc_data {
+    struct drv_psadc_dma_info dma_info;
+    rt_sem_t cplt_sem;
+};
 
 static rt_adc_device_t psadc_dev;
 static const char sopts[] = "t:n:w:sh";
@@ -54,9 +61,74 @@ static void cmd_psadc_usage(char *program)
 
 static int test_psadc_adc2voltage(float ref_voltage, int adc_value)
 {
+    adc_value &= AIC_PSADC_BIT_MASK;
     return (adc_value * (ref_voltage / 100)) / AIC_PSADC_ADC_MAX_VAL;
 }
 
+#ifdef AIC_PSADC_DRV_DMA
+static void psadc_dma_cb(void *arg)
+{
+    struct psadc_data *data = (struct psadc_data *)arg;
+
+    printf("PSADC DMA Callback.\n");
+    rt_sem_release(data->cplt_sem);
+}
+
+static int psadc_get_adc_by_dma(float ref_voltage, int sample_num, int chan_cnt)
+{
+    int i = 0, j = 0, k = 0, voltage = 0;
+    struct drv_psadc_dma_info info = {0};
+    struct psadc_data psadc_data = {0};
+    rt_err_t ret = RT_EOK;
+    u32 *buf = NULL;
+
+    psadc_data.cplt_sem = rt_sem_create("gpai_period_sem", 0, RT_IPC_FLAG_FIFO);
+
+#ifdef AIC_PSADC_TRIG_BY_SOFT
+    info.smp_cnt = 1;
+#else
+    info.smp_cnt = sample_num;
+    sample_num = 1;
+#endif
+    info.callback = psadc_dma_cb;
+    info.callback_param = &psadc_data;
+    ret = rt_adc_control(psadc_dev, RT_ADC_CMD_CONFIG_DMA,
+                         (void *)&info);
+    if (ret != RT_EOK) {
+        printf("Failed to config DMA. ret %ld\n", ret);
+        goto out;
+    }
+
+    do {
+        ret = rt_adc_control(psadc_dev, RT_ADC_CMD_ACTIVE_DMA,
+                            NULL);
+        if (ret != RT_EOK) {
+            printf("Failed to active DMA. ret %ld\n", ret);
+            goto out;
+        }
+
+        ret = rt_sem_take(psadc_data.cplt_sem, 100);
+        if (ret != RT_EOK) {
+            printf("wait for semaphore timeout\n");
+            goto out;
+        }
+
+        buf = (u32 *)info.buf;
+        for (j = 0; j < info.smp_cnt; j++) {
+            for (k = 0; k < chan_cnt; k++) {
+                voltage = test_psadc_adc2voltage(ref_voltage, buf[j * chan_cnt + k]);
+                printf("[%d: %d.%d] %7d %2d.%02d V\n", i, j, k,
+                       buf[j * chan_cnt + k], voltage / 100, voltage % 100);
+            }
+        }
+        i++;
+        sample_num--;
+    } while (sample_num > 0);
+out:
+    rt_sem_delete(psadc_data.cplt_sem);
+    return ret;
+}
+#else
 static void show_sample_rate(u32 cnt, u32 window, u64 start_us)
 {
     u64 elapse = aic_get_time_us() - start_us;
@@ -64,15 +136,20 @@ static void show_sample_rate(u32 cnt, u32 window, u64 start_us)
     printf("Cnt %d, Sample rate: %ld Hz\n", cnt,
            (long)(((u64)window * 1000000ULL) / elapse));
 }
+#endif
 
 int psadc_get_adc(float def_voltage, int sample_num, u32 window)
 {
-    int ret = 0;
-    u32 adc_values[AIC_PSADC_CH_NUM];
-    int cnt = 0, i, voltage = 0;
-    int chan_cnt = 0;
+#ifndef AIC_PSADC_DRV_DMA
+    u32 adc_values[AIC_PSADC_CH_NUM] = {0};
     u64 start_us = 0, end_us = 0;
+    int voltage = 0;
+    int cnt = 0;
+    int i = 0;
+#endif
     int ref_voltage = 0;
+    int chan_cnt = 0;
+    int ret = 0;
 
     psadc_dev = (rt_adc_device_t)rt_device_find(AIC_PSADC_NAME);
     if (!psadc_dev) {
@@ -95,13 +172,18 @@ int psadc_get_adc(float def_voltage, int sample_num, u32 window)
     chan_cnt = rt_adc_control(psadc_dev, RT_ADC_CMD_GET_CHAN_COUNT, NULL);
     printf("Will get %d data from %d channels in %s mode\n\n", sample_num,
            chan_cnt,
-#ifdef AIC_PSADC_DRV_POLL
+#if defined(AIC_PSADC_DRV_POLL)
            "poll"
+#elif defined(AIC_PSADC_DRV_DMA)
+           "DMA"
 #else
            "IRQ"
 #endif
            );
 
+#ifdef AIC_PSADC_DRV_DMA
+    ret = psadc_get_adc_by_dma(ref_voltage, sample_num, chan_cnt);
+#else
     if (!window) {
         printf("Cnt ");
         for (i = 0; i < chan_cnt; i++)
@@ -125,6 +207,11 @@ int psadc_get_adc(float def_voltage, int sample_num, u32 window)
         ret = rt_adc_control(psadc_dev, RT_ADC_CMD_GET_VALUES,
                              (void *)adc_values);
 #endif
+        if (ret < 0) {
+            printf("Read timeout! return %d\n", ret);
+            return -RT_ERROR;
+        }
+
         if (window) {
             if (cnt && cnt % window == 0) {
                 show_sample_rate(cnt, window, start_us);
@@ -141,19 +228,14 @@ int psadc_get_adc(float def_voltage, int sample_num, u32 window)
             if (start_us)
                 printf("%8d\n", abs(end_us - start_us));
         }
-
-        if (ret < 0) {
-            printf("Read timeout! return %d\n", ret);
-            return -RT_ERROR;
-        }
-
 #ifdef AIC_PSADC_TRIG_BY_SOFT
         aicos_msleep(500);
 #endif
     }
-    rt_adc_disable(psadc_dev, AIC_PSADC_QC_MODE);
+#endif
 
-    return -RT_ERROR;
+    rt_adc_disable(psadc_dev, AIC_PSADC_QC_MODE);
+    return ret;
 }
 
 static void cmd_test_psadc(int argc, char **argv)

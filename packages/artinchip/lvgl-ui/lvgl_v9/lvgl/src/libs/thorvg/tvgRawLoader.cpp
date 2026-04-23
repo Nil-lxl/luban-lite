@@ -22,7 +22,7 @@
 
 #include "../../lv_conf_internal.h"
 #if LV_USE_THORVG_INTERNAL
-
+#include <ctime>
 #include <fstream>
 #include <string.h>
 #include "tvgLoader.h"

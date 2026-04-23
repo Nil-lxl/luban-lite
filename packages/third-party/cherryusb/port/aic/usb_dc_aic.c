@@ -759,7 +759,6 @@ int usb_dc_init(uint8_t busid)
     base = 0;
     writel(AIC_RX_FIFO_SIZE, &AIC_UDC_REG->rxfifosiz);
     base += AIC_RX_FIFO_SIZE;
-
 #ifdef AIC_USB_DEVICE_DRV_V10
     writel((AIC_NP_TX_FIFO_SIZE << 16) | base, &AIC_UDC_REG->nptxfifosiz);
     base += AIC_NP_TX_FIFO_SIZE;
@@ -773,11 +772,10 @@ int usb_dc_init(uint8_t busid)
     for (int i = 1; i < USB_NUM_BIDIR_ENDPOINTS; i++) {
         /* txfifo is configuared separately, starting from txfifo 1 here. */
 
-        if (g_tx_fifo_sz_array[i] == 0)
-            continue;
-
         writel((g_tx_fifo_sz_array[i] << 16) | base, &AIC_UDC_REG->txfifosiz[i -1]);
         base += g_tx_fifo_sz_array[i];
+        if (g_tx_fifo_sz_array[i] == 0)
+            writel((g_tx_fifo_sz_array[i] << 16) | 0, &AIC_UDC_REG->txfifosiz[i -1]);
     }
 #endif
 
@@ -870,6 +868,17 @@ uint8_t usbd_get_port_speed(uint8_t busid)
     return speed;
 }
 
+void usbd_iso_threshold_cfg(void)
+{
+#ifndef AIC_USB_DEVICE_DRV_V10
+    uint32_t reg = readl(&AIC_UDC_REG->thr_ctl);
+
+    reg |= ISO_THR_EN | TX_THR_LEN(128);
+
+    writel(reg, &AIC_UDC_REG->thr_ctl);
+#endif
+}
+
 int usbd_ep_open(uint8_t busid, const struct usb_endpoint_descriptor *ep)
 {
     uint8_t ep_idx = USB_EP_GET_IDX(ep->bEndpointAddress);
@@ -944,6 +953,9 @@ int usbd_ep_open(uint8_t busid, const struct usb_endpoint_descriptor *ep)
 #else
         tx_fifo_num = ep_idx;
         aic_flush_txfifo(tx_fifo_num);
+        if ((USB_GET_ENDPOINT_TYPE(ep->bmAttributes) == USB_ENDPOINT_TYPE_ISOCHRONOUS)) {
+            usbd_iso_threshold_cfg();
+        }
 #endif
 
         epcfg = readl(&AIC_UDC_REG->inepcfg[ep_idx]);

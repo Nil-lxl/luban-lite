@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -26,6 +26,7 @@
 #define MNGSIG 0x8a4d4e470d0a1a0aull
 #define JPEG_SOI 0xFFD8
 #define JPEG_SOF 0xFFC0
+#define AICP_SOF 0xFFC1
 #define ALIGN_16B(x) (((x) + (15)) & ~(15))
 
 lv_color_format_t mpp_fmt_to_lv_fmt(enum mpp_pixel_format cf)
@@ -140,6 +141,16 @@ static int get_jpeg_format(uint8_t *buf, enum mpp_pixel_format *pix_fmt)
     *pix_fmt = MPP_FMT_RGB_888;
 #endif
 #endif
+
+#ifdef AIC_VE_DRV_V31
+    if (nb_components == 4)
+        *pix_fmt = MPP_FMT_ARGB_8888;
+#else
+    if (nb_components == 4) {
+        LV_LOG_ERROR("Unsupported nb_components: %d", nb_components);
+        return -1;
+    }
+#endif
     return 0;
 }
 
@@ -173,7 +184,7 @@ read_err:
     return res;
 }
 
-static lv_result_t jpeg_get_img_size(lv_stream_t *stream, int *w, int *h, enum mpp_pixel_format *pix_fmt)
+static lv_result_t jpeg_get_img_size(lv_stream_t *stream, int *w, int *h, enum mpp_pixel_format *pix_fmt, bool is_aicp)
 {
     uint32_t read_num;
     uint8_t buf[128];
@@ -182,35 +193,45 @@ static lv_result_t jpeg_get_img_size(lv_stream_t *stream, int *w, int *h, enum m
 
     if (check_jpeg_soi(stream) != LV_RESULT_OK) {
         res = LV_RESULT_INVALID;
+        LV_LOG_ERROR("check jpeg soi failed");
         goto read_err;
     }
 
     // find SOF
     while (1) {
         int size;
+        uint16_t marker;
         fs_res = lv_aic_stream_read(stream, buf, 4, &read_num);
         if (fs_res != LV_FS_RES_OK || read_num != 4) {
             res = LV_RESULT_INVALID;
+            LV_LOG_ERROR("get chunk header failed");
             goto read_err;
         }
 
-        if (stream_to_u16(buf) == JPEG_SOF) {
+        marker = stream_to_u16(buf);
+        if (marker == JPEG_SOF || (is_aicp && marker == AICP_SOF)) {
             fs_res = lv_aic_stream_read(stream, buf, 15, &read_num);
             if (fs_res != LV_FS_RES_OK) {
                 res = LV_RESULT_INVALID;
+                LV_LOG_ERROR("read chunk data failed");
                 goto read_err;
             }
 
             *h = stream_to_u16(buf + 1);
             *w = stream_to_u16(buf + 3);
 
-            get_jpeg_format(buf + 5, pix_fmt);
+            if (get_jpeg_format(buf + 5, pix_fmt) < 0) {
+                res = LV_RESULT_INVALID;
+                LV_LOG_ERROR("get format failed");
+                goto read_err;
+            }
             break;
         } else {
             size = stream_to_u16(buf + 2);
              fs_res = lv_aic_stream_seek(stream, size - 2, SEEK_CUR);
             if (fs_res != LV_FS_RES_OK) {
                 res = LV_RESULT_INVALID;
+                LV_LOG_ERROR("read chunk data failed");
                 goto read_err;
             }
         }
@@ -219,7 +240,7 @@ read_err:
     return res;
 }
 
-lv_result_t lv_jpeg_decoder_info(const char *src, lv_image_header_t *header, uint32_t size, bool is_file)
+lv_result_t lv_jpeg_decoder_info(const char *src, lv_image_header_t *header, uint32_t size, bool is_file, bool is_aicp)
 {
     lv_fs_res_t res;
     int width;
@@ -235,17 +256,34 @@ lv_result_t lv_jpeg_decoder_info(const char *src, lv_image_header_t *header, uin
     if (res != LV_FS_RES_OK)
         return LV_RESULT_INVALID;
 
-    res = jpeg_get_img_size(&stream, &width, &height, &format);
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+    // Skip AICP header if present
+    if (is_aicp) {
+        uint8_t aicp_header[4];
+        uint32_t read_num;
+        res = lv_aic_stream_read(&stream, aicp_header, 4, &read_num);
+        if (res != LV_FS_RES_OK || read_num != 4 || memcmp(aicp_header, "AICP", 4) != 0) {
+            LV_LOG_ERROR("AICP header not found");
+            lv_aic_stream_close(&stream);
+            return LV_RESULT_INVALID;
+        }
+    }
+#endif
+
+    res = jpeg_get_img_size(&stream, &width, &height, &format, is_aicp);
     if (res != LV_RESULT_OK) {
         lv_aic_stream_close(&stream);
+        LV_LOG_ERROR("get img size failed");
         return LV_RESULT_INVALID;
     }
 
 #if defined(MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE)
-    int size_shift = jpeg_size_limit(width, height);
-    width = width >> size_shift;
-    height = height >> size_shift;
-    header->reserved_2 = size_shift;
+    if (!is_aicp) {
+        int size_shift = jpeg_size_limit(width, height);
+        width = width >> size_shift;
+        height = height >> size_shift;
+        header->reserved_2 = size_shift;
+    }
 #endif
 
     header->w = width;
@@ -357,7 +395,11 @@ static lv_result_t lv_mpp_dec_info(lv_image_decoder_t *decoder, const void *src,
         if (!strcmp(ptr, ".png")) {
             return lv_png_decoder_info(src, header, 0, true);
         } else if (image_suffix_is_jpg(ptr)) {
-            return lv_jpeg_decoder_info(src, header, 0, true);
+            return lv_jpeg_decoder_info(src, header, 0, true, false);
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+        } else if (image_suffix_is_aicp(ptr)) {
+            return lv_jpeg_decoder_info(src, header, 0, true, true);
+#endif
         } else if (!strcmp(ptr, ".fake")) {
             return fake_decoder_info(src, header);
 #if LV_USE_AIC_BMP
@@ -365,6 +407,7 @@ static lv_result_t lv_mpp_dec_info(lv_image_decoder_t *decoder, const void *src,
             return lv_bmp_decoder_info(src, header, 0, true);
 #endif
         } else {
+            LV_LOG_ERROR("unsupported image:%s", (uint8_t *)src);
             return LV_RESULT_INVALID;
         }
     } else if (lv_image_src_get_type(src) == LV_IMAGE_SRC_VARIABLE) {
@@ -373,7 +416,15 @@ static lv_result_t lv_mpp_dec_info(lv_image_decoder_t *decoder, const void *src,
         uint32_t data_size = ((lv_img_dsc_t *)src)->data_size;
 
         if (cf == LV_COLOR_FORMAT_RAW || cf == LV_COLOR_FORMAT_RAW) {
-            res = lv_jpeg_decoder_info(data, header, data_size, false);
+            bool is_aicp_data = false;
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+            // Check for AICP header
+            if (data_size >= 4 && memcmp(data, "AICP", 4) == 0) {
+                is_aicp_data = true;
+            }
+#endif
+            res = lv_jpeg_decoder_info(data, header, data_size, false, is_aicp_data);
+
             if (res != LV_RESULT_OK) {
                 res = lv_png_decoder_info(data, header, data_size, false);
 #if LV_USE_AIC_BMP
@@ -571,6 +622,47 @@ void lv_set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_shif
     }
 }
 
+static enum mpp_codec_type detect_codec_type(lv_stream_t *stream, lv_image_decoder_dsc_t *dsc)
+{
+    enum mpp_codec_type type = MPP_CODEC_VIDEO_DECODER_PNG;
+    char* ptr = NULL;
+
+    if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_FILE) {
+        ptr = strrchr(dsc->src, '.');
+        if (ptr && image_suffix_is_jpg(ptr)) {
+            type = MPP_CODEC_VIDEO_DECODER_MJPEG;
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+        } else if (ptr && image_suffix_is_aicp(ptr)) {
+            type = MPP_CODEC_VIDEO_DECODER_AICP;
+#endif
+        }
+    } else if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_VARIABLE) {
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+        uint8_t aicp_header[4];
+        uint32_t read_num;
+        lv_result_t res;
+
+        // Check for AICP header first
+        res = lv_aic_stream_read(stream, aicp_header, 4, &read_num);
+        if (res == LV_FS_RES_OK && read_num == 4 && memcmp(aicp_header, "AICP", 4) == 0) {
+            type = MPP_CODEC_VIDEO_DECODER_AICP;
+        } else {
+            lv_aic_stream_reset(stream);
+#endif
+            if (check_jpeg_soi(stream) == LV_RESULT_OK) {
+                type = MPP_CODEC_VIDEO_DECODER_MJPEG;
+            } else {
+                lv_aic_stream_reset(stream);
+            }
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+        }
+#endif
+        lv_aic_stream_reset(stream);
+    }
+
+    return type;
+}
+
 static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder_dsc_t *dsc)
 {
     lv_result_t res = LV_RESULT_OK;
@@ -579,8 +671,7 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
     struct mpp_packet packet;
     int width = 0;
     int height = 0;
-    enum mpp_codec_type type = MPP_CODEC_VIDEO_DECODER_PNG;
-    char* ptr = NULL;
+    enum mpp_codec_type type;
     struct decode_config config = { 0 };
     int buf_size[3] = { 0 };
     struct mpp_decoder *dec = NULL;
@@ -611,22 +702,8 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
     height = dsc->header.h;
     config.pix_fmt = lv_fmt_to_mpp_fmt(dsc->header.cf);
 
-    if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_FILE) {
-        ptr = strrchr(dsc->src, '.');
-        if (ptr && image_suffix_is_jpg(ptr))
-            type = MPP_CODEC_VIDEO_DECODER_MJPEG;
-
-    } else if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_VARIABLE) {
-        res = check_jpeg_soi(&stream);
-        if (res == LV_RESULT_OK) {
-            type = MPP_CODEC_VIDEO_DECODER_MJPEG;
-        } else {
-            lv_aic_stream_reset(&stream);
-            res = check_png_sig(&stream);
-            CHECK_RET(res, LV_RESULT_OK);
-        }
-        lv_aic_stream_reset(&stream);
-    }
+    // Detect codec type
+    type = detect_codec_type(&stream, dsc);
 
     lv_aic_stream_get_size(&stream, &file_len);
     dec = mpp_decoder_create(type);
@@ -668,6 +745,7 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
     mpp_decoder_get_packet(dec, &packet, file_len);
 
     uint32_t read_size = 0;
+
     lv_aic_stream_read(&stream, packet.data, file_len, &read_size);
     packet.size = file_len;
     packet.flag = PACKET_FLAG_EOS;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -197,12 +197,14 @@ struct aic_clk_auth_cfg *mod = to_clk_auth(comm_cfg);
     u32 parent_index = (readl(cmu_reg(mod->offset_reg)) >> mod->mux_bit) & mod->mux_mask;
 
     if (parent_index >= mod->num_parents) {
-        hal_log_err("%s parent clock index error!\n", comm_cfg->name);
+        hal_log_err("%s parent clock index %d error!\n",
+                    comm_cfg->name, parent_index);
         return -EINVAL;
     }
 
     if (mod->num_parents != mod->num_div) {
-        hal_log_err("%s parent number is not equal to divider number!\n", comm_cfg->name);
+        hal_log_err("%s parent number %d is not equal to divider number %d!\n",
+                    comm_cfg->name, mod->num_parents, mod->num_div);
         return -EINVAL;
     }
 
@@ -255,16 +257,13 @@ static int clk_auth_mod_set_rate(struct aic_clk_comm_cfg *comm_cfg,
     div = DIV_ROUND_CLOSEST(parent_rate, rate);
 
     /*
-     * If div != 1, we need to set the clock divider, so we must find the parent_index
-     * that can configure the divider.
+     * Find the parent_index that can configure the divider.
      */
-    if (div != 1) {
-        for (parent_index = 0; parent_index < mod->num_parents; parent_index++)
-            if (mod->table_div[parent_index].shift < 0)
-                continue;
-            else
-                break;
-    }
+    for (parent_index = 0; parent_index < mod->num_parents; parent_index++)
+        if (mod->table_div[parent_index].shift < 0)
+            continue;
+        else
+            break;
 
     if (parent_index >= mod->num_parents) {
         hal_log_err("%s parent clock index error!\n", comm_cfg->name);

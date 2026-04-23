@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -25,34 +25,31 @@
 #define MTOP_MODE                       BIT(28)
 #define MTOP_EN                         BIT(0)
 
-typedef struct port_bandwidth_t {
+struct port_bandwidth {
     u32 wcnt;
     u32 rcnt;
-}port_bandwidth;
+};
 
 struct aic_mtop_dev {
-        unsigned long reg_base;
-        IRQn_Type irq_num;
-        uint32_t clk_id;
-        uint8_t grp;
-        uint8_t prt;
-        port_bandwidth port_bw[MTOP_GROUP_MAX * MTOP_PORT_MAX];
-        void (*callback)(struct aic_mtop_dev *phandle, void *arg);
-        void *arg;
+    unsigned long reg_base;
+    IRQn_Type irq_num;
+    uint32_t clk_id;
+    uint8_t grp;
+    uint8_t prt;
+    struct port_bandwidth port_bw[MTOP_GROUP_MAX * MTOP_PORT_MAX];
+    void (*callback)(struct aic_mtop_dev *phandle, void *arg);
+    void *arg;
 };
 
 int hal_mtop_init(struct aic_mtop_dev *phandle);
 int hal_mtop_deinit(struct aic_mtop_dev *phandle);
 void hal_mtop_enable(struct aic_mtop_dev *phandle);
-void hal_mtop_irq_enable(struct aic_mtop_dev *phandle);
+void hal_mtop_irq_enable(struct aic_mtop_dev *phandle, bool enable);
 irqreturn_t hal_mtop_irq_handler(int irq_num, void *can_handle);
 void hal_mtop_set_period_cnt(struct aic_mtop_dev *phandle, uint32_t period_cnt);
 void hal_mtop_attach_callback(struct aic_mtop_dev *phandle, void *callback, void *arg);
 void hal_mtop_detach_callback(struct aic_mtop_dev *phandle);
-
-
-
-
-
+u32 hal_mtop_get_group_num(void);
+u32 hal_mtop_get_port_num(void);
 
 #endif

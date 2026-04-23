@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,13 +29,11 @@
 #include "drv_camera.h"
 #endif
 #include "aic_render.h"
-#include "mpp_fb.h"
 #include "artinchip_fb.h"
 #ifdef LPKG_USING_CPU_USAGE
 #include "cpu_usage.h"
 #endif
 
-//#define RECORDER_DVP_CROP_MODE
 #define RECORDER_VID_BUF_NUM        3
 #define RECORDER_VID_BUF_PLANE_NUM  2
 #define RECORDER_DEMO_DEFAULT_RECORD_TIME 0x7FFFFFFF
@@ -84,11 +82,8 @@ struct recorder_context {
     bool record_flag;
     bool recorder_stop;
     unsigned int snapshot_count;
-    unsigned int record_count;
-    int last_index;
-    long long first_frame_time;
+    int quality;
     struct mpp_frame frame[RECORDER_VID_BUF_NUM];
-    struct aicfb_screeninfo fb_info;
 };
 
 
@@ -102,6 +97,7 @@ static void print_help(const char* prog)
         "\t-t                             recoder time(s)\n"
         "\t-c                             recoder config file\n"
         "\t-d                             display to screen\n"
+        "\t-q                             set pic quality\n"
         "\t-r                             record data\n"
         "\t-h                             help\n\n"
         "Example1: recoder_demo -i dvp -t 60 -c /sdcard/recorder.config\n"
@@ -224,7 +220,6 @@ static s32 giveback_buf(void *app_data, s32 event, void *buffer)
 
     switch (event) {
         case AIC_RECORDER_EVENT_GIVEBACK_FRAME:
-            dvp_queue_buf(((struct mpp_frame*)buffer)->id);
             break;
 
         case AIC_RECORDER_EVENT_GIVEBACK_PACKET:
@@ -289,7 +284,8 @@ int parse_config_file(char *config_file, struct recorder_context *recorder_cxt)
     if (cjson) {
         recorder_cxt->config.qfactor = cjson->valueint;
     }
-
+    if (recorder_cxt->quality > 0)
+        recorder_cxt->config.qfactor = recorder_cxt->quality;
     cjson = cJSON_GetObjectItem(root, "video");
     if (cjson) {
         int enable = cJSON_GetObjectItem(cjson, "enable")->valueint;
@@ -366,7 +362,7 @@ static int parse_options(struct recorder_context *recoder_ctx, int cnt, char **o
     }
     optind = 0;
     while (1) {
-        opt = getopt(argc, argv, "i:c:t:r:dh");
+        opt = getopt(argc, argv, "i:c:t:r:q:dh");
         if (opt == -1) {
             break;
         }
@@ -389,6 +385,10 @@ static int parse_options(struct recorder_context *recoder_ctx, int cnt, char **o
 
         case 'r':
             ctx->record_flag = atoi(optarg);
+            break;
+
+        case 'q':
+            ctx->quality = atoi(optarg);
             break;
 
         case 'd':
@@ -490,40 +490,15 @@ static void recorder_render_deinit(struct recorder_render_data *render_data)
     render_data->render_init = false;
 }
 
-#ifdef RECORDER_DVP_CROP_MODE
-static int recorder_fb_get_info(struct aicfb_screeninfo *fb_info)
-{
-    struct mpp_fb *fb = NULL;
-    int ret = 0;
-
-    fb = mpp_fb_open();
-    if (!fb) {
-        loge("Failed to open FB\n");
-        return -1;
-    }
-
-    ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, fb_info);
-    if (ret < 0)
-        loge("Failed to get screen info! errno: -%d\n", -ret);
-
-    logi("Screen width: %d, height %d\n", fb_info->width, fb_info->height);
-
-    mpp_fb_close(fb);
-
-    return 0;
-}
-#endif
-
-static int recorder_dvp_init(struct recorder_dvp_data *dvp_data,
-                             struct aicfb_screeninfo *fb_info)
+static int recorder_dvp_init(struct recorder_dvp_data *dvp_data)
 {
     struct mpp_video_fmt *src;
     struct dvp_out_fmt *dst;
     int ret = -1;
     int i = 0;
 
-    if (!dvp_data || !fb_info) {
-        loge("dvp_data or fb is null");
+    if (!dvp_data) {
+        loge("dvp_data is null");
         return -1;
     }
 
@@ -550,31 +525,10 @@ static int recorder_dvp_init(struct recorder_dvp_data *dvp_data,
     }
 
     /*dvp config*/
-#ifdef RECORDER_DVP_CROP_MODE
-    ret = recorder_fb_get_info(fb_info);
-    if (ret < 0) {
-        loge("ioctl(DVP_IN_S_FMT) failed! err -%d\n", -ret);
-        goto _exit;
-    }
-    if (src->width > fb_info->width) {
-        dst->width = fb_info->width;
-        dst->crop_x = (src->width - fb_info->width) / 2;
-    } else {
-        dst->width = src->width;
-    }
-
-    if (src->height > fb_info->height) {
-        dst->height = fb_info->height;
-        dst->crop_y = (src->height - fb_info->height) / 2;
-    } else {
-        dst->height = src->height;
-    }
-#else
     dvp_data->w = src->width;
     dvp_data->h = src->height;
     dst->width = src->width;
     dst->height = src->height;
-#endif
     dst->pixelformat = MPP_FMT_NV12;
     dst->num_planes = RECORDER_VID_BUF_PLANE_NUM;
     dst->frame_offset = 0;
@@ -694,16 +648,12 @@ static void do_recorder(struct recorder_context *recorder_cxt)
     if (ret != 0)
         return;
 
-    if (recorder_cxt->record_count == 0) {
-        recorder_cxt->first_frame_time = aic_dvp_get_timestamp(index);
-    }
-
     // set frame info
     binfo = &recorder_cxt->dvp_data.binfo;
     dst = &recorder_cxt->dvp_data.dst_fmt;
     frame = &recorder_cxt->frame[index];
     frame->id = index;
-    frame->pts = aic_dvp_get_timestamp(index) - recorder_cxt->first_frame_time; //ms
+    frame->pts = aic_get_time_ms();
     frame->buf.buf_type = MPP_PHY_ADDR;
     frame->buf.size.width = dst->width;
     frame->buf.size.height = dst->height;
@@ -719,17 +669,15 @@ static void do_recorder(struct recorder_context *recorder_cxt)
     // render a frame
     recorder_render_frame(&recorder_cxt->render_data, frame);
 
+    // send to recorder
     if (recorder_cxt->record_flag) {
-        // send to recorder
         ret = aic_recorder_send_frame(recorder_cxt->recorder, frame);
         if (ret != 0) {
             dvp_queue_buf(index);
             return;
         }
-    } else {
-        dvp_queue_buf(index);
     }
-    recorder_cxt->record_count++;
+    dvp_queue_buf(index);
 }
 
 static void *recorder_thread(void *arg)
@@ -739,7 +687,6 @@ static void *recorder_thread(void *arg)
 
     clock_gettime(CLOCK_REALTIME, &start_time);
 
-    recorder_cxt->record_count = 0;
     while (!recorder_cxt->recorder_stop) {
         clock_gettime(CLOCK_REALTIME, &cur_time);
         if (recorder_cxt->record_time <= (cur_time.tv_sec - start_time.tv_sec)) {
@@ -828,15 +775,9 @@ int recorder_demo_test(int argc, char *argv[])
         goto _EXIT;
     }
 
-    //display frame to video layer
-    if (recorder_cxt->render_flag) {
-        if (recorder_render_init(&recorder_cxt->render_data))
-            goto _EXIT;
-    }
-
     //initialize video input module
     if (recorder_cxt->vin_source_type == AIC_RECORDER_VIN_DVP) {
-        if (recorder_dvp_init(&recorder_cxt->dvp_data, &recorder_cxt->fb_info))
+        if (recorder_dvp_init(&recorder_cxt->dvp_data))
             goto _EXIT;
     } else if (recorder_cxt->vin_source_type == AIC_RECORDER_VIN_FILE) {
         aic_recorder_set_input_file_path(recorder_cxt->recorder,
@@ -849,11 +790,16 @@ int recorder_demo_test(int argc, char *argv[])
         goto _EXIT;
     }
 
+    //display frame to video layer
+    if (recorder_cxt->render_flag) {
+        if (recorder_render_init(&recorder_cxt->render_data))
+            goto _EXIT;
+    }
 
     //create recorder thread
     pthread_attr_init(&attr);
     attr.stacksize = 8 * 1024;
-    attr.schedparam.sched_priority = 30;
+    attr.schedparam.sched_priority = 0;
     ret = pthread_create(&thread_id, &attr, recorder_thread, recorder_cxt);
     if (ret) {
         loge("create recorder_thread failed\n");

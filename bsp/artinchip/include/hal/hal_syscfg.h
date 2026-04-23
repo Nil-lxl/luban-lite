@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -53,5 +53,5 @@ typedef enum {
 s32 hal_syscfg_probe(void);
 u32 hal_syscfg_read_ldo_cfg(void);
 void hal_syscfg_usb_phy0_sw_host(s32 host_mode);
-
+void hal_syscfg_usb_pll_en(void);
 #endif

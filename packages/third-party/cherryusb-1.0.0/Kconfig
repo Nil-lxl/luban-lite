@@ -407,6 +407,10 @@ if LPKG_USING_CHERRYUSB
                     depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
                     bool "HID_TOUCHPAD_MODE"
                     default n
+                config HID_TOUCHMOUSE_MODE
+                    depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
+                    bool "HID_TOUCHMOUSE_MODE"
+                    default n
                 menu "Hid Touch Parameter"
                     depends on LPKG_CHERRYUSB_DEVICE_HID_TOUCH_TEMPLATE
                     config HID_TOUCH_INT_MODE
@@ -728,6 +732,14 @@ if LPKG_USING_CHERRYUSB
                         endchoice
                     endif
 
+                    config AIC_USB_DISP_HEARTBEAT
+                        bool "Enable display heartbeat monitor"
+                        default n
+
+                    config AIC_USB_DISP_ASYNC_MODE
+                        bool "Enable display async mode"
+                        default n
+
                     config AIC_USB_DISP_PM_SUSPEND
                         bool "Using system PM suspend"
                         default n
@@ -750,6 +762,10 @@ if LPKG_USING_CHERRYUSB
 
                     config AIC_USB_DISP_INIT_MIRROR_MOD_EN
                         bool "Init mirror mode"
+                        default n
+
+                    config AIC_USB_DISP_DISABLE_BACKLIGHT_AT_INIT
+                        bool "Disable backlight by default at init."
                         default n
 
                     config AIC_USB_DISP_HOST_SCALE_MOD_EN
@@ -810,6 +826,10 @@ if LPKG_USING_CHERRYUSB
                         bool
                         prompt "Print FPS in-live"
                         default n
+
+                    config AIC_USB_DISP_CALIBRATION_DEGREE
+                        int
+                        default AIC_SCREEN_RELATIVE_ROTATION_DEGREE
                 endif
             endif
         endif

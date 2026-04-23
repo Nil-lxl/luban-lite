@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -31,7 +31,7 @@ struct aic_rng_handle {
     struct rng_request *req;
 };
 
-struct crypto_alg {
+struct rng_crypto_alg {
 	u32 cra_flags;
 	unsigned int cra_blocksize;
 	unsigned int cra_ctxsize;
@@ -44,7 +44,7 @@ struct crypto_alg {
 
 	int (*cra_init)(struct aic_rng_handle *handle);
 	void (*cra_exit)(struct aic_rng_handle *handle);
-	void (*cra_destroy)(struct crypto_alg *alg);
+	void (*cra_destroy)(struct rng_crypto_alg *alg);
 };
 
 struct rng_alg {
@@ -53,7 +53,7 @@ struct rng_alg {
     void (*set_ent)(struct aic_rng_handle *handle, const u8 *data,unsigned int len);
 
     unsigned int seedsize;
-    struct crypto_alg base;
+    struct rng_crypto_alg base;
 };
 
 static inline struct rng_tfm *rng_handle_tfm(struct aic_rng_handle *handle)

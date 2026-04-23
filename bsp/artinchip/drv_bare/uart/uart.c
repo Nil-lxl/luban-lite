@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -82,21 +82,22 @@ struct uart_dev_para {
     u32 clk_freq;
     u32 rst;
     u32 function;
+    u32 flag;
     char *name;
 };
 
 struct aic_uart {
+#if defined (AIC_SERIAL_USING_DMA)
+    u8 dma_tx_buf[AIC_UART_TX_FIFO_SIZE] __attribute__((aligned(CACHE_LINE_SIZE)));
+    u8 dma_rx_buf[AIC_UART_RX_FIFO_SIZE] __attribute__((aligned(CACHE_LINE_SIZE)));
+    u32 rx_size;
+    u32 tx_size;
+    u32 tx_dma_working;
+#endif
     usart_handle_t handle;
     struct uart_dev_para *para;
     struct uart_rx_fifo *rx_fifo;
     struct uart_tx_fifo *tx_fifo;
-#if defined (AIC_SERIAL_USING_DMA)
-    u32 rx_size;
-    u32 tx_size;
-    u32 tx_dma_working;
-    u8 dma_tx_buf[AIC_UART_TX_FIFO_SIZE] __attribute__((aligned(CACHE_LINE_SIZE)));
-    u8 dma_rx_buf[AIC_UART_RX_FIFO_SIZE] __attribute__((aligned(CACHE_LINE_SIZE)));
-#endif
 };
 
 static struct uart_dev_para uart_dev_paras[] =
@@ -105,49 +106,49 @@ static struct uart_dev_para uart_dev_paras[] =
     {0, AIC_DEV_UART0_DATABITS, AIC_DEV_UART0_STOPBITS, AIC_DEV_UART0_PARITY,
         AIC_DEV_UART0_RX_MODE, AIC_DEV_UART0_RX_BUFSZ, AIC_DEV_UART0_TX_BUFSZ,
         AIC_DEV_UART0_BAUDRATE, CLK_UART0, AIC_CLK_UART0_FREQ, RESET_UART0,
-        AIC_DEV_UART0_MODE, "uart0"},
+        AIC_DEV_UART0_MODE, AIC_UART0_FLAG, "uart0"},
 #endif
 #ifdef AIC_USING_UART1
     {1, AIC_DEV_UART1_DATABITS, AIC_DEV_UART1_STOPBITS, AIC_DEV_UART1_PARITY,
         AIC_DEV_UART1_RX_MODE, AIC_DEV_UART1_RX_BUFSZ, AIC_DEV_UART1_TX_BUFSZ,
         AIC_DEV_UART1_BAUDRATE, CLK_UART1, AIC_CLK_UART1_FREQ, RESET_UART1,
-        AIC_DEV_UART1_MODE, "uart1"},
+        AIC_DEV_UART1_MODE, AIC_UART1_FLAG, "uart1"},
 #endif
 #ifdef AIC_USING_UART2
     {2, AIC_DEV_UART2_DATABITS, AIC_DEV_UART2_STOPBITS, AIC_DEV_UART2_PARITY,
         AIC_DEV_UART2_RX_MODE, AIC_DEV_UART2_RX_BUFSZ, AIC_DEV_UART2_TX_BUFSZ,
         AIC_DEV_UART2_BAUDRATE, CLK_UART2, AIC_CLK_UART2_FREQ, RESET_UART2,
-        AIC_DEV_UART2_MODE, "uart2"},
+        AIC_DEV_UART2_MODE, AIC_UART2_FLAG, "uart2"},
 #endif
 #ifdef AIC_USING_UART3
     {3, AIC_DEV_UART3_DATABITS, AIC_DEV_UART3_STOPBITS, AIC_DEV_UART3_PARITY,
         AIC_DEV_UART3_RX_MODE, AIC_DEV_UART3_RX_BUFSZ, AIC_DEV_UART3_TX_BUFSZ,
         AIC_DEV_UART3_BAUDRATE, CLK_UART3, AIC_CLK_UART3_FREQ, RESET_UART3,
-        AIC_DEV_UART3_MODE, "uart3"},
+        AIC_DEV_UART3_MODE, AIC_UART3_FLAG, "uart3"},
 #endif
 #ifdef AIC_USING_UART4
     {4, AIC_DEV_UART4_DATABITS, AIC_DEV_UART4_STOPBITS, AIC_DEV_UART4_PARITY,
         AIC_DEV_UART4_RX_MODE, AIC_DEV_UART4_RX_BUFSZ, AIC_DEV_UART4_TX_BUFSZ,
         AIC_DEV_UART4_BAUDRATE, CLK_UART4, AIC_CLK_UART4_FREQ, RESET_UART4,
-        AIC_DEV_UART4_MODE, "uart4"},
+        AIC_DEV_UART4_MODE, AIC_UART4_FLAG, "uart4"},
 #endif
 #ifdef AIC_USING_UART5
     {5, AIC_DEV_UART5_DATABITS, AIC_DEV_UART5_STOPBITS, AIC_DEV_UART5_PARITY,
         AIC_DEV_UART5_RX_MODE, AIC_DEV_UART5_RX_BUFSZ, AIC_DEV_UART5_TX_BUFSZ,
         AIC_DEV_UART5_BAUDRATE, CLK_UART5, AIC_CLK_UART5_FREQ, RESET_UART5,
-        AIC_DEV_UART5_MODE, "uart5"},
+        AIC_DEV_UART5_MODE, AIC_UART5_FLAG, "uart5"},
 #endif
 #ifdef AIC_USING_UART6
     {6, AIC_DEV_UART6_DATABITS, AIC_DEV_UART6_STOPBITS, AIC_DEV_UART6_PARITY,
         AIC_DEV_UART6_RX_MODE, AIC_DEV_UART6_RX_BUFSZ, AIC_DEV_UART6_TX_BUFSZ,
         AIC_DEV_UART6_BAUDRATE, CLK_UART6, AIC_CLK_UART6_FREQ, RESET_UART6,
-        AIC_DEV_UART6_MODE, "uart6"},
+        AIC_DEV_UART6_MODE, AIC_UART6_FLAG, "uart6"},
 #endif
 #ifdef AIC_USING_UART7
     {7, AIC_DEV_UART7_DATABITS, AIC_DEV_UART7_STOPBITS, AIC_DEV_UART7_PARITY,
         AIC_DEV_UART7_RX_MODE, AIC_DEV_UART7_RX_BUFSZ, AIC_DEV_UART7_TX_BUFSZ,
         AIC_DEV_UART7_BAUDRATE, CLK_UART7, AIC_CLK_UART7_FREQ, RESET_UART7,
-        AIC_DEV_UART7_MODE, "uart7"},
+        AIC_DEV_UART7_MODE, AIC_UART7_FLAG, "uart7"},
 #endif
 };
 
@@ -167,79 +168,81 @@ static void uart_irqhandler(int irq, void * data)
         return;
 
     status = hal_usart_get_irqstatus(id);
+    if (uart->para->flag == AIC_UART_DMA_FLAG) {
 #if defined (AIC_SERIAL_USING_DMA)
-    struct uart_tx_fifo *tx_fifo = NULL;
-    tx_fifo = uart->tx_fifo;
-    switch (status) {
-        case AIC_IIR_THR_EMPTY:
-            hal_usart_set_interrupt(uart->handle, USART_INTR_WRITE, 0);
-            if (uart->tx_dma_working)
-                return;
+        struct uart_tx_fifo *tx_fifo = NULL;
+        tx_fifo = uart->tx_fifo;
+        switch (status) {
+            case AIC_IIR_THR_EMPTY:
+                hal_usart_set_interrupt(uart->handle, USART_INTR_WRITE, 0);
+                if (uart->tx_dma_working)
+                    return;
 
-            uart->tx_size = ringbuf_len(&(tx_fifo->rb));
-            if (uart->tx_size) {
-                if (uart->tx_size > AIC_UART_TX_FIFO_SIZE)
-                    uart->tx_size = AIC_UART_TX_FIFO_SIZE;
+                uart->tx_size = ringbuf_len(&(tx_fifo->rb));
+                if (uart->tx_size) {
+                    if (uart->tx_size > AIC_UART_TX_FIFO_SIZE)
+                        uart->tx_size = AIC_UART_TX_FIFO_SIZE;
 
-                ringbuf_out(&(uart->tx_fifo->rb), uart->dma_tx_buf, uart->tx_size);
-                aicos_dcache_clean_range(uart->dma_tx_buf, ALIGN_UP(AIC_UART_TX_FIFO_SIZE, CACHE_LINE_SIZE));
-                hal_uart_send_by_dma(uart->handle, uart->dma_tx_buf, uart->tx_size);
-                uart->tx_dma_working = 1;
-            }
-            break;
-        case AIC_IIR_RECV_DATA:
-        case AIC_IIR_CHAR_TIMEOUT:
-            uart->rx_size = hal_usart_get_rx_fifo_num(uart->handle);
-            if (uart->rx_size) {
-                hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 0);
-                hal_uart_rx_dma_config(uart->handle, uart->dma_rx_buf, uart->rx_size);
-            }
-            break;
-        default:
-            break;
-    }
-#else
-    struct uart_rx_fifo *rx_fifo = NULL;
-    struct uart_tx_fifo *tx_fifo = NULL;
-    int ch = -1;
-
-    rx_fifo = uart->rx_fifo;
-    tx_fifo = uart->tx_fifo;
-    switch (status) {
-        case AIC_IIR_THR_EMPTY:
-            hal_usart_set_interrupt(uart->handle, USART_INTR_WRITE, 0);
-            while (1)
-            {
-                if (ringbuf_len(&(tx_fifo->rb)) > 0) {
-                    ringbuf_out(&(tx_fifo->rb), &ch, 1);
-                    if (hal_usart_putchar(uart->handle, ch) != 0)
-                        break;
-                } else {
-                    break;
+                    ringbuf_out(&(uart->tx_fifo->rb), uart->dma_tx_buf, uart->tx_size);
+                    aicos_dcache_clean_range(uart->dma_tx_buf, ALIGN_UP(AIC_UART_TX_FIFO_SIZE, CACHE_LINE_SIZE));
+                    hal_uart_send_by_dma(uart->handle, uart->dma_tx_buf, uart->tx_size);
+                    uart->tx_dma_working = 1;
                 }
-            }
-            break;
-        case AIC_IIR_RECV_DATA:
-        case AIC_IIR_CHAR_TIMEOUT:
-            hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 0);
-            while (1)
-            {
-                ch = hal_uart_getchar(uart->handle);
-                if (ch == -1) break;
-                ringbuf_in(&(rx_fifo->rb), &ch, 1);
-            }
-            hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 1);
-
-            break;
-        case AIC_IIR_RECV_LINE:
-            hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 0);
-            hal_usart_intr_recv_line(id, uart->handle);
-            hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 1);
-            break;
-        default:
-            break;
-    }
+                break;
+            case AIC_IIR_RECV_DATA:
+            case AIC_IIR_CHAR_TIMEOUT:
+                uart->rx_size = hal_usart_get_rx_fifo_num(uart->handle);
+                if (uart->rx_size) {
+                    hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 0);
+                    hal_uart_rx_dma_config(uart->handle, uart->dma_rx_buf, uart->rx_size);
+                }
+                break;
+            default:
+                break;
+        }
 #endif
+    } else {
+        struct uart_rx_fifo *rx_fifo = NULL;
+        struct uart_tx_fifo *tx_fifo = NULL;
+        int ch = -1;
+
+        rx_fifo = uart->rx_fifo;
+        tx_fifo = uart->tx_fifo;
+        switch (status) {
+            case AIC_IIR_THR_EMPTY:
+                hal_usart_set_interrupt(uart->handle, USART_INTR_WRITE, 0);
+                while (1)
+                {
+                    if (ringbuf_len(&(tx_fifo->rb)) > 0) {
+                        ringbuf_out(&(tx_fifo->rb), &ch, 1);
+                        if (hal_usart_putchar(uart->handle, ch) != 0)
+                            break;
+                    } else {
+                        break;
+                    }
+                }
+                break;
+            case AIC_IIR_RECV_DATA:
+            case AIC_IIR_CHAR_TIMEOUT:
+                hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 0);
+                while (1)
+                {
+                    ch = hal_uart_getchar(uart->handle);
+                    if (ch == -1) break;
+                    ringbuf_in(&(rx_fifo->rb), &ch, 1);
+                }
+                hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 1);
+
+                break;
+            case AIC_IIR_RECV_LINE:
+                hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 0);
+                hal_usart_intr_recv_line(id, uart->handle);
+                hal_usart_set_interrupt(uart->handle, USART_INTR_READ, 1);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 #if defined (AIC_SERIAL_USING_DMA)
@@ -366,7 +369,12 @@ int uart_init(int id)
         return 0;
     }
 
+#if defined (AIC_SERIAL_USING_DMA)
+    uart = aicos_malloc_align(0, sizeof(struct aic_uart), CACHE_LINE_SIZE);
+#else
     uart = malloc(sizeof(struct aic_uart));
+#endif
+
     if (!uart) {
         pr_err("Failed to malloc(%d)\n", (u32)sizeof(struct aic_uart));
         return -1;
@@ -449,7 +457,11 @@ err:
     }
 
     if (uart != NULL) {
+#if defined (AIC_SERIAL_USING_DMA)
+        aicos_free_align(0, uart);
+#else
         free(uart);
+#endif
         uart = NULL;
     }
     return ret;

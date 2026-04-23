@@ -2,7 +2,7 @@ from building import *
 
 cwd = GetCurrentDir()
 src = ['sqlite3.c']
-src += ['dbhelper.c']
+src += Glob('dbhelper.c')
 
 if GetDepend('LPKG_SQLITE_DAO_EXAMPLE'):
     src += Glob('student_dao.c')

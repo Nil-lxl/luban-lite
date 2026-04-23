@@ -31,6 +31,7 @@ source "packages/third-party/sqlite/Kconfig"
 source "packages/third-party/llm_chat/Kconfig"
 source "packages/third-party/levelx/Kconfig"
 source "packages/third-party/miniz/Kconfig"
+source "packages/third-party/pahomqtt/Kconfig"
 # for baremetal mode
 source "packages/third-party/dfs/Kconfig"
 source "packages/third-party/minimp3/Kconfig"

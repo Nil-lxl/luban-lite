@@ -23,6 +23,15 @@ choice
         bool "sdmc 8-bit mode"
 endchoice
 
+    config AIC_SDMC0_USING_HOTPLUG
+        bool "Using SDcard hotplug detection"
+        default n
+
+    config AIC_SDMC0_HOTPLUG_PIN
+        string "sdcard hotplug gpio"
+        default "PD.5"
+        depends on AIC_SDMC0_USING_HOTPLUG
+
     config AIC_SDMC0_DDR_MODE
         bool "Using DDR mode"
         default n

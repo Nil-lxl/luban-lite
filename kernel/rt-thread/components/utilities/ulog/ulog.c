@@ -277,6 +277,14 @@ RT_WEAK rt_size_t ulog_formater(char *log_buf, rt_uint32_t level, const char *ta
     /* add time info */
     {
 #ifdef ULOG_TIME_USING_TIMESTAMP
+#ifdef PLATFORM_LUBANLITE
+        rt_uint64_t aic_get_time_us(void);
+
+        rt_uint64_t us = (rt_uint64_t)aic_get_time_us();
+
+        rt_snprintf(log_buf + log_len, ULOG_LINE_BUF_SIZE - log_len, "[%4ld.%03ld]",
+                    (long)(us/1000000), (long)(us%1000000/1000));
+#else
         static struct timeval now;
         static struct tm *tm, tm_tmp;
         static rt_bool_t check_usec_support = RT_FALSE, usec_is_support = RT_FALSE;
@@ -308,7 +316,7 @@ RT_WEAK rt_size_t ulog_formater(char *log_buf, rt_uint32_t level, const char *ta
             log_len += rt_strlen(log_buf + log_len);
             rt_snprintf(log_buf + log_len, ULOG_LINE_BUF_SIZE - log_len, ".%03d", now.tv_usec / 1000);
         }
-
+#endif /* PLATFORM_LUBANLITE */
 #else
         static rt_size_t tick_len = 0;
 

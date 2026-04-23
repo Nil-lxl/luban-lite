@@ -34,12 +34,12 @@ if GetDepend('AIC_NFTL_SUPPORT'):
 
             if GetDepend('DRIVER_BARE_DRV_EN'):
                 CPPPATH += [cwd + '/nftl_port/boot/inc/']
-                src += ['nftl_port/boot/src/nftl_port_hw.c']
+                src += Glob('nftl_port/boot/src/nftl_port_hw.c')
 
             if GetDepend('DRIVER_DRV_EN'):
                 CPPPATH += [cwd + '/nftl_port/rtos/inc/']
-                src += ['nftl_port/rtos/src/nftl_port_hw.c']
-                src += ['nftl_api/src/nftl_test.c']
+                src += Glob('nftl_port/rtos/src/nftl_port_hw.c')
+                src += Glob('nftl_api/src/nftl_test.c')
 
         prj_chip=GetDepend('PRJ_CHIP').strip('"')
         LIBNAME="nftl_lib_" + prj_chip
@@ -51,11 +51,11 @@ if GetDepend('AIC_NFTL_SUPPORT'):
             CPPPATH += [cwd + '/nftl_api/inc']
             if GetDepend('DRIVER_BARE_DRV_EN'):
                 CPPPATH += [cwd + '/nftl_port/boot/inc']
-                src += ['nftl_port/boot/src/nftl_port_hw.c']
+                src += Glob('nftl_port/boot/src/nftl_port_hw.c')
             if GetDepend('DRIVER_DRV_EN'):
                 CPPPATH += [cwd + '/nftl_port/rtos/inc']
-                src += ['nftl_port/rtos/src/nftl_port_hw.c']
-                src += ['nftl_api/src/nftl_test.c']
+                src += Glob('nftl_port/rtos/src/nftl_port_hw.c')
+                src += Glob('nftl_api/src/nftl_test.c')
 
             if rtconfig.PLATFORM in ['gcc', 'armclang']:
                 LOCAL_CFLAGS += ' -std=c99'

@@ -165,6 +165,11 @@ static int _pm_device_suspend(rt_uint8_t mode)
         }
     }
 
+#ifdef AIC_NO_CONSOLE_SUSPEND
+        for (index = 0; index < _pm.device_pm_number; index++)
+                rt_kprintf("%s calls the suspend function.\n", _pm.device_pm[index].device->parent.name);
+#endif
+
     rt_pm_disable_pin_irq_nonwakeup();
 
     return ret;
@@ -189,6 +194,9 @@ static void _pm_device_resume(rt_uint8_t mode)
     {
         if (_pm.device_pm[index].ops->resume != RT_NULL)
         {
+#ifdef AIC_NO_CONSOLE_SUSPEND
+            rt_kprintf("%s calls the resume function.\n", _pm.device_pm[index].device->parent.name);
+#endif
             _pm.device_pm[index].ops->resume(_pm.device_pm[index].device, mode);
         }
     }
@@ -451,6 +459,7 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
     /* module busy request check */
     if (_pm_device_check_idle() == RT_FALSE)
     {
+        rt_kprintf("Device stays active.\n");
         sleep_mode = PM_BUSY_SLEEP_MODE;
         if (sleep_mode < pm->sleep_mode)
         {
@@ -465,6 +474,8 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
     }
     else
     {
+        rt_kprintf("Enter sleep mode (id:%d)\n", pm->sleep_mode);
+
         /* Notify app will enter sleep mode */
         if (_pm_notify.notify)
             _pm_notify.notify(RT_PM_ENTER_SLEEP, pm->sleep_mode, _pm_notify.data);
@@ -493,7 +504,8 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
         if (pm->timer_mask & (0x01 << pm->sleep_mode))
         {
             timeout_tick = pm_timer_next_timeout_tick(pm->sleep_mode);
-            timeout_tick = timeout_tick - rt_tick_get();
+            if (timeout_tick != RT_UINT32_MAX)
+                timeout_tick = timeout_tick - rt_tick_get();
 
             /* Judge sleep_mode from threshold time */
             pm->sleep_mode = pm_get_sleep_threshold_mode(pm->sleep_mode, timeout_tick);
@@ -525,12 +537,14 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
             }
         }
 
+        /* resume all device */
+        _pm_device_resume(pm->sleep_mode);
+
         #ifdef PM_ENABLE_DEBUG
         pm_dump_wakeup_source();
         #endif
 
-        /* resume all device */
-        _pm_device_resume(pm->sleep_mode);
+        rt_kprintf("Wake up from sleep mode (id:%d)\n", pm->sleep_mode);
 
         if (_pm_notify.notify)
             _pm_notify.notify(RT_PM_EXIT_SLEEP, pm->sleep_mode, _pm_notify.data);

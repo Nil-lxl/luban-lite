@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -1212,7 +1212,7 @@ void usbd_hid_touch_set_params(int params)
         rt_sem_release(hid_touch->sem);
 }
 
-void usbd_hid_touch_set_crop(int width, int height)
+void usbd_hid_touch_set_crop(int x, int y, int width, int height)
 {
     struct hid_touch_t *hid_touch = get_hid_touch();
     struct rt_touch_crop_info crop_info = {0};
@@ -1227,15 +1227,18 @@ void usbd_hid_touch_set_crop(int width, int height)
         return;
     }
 
-    if (crop_info.width == width && crop_info.height == height)
+    if (crop_info.x == x && crop_info.y == y &&
+        crop_info.width == width && crop_info.height == height)
         return;
 
-    USB_LOG_INFO("set hid_touch crop:%dx%d->%dx%d.\n",
-        crop_info.width, crop_info.height, width, height);
+    USB_LOG_INFO("set hid_touch crop:x %d, y %d, w:h %dx%d->%dx%d.\n",
+        x, y, crop_info.width, crop_info.height, width, height);
 
     crop_info.enable = true;
     crop_info.width = width;
     crop_info.height = height;
+    crop_info.x = x;
+    crop_info.y = y;
     rt_device_control(hid_touch->dev, RT_TOUCH_CTRL_SET_DYNAMIC_CROP, &crop_info);
 }
 

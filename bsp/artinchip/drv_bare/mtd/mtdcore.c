@@ -166,3 +166,10 @@ int mtd_unmap_oob_user_region(struct mtd_dev *mtd, u8 *dst, u8* src, int start, 
         return mtd->ops.unmap_user(mtd, dst, src, start, nbytes);
     return -1;
 }
+
+u32 mtd_trans_lga_to_pha(struct mtd_dev *mtd, u32 offset)
+{
+    if (mtd && mtd->ops.la2pa)
+        return mtd->ops.la2pa(mtd, offset);
+    return offset;
+}

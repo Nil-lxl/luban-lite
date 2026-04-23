@@ -5,8 +5,12 @@ from building import *
 cwd = GetCurrentDir()
 CPPPATH = []
 src = []
+
 if GetDepend('AIC_DVP_TEST') and GetDepend('RT_USING_FINSH'):
-    src = Glob('*.c')
+    src = ['test_dvp.c']
+elif GetDepend('AIC_DVP_TEST_V2') and GetDepend('RT_USING_FINSH'):
+    src = ['test_dvp_v2.c']
+
 
 group = DefineGroup('test-dvp', src, depend = [''], CPPPATH = CPPPATH)
 

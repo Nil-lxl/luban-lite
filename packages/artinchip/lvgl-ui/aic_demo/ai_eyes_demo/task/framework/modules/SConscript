@@ -1,0 +1,28 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+src_files = []
+
+
+all_files = Glob('*.c')
+for f in all_files:
+    if 'wifi_module_example.c' not in str(f):
+        src_files.append(f)
+
+# modules
+_cjson = os.path.normpath(os.path.join(cwd, '..', '..', '..', '..', '..', '..', '..',
+                                      'third-party', 'cJSON-1.7.16'))
+CPPPATH = [cwd, _cjson]
+
+list = os.listdir(cwd)
+for d in list:
+    path = os.path.join(cwd, d)
+    if os.path.isfile(os.path.join(path, 'SConscript')):
+        group = group + SConscript(os.path.join(d, 'SConscript'))
+
+group = group + DefineGroup('LVGL-port', src_files, depend = ['AIC_LVGL_AI_EYES_DEMO', 'LPKG_USING_CJSON'], CPPPATH = CPPPATH)
+
+Return('group')
+

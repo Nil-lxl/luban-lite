@@ -382,7 +382,7 @@ int f_dirent_cache_set(dirent_cache_t cache, unsigned long sector, unsigned char
     return count;
 }
 
-uint32_t image_calc_checksum(uint8_t *buf, uint32_t size)
+static uint32_t image_calc_checksum(uint8_t *buf, uint32_t size)
 {
     uint32_t i, val, sum, rest, cnt;
     uint8_t *p;

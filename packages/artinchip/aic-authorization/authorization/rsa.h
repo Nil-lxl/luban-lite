@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2024, Intel Corporation
+ * Copyright (c) 2015-2026, Intel Corporation
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -10,6 +10,7 @@
 #define __RSA_HELPER_
 
 #include <aic_core.h>
+#include "akcipher.h"
 
 /**
  * rsa_key - RSA key structure
@@ -54,4 +55,23 @@ int rsa_parse_pub_key(struct rsa_key *rsa_key, const void *key,
 
 int rsa_parse_priv_key(struct rsa_key *rsa_key, const void *key,
                        unsigned int key_len);
+
+int aic_akcipher_rsa_encrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_rsa_decrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_pnk_rsa_encrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_pnk_rsa_decrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_psk0_rsa_encrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_psk0_rsa_decrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_psk1_rsa_encrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_psk1_rsa_decrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_psk2_rsa_encrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_psk2_rsa_decrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_psk3_rsa_encrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_psk3_rsa_decrypt(struct aic_akcipher_handle *handle);
+int aic_akcipher_rsa_set_pub_key(struct aic_akcipher_handle *handle,
+                                 const void *key, unsigned int keylen);
+int aic_akcipher_rsa_set_priv_key(struct aic_akcipher_handle *handle,
+                                  const void *key, unsigned int keylen);
+u32 aic_akcipher_rsa_max_size(struct aic_akcipher_handle *handle);
+
 #endif

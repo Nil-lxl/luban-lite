@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -43,44 +43,6 @@ struct aicupg_nand_priv {
     unsigned char remain_data[PAGE_MAX_SIZE];
     unsigned int remain_len;
     int spl_flag;
-};
-
-struct nand_page_table_head {
-    char magic[4]; /* AICP: AIC Page table */
-    u32 entry_cnt;
-    u16 page_size;
-    u8 pad[10];   /* Padding it to fit size 20 bytes */
-};
-
-/*
- * FSBL page data store in 4 block's NAND Page. This structure is used to keep
- * all 4 NAND page address that storing FSBL page data, and keep that page data
- * checksum value(Actually is ~checksum (inverted)).
- */
-struct nand_page_table_entry {
-    u32 pageaddr[SPL_NAND_IMAGE_BACKUP_NUM]; /* Page address in block */
-    u32 checksum; /* Page data checksum/crc32 value */
-};
-
-/*
- * Page Table
- *
- * Page table store page and data checksum information of FSBL.
- *
- * FSBL data will be splited into a lot of 2KB slices, each slice use one NAND
- * page to store it. Programmer and BROM don't care the actual NAND page size
- * is 2KB or 4KB or greater, just use the first 2KB(Not support page size less
- * than 2KB NAND).
- *
- * Every slice has 4 backup, that means 4 pages in 4 different good blocks.
- * Page table is used to keep these page address information and checksum for
- * every slice.
- *
- * Page table always store in the first page of blocks.
- */
-struct nand_page_table {
-    struct nand_page_table_head head;
-    struct nand_page_table_entry entry[PAGE_TABLE_MAX_ENTRY];
 };
 
 s32 nand_fwc_spl_reserve_blocks(struct aicupg_nand_priv *priv);

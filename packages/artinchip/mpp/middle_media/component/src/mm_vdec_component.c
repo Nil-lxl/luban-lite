@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Author: <jun.ma@artinchip.com>
+ * Author: <che.jiang@artinchip.com>
  * Desc: middle media vdec component
  */
 
@@ -26,6 +26,7 @@
 #include "aic_message.h"
 #include "mpp_decoder.h"
 #include "mpp_dec_type.h"
+#include "aic_middle_media_common.h"
 
 #define VDEC_INPORT_STREAM_END_FLAG      0x01
 #define VDEC_OUTPORT_SEND_ALL_FRAME_FLAG 0x08 // consume all frame in readylist
@@ -60,6 +61,7 @@ typedef struct mm_vdec_data {
     struct decode_config decoder_config;
     enum mpp_codec_type codec_type;
     struct frame_allocator *allocator;
+    s32 rotation_angle;
     s32 ve_fill_fb_flag;
     struct mpp_dec_crop_info crop;
     s32 ve_fill_fb_crop_change;
@@ -93,6 +95,7 @@ typedef struct mm_vdec_data {
     MM_BOOL decode_resume_flag;
     MM_BOOL decode_delay_exit;
     MM_BOOL debug_en;
+    MM_BOOL rotation_angle_change;
     u32 ready_packet_num;
 } mm_vdec_data;
 
@@ -243,6 +246,7 @@ static s32 mm_vdec_video_format_trans(enum mpp_codec_type *p_dest_type,
                                       MM_VIDEO_CODING_TYPE *p_src_type)
 {
     s32 ret = MM_ERROR_NONE;
+
     if (p_dest_type == NULL || p_src_type == NULL) {
         loge("bad params!!!!\n");
         return MM_ERROR_BAD_PARAMETER;
@@ -250,17 +254,23 @@ static s32 mm_vdec_video_format_trans(enum mpp_codec_type *p_dest_type,
     if (*p_src_type == MM_VIDEO_CODING_AVC) {
         if ((0 == strcmp(PRJ_CHIP, "d12x")) ||
             (0 == strcmp(PRJ_CHIP, "d13x"))) {
-            loge("unsupport codec %d!!!!\n", *p_src_type);
             ret = MM_ERROR_UNSUPPORT;
+            goto exit;
         } else {
             *p_dest_type = MPP_CODEC_VIDEO_DECODER_H264;
         }
     } else if (*p_src_type == MM_VIDEO_CODING_MJPEG) {
         *p_dest_type = MPP_CODEC_VIDEO_DECODER_MJPEG;
     } else {
-        loge("unsupport codec %d!!!!\n", *p_src_type);
         ret = MM_ERROR_UNSUPPORT;
+        goto exit;
     }
+    return ret;
+
+exit:
+    loge("Not configured or support video decoder type: %s, %d.\n",
+        mm_component_video_type_to_str(*p_src_type), *p_src_type);
+
     return ret;
 }
 
@@ -446,12 +456,16 @@ static s32 mm_vdec_set_config(mm_handle h_component, MM_INDEX_TYPE index,
             break;
 
         case MM_INDEX_CONFIG_COMMON_ROTATE:
-            if (p_config)
-                mpp_decoder_control(p_vdec_data->p_decoder,
-                                    MPP_DEC_INIT_CMD_SET_ROT_FLIP_FLAG,
-                                    &((mm_config_rotation *)p_config)->rotation);
-            else
-                loge("config rotate config is null\n");
+            if (!p_config) {
+                loge("vdec config rotate is null\n");
+                return MM_ERROR_BAD_PARAMETER;
+            }
+            if (p_vdec_data->rotation_angle != ((mm_config_rotation *)p_config)->rotation) {
+                pthread_mutex_lock(&p_vdec_data->process_dec_lock);
+                p_vdec_data->rotation_angle = ((mm_config_rotation *)p_config)->rotation;
+                p_vdec_data->rotation_angle_change = true;
+                pthread_mutex_unlock(&p_vdec_data->process_dec_lock);
+            }
             break;
 
         default:
@@ -574,6 +588,30 @@ static s32 mm_vdec_config_timestamp(mm_vdec_data *p_vdec_data,
     return MM_ERROR_NONE;
 }
 
+static s32 mm_vdec_set_rotation(mm_vdec_data *p_vdec_data)
+{
+    s32 error = MM_ERROR_NONE;
+
+    if (p_vdec_data == NULL || p_vdec_data->p_decoder == NULL) {
+        loge("vdec or video decoder is null\n");
+        return MM_ERROR_NULL_POINTER;
+    }
+
+    if (!p_vdec_data->rotation_angle_change)
+        return MM_ERROR_NONE;
+
+    pthread_mutex_lock(&p_vdec_data->process_dec_lock);
+    error = mpp_decoder_control(p_vdec_data->p_decoder,
+                                MPP_DEC_INIT_CMD_SET_ROT_FLIP_FLAG,
+                                &p_vdec_data->rotation_angle);
+    if (error != 0)
+        loge("set vdecoder rotate failed %d\n", error);
+    p_vdec_data->rotation_angle_change = false;
+    pthread_mutex_unlock(&p_vdec_data->process_dec_lock);
+
+    return error;
+}
+
 static s32 mm_vdec_get_buffer(mm_handle h_comp, mm_buffer *p_buffer)
 {
     s32 error = MM_ERROR_NONE;
@@ -609,6 +647,8 @@ static s32 mm_vdec_get_buffer(mm_handle h_comp, mm_buffer *p_buffer)
     if (p_vdec_data->flags & VDEC_OUTPORT_SEND_ALL_FRAME_FLAG) {
         return MM_ERROR_EMPTY_DATA;
     }
+
+    mm_vdec_set_rotation(p_vdec_data);
 
     p_frame = (struct mpp_frame *)p_buffer->p_buffer;
 
@@ -1254,7 +1294,30 @@ static void mm_vdec_show_debug_info(mm_vdec_data *p_vdec_data)
         p_vdec_data->get_frame_failed_num,
         p_vdec_data->decoder_drop_num);
 #endif
+    printf("\nrotate: %d", p_vdec_data->rotation_angle * 90);
     printf("\nstate: %s\n\n", mm_component_sta_to_str(p_vdec_data->state));
+}
+
+static void mm_vdec_show_perf(mm_vdec_data *p_vdec_data, s64 time_diff)
+{
+    static s64 total_dec_tm = 0;
+    static u32 total_cnt = 0;
+
+    if (!p_vdec_data->debug_en)
+        return;
+
+    total_dec_tm += time_diff;
+    total_cnt++;
+    if (total_dec_tm >= MM_MEDIA_PERF_PERIOD_TIME) {
+        printf("video decoder perf info:\n");
+        printf("\tAvgDecTm(ms)    Count    Period(ms)    CurDecTm(ms)\n");
+        printf("\t%12lld    %5u    %10lld    %11lld\n\n",
+            total_dec_tm / (total_cnt * 1000), total_cnt,
+            total_dec_tm / 1000, time_diff / 1000);
+
+        total_cnt = 0;
+        total_dec_tm = 0;
+    }
 }
 
 static void *mm_vdec_component_thread(void *p_thread_data)
@@ -1268,6 +1331,7 @@ static void *mm_vdec_component_thread(void *p_thread_data)
 #ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
     mm_bind_info *p_bind_video_render = &p_vdec_data->out_port_bind;
 #endif
+    s64 cur_time;
 
     while (1) {
     _AIC_MSG_GET_:
@@ -1309,16 +1373,18 @@ static void *mm_vdec_component_thread(void *p_thread_data)
         }
 #endif
 
+        mm_vdec_set_rotation(p_vdec_data);
+
         /* do video decode*/
-
         p_vdec_data->decoder_total_num++;
+        cur_time = aic_get_time_us();
         pthread_mutex_lock(&p_vdec_data->process_dec_lock);
-
         dec_ret = mpp_decoder_decode(p_vdec_data->p_decoder);
         pthread_mutex_unlock(&p_vdec_data->process_dec_lock);
 
         if (dec_ret == DEC_OK) {
             logd("mpp_decoder_decode ok!!!\n");
+            cur_time = aic_get_time_us() - cur_time;
             /*when set VE_USE_FILL_FB mode, there is no need wkup video render,
               because video render component is no create*/
 #ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
@@ -1326,6 +1392,7 @@ static void *mm_vdec_component_thread(void *p_thread_data)
 #endif
             mm_send_command(p_bind_demuxer->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
             p_vdec_data->decoder_ok_num++;
+            mm_vdec_show_perf(p_vdec_data, cur_time);
         } else if (dec_ret == DEC_NO_READY_PACKET) {
             mm_send_command(p_bind_demuxer->p_bind_comp, MM_COMMAND_WKUP, 0, NULL);
             pthread_mutex_lock(&p_vdec_data->in_pkt_lock);

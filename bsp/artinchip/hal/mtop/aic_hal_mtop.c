@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -13,9 +13,12 @@
 #include "aic_hal_mtop.h"
 #include "aic_hal_clk.h"
 
-void hal_mtop_irq_enable(struct aic_mtop_dev *phandle)
+void hal_mtop_irq_enable(struct aic_mtop_dev *phandle, bool enable)
 {
-    writel(0x1, phandle->reg_base + MTOP_IRQ_CTL);
+    if (enable)
+        writel(0x1, phandle->reg_base + MTOP_IRQ_CTL);
+    else
+        writel(0x0, phandle->reg_base + MTOP_IRQ_CTL);
 }
 
 int hal_mtop_init(struct aic_mtop_dev *phandle)
@@ -103,4 +106,14 @@ irqreturn_t hal_mtop_irq_handler(int irq_num, void *can_handle)
     }
 
     return IRQ_HANDLED;
+}
+
+u32 hal_mtop_get_group_num(void)
+{
+    return MTOP_GROUP_MAX;
+}
+
+u32 hal_mtop_get_port_num(void)
+{
+    return MTOP_PORT_MAX;
 }

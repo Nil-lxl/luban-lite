@@ -456,6 +456,7 @@ s32 nand_fwc_mtd_write(struct fwc_info *fwc, u8 *buf, s32 len)
     struct mtd_dev *mtd;
     int i, calc_len = 0;
     u8 __attribute__((unused)) *rdbuf = NULL, *buf_to_write = NULL, *buf_to_read = NULL;
+    s32 ret = 0;
 
     if ((fwc->meta.size - fwc->trans_size) < len)
         calc_len = fwc->meta.size - fwc->trans_size;
@@ -497,7 +498,8 @@ s32 nand_fwc_mtd_write(struct fwc_info *fwc, u8 *buf, s32 len)
         if (len >= mtd->erasesize) {
             pr_debug("priv->erase_offset[i]: %lu, priv->start_offset[i]: %lu\n", priv->erase_offset[i], priv->start_offset[i]);
             for (j = 0; j < count; j++) {
-                if (nand_fwc_mtd_erase_write(dolen, mtd, priv, i, buf_to_write))
+                ret = nand_fwc_mtd_erase_write(dolen, mtd, priv, i, buf_to_write);
+                if (ret)
                     goto out;
 #ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
                 mtd_read(mtd, priv->start_offset[i], buf_to_read, dolen);
@@ -513,7 +515,8 @@ s32 nand_fwc_mtd_write(struct fwc_info *fwc, u8 *buf, s32 len)
         if (len % mtd->erasesize) {
             pr_debug("priv->erase_offset[i]: %lu, priv->start_offset[i]: %lu\n", priv->erase_offset[i], priv->start_offset[i]);
             dolen = len - (count * mtd->erasesize);
-            if (nand_fwc_mtd_erase_write(dolen, mtd, priv, i, buf_to_write))
+            ret = nand_fwc_mtd_erase_write(dolen, mtd, priv, i, buf_to_write);
+            if (ret)
                 goto out;
 #ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
             mtd_read(mtd, priv->start_offset[i], buf_to_read, dolen);
@@ -541,7 +544,7 @@ s32 nand_fwc_mtd_write(struct fwc_info *fwc, u8 *buf, s32 len)
 out:
     if (rdbuf)
         aicupg_free_align(rdbuf);
-    return 0;
+    return ret;
 }
 
 #ifdef AIC_NFTL_SUPPORT

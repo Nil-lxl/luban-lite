@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -9,7 +9,7 @@
 #include <rtdevice.h>
 #include "lv_aic_spi.h"
 
-#ifdef LV_SPI
+#ifdef LV_SPI_BUS_WIDTH_1
 #define ST77916_RST_PIN  "PE.11"
 
 void lv_spi_panel_enable(struct lv_spi_dev *dev)
@@ -225,8 +225,23 @@ void lv_spi_panel_enable(struct lv_spi_dev *dev)
 }
 #endif
 
-#ifdef LV_QSPI
+#ifdef LV_SPI_BUS_WIDTH_4
 #define ST77916_RST_PIN  "PD.19"
+
+static const struct qspi_disp_priv st77916 = {
+    .instruction = {
+        .cmd_content = 0x02002C00,
+        .flush_content = 0x32002C00,
+        .qspi_lines = 1,
+    },
+    .data_lines = 4,
+};
+
+void lv_qspi_disp_mode_init(struct lv_spi_dev *spi_dev)
+{
+    spi_dev->qspi_disp_mode = false;
+    spi_dev->qspi_priv = &st77916;
+}
 
 void lv_spi_panel_enable(struct lv_spi_dev *dev)
 {

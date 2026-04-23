@@ -28,6 +28,8 @@
 
 #include "tvgTaskScheduler.h"
 #include "tvgSvgLoaderCommon.h"
+#include <ctime>
+
 
 class SvgLoader : public LoadModule, public Task
 {

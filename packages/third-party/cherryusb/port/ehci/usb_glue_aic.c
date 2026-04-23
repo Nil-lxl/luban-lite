@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -69,10 +69,31 @@ aic_ehci_config_t config[] = {
 #endif
 };
 
+#if defined(AIC_SYSCFG_DRV_V16)
+#define PLL_COM                         (USB_HOST0_BASE + 0x878)
+#define PLL_LOCKED                      BIT(23)
+
+int usb_wait_pll_locked(void)
+{
+    uint32_t i = 0;
+
+    while((readl(PLL_COM) & PLL_LOCKED) == 0) {
+        i++;
+        if (i >= 20000) {
+            return -1;
+        }
+    }
+    return 0;
+}
+#endif
 void usb_hc_low_level_init(struct usbh_bus *bus)
 {
     uint32_t val;
     int i = 0;
+
+#if defined(AIC_SYSCFG_DRV_V16)
+    hal_syscfg_usb_pll_en();
+#endif
 
     for (i=0; i<sizeof(config)/sizeof(aic_ehci_config_t); i++) {
         if (bus->hcd.reg_base == config[i].base_addr)
@@ -97,6 +118,11 @@ void usb_hc_low_level_init(struct usbh_bus *bus)
     hal_reset_deassert(config[i].rst_id);
     aicos_udelay(300);
 
+#if defined(AIC_SYSCFG_DRV_V16)
+    if (usb_wait_pll_locked() < 0)
+        USB_LOG_ERR("usb pll unlock :%#lx \n", (long)(readl(PLL_COM)));
+#endif
+
     /* set phy type: UTMI/ULPI */
     val = readl((volatile void *)(unsigned long)(config[i].base_addr+0x800));
 #ifdef FPGA_BOARD_ARTINCHIP
@@ -104,7 +130,7 @@ void usb_hc_low_level_init(struct usbh_bus *bus)
     writel((val  & ~0x1U), (volatile void *)(unsigned long)(config[i].base_addr+0x800));
 #else
     /* board phy type = UTMI */
-    writel((val | 0x1), (volatile void *)(unsigned long)(config[i].base_addr+0x800));
+    writel((val | 0x1 | 0xe << 8), (volatile void *)(unsigned long)(config[i].base_addr+0x800));
 #endif
 
     /* Set AHB2STBUS_INSREG01

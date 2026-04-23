@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -54,7 +54,7 @@ static const struct aic_rgb_info rgb_info[] = {
     { .mode = SRGB, .format = SRGB_6BIT,     .bits_valid = 0x555, .bpp = 18, },
 };
 
-#ifdef AIC_DISP_RGB_DRV_V12
+#if defined(AIC_DISP_RGB_DRV_V12) || defined(AIC_DISP_RGB_DRV_V13)
 static int aic_rgb_data_valid(u32 mode, u32 format, u32 *bits_valid)
 {
     unsigned int i;
@@ -108,7 +108,7 @@ static void aic_rgb_swap(void)
         reg_set_bits(comp->regs + RGB_DATA_SEQ_SEL,
             RGB_DATA_OUT_SEL_MASK, RGB_DATA_OUT_SEL(7));
 
-#ifdef AIC_DISP_RGB_DRV_V12
+#if defined(AIC_DISP_RGB_DRV_V12) || defined(AIC_DISP_RGB_DRV_V13)
         if (aic_rgb_data_valid(rgb->mode, rgb->format, &bits_valid))
             pr_err("rgb data mirror failed, disable data mirror\n");
 #endif

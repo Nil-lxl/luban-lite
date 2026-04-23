@@ -25,6 +25,7 @@
 
 #include "tvgCommon.h"
 #include "tvgSaveModule.h"
+#include <ctime>
 
 #ifdef THORVG_TVG_SAVER_SUPPORT
     #include "tvgTvgSaver.h"

@@ -6,7 +6,7 @@ CPPPATH    = [cwd]
 src = ['burn_in.c']
 
 if GetDepend('LPKG_BURN_IN_PLAYER_ENABLE'):
-    src += ['burn_in_player.c']
+    src += Glob('burn_in_player.c')
 
 group = DefineGroup('burn', src, depend = ['LPKG_BURN_IN'], CPPPATH = CPPPATH)
 

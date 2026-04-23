@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,6 +29,23 @@ rt_device_t g_camera_dev = NULL;
 char *g_mpp_dvp_buf = NULL;
 #endif
 
+#ifdef AIC_DVP_SUPPORT_DEMUX
+#define DVP_PARAM_CH                g_mpp_vin_ch
+#define DVP_PARAMS_CH               ,g_mpp_vin_ch
+
+static u32 g_mpp_vin_ch = 0;
+#else
+#define DVP_PARAM_CH
+#define DVP_PARAMS_CH
+#endif
+
+void mpp_vin_sel_ch(u32 ch)
+{
+#ifdef AIC_DVP_SUPPORT_DEMUX
+    g_mpp_vin_ch = ch;
+#endif
+}
+
 int mpp_vin_init(char *camera)
 {
     if (!camera) {
@@ -47,15 +64,15 @@ int mpp_vin_init(char *camera)
     }
 
 #ifdef AIC_USING_DVP
-    if (aic_dvp_probe())
+    /* DVP probe and open */
+    if (aic_dvp_probe(DVP_PARAM_CH))
+        return -1;
+    if (aic_dvp_open(DVP_PARAM_CH))
+        return -1;
+    if (aic_dvp_vb_init(DVP_PARAM_CH))
         return -1;
 
-    if (aic_dvp_open())
-        return -1;
-
-    if (aic_dvp_vb_init())
-        return -1;
-
+    /* Allocate DVP buffer */
     if (g_mpp_dvp_buf) {
         pr_info("DVP buffer is already malloced: 0x%lx\n", (ptr_t)g_mpp_dvp_buf);
         return 0;
@@ -79,7 +96,7 @@ int mpp_vin_reinit(void)
         return -1;
     }
 
-    if (aic_dvp_vb_init())
+    if (aic_dvp_vb_init(DVP_PARAM_CH))
         return -1;
 
     return 0;
@@ -91,18 +108,18 @@ void mpp_vin_deinit(void)
         rt_device_close(g_camera_dev);
         g_camera_dev = NULL;
     }
+
 #ifdef AIC_USING_DVP
     if (g_mpp_dvp_buf) {
         aicos_free(MEM_CMA, g_mpp_dvp_buf);
         g_mpp_dvp_buf = NULL;
     }
-
-    aic_dvp_vb_deinit();
-    aic_dvp_close();
+    aic_dvp_vb_deinit(DVP_PARAM_CH);
+    aic_dvp_close(DVP_PARAM_CH);
 #endif
 }
 
-int mpp_dvp_ioctl(int cmd, void *arg)
+int mpp_dvp2_ioctl(int cmd, void *arg, u32 ch)
 {
 #ifdef AIC_USING_DVP
     char *tmp = NULL;
@@ -125,29 +142,30 @@ int mpp_dvp_ioctl(int cmd, void *arg)
 
     case DVP_STREAM_ON:
         camera_start(g_camera_dev);
-        if (aic_dvp_open())
+        if (aic_dvp_open(DVP_PARAM_CH))
             return -1;
-        if (aic_dvp_stream_on())
+        if (aic_dvp_stream_on(DVP_PARAM_CH))
             return -1;
         return 0;
 
     case DVP_STREAM_OFF:
-        if (aic_dvp_stream_off())
+        camera_stop(g_camera_dev);
+        if (aic_dvp_stream_off(DVP_PARAM_CH))
             return -1;
-        if (aic_dvp_close())
+        if (aic_dvp_close(DVP_PARAM_CH))
             return -1;
         camera_stop(g_camera_dev);
         return 0;
 
     case DVP_STREAM_PAUSE:
-        aic_dvp_stream_pause();
-        aicos_msleep(50);
         camera_pause(g_camera_dev);
+        aicos_msleep(50);
+        aic_dvp_stream_pause(DVP_PARAM_CH);
         return 0;
 
     case DVP_STREAM_RESUME:
         camera_resume(g_camera_dev);
-        aic_dvp_stream_resume();
+        aic_dvp_stream_resume(DVP_PARAM_CH);
         return 0;
 #endif
 
@@ -155,16 +173,16 @@ int mpp_dvp_ioctl(int cmd, void *arg)
         align_offset = CACHE_LINE_SIZE - (ptr_t)g_mpp_dvp_buf%CACHE_LINE_SIZE;
         tmp = g_mpp_dvp_buf + align_offset;
         return aic_dvp_req_buf(tmp, AIC_MPP_VIN_BUF_SIZE - align_offset,
-                               (struct vin_video_buf *)arg);
+                               (struct vin_video_buf *)arg DVP_PARAMS_CH);
 
     case DVP_Q_BUF:
-        return aic_dvp_q_buf((u32)(ptr_t)arg);
+        return aic_dvp_q_buf((u32)(ptr_t)arg DVP_PARAMS_CH);
 
     case DVP_DQ_BUF:
-        return aic_dvp_dq_buf((u32 *)arg);
+        return aic_dvp_dq_buf((u32 *)arg DVP_PARAMS_CH);
 
     case DVP_GET_TIMESTAMP:
-        return aic_dvp_get_timestamp((u32)(ptr_t)arg);
+        return aic_dvp_get_timestamp((u32)(ptr_t)arg DVP_PARAMS_CH);
 
     default:
         pr_err("Unsupported ioctl command: 0x%x\n", cmd);
@@ -172,4 +190,9 @@ int mpp_dvp_ioctl(int cmd, void *arg)
     }
 #endif
     return 0;
+}
+
+int mpp_dvp_ioctl(int cmd, void *arg)
+{
+    return mpp_dvp2_ioctl(cmd, arg, 0);
 }

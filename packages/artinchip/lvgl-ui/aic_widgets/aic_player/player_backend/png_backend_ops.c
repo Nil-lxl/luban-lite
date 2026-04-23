@@ -103,6 +103,7 @@ struct png_player_ctx {
     uint32_t first_frame_pos;
 
     /* Decoder related */
+    bool has_tRNS;
     struct mpp_decoder *dec;
     uint32_t package_size;
     uint8_t *addr[2];
@@ -300,7 +301,7 @@ static lv_res_t png_player_backend_set_src(void *ctx, const char *src)
     png_ctx->bitmap.width = png_get_be32(png_ctx->ihdr.data);
     png_ctx->bitmap.height = png_get_be32(png_ctx->ihdr.data + 4);
     if (png_ctx->is_normal_png == false) {
-        png_ctx->bitmap.format = png_ctx->dcTL.has_alpha ? MPP_FMT_ARGB_8888 : MPP_FMT_RGB_888;
+        png_ctx->bitmap.format = (png_ctx->dcTL.has_alpha || png_ctx->has_tRNS) ? MPP_FMT_ARGB_8888 : MPP_FMT_RGB_888;
     }
     png_ctx->bitmap.stride = backend_align_stride(png_ctx->bitmap.width, png_ctx->bitmap.format);
 
@@ -624,6 +625,10 @@ static void png_scan_apng_header(struct png_player_ctx *ctx)
                 lv_free(chunk.data);
                 goto cleanup_aux_chunks;
                 return;
+            }
+
+            if (memcmp(chunk.type, "tRNS", 4) == 0) {
+                ctx->has_tRNS = 1;
             }
 
             ctx->aux_chunks = new_aux;

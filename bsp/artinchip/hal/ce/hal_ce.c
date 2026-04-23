@@ -136,6 +136,17 @@ u32 hal_crypto_get_err(u32 alg_unit)
     return ((readl(CE_BASE + CE_REG_TER) >> (8 * alg_unit)) & 0xFF);
 }
 
+void hal_crypto_err_clear(u32 alg_unit)
+{
+    u32 reg_val;
+
+    reg_val = readl(CE_BASE + CE_REG_TER);
+    if (reg_val & (0xFF << (alg_unit << 3))) {
+	reg_val &= 0xFF << (alg_unit << 3);
+    }
+    writel(reg_val, CE_BASE + CE_REG_TER);
+}
+
 s32 hal_crypto_bignum_byteswap(u8 *bn, u32 len)
 {
     u32 i, j;
@@ -180,7 +191,8 @@ s32 hal_crypto_bignum_be2le(u8 *src, u32 slen, u8 *dst, u32 dlen)
 
     return 0;
 }
-#define is_aes(alg) (((alg) & 0xF0) == 0)
+#define is_aes(alg) ((((alg) & 0xF0) == 0x00) && (((alg) & 0x0F) <= 0x04))
+#define is_sm4(alg) ((((alg) & 0xF0) == 0x00) && (((alg) & 0x0F) >= 0x05))
 #define is_des(alg) ((((alg) & 0xF0) == 0x10) || (((alg) & 0xF0) == 0x20))
 #define is_hash(alg) (((alg) & 0xF0) == 0x40)
 #define is_trng(alg) (((alg) & 0xF0) == 0x50)
@@ -220,6 +232,37 @@ void hal_crypto_dump_task(struct crypto_task *task, int len)
 			if (task->alg.alg_tag == ALG_AES_XTS)
 				pr_err("  alg.tweak_addr:   %08x\n",
 				       task->alg.aes_xts.tweak_addr);
+
+			pr_err("  data.in_addr      %08x\n",
+			       task->data.in_addr);
+			pr_err("  data.in_len       %u\n",
+			       task->data.in_len);
+			pr_err("  data.out_addr     %08x\n",
+			       task->data.out_addr);
+			pr_err("  data.out_len      %u\n",
+			       task->data.out_len);
+		}
+		if (is_sm4(task->alg.alg_tag)) {
+			pr_err("  alg.alg_tag:      %08x\n",
+			       task->alg.sm4_ecb.alg_tag);
+			pr_err("  alg.direction:    %u\n",
+			       task->alg.sm4_ecb.direction);
+			pr_err("  alg.key_siz:      %u\n",
+			       task->alg.sm4_ecb.key_siz);
+			pr_err("  alg.key_src:      %u\n",
+			       task->alg.sm4_ecb.key_src);
+			pr_err("  alg.key_addr:     %08x\n",
+			       task->alg.sm4_ecb.key_addr);
+			if (task->alg.alg_tag == ALG_SM4_CBC)
+				pr_err("  alg.iv_addr:      %08x\n",
+				       task->alg.sm4_cbc.iv_addr);
+
+			if (task->alg.alg_tag == ALG_SM4_CTR) {
+				pr_err("  alg.ctr_in:       %08x\n",
+				       task->alg.sm4_ctr.ctr_in_addr);
+				pr_err("  alg.ctr_out:      %08x\n",
+				       task->alg.sm4_ctr.ctr_out_addr);
+			}
 
 			pr_err("  data.in_addr      %08x\n",
 			       task->data.in_addr);
@@ -274,6 +317,118 @@ void hal_crypto_dump_task(struct crypto_task *task, int len)
 			pr_err("  data.out_len      %u\n",
 			       task->data.out_len);
 		}
+        if (task->alg.alg_tag == ALG_SM2_SIGN) {
+            pr_err("  alg.alg_tag:      %08x\n",
+                    task->alg.sm2_sign.alg_tag);
+            pr_err("  alg.op_siz:       %u\n",
+                    task->alg.sm2_sign.op_siz);
+            pr_err("  alg.p_addr:       %08x\n",
+                    task->alg.sm2_sign.p_addr);
+            pr_err("  alg.g_addr:     %08x\n",
+                    task->alg.sm2_sign.G_addr);
+            pr_err("  alg.a_addr:     %08x\n",
+                    task->alg.sm2_sign.a_addr);
+            pr_err("  alg.k_addr:     %08x\n",
+                    task->alg.sm2_sign.k_addr);
+            pr_err("  alg.n_addr:     %08x\n",
+                    task->alg.sm2_sign.n_addr);
+            pr_err("  alg.d_addr:     %08x\n",
+                    task->alg.sm2_sign.d_addr);
+
+            pr_err("  data.in_addr      %08x\n",
+                    task->data.in_addr);
+            pr_err("  data.in_len       %u\n",
+                    task->data.in_len);
+            pr_err("  data.out_addr     %08x\n",
+                    task->data.out_addr);
+            pr_err("  data.out_len      %u\n",
+                    task->data.out_len);
+        }
+
+        if (task->alg.alg_tag == ALG_SM2_VERI) {
+            pr_err("  alg.alg_tag:      %08x\n",
+                    task->alg.sm2_veri.alg_tag);
+            pr_err("  alg.op_siz:       %u\n",
+                    task->alg.sm2_veri.op_siz);
+            pr_err("  alg.p_addr:       %08x\n",
+                    task->alg.sm2_veri.p_addr);
+            pr_err("  alg.g_addr:     %08x\n",
+                    task->alg.sm2_veri.G_addr);
+            pr_err("  alg.a_addr:     %08x\n",
+                    task->alg.sm2_veri.a_addr);
+            pr_err("  alg.Q_addr:     %08x\n",
+                    task->alg.sm2_veri.Q_addr);
+            pr_err("  alg.r_addr:     %08x\n",
+                    task->alg.sm2_veri.r_addr);
+            pr_err("  alg.s_addr:     %08x\n",
+                    task->alg.sm2_veri.s_addr);
+            pr_err("  alg.n_addr:     %08x\n",
+                    task->alg.sm2_veri.n_addr);
+
+            pr_err("  data.in_addr      %08x\n",
+                    task->data.in_addr);
+            pr_err("  data.in_len       %u\n",
+                    task->data.in_len);
+            pr_err("  data.out_addr     %08x\n",
+                    task->data.out_addr);
+            pr_err("  data.out_len      %u\n",
+                    task->data.out_len);
+        }
+
+        if (task->alg.alg_tag == ALG_SM2_ENC) {
+            pr_err("  alg.alg_tag:      %08x\n",
+                    task->alg.sm2_enc.alg_tag);
+            pr_err("  alg.op_siz:       %u\n",
+                    task->alg.sm2_enc.op_siz);
+            pr_err("  alg.p_addr:       %08x\n",
+                    task->alg.sm2_enc.p_addr);
+            pr_err("  alg.g_addr:     %08x\n",
+                    task->alg.sm2_enc.G_addr);
+            pr_err("  alg.a_addr:     %08x\n",
+                    task->alg.sm2_enc.a_addr);
+            pr_err("  alg.Q_addr:     %08x\n",
+                    task->alg.sm2_enc.Q_addr);
+            pr_err("  alg.k_addr:     %08x\n",
+                    task->alg.sm2_enc.k_addr);
+            pr_err("  alg.h_addr:     %08x\n",
+                    task->alg.sm2_enc.h_addr);
+
+            pr_err("  data.in_addr      %08x\n",
+                    task->data.in_addr);
+            pr_err("  data.in_len       %u\n",
+                    task->data.in_len);
+            pr_err("  data.out_addr     %08x\n",
+                    task->data.out_addr);
+            pr_err("  data.out_len      %u\n",
+                    task->data.out_len);
+        }
+
+        if (task->alg.alg_tag == ALG_SM2_DEC) {
+            pr_err("  alg.alg_tag:      %08x\n",
+                    task->alg.sm2_dec.alg_tag);
+            pr_err("  alg.op_siz:       %u\n",
+                    task->alg.sm2_dec.op_siz);
+            pr_err("  alg.p_addr:       %08x\n",
+                    task->alg.sm2_dec.p_addr);
+            pr_err("  alg.R_addr:     %08x\n",
+                    task->alg.sm2_dec.R_addr);
+            pr_err("  alg.a_addr:     %08x\n",
+                    task->alg.sm2_dec.a_addr);
+            pr_err("  alg.h_addr:     %08x\n",
+                    task->alg.sm2_dec.h_addr);
+            pr_err("  alg.d_addr:     %08x\n",
+                    task->alg.sm2_dec.d_addr);
+
+            pr_err("  data.in_addr      %08x\n",
+                    task->data.in_addr);
+            pr_err("  data.in_len       %u\n",
+                    task->data.in_len);
+            pr_err("  data.out_addr     %08x\n",
+                    task->data.out_addr);
+            pr_err("  data.out_len      %u\n",
+                    task->data.out_len);
+        }
+
 		if (is_hash(task->alg.alg_tag)) {
 			pr_err("  alg.alg_tag:      %08x\n",
 			       task->alg.hmac.alg_tag);

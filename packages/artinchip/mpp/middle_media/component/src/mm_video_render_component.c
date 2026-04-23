@@ -1,9 +1,9 @@
 /*
-* Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+* Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
 *
 * SPDX-License-Identifier: Apache-2.0
 *
-*  author: <jun.ma@artinchip.com>
+*  author: <che.jiang@artinchip.com>
 *  Desc: middle media video render component
 */
 
@@ -94,6 +94,10 @@ typedef struct mm_video_render_data {
     s64 pause_time_durtion;
     s64 pre_frame_pts;
     s32 dump_index;
+    s64 tm_vrender_start;
+    s64 tm_vrender_end;
+    s64 tm_rot_start;
+    s64 tm_rot_end;
 } mm_video_render_data;
 
 static void *mm_video_render_component_thread(void *p_thread_data);
@@ -195,10 +199,6 @@ static int mm_video_render_free_frame_buffer(struct mpp_frame *p_frame)
         return -1;
     }
 
-    if (0 == strcmp(PRJ_CHIP, "d13x")) {
-        return 0;
-    }
-
     for (i = 0; i < 3; i++) {
         if (p_frame->buf.phy_addr[i]) {
             mpp_phy_free(p_frame->buf.phy_addr[i]);
@@ -293,11 +293,6 @@ mm_video_render_init_rotation_param(mm_video_render_data *p_video_render_data,
     int ret = 0;
 
     p_video_render_data->init_rotation_param = 0;
-
-    if (0 == strcmp(PRJ_CHIP, "d13x")) {
-        p_video_render_data->init_rotation_param = 1;
-        return 0;
-    }
 
     if (p_video_render_data->rotation_angle == MPP_ROTATION_0) {
         p_video_render_data->init_rotation_param = 1;
@@ -401,9 +396,37 @@ static s32 mm_video_render_update_frame(mm_video_render_data *p_video_render_dat
         (buf_width < buf_height && p_frame->buf.crop.width > p_frame->buf.crop.height)) {
         p_frame->buf.size.width = buf_height;
         p_frame->buf.size.height = buf_width;
-        p_frame->buf.stride[0] = p_frame->buf.size.width;
-        p_frame->buf.stride[1] = p_frame->buf.size.width;
-        p_frame->buf.stride[2] = 0;
+        switch (p_frame->buf.format) {
+            case MPP_FMT_ARGB_8888:
+                p_frame->buf.stride[0] = p_frame->buf.size.width*4;
+                p_frame->buf.stride[1] = 0;
+                p_frame->buf.stride[2] = 0;
+                break;
+            case MPP_FMT_RGB_888:
+                p_frame->buf.stride[0] = p_frame->buf.size.width*3;
+                p_frame->buf.stride[1] = 0;
+                p_frame->buf.stride[2] = 0;
+                break;
+            case MPP_FMT_ARGB_1555:
+            case MPP_FMT_RGB_565:
+                p_frame->buf.stride[0] = p_frame->buf.size.width<<1;
+                p_frame->buf.stride[1] = 0;
+                p_frame->buf.stride[2] = 0;
+                break;
+            case MPP_FMT_YUV420P:
+                p_frame->buf.stride[0] = p_frame->buf.size.width;
+                p_frame->buf.stride[1] = p_frame->buf.size.width>>1;
+                p_frame->buf.stride[2] = p_frame->buf.size.width>>1;
+                break;
+            case MPP_FMT_NV12:
+                p_frame->buf.stride[0] = p_frame->buf.size.width;
+                p_frame->buf.stride[1] = p_frame->buf.size.width;
+                p_frame->buf.stride[2] = 0;
+                break;
+            default:
+                loge("unsupport format %d.", p_frame->buf.format);
+                return MM_ERROR_UNSUPPORT;
+        }
     }
 
     return MM_ERROR_NONE;
@@ -1476,13 +1499,14 @@ static void mm_video_render_show_debug_info(mm_video_render_data *p_video_render
             p_video_render_data->giveback_frame_ok_num,
             p_video_render_data->giveback_frame_fail_num,
             p_video_render_data->drop_frame_num);
+
+    printf("\nrotate: %d",p_video_render_data->rotation_angle * 90);
     printf("\nstate: %s\n\n", mm_component_sta_to_str(p_video_render_data->state));
 }
 
 void mm_video_render_print_frame(struct mpp_frame *p_frame)
 {
-    logi(
-        "[%s:%d]stride[0]:%d,stride[1]:%d,stride[2]:%d,format:%d,width:%d,height:%d,"
+    logi("[%s:%d]stride[0]:%d,stride[1]:%d,stride[2]:%d,format:%d,width:%d,height:%d,"
         "crop_en:%d,crop.x:%d,crop.y:%d,crop.width:%d,crop.height:%d\n",
         __FUNCTION__, __LINE__, p_frame->buf.stride[0], p_frame->buf.stride[1],
         p_frame->buf.stride[2], p_frame->buf.format, p_frame->buf.size.width,
@@ -1490,44 +1514,38 @@ void mm_video_render_print_frame(struct mpp_frame *p_frame)
         p_frame->buf.crop.y, p_frame->buf.crop.width, p_frame->buf.crop.height);
 }
 
-void mm_video_render_calc_fps(mm_video_render_data *p_video_render_data)
+void mm_video_render_show_perf(mm_video_render_data *p_video_render_data)
 {
-    static struct timespec pev = { 0 }, cur = { 0 };
+    static s64 total_vrender_tm = 0;
+    static s64 total_rot_tm = 0;
+    static u64 last_vrender_tm = 0;
+    static u32 total_cnt = 0;
+    s64 time_diff;
 
-    if (pev.tv_sec == 0) {
-        clock_gettime(CLOCK_REALTIME, &pev);
-    } else {
-        long diff = 0;
-        clock_gettime(CLOCK_REALTIME, &cur);
-        diff = (cur.tv_sec - pev.tv_sec) * 1000 * 1000 +
-               (cur.tv_nsec - pev.tv_nsec) / 1000;
+    if (!p_video_render_data->debug_en)
+        return;
 
-        if (diff > 1000 * 1000) {
-            logi("frame_rate:%d\n", p_video_render_data->calc_frame_rate);
-            p_video_render_data->calc_frame_rate = 0;
-            pev = cur;
+    time_diff = p_video_render_data->tm_vrender_end - p_video_render_data->tm_vrender_start;
+    total_vrender_tm += time_diff;
+    time_diff = p_video_render_data->tm_rot_end - p_video_render_data->tm_rot_start;
+    total_rot_tm += time_diff;
+    total_cnt++;
+    if (total_vrender_tm + total_rot_tm >= MM_MEDIA_PERF_PERIOD_TIME) {
+        time_diff = p_video_render_data->tm_vrender_start - last_vrender_tm;
+        if (time_diff > 0) {
+            printf("video render perf info:\n");
+            printf("\tAvgTm(ms)    RotateTm(ms)    RenderTm(ms)    FPS    Count    Period(ms)\n");
+            printf("\t%9lld    %12lld    %12lld    %3lld   %5u    %10lld\n\n",
+                (total_vrender_tm + total_rot_tm) / (total_cnt * 1000),
+                total_rot_tm / (total_cnt * 1000),
+                total_vrender_tm / (total_cnt * 1000),
+                (total_cnt * 1000000 / time_diff), total_cnt,
+                (total_vrender_tm + total_rot_tm) / 1000);
         }
-    }
-}
 
-void mm_video_render_calc_drop_fps(mm_video_render_data *p_video_render_data)
-{
-    static struct timespec pev = { 0 }, cur = { 0 };
-
-    if (pev.tv_sec == 0) {
-        clock_gettime(CLOCK_REALTIME, &pev);
-    } else {
-        long diff = 0;
-        clock_gettime(CLOCK_REALTIME, &cur);
-        diff = (cur.tv_sec - pev.tv_sec) * 1000 * 1000 +
-               (cur.tv_nsec - pev.tv_nsec) / 1000;
-
-        if (diff > 1000 * 1000) {
-            printf("drop_frame_num:%d in time %ld ms\n",
-                p_video_render_data->drop_frame_num, diff / 1000);
-            p_video_render_data->drop_frame_num = 0;
-            pev = cur;
-        }
+        total_cnt = 0;
+        total_vrender_tm = total_rot_tm = 0;
+        last_vrender_tm = p_video_render_data->tm_vrender_start;
     }
 }
 
@@ -1562,16 +1580,18 @@ static s32 mm_video_render_rend_frame(mm_video_render_data *p_video_render_data,
             p_video_render_data, p_frame);
         p_video_render_data->rotation_angle_change = 0;
     }
+    p_video_render_data->tm_rot_start = aic_get_time_us();
     mm_video_render_rotate_frame(p_video_render_data, p_frame);
-
+    p_video_render_data->tm_rot_end = aic_get_time_us();
 #ifdef MM_VIDEO_RENDER_ENABLE_DUMP_PIC
 
     mm_video_render_dump_pic(&p_video_render_data->p_cur_display_frame->buf,
                              p_video_render_data->dump_index++);
 #endif
+    p_video_render_data->tm_vrender_start = aic_get_time_us();
     ret = aic_video_render_rend(p_video_render_data->render,
         p_video_render_data->p_cur_display_frame);
-
+    p_video_render_data->tm_vrender_end = aic_get_time_us();
     if (ret == 0) {
         p_video_render_data->show_frame_ok_num++;
     } else {
@@ -1642,7 +1662,7 @@ _AIC_SHOW_DIRECT_:
             p_video_render_data->flags |= VIDEO_RENDER_INPORT_SEND_ALL_FRAME_FLAG;
 
         p_video_render_data->drop_frame_num++;
-        mm_video_render_calc_drop_fps(p_video_render_data);
+        mm_video_render_show_perf(p_video_render_data);
     } else if (sync_type == MM_VIDEO_SYNC_DELAY) {
         struct timespec delay_before = {0}, delay_after = {0};
         long  delay = 0;
@@ -1863,14 +1883,14 @@ static void *mm_video_render_component_thread(void *p_thread_data)
             sync_type = mm_vdieo_render_process_video_sync(p_video_render_data,
                                                            p_cur_frame, &delay_time);
 
-            mm_video_render_calc_fps(p_video_render_data);
-
             /* process render show different strategy*/
             ret = mm_video_render_process_sync_show(p_video_render_data,
                                                     sync_type, delay_time);
             if (ret != 0) {
                 goto _AIC_MSG_GET_;
             }
+
+            mm_video_render_show_perf(p_video_render_data);
 
             /* giveback frame to vdec*/
             mm_video_render_giveback_frame(p_video_render_data, p_last_frame);

@@ -27,6 +27,7 @@
 #define _TVG_CANVAS_IMPL_H_
 
 #include "tvgPaint.h"
+#include <ctime>
 
 /************************************************************************/
 /* Internal Class Implementation                                        */

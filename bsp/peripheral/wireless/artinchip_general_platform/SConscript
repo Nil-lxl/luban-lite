@@ -1,0 +1,10 @@
+
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob('*.c')
+path = [cwd]
+
+group = DefineGroup("gpio", src, depend = ['AIC_WIRELESS_LAN'], CPPPATH = path)
+
+Return('group')

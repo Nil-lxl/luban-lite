@@ -34,14 +34,14 @@ if os.path.exists(cwd + '/' + lvgl_version + '/lv_aic_canvas.c'):
     src += Glob(lvgl_version + '/*.c')
     if build_lib == True:
         lib_src = Glob(lvgl_version + '/*.c')
-        DefineGroup(library_path + library_name + '.a', lib_src, depend = ['LPKG_USING_LVGL'], LIBRARY='')
+        DefineGroup(library_path + library_name + '.a', lib_src, depend = ['LPKG_USING_LVGL', 'LPKG_MPP'], LIBRARY='')
 
 if src_exist == False:
-    group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL'],
+    group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL', 'LPKG_MPP'],
                     CPPPATH = cpp_path, CFLAGS = cc_flages,
                     LIBS = [library_name], LIBPATH = [library_path])
 else:
-    group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL'],
+    group = DefineGroup('LVGL-port', src, depend = ['LPKG_USING_LVGL', 'LPKG_MPP'],
                     CPPPATH = cpp_path, CFLAGS = cc_flages)
 
 Return('group')

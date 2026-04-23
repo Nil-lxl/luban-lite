@@ -83,6 +83,8 @@ struct rt_touch_crop_info
     rt_int32_t     width;
     rt_int32_t     height;
     rt_uint8_t     enable;
+    rt_uint16_t    x;
+    rt_uint16_t    y;
 };
 
 struct rt_touch_config

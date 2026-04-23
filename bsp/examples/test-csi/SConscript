@@ -1,0 +1,18 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+CPPPATH = [cwd, cwd + '/../../artinchip/sys/d13x/csi_dsp/include']
+src = []
+LIBPATH = []
+LIBS = []
+
+if GetDepend('AIC_CSI_DSP_TEST') and GetDepend('RT_USING_FINSH'):
+    src += Glob('*.c')
+    LIBPATH = [cwd + '/../../artinchip/sys/d13x/csi_dsp/lib']
+    LIBS = ['csi_xt900p32fd_dsp']
+
+group = DefineGroup('test-csi', src, depend = [''], CPPPATH = CPPPATH, LIBPATH = LIBPATH, LIBS = LIBS)
+
+Return('group')

@@ -11,9 +11,10 @@
 #include "aic_core.h"
 #include "aic_osal.h"
 #include "aic_ui.h"
-#include <dfs_fs.h>
 #include "aic_time.h"
 
+#ifdef RT_USING_DFS
+#include <dfs_fs.h>
 void lv_wait_fs_mounted(void)
 {
     struct dfs_filesystem *fs = NULL;
@@ -30,6 +31,7 @@ void lv_wait_fs_mounted(void)
     }
     LV_LOG_ERROR("Wait fs mound timeout, path: %s\n", LVGL_STORAGE_PATH);
 }
+#endif
 
 void lv_user_gui_init(void)
 {

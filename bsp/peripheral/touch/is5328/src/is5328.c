@@ -165,7 +165,7 @@ static void is5328_read_point(struct rt_touch_device *touch, void *buf, rt_size_
                 is5328_touch_down(buf, touch_id[i], touch_x[i], touch_y[i]);
                 // printf("Touch ID: %d, X: %d, Y: %d\n", touch_id[i], touch_x[i], touch_y[i]);
             } else {
-                is5328_touch_up(buf, touch_id[i]);
+                // is5328_touch_up(buf, touch_id[i]);
             }
         }
     } else {

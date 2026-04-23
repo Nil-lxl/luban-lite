@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2024 ArtInChip Technology Co., Ltd
+# Copyright (C) 2024-2026 ArtInChip Technology Co., Ltd
 # zrq <ruiqi.zheng@artinchip.com>
 
 import os
@@ -138,7 +138,7 @@ def parse_and_fill_ota_size(cfgfile, value):
 
             print("Error: 'size' not found in the binary file.")
     except FileNotFoundError:
-        print(f"Error: File '{filename}' not found.")
+        print(f"Error: File '{cfgfile}' not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
 

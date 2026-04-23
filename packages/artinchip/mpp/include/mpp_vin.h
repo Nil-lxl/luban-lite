@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -164,5 +164,8 @@ void mpp_vin_deinit(void);
 
 /* DVP & Camera ioctrl API, defined int mpp_vin.c */
 int mpp_dvp_ioctl(int cmd, void *arg);
+int mpp_dvp2_ioctl(int cmd, void *arg, u32 ch);
+
+void mpp_vin_sel_ch(u32 ch);
 
 #endif /* _MPP_VIDEO_IN_H_ */

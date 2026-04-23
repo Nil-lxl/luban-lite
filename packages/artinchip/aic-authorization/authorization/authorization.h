@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -46,5 +46,17 @@ int aic_hwp_rsa_priv_enc(int flen, unsigned char *from, unsigned char *to,
 
 int aic_hwp_rsa_priv_dec(int flen, unsigned char *from, unsigned char *to,
                          struct ak_options *opts, char *algo);
+
+int aic_sm2_sign(int flen, unsigned char *from, unsigned char *to,
+                 struct ak_options *opts);
+
+int aic_sm2_verify(int flen, unsigned char *from, unsigned char *to,
+                   struct ak_options *opts);
+
+int aic_sm2_enc(int flen, unsigned char *from, unsigned char *to,
+                struct ak_options *opts);
+
+int aic_sm2_dec(int flen, unsigned char *from, unsigned char *to,
+                struct ak_options *opts);
 
 #endif

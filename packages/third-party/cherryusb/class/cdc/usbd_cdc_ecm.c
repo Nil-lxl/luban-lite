@@ -10,9 +10,6 @@
 #define CDC_ECM_IN_EP_IDX  1
 #define CDC_ECM_INT_EP_IDX 2
 
-/* Ethernet Maximum Segment size, typically 1514 bytes */
-#define CONFIG_CDC_ECM_ETH_MAX_SEGSZE 1536U
-
 /* Describe EndPoints configuration */
 static struct usbd_endpoint cdc_ecm_ep_data[3];
 

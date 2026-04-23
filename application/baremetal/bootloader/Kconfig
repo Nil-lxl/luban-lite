@@ -148,6 +148,11 @@ if AICUPG_SUPPORT
         default n
         depends on AIC_BOOTLOADER_SPINAND_SUPPORT
 
+    config AICUPG_NAND_SPL_PT_VER_20
+        bool "NAND SPL Page Table version 2.0"
+        default n
+        depends on AICUPG_NAND_ARTINCHIP
+
     config AICUPG_NOR_ARTINCHIP
         bool "Write to NOR support"
         default n

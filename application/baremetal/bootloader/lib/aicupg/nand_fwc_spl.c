@@ -18,6 +18,44 @@
 #include "nand_fwc_spl.h"
 #include <firmware_security.h>
 
+struct nand_page_table_head {
+    char magic[4]; /* AICP: AIC Page table */
+    u32 entry_cnt;
+    u16 page_size;
+    u8 pad[10];   /* Padding it to fit size 20 bytes */
+};
+
+/*
+ * FSBL page data store in 4 block's NAND Page. This structure is used to keep
+ * all 4 NAND page address that storing FSBL page data, and keep that page data
+ * checksum value(Actually is ~checksum (inverted)).
+ */
+struct nand_page_table_entry {
+    u32 pageaddr[SPL_NAND_IMAGE_BACKUP_NUM]; /* Page address in block */
+    u32 checksum; /* Page data checksum/crc32 value */
+};
+
+/*
+ * Page Table
+ *
+ * Page table store page and data checksum information of FSBL.
+ *
+ * FSBL data will be splited into a lot of 2KB slices, each slice use one NAND
+ * page to store it. Programmer and BROM don't care the actual NAND page size
+ * is 2KB or 4KB or greater, just use the first 2KB(Not support page size less
+ * than 2KB NAND).
+ *
+ * Every slice has 4 backup, that means 4 pages in 4 different good blocks.
+ * Page table is used to keep these page address information and checksum for
+ * every slice.
+ *
+ * Page table always store in the first page of blocks.
+ */
+struct nand_page_table {
+    struct nand_page_table_head head;
+    struct nand_page_table_entry entry[PAGE_TABLE_MAX_ENTRY];
+};
+
 struct aicupg_nand_spl {
     struct mtd_dev *mtd;
     u32 spl_blocks[SPL_NAND_IMAGE_BACKUP_NUM];
@@ -87,7 +125,7 @@ static s32 get_good_blocks_for_spl(struct mtd_dev *mtd, u32 *spl_blocks,
 
         offset = mtd->erasesize * blkidx;
         ret = mtd_read_oob(mtd, offset, NULL, 0, buf, 2);
-        if (ret) {
+        if (ret < 0) {
             pr_err("Read OOB from block %d failed. ret = %d\n", blkidx, ret);
             continue;
         }
@@ -158,7 +196,7 @@ s32 nand_fwc_spl_reserve_blocks(struct aicupg_nand_priv *priv)
 
     ret = get_good_blocks_for_spl(mtd, spl_blocks, block_mark,
                                   SPL_NAND_IMAGE_BACKUP_NUM);
-    if (ret) {
+    if (ret < 0) {
         pr_err("Get SPL blocks failed.\n");
         return ret;
     }
@@ -188,7 +226,7 @@ static s32 nand_spl_get_good_blocks(struct aicupg_nand_spl *spl)
 
     ret = get_good_blocks_for_spl(spl->mtd, spl->spl_blocks, block_mark,
                                   SPL_NAND_IMAGE_BACKUP_NUM);
-    if (ret) {
+    if (ret < 0) {
         pr_err("Get blocks for SPL failed.\n");
         return -1;
     }
@@ -452,7 +490,7 @@ static s32 nand_fwc_spl_program(struct fwc_info *fwc, struct aicupg_nand_spl *sp
 #ifdef AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
         // Read data to calc crc
         ret = mtd_read(spl->mtd, offset, rd_page_data, slice_size);
-        if (ret) {
+        if (ret < 0) {
             pr_err("Read SPL page %d failed.\n", pgidx);
             ret = -1;
             goto out;
@@ -493,7 +531,7 @@ static s32 verify_page_table(struct aicupg_nand_spl *spl, u32 blkidx,
 #ifdef AIC_USING_SPIENC
     spienc_set_bypass(AIC_SPIENC_BYPASS_DISABLE);
 #endif
-    if (ret) {
+    if (ret < 0) {
         pr_err("Read page_data failed.\n");
         return -1;
     }
@@ -544,7 +582,7 @@ static s32 verify_image_page(struct aicupg_nand_spl *spl,
             continue;
         offset = pa * spl->mtd->writesize;
         ret = mtd_read(spl->mtd, offset, page_data, slice_size);
-        if (ret) {
+        if (ret < 0) {
             pr_err("Read page %d, pa 0x%x failed. ret %d\n", i, pa, ret);
             ret = -1;
             goto out;
@@ -630,7 +668,7 @@ s32 nand_fwc_spl_prepare(struct aicupg_nand_priv *priv, u32 datasiz, u32 blksiz)
     memset(spl->image_buf, 0xFF, spl->buf_size);
 
     ret = nand_spl_get_good_blocks(spl);
-    if (ret) {
+    if (ret < 0) {
         pr_err("No good blocks for SPL.\n");
         return -1;
     }

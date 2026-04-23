@@ -60,7 +60,7 @@ static rt_err_t mtd_data_read(struct rt_mtd_nand_device *mtd, rt_off_t off,
             continue;
         }
         ret = rt_mtd_nand_read(mtd, page_id, data, mtd->page_size, RT_NULL, 0);
-        if (ret) {
+        if (ret < 0) {
             LOG_E("Failed to read page data from NAND.\n");
             return -RT_ERROR;
         }
@@ -107,7 +107,7 @@ static int ramdisk_device_nand_init(void)
     }
 
     ret = mtd_data_read(mtd, 0, tmp, mtd->page_size);
-    if (ret) {
+    if (ret < 0) {
             LOG_E("Failed to read ramdisk from NAND.\n");
             ret = -RT_ERROR;
             goto out;
@@ -136,7 +136,7 @@ static int ramdisk_device_nand_init(void)
     }
 
     ret = mtd_data_read(mtd, 0, diskbuf, total_size);
-    if (ret) {
+    if (ret < 0) {
             LOG_E("Failed to read ramdisk from NAND.\n");
             ret = -RT_ERROR;
             goto out;

@@ -63,6 +63,14 @@ static rt_err_t _adc_control(rt_device_t dev, int cmd, void *args)
             result = RT_EOK;
         }
     }
+    else if (cmd == RT_ADC_CMD_ACTIVE_DMA && adc->ops->active_dma)
+    {
+        return adc->ops->active_dma(adc, args);
+    }
+    else if (cmd == RT_ADC_CMD_CONFIG_DMA && adc->ops->config_dma)
+    {
+        return adc->ops->config_dma(adc, args);
+    }
 #ifdef AIC_PSADC_DRV
     else if (cmd == RT_ADC_CMD_GET_VALUES_POLL && adc->ops->get_adc_values_poll)
     {
@@ -78,14 +86,6 @@ static rt_err_t _adc_control(rt_device_t dev, int cmd, void *args)
     }
 #endif
 #ifdef AIC_GPAI_DRV
-    else if (cmd == RT_ADC_CMD_CONFIG_DMA && adc->ops->config_dma)
-    {
-        return adc->ops->config_dma(adc, args);
-    }
-    else if (cmd == RT_ADC_CMD_GET_DMA_DATA && adc->ops->get_dma_data)
-    {
-        return adc->ops->get_dma_data(adc, (rt_uint32_t)(long)args);
-    }
     else if (cmd == RT_ADC_CMD_STOP_DMA && adc->ops->stop_dma)
     {
         return adc->ops->stop_dma(adc, (rt_uint32_t)(long)args);

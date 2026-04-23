@@ -1,7 +1,12 @@
 
 # Kconfig file for package FDTLIB
-config LPKG_USING_FDTLIB
+menuconfig LPKG_USING_FDTLIB
     bool "fdtlib: fdt parse lib"
     default y
 
 
+if LPKG_USING_FDTLIB
+config LPKG_USING_FDTLIB_CRC32_VERIFY
+    bool "enable payload crc32 verification"
+    default y
+endif # LPKG_USING_FDTLIB

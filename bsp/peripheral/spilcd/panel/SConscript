@@ -1,0 +1,21 @@
+from building import *
+import os
+
+cwd = GetCurrentDir()
+group = []
+src = []
+
+if GetDepend(['AIC_QSPI_LCD_ST77916']):
+    src += Glob('panel_st77916.c')
+
+CPPPATH = [cwd]
+
+list = os.listdir(cwd)
+for d in list:
+    path = os.path.join(cwd, d)
+    if os.path.isfile(os.path.join(path, 'SConscript')):
+        group = group + SConscript(os.path.join(d, 'SConscript'))
+
+group = group + DefineGroup('SPI-LCD', src, depend = ['AIC_QSPI_LCD_ST77916'], CPPPATH = CPPPATH)
+
+Return('group')

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -177,6 +177,7 @@ struct aic_dma_chan * hal_request_dma_chan(void);
 int hal_dma_init(void);
 int hal_dma_deinit(void);
 int hal_dma_chan_dump(int ch_nr);
+int hal_wait_dma_chans_finish(void);
 
 irqreturn_t hal_dma_irq(int irq, void *arg);
 

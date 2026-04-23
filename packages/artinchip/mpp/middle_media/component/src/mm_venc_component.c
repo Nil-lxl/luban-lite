@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 
+#include "aic_core.h"
 #include "aic_message.h"
 #include "aic_muxer.h"
 #include "dma_allocator.h"
@@ -36,6 +37,8 @@
 typedef struct mm_venc_in_frame {
     struct mpp_frame frame;
     struct mpp_list list;
+    u32 phy_addr;
+    s32 size;
 } mm_venc_in_frame;
 
 typedef struct mm_venc_out_packet {
@@ -113,8 +116,9 @@ typedef struct mm_venc_data {
     })
 
 static void *mm_venc_component_thread(void *p_thread_data);
-static void mm_venc_component_count_print(mm_venc_data *p_venc_data);
-
+static void mm_venc_show_debug_info(mm_venc_data *p_venc_data);
+static void mm_venc_event_notify(mm_venc_data *p_venc_data, MM_EVENT_TYPE event,
+    u32 data1, u32 data2, void *p_event_data);
 
 static s32 mm_venc_buffer_init(mm_venc_data *p_venc_data)
 {
@@ -131,7 +135,8 @@ static s32 mm_venc_buffer_init(mm_venc_data *p_venc_data)
     s32 width = p_venc_data->video_stream.width;
     s32 height = p_venc_data->video_stream.height;
     s32 quality = p_venc_data->encoder_config.quality;
-    s32 size = (width * height / 3) * quality / 100;
+    s32 stride = ALIGN_UP(width, 16);
+    s32 size = (stride * height / 3) * quality / 100;
 
     for (i = 0; i < VENC_FRAME_ONE_TIME_CREATE_NUM; i++) {
         mm_venc_out_packet *p_pkt_node =
@@ -155,7 +160,109 @@ static s32 mm_venc_buffer_init(mm_venc_data *p_venc_data)
         error = MM_ERROR_INSUFFICIENT_RESOURCES;
     }
 
+    for (i = 0; i < VENC_FRAME_ONE_TIME_CREATE_NUM; i++) {
+        mm_venc_in_frame *p_frame_node =
+            (mm_venc_in_frame *)mpp_alloc(sizeof(mm_venc_in_frame));
+        if (NULL == p_frame_node) {
+            break;
+        }
+        memset(p_frame_node, 0x00, sizeof(mm_venc_in_frame));
+
+        size = width * height * 3 / 2;
+        p_frame_node->phy_addr = mpp_phy_alloc(size);
+        if (p_frame_node->phy_addr == 0) {
+            loge("mpp_phy_alloc for frame:%d y buf failed", i);
+            error = MM_ERROR_INSUFFICIENT_RESOURCES;
+            goto exit;
+        }
+
+        mpp_list_add_tail(&p_frame_node->list, &p_venc_data->in_empty_frame);
+        p_venc_data->in_frame_node_num++;
+    }
+    if (p_venc_data->in_frame_node_num == 0) {
+        loge("mpp_alloc in frame video node fail\n");
+        error = MM_ERROR_INSUFFICIENT_RESOURCES;
+        goto exit;
+    }
+
 exit:
+    return error;
+}
+
+static s32 mm_venc_buffer_deinit(mm_venc_data *p_venc_data)
+{
+    mm_venc_out_packet *p_pkt_node = NULL, *p_pkt_node1 = NULL;
+    mm_venc_in_frame *p_frame_node = NULL, *p_frame_node1 = NULL;
+    s32 error = MM_ERROR_NONE;
+
+    pthread_mutex_lock(&p_venc_data->in_frame_lock);
+    if (!mpp_list_empty(&p_venc_data->in_empty_frame)) {
+        mpp_list_for_each_entry_safe(p_frame_node, p_frame_node1,
+                                     &p_venc_data->in_empty_frame, list)
+        {
+            mpp_list_del(&p_frame_node->list);
+            if (p_frame_node->phy_addr) {
+                mpp_phy_free(p_frame_node->phy_addr);
+                p_frame_node->phy_addr = 0;
+            }
+            mpp_free(p_frame_node);
+        }
+    }
+
+    if (!mpp_list_empty(&p_venc_data->in_ready_frame)) {
+        mpp_list_for_each_entry_safe(p_frame_node, p_frame_node1,
+                                     &p_venc_data->in_ready_frame, list)
+        {
+            mpp_list_del(&p_frame_node->list);
+            if (p_frame_node->phy_addr) {
+                mpp_phy_free(p_frame_node->phy_addr);
+                p_frame_node->phy_addr = 0;
+            }
+            mpp_free(p_frame_node);
+        }
+    }
+
+    pthread_mutex_unlock(&p_venc_data->in_frame_lock);
+
+    pthread_mutex_lock(&p_venc_data->out_pkt_lock);
+    if (!mpp_list_empty(&p_venc_data->out_empty_pkt)) {
+        mpp_list_for_each_entry_safe(p_pkt_node, p_pkt_node1,
+                                     &p_venc_data->out_empty_pkt, list)
+        {
+            mpp_list_del(&p_pkt_node->list);
+            if (p_pkt_node->phy_addr) {
+                mpp_phy_free(p_pkt_node->phy_addr);
+                p_pkt_node->phy_addr = 0;
+            }
+            mpp_free(p_pkt_node);
+        }
+    }
+    if (!mpp_list_empty(&p_venc_data->out_ready_pkt)) {
+        mpp_list_for_each_entry_safe(p_pkt_node, p_pkt_node1,
+                                     &p_venc_data->out_ready_pkt, list)
+        {
+            mpp_list_del(&p_pkt_node->list);
+            if (p_pkt_node->phy_addr) {
+                mpp_phy_free(p_pkt_node->phy_addr);
+                p_pkt_node->phy_addr = 0;
+            }
+            mpp_free(p_pkt_node);
+        }
+    }
+
+    if (!mpp_list_empty(&p_venc_data->out_processing_pkt)) {
+        mpp_list_for_each_entry_safe(p_pkt_node, p_pkt_node1,
+                                     &p_venc_data->out_processing_pkt, list)
+        {
+            mpp_list_del(&p_pkt_node->list);
+            if (p_pkt_node->phy_addr) {
+                mpp_phy_free(p_pkt_node->phy_addr);
+                p_pkt_node->phy_addr = 0;
+            }
+            mpp_free(p_pkt_node);
+        }
+    }
+
     return error;
 }
 
@@ -231,7 +338,7 @@ static s32 mm_venc_set_parameter(mm_handle h_component, MM_INDEX_TYPE index, voi
         break;
     }
     case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
-        mm_venc_component_count_print(p_venc_data);
+        mm_venc_show_debug_info(p_venc_data);
         break;
 
     default:
@@ -347,7 +454,22 @@ static s32 mm_venc_send_buffer(mm_handle h_component, mm_buffer *p_buffer)
     mm_venc_in_frame *p_frame_node;
     struct aic_message msg;
     struct mpp_frame *p_frame = NULL;
+    u32 size = 0;
     p_venc_data = (mm_venc_data *)(((mm_component *)h_component)->p_comp_private);
+
+    if (!p_venc_data || !p_buffer)
+        return MM_ERROR_NULL_POINTER;
+
+    p_frame = (struct mpp_frame *)p_buffer->p_buffer;
+    if (!p_frame)
+        return MM_ERROR_NULL_POINTER;
+
+    if (p_frame->buf.format != MPP_FMT_NV12 &&
+        p_frame->buf.format != MPP_FMT_NV21) {
+        mm_venc_event_notify(p_venc_data, MM_EVENT_BUFFER_FLAG, 0, 0, NULL);
+        loge("unsupport color format type 0x%x\n", p_frame->buf.format);
+        return MM_ERROR_UNSUPPORT;
+    }
 
     pthread_mutex_lock(&p_venc_data->state_lock);
     if (p_venc_data->state != MM_STATE_EXECUTING) {
@@ -357,27 +479,36 @@ static s32 mm_venc_send_buffer(mm_handle h_component, mm_buffer *p_buffer)
         return MM_ERROR_INVALID_STATE;
     }
 
+    pthread_mutex_unlock(&p_venc_data->state_lock);
+
     if (mm_venc_list_empty(&p_venc_data->in_empty_frame,
                            p_venc_data->in_frame_lock)) {
-        mm_venc_in_frame *p_frame_node =
-            (mm_venc_in_frame *)mpp_alloc(sizeof(mm_venc_in_frame));
-        if (NULL == p_frame_node) {
-            loge("MM_ERROR_INSUFFICIENT_RESOURCES\n");
-            pthread_mutex_unlock(&p_venc_data->state_lock);
-            return MM_ERROR_INSUFFICIENT_RESOURCES;
-        }
-        memset(p_frame_node, 0x00, sizeof(mm_venc_in_frame));
-        pthread_mutex_lock(&p_venc_data->in_frame_lock);
-        mpp_list_add_tail(&p_frame_node->list, &p_venc_data->in_empty_frame);
-        pthread_mutex_unlock(&p_venc_data->in_frame_lock);
-        p_venc_data->in_frame_node_num++;
+        return MM_ERROR_INSUFFICIENT_RESOURCES;
     }
 
     pthread_mutex_lock(&p_venc_data->in_frame_lock);
     p_frame_node = mpp_list_first_entry(&p_venc_data->in_empty_frame,
                                         mm_venc_in_frame, list);
-    p_frame = (struct mpp_frame *)p_buffer->p_buffer;
+    pthread_mutex_unlock(&p_venc_data->in_frame_lock);
     memcpy(&p_frame_node->frame, p_frame, sizeof(struct mpp_frame));
+    size = p_frame->buf.stride[0] * p_frame->buf.size.height;
+    p_frame_node->frame.buf.format = p_frame->buf.format;
+    p_frame_node->frame.buf.phy_addr[0] = p_frame_node->phy_addr;
+    p_frame_node->frame.buf.phy_addr[1] = p_frame_node->phy_addr + size;
+    p_frame_node->frame.buf.phy_addr[2] = 0;
+
+    aicos_dcache_invalid_range((void *)(unsigned long)p_frame->buf.phy_addr[0],
+        ALIGN_UP(size, CACHE_LINE_SIZE));
+    aicos_dcache_invalid_range((void *)(unsigned long)p_frame->buf.phy_addr[1],
+        ALIGN_UP(size / 2, CACHE_LINE_SIZE));
+    memcpy((void*)(unsigned long)p_frame_node->frame.buf.phy_addr[0],
+        (void*)(unsigned long)p_frame->buf.phy_addr[0], size);
+    memcpy((void*)(unsigned long)p_frame_node->frame.buf.phy_addr[1],
+        (void*)(unsigned long)p_frame->buf.phy_addr[1], size / 2);
+    aicos_dcache_clean_range((void *)(unsigned long)p_frame_node->phy_addr,
+        ALIGN_UP(size * 3 / 2, CACHE_LINE_SIZE));
+
+    pthread_mutex_lock(&p_venc_data->in_frame_lock);
     mpp_list_del(&p_frame_node->list);
     mpp_list_add_tail(&p_frame_node->list, &p_venc_data->in_ready_frame);
     pthread_mutex_unlock(&p_venc_data->in_frame_lock);
@@ -388,7 +519,6 @@ static s32 mm_venc_send_buffer(mm_handle h_component, mm_buffer *p_buffer)
 
     p_venc_data->receive_frame_ok_num++;
 
-    pthread_mutex_unlock(&p_venc_data->state_lock);
     return error;
 }
 
@@ -459,8 +589,6 @@ s32 mm_venc_component_deinit(mm_handle h_component)
     s32 error = MM_ERROR_NONE;
     mm_component *p_comp;
     mm_venc_data *p_venc_data;
-    mm_venc_out_packet *p_pkt_node = NULL, *p_pkt_node1 = NULL;
-    mm_venc_in_frame *p_frame_node = NULL, *p_frame_node1 = NULL;
     p_comp = (mm_component *)h_component;
     struct aic_message msg;
     p_venc_data = (mm_venc_data *)p_comp->p_comp_private;
@@ -479,65 +607,8 @@ s32 mm_venc_component_deinit(mm_handle h_component)
     aic_msg_put(&p_venc_data->msg, &msg);
     pthread_join(p_venc_data->thread_id, (void *)&error);
 
-    pthread_mutex_lock(&p_venc_data->in_frame_lock);
-    if (!mpp_list_empty(&p_venc_data->in_empty_frame)) {
-        mpp_list_for_each_entry_safe(p_frame_node, p_frame_node1,
-                                     &p_venc_data->in_empty_frame, list)
-        {
-            mpp_list_del(&p_frame_node->list);
-            mpp_free(p_frame_node);
-        }
-    }
+    mm_venc_buffer_deinit(p_venc_data);
 
-    if (!mpp_list_empty(&p_venc_data->in_ready_frame)) {
-        mpp_list_for_each_entry_safe(p_frame_node, p_frame_node1,
-                                     &p_venc_data->in_ready_frame, list)
-        {
-            mpp_list_del(&p_frame_node->list);
-            mpp_free(p_pkt_node);
-        }
-    }
-
-    pthread_mutex_unlock(&p_venc_data->in_frame_lock);
-
-    pthread_mutex_lock(&p_venc_data->out_pkt_lock);
-    if (!mpp_list_empty(&p_venc_data->out_empty_pkt)) {
-        mpp_list_for_each_entry_safe(p_pkt_node, p_pkt_node1,
-                                     &p_venc_data->out_empty_pkt, list)
-        {
-            mpp_list_del(&p_pkt_node->list);
-            if (p_pkt_node->phy_addr) {
-                mpp_phy_free(p_pkt_node->phy_addr);
-                p_pkt_node->phy_addr = 0;
-            }
-            mpp_free(p_pkt_node);
-        }
-    }
-    if (!mpp_list_empty(&p_venc_data->out_ready_pkt)) {
-        mpp_list_for_each_entry_safe(p_pkt_node, p_pkt_node1,
-                                     &p_venc_data->out_ready_pkt, list)
-        {
-            mpp_list_del(&p_pkt_node->list);
-            if (p_pkt_node->phy_addr) {
-                mpp_phy_free(p_pkt_node->phy_addr);
-                p_pkt_node->phy_addr = 0;
-            }
-            mpp_free(p_pkt_node);
-        }
-    }
-
-    if (!mpp_list_empty(&p_venc_data->out_processing_pkt)) {
-        mpp_list_for_each_entry_safe(p_pkt_node, p_pkt_node1,
-                                     &p_venc_data->out_processing_pkt, list)
-        {
-            mpp_list_del(&p_pkt_node->list);
-            if (p_pkt_node->phy_addr) {
-                mpp_phy_free(p_pkt_node->phy_addr);
-                p_pkt_node->phy_addr = 0;
-            }
-            mpp_free(p_pkt_node);
-        }
-    }
     pthread_mutex_unlock(&p_venc_data->out_pkt_lock);
 
     pthread_mutex_destroy(&p_venc_data->in_frame_lock);
@@ -574,8 +645,6 @@ s32 mm_venc_component_init(mm_handle h_component)
     mm_component *p_comp;
     mm_venc_data *p_venc_data;
     s32 error = MM_ERROR_NONE;
-    u32 err;
-    u32 i;
     s8 msg_create = 0;
     s8 in_frame_lock_init = 0;
     s8 out_pkt_lock_init = 0;
@@ -629,21 +698,6 @@ s32 mm_venc_component_init(mm_handle h_component)
     mpp_list_init(&p_venc_data->in_empty_frame);
     mpp_list_init(&p_venc_data->in_ready_frame);
     mpp_list_init(&p_venc_data->in_processed_frame);
-    for (i = 0; i < VENC_PACKET_ONE_TIME_CREATE_NUM; i++) {
-        mm_venc_in_frame *p_frame_node =
-            (mm_venc_in_frame *)mpp_alloc(sizeof(mm_venc_in_frame));
-        if (NULL == p_frame_node) {
-            break;
-        }
-        memset(p_frame_node, 0x00, sizeof(mm_venc_in_frame));
-        mpp_list_add_tail(&p_frame_node->list, &p_venc_data->in_empty_frame);
-        p_venc_data->in_frame_node_num++;
-    }
-    if (p_venc_data->in_frame_node_num == 0) {
-        loge("mpp_alloc in frame video node fail\n");
-        error = MM_ERROR_INSUFFICIENT_RESOURCES;
-        goto _EXIT;
-    }
 
     p_venc_data->out_pkt_node_buffer = 0;
     mpp_list_init(&p_venc_data->out_empty_pkt);
@@ -673,8 +727,8 @@ s32 mm_venc_component_init(mm_handle h_component)
     state_lock_init = 1;
 
     // Create the component thread
-    err = pthread_create(&p_venc_data->thread_id, &attr, mm_venc_component_thread, p_venc_data);
-    if (err) {
+    error = pthread_create(&p_venc_data->thread_id, &attr, mm_venc_component_thread, p_venc_data);
+    if (error) {
         loge("pthread_create venc component fail!");
         error = MM_ERROR_INSUFFICIENT_RESOURCES;
         goto _EXIT;
@@ -893,24 +947,22 @@ CMD_EXIT:
     return cmd;
 }
 
-void mm_venc_component_count_print(mm_venc_data *p_venc_data)
+void mm_venc_show_debug_info(mm_venc_data *p_venc_data)
 {
-    printf("[%s:%d]receive_frame_ok_num:%u,receive_frame_fail_num:%u,"
-           "giveback_frame_ok_num:%u,giveback_frame_fail_num:%u,"
-           "encoder_frame_ok_num:%u,send_pkt_ok_num:%u,send_pkt_fail_num:%u,"
-           "giveback_pkt_ok_num:%u,giveback_pkt_fail_num:%u\n",
-           __FUNCTION__, __LINE__,
-           p_venc_data->receive_frame_ok_num,
-           p_venc_data->receive_frame_fail_num,
-           p_venc_data->giveback_frame_ok_num,
-           p_venc_data->giveback_frame_fail_num,
-           p_venc_data->encoder_frame_ok_num,
-           p_venc_data->send_pkt_ok_num,
-           p_venc_data->send_pkt_fail_num,
-           p_venc_data->giveback_pkt_ok_num,
-           p_venc_data->giveback_pkt_fail_num);
+    printf("****************************Venc comp info****************************\n");
+    printf("input frame info:\n");
+    printf("recv_ok    recv_fail    give_ok    give_fail    encode_ok\n");
+    printf("%7u    %9u    %7u    %9u    %9u\n",
+        p_venc_data->receive_frame_ok_num, p_venc_data->receive_frame_fail_num,
+        p_venc_data->giveback_frame_ok_num, p_venc_data->giveback_frame_fail_num,
+        p_venc_data->send_pkt_ok_num);
+    printf("\noutput packet info:\n");
+    printf("send_ok    send_fail    give_ok    give_fail\n");
+    printf("%7u    %9u    %7u    %9u\n",
+        p_venc_data->send_pkt_ok_num, p_venc_data->send_pkt_fail_num,
+        p_venc_data->giveback_pkt_ok_num, p_venc_data->giveback_pkt_fail_num);
+    printf("\nstate: %s\n\n", mm_component_sta_to_str(p_venc_data->state));
 }
-
 
 static int mm_venc_component_process_snapshot(mm_venc_data *p_venc_data, mm_venc_out_packet *p_pkt_node)
 {
@@ -969,9 +1021,7 @@ static void *mm_venc_component_thread(void *p_thread_data)
                                                 mm_venc_in_frame, list);
             pthread_mutex_unlock(&p_venc_data->in_frame_lock);
             venc_buffer.p_buffer = (u8 *)&p_frame_node->frame;
-#ifdef AIC_MPP_RECORDER_USING_EXTRA_FRAME
-            ret = mm_venc_event_giveback_buffer(p_venc_data, &venc_buffer);
-#else
+#ifndef AIC_MPP_RECORDER_USING_EXTRA_FRAME
             ret = mm_giveback_buffer(p_venc_data->in_port_bind.p_bind_comp, &venc_buffer);
 #endif
             if (ret != 0) {

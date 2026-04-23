@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -650,8 +650,10 @@ NFTL_STRESS_TEST_FAILED:
 #define BUFFER_SIZE 8192
 static void cat_file(int argc, char **argv)
 {
-    FILE *fd;
+    u32 read_bytes = 0;
+    u32 file_sizes = 0;
     uint8_t *buffer;
+    FILE *fp;
 
     if (argc != 2) {
         pr_err("Usage %s: %s <file name>.\n", __func__, __func__);
@@ -664,19 +666,16 @@ static void cat_file(int argc, char **argv)
         return;
     }
 
-    u32 read_bytes = 0;
-    u32 file_sizes = 0;
     /* open the ‘/text.txt’ file in read-only mode */
-
-    fd = fopen(argv[1], "rb+");
-    if (fd >= 0) {
-        while ((read_bytes = fread(buffer, sizeof(uint8_t), BUFFER_SIZE, fd))) {
+    fp = fopen(argv[1], "rb+");
+    if (fp != NULL) {
+        while ((read_bytes = fread(buffer, sizeof(uint8_t), BUFFER_SIZE, fp))) {
             file_sizes += read_bytes;
             rt_nftl_dump_hex(buffer, read_bytes);
         }
 
         pr_info("sizes: %d\n", file_sizes);
-        fclose(fd);
+        fclose(fp);
     }
 
     if (buffer)

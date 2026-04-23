@@ -542,10 +542,14 @@ static int qspi_master_wait_dma_done(struct aic_dma_chan *ch, u32 tmo)
 {
     u32 left, cnt = 0;
 
-    while (hal_dma_chan_tx_status(ch, &left) != DMA_COMPLETE && left) {
+    while (1) {
+        if ((hal_dma_chan_tx_status(ch, &left) == DMA_COMPLETE) && (left == 0))
+            break;
+
         aic_udelay(HAL_QSPI_WAIT_DELAY_US);
         cnt++;
         if (cnt > tmo) {
+            hal_dma_chan_dump(ch->ch_nr);
             return -ETIMEDOUT;
         }
     }
@@ -662,6 +666,7 @@ static int qspi_txrx_dma_sync(qspi_master_handle *h,
     qspi_hw_tx_dma_disable(base);
     hal_dma_chan_stop(qspi->dma_rx);
     hal_dma_chan_stop(qspi->dma_tx);
+    aicos_dcache_invalid_range((void *)(unsigned long)t->rx_data, t->data_len);
 
     return ret;
 }
@@ -803,6 +808,7 @@ static int qspi_master_transfer_dma_sync(qspi_master_handle *h,
     rx_stop:
         qspi_hw_rx_dma_disable(base);
         hal_dma_chan_stop(dma_rx);
+        aicos_dcache_invalid_range((void *)(unsigned long)t->rx_data, t->data_len);
     }
 out:
     qspi_hw_get_interrupt_status(base, &sts);
@@ -931,6 +937,7 @@ static void qspi_master_dma_rx_callback(void *h)
 {
     struct qspi_master_state *qspi = h;
     struct aic_dma_chan *dma_rx = qspi->dma_rx;
+    struct aic_dma_task *task = NULL;
     u32 base;
 
     qspi->status |= HAL_QSPI_STATUS_ASYNC_DMA_DONE;
@@ -938,6 +945,8 @@ static void qspi_master_dma_rx_callback(void *h)
         base = qspi_hw_index_to_base(qspi->idx);
         qspi_hw_rx_dma_disable(base);
         hal_dma_chan_stop(dma_rx);
+        task = dma_rx->desc;
+        aicos_dcache_invalid_range((void *)(unsigned long)task->dst, task->len);
         if (qspi->cb)
             qspi->cb(h, qspi->cb_priv);
     }
@@ -1054,6 +1063,10 @@ int hal_qspi_master_transfer_async(qspi_master_handle *h,
 
 void hal_qspi_master_irq_handler(qspi_master_handle *h)
 {
+#ifdef AIC_DMA_DRV
+    struct aic_dma_chan *dma_rx = NULL;
+    struct aic_dma_task *task = NULL;
+#endif
     struct qspi_master_state *qspi;
     u32 base, sts;
 
@@ -1111,8 +1124,12 @@ void hal_qspi_master_irq_handler(qspi_master_handle *h)
 #ifdef AIC_DMA_DRV
             if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_TX_DMA)
                 hal_dma_chan_stop(qspi->dma_tx);
-            if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_RX_DMA)
+            if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_RX_DMA) {
                 hal_dma_chan_stop(qspi->dma_rx);
+                dma_rx = qspi->dma_rx;
+                task = dma_rx->desc;
+                aicos_dcache_invalid_range((void *)(unsigned long)task->dst, task->len);
+            }
 #endif
             if (qspi->cb)
                 qspi->cb(h, qspi->cb_priv);

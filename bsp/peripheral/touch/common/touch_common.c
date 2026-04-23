@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -103,9 +103,16 @@ rt_int8_t aic_touch_dynamic_crop(struct rt_touch_device *touch, int16_t *input_x
         rt_kprintf("Crop width or height out of screen bound!\n");
         return RT_EINVAL;
     }
+    if (crop_info.x < 0 || crop_info.y < 0) {
+        rt_kprintf("Crop width or height out of screen bound!\n");
+        return RT_EINVAL;
+    }
 
-    div_x = (AIC_SCREEN_REAL_X_RESOLUTION - (int16_t)crop_info.width) / 2;
-    div_y = (AIC_SCREEN_REAL_Y_RESOLUTION - (int16_t)crop_info.height) / 2;
+
+    div_x = crop_info.x;
+    div_y = crop_info.y;
+
+
 
     if (crop_info.width >= crop_info.height) {
         *input_x -= div_y;
@@ -117,7 +124,10 @@ rt_int8_t aic_touch_dynamic_crop(struct rt_touch_device *touch, int16_t *input_x
             return RT_EINVAL;
 
         *input_x = (*input_x * AIC_SCREEN_REAL_Y_RESOLUTION * 100 / (int16_t)crop_info.height / 100);
+        *input_y = (*input_y * AIC_SCREEN_REAL_X_RESOLUTION * 100 / (int16_t)crop_info.width / 100);
         if (*input_x >= AIC_SCREEN_REAL_Y_RESOLUTION)
+            return RT_EINVAL;
+        if (*input_y >= AIC_SCREEN_REAL_X_RESOLUTION)
             return RT_EINVAL;
     } else {
         *input_x -= div_x;
@@ -129,7 +139,10 @@ rt_int8_t aic_touch_dynamic_crop(struct rt_touch_device *touch, int16_t *input_x
             return RT_EINVAL;
 
         *input_x = (*input_x * AIC_SCREEN_REAL_X_RESOLUTION * 100 / (int16_t)crop_info.width / 100);
+        *input_y = (*input_y * AIC_SCREEN_REAL_Y_RESOLUTION * 100 / (int16_t)crop_info.height / 100);
         if (*input_x >= AIC_SCREEN_REAL_X_RESOLUTION)
+            return RT_EINVAL;
+        if (*input_y >= AIC_SCREEN_REAL_Y_RESOLUTION)
             return RT_EINVAL;
     }
 

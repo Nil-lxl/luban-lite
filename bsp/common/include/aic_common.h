@@ -18,8 +18,8 @@ extern "C" {
 
 /* Luban-Lite version information */
 #define LL_VERSION      1
-#define LL_SUBVERSION   2
-#define LL_REVISION     3
+#define LL_SUBVERSION   3
+#define LL_REVISION     0
 
 typedef __signed__ char     s8;
 typedef unsigned char       u8;
@@ -408,6 +408,13 @@ typedef enum {
 #endif
     MAX_MEM_REGION,
 } aic_mem_region_t;
+
+typedef struct {
+    char * name;
+    aic_mem_region_t type;
+    size_t start;
+    size_t end;
+} heap_def_t;
 
 /* cma */
 #ifdef AIC_BOOTLOADER

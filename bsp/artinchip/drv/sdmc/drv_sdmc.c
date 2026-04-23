@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -579,6 +579,9 @@ static struct aic_sdmc_pdata sdmc_pdata[] = {
 #endif
 #ifdef AIC_SDMC0_IS_SDIO
         .is_sdio = 1,
+#endif
+#ifdef AIC_SDMC0_USING_HOTPLUG
+        .is_hotplug = 1,
 #endif
         .drv_phase = AIC_SDMC0_DRV_PHASE,
         .smp_phase = AIC_SDMC0_SMP_PHASE,

@@ -157,8 +157,8 @@ if GetDepend('AIC_MTOP_DRV'):
     ver = ver.replace('"','')
     if GetDepend('DRIVER_HAL_EN'):
         src += Glob('drv/mtop/*.c')
-        src += Glob('hal/mtop/*.c', exclude=['hal/mtop/*def_v*.c'])
-        src += Glob('hal/mtop/*def_v%s.c' % ver)
+        src += Glob('hal/mtop/*.c', exclude=['hal/mtop/*_v*.c'])
+        src += Glob('hal/mtop/*_v%s.c' % ver)
 
 # SPINAND driver
 if GetDepend('AIC_SPINAND_DRV'):
@@ -289,6 +289,9 @@ if GetDepend('AIC_PANEL_DSI_FT8201'):
 if GetDepend('AIC_PANEL_DSI_ST7701S'):
     src += Glob('drv/display/panel/panel_dsi_st7701s.c')
 
+if GetDepend('AIC_PANEL_DSI_JD9366TC'):
+    src += Glob('drv/display/panel/panel_dsi_jd9366tc.c')
+
 if GetDepend('AIC_PANEL_DSI_EDP_LT9811EXB'):
     src += Glob('drv/display/panel/panel_dsi_edp_lt8911exb.c')
 
@@ -372,6 +375,10 @@ if GetDepend('AIC_PANEL_DBI_ILI9488'):
 
 if GetDepend('AIC_PANEL_DBI_ILI9486L'):
     src += Glob('drv/display/panel/panel_dbi_ili9486l.c')
+
+if GetDepend('AIC_PANEL_DBI_GC9B72NA'):
+    src += Glob('drv/display/panel/panel_dbi_gc9b72na.c')
+
 #
 # MIPI-DBI Type C SPI Panel Driver
 #
@@ -426,6 +433,8 @@ if GetDepend('AIC_PANEL_RGB_NT35560'):
 if GetDepend('AIC_PANEL_RGB_ST77922'):
     src += Glob('drv/display/panel/panel_rgb_st77922.c')
 
+if GetDepend('AIC_PANEL_RGB_ST7102'):
+    src += Glob('drv/display/panel/panel_rgb_st7102.c')
 if GetDepend('AIC_PANEL_RGB_H024A13'):
     src += Glob('drv/display/panel/panel_rgb_h024a13.c')
 
@@ -443,7 +452,7 @@ if GetDepend('AIC_PANEL_RGB_H034A02'):
 
 if GetDepend('AIC_PANEL_RGB_H035A17'):
     src += Glob('drv/display/panel/panel_rgb_h035a17.c')
-    
+
 if GetDepend('AIC_PANEL_RGB_H035A24'):
     src += Glob('drv/display/panel/panel_rgb_h035a24.c')
 
@@ -520,11 +529,21 @@ if GetDepend('AIC_VE_DRV'):
         src += Glob('drv/ve/*.c')
         CPPPATH.append(cwd + '/include/drv')
 
-if GetDepend('AIC_DVP_DRV'):
+if GetDepend('AIC_DVP_DRV_V11'):
     if GetDepend('DRIVER_DRV_EN'):
-        src += Glob('drv/dvp/*.c')
+        src += Glob('drv/dvp/v1/*.c')
+        CPPPATH.append(cwd + '/drv/dvp/v1/')
     if GetDepend('DRIVER_HAL_EN'):
-        src += Glob('hal/dvp/*.c')
+        src += Glob('hal/dvp/v1/*.c')
+        CPPPATH.append(cwd + '/hal/dvp/v1/')
+
+if GetDepend('AIC_DVP_DRV_V22'):
+    if GetDepend('DRIVER_DRV_EN'):
+        src += Glob('drv/dvp/v2/*.c')
+        CPPPATH.append(cwd + '/drv/dvp/v2/')
+    if GetDepend('DRIVER_HAL_EN'):
+        src += Glob('hal/dvp/v2/*.c')
+        CPPPATH.append(cwd + '/hal/dvp/v2/')
 
 if GetDepend('AIC_ADCIM_DRV'):
     if GetDepend('DRIVER_DRV_EN'):

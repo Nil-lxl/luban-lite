@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -8,15 +8,22 @@
 
 #include "aic_core.h"
 
-#ifdef AIC_SDMC1_USING_HOTPLUG
-
 #include <drivers/mmcsd_core.h>
 #include <dfs_fs.h>
 
+#ifdef AIC_SDMC1_USING_HOTPLUG
 #define HOTPLUG_SDMC 1
 #define SD_CHECK_PIN (rt_pin_get(AIC_SDMC1_HOTPLUG_PIN))
 #define SD_DEVICE    "sd1"
+#elif defined(AIC_SDMC0_USING_HOTPLUG)
+#define HOTPLUG_SDMC 0
+#define SD_CHECK_PIN (rt_pin_get(AIC_SDMC0_HOTPLUG_PIN))
+#define SD_DEVICE    "sd0"
+#else
+#define SDMC_NO_HOTPLUG
+#endif
 
+#ifndef SDMC_NO_HOTPLUG
 extern void aic_mmcsd_change(u8 id);
 
 static void sd_hotplug_detection_thread(void *parameter)

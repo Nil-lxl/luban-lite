@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -36,11 +36,6 @@
 #define ADEC_BITSTREAM_BUFFER_SIZE (4 * 1024)
 #define ADEC_BITSTREAM_PKT_COUNT   (4)
 #endif
-
-struct mm_adec_tbl {
-    MM_AUDIO_CODING_TYPE type;
-    char  type_str[16];
-};
 
 typedef struct mm_adec_data {
     MM_STATE_TYPE state;
@@ -80,15 +75,6 @@ typedef struct mm_adec_data {
     u32 ready_packet_num;
 } mm_adec_data;
 
-
-struct mm_adec_tbl adec_tbl[] =
-{
-    {MM_AUDIO_CODING_MP3, "mp3"},
-    {MM_AUDIO_CODING_AAC, "aac"},
-    {MM_AUDIO_CODING_APE, "ape"},
-    {MM_AUDIO_CODING_FLAC, "flac"},
-    {MM_AUDIO_CODING_WMA, "wma"}
-};
 
 static void mm_adec_event_notify(mm_adec_data *p_adec_data, MM_EVENT_TYPE event,
                                  u32 data1, u32 data2, void *p_event_data);
@@ -203,40 +189,34 @@ static s32 mm_adec_get_parameter(mm_handle h_component, MM_INDEX_TYPE index,
 }
 
 static s32 mm_adec_audio_format_trans(enum aic_audio_codec_type *p_desType,
-                                      MM_AUDIO_CODING_TYPE *p_srcType)
+                                      MM_AUDIO_CODING_TYPE *p_src_type)
 {
-    s32 ret = 0, i = 0;
-    if (p_desType == NULL || p_srcType == NULL) {
+    s32 ret = 0;
+    if (p_desType == NULL || p_src_type == NULL) {
         loge("bad params!!!!\n");
         return MM_ERROR_BAD_PARAMETER;
     }
-    if (*p_srcType == MM_AUDIO_CODING_MP3) {
+    if (*p_src_type == MM_AUDIO_CODING_MP3) {
         *p_desType = MPP_CODEC_AUDIO_DECODER_MP3;
 #ifdef AIC_MPP_AAC_DEC
-    } else if (*p_srcType == MM_AUDIO_CODING_AAC) {
+    } else if (*p_src_type == MM_AUDIO_CODING_AAC) {
         *p_desType = MPP_CODEC_AUDIO_DECODER_AAC;
 #endif
 #ifdef AIC_MPP_APE_DEC
-    } else if (*p_srcType == MM_AUDIO_CODING_APE) {
+    } else if (*p_src_type == MM_AUDIO_CODING_APE) {
         *p_desType = MPP_CODEC_AUDIO_DECODER_APE;
 #endif
 #ifdef AIC_MPP_FLAC_DEC
-    } else if (*p_srcType == MM_AUDIO_CODING_FLAC) {
+    } else if (*p_src_type == MM_AUDIO_CODING_FLAC) {
         *p_desType = MPP_CODEC_AUDIO_DECODER_FLAC;
 #endif
 #ifdef AIC_MPP_WMA_DEC
-    } else if (*p_srcType == MM_AUDIO_CODING_WMA) {
+    } else if (*p_src_type == MM_AUDIO_CODING_WMA) {
         *p_desType = MPP_CODEC_AUDIO_DECODER_WMA;
 #endif
     } else {
-        for (i = 0; i < MPP_ARRAY_ELEMS(adec_tbl); i++) {
-            if (adec_tbl[i].type == *p_srcType) {
-                loge("Not configured audio decoder: %s.\n", adec_tbl[i].type_str);
-                break;
-            }
-        }
-        if (i >=  MPP_ARRAY_ELEMS(adec_tbl))
-            loge("Not support audio decoder: %d.\n", *p_srcType);
+        loge("Not configured or support audio decoder type: %s, %d.\n",
+            mm_component_audio_type_to_str(*p_src_type), *p_src_type);
         ret = MM_ERROR_UNSUPPORT;
     }
     return ret;

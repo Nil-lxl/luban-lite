@@ -893,25 +893,33 @@ endmenu
 
 # 2. psram region
 menu "PSRAM parameter"
+    config AIC_NO_PSRAM
+        bool "No PSRAM"
+        default false
+
     config AIC_PSRAM_SIZE
         hex "PSRAM size"
         default 0x800000
+        depends on !AIC_NO_PSRAM
 
     # 2.1 psram cma: section(".psram_cma_data") + psram_cma_heap ‘MEM_PSRAM_CMA’
 
     config AIC_PSRAM_CMA_EN
         bool
         default y if AIC_PSRAM_SIZE > 0
+        depends on !AIC_NO_PSRAM
 
     # 2.2 psram sw: section(".psram_sw_data") + psram_sw_heap ‘MEM_PSRAM_SW’
     config AIC_PSRAM_SW_SIZE
         hex "Software size in PSRAM"
         range 0 AIC_PSRAM_SIZE
         default 0x100000
+        depends on !AIC_NO_PSRAM
 
     config AIC_PSRAM_SW_EN
         bool
         default y if AIC_PSRAM_SW_SIZE > 0
+        depends on !AIC_NO_PSRAM
 endmenu
 
 # 3. XIP

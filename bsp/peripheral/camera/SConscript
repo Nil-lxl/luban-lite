@@ -32,6 +32,9 @@ if GetDepend('AIC_USING_CAMERA_GC0308'):
 if GetDepend('AIC_USING_CAMERA_GC032A'):
     src += Glob('gc032a/*.c')
 
+if GetDepend('AIC_USING_CAMERA_BF3A03'):
+    src += Glob('bf3a03/*.c')
+
 if GetDepend('AIC_USING_CAMERA_GM7150'):
     src += Glob('gm7150/*.c')
 

@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2023 ArtInChip Technology Co.,Ltd
+ * Copyright (C) 2023-2026 ArtInChip Technology Co.,Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
  * Author: Dehuang Wu <dehuang.wu@artinchip.com>
  */
 
@@ -104,7 +107,7 @@ static s32 get_nand_page_table(nand_read fn, void *dev, unsigned long pagesize,
         pa = (blkidx << 6) + 0; /* First page in block */
         offset = pa * pagesize;
         ret = fn(dev, offset, page_data, PAGE_DEFAULT_SIZE, 1);
-        if (ret != 0) {
+        if (ret < 0) {
             pr_err("Read from block = %d, pa = 0x%x failed.\n", blkidx, pa);
             return (ret);
         }
@@ -197,7 +200,7 @@ void *aic_get_boot_resource_from_nand(void *dev, unsigned long pagesize,
             }
             offset = pa * pagesize;
             ret = fn(dev, offset, p, pagesize, 0);
-            if (ret) {
+            if (ret < 0) {
                 pr_err("Failed to read aic image head.");
                 free(res);
                 res = NULL;

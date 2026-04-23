@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -479,10 +479,6 @@ INIT_LATE_APP_EXPORT(aic_realtek_wifi_cfg);
 
 int aic_realtek_wifi_device_reg(void)
 {
-    extern void realtek_pin_init();
-
-    realtek_pin_init();
-
     s_wlan_dev = rt_malloc(sizeof(struct rt_wlan_device));
     if (!s_wlan_dev) {
         rt_kprintf("%s devcie malloc fail!\n", RT_WLAN_FLAG_STA_ONLY);

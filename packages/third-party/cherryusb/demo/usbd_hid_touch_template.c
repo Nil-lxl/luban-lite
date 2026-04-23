@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -643,6 +643,8 @@ struct hid_touch_t {
 
     u64 base_time;
     uint8_t last_event;
+    uint8_t last_finger_event[TOUCH_MAX_POINT_NUM];
+    uint8_t finger_state[TOUCH_MAX_POINT_NUM];
     uint8_t id[TOUCH_MAX_POINT_NUM + 1];
     struct hid_touch_cfg_t finger[TOUCH_MAX_POINT_NUM];
     struct hid_touchmouse_report_t mouse;
@@ -712,6 +714,7 @@ static void usbd_touch_event_handler(uint8_t busid, uint8_t event)
         case USBD_EVENT_SUSPEND:
             break;
         case USBD_EVENT_CONFIGURED:
+            g_hid_touch.hid_state = HID_STATE_BUSY;
             break;
         case USBD_EVENT_SET_REMOTE_WAKEUP:
             break;
@@ -739,8 +742,10 @@ void usbd_hid_set_protocol(uint8_t busid, uint8_t intf, uint8_t protocol)
 {
     struct hid_touch_t *hid_touch = get_hid_touch();
     hid_touch->hid_state = HID_STATE_IDLE;
+#ifdef HID_TOUCHMOUSE_MODE
     hid_touch->mode = TOUCH_MOUSE;
     USB_LOG_INFO("HID-TOUCH: switch to touch-mouse\n");
+#endif
 }
 
 static void usbd_hid_int_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
@@ -779,15 +784,14 @@ void hid_touch_hw_data_dump(uint8_t id)
 
 void hid_touch_sw_data_dump(uint8_t id)
 {
-    struct hid_touchscreen_report_t *touch_report = NULL;
-    touch_report = (struct hid_touchscreen_report_t *)g_report;
+    struct hid_touch_t *hid_touch = get_hid_touch();
 
     USB_LOG_INFO("HID-TOUCH: sw: %d %d %d %d %d\n",
-                    (uint8_t)touch_report->touch[id].tip,
-                    (uint8_t)touch_report->touch[id].id,
-                    (uint16_t)touch_report->touch[id].x,
-                    (uint16_t)touch_report->touch[id].y,
-                    (uint16_t)touch_report->touch[id].width);
+                    (uint8_t)hid_touch->finger[id].tip,
+                    (uint8_t)hid_touch->finger[id].id,
+                    (uint16_t)hid_touch->finger[id].x,
+                    (uint16_t)hid_touch->finger[id].y,
+                    (uint16_t)hid_touch->finger[id].width);
 }
 
 static int _touch_param_transform(uint8_t i)
@@ -795,8 +799,6 @@ static int _touch_param_transform(uint8_t i)
     uint16_t temp = 0;
     uint32_t x = 0, y = 0;
     struct hid_touch_t *hid_touch = get_hid_touch();
-    struct hid_touchscreen_report_t *touch_report = NULL;
-    touch_report = (struct hid_touchscreen_report_t *)g_report;
 
     // 1. touch screen rotation
     if ((hid_touch->hid_touch_rotate == 90) ||
@@ -832,7 +834,7 @@ static int _touch_param_transform(uint8_t i)
     hid_touch->finger[i].y = TOUCH_LOGICAL_MAXNUM - hid_touch->finger[i].y;
     #endif
 
-    if (touch_report->touch[i].x < 0 || touch_report->touch[i].y < 0)
+    if (hid_touch->finger[i].x < 0 || hid_touch->finger[i].y < 0)
         USB_LOG_WRN("WRN 3: The x/y coordinates flip set are incorret.\n"
                     "You can try filpping the x/y coordinates.\n");
 
@@ -846,9 +848,14 @@ static int _touch_param_transform(uint8_t i)
 uint8_t hid_touch_fingers_num_update(struct rt_touch_data *data)
 {
     uint8_t finger_cnt = 0;
+    uint8_t finger0_effective = 0;
 
-    if (data->track_id == 0 && data->event != RT_TOUCH_EVENT_NONE)
-        finger_cnt++;
+    if (data->track_id == 0) {
+        if (data->event == RT_TOUCH_EVENT_NONE)
+            finger0_effective = 1;
+        else
+            finger_cnt++;
+    }
 
     for (int i = 0; i < TOUCH_MAX_POINT_NUM; i++) {
         USB_LOG_DBG("finers id[%d] : %d\n", i, data->track_id);
@@ -859,9 +866,40 @@ uint8_t hid_touch_fingers_num_update(struct rt_touch_data *data)
         data++;
     }
 
+    if (finger0_effective == 1 && finger_cnt > 1)
+        finger_cnt++;
+
     USB_LOG_DBG("finger_cnt: %d\n", finger_cnt);
 
     return finger_cnt;
+}
+
+uint8_t hid_touch_fingers_event_update(struct rt_touch_data *data)
+{
+    uint8_t id = 0;
+    struct hid_touch_t *hid_touch = get_hid_touch();
+
+    for (id = 0; id < TOUCH_MAX_POINT_NUM; id++) {
+        if (data->x_coordinate != 0 || data->y_coordinate != 0) {
+            if (hid_touch->last_finger_event[id] == RT_TOUCH_EVENT_NONE || hid_touch->last_finger_event[id] == RT_TOUCH_EVENT_UP)
+                hid_touch->data[id].event = RT_TOUCH_EVENT_DOWN;
+            else if (hid_touch->last_finger_event[id] == RT_TOUCH_EVENT_DOWN || hid_touch->last_finger_event[id] == RT_TOUCH_EVENT_MOVE)
+                hid_touch->data[id].event = RT_TOUCH_EVENT_MOVE;
+        } else {
+            if (hid_touch->last_finger_event[id] == RT_TOUCH_EVENT_DOWN || hid_touch->last_finger_event[id] == RT_TOUCH_EVENT_MOVE)
+                hid_touch->data[id].event = RT_TOUCH_EVENT_UP;
+            else if (hid_touch->last_finger_event[id] == RT_TOUCH_EVENT_NONE)
+                hid_touch->data[id].event = RT_TOUCH_EVENT_NONE;
+            else if (hid_touch->last_finger_event[id] == RT_TOUCH_EVENT_UP)
+                hid_touch->data[id].event = RT_TOUCH_EVENT_NONE;
+        }
+
+        hid_touch->data[id].track_id = id;
+        hid_touch->last_finger_event[id] = hid_touch->data[id].event;
+        data++;
+    }
+
+    return hid_touch->data[id].event;
 }
 
 uint8_t _finger_alloc(uint8_t id)
@@ -951,9 +989,18 @@ static int _touch_move(uint8_t i)
 
 static int _touch_up(uint8_t i)
 {
+    uint8_t index;
     struct hid_touch_t *hid_touch = get_hid_touch();
 
-    _finger_release(hid_touch->data[i].track_id);
+    index = _finger_get(hid_touch->data[i].track_id);
+
+    hid_touch->finger[index].tip = 0;
+    hid_touch->finger[index].id = hid_touch->data[i].track_id;
+    hid_touch->finger[index].x = hid_touch->data[i].x_coordinate;
+    hid_touch->finger[index].y = hid_touch->data[i].y_coordinate;
+    hid_touch->finger[index].width = 0;
+
+    _touch_param_transform(index);
 
     return 0;
 }
@@ -967,7 +1014,7 @@ static int _touch_up(uint8_t i)
     time_us = aic_get_time_us();
 
     time_us = time_us - hid_touch->base_time;
-    scan_time = (uint16_t)(time_us / 100);  /* 100us units */
+    scan_time = (uint16_t)(time_us / 5000);
 
     USB_LOG_DBG("base_time:%lld, scan_time:%d .\n",
                     hid_touch->base_time, scan_time);
@@ -984,11 +1031,12 @@ static uint8_t *hid_touchscreen_data(void)
     memset(g_report, 0, GLOBAL_REPORT_SIZE);
 
     touchscreen->report_id = 0x01;
-    // touchscreen->scan_time = _touch_get_scan_time(0);
-    touchscreen->scan_time = hid_touch->data->timestamp;
+    touchscreen->scan_time = _touch_get_scan_time(0);
 
-    if (hid_touch->cur_point_num > hid_touch->cur_max_point_num)
+    if (hid_touch->cur_point_num > hid_touch->cur_max_point_num) {
+        USB_LOG_WRN("cur :%d max:%d \n", hid_touch->cur_point_num, hid_touch->cur_max_point_num);
         hid_touch->cur_point_num = hid_touch->cur_max_point_num;
+    }
 
     touchscreen->count = hid_touch->cur_point_num;
 
@@ -1008,7 +1056,6 @@ static uint8_t *hid_touchpad_data(void)
     memset(g_report, 0, GLOBAL_REPORT_SIZE);
 
     touchpad_report->report_id = 0x01;
-    // touchpad_report->scan_time = _touch_get_scan_time(0);
     touchpad_report->scan_time = 0xf;
     touchpad_report->count = hid_touch->cur_point_num;
 
@@ -1057,9 +1104,10 @@ static uint8_t *hid_touchkeyboard_data(void)
 }
 static void hid_touch_send_data(void)
 {
-    int ret = 0;
-    uint8_t *report;
     struct hid_touch_t *hid_touch = get_hid_touch();
+    uint32_t timeout = 0, err_cnt = 0;
+    uint8_t *report;
+    int ret =0;
 
     switch (hid_touch->mode) {
         case TOUCH_SCREEN:
@@ -1081,17 +1129,31 @@ static void hid_touch_send_data(void)
     if (report == NULL)
         goto __err;
 
-    if (hid_touch->hid_state == HID_STATE_IDLE && usb_device_is_configured(0)) {
-        hid_touch->hid_state = HID_STATE_BUSY;
-        ret = usbd_ep_start_write(0, hid_in_ep.ep_addr, report,
-                                    hid_touch->int_ep_size);
-        #ifdef HID_TOUCH_DEBUG
-        USB_LOG_RAW("HID-TOUCH: Current effective finger count: %#lx \n",
-                (long)hid_touch->cur_point_num);
-        #endif
 
-        if (ret < 0)
+_retry:
+    ret = usbd_ep_start_write(0, hid_in_ep.ep_addr, report,
+                              hid_touch->int_ep_size);
+    if (ret < 0 && err_cnt < 10) {
+        aic_udelay(1);
+        err_cnt++;
+        goto _retry;
+    } else {
+        err_cnt = 0;
+    }
+
+    if (err_cnt) {
+        USB_LOG_WRN("USB send data failed. %d\n", ret);
+        return;
+    }
+
+    hid_touch->hid_state = HID_STATE_BUSY;
+    while (hid_touch->hid_state == HID_STATE_BUSY) {
+        timeout++;
+        aic_udelay(1);
+        if (timeout > 30000) {
+            hid_touch->hid_state = HID_STATE_IDLE;
             return;
+        }
     }
 
     if (hid_touch->cur_point_num == 0)
@@ -1108,18 +1170,19 @@ static int hid_touch_event_processing(uint8_t index, uint8_t event)
 {
     switch(event) {
         case RT_TOUCH_EVENT_MOVE:
-            USB_LOG_DBG("HID-TOUCH: RT_TOUCH_EVENT_MOVE\n");
+            USB_LOG_DBG("HID-TOUCH: ID[%d] RT_TOUCH_EVENT_MOVE\n", index);
             _touch_move(index);
             break;
         case RT_TOUCH_EVENT_DOWN:
-            USB_LOG_DBG("HID-TOUCH: RT_TOUCH_EVENT_DOWN\n");
+            USB_LOG_DBG("HID-TOUCH: ID[%d] RT_TOUCH_EVENT_DOWN\n", index);
             _touch_down(index);
             break;
         case RT_TOUCH_EVENT_UP:
-            USB_LOG_DBG("HID-TOUCH: RT_TOUCH_EVENT_UP\n");
+            USB_LOG_DBG("HID-TOUCH: ID[%d] RT_TOUCH_EVENT_UP\n", index);
             _touch_up(index);
             break;
         default:
+            USB_LOG_DBG("HID-TOUCH: ID[%d] RT_TOUCH_EVENT_NONE\n", index);
             return -1;
     }
 
@@ -1428,9 +1491,12 @@ static void hid_touch_thread(void *parameter)
 
         if (rt_device_read(hid_touch->dev, 0, hid_touch->data, hid_touch->info.point_num)
                             == hid_touch->info.point_num) {
-
+#ifdef AIC_TOUCH_PANEL_GT911
+            hid_touch->cur_max_point_num = hid_touch->info.point_num;
+            hid_touch_fingers_event_update(hid_touch->data);
+#else
             hid_touch->cur_max_point_num = hid_touch_fingers_num_update(hid_touch->data);
-
+#endif
             for (rt_uint8_t i = 0; i < TOUCH_MAX_POINT_NUM; i++) {
                 if (i > hid_touch->info.point_num)
                     break;
@@ -1445,9 +1511,20 @@ static void hid_touch_thread(void *parameter)
 
                 hid_touch->last_event = hid_touch->data[i].event;
             }
-            if (hid_touch->mode == TOUCH_SCREEN || hid_touch->mode  == TOUCH_PAD)
-                hid_touch_send_data();
+
+            hid_touch_send_data();
+
+            for (rt_uint8_t i = 0; i < TOUCH_MAX_POINT_NUM; i++) {
+                if (hid_touch->data[i].event == RT_TOUCH_EVENT_UP)
+                    _finger_release(hid_touch->data[i].track_id);
+            }
+            #ifdef HID_TOUCH_DEBUG
+            USB_LOG_DBG("xHID-TOUCH: Current effective finger count: %#lx \n",
+                    (long)hid_touch->cur_point_num);
+            #endif
+
         }
+
         rt_device_control(hid_touch->dev, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
     }
 }
@@ -1485,6 +1562,7 @@ static int hid_touch_hw_init(char *dev_name)
 
     rt_device_control(hid_touch->dev, RT_TOUCH_CTRL_GET_ID, id);
     rt_device_control(hid_touch->dev, RT_TOUCH_CTRL_GET_INFO, &hid_touch->info);
+
     hid_touch_hw_info();
 
     rt_device_set_rx_indicate(hid_touch->dev, rx_callback);
@@ -1713,7 +1791,7 @@ void usbd_hid_touch_set_params(int params)
         rt_sem_release(hid_touch->sem);
 }
 
-void usbd_hid_touch_set_crop(int width, int height)
+void usbd_hid_touch_set_crop(int x, int y, int width, int height)
 {
     struct hid_touch_t *hid_touch = get_hid_touch();
     struct rt_touch_crop_info crop_info = {0};
@@ -1728,15 +1806,18 @@ void usbd_hid_touch_set_crop(int width, int height)
         return;
     }
 
-    if (crop_info.width == width && crop_info.height == height)
+    if (crop_info.x == x && crop_info.y == y &&
+        crop_info.width == width && crop_info.height == height)
         return;
 
-    USB_LOG_INFO("set hid_touch crop:%dx%d->%dx%d.\n",
-        crop_info.width, crop_info.height, width, height);
+    USB_LOG_INFO("set hid_touch crop:x %d, y %d, w:h %dx%d->%dx%d.\n",
+        x, y, crop_info.width, crop_info.height, width, height);
 
     crop_info.enable = true;
     crop_info.width = width;
     crop_info.height = height;
+    crop_info.x = x;
+    crop_info.y = y;
     rt_device_control(hid_touch->dev, RT_TOUCH_CTRL_SET_DYNAMIC_CROP, &crop_info);
 }
 

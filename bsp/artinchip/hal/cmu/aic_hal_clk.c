@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -88,12 +88,17 @@ int hal_clk_set_rate(uint32_t clk_id, unsigned long rate,
                      unsigned long parent_rate)
 {
     struct aic_clk_comm_cfg *cfg;
+    unsigned long old_rate;
 
     CHECK_PARAM(clk_id < AIC_CLK_NUM && clk_id > 0, -EINVAL);
 
     cfg = (struct aic_clk_comm_cfg *)aic_clk_cfgs[clk_id];
     CHECK_PARAM(cfg != NULL && cfg->ops != NULL && cfg->ops->set_rate != NULL,
                 -EINVAL);
+
+    old_rate = hal_clk_recalc_rate(clk_id, parent_rate);
+    if (old_rate == rate)
+        return 0;
 
     return (cfg->ops->set_rate(cfg, rate, parent_rate));
 }

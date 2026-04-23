@@ -389,18 +389,6 @@ void wifi_p2p_go_stopped(void)
 int wifi_device_reg(void)
 {
     AIC_LOG_PRINTF("%s ctrl pwrkey\n", __func__);
-    platform_rst_wifi_pin_init();
-    platform_rst_wifi_pin_enable();
-    rtos_task_suspend(10);
-    platform_pwr_wifi_pin_init();
-    platform_pwr_wifi_pin_disable();
-    rtos_task_suspend(10);
-    platform_pwr_wifi_pin_enable();
-    rtos_task_suspend(10);
-    platform_rst_bt_pin_init();
-    platform_rst_bt_pin_disable();
-    rtos_task_suspend(10);
-    platform_rst_bt_pin_enable();
 
     s_wlan_dev = rt_malloc(sizeof(struct rt_wlan_device));
     if (!s_wlan_dev){

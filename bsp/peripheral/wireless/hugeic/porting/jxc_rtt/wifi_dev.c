@@ -111,7 +111,7 @@ void sys_netif_recv(void *priv, char *data, int len, void *buff_priv)
 
     p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
     if (p == NULL) {
-        hgic_err("\n\rCannot allocate pbuf to receive packet length %d,l%d.\n", len);
+        hgic_err("\n\rCannot allocate pbuf to receive packet length %d.\n", len);
         return;
     }
     pbuf_take(p, data, len);
@@ -947,10 +947,6 @@ const struct rt_wlan_dev_ops wlan_ops = {
 int hgic_wlan_device_reg(void)
 {
     hgic_dbg("ctrl power key\n");
-    platform_pwr_wifi_pin_init();
-    platform_pwr_wifi_pin_disable();
-    rt_thread_mdelay(10);
-    platform_pwr_wifi_pin_enable();
 
     g_hgics_wlan_dev = rt_malloc(sizeof(struct rt_wlan_device));
     if (!g_hgics_wlan_dev) {

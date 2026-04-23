@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -27,7 +27,7 @@
 
 static float g_def_voltage = AIC_PSADC_DEFAULT_VOLTAGE;
 static int g_sample_num = AIC_PSADC_DEFAULT_SAMPLES_NUM;
-static struct aic_psadc_queue *queue = &aic_psadc_queues[AIC_PSADC_QC];
+static struct aic_psadc_dev *queue = &aic_psadc_queues[AIC_PSADC_QC];
 
 /* Functions */
 
@@ -98,7 +98,7 @@ static int test_psadc_init()
     }
     queue->nodes_num = cnt;
     queue->complete = aicos_sem_create(0);
-    hal_psadc_ch_init();
+    hal_psadc_init(queue);
 
     return 0;
 }
@@ -153,7 +153,7 @@ static int test_psadc_get_adc()
         cnt++;
 
         start_us = aic_get_time_us();
-        hal_psadc_read_poll(adc_values, AIC_PSADC_POLL_READ_TIMEOUT);
+        hal_psadc_read_poll(queue, adc_values, AIC_PSADC_POLL_READ_TIMEOUT);
         end_us = aic_get_time_us();
         printf("Sample time: %d us\n", abs(end_us - start_us));
         if (ret < 0) {

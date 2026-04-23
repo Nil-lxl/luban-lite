@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,7 +13,7 @@
 #include <env.h>
 #include <absystem_os.h>
 
-#define BUFFER_SIZE 256 //Need to be less than 2048 bytes
+#define BUFFER_SIZE 256 //Need to be less than OTA_BURN_LEN
 
 char buffer[BUFFER_SIZE];
 

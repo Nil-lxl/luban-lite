@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -707,6 +707,11 @@ static int aic_usart_suspend(const struct rt_device *device, rt_uint8_t mode)
 {
     aic_usart_priv_t *uart_data = device->user_data;
 
+#ifdef AIC_NO_CONSOLE_SUSPEND
+    if(!rt_strncmp(device->parent.name, RT_CONSOLE_DEVICE_NAME, RT_NAME_MAX))
+        return 0;
+#endif
+
     switch (mode)
     {
     case PM_SLEEP_MODE_IDLE:
@@ -726,6 +731,11 @@ static int aic_usart_suspend(const struct rt_device *device, rt_uint8_t mode)
 static void aic_usart_resume(const struct rt_device *device, rt_uint8_t mode)
 {
     aic_usart_priv_t *uart_data = device->user_data;
+
+#ifdef AIC_NO_CONSOLE_SUSPEND
+    if(!rt_strncmp(device->parent.name, RT_CONSOLE_DEVICE_NAME, RT_NAME_MAX))
+        return;
+#endif
 
     switch (mode)
     {

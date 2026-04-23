@@ -1,7 +1,7 @@
 /*
  * Definitions for the ArtinChip frambuffer driver
  *
- * Copyright (C) 2020-2021 ArtinChip Technology Co., Ltd.
+ * Copyright (C) 2020-2026 ArtinChip Technology Co., Ltd.
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -330,6 +330,12 @@ struct aicfb_screeninfo {
 
 /* disable aic fb, calls panel disable callback */
 #define AICFB_POWEROFF   _IOR(IOC_TYPE_FB, 0x64, unsigned int)
+
+/** update background blend ui config */
+#define AICFB_UPDATE_BG_BLEND_UI_CONFIG _IOW(IOC_TYPE_FB, 0x72, unsigned int)
+
+/** get background blend ui config */
+#define AICFB_GET_BG_BLEND_UI_CONFIG _IOR(IOC_TYPE_FB, 0x73, unsigned int)
 
 int aicfb_probe(void);
 int aicfb_ioctl(int cmd, void *args);

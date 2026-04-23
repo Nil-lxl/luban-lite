@@ -1,3 +1,15 @@
+if AIC_WIRELESS_LAN
+    menu "Wireless power & reset pin configuration"
+        config AIC_WIRELESS_PWR_GPIO
+            string "Wlan power on gpio"
+            depends on AIC_WIRELESS_LAN
+
+        config AIC_WIRELESS_BT_PWR_GPIO
+            string "Bt reset gpio"
+            depends on AIC_WIRELESS_LAN
+    endmenu
+endif
+
 menuconfig AIC_WLAN_REALTEK
     bool "Using Realtek wlan driver"
     default n
@@ -17,10 +29,6 @@ menuconfig WIFI_USING_SDIOWIFI_ATBM
     select RT_USING_SYSTEM_WORKQUEUE
     default n
 
-    if WIFI_USING_SDIOWIFI_ATBM
-    source "bsp/peripheral/wireless/atbm603x/Kconfig.dev"
-    endif
-
 menuconfig AIC_WLAN_ASR
     bool "Using ASR wlan driver"
     default n
@@ -29,10 +37,6 @@ menuconfig AIC_WLAN_ASR
     select RT_USING_WIFI
     select RT_USING_SYSTEM_WORKQUEUE
     select LPKG_USING_MBEDTLS
-
-    if AIC_WLAN_ASR
-    source "bsp/peripheral/wireless/asr/Kconfig"
-    endif
 
 menuconfig AIC_WLAN_AIC8800D40L
     bool "AIC8800 wlan driver"

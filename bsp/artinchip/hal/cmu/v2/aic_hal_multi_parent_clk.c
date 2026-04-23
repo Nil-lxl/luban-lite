@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -216,16 +216,13 @@ static int clk_multi_parent_mod_set_rate(struct aic_clk_comm_cfg *comm_cfg,
     div = DIV_ROUND_CLOSEST(parent_rate, rate);
 
     /*
-     * If div != 1, we need to set the clock divider, so we must find the parent_index
-     * that can configure the divider.
+     * Find the parent_index that can configure the divider.
      */
-    if (div != 1) {
-        for (parent_index = 0; parent_index < mod->num_parents; parent_index++)
-            if (mod->table_div[parent_index].shift < 0)
-                continue;
-            else
-                break;
-    }
+    for (parent_index = 0; parent_index < mod->num_parents; parent_index++)
+        if (mod->table_div[parent_index].shift < 0)
+            continue;
+        else
+            break;
 
     if (parent_index >= mod->num_parents) {
         hal_log_err("%s parent clock index error!\n", comm_cfg->name);

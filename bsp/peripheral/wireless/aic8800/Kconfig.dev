@@ -37,15 +37,6 @@ menu "Wlan0 Parameter"
         bool "enable aic8800 BT support"
         default n
 
-    config AIC_DEV_AIC8800_BT_RST_GPIO
-        string "aic8800 bt reset gpio"
-
-    config AIC_WIRELESS_PWR_GPIO
-        string "aic8800 wlan0 power on gpio"
-
-    config AIC_DEV_AIC8800_WLAN0_RST_GPIO
-        string "aic8800 wlan0 reset gpio"
-
     config AIC_DEV_AIC8800_DEBUG_LOG
         bool "enable aic8800 debug messages"
         default y

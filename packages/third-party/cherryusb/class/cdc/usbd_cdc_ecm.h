@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 #define CONFIG_USBDEV_CDC_ECM_USING_LWIP
+/* Ethernet Maximum Segment size, typically 1514 bytes */
+#define CONFIG_CDC_ECM_ETH_MAX_SEGSZE 1514u
 
 /* Init cdc ecm interface driver */
 struct usbd_interface *usbd_cdc_ecm_init_intf(struct usbd_interface *intf, const uint8_t int_ep, const uint8_t out_ep, const uint8_t in_ep);

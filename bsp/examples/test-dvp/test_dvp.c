@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -275,7 +275,7 @@ void dvp_release_buf(int num)
 
 int dvp_queue_buf(int index)
 {
-    if (mpp_dvp_ioctl(DVP_Q_BUF, (void *)(ptr_t)index) < 0) {
+    if (mpp_dvp_ioctl(DVP_Q_BUF, (void *)(ptr_t)index)) {
         pr_err("Q failed! Maybe buf state is invalid.\n");
         return -1;
     }

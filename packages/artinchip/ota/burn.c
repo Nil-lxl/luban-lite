@@ -19,6 +19,7 @@
 #include "aic_core.h"
 #include <boot_param.h>
 #include <burn.h>
+#include <ota.h>
 
 #ifdef AIC_SPINOR_DRV
 #include <fal.h>
@@ -168,21 +169,6 @@ int aic_ota_find_part(char *partname)
     return 0;
 }
 
-#ifdef AIC_SPINOR_DRV
-int aic_ota_nor_erase_part(void)
-{
-    LOG_I("Start erase flash (%s) partition!", dl_part->name);
-    if (fal_partition_erase(dl_part, 0, dl_part->len) < 0) {
-        LOG_E("Firmware download failed! Partition (%s) erase error! len = %d",
-              dl_part->name, dl_part->len);
-        return -RT_ERROR;
-    }
-    LOG_I("Erase flash (%s) partition success! len = %d", dl_part->name,
-          dl_part->len);
-    return 0;
-}
-#endif
-
 #ifdef AIC_SPINAND_DRV
 int aic_ota_nand_erase_part(void)
 {
@@ -232,9 +218,10 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
     static unsigned long bad_block_off = 0;
     unsigned long blk_size = 0, page_size = 0;
     rt_err_t ret = 0;
+    uint32_t i = 0;
 
-    if (size > 2048) {
-        LOG_E("OTA_BURN_LEN need set 2048! size = %d", size);
+    if (size != OTA_BURN_LEN) {
+        LOG_E("page write size must be OTA_BURN_LEN, but got %d", size);
         return -RT_ERROR;
     }
 
@@ -259,7 +246,8 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
             return ret;
         }
 
-        blk_size = nand_mtd->pages_per_block * nand_mtd->page_size;
+        page_size = nand_mtd->page_size;
+        blk_size = nand_mtd->pages_per_block * page_size;
         offset = addr + bad_block_off;
 
         /* Search for the first good block after the given offset */
@@ -273,31 +261,38 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
             }
         }
 
-        page = offset / nand_mtd->page_size;
-        ret = rt_mtd_nand_write(nand_mtd, page, buf, size, RT_NULL, 0);
-        if (ret) {
-            LOG_E("Write data to page %u error.\n", page);
-            ret = -RT_ERROR;
-            if (rt_mtd_nand_mark_badblock(nand_mtd, offset / blk_size)) {
-                LOG_E("Mark bad block failed.\n");
+        uint32_t start_page = offset / page_size;
+        uint32_t pages_to_write = size / page_size;
+        const uint8_t *cur_buf = buf;
+        uint32_t cur_page = start_page;
+
+        for (i = 0; i < pages_to_write; i++) {
+            ret = rt_mtd_nand_write(nand_mtd, cur_page, cur_buf, page_size, NULL, 0);
+            if (ret) {
+                LOG_E("Write data to page %u error\n", cur_page);
+                unsigned long cur_blk = cur_page / nand_mtd->pages_per_block;
+                if (rt_mtd_nand_mark_badblock(nand_mtd, cur_blk)) {
+                    LOG_E("Mark bad block failed\n");
+                }
+                bad_block_off += blk_size;
+                ret = -RT_ERROR;
+                goto exit;
             }
+            cur_buf += page_size;
+            cur_page++;
         }
-
-        rt_device_close(nand_dev);
-
     } else {
-
         ret = rt_device_open(nand_dev, RT_DEVICE_OFLAG_RDWR);
         if (ret) {
             LOG_E("Open MTD device failed.!\n");
             return ret;
         }
-        page_size = 2048;//default size:nand_blk->mtd_device->page_size;
+        page_size = OTA_BURN_LEN;
 
         page = addr / page_size;
-        sector = page * 4;
+        sector = page * 8;
 
-        sector_total = (size / page_size) * 4;
+        sector_total = (size / page_size) * 8;
 
         ret = rt_device_write(nand_dev, sector, buf, sector_total);
         if (ret < 0) {
@@ -306,12 +301,14 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
         } else {
             ret = 0;
         }
-
-        rt_device_close(nand_dev);
     }
+
+exit:
+    rt_device_close(nand_dev);
 
     return ret;
 }
+
 
 int aic_ota_nand_read(uint32_t addr, uint8_t *buf, size_t size)
 {
@@ -319,9 +316,10 @@ int aic_ota_nand_read(uint32_t addr, uint8_t *buf, size_t size)
     static unsigned long bad_block_off = 0;
     unsigned long blk_size = 0, page_size = 0;
     rt_err_t ret = 0;
+    uint32_t i = 0;
 
-    if (size > 2048) {
-        LOG_E("OTA_BURN_LEN need set 2048! size = %d", size);
+    if (size != OTA_BURN_LEN) {
+        LOG_E("page read size must be OTA_BURN_LEN, but got %d", size);
         return -RT_ERROR;
     }
 
@@ -336,7 +334,8 @@ int aic_ota_nand_read(uint32_t addr, uint8_t *buf, size_t size)
             return ret;
         }
 
-        blk_size = nand_mtd->pages_per_block * nand_mtd->page_size;
+        page_size = nand_mtd->page_size;
+        blk_size = nand_mtd->pages_per_block * page_size;
         offset = addr + bad_block_off;
 
         /* Search for the first good block after the given offset */
@@ -350,31 +349,38 @@ int aic_ota_nand_read(uint32_t addr, uint8_t *buf, size_t size)
             }
         }
 
-        page = offset / nand_mtd->page_size;
-        ret = rt_mtd_nand_read(nand_mtd, page, buf, size, RT_NULL, 0);
-        if (ret) {
-            LOG_E("Read data to page %u error.\n", page);
-            ret = -RT_ERROR;
-            if (rt_mtd_nand_mark_badblock(nand_mtd, offset / blk_size)) {
-                LOG_E("Mark bad block failed.\n");
+        uint32_t start_page = offset / page_size;
+        uint32_t pages_to_read = size / page_size;
+        uint8_t *cur_buf = buf;
+        uint32_t cur_page = start_page;
+
+        for (i = 0; i < pages_to_read; i++) {
+            ret = rt_mtd_nand_read(nand_mtd, cur_page, cur_buf, page_size, NULL, 0);
+            if (ret) {
+                LOG_E("Read data from page %u error\n", cur_page);
+                unsigned long cur_blk = cur_page / nand_mtd->pages_per_block;
+                if (rt_mtd_nand_mark_badblock(nand_mtd, cur_blk)) {
+                    LOG_E("Mark bad block failed\n");
+                }
+                bad_block_off += blk_size;
+                ret = -RT_ERROR;
+                goto exit;
             }
+            cur_buf += page_size;
+            cur_page++;
         }
-
-        rt_device_close(nand_dev);
-
     } else {
-
         ret = rt_device_open(nand_dev, RT_DEVICE_OFLAG_RDWR);
         if (ret) {
             LOG_E("Open MTD device failed.!\n");
             return ret;
         }
-        page_size = 2048;//default size:nand_blk->mtd_device->page_size;
+        page_size = OTA_BURN_LEN;//default size:nand_blk->mtd_device->page_size;
 
         page = addr / page_size;
-        sector = page * 4;
+        sector = page * 8;
 
-        sector_total = (size / page_size) * 4;
+        sector_total = (size / page_size) * 8;
 
         ret = rt_device_read(nand_dev, sector, buf, sector_total);
         if (ret < 0) {
@@ -383,9 +389,10 @@ int aic_ota_nand_read(uint32_t addr, uint8_t *buf, size_t size)
         } else {
             ret = 0;
         }
-
-        rt_device_close(nand_dev);
     }
+
+exit:
+    rt_device_close(nand_dev);
 
     return ret;
 }
@@ -424,8 +431,8 @@ int aic_ota_mmc_write(uint32_t addr, const uint8_t *buf, size_t size)
 {
     unsigned long blkcnt, blkoffset;
 
-    if (size > 2048) {
-        LOG_E("OTA_BURN_LEN need set 2048! size = %d", size);
+    if (size != OTA_BURN_LEN) {
+        LOG_E("page write size must be OTA_BURN_LEN, but got %d", size);
         return -RT_ERROR;
     }
 
@@ -445,8 +452,8 @@ int aic_ota_mmc_read(uint32_t addr, uint8_t *buf, size_t size)
 {
     unsigned long blkcnt, blkoffset;
 
-    if (size > 2048) {
-        LOG_E("OTA_BURN_LEN need set 2048! size = %d", size);
+    if (size != OTA_BURN_LEN) {
+        LOG_E("page write size must be OTA_BURN_LEN, but got %d", size);
         return -RT_ERROR;
     }
 
@@ -469,7 +476,6 @@ int aic_ota_erase_part(void)
     switch (aic_get_boot_device()) {
 #ifdef AIC_SPINOR_DRV
         case BD_SPINOR:
-            ret = aic_ota_nor_erase_part();
             break;
 #endif
 #ifdef AIC_SPINAND_DRV
@@ -495,15 +501,25 @@ int aic_ota_part_write(uint32_t addr, const uint8_t *buf, size_t size)
     switch (aic_get_boot_device()) {
 #ifdef AIC_SPINOR_DRV
         case BD_SPINOR:
+            if (size != OTA_BURN_LEN) {
+                LOG_E("size must be OTA_BURN_LEN, but got %d", size);
+                return -RT_ERROR;
+            }
+            ret = fal_partition_erase(dl_part, addr, size);
+            if (ret < 0) {
+                LOG_E(
+                    "Firmware download failed! Partition (%s) erase data error!",
+                    dl_part->name);
+                return -RT_ERROR;
+            }
             ret = fal_partition_write(dl_part, addr, buf, size);
             if (ret < 0) {
                 LOG_E(
                     "Firmware download failed! Partition (%s) write data error!",
                     dl_part->name);
                 return -RT_ERROR;
-            } else {
-                ret = RT_EOK;
             }
+            ret = RT_EOK;
             break;
 #endif
 #ifdef AIC_SPINAND_DRV

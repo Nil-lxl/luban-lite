@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright (C) 2021-2025 ArtInChip Technology Co., Ltd
+# Copyright (C) 2021-2026 ArtInChip Technology Co., Ltd
 # Dehuang Wu <dehuang.wu@artinchip.com>
 
 import os
@@ -21,8 +21,16 @@ from collections import OrderedDict
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Hash import MD5
 from Cryptodome.Hash import SHA256
+from Cryptodome.Hash import HMAC
 from Cryptodome.Cipher import AES
+from Cryptodome.Util import Counter
 from Cryptodome.Signature import PKCS1_v1_5
+import binascii
+import asn1crypto.core
+import gmssl.sm2 as SM2
+import gmssl.sm3 as SM3
+import gmssl.sm4 as SM4
+import gmssl.func as func
 
 DATA_ALIGNED_SIZE = 2048
 META_ALIGNED_SIZE = 512
@@ -74,6 +82,17 @@ def parse_image_cfg(cfgfile):
     return cfg
 
 
+def dump_hex(msg, data, dlen):
+    print("{}:".format(msg))
+    for i in range(len(data)):
+        if i > dlen:
+            break
+        if i > 0 and i % 16 == 0:
+            print("")
+        print("{} ".format(hex(data[i])), end="")
+    print("")
+
+
 def get_file_path(fpath, dirpath):
     if dirpath is not None and os.path.exists(dirpath + fpath):
         return dirpath + fpath
@@ -89,6 +108,13 @@ def aic_boot_get_resource_file_size(cfg, keydir, datadir):
     files = {}
     filepath = ""
     if "resource" in cfg:
+        sign_len = 0
+        if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
+            sign_len = 256
+        if "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+            sign_len = 32
+        if "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+            sign_len = 64
         if "private" in cfg["resource"]:
             filepath = get_file_path(cfg["resource"]["private"], keydir)
             if filepath is None:
@@ -99,6 +125,23 @@ def aic_boot_get_resource_file_size(cfg, keydir, datadir):
             statinfo = os.stat(filepath)
             files["resource/private"] = statinfo.st_size
             files["round(resource/private)"] = round_up(statinfo.st_size, 32)
+        if "private2" in cfg["resource"]:
+            align_len = 4
+            if sign_len:
+                align_len = sign_len
+            if os.path.exists(keydir + cfg["resource"]["private2"]):
+                statinfo = os.stat(keydir + cfg["resource"]["private2"])
+                files["resource/private2"] = statinfo.st_size
+                files["round(resource/private2)"] = round_up(statinfo.st_size, align_len)
+                files["round(resource/private2/sign_len)"] = sign_len
+            elif os.path.exists(datadir + cfg["resource"]["private2"]):
+                statinfo = os.stat(datadir + cfg["resource"]["private2"])
+                files["resource/private2"] = statinfo.st_size
+                files["round(resource/private2)"] = round_up(statinfo.st_size, align_len)
+                files["round(resource/private2/sign_len)"] = sign_len
+            else:
+                print("Error, {} is not found.".format(cfg["resource"]["private2"]))
+                sys.exit(1)
 
         if "pubkey" in cfg["resource"]:
             filepath = get_file_path(cfg["resource"]["pubkey"], keydir)
@@ -118,6 +161,23 @@ def aic_boot_get_resource_file_size(cfg, keydir, datadir):
             statinfo = os.stat(filepath)
             files["resource/pbp"] = statinfo.st_size
             files["round(resource/pbp)"] = round_up(statinfo.st_size, 32)
+        if "pbp2" in cfg["resource"]:
+            align_len = 16
+            if sign_len:
+                align_len = sign_len
+            if os.path.exists(keydir + cfg["resource"]["pbp2"]):
+                statinfo = os.stat(keydir + cfg["resource"]["pbp2"])
+                files["resource/pbp2"] = statinfo.st_size
+                files["round(resource/pbp2)"] = round_up(statinfo.st_size, align_len)
+                files["round(resource/pbp2/sign_len)"] = sign_len
+            elif os.path.exists(datadir + cfg["resource"]["pbp2"]):
+                statinfo = os.stat(datadir + cfg["resource"]["pbp2"])
+                files["resource/pbp2"] = statinfo.st_size
+                files["round(resource/pbp2)"] = round_up(statinfo.st_size, align_len)
+                files["round(resource/pbp2/sign_len)"] = sign_len
+            else:
+                print("Error, {} is not found.".format(cfg["resource"]["pbp2"]))
+                sys.exit(1)
     if "encryption" in cfg:
         if "iv" in cfg["encryption"]:
             filepath = get_file_path(cfg["encryption"]["iv"], keydir)
@@ -145,7 +205,7 @@ def aic_boot_get_resource_file_size(cfg, keydir, datadir):
     return files
 
 
-def aic_boot_calc_image_length(filesizes, sign):
+def aic_boot_calc_image_length(filesizes, sign_len):
     """ Calculate the boot image's total length
     """
 
@@ -154,21 +214,20 @@ def aic_boot_calc_image_length(filesizes, sign):
         total_siz = total_siz + filesizes["round(resource/pubkey)"]
     if "encryption/iv" in filesizes:
         total_siz = total_siz + filesizes["round(encryption/iv)"]
-    if "resource/private" in filesizes:
+    if "resource/private2" in filesizes:
+        total_siz = total_siz + filesizes["round(resource/private2)"]
+    elif "resource/private" in filesizes:
         total_siz = total_siz + filesizes["round(resource/private)"]
-    if "resource/pbp" in filesizes:
+    if "resource/pbp2" in filesizes:
+        total_siz = total_siz + filesizes["round(resource/pbp2)"]
+    elif "resource/pbp" in filesizes:
         total_siz = total_siz + filesizes["round(resource/pbp)"]
     total_siz = round_up(total_siz, 256)
-    if sign:
-        # Add the length of signature
-        total_siz = total_siz + 256
-    else:
-        # Add the length of md5
-        total_siz = total_siz + 16
+    total_siz = total_siz + sign_len
     return total_siz
 
 
-def aic_boot_calc_image_length_for_ext(filesizes, sign):
+def aic_boot_calc_image_length_for_ext(filesizes, sign_len):
     """ Calculate the boot image's total length
     """
 
@@ -177,15 +236,12 @@ def aic_boot_calc_image_length_for_ext(filesizes, sign):
         total_siz = total_siz + filesizes["round(resource/pubkey)"]
     if "encryption/iv" in filesizes:
         total_siz = total_siz + filesizes["round(encryption/iv)"]
-    if "resource/private" in filesizes:
+    if "resource/private2" in filesizes:
+        total_siz = total_siz + filesizes["round(resource/private2)"]
+    elif "resource/private" in filesizes:
         total_siz = total_siz + filesizes["round(resource/private)"]
     total_siz = round_up(total_siz, 256)
-    if sign:
-        # Add the length of signature
-        total_siz = total_siz + 256
-    else:
-        # Add the length of md5
-        total_siz = total_siz + 16
+    total_siz = total_siz + sign_len
     return total_siz
 
 
@@ -200,6 +256,58 @@ def check_loader_run_in_dram(cfg):
         if cfg["loader"]["run in dram"].upper() == "FALSE":
             return False
     return True
+
+
+def aic_boot_get_encryption_key(cfg, ssk_derived=False):
+    fpath = get_file_path(cfg["encryption"]["key"], cfg["keydir"])
+    if fpath is None:
+        fpath = get_file_path(cfg["encryption"]["key"], cfg["datadir"])
+    if fpath is None:
+        print('Please provide key file')
+        sys.exit(1)
+    keydata = None
+    ivdata = None
+    if ssk_derived:
+        # Use SSK(Symmetric Secure Key) derived AES key to encrypt it
+        #
+        #                SSK(128bit)
+        #                 | (key)
+        #                 v
+        #  KM(128bit) -> AES -> HSK(128bit, in Secure SRAM)
+        #                        | (key)
+        #                        v
+        #      SPL plaintext -> AES -> SPL ciphertext
+
+        # Only encrypt loader content, if loader not exist, don't do it
+        try:
+            with open(fpath, "rb") as f:
+                key_material = b"0123456789abcdef"
+                symmetric_secure_key = f.read(16)
+                cipher = AES.new(symmetric_secure_key, AES.MODE_ECB)
+                hardware_secure_key = cipher.encrypt(key_material)
+                keydata = hardware_secure_key
+        except IOError:
+            print('Failed to open symmetric secure key file')
+            sys.exit(1)
+    else:
+        try:
+            with open(fpath, "rb") as f:
+                keydata = f.read(16)
+        except IOError:
+            print('Failed to open aes key file')
+            sys.exit(1)
+
+    fpath = get_file_path(cfg["encryption"]["iv"], cfg["keydir"])
+    if fpath is None:
+        fpath = get_file_path(cfg["encryption"]["iv"], cfg["datadir"])
+    try:
+        with open(fpath, "rb") as f:
+            ivdata = f.read(16)
+    except IOError:
+        print('Failed to open iv file')
+        sys.exit(1)
+
+    return keydata, ivdata
 
 
 def aic_boot_get_loader_bytes(cfg, filesizes):
@@ -246,38 +354,25 @@ def aic_boot_get_loader_bytes(cfg, filesizes):
     #                        v
     #      SPL plaintext -> AES -> SPL ciphertext
     if "encryption" in cfg and loader_size > 0:
-        # Only encrypt loader content, if loader not exist, don't do it
-        try:
-            fpath = get_file_path(cfg["encryption"]["key"], cfg["keydir"])
-            if fpath is None:
-                fpath = get_file_path(cfg["encryption"]["key"], cfg["datadir"])
-            with open(fpath, "rb") as f:
-                key_material = b"0123456789abcdef"
-                symmetric_secure_key = f.read(16)
-                cipher = AES.new(symmetric_secure_key, AES.MODE_ECB)
-                hardware_secure_key = cipher.encrypt(key_material)
-        except IOError:
-            print('Failed to open symmetric secure key file')
-            sys.exit(1)
-
-        try:
-            fpath = get_file_path(cfg["encryption"]["iv"], cfg["keydir"])
-            if fpath is None:
-                fpath = get_file_path(cfg["encryption"]["iv"], cfg["datadir"])
-            with open(fpath, "rb") as f:
-                ivdata = f.read(16)
-        except IOError:
-            print('Failed to open iv file')
-            sys.exit(1)
-        cipher = AES.new(hardware_secure_key, AES.MODE_CBC, ivdata)
-        enc_bytes = cipher.encrypt(rawbytes)
-        return enc_bytes
+        keydata, ivdata = aic_boot_get_encryption_key(cfg, True)
+        if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-ecb":
+            cipher = AES.new(keydata, AES.MODE_CBC, ivdata)
+            enc_bytes = cipher.encrypt(rawbytes)
+            return enc_bytes
+        elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-ecb":
+            # Only encrypt loader content, if loader not exist, don't do it
+            cipher = SM4.CryptSM4()
+            cipher.set_key(keydata, SM4.SM4_ENCRYPT)
+            enc_bytes = cipher.crypt_ecb(rawbytes)
+            return enc_bytes[0:len(rawbytes)]
     else:
         return rawbytes
 
 
 def aic_boot_get_loader_for_ext(cfg, filesizes):
     """ Read the loader's binaray data, and perform encryption if it is needed.
+
+        Legacy code, will be removed in later's version
     """
 
     loader_size = 0
@@ -312,30 +407,8 @@ def aic_boot_get_loader_for_ext(cfg, filesizes):
     #                        v
     #      SPL plaintext -> AES -> SPL ciphertext
     if "encryption" in cfg and loader_size > 0:
-        # Only encrypt loader content, if loader not exist, don't do it
-        try:
-            fpath = get_file_path(cfg["encryption"]["key"], cfg["keydir"])
-            if fpath is None:
-                fpath = get_file_path(cfg["encryption"]["key"], cfg["datadir"])
-            with open(fpath, "rb") as f:
-                key_material = b"0123456789abcdef"
-                symmetric_secure_key = f.read(16)
-                cipher = AES.new(symmetric_secure_key, AES.MODE_ECB)
-                hardware_secure_key = cipher.encrypt(key_material)
-        except IOError:
-            print('Failed to open symmetric secure key file')
-            sys.exit(1)
-
-        try:
-            fpath = get_file_path(cfg["encryption"]["iv"], cfg["keydir"])
-            if fpath is None:
-                fpath = get_file_path(cfg["encryption"]["iv"], cfg["datadir"])
-            with open(fpath, "rb") as f:
-                ivdata = f.read(16)
-        except IOError:
-            print('Failed to open iv file')
-            sys.exit(1)
-        cipher = AES.new(hardware_secure_key, AES.MODE_CBC, ivdata)
+        keydata, ivdata = aic_boot_get_encryption_key(cfg, True)
+        cipher = AES.new(keydata, AES.MODE_CBC, ivdata)
         enc_bytes = cipher.encrypt(rawbytes)
         return enc_bytes
     else:
@@ -370,53 +443,143 @@ def aic_boot_get_loader_bytes_v2(cfg, filesizes):
     filesizes["resource_start"] = header_size + loader_size
 
     if "encryption" in cfg and loader_size > 0:
-        # Only encrypt loader content, if loader not exist, don't do it
-        try:
-            fpath = get_file_path(cfg["encryption"]["key"], cfg["keydir"])
-            if fpath is None:
-                fpath = get_file_path(cfg["encryption"]["key"], cfg["datadir"])
-            with open(fpath, "rb") as f:
-                symmetric_secure_key = f.read(16)
-                if aic_boot_use_ssk_derived_key(cfg):
-                    # Use SSK(Symmetric Secure Key) derived AES key to encrypt it
-                    #
-                    #                SSK(128bit)
-                    #                 | (key)
-                    #                 v
-                    #  KM(128bit) -> AES -> HSK(128bit, in Secure SRAM)
-                    #                        | (key)
-                    #                        v
-                    #      SPL plaintext -> AES -> SPL ciphertext
-                    key_material = b"0123456789abcdef"
-                    cipher = AES.new(symmetric_secure_key, AES.MODE_ECB)
-                    encrypt_key = cipher.encrypt(key_material)
-                else:
-                    encrypt_key = symmetric_secure_key
-        except IOError:
-            print('Failed to open symmetric secure key file')
+        derive = aic_boot_use_ssk_derived_key(cfg)
+        keydata, ivdata = aic_boot_get_encryption_key(cfg, derive)
+        if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc":
+            cipher = AES.new(keydata, AES.MODE_CBC, ivdata)
+            enc_bytes = cipher.encrypt(rawbytes)
+            return enc_bytes
+        elif "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-ctr":
+            init_val = int.from_bytes(ivdata, 'big')
+            ctr = Counter.new(128, initial_value=init_val)
+            cipher = AES.new(keydata, AES.MODE_CTR, counter=ctr)
+            enc_bytes = cipher.encrypt(rawbytes)
+            return enc_bytes
+        elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-cbc":
+            cipher = SM4.CryptSM4()
+            cipher.set_key(keydata, SM4.SM4_ENCRYPT)
+            enc_bytes = cipher.crypt_cbc(ivdata, rawbytes)
+            return enc_bytes[0:len(rawbytes)]
+        elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-ecb":
+            # Only encrypt loader content, if loader not exist, don't do it
+            cipher = SM4.CryptSM4()
+            cipher.set_key(keydata, SM4.SM4_ENCRYPT)
+            enc_bytes = cipher.crypt_ecb(rawbytes)
+            return enc_bytes[0:len(rawbytes)]
+        else:
+            print('Unknown encryption ALGO')
             sys.exit(1)
-
-        try:
-            fpath = get_file_path(cfg["encryption"]["iv"], cfg["keydir"])
-            if fpath is None:
-                fpath = get_file_path(cfg["encryption"]["iv"], cfg["datadir"])
-            with open(fpath, "rb") as f:
-                ivdata = f.read(16)
-        except IOError:
-            print('Failed to open iv file')
-            sys.exit(1)
-        cipher = AES.new(encrypt_key, AES.MODE_CBC, ivdata)
-        enc_bytes = cipher.encrypt(rawbytes)
-        return enc_bytes
     else:
         return rawbytes
+
+
+def aic_boot_private2_data_sign(cfg, privdata):
+    if "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        newdata = privdata[0:4] + bytearray(4)
+        newdata = newdata + privdata[8:12] + int_to_uint32_bytes(len(privdata)) + privdata[16:]
+        signature = aic_boot_gen_hmac_signature_bytes(cfg, newdata)
+        signed_bytes = newdata + signature
+    elif "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
+        newdata = privdata[0:4] + bytearray(4)
+        newdata = newdata + privdata[8:12] + int_to_uint32_bytes(len(privdata)) + privdata[16:]
+        signature = aic_boot_gen_rsa_signature_bytes(cfg, newdata)
+        signed_bytes = newdata + signature
+    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+        newdata = privdata[0:4] + bytearray(4)
+        newdata = newdata + privdata[8:12] + int_to_uint32_bytes(len(privdata)) + privdata[16:]
+        signature = aic_boot_gen_sm2_signature_bytes(cfg, newdata)
+        signed_bytes = newdata + signature
+    else:
+        signed_bytes = privdata
+    return signed_bytes
+
+
+def aic_boot_pbp2_enc_and_sign(cfg, pbp_data):
+    """
+        PBP format:
+        struct pbp_header {
+            char magic[4]; // "PBP2"
+            u32  checksum; // Secure boot it can be set to 0
+            u32  head_ver;
+            u32  sign_offset; // Offset from PBP header start to the pbp signature
+            char pad[16];
+            .... PBP data; // should align to 256 byte
+            u8 sign[256];
+    """
+    out_bytes = pbp_data
+    prog_data = pbp_data[32:]
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc":
+        keydata, ivdata = aic_boot_get_encryption_key(cfg, False)
+        cipher = AES.new(keydata, AES.MODE_CBC, ivdata)
+        enc_bytes = cipher.encrypt(prog_data)
+        prog_data = enc_bytes
+        # Update checksum first for no signature case
+        newdata = pbp_data[0:4] + bytearray(4) + pbp_data[8:32] + enc_bytes
+        cksum = aic_calc_checksum(newdata, len(newdata))
+        out_bytes = pbp_data[0:4] + int_to_uint32_bytes(cksum) + newdata[8:]
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-ctr":
+        keydata, ivdata = aic_boot_get_encryption_key(cfg, False)
+        init_val = int.from_bytes(ivdata, 'big')
+        ctr = Counter.new(128, initial_value=init_val)
+        cipher = AES.new(keydata, AES.MODE_CTR, counter=ctr)
+        enc_bytes = cipher.encrypt(prog_data)
+        prog_data = enc_bytes
+        # Update checksum first for no signature case
+        newdata = pbp_data[0:4] + bytearray(4) + pbp_data[8:32] + enc_bytes
+        cksum = aic_calc_checksum(newdata, len(newdata))
+        out_bytes = pbp_data[0:4] + int_to_uint32_bytes(cksum) + newdata[8:]
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-cbc":
+        keydata, ivdata = aic_boot_get_encryption_key(cfg, False)
+        cipher = SM4.CryptSM4()
+        cipher.set_key(keydata, SM4.SM4_ENCRYPT)
+        enc_bytes = cipher.crypt_cbc(ivdata, prog_data)
+        prog_data = enc_bytes[0:len(prog_data)]
+        # Update checksum first for no signature case
+        newdata = pbp_data[0:4] + bytearray(4) + pbp_data[8:32] + enc_bytes
+        cksum = aic_calc_checksum(newdata, len(newdata))
+        out_bytes = pbp_data[0:4] + int_to_uint32_bytes(cksum) + newdata[8:]
+    if "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        newdata = pbp_data[0:4] + bytearray(4)
+        newdata = newdata + pbp_data[8:12] + int_to_uint32_bytes(len(pbp_data)) + pbp_data[16:32]
+        newdata = newdata + prog_data
+        signature = aic_boot_gen_hmac_signature_bytes(cfg, newdata)
+        signed_bytes = newdata + signature
+        out_bytes = signed_bytes
+    elif "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
+        newdata = pbp_data[0:4] + bytearray(4)
+        newdata = newdata + pbp_data[8:12] + int_to_uint32_bytes(len(pbp_data)) + pbp_data[16:32]
+        newdata = newdata + prog_data
+        signature = aic_boot_gen_rsa_signature_bytes(cfg, newdata)
+        signed_bytes = newdata + signature
+        out_bytes = signed_bytes
+    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+        newdata = pbp_data[0:4] + bytearray(4)
+        newdata = newdata + pbp_data[8:12] + int_to_uint32_bytes(len(pbp_data)) + pbp_data[16:32]
+        newdata = newdata + prog_data
+        signature = aic_boot_gen_sm2_signature_bytes(cfg, newdata)
+        signed_bytes = newdata + signature
+        out_bytes = signed_bytes
+    return out_bytes
 
 
 def aic_boot_get_resource_bytes(cfg, filesizes):
     """ Pack all resource data into boot image's resource section
     """
     resbytes = bytearray(0)
-    if "resource/pbp" in filesizes:
+    if "resource/pbp2" in filesizes:
+        pbp_size = filesizes["round(resource/pbp2)"]
+        try:
+            fpath = get_file_path(cfg["resource"]["pbp2"], cfg["datadir"])
+            with open(fpath, "rb") as f:
+                pbp_data = f.read(pbp_size)
+        except IOError:
+            print('Failed to open pbp file')
+            sys.exit(1)
+        paddata = pbp_data + bytearray(pbp_size - len(pbp_data))
+        pbp_data = aic_boot_pbp2_enc_and_sign(cfg, paddata)
+        filesizes["round(resource/pbp2)"] = len(pbp_data)
+        resbytes = resbytes + pbp_data
+    elif "resource/pbp" in filesizes:
         pbp_size = filesizes["round(resource/pbp)"]
         try:
             fpath = get_file_path(cfg["resource"]["pbp"], cfg["datadir"])
@@ -426,7 +589,21 @@ def aic_boot_get_resource_bytes(cfg, filesizes):
             print('Failed to open pbp file')
             sys.exit(1)
         resbytes = resbytes + pbp_data + bytearray(pbp_size - len(pbp_data))
-    if "resource/private" in filesizes:
+    if "resource/private2" in filesizes:
+        priv_size = filesizes["round(resource/private2)"]
+        try:
+            fpath = get_file_path(cfg["resource"]["private2"], cfg["datadir"])
+            with open(fpath, "rb") as f:
+                privdata = f.read(priv_size)
+        except IOError:
+            print('Failed to open private file')
+            sys.exit(1)
+
+        paddata = privdata + bytearray(priv_size - len(privdata))
+        privdata = aic_boot_private2_data_sign(cfg, paddata)
+        filesizes["round(resource/private2)"] = len(privdata)
+        resbytes = resbytes + privdata
+    elif "resource/private" in filesizes:
         priv_size = filesizes["round(resource/private)"]
         try:
             fpath = get_file_path(cfg["resource"]["private"], cfg["datadir"])
@@ -473,6 +650,20 @@ def aic_boot_get_resource_for_ext(cfg, filesizes):
     """
 
     resbytes = bytearray(0)
+    if "resource/private2" in filesizes:
+        priv_size = filesizes["round(resource/private2)"]
+        try:
+            fpath = get_file_path(cfg["resource"]["private2"], cfg["datadir"])
+            with open(fpath, "rb") as f:
+                privdata = f.read(priv_size)
+        except IOError:
+            print('Failed to open private file')
+            sys.exit(1)
+
+        paddata = privdata + bytearray(priv_size - len(privdata))
+        privdata = aic_boot_private2_data_sign(cfg, paddata)
+        filesizes["round(resource/private2)"] = len(privdata)
+        resbytes = resbytes + privdata
     if "resource/private" in filesizes:
         priv_size = filesizes["round(resource/private)"]
         try:
@@ -565,7 +756,14 @@ def aic_boot_gen_header_bytes(cfg, filesizes):
     if "head_ver" in cfg:
         header_ver = int(cfg["head_ver"], 16)
 
-    img_len = aic_boot_calc_image_length(filesizes, "signature" in cfg)
+    if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
+        img_len = aic_boot_calc_image_length(filesizes, 256)
+    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+        img_len = aic_boot_calc_image_length(filesizes, 64)
+    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        img_len = aic_boot_calc_image_length(filesizes, 32)
+    else:
+        img_len = aic_boot_calc_image_length(filesizes, 16)
     fw_ver = 0
     if "anti-rollback counter" in cfg:
         fw_ver = cfg["anti-rollback counter"]
@@ -601,19 +799,35 @@ def aic_boot_gen_header_bytes(cfg, filesizes):
     next_res_offset = filesizes["resource_start"]
     pbp_data_offset = 0
     pbp_data_length = 0
-    if "resource" in cfg and "pbp" in cfg["resource"]:
+    if "resource" in cfg and "pbp2" in cfg["resource"]:
+        pbp_data_offset = next_res_offset
+        pbp_data_length = filesizes["round(resource/pbp2)"]
+        next_res_offset = pbp_data_offset + filesizes["round(resource/pbp2)"]
+    elif "resource" in cfg and "pbp" in cfg["resource"]:
         pbp_data_offset = next_res_offset
         pbp_data_length = filesizes["resource/pbp"]
         next_res_offset = pbp_data_offset + filesizes["round(resource/pbp)"]
     priv_data_offset = 0
     priv_data_length = 0
-    if "resource" in cfg and "private" in cfg["resource"]:
+    if "resource" in cfg and "private2" in cfg["resource"]:
+        priv_data_offset = next_res_offset
+        priv_data_length = filesizes["round(resource/private2)"]
+        next_res_offset = priv_data_offset + filesizes["round(resource/private2)"]
+    elif "resource" in cfg and "private" in cfg["resource"]:
         priv_data_offset = next_res_offset
         priv_data_length = filesizes["resource/private"]
         next_res_offset = priv_data_offset + filesizes["round(resource/private)"]
     if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
         sign_algo = 1
         sign_length = 256
+        sign_offset = img_len - sign_length
+    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+        sign_algo = 2
+        sign_length = 64
+        sign_offset = img_len - sign_length
+    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        sign_algo = 3
+        sign_length = 32
         sign_offset = img_len - sign_length
     else:
         # Append md5 result to the end
@@ -630,11 +844,23 @@ def aic_boot_gen_header_bytes(cfg, filesizes):
     enc_algo = 0
     iv_data_offset = 0
     iv_data_length = 0
-    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc":
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc" and loader_length != 0:
         enc_algo = 1
         iv_data_offset = next_res_offset
         iv_data_length = 16
         next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    elif "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-ctr" and loader_length != 0:
+        enc_algo = 4
+        iv_data_offset = next_res_offset
+        iv_data_length = 16
+        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-cbc" and loader_length != 0:
+        enc_algo = 3
+        iv_data_offset = next_res_offset
+        iv_data_length = 16
+        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-ecb":
+        enc_algo = 2
     # Generate header bytes
     header_bytes = magic.encode(encoding="utf-8")
     header_bytes = aic_boot_add_header(header_bytes, checksum)
@@ -673,7 +899,14 @@ def aic_boot_gen_header_for_ext(cfg, filesizes):
     if "head_ver" in cfg:
         header_ver = int(cfg["head_ver"], 16)
 
-    img_len = aic_boot_calc_image_length_for_ext(filesizes, "signature" in cfg)
+    if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
+        img_len = aic_boot_calc_image_length_for_ext(filesizes, 256)
+    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+        img_len = aic_boot_calc_image_length_for_ext(filesizes, 64)
+    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        img_len = aic_boot_calc_image_length_for_ext(filesizes, 32)
+    else:
+        img_len = aic_boot_calc_image_length_for_ext(filesizes, 16)
     fw_ver = 0
 
     loader_length = 0
@@ -715,6 +948,10 @@ def aic_boot_gen_header_for_ext(cfg, filesizes):
         sign_algo = 1
         sign_length = 256
         sign_offset = img_len - sign_length
+    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        sign_algo = 3
+        sign_length = 32
+        sign_offset = img_len - sign_length
     else:
         # Append md5 result to the end
         sign_algo = 0
@@ -732,6 +969,16 @@ def aic_boot_gen_header_for_ext(cfg, filesizes):
     iv_data_length = 0
     if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc":
         enc_algo = 1
+        iv_data_offset = next_res_offset
+        iv_data_length = 16
+        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-ctr":
+        enc_algo = 4
+        iv_data_offset = next_res_offset
+        iv_data_length = 16
+        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-cbc":
+        enc_algo = 3
         iv_data_offset = next_res_offset
         iv_data_length = 16
         next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
@@ -773,7 +1020,23 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
     if "head_ver" in cfg:
         header_ver = int(cfg["head_ver"], 16)
 
-    img_len = aic_boot_calc_image_length(filesizes, "signature" in cfg)
+    # Default is MD5
+    cksum_aux_len = 0
+    cksum_algo = "md5"
+    if "checksum-algo" in cfg:
+        cksum_algo = cfg["checksum-algo"].strip().lower()
+    if cksum_algo == "md5":
+        cksum_aux_len = 16
+    if cksum_algo == "sm3":
+        cksum_aux_len = 32
+    if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
+        img_len = aic_boot_calc_image_length(filesizes, 256)
+    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+        img_len = aic_boot_calc_image_length(filesizes, 64)
+    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        img_len = aic_boot_calc_image_length(filesizes, 32)
+    else:
+        img_len = aic_boot_calc_image_length(filesizes, cksum_aux_len)
     fw_ver = 0
     if "anti-rollback counter" in cfg:
         fw_ver = cfg["anti-rollback counter"]
@@ -784,6 +1047,7 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
 
     loader_ext_offset = 0
     if aic_boot_with_ext_loader(cfg):
+        loader_length = 0
         loader_ext_offset = img_len
         # ensure ext loader start position is aligned to 512
         loader_ext_offset = round_up(img_len, META_ALIGNED_SIZE)
@@ -813,13 +1077,21 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
     next_res_offset = filesizes["resource_start"]
     pbp_data_offset = 0
     pbp_data_length = 0
-    if "resource" in cfg and "pbp" in cfg["resource"]:
+    if "resource" in cfg and "pbp2" in cfg["resource"]:
+        pbp_data_offset = next_res_offset
+        pbp_data_length = filesizes["round(resource/pbp2)"]
+        next_res_offset = pbp_data_offset + filesizes["round(resource/pbp2)"]
+    elif "resource" in cfg and "pbp" in cfg["resource"]:
         pbp_data_offset = next_res_offset
         pbp_data_length = filesizes["resource/pbp"]
         next_res_offset = pbp_data_offset + filesizes["round(resource/pbp)"]
     priv_data_offset = 0
     priv_data_length = 0
-    if "resource" in cfg and "private" in cfg["resource"]:
+    if "resource" in cfg and "private2" in cfg["resource"]:
+        priv_data_offset = next_res_offset
+        priv_data_length = filesizes["round(resource/private2)"]
+        next_res_offset = priv_data_offset + filesizes["round(resource/private2)"]
+    elif "resource" in cfg and "private" in cfg["resource"]:
         priv_data_offset = next_res_offset
         priv_data_length = filesizes["resource/private"]
         next_res_offset = priv_data_offset + filesizes["round(resource/private)"]
@@ -827,10 +1099,18 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
         sign_algo = 1
         sign_length = 256
         sign_offset = img_len - sign_length
+    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+        sign_algo = 2
+        sign_length = 64
+        sign_offset = img_len - sign_length
+    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        sign_algo = 3
+        sign_length = 32
+        sign_offset = img_len - sign_length
     else:
-        # Append md5 result to the end
+        # Append other checksum algo result to the end
         sign_algo = 0
-        sign_length = 16
+        sign_length = cksum_aux_len
         sign_offset = img_len - sign_length
 
     if "resource" in cfg and "pubkey" in cfg["resource"]:
@@ -847,6 +1127,18 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
         iv_data_offset = next_res_offset
         iv_data_length = 16
         next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    elif "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-ctr":
+        enc_algo = 4
+        iv_data_offset = next_res_offset
+        iv_data_length = 16
+        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-cbc":
+        enc_algo = 3
+        iv_data_offset = next_res_offset
+        iv_data_length = 16
+        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-ecb":
+        enc_algo = 2
     # Generate header bytes
     header_bytes = magic.encode(encoding="utf-8")
     header_bytes = aic_boot_add_header(header_bytes, checksum)
@@ -873,7 +1165,7 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
     return header_bytes
 
 
-def aic_boot_gen_signature_bytes(cfg, bootimg):
+def aic_boot_gen_rsa_signature_bytes(cfg, bootimg):
     """ Generate RSASSA-PKCS1-v1.5 Signature with SHA-256
     """
     if "privkey" not in cfg["signature"]:
@@ -905,6 +1197,62 @@ def aic_boot_gen_signature_bytes(cfg, bootimg):
     return sign_bytes
 
 
+def aic_boot_gen_hmac_signature_bytes(cfg, bootimg):
+    """ Generate ArtInChip specified HMAC-SHA256 authentication code calculate flow for
+        firmware component:
+
+        1. Use privkey to perform AES-128-ECB encrypt first 64 bytes, the output will be used as
+           HMAC key
+        2. Use the calculated HMAC key to calculate firmware component's authentication code.
+    """
+    if "privkey" not in cfg["signature"]:
+        print("HMAC Private key is not exist.")
+        sys.exit(1)
+    try:
+        if os.path.exists(cfg["keydir"] + cfg["signature"]["privkey"]):
+            fpath = cfg["keydir"] + cfg["signature"]["privkey"]
+        else:
+            fpath = cfg["datadir"] + cfg["signature"]["privkey"]
+        with open(fpath, 'rb') as fkey:
+            privkey = fkey.read()
+    except IOError:
+        print("Failed to open file: " + cfg["signature"]["privkey"])
+        sys.exit(1)
+    # Check if it is private key
+    if len(privkey) != 16:
+        print("Should provide 16 bytes private key to sign")
+        sys.exit(1)
+    if "key-derive" in cfg["signature"] and cfg["signature"]["key-derive"] == "aes-128-ctr":
+        iv = b"0123456789ABCDEF"
+        init_val = int.from_bytes(iv, 'big')
+        ctr = Counter.new(128, initial_value=init_val)
+        cipher = AES.new(privkey, AES.MODE_CTR, counter=ctr)
+    else:
+        cipher = AES.new(privkey, AES.MODE_ECB)
+    keyseed = bootimg[0:64]
+    hmackey = cipher.encrypt(keyseed)
+    # print(f"\n\nlen: {len(bootimg)}")
+    # print(bootimg[:32])
+    # print(f"hmackey:{hmackey.hex()}")
+    hmac = HMAC.new(hmackey, digestmod=SHA256)
+    hmac.update(bootimg)
+    sign_bytes = hmac.digest()
+    # print(f"sign_bytes:{sign_bytes.hex()}")
+    return sign_bytes
+
+
+def aic_boot_gen_signature_bytes(cfg, bootimg):
+    if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
+        return aic_boot_gen_rsa_signature_bytes(cfg, bootimg)
+    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
+        return aic_boot_gen_hmac_signature_bytes(cfg, bootimg)
+    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
+        return aic_boot_gen_sm2_signature_bytes(cfg, bootimg)
+    else:
+        print("Not support signature algorithm")
+        sys.exit(1)
+
+
 def aic_boot_gen_img_md5_bytes(cfg, bootimg):
     """ Calculate MD5 of image to make brom verify image faster
     """
@@ -916,12 +1264,16 @@ def aic_boot_gen_img_md5_bytes(cfg, bootimg):
 
 
 def aic_boot_check_params(cfg):
-    if "encryption" in cfg and cfg["encryption"]["algo"] != "aes-128-cbc":
-        print("Only support aes-128-cbc encryption")
+    if ("encryption" in cfg and
+        (cfg["encryption"]["algo"] != "aes-128-cbc" and
+         cfg["encryption"]["algo"] != "aes-128-ctr" and
+         cfg["encryption"]["algo"] != "sm4-cbc" and
+         cfg["encryption"]["algo"] != "sm4-ecb")):
+        print("Only support aes-128-cbc/aes-128-ctr/sm4-cbc/sm4-ecb encryption")
         return False
-    if "signature" in cfg and cfg["signature"]["algo"] != "rsa,2048":
-        print("Only support rsa,2048 signature")
-        return False
+    # if "signature" in cfg and cfg["signature"]["algo"] != "rsa,2048":
+    #     print("Only support rsa,2048 signature")
+    #     return False
     # if "loader" not in cfg or "load address" not in cfg["loader"]:
     #     print("load address is not set")
     #     return False
@@ -929,6 +1281,64 @@ def aic_boot_check_params(cfg):
     #     print("entry point is not set")
     #     return False
     return True
+
+
+def get_sm2_key_pair(derfile):
+    pk = None
+    pr = None
+    try:
+        with open(derfile, 'rb') as fsm2:
+            asn1 = asn1crypto.core.load(fsm2.read())
+            # asn1.debug()
+            asn1._parse_children()
+            pr = asn1.children[1][4]
+            value = asn1.children[3][4][2:]
+            if value[0]:
+                pk = value
+            else:
+                pk = value[1:]
+    except IOError:
+        print('Failed to open file: ' + derfile)
+        sys.exit(1)
+    priv_key_hex = binascii.hexlify(pr).decode('utf-8')
+    pub_key_hex = binascii.hexlify(pk).decode('utf-8')
+    return (priv_key_hex, pub_key_hex)
+
+
+def aic_boot_gen_sm2_signature_bytes(cfg, bootimg):
+    """ Generate SM2 Signature with SM3
+    """
+    if "privkey" not in cfg["signature"]:
+        print("SM2 Private key is not exist.")
+        sys.exit(1)
+    if os.path.exists(cfg["keydir"] + cfg["signature"]["privkey"]):
+        fpath = cfg["keydir"] + cfg["signature"]["privkey"]
+    else:
+        fpath = cfg["datadir"] + cfg["signature"]["privkey"]
+    (pr, pk) = get_sm2_key_pair(fpath)
+    sm2_crypt = SM2.CryptSM2(public_key=pk, private_key=pr)
+    sm3_str = SM3.sm3_hash(bytearray(bootimg))
+    sm3_bin = binascii.unhexlify(sm3_str)
+    # Debug
+    # random_str = sm3_str
+    random_str = func.random_hex(sm2_crypt.para_len)
+    # random_str = 'fadc36018fcc350ffd1783553d6ede3790eda384cd61eeb923a52f51bb2762ea'
+    sign_str = sm2_crypt.sign(sm3_bin, random_str)
+    sign_bytes = binascii.unhexlify(sign_str)
+    return sign_bytes
+
+
+def aic_boot_gen_img_sm3_bytes(cfg, bootimg):
+    """ Calculate SM3 of image to make brom verify image faster
+    """
+    # Calculate SM3 hash
+
+    sm3_str = SM3.sm3_hash(bytearray(bootimg))
+    # print(sm3_str)
+    # with open('check_sm3.bin', 'wb') as f:
+    #     f.write(bootimg)
+    sm3_bytes = binascii.unhexlify(sm3_str)
+    return sm3_bytes
 
 
 def aic_boot_create_image(cfg, keydir, datadir):
@@ -1035,15 +1445,22 @@ def aic_boot_create_image_v2(cfg, keydir, datadir):
                 bootimg += bytearray(padlen)
         return bootimg
 
-    # Secure boot is not enabled, always add md5 result to the end
-    md5_bytes = aic_boot_gen_img_md5_bytes(cfg, bootimg[8:])
-    bootimg = bootimg + md5_bytes
+    # Default is MD5
+    cksum_algo = "md5"
+    if "checksum-algo" in cfg:
+        cksum_algo = cfg["checksum-algo"].strip().lower()
+    if cksum_algo == "md5":
+        # Secure boot is not enabled, always add md5 result to the end
+        md5_bytes = aic_boot_gen_img_md5_bytes(cfg, bootimg[8:])
+        bootimg = bootimg + md5_bytes
+    if cksum_algo == "sm3":
+        sm3_bytes = aic_boot_gen_img_sm3_bytes(cfg, bootimg[8:])
+        bootimg = bootimg + sm3_bytes
     if aic_boot_with_ext_loader(cfg):
         padlen = round_up(len(bootimg), META_ALIGNED_SIZE) - len(bootimg)
         if padlen > 0:
             bootimg += bytearray(padlen)
-    # Calculate checksum.
-    # When MD5 is disabled, checksum will be checked by BROM.
+    # Always Calculate simple checksum.
     cs = aic_boot_checksum(bootimg)
     cs_bytes = cs.to_bytes(4, byteorder='little', signed=False)
     bootimg = bootimg[0:4] + cs_bytes + bootimg[8:]
@@ -1243,6 +1660,16 @@ def str_from_nbytes(s):
     return str(s, encoding='utf-8')
 
 
+def val_to_int(val):
+    """ Maybe int, or hex string
+    """
+    if isinstance(val, int):
+        return val
+    if isinstance(val, str):
+        return int(val, 16)
+    return 0
+
+
 def int_to_uint32_bytes(n):
     """ Int value to uint32 bytes
     """
@@ -1288,6 +1715,8 @@ struct artinchip_fw_hdr{
     u32  file_size;   /* File data Area size */
 };
 """
+
+
 def img_write_fw_header(imgfile, cfg, meta_area_size, file_area_size):
     """ Generate Firmware image's header data
     Args:
@@ -1310,10 +1739,7 @@ def img_write_fw_header(imgfile, cfg, meta_area_size, file_area_size):
     dev_id = 0
     if "device_id" in cfg["image"]["info"]["media"]:
         val = cfg["image"]["info"]["media"]["device_id"]
-        if isinstance(val, str):
-            dev_id = int(val)
-        else:
-            dev_id = val
+        dev_id = val_to_int(val)
 
     magic = "AIC.FW"
     platform = str(cfg["image"]["info"]["platform"])
@@ -1735,9 +2161,13 @@ def img_write_fwc_file_to_binfile(binfile, cfg, datadir):
         media_size = BIN_FILE_MAX_SIZE
 
     step = 1024 * 1024
-    buff = gen_bytes(0xFF, step)
     while True:
-        binfile.write(buff)
+        remain = int(media_size) - int(binfile.tell())
+        if remain > step:
+            binfile.write(gen_bytes(0xFF, step))
+        else:
+            binfile.write(gen_bytes(0xFF, remain))
+
         if int(binfile.tell()) >= int(media_size):
             break
 
@@ -1824,6 +2254,10 @@ def img_write_fwc_file_to_binfile(binfile, cfg, datadir):
                         break
                     binfile.write(bindata)
             binfile.seek(part_offset + filesize, 0)
+
+            if fwc == "spl" and cfg["image"]["info"]["media"]["type"] == "spi-nand":
+                filesize += page_table_size
+
             if (part_size - filesize < 0):
                 print("file {} size({}) exceeds {} partition size({})".format(fwcset[fwc]["file"],
                                                                               filesize,

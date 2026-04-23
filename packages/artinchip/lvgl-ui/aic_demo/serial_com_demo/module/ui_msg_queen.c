@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -25,7 +25,7 @@ int ui_msg_queen_init(void)
 int ui_msg_queen_send(ui_message_t *msg)
 {
     if(rt_mq_send(g_ui_mq, msg, sizeof(ui_message_t)) != RT_EOK) {
-        rt_kprintf("rt send mq failed, mq name = %s", g_ui_mq->parent.parent.name);
+        rt_kprintf("rt send mq failed, mq name = %s\n", g_ui_mq->parent.parent.name);
         return 0;
     }
 
@@ -35,7 +35,7 @@ int ui_msg_queen_send(ui_message_t *msg)
 int ui_msg_queen_recv(ui_message_t * msg)
 {
     if(rt_mq_recv(g_ui_mq, msg, sizeof(ui_message_t), 0) != RT_EOK) {
-        rt_kprintf("rt recv mq failed, mq name = %s", g_ui_mq->parent.parent.name);
+        return -1;
     }
 
     return 0;

@@ -1,0 +1,44 @@
+{
+	"system": {
+		"upgmode": { // Set PIN to enter BROM's upgrading mode
+			// If set upgmode_pin_cfg_reg to "0", disable bootpin detect in PBP
+			"upgmode_pin_cfg_reg": "0x18700080", // PINMUX REG, PA0
+			"upgmode_pin_cfg_val": "0x10321",    // PINMUX VAL
+			"upgmode_pin_input_reg": "0x18700000", // INPUT VAL REG
+			"upgmode_pin_input_msk": "0x1", // Bit MSK
+			"upgmode_pin_input_val": "0x0", // Bit VAL
+			"upgmode_pin_pullup_dly": "500", // us
+		},
+		"uart": { // PBP's uart setting, remove uart setting to disable log in PBP
+			"main": {
+				// "uart_id": "0", // UART0 for log output
+				// "uart_tx_pin_cfg_reg": "0x18700080", // PA0
+				// "uart_tx_pin_cfg_val": "0x035",
+				// "uart_rx_pin_cfg_reg": "0x18700084", // PA1
+				// "uart_rx_pin_cfg_val": "0x035",
+
+				"uart_id": "1", // UART1 for log output
+				"uart_tx_pin_cfg_reg": "0x18700088", // PA4
+				"uart_tx_pin_cfg_val": "0x325",
+				"uart_rx_pin_cfg_reg": "0x1870008C", // PA5
+				"uart_rx_pin_cfg_val": "0x325",
+
+			},
+		},
+		"jtag": {
+			"jtag_only": "0", // 1: Boot code stop in PBP after DDR init and jtag init
+			"main": {
+				"jtag_id": "0",
+				"jtag_ms_pin_cfg_reg": "0x187000A8", // PA10
+				"jtag_ms_pin_cfg_val": "0x338",
+				"jtag_ck_pin_cfg_reg": "0x187000AC", // PA11
+				"jtag_ck_pin_cfg_val": "0x338",
+
+				// "jtag_ms_pin_cfg_reg": "0x18700280", // PC0
+				// "jtag_ms_pin_cfg_val": "0x338",
+				// "jtag_ck_pin_cfg_reg": "0x18700294", // PC5
+				// "jtag_ck_pin_cfg_val": "0x338",
+			},
+		},
+	},
+}

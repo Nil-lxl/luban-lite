@@ -51,6 +51,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <ctime>
 #include <cstring>
 #include <fstream>
 #include <float.h>
@@ -61,6 +62,7 @@
 #include "tvgStr.h"
 #include "tvgSvgCssStyle.h"
 #include "tvgMath.h"
+
 
 /************************************************************************/
 /* Internal Class Implementation                                        */

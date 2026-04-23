@@ -1074,11 +1074,14 @@ static lv_res_t player_handle_update_display_area(void *ctx)
     if (calc_video_mpp_rotation_with_check(obj, &video_rotate) < 0)
         return LV_RES_INV;
 
-    ret = aic_player_set_rotation(aic_ctx->player, video_rotate);
-    if (ret != 0) {
-        LV_LOG_ERROR("aic_player_set_rotation failed, rotation = %d", video_rotate);
-        return LV_RES_INV;
+    if (atomic_load(&aic_ctx->status) == PLAYER_STATUS_RUNNING) {
+        ret = aic_player_set_rotation(aic_ctx->player, video_rotate);
+        if (ret != 0) {
+            LV_LOG_ERROR("aic_player_set_rotation failed, rotation = %d", video_rotate);
+            return LV_RES_INV;
+        }
     }
+
     return LV_RES_OK;
 }
 

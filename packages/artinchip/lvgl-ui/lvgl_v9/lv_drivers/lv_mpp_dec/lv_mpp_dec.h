@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -107,6 +107,13 @@ static inline bool image_suffix_is_jpg(char *ptr)
             || (!strcmp(ptr, ".JPG")) || (!strcmp(ptr, ".JPEG")));
 }
 
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+static inline bool image_suffix_is_aicp(char *ptr)
+{
+    return (!strcmp(ptr, ".aicp"));
+}
+#endif
+
 static inline int jpeg_size_limit(int w, int h)
 {
     return LV_MAX(jpeg_width_limit(w), jpeg_height_limit(h));
@@ -116,7 +123,7 @@ lv_color_format_t mpp_fmt_to_lv_fmt(enum mpp_pixel_format cf);
 
 lv_result_t lv_png_decoder_info(const char *src, lv_image_header_t *header, uint32_t size, bool is_file);
 
-lv_result_t lv_jpeg_decoder_info(const char *src, lv_image_header_t *header, uint32_t size, bool is_file);
+lv_result_t lv_jpeg_decoder_info(const char *src, lv_image_header_t *header, uint32_t size, bool is_file, bool is_aicp);
 
 lv_result_t lv_frame_buf_alloc(mpp_decoder_data_t *mpp_data, struct mpp_buf *alloc_buf,
                               int *size, uint32_t cf);

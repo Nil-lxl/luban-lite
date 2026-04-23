@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -53,10 +53,19 @@ int _nftl_port_hw_erase_block(void *device, struct physical_op_info *p)
     return 0;
 }
 
-static int nftl_check_need_unmap(u8 *spare)
+static int nftl_check_spare_data_format(u8 *spare)
 {
 
-    if (spare[12] == 0xa5 && spare[13] == 0xa5 && spare[0] == 0xff && spare[1] == 0xff)
+    if (spare[0] != 0xff || spare[1] != 0xff)
+        return 0;
+
+    if ((spare[2] & 0xf0) == 0xc0)
+        return 1;
+
+    if (spare[2] == 0xaa && spare[3] == 0xaa && spare[4] == 0xff && spare[5] == 0xff)
+        return 1;
+
+    if (spare[2] == 0x55 && spare[3] == 0x55 && spare[4] == 0x55 && spare[5] == 0x55)
         return 1;
 
     return 0;
@@ -84,7 +93,7 @@ int _nftl_port_hw_read_page(void *device, struct physical_op_info *p)
         return ret;
     }
 
-    if (!nftl_check_need_unmap(p->spare_data_addr))
+    if (!nftl_check_spare_data_format(p->spare_data_addr) && nftl_check_spare_data_format(src_buf))
         memcpy(p->spare_data_addr, src_buf, 64);
 
     memset(p->spare_data_addr + 16, 0xFF, 8);

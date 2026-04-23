@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,13 +10,6 @@
 #include "aic_tlsf.h"
 
 //#define printf(fmt, ...)
-
-typedef struct {
-    char * name;
-    aic_mem_region_t type;
-    size_t start;
-    size_t end;
-} heap_def_t;
 
 typedef struct {
     pool_t pool;
@@ -33,7 +26,7 @@ typedef struct {
     u32 max_free_mem;
 } aic_tlsf_heap_t;
 
-static heap_def_t heap_def[MAX_MEM_REGION] = {
+heap_def_t heap_def[MAX_MEM_REGION] = {
 #if !defined(KERNEL_FREERTOS)
     {
         .name = "sys",

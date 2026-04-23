@@ -26,6 +26,7 @@
 #ifndef _TVG_COMMON_H_
 #define _TVG_COMMON_H_
 
+#include <ctime>
 #include "config.h"
 #include "thorvg.h"
 

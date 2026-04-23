@@ -418,12 +418,12 @@ static bool player_should_wait_sync(lv_obj_t * obj)
 
 static bool player_reset_frame_sync(lv_obj_t *obj, void *data)
 {
+    if (data == NULL)
+        return false;
+
     lv_aic_player_t * player = (lv_aic_player_t *)obj;
     lv_aic_player_group_t * group = (lv_aic_player_group_t *)player->group;
     u64 play_time = *(u64 *)data;
-
-    if (data == NULL)
-        return false;
 
     if (group && play_time != 0) {
         LV_LOG_WARN("Enable frame sync, only supports time setting to 0");

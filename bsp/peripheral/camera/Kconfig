@@ -29,6 +29,9 @@ choice
     config AIC_USING_CAMERA_GC032A
         bool "Using camera GC032A"
 
+    config AIC_USING_CAMERA_BF3A03
+        bool "Using camera BF3A03"
+
     config AIC_USING_CAMERA_GM7150
         bool "Using camera GM7150"
 

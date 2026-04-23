@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -300,8 +300,9 @@ enum dma_status hal_dma_chan_tx_status(struct aic_dma_chan *chan,
 
 int hal_dma_chan_stop(struct aic_dma_chan *chan)
 {
-    u32 value;
     u32 irq_reg, irq_offset;
+    u32 cnt = 0;
+    u32 value;
 
     CHECK_PARAM(chan != NULL, -EINVAL);
     if (chan->cfg.direction == DMA_DEV_TO_MEM)
@@ -317,8 +318,27 @@ int hal_dma_chan_stop(struct aic_dma_chan *chan)
 
     /* pause */
     hal_dma_chan_pause(chan);
+
+    /* wait for read task complete */
+    while(readl(chan->base + DMA_CH_RDC_COMPLETE_REG)) {
+        aic_udelay(10);
+        if (cnt++ > 100) {
+            pr_err("Wait dma complete timeout!\n");
+            return -ETIMEDOUT;
+        }
+    }
+    cnt = 0;
+
     /* stop */
     writel(0x00, chan->base + DMA_CH_EN_REG);
+    while(readl(chan->base + DMA_CH_EN_REG)) {
+        aic_udelay(10);
+        if (cnt++ > 100) {
+            pr_err("Wait dma chn disable timeout!\\n");
+            return -ETIMEDOUT;
+        }
+    }
+
     /* resume */
     hal_dma_chan_resume(chan);
 
@@ -429,6 +449,31 @@ struct aic_dma_chan *hal_request_dma_chan(void)
     }
     aicos_local_irq_restore(state);
     return NULL;
+}
+
+int hal_wait_dma_chans_finish(void)
+{
+    int i = 0;
+    struct aic_dma_chan *chan;
+    u32 left_size = 0;
+    u64 start_us = 0;
+
+    start_us = aic_get_time_us();
+retry:
+    for (i = 0; i < AIC_DMA_CH_NUM; i++)
+    {
+        if ((aic_get_time_us() - start_us) > 3000) {
+            printf("%s timeout!\n", __func__);
+            return -EBUSY;
+        }
+        chan = &aich_dma.dma_chan[i];
+        if (hal_dma_chan_tx_status(chan, &left_size) != DMA_COMPLETE) {
+            aic_udelay(1);
+            goto retry;
+        }
+    }
+
+    return 0;
 }
 
 int hal_dma_init(void)

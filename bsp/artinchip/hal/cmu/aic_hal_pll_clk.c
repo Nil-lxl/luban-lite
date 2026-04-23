@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,6 +10,31 @@
 
 #define PLL_WAIT_TIMEOUT    10 //unit: ms
 #define to_clk_pll(_hw) container_of(_hw, struct aic_clk_pll_cfg, comm)
+
+#ifdef AIC_CMU_DRV_V32
+static void pll_write_auth(uint32_t val, volatile void *reg_addr)
+{
+    uint32_t offset;
+    u64 timeout = 0;
+
+    offset = (uint32_t)reg_addr - CMU_BASE;
+    writel((0xA1C << 20) | offset, cmu_reg(0xFE8));
+    timeout = PLL_WAIT_TIMEOUT + aic_get_time_ms();
+    while (!(readl(cmu_reg(0xFE8)) & (1 << 16))) {
+        if (aic_get_time_ms() >= timeout) {
+            hal_log_err("PLL get auth timeout\n");
+            return;
+        }
+    }
+    writel(val, reg_addr);
+}
+#endif
+
+#ifndef AIC_CMU_DRV_V32
+#define PLL_WRITE           writel
+#else
+#define PLL_WRITE           pll_write_auth
+#endif
 
 /* ALL chips:
  * Other vco of clock not change
@@ -53,7 +78,7 @@ static inline void clk_pll_bypass(struct aic_clk_pll_cfg *pll, unsigned int bypa
     val = readl(cmu_reg(pll->offset_gen));
     val &= ~(1 << PLL_OUT_MUX);
     val |= (!bypass << PLL_OUT_MUX);
-    writel(val, cmu_reg(pll->offset_gen));
+    PLL_WRITE(val, cmu_reg(pll->offset_gen));
 #endif
 }
 
@@ -75,8 +100,8 @@ static int clk_pll_enable(struct aic_clk_comm_cfg *comm_cfg)
     val |= (1 << PLL_OUT_SYS | 1 << PLL_EN_BIT);
 #else
     val |= 1 << PLL_EN_BIT;
-    writel(val, cmu_reg(pll->offset_gen));
-    writel(0x7, cmu_reg(pll->offset_gen + 0xC));
+    PLL_WRITE(val, cmu_reg(pll->offset_gen));
+    PLL_WRITE(0x7, cmu_reg(pll->offset_gen + 0xC));
     timeout = PLL_WAIT_TIMEOUT + aic_get_time_ms();
     while (!(readl(cmu_reg(pll->offset_gen + 0xC)) & 0x10)) {
         if (aic_get_time_ms() >= timeout) {
@@ -86,7 +111,7 @@ static int clk_pll_enable(struct aic_clk_comm_cfg *comm_cfg)
     }
     val |= 1 << PLL_OUT_SYS;
 #endif
-    writel(val, cmu_reg(pll->offset_gen));
+    PLL_WRITE(val, cmu_reg(pll->offset_gen));
 
 #ifndef AIC_CMU_DRV_V30
     clk_pll_wait_lock();
@@ -102,7 +127,7 @@ static void clk_pll_disable(struct aic_clk_comm_cfg *comm_cfg)
     if (!(pll->flag & CLK_NO_CHANGE)) {
         val = readl(cmu_reg(pll->offset_gen));
         val &= ~(1 << PLL_OUT_SYS | 1 << PLL_EN_BIT);
-        writel(val, cmu_reg(pll->offset_gen));
+        PLL_WRITE(val, cmu_reg(pll->offset_gen));
     }
 }
 
@@ -142,7 +167,7 @@ static void clk_pll_enable_sdm(struct aic_clk_pll_cfg *pll, unsigned long parent
               (3 << PLL_SDM_FREQ_BIT) |
               (sdm_amp << PLL_SDM_AMP_BIT);
 
-    writel(reg_val, cmu_reg(pll->offset_sdm));
+    PLL_WRITE(reg_val, cmu_reg(pll->offset_sdm));
 }
 
 static unsigned long clk_pll_recalc_rate(struct aic_clk_comm_cfg *comm_cfg,
@@ -263,7 +288,7 @@ static int clk_pll_set_rate(struct aic_clk_comm_cfg *comm_cfg,
     if (rate == CLOCK_24M) {
         val = readl(cmu_reg(pll->offset_gen));
         val &= ~(1 << PLL_OUT_MUX);
-        writel(val, cmu_reg(pll->offset_gen));
+        PLL_WRITE(val, cmu_reg(pll->offset_gen));
         return 0;
     }
 #endif
@@ -308,7 +333,7 @@ static int clk_pll_set_rate(struct aic_clk_comm_cfg *comm_cfg,
     /* If SDM enable, set PLL_ICP = 0 */
     if (pll->type == AIC_PLL_SDM)
         reg_val &= ~(0x1F << 24);
-    writel(reg_val, cmu_reg(pll->offset_gen));
+    PLL_WRITE(reg_val, cmu_reg(pll->offset_gen));
 
     if (pll->type == AIC_PLL_FRA) {
         val = rate % (parent_rate * (factor_n + 1) /
@@ -320,10 +345,10 @@ static int clk_pll_set_rate(struct aic_clk_comm_cfg *comm_cfg,
             do_div(fra_in, parent_rate);
         }
         /* Configure fractional division */
-        writel(fra_en << PLL_FRAC_EN_BIT | fra_in, cmu_reg(pll->offset_fra));
+        PLL_WRITE(fra_en << PLL_FRAC_EN_BIT | fra_in, cmu_reg(pll->offset_fra));
         /* when using decimal divsion, do not configure spreading parameters */
         sdm_en = (1UL << PLL_SDM_EN_BIT) | (2UL << PLL_SDM_MODE_BIT);
-        writel(sdm_en, cmu_reg(pll->offset_sdm));
+        PLL_WRITE(sdm_en, cmu_reg(pll->offset_sdm));
     } else if (pll->type == AIC_PLL_SDM) {
         clk_pll_enable_sdm(pll, parent_rate, factor_n);
     }
@@ -331,7 +356,7 @@ static int clk_pll_set_rate(struct aic_clk_comm_cfg *comm_cfg,
 #ifndef AIC_CMU_DRV_V30
     reg_val = readl(cmu_reg(pll->offset_gen));
     reg_val |= (1 << PLL_OUT_SYS | 1 << PLL_EN_BIT);
-    writel(reg_val, cmu_reg(pll->offset_gen));
+    PLL_WRITE(reg_val, cmu_reg(pll->offset_gen));
 
     if (!clk_pll_wait_lock()) {
         clk_pll_bypass(pll, 0);

@@ -140,6 +140,9 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DSI_H103W01
         bool "Hotlcd MIPI DSI H103W01 panel"
         depends on AIC_DISP_MIPI_DSI
+    config AIC_PANEL_DSI_JD9366TC
+        bool "ArtInChip MIPI DSI JD9366TC panel"
+        depends on AIC_DISP_MIPI_DSI
 #
 # MIPI-DBI Type B I8080 Panel
 #
@@ -168,6 +171,12 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DBI_H040A27
         bool "Hotlcd MIPI DBI H040A27 panel"
         depends on AIC_DISP_MIPI_DBI
+
+    config AIC_PANEL_DBI_GC9B72NA
+        bool "ArtInChip MIPI DBI GC9B72NA panel"
+        depends on AIC_DISP_MIPI_DBI
+        help
+            MIPI-DBI Type B, I8080_RGB565_8BIT
 #
 # MIPI-DBI Type C SPI Panel
 #
@@ -264,6 +273,11 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
+    config AIC_PANEL_RGB_ST7102
+        bool "ArtInChip RGB ST7102 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
     config AIC_PANEL_RGB_H024A13
         bool "Hotlcd RGB H024A13 panel"
         depends on AIC_DISP_RGB
@@ -293,7 +307,7 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd RGB H035A17 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
-    
+
     config AIC_PANEL_RGB_H035A24
         bool "Hotlcd RGB H035A24 panel"
         depends on AIC_DISP_RGB
@@ -323,7 +337,7 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd RGB H050A12 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
-    
+
     config AIC_PANEL_RGB_H050A18
         bool "Hotlcd RGB H050A18 panel"
         depends on AIC_DISP_RGB
@@ -414,7 +428,7 @@ choice
     config AIC_PANEL_H070A20
         bool "h070a20"
         depends on AIC_DISP_RGB
-    
+
     config AIC_PANEL_H086A01
         bool "h086a01"
         depends on AIC_DISP_RGB
@@ -514,6 +528,40 @@ endif
 
 if AIC_PANEL_CUSTOM_RESOLUTION && !AIC_DISP_PQ_TOOL
 source "bsp/artinchip/drv/display/panel/Kconfig.timing"
+endif
+
+config AIC_SIMPLE_PANEL_POWER_GPIO
+    bool "simple panel power control via GPIO"
+    depends on AIC_SIMPLE_PANEL
+    default n
+    help
+        Enable simple panel power control using a fixed GPIO pin.
+        This GPIO pin does not need to registered in pinmux.c file.
+        Say Y if simple panel needs to apply a dedicated power enable GPIO.
+
+if AIC_SIMPLE_PANEL_POWER_GPIO
+
+config AIC_SIMPLE_PANEL_POWER_GPIO_PIN
+    string "panel power GPIO pin"
+    default "PE.13"
+    help
+        Specify the GPIO pin used for simple panel power control.
+        Format: "PX.NN" (e.g., "PE.20", "PA.5")
+
+config AIC_SIMPLE_PANEL_POWER_GPIO_LOW_ACTIVE
+    bool "power control GPIO is low active"
+    default n
+    help
+        Say Y here if the GPIO needs to be driven low to enable LCD power,
+        and high to disable. If unsure, say N (default high active).
+
+config AIC_SIMPLE_PANEL_POWER_DELAY_MS
+    int "panel power on delay (ms)"
+    default 0
+    range 0 1000
+    help
+        Delay in milliseconds after enabling power before
+        initializing the panel. Some panels require stabilization time.
 endif
 
 

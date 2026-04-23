@@ -667,7 +667,7 @@ static int nread(int argc, char **argv)
     page = page + device->block_start * device->pages_per_block;
 
     if (spinand_mtd_read(device, page, &data_ptr[0], flash->info->page_size,
-                         &spare[0], flash->info->oob_size) != RT_EOK)
+                         &spare[0], flash->info->oob_size) < 0)
         goto exit_nread;
 
     pr_info("Partition:%d page-%d\n", partition, page);

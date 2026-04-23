@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <string.h>
+
+#ifdef LPKG_MPP
 #include "lvgl.h"
 #include "lv_port_disp.h"
 #include "lv_tpc_run.h"
@@ -445,3 +447,5 @@ void lv_port_disp_init(void)
 #endif
 #endif
 }
+
+#endif // LPKG_MPP

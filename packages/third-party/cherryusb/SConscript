@@ -200,6 +200,8 @@ if GetDepend(['LPKG_CHERRYUSB_HOST']) and GetDepend(['AIC_USB_HOST_EHCI_DRV']):
         src += Glob('class/cdc/usbh_cdc_ecm.c')
     if GetDepend(['LPKG_CHERRYUSB_HOST_NCM']):
         src += Glob('class/cdc/usbh_cdc_ncm.c')
+    if GetDepend(['LPKG_CHERRYUSB_HOST_NCM']) or GetDepend(['LPKG_CHERRYUSB_HOST_CDC_ECM']) or GetDepend(['LPKG_CHERRYUSB_HOST_RNDIS']):
+        src += Glob('platform/rtthread/usbh_lwip.c')
     if GetDepend(['LPKG_CHERRYUSB_HOST_BLUETOOTH']):
         src += Glob('class/wireless/usbh_bluetooth.c')
     if GetDepend(['LPKG_CHERRYUSB_HOST_UVC']):

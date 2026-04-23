@@ -17,24 +17,28 @@
 #define CE_CIPHER_MAX_IV_SIZE   AES_BLOCK_SIZE
 #define FLG_DEC                 BIT(0)
 #define FLG_AES                 BIT(1)
-#define FLG_DES                 BIT(2)
-#define FLG_TDES                BIT(3)
-#define FLG_ECB                 BIT(4)
-#define FLG_CBC                 BIT(5)
-#define FLG_CTR                 BIT(6)
-#define FLG_CTS                 BIT(7)
-#define FLG_XTS                 BIT(8)
-#define FLG_GENHSK              BIT(9) /* Gen HSK(Hardware Secure Key) to SSRAM */
+#define FLG_SM4                 BIT(2)
+#define FLG_DES                 BIT(3)
+#define FLG_TDES                BIT(4)
+#define FLG_ECB                 BIT(5)
+#define FLG_CBC                 BIT(6)
+#define FLG_CTR                 BIT(7)
+#define FLG_CTS                 BIT(8)
+#define FLG_XTS                 BIT(9)
+#define FLG_GENHSK              BIT(10) /* Gen HSK(Hardware Secure Key) to SSRAM */
 
 #define FLG_KEYOFFSET (16)
 #define FLG_KEYMASK   GENMASK(19, 16) /* eFuse Key ID */
 
 #define AES_MIN_KEY_SIZE      16
+#define SM4_MIN_KEY_SIZE      16
 #define AES_MAX_KEY_SIZE      32
+#define SM4_MAX_KEY_SIZE      32
 #define AES_KEYSIZE_128       16
 #define AES_KEYSIZE_192       24
 #define AES_KEYSIZE_256       32
 #define AES_BLOCK_SIZE        16
+#define SM4_BLOCK_SIZE        16
 #define AES_MAX_KEYLENGTH     (15 * 16)
 #define AES_MAX_KEYLENGTH_U32 (AES_MAX_KEYLENGTH / sizeof(u32))
 
@@ -97,6 +101,21 @@ static inline bool is_aes_cts(unsigned long flg)
 static inline bool is_aes_xts(unsigned long flg)
 {
     return (flg & FLG_AES && flg & FLG_XTS);
+}
+
+static inline bool is_sm4_ecb(unsigned long flg)
+{
+    return (flg & FLG_SM4 && flg & FLG_ECB);
+}
+
+static inline bool is_sm4_cbc(unsigned long flg)
+{
+    return (flg & FLG_SM4 && flg & FLG_CBC);
+}
+
+static inline bool is_sm4_ctr(unsigned long flg)
+{
+    return (flg & FLG_SM4 && flg & FLG_CTR);
 }
 
 static inline bool is_des_ecb(unsigned long flg)
@@ -188,6 +207,7 @@ static void aic_skcipher_task_cfg(struct crypto_task *task,
 {
     u32 opdir, keysrc, keysize;
 
+    pr_debug("%s\n", __func__);
     if (is_aes_xts(rctx->flags))
         keysize = aic_skcipher_keysize(rctx->keylen / 2);
     else
@@ -260,6 +280,36 @@ static void aic_skcipher_task_cfg(struct crypto_task *task,
         task->alg.aes_xts.tweak_addr = (u32)(uintptr_t)rctx->iv;
         task->data.first_flag = first_flag;
         task->data.last_flag = last_flag;
+    } else if (is_sm4_ecb(rctx->flags)) {
+        task->alg.sm4_ecb.alg_tag = ALG_SM4_ECB;
+        task->alg.sm4_ecb.direction = opdir;
+        task->alg.sm4_ecb.key_siz = keysize;
+        task->alg.sm4_ecb.key_src = keysrc;
+        if (rctx->ssram_addr)
+            task->alg.sm4_ecb.key_addr = rctx->ssram_addr;
+        else
+            task->alg.sm4_ecb.key_addr = (u32)(uintptr_t)rctx->key;
+    } else if (is_sm4_cbc(rctx->flags)) {
+        task->alg.sm4_cbc.alg_tag = ALG_SM4_CBC;
+        task->alg.sm4_cbc.direction = opdir;
+        task->alg.sm4_cbc.key_siz = keysize;
+        task->alg.sm4_cbc.key_src = keysrc;
+        if (rctx->ssram_addr)
+            task->alg.sm4_cbc.key_addr = rctx->ssram_addr;
+        else
+            task->alg.sm4_cbc.key_addr = (u32)(uintptr_t)rctx->key;
+        if (rctx->next_iv)
+            task->alg.sm4_cbc.iv_addr = rctx->next_iv;
+        else
+            task->alg.sm4_cbc.iv_addr = (u32)(uintptr_t)rctx->iv;
+    } else if (is_sm4_ctr(rctx->flags)) {
+        task->alg.sm4_ctr.alg_tag = ALG_SM4_CTR;
+        task->alg.sm4_ctr.direction = opdir;
+        task->alg.sm4_ctr.key_siz = keysize;
+        task->alg.sm4_ctr.key_src = keysrc;
+        task->alg.sm4_ctr.key_addr = (u32)(uintptr_t)rctx->key;
+        task->alg.sm4_ctr.ctr_in_addr = (u32)(uintptr_t)rctx->iv;
+        task->alg.sm4_ctr.ctr_out_addr = (u32)(uintptr_t)rctx->iv;
     } else if (is_des_ecb(rctx->flags)) {
         task->alg.des_ecb.alg_tag = ALG_DES_ECB;
         task->alg.des_ecb.direction = opdir;
@@ -293,21 +343,29 @@ static void aic_skcipher_task_cfg(struct crypto_task *task,
         else
             task->alg.des_cbc.iv_addr = (u32)(uintptr_t)rctx->iv;
     }
-    aicos_dcache_clean_range((void *)(uintptr_t)rctx->key, keysize);
-    aicos_dcache_clean_range((void *)(uintptr_t)din, dlen);
+
     aicos_dcache_clean_range((void *)(uintptr_t)task, sizeof(struct crypto_task));
+    aicos_dcache_clean_range((void *)(uintptr_t)rctx->iv, rctx->ivsize);
+    aicos_dcache_clean_range((void *)(uintptr_t)rctx->key, rctx->keylen);
+    aicos_dcache_clean_range((void *)(uintptr_t)din, dlen);
 }
 
 static inline bool is_sk_block_aligned(unsigned int val, unsigned long flg)
 {
     if (flg & FLG_AES) {
-        if (val % AES_BLOCK_SIZE)
+        if (val % ALIGN_UP(AES_BLOCK_SIZE, CACHE_LINE_SIZE))
+            return false;
+        return true;
+    }
+
+    if (flg & FLG_SM4) {
+        if (val % ALIGN_UP(SM4_BLOCK_SIZE, CACHE_LINE_SIZE))
             return false;
         return true;
     }
 
     if (flg & FLG_DES) {
-        if (val % DES_BLOCK_SIZE)
+        if (val % ALIGN_UP(DES_BLOCK_SIZE, CACHE_LINE_SIZE))
             return false;
         return true;
     }
@@ -319,6 +377,7 @@ static inline bool is_need_copy_dst(struct skcipher_request *req)
 {
     struct aic_skcipher_req_ctx *rctx;
 
+    pr_debug("%s\n", __func__);
     rctx = skcipher_request_ctx(req);
     if (!is_sk_block_aligned((u32)(uintptr_t)req->dst, rctx->flags)) {
         pr_debug("%s, offset(%d) is not aligned.\n", __func__, (u32)(uintptr_t)req->dst);
@@ -326,9 +385,9 @@ static inline bool is_need_copy_dst(struct skcipher_request *req)
     }
 
     /*
-	 * Even it is ctr mode, if data length is not block size alignment,
-	 * still need to use dst copy buffer.
-	 */
+     * Even it is ctr mode, if data length is not block size alignment,
+     * still need to use dst copy buffer.
+     */
     if (!is_sk_block_aligned(req->cryptlen, rctx->flags)) {
         pr_debug("%s, cryptlen(%d) is not aligned.\n", __func__, req->cryptlen);
         return true;
@@ -341,9 +400,19 @@ static inline bool is_need_copy_src(struct skcipher_request *req)
 {
     struct aic_skcipher_req_ctx *rctx;
 
+    pr_debug("%s\n", __func__);
     rctx = skcipher_request_ctx(req);
     if (!is_sk_block_aligned((u32)(uintptr_t)req->src, rctx->flags)) {
         pr_debug("%s, offset(%d) is not aligned.\n", __func__, (u32)(uintptr_t)req->src);
+        return true;
+    }
+
+    /*
+     * Even it is ctr mode, if data length is not block size alignment,
+     * still need to use src copy buffer.
+     */
+    if (!is_sk_block_aligned(req->cryptlen, rctx->flags)) {
+        pr_debug("%s, cryptlen(%d) is not aligned.\n", __func__, req->cryptlen);
         return true;
     }
 
@@ -361,13 +430,14 @@ static int aic_skcipher_prepare_data_buf(struct skcipher_request *req)
 
     rctx = skcipher_request_ctx(req);
 
-    pages = ALIGN_UP(req->cryptlen, rctx->blocksize);
+    pages = ALIGN_UP(req->cryptlen, CACHE_LINE_SIZE);
 
+    pr_debug("%s\n", __func__);
     cpysrc = is_need_copy_src(req);
     if (cpysrc) {
         rctx->src_cpy_buf = (void *)aicos_malloc_align(0, pages, CACHE_LINE_SIZE);
         if (!rctx->src_cpy_buf) {
-            pr_err("Failed to allocate pages for src.\n");
+            pr_err("Failed to allocate pages(%d) for src.\n", pages);
             return -ENOMEM;
         }
 
@@ -377,10 +447,9 @@ static int aic_skcipher_prepare_data_buf(struct skcipher_request *req)
 
     cpydst = is_need_copy_dst(req);
     if (cpydst) {
-        rctx->dst_cpy_buf =
-            (void *)aicos_malloc_align(0, pages, CACHE_LINE_SIZE);
+        rctx->dst_cpy_buf = (void *)aicos_malloc_align(0, pages, CACHE_LINE_SIZE);
         if (!rctx->dst_cpy_buf) {
-            pr_err("Failed to allocate pages for dst.\n");
+            pr_err("Failed to allocate pages(%d) for dst.\n", pages);
             return -ENOMEM;
         }
     }
@@ -474,8 +543,10 @@ static int prepare_task_with_both_cpy_buf(struct skcipher_request *req)
     rctx = skcipher_request_ctx(req);
     rctx->tasklen = sizeof(struct crypto_task);
     rctx->task = aicos_malloc_align(0, rctx->tasklen, CACHE_LINE_SIZE);
-    if (!rctx->task)
+    if (!rctx->task) {
+        pr_err("Failed to allocate task(%d).\n", rctx->tasklen);
         return -ENOMEM;
+    }
 
     memset(rctx->task, 0, rctx->tasklen);
 
@@ -484,6 +555,7 @@ static int prepare_task_with_both_cpy_buf(struct skcipher_request *req)
     dout = (u32)(uintptr_t)rctx->dst_cpy_buf;
     bytelen = ALIGN_UP(req->cryptlen, rctx->blocksize);
     aic_skcipher_task_cfg(rctx->task, rctx, din, dout, bytelen, 1, 1);
+    aicos_dcache_clean_range((void *)(uintptr_t)rctx->task, sizeof(struct crypto_task));
 
     return 0;
 }
@@ -508,8 +580,12 @@ static int prepare_task_with_dst_cpy_buf(struct skcipher_request *req)
 
     rctx->tasklen = sizeof(struct crypto_task) * task_cnt;
     rctx->task = aicos_malloc_align(0, rctx->tasklen, CACHE_LINE_SIZE);
-    if (!rctx->task)
+    if (!rctx->task) {
+        pr_err("Failed to allocate task(%d).\n", rctx->tasklen);
         return -ENOMEM;
+    }
+
+    memset(rctx->task, 0, rctx->tasklen);
 
     rctx->next_iv = 0;
     remain = req->cryptlen;
@@ -517,7 +593,7 @@ static int prepare_task_with_dst_cpy_buf(struct skcipher_request *req)
     dout = (u32)(uintptr_t)rctx->dst_cpy_buf;
     for (i = 0; i < task_cnt; i++) {
         task = &rctx->task[i];
-        next_addr = (u32)(uintptr_t)rctx->task + ((i + 1) * sizeof(*task));
+        next_addr = (u32)(uintptr_t)rctx->task + ((i + 1) * sizeof(struct crypto_task));
 
         first_flag = (i == 0);
         last_flag = ((i + 1) == task_cnt);
@@ -528,6 +604,8 @@ static int prepare_task_with_dst_cpy_buf(struct skcipher_request *req)
             task->next = 0;
         else
             task->next = cpu_to_le32(next_addr);
+
+        aicos_dcache_clean_range((void *)(uintptr_t)task, sizeof(struct crypto_task));
 
         din += bytelen;
         dout += bytelen;
@@ -564,8 +642,12 @@ static int prepare_task_with_src_cpy_buf(struct skcipher_request *req)
 
     rctx->tasklen = sizeof(struct crypto_task) * task_cnt;
     rctx->task = aicos_malloc_align(0, rctx->tasklen, CACHE_LINE_SIZE);
-    if (!rctx->task)
+    if (!rctx->task) {
+        pr_err("Failed to allocate task(%d).\n", rctx->tasklen);
         return -ENOMEM;
+    }
+
+    memset(rctx->task, 0, rctx->tasklen);
 
     remain = req->cryptlen;
     din = (u32)(uintptr_t)rctx->src_cpy_buf;
@@ -583,6 +665,8 @@ static int prepare_task_with_src_cpy_buf(struct skcipher_request *req)
             task->next = 0;
         else
             task->next = cpu_to_le32(next_addr);
+
+        aicos_dcache_clean_range((void *)(uintptr_t)task, sizeof(struct crypto_task));
 
         din += bytelen;
         dout += bytelen;
@@ -619,8 +703,12 @@ static int prepare_task_with_no_cpy_buf(struct skcipher_request *req)
 
     rctx->tasklen = sizeof(struct crypto_task) * task_cnt;
     rctx->task = aicos_malloc_align(0, rctx->tasklen, CACHE_LINE_SIZE);
-    if (!rctx->task)
+    if (!rctx->task) {
+        pr_err("Failed to allocate task(%d).\n", rctx->tasklen);
         return -ENOMEM;
+    };
+
+    memset(rctx->task, 0, rctx->tasklen);
 
     rctx->next_iv = 0;
     remain = req->cryptlen;
@@ -640,8 +728,11 @@ static int prepare_task_with_no_cpy_buf(struct skcipher_request *req)
         else
             task->next = cpu_to_le32(next_addr);
 
+        aicos_dcache_clean_range((void *)(uintptr_t)task, sizeof(struct crypto_task));
+
         din += bytelen;
         dout += bytelen;
+        remain -= bytelen;
         if (is_cbc_enc(rctx->flags)) {
             /* For CBC encryption next iv is last output block */
             rctx->next_iv = dout + bytelen - rctx->ivsize;
@@ -667,18 +758,20 @@ static int prepare_task_to_genhsk(struct skcipher_request *req)
     rctx = skcipher_request_ctx(req);
     rctx->tasklen = sizeof(struct crypto_task);
     rctx->task = aicos_malloc_align(0, rctx->tasklen, CACHE_LINE_SIZE);
-    if (!rctx->task)
+    if (!rctx->task) {
+        pr_err("Failed to allocate task(%d).\n", rctx->tasklen);
         return -ENOMEM;
+    }
 
     memset(rctx->task, 0, rctx->tasklen);
 
     bytelen = ALIGN_UP(req->cryptlen, rctx->blocksize);
     keymaterial = (unsigned char *)req->src;
     ssram_addr = (unsigned int)(uintptr_t)req->dst;
-    pages = ALIGN_UP(req->cryptlen, rctx->blocksize);
+    pages = ALIGN_UP(req->cryptlen, CACHE_LINE_SIZE);
     rctx->src_cpy_buf = aicos_malloc_align(0, pages, CACHE_LINE_SIZE);
     if (!rctx->src_cpy_buf) {
-        pr_err("Failed to allocate pages for src.\n");
+        pr_err("Failed to allocate pages(%d) for src.\n", pages);
         return -ENOMEM;
     }
     memset(rctx->src_cpy_buf, 0, pages);
@@ -708,9 +801,6 @@ static int aic_skcipher_unprepare_req(struct skcipher_tfm *tfm,
     }
 
     if (rctx->dst_cpy_buf) {
-        memset(req->dst, 0, req->cryptlen);
-        memcpy(req->dst, rctx->dst_cpy_buf, req->cryptlen);
-
         aicos_free_align(0, rctx->dst_cpy_buf);
         rctx->dst_cpy_buf = NULL;
     }
@@ -781,6 +871,10 @@ static int aic_skcipher_prepare_req(struct skcipher_tfm *tfm,
             goto err;
         }
         rctx->keylen = ctx->inkeylen;
+
+        aicos_free_align(0, ctx->inkey);
+        ctx->inkey = NULL;
+        ctx->inkeylen = 0;
     }
 
     ivsize = skcipher_tfm_ivsize(tfm);
@@ -856,14 +950,16 @@ static int aic_skcipher_do_one_req(struct skcipher_request *req)
     hal_crypto_pending_clear(ALG_SK_ACCELERATOR);
 
     if (hal_crypto_get_err(ALG_SK_ACCELERATOR)) {
-        pr_err("SK ACCELERATOR run error.\n");
+        pr_err("SK ACCELERATOR run error, ret:%d.\n", hal_crypto_get_err(ALG_SK_ACCELERATOR));
+        hal_crypto_dump_task(rctx->task, rctx->tasklen);
+        hal_crypto_dump_reg();
+	    hal_crypto_err_clear(ALG_SK_ACCELERATOR);
         return -1;
     }
 
     aicos_dma_sync();
     if (rctx->dst_cpy_buf) {
-        aicos_dcache_invalid_range((void *)(uintptr_t)rctx->dst_cpy_buf,
-                                   req->cryptlen);
+        aicos_dcache_invalid_range((void *)(uintptr_t)rctx->dst_cpy_buf, req->cryptlen);
         memcpy(req->dst, rctx->dst_cpy_buf, req->cryptlen);
     } else {
         aicos_dcache_invalid_range((void *)(uintptr_t)req->dst, req->cryptlen);
@@ -949,17 +1045,17 @@ static int aic_skcipher_crypt(struct aic_skcipher_handle *handle,
         }
     }
 
-    ret = aic_skcipher_prepare_req(tfm, req);
+    ret += aic_skcipher_prepare_req(tfm, req);
     if (ret) {
         pr_err("skcipher prepare req failed.\n");
         return ret;
     }
-    ret = aic_skcipher_do_one_req(req);
+    ret += aic_skcipher_do_one_req(req);
     if (ret) {
         pr_err("skcipher do one req failed.\n");
         return ret;
     }
-    ret = aic_skcipher_unprepare_req(tfm, req);
+    ret += aic_skcipher_unprepare_req(tfm, req);
     if (ret) {
         pr_err("skcipher unprepare req failed.\n");
         return ret;
@@ -1000,20 +1096,18 @@ static int aic_skcipher_gen_hsk(char *alg_name, unsigned long flg,
     req->src = key_material;
     req->dst = (void *)(uintptr_t)ssram_addr;
 
-    ret = aic_skcipher_prepare_req(tfm, req);
+    ret += aic_skcipher_prepare_req(tfm, req);
     if (ret) {
         pr_err("skcipher prepare req failed.\n");
         goto out;
     }
-    ret = aic_skcipher_do_one_req(req);
+    ret += aic_skcipher_do_one_req(req);
     if (ret) {
         pr_err("skcipher do one req failed.\n");
-        goto out;
     }
-    ret = aic_skcipher_unprepare_req(tfm, req);
+    ret += aic_skcipher_unprepare_req(tfm, req);
     if (ret) {
         pr_err("skcipher unprepare req failed.\n");
-        goto out;
     }
 
 out:
@@ -1052,6 +1146,46 @@ static int aic_skcipher_aes_cbc_encrypt(struct aic_skcipher_handle *handle)
 static int aic_skcipher_aes_cbc_decrypt(struct aic_skcipher_handle *handle)
 {
     return aic_skcipher_crypt(handle, FLG_AES | FLG_CBC | FLG_DEC);
+}
+
+static int aic_skcipher_aes_ctr_encrypt(struct aic_skcipher_handle *handle)
+{
+    return aic_skcipher_crypt(handle, FLG_AES | FLG_CTR);
+}
+
+static int aic_skcipher_aes_ctr_decrypt(struct aic_skcipher_handle *handle)
+{
+    return aic_skcipher_crypt(handle, FLG_AES | FLG_CTR | FLG_DEC);
+}
+
+static int aic_skcipher_sm4_ecb_encrypt(struct aic_skcipher_handle *handle)
+{
+    return aic_skcipher_crypt(handle, FLG_SM4 | FLG_ECB);
+}
+
+static int aic_skcipher_sm4_ecb_decrypt(struct aic_skcipher_handle *handle)
+{
+    return aic_skcipher_crypt(handle, FLG_SM4 | FLG_ECB | FLG_DEC);
+}
+
+static int aic_skcipher_sm4_cbc_encrypt(struct aic_skcipher_handle *handle)
+{
+    return aic_skcipher_crypt(handle, FLG_SM4 | FLG_CBC);
+}
+
+static int aic_skcipher_sm4_cbc_decrypt(struct aic_skcipher_handle *handle)
+{
+    return aic_skcipher_crypt(handle, FLG_SM4 | FLG_CBC | FLG_DEC);
+}
+
+static int aic_skcipher_sm4_ctr_encrypt(struct aic_skcipher_handle *handle)
+{
+    return aic_skcipher_crypt(handle, FLG_SM4 | FLG_CTR);
+}
+
+static int aic_skcipher_sm4_ctr_decrypt(struct aic_skcipher_handle *handle)
+{
+    return aic_skcipher_crypt(handle, FLG_SM4 | FLG_CTR | FLG_DEC);
 }
 
 static int aic_skcipher_des_ecb_encrypt(struct aic_skcipher_handle *handle)
@@ -1107,6 +1241,66 @@ static struct aic_skcipher_alg sk_algs[] = {
 	},
 	{
 		.alg = {
+			.base.cra_name = "ctr(aes)",
+			.base.cra_driver_name = "ctr-aes-aic",
+			.base.cra_blocksize = AES_BLOCK_SIZE,
+			.base.cra_ctxsize = sizeof(struct aic_skcipher_tfm_ctx),
+			.base.cra_alignmask = 0,
+			.setkey = aic_skcipher_alg_setkey,
+			.decrypt = aic_skcipher_aes_ctr_decrypt,
+			.encrypt = aic_skcipher_aes_ctr_encrypt,
+			.min_keysize = AES_MIN_KEY_SIZE,
+			.max_keysize = AES_MAX_KEY_SIZE,
+			.ivsize = AES_BLOCK_SIZE,
+		},
+	},
+	{
+		.alg = {
+			.base.cra_name = "ecb(sm4)",
+			.base.cra_driver_name = "ecb-sm4-aic",
+			.base.cra_blocksize = SM4_BLOCK_SIZE,
+			.base.cra_ctxsize = sizeof(struct aic_skcipher_tfm_ctx),
+			.base.cra_alignmask = 0,
+			.setkey = aic_skcipher_alg_setkey,
+			.decrypt = aic_skcipher_sm4_ecb_decrypt,
+			.encrypt = aic_skcipher_sm4_ecb_encrypt,
+			.min_keysize = SM4_MIN_KEY_SIZE,
+			.max_keysize = SM4_MAX_KEY_SIZE,
+			.ivsize = 0,
+		},
+	},
+	{
+		.alg = {
+			.base.cra_name = "cbc(sm4)",
+			.base.cra_driver_name = "cbc-sm4-aic",
+			.base.cra_blocksize = SM4_BLOCK_SIZE,
+			.base.cra_ctxsize = sizeof(struct aic_skcipher_tfm_ctx),
+			.base.cra_alignmask = 0,
+			.setkey = aic_skcipher_alg_setkey,
+			.decrypt = aic_skcipher_sm4_cbc_decrypt,
+			.encrypt = aic_skcipher_sm4_cbc_encrypt,
+			.min_keysize = SM4_MIN_KEY_SIZE,
+			.max_keysize = SM4_MAX_KEY_SIZE,
+			.ivsize = SM4_BLOCK_SIZE,
+		},
+	},
+	{
+		.alg = {
+			.base.cra_name = "ctr(sm4)",
+			.base.cra_driver_name = "ctr-sm4-aic",
+			.base.cra_blocksize = SM4_BLOCK_SIZE,
+			.base.cra_ctxsize = sizeof(struct aic_skcipher_tfm_ctx),
+			.base.cra_alignmask = 0,
+			.setkey = aic_skcipher_alg_setkey,
+			.decrypt = aic_skcipher_sm4_ctr_decrypt,
+			.encrypt = aic_skcipher_sm4_ctr_encrypt,
+			.min_keysize = SM4_MIN_KEY_SIZE,
+			.max_keysize = SM4_MAX_KEY_SIZE,
+			.ivsize = SM4_BLOCK_SIZE,
+		},
+	},
+	{
+		.alg = {
 			.base.cra_name = "ecb(des)",
 			.base.cra_driver_name = "ecb-des-aic",
 			.base.cra_blocksize = DES_BLOCK_SIZE,
@@ -1138,6 +1332,7 @@ static struct aic_skcipher_alg sk_algs[] = {
 
 void aic_skcipher_destroy(struct aic_skcipher_handle *handle)
 {
+    pr_debug("%s\n", __func__);
     if (handle->req->__ctx) {
         aicos_free(0, handle->req->__ctx);
         handle->req->__ctx = NULL;
@@ -1172,6 +1367,7 @@ struct aic_skcipher_handle *aic_skcipher_init(const char *ciphername, u32 flags)
     struct skcipher_request *req = NULL;
     struct skcipher_tfm *tfm = NULL;
 
+    pr_debug("%s\n", __func__);
     handle = aicos_malloc(0, sizeof(struct aic_skcipher_handle));
     if (handle == NULL) {
         pr_err("malloc skcipher handle failed.\n");

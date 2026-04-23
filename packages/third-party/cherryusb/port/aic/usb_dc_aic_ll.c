@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -21,11 +21,28 @@ void usb_dc_sync_dma(void)
     csi_dcache_clean_range((phy_addr_t)(ptr_t)dma_sync_buffer, CACHE_LINE_SIZE);
 }
 
+int usb_wait_pll_locked(void)
+{
+    uint32_t i = 0;
+
+    while((readl(PLL_COM) & PLL_LOCKED) == 0) {
+        i++;
+        if (i >= 20000) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
 void usb_dc_low_level_init(void)
 {
     /* set usb0 phy switch: Host/Device */
 #if defined(AIC_USING_USB0_DEVICE) || defined(AIC_USING_USB0_OTG)
     hal_syscfg_usb_phy0_sw_host(0);
+#endif
+
+#ifndef AIC_USB_DEVICE_DRV_V10
+    hal_syscfg_usb_pll_en();
 #endif
     /* set pin-mux */
 
@@ -39,6 +56,11 @@ void usb_dc_low_level_init(void)
     hal_reset_deassert(CONFIG_USB_AIC_DC_PHY_RESET);
     hal_reset_deassert(CONFIG_USB_AIC_DC_RESET);
     aicos_udelay(300);
+#ifndef AIC_USB_DEVICE_DRV_V10
+    if (usb_wait_pll_locked() < 0)
+        USB_LOG_ERR("usb pll unlock :%#lx \n", (long)(readl(PLL_COM)));
+
+#endif
 
     usbd_clk = hal_clk_get_freq(CONFIG_USB_AIC_DC_CLK);
 

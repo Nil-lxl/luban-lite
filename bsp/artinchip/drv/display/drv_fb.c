@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -267,6 +267,16 @@ static int aicfb_ioctl_get_gamma_cfg(struct aicfb_info *fbi, void *args)
     return fbi->de->de_funcs->get_gamma_config(args);
 }
 
+static int aicfb_ioctl_update_bg_blend_ui_cfg(struct aicfb_info *fbi, void *args)
+{
+    return fbi->de->de_funcs->update_bg_blend_ui_config(*(u32 *)args);
+}
+
+static int aicfb_ioctl_get_bg_blend_ui_cfg(struct aicfb_info *fbi, void *args)
+{
+    return fbi->de->de_funcs->get_bg_blend_ui_config(args);
+}
+
 #ifdef AIC_DISPLAY_TEST
 static int aicfb_ioctl_pq_set_cfg(struct aicfb_info *fbi, void *args)
 {
@@ -308,6 +318,8 @@ struct aicfb_ioctl_cmd aicfb_ioctl_cmds[] = {
 {AICFB_UPDATE_CCM_CONFIG, aicfb_ioctl_update_ccm_cfg, "Update CCM cfg"},
 {AICFB_UPDATE_GAMMA_CONFIG, aicfb_ioctl_update_gamma_cfg, "Update gamma cfg"},
 {AICFB_GET_GAMMA_CONFIG, aicfb_ioctl_get_gamma_cfg, "Get gamma cfg"},
+{AICFB_UPDATE_BG_BLEND_UI_CONFIG, aicfb_ioctl_update_bg_blend_ui_cfg, "Update bg blend ui cfg"},
+{AICFB_GET_BG_BLEND_UI_CONFIG, aicfb_ioctl_get_bg_blend_ui_cfg, "Get bg blend ui cfg"},
 {AICFB_POWERON, aicfb_ioctl_power_on, "Power on screen"},
 {AICFB_POWEROFF, aicfb_ioctl_power_off, "Power off screen"},
 {AICFB_GET_SCREENREG, aicfb_ioctl_get_screen_register, "Get screen register"},

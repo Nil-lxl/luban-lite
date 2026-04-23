@@ -313,7 +313,7 @@ irqreturn_t hal_rtc_irq(int irq, void *arg)
 s32 hal_rtc_init(void)
 {
     s32 ret = 0;
-#if defined(AIC_RTC_DRV_V10) || defined(AIC_RTC_DRV_V20)
+#if defined(AIC_RTC_DRV_V10) || defined(AIC_RTC_DRV_V20) || defined(AIC_RTC_DRV_V12)
     u8 val = 0;
 #endif
 
@@ -345,6 +345,10 @@ s32 hal_rtc_init(void)
     val = RTC_READB(RTC_REG_ANALOG2);
     val |= RTC_ANA2_XTAL32K_EN;
     RTC_WRITEB(val, RTC_REG_ANALOG2);
+#elif defined(AIC_RTC_DRV_V12)
+    val = RTC_READB(RTC_REG_ANALOG3);
+    val |= RTC_ANA3_XTAL32K_EN;
+    RTC_WRITEB(val, RTC_REG_ANALOG3);
 #endif
 
     aich_rtc.inited = 1;

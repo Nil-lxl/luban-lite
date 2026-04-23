@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -44,6 +44,7 @@ extern "C" {
 #define DMA_CH_SRC_REG          (0x0010)
 #define DMA_CH_SINK_REG         (0x0014)
 #define DMA_CH_LEFT_REG         (0x0018)
+#define DMA_CH_RDC_COMPLETE_REG (0x0020)
 #define DMA_CH_MODE_REG         (0x0028)
 #define DMA_CH_PKG_NUM_REG      (0x0030)
 #define DMA_CH_MEMSET_VAL_REG   (0x0034)

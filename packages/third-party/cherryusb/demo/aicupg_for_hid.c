@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -196,7 +196,7 @@ static uint32_t usbd_hid_ep_start_write(uint8_t *data, uint32_t data_len)
     return HID_IN_EP_SIZE;
 }
 
-static void usbd_hid_notify_handler(uint8_t event, void *arg)
+static void usbd_hid_notify_handler(uint8_t busid, uint8_t event, void *arg)
 {
     switch (event) {
         case USBD_EVENT_RESET:
@@ -225,13 +225,13 @@ static void usbd_hid_notify_handler(uint8_t event, void *arg)
     }
 }
 
-static void usbd_hid_in_callback(uint8_t ep, uint32_t nbytes)
+static void usbd_hid_in_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     USB_LOG_DBG("actual in len:%d\r\n", nbytes);
     data_trans_layer_in_proc(&trans_info);
 }
 
-static void usbd_hid_out_callback(uint8_t ep, uint32_t nbytes)
+static void usbd_hid_out_callback(uint8_t busid, uint8_t ep, uint32_t nbytes)
 {
     USB_LOG_DBG("actual out len:%d\r\n", nbytes);
     data_trans_layer_out_proc(&trans_info);
@@ -252,7 +252,7 @@ static struct usbd_interface intf0;
 int hid_init(void)
 {
     usbd_desc_register(0, hid_descriptor);
-    usbd_add_interface(0, usbd_hid_init_intf(&intf0, hid_report_desc, HID_REPORT_DESC_SIZE));
+    usbd_add_interface(0, usbd_hid_init_intf(0, &intf0, hid_report_desc, HID_REPORT_DESC_SIZE));
     intf0.notify_handler = usbd_hid_notify_handler;
 
     usbd_add_endpoint(0, &hid_in_ep);

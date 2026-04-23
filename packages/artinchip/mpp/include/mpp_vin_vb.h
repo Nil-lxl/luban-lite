@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -66,6 +66,7 @@ struct vb_queue {
     unsigned int        streaming:1;
     unsigned int        error:1;
     unsigned int        waiting_in_dqbuf:1;
+    u32                 ch;
 };
 
 struct vb_ops {
@@ -79,7 +80,6 @@ int vin_vb_req_buf(struct vb_queue *q,
 int vin_vb_q_buf(struct vb_queue *q, u32 index);
 int vin_vb_dq_buf(struct vb_queue *q, u32 *pindex);
 void vin_vb_buffer_done(struct vb_buffer *vb, enum vb_buffer_state state);
-
 int vin_vb_init(struct vb_queue *q, const struct vb_ops *ops);
 void vin_vb_deinit(struct vb_queue *q);
 

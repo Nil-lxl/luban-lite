@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -58,7 +58,7 @@ static rt_err_t mtd_data_read(struct rt_mtd_nand_device *mtd, rt_off_t off,
             continue;
         }
         ret = rt_mtd_nand_read(mtd, page_id, data, mtd->page_size, RT_NULL, 0);
-        if (ret) {
+        if (ret < 0) {
             pr_err("Failed to read page data from NAND.\n");
             return -RT_ERROR;
         }
@@ -112,7 +112,7 @@ static int test_mtd_load_file(int argc, char **argv)
     }
 
     ret = mtd_data_read(mtd, 0, tmp, file_size);
-    if (ret) {
+    if (ret < 0) {
         pr_err("Failed to read data from NAND.\n");
         ret = -RT_ERROR;
         goto out;

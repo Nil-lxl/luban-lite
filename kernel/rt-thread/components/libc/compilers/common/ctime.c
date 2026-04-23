@@ -544,6 +544,7 @@ RTM_EXPORT(nanosleep);
 #ifdef RT_USING_POSIX_CLOCK
 #ifdef RT_USING_RTC
 static volatile struct timeval _timevalue;
+static volatile rt_tick_t g_last_tick = 0;
 static int _rt_clock_time_system_init(void)
 {
     rt_base_t level;
@@ -559,6 +560,8 @@ static int _rt_clock_time_system_init(void)
         {
             level = rt_hw_interrupt_disable();
             tick = rt_tick_get(); /* get tick */
+            g_last_tick = tick;
+
             _timevalue.tv_usec = (tick%RT_TICK_PER_SECOND) * MICROSECOND_PER_TICK;
             _timevalue.tv_sec = time - tick/RT_TICK_PER_SECOND - 1;
             rt_hw_interrupt_enable(level);
@@ -617,6 +620,25 @@ int clock_getres(clockid_t clockid, struct timespec *res)
 }
 RTM_EXPORT(clock_getres);
 
+#ifdef RT_USING_RTC
+static void adjust_timeval_on_flip(rt_tick_t cur)
+{
+    if (cur < g_last_tick)
+    {
+        /* Tick flipped, so need adjust _timevalue */
+        _timevalue.tv_sec += UINT32_MAX / RT_TICK_PER_SECOND;
+        _timevalue.tv_usec += (UINT32_MAX % RT_TICK_PER_SECOND) * MICROSECOND_PER_TICK;
+        if (_timevalue.tv_usec >= MICROSECOND_PER_SECOND)
+        {
+            _timevalue.tv_usec -= MICROSECOND_PER_SECOND;
+            _timevalue.tv_sec++;
+        }
+    }
+
+    g_last_tick = cur;
+}
+#endif
+
 int clock_gettime(clockid_t clockid, struct timespec *tp)
 {
 #ifndef RT_USING_RTC
@@ -647,6 +669,7 @@ int clock_gettime(clockid_t clockid, struct timespec *tp)
 
             level = rt_hw_interrupt_disable();
             tick = rt_tick_get(); /* get tick */
+            adjust_timeval_on_flip(tick);
             tp->tv_sec  = _timevalue.tv_sec + tick / RT_TICK_PER_SECOND;
             tp->tv_nsec = (_timevalue.tv_usec + (tick % RT_TICK_PER_SECOND) * MICROSECOND_PER_TICK) * 1000;
             if (tp->tv_nsec > NANOSECOND_PER_SECOND) {
@@ -716,6 +739,7 @@ int clock_settime(clockid_t clockid, const struct timespec *tp)
 
     level = rt_hw_interrupt_disable();
     tick = rt_tick_get(); /* get tick */
+    g_last_tick = tick;
     /* update timevalue */
     _timevalue.tv_usec = MICROSECOND_PER_SECOND - (tick % RT_TICK_PER_SECOND) * MICROSECOND_PER_TICK;
     _timevalue.tv_sec = second - tick/RT_TICK_PER_SECOND - 1;

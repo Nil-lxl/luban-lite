@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- *  Author: <jun.ma@artinchip.com>
+ *  Author: <che.jiang@artinchip.com>
  *  Desc: aic_player api
  */
 
@@ -59,6 +59,7 @@ struct aic_player {
     u32 sync_flag;
     pthread_t threadId;
     s32 thread_runing;
+    pthread_mutex_t play_lock;
     mm_param_content_uri * uri_param;
     s64 video_pts;
     s64 audio_pts;
@@ -109,6 +110,7 @@ static s32 component_event_handler (
         case MM_EVENT_CMD_COMPLETE:
             break;
         case MM_EVENT_BUFFER_FLAG:
+            pthread_mutex_lock(&player->play_lock);
             if (player->media_info.has_video) {
 #ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
                 if (player->vdecoder_handle == h_component) {
@@ -137,7 +139,7 @@ static s32 component_event_handler (
                     }
                 }
             }
-
+            pthread_mutex_unlock(&player->play_lock);
             break;
         case MM_EVENT_PORT_FORMAT_DETECTED:
             logi("[%s:%d]MM_EVENT_PORT_FORMAT_DETECTED\n", __FUNCTION__, __LINE__);
@@ -169,6 +171,7 @@ static s32 component_event_handler (
             break;
         case MM_EVENT_VIDEO_RENDER_FIRST_FRAME:
         case MM_EVENT_AUDIO_RENDER_FIRST_FRAME:
+            pthread_mutex_lock(&player->play_lock);
             if (player->media_info.has_video) {
 #ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
                 if (player->vdecoder_handle == h_component) {
@@ -191,6 +194,7 @@ static s32 component_event_handler (
                     }
                 }
             }
+            pthread_mutex_unlock(&player->play_lock);
             break;
         default:
             break;
@@ -237,6 +241,11 @@ struct aic_player* aic_player_create(char *uri)
         }
     } else {
         player->state = AIC_PLAYER_STATE_IDLE;
+    }
+
+    if (pthread_mutex_init(&player->play_lock, NULL)) {
+        loge("init player state lock fail!\n");
+        goto _exit;
     }
 
     if (MM_ERROR_NONE != mm_get_handle(&player->demuxer_handle,
@@ -492,7 +501,9 @@ s32 aic_player_start_video(struct aic_player *player)
             return MM_ERROR_INSUFFICIENT_RESOURCES;
         }
 #endif
+        pthread_mutex_lock(&player->play_lock);
         player->video_audio_end_mask |= AIC_VIDEO;
+        pthread_mutex_unlock(&player->play_lock);
     }
 
     return MM_ERROR_NONE;
@@ -590,7 +601,9 @@ s32 aic_player_start_audio(struct aic_player *player)
             return MM_ERROR_INSUFFICIENT_RESOURCES;
         }
 
+        pthread_mutex_lock(&player->play_lock);
         player->video_audio_end_mask |= AIC_AUDIO;
+        pthread_mutex_unlock(&player->play_lock);
     }
 
     return MM_ERROR_NONE;
@@ -860,6 +873,8 @@ s32 aic_player_pause(struct aic_player *player)
 static int do_seek(struct aic_player *player,u64 seek_time)
 {
     mm_time_config_timestamp  time_stamp;
+
+    pthread_mutex_lock(&player->play_lock);
     player->seeking = 1;
     time_stamp.timestamp = seek_time;
     if (MM_ERROR_NONE != mm_set_config(player->demuxer_handle,
@@ -923,12 +938,15 @@ static int do_seek(struct aic_player *player,u64 seek_time)
                                        &time_stamp)) {
         goto _exit;
     }
+
+    pthread_mutex_unlock(&player->play_lock);
     return 0;
 
 _exit:
     loge("seek error!\n");
     player->seeking = 0;
     player->video_audio_seek_mask = 0;
+    pthread_mutex_unlock(&player->play_lock);
     return -1;
 
 }
@@ -945,6 +963,7 @@ s32 aic_player_seek(struct aic_player *player,u64 seek_time)
         (player->state == AIC_PLAYER_STATE_STARTED)) {
         time_stamp.timestamp = seek_time;
         // logd("time_stamp.timestamp:"FMT_d64"\n",time_stamp.timestamp);
+        pthread_mutex_lock(&player->play_lock);
         player->seeking = 1;
         if (MM_ERROR_NONE != mm_set_config(player->demuxer_handle,
                                            MM_INDEX_CONFIG_TIME_POSITION,
@@ -953,6 +972,7 @@ s32 aic_player_seek(struct aic_player *player,u64 seek_time)
             player->seeking = 0;
             ret = -1;
         }
+        pthread_mutex_unlock(&player->play_lock);
     } else if ((player->state == AIC_PLAYER_STATE_PLAYING) ||
                (player->state == AIC_PLAYER_STATE_PLAYBACK_COMPLETED)) {
         aic_player_pause(player);
@@ -1095,7 +1115,9 @@ s32 aic_player_stop(struct aic_player *player)
 
     aic_player_stop_component(player);
 
+    pthread_mutex_lock(&player->play_lock);
     player->video_audio_end_mask = 0;
+    pthread_mutex_unlock(&player->play_lock);
 
     if (player->media_info.has_video) {
 #ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
@@ -1139,8 +1161,10 @@ s32 aic_player_stop(struct aic_player *player)
 #endif
 
     memset(&player->media_info, 0x00, sizeof(struct aic_parser_av_media_info));
+    pthread_mutex_lock(&player->play_lock);
     player->state = AIC_PLAYER_STATE_STOPPED;
     player->seeking = 0;
+    pthread_mutex_unlock(&player->play_lock);
     return 0;
 }
 
@@ -1154,6 +1178,8 @@ s32 aic_player_destroy(struct aic_player *player)
         mm_free_handle(player->demuxer_handle);
         player->demuxer_handle = NULL;
     }
+
+    pthread_mutex_destroy(&player->play_lock);
 
     if (player->uri_param) {
         mpp_free(player->uri_param);
@@ -1348,7 +1374,7 @@ s32 aic_player_set_rotation(struct aic_player *player, int rotation_angle)
     }
 
     rotation.rotation = rotation_angle;
-    if (0 == strcmp(PRJ_CHIP, "d13x")) {
+    if (MPP_CODEC_VIDEO_DECODER_MJPEG == player->media_info.video_stream.codec_type) {
         if(!player->vdecoder_handle) {
             loge("no vdecoder_handle!!!!\n");
             return -1;
@@ -1359,8 +1385,7 @@ s32 aic_player_set_rotation(struct aic_player *player, int rotation_angle)
             loge("set vdecoder rotate failed!!!!\n");
             return -1;
         }
-    }
-    if(player->video_render_handle) {
+    } else if(player->video_render_handle) {
         if (MM_ERROR_NONE != mm_set_config(player->video_render_handle,
                                             MM_INDEX_CONFIG_COMMON_ROTATE,
                                             &rotation)) {
@@ -1397,7 +1422,8 @@ static void set_debug_info(struct aic_player *player, int debug_en)
     params.u32 = debug_en;
     printf("%s: debug_en=%d, has_video=%d, has_audio=%d\n", __func__, debug_en,
         player->media_info.has_video, player->media_info.has_audio);
-
+    printf("%s: state=%d, seeking=%d, seek_mask=0x%x, end_mask=0x%x\n", __func__,
+        player->state, player->seeking, player->video_audio_seek_mask, player->video_audio_end_mask);
     if (player->media_info.has_video) {
         if (player->video_render_handle) {
             mm_set_parameter(player->video_render_handle, MM_INDEX_PARAM_PRINT_DEBUG_INFO, &params);

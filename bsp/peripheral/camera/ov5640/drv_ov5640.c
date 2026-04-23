@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,7 +14,10 @@
 #include "aic_core.h"
 #include "aic_hal_clk.h"
 #include "mpp_types.h"
+
+#ifdef AIC_DVP_DRV
 #include "mpp_vin.h"
+#endif
 
 #include "drv_camera.h"
 #include "camera_inner.h"

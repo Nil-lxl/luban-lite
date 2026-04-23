@@ -361,11 +361,24 @@ config AIC_LVGL_IMAGE_DEMO
 config AIC_LVGL_DOUBLE_DISP_DEMO
     bool "LVGL double display demo"
     select AIC_LVGL_SPI_WIDGET
+    select AIC_QSPI_LCD_INTERFACE
+
+config AIC_SPI_SCREEN_DEMO
+    bool "LVGL SPI screen demo"
+
+config AIC_LVGL_OTA_DEMO
+    bool "LVGL ota demo"
+    select LPKG_LVGL_USING_DEMOS
+
+config AIC_LVGL_AI_EYES_DEMO
+    bool "LVGL ai eyes demo"
+    select AIC_LVGL_SPI_WIDGET
 
 config AIC_LVGL_LANG_DEMO
     bool "LVGL Multi-language demo"
 
 endchoice
+
 
 config LV_COLOR_DEPTH
     int "LVGL color depth(32/16)"
@@ -479,12 +492,6 @@ config LV_USE_SPI_REPLACE_MIPI_DBI
     depends on AIC_DISP_MIPI_DBI
     depends on LVGL_V_9
     depends on !AIC_LVGL_DOUBLE_DISP_DEMO
-    select AIC_LVGL_SPI_WIDGET
-
-config LV_SPI_HARDWARE
-    bool "LVGL send data through hardware"
-    default n
-    depends on LVGL_V_9
     select AIC_LVGL_SPI_WIDGET
 
 # Parameters for LVGL meter demo
@@ -601,11 +608,11 @@ config AIC_LVGL_SPI_WIDGET
 
 if AIC_LVGL_SPI_WIDGET
 
-    config LV_SPI
+    config LV_SPI_SCREEN_BUS_WIDTH_1
         bool
         default n
 
-    config LV_QSPI
+    config LV_SPI_SCREEN_BUS_WIDTH_4
         bool
         default n
 
@@ -613,33 +620,39 @@ if AIC_LVGL_SPI_WIDGET
         prompt "extend spi controller driver"
             default LV_SPI_ST77912
 
-        config LV_SPI_ST77912
-            bool "ST77912"
-            select LV_SPI
-        config LV_SPI_ST77916
-            bool "ST77916"
         config LV_SPI_ST7789
             bool "ST7789"
-            select LV_SPI
+            select LV_SPI_SCREEN_BUS_WIDTH_1
+        config LV_SPI_ST77912
+            bool "ST77912"
+            select LV_SPI_SCREEN_BUS_WIDTH_1
+        config LV_SPI_ST77916
+            bool "ST77916"
+            select LV_SPI_SCREEN_BUS_WIDTH_1
+            select LV_SPI_SCREEN_BUS_WIDTH_4
+        config LV_SPI_ST77903
+            bool "ST77903"
+            select LV_SPI_SCREEN_BUS_WIDTH_4
         config LV_SPI_GC9D01N
             bool "GC9D01N"
-            select LV_SPI
+            select LV_SPI_SCREEN_BUS_WIDTH_1
+        config LV_SPI_AXS15231B
+            bool "AXS15231B"
+            select LV_SPI_SCREEN_BUS_WIDTH_1
     endchoice
 
-    if LV_SPI_ST77916
-        choice
-            prompt "SPI type for ST77916"
-            default LV_ST77916_QSPI_CONTROL
+    choice
+        prompt "spi bus width"
 
-            config LV_ST77916_SPI_CONTROL
-                bool "SPI Control"
-                select LV_SPI
+        config LV_SPI_BUS_WIDTH_1
+            bool "Standard"
+            depends on LV_SPI_SCREEN_BUS_WIDTH_1
 
-            config LV_ST77916_QSPI_CONTROL
-                bool "QSPI Control"
-                select LV_QSPI
-        endchoice
-    endif
+        config LV_SPI_BUS_WIDTH_4
+            bool "Quad"
+            depends on LV_SPI_SCREEN_BUS_WIDTH_4
+    endchoice
+
 endif # AIC_LVGL_DOUBLE_DISP_DEMO
 
 endif # AIC_LVGL_DEMO

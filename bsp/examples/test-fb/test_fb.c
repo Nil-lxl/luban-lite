@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -369,25 +369,25 @@ int show_color_block(int fd)
                     j++;
             }
         }
-        line1 += width * pixel_size;
+        line1 = fb_buf + i * s.stride;
     }
 
     /* Draw the location line */
 
-    line1 = &fb_buf[width * pixel_size] + pixel_size;
-    line2 = &fb_buf[width * (height - 2) * pixel_size - ((width >> 3) + 1) * pixel_size];
+    line1 = &fb_buf[s.stride];
+    line2 = &fb_buf[s.stride * (height - 1) + (width - (width >> 3)) * pixel_size];
     for (i = 0; i < (width >> 3); i++) {
         memcpy(&line1[i * pixel_size], &colors[3], pixel_size);
         memcpy(&line2[i * pixel_size], &colors[3], pixel_size);
     }
 
-    line1 = &fb_buf[width * pixel_size] + pixel_size;
-    line2 = &fb_buf[width * (height - (width >> 3) - 1) * pixel_size - pixel_size];
+    line1 = &fb_buf[s.stride];
+    line2 = &fb_buf[s.stride * (height - (width >> 3) - 1) + (width - 1) * pixel_size];
     for (i = 0; i < (width >> 3); i++) {
         memcpy(&line1[0], &colors[3], pixel_size);
-        line1 += width * pixel_size;
+        line1 += s.stride;
         memcpy(&line2[0], &colors[3], pixel_size);
-        line2 += width * pixel_size;
+        line2 += s.stride;
     }
 
     aicos_dcache_clean_range(fb_buf, s.smem_len);

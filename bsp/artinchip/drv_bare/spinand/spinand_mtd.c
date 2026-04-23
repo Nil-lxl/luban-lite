@@ -280,6 +280,37 @@ static int mtd_spinand_unmap_oob_user(struct mtd_dev *mtd, u8 *dst, u8* src, int
     return spinand_ooblayout_unmap_user(flash, dst, src, start, nbytes);
 }
 
+/* Find the available physical address corresponding to the logical address. */
+static u32 mtd_spinand_la2pa(struct mtd_dev *mtd, u32 logic_addr)
+{
+    struct aic_spinand *flash = NULL;
+    u32 offset = 0, valid_len = 0;
+    u32 blocksize = 0;
+    int err = -1;
+
+    if (!mtd || logic_addr >= mtd->size)
+        return UINT32_MAX;
+
+    flash = (struct aic_spinand *)mtd->priv;
+    blocksize = flash->info->page_size * flash->info->pages_per_eraseblock;
+
+    do {
+        err = mtd_spinand_block_isbad(mtd, offset);
+        if (err == 0) {
+            /* Found a good block */
+            valid_len += blocksize;
+        }
+        if (valid_len > logic_addr)
+            return offset + (logic_addr % blocksize);
+
+        offset += blocksize;
+        if (offset >= mtd->size)
+            return UINT32_MAX;
+    }  while (1);
+
+    return UINT32_MAX;
+}
+
 int nand_read_data(void *dev, unsigned long offset, void *buf,
                    unsigned long len, int spienc_bypass)
 {
@@ -384,6 +415,7 @@ struct aic_spinand *spinand_probe(u32 spi_bus)
     mtd->ops.cont_read = mtd_spinand_continuous_read;
     mtd->ops.map_user = mtd_spinand_map_oob_user;
     mtd->ops.unmap_user = mtd_spinand_unmap_oob_user;
+    mtd->ops.la2pa = mtd_spinand_la2pa;
     mtd->priv = (void *)flash;
     mtd_add_device(mtd);
 
@@ -443,6 +475,7 @@ struct aic_spinand *spinand_probe(u32 spi_bus)
         mtd->ops.cont_read = mtd_spinand_continuous_read;
         mtd->ops.map_user = mtd_spinand_map_oob_user;
         mtd->ops.unmap_user = mtd_spinand_unmap_oob_user;
+        mtd->ops.la2pa = mtd_spinand_la2pa;
         mtd->priv = (void *)flash;
         mtd->attr = p->attr;
         mtd_add_device(mtd);

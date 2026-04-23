@@ -32,7 +32,8 @@
 #define LWIP_NO_CTYPE_H         0
 #define LWIP_SOCKET_SELECT      1
 #define LWIP_SOCKET_POLL        1
-
+#define LWIP_TCPIP_CORE_LOCKING 1
+#define LWIP_TCPIP_CORE_LOCKING_INPUT 1
 #define LWIP_RAND rand
 
 #ifndef SSIZE_MAX
@@ -354,6 +355,8 @@
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
 #ifdef RT_LWIP_PBUF_POOL_BUFSIZE
 #define PBUF_POOL_BUFSIZE            RT_LWIP_PBUF_POOL_BUFSIZE
+#else
+#define PBUF_POOL_BUFSIZE            1600
 #endif
 
 /* PBUF_LINK_HLEN: the number of bytes that should be allocated for a
@@ -607,7 +610,7 @@
 #endif
 
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active timeouts. */
-#define MEMP_NUM_SYS_TIMEOUT       (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + PPP_SUPPORT + (LWIP_IPV6 ? ( 1 + ( 2*LWIP_IPV6)) : 0))
+#define MEMP_NUM_SYS_TIMEOUT       (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + PPP_SUPPORT + (LWIP_IPV6 ? (1 + (2 * LWIP_IPV6)) : 0))
 
 /*
  * LWIP_COMPAT_SOCKETS==1: Enable BSD-style sockets functions names.

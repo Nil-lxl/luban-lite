@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -85,7 +85,7 @@ typedef struct mm_muxer_data {
 } mm_muxer_data;
 
 static void *mm_muxer_component_thread(void *p_thread_data);
-void mm_muxer_component_count_print(mm_muxer_data *p_muxer_data);
+void mm_muxer_show_debug_info(mm_muxer_data *p_muxer_data);
 
 static s32 mm_muxer_set_command(mm_handle h_component, MM_COMMAND_TYPE cmd,
                                 u32 param1, void *p_cmd_data)
@@ -197,7 +197,7 @@ static s32 mm_muxer_set_parameter(mm_handle h_component, MM_INDEX_TYPE index, vo
         break;
     }
     case MM_INDEX_PARAM_PRINT_DEBUG_INFO:
-        mm_muxer_component_count_print(p_muxer_data);
+        mm_muxer_show_debug_info(p_muxer_data);
         value = p_muxer_data->print_flag;
         p_muxer_data->print_flag = ~value;
         break;
@@ -735,44 +735,48 @@ CMD_EXIT:
     return cmd;
 }
 
-void mm_muxer_component_count_print(mm_muxer_data *p_muxer_data)
+void mm_muxer_show_debug_info(mm_muxer_data *p_muxer_data)
 {
-    printf("[%s:%d]receive_pkt_ok_num:%u,read_pkt_ok_num:%u,"
-           "muxer_write_pkt_ok_num:%u,muxer_write_pkt_fail_num:%u,"
-           "giveback_pkt_ok_num:%u,giveback_pkt_fail_num:%u\n",
-           __FUNCTION__, __LINE__,
-           p_muxer_data->receive_pkt_ok_num,
-           p_muxer_data->read_pkt_ok_num,
-           p_muxer_data->muxer_write_pkt_ok_num,
-           p_muxer_data->muxer_write_pkt_fail_num,
-           p_muxer_data->giveback_pkt_ok_num,
-           p_muxer_data->giveback_pkt_fail_num);
+    printf("****************************Muxer comp info****************************\n");
+    printf("receive    read_ok    write_ok    write_fail    give_ok    give_fail\n");
+    printf("%7u    %7u    %8u    %10u    %7u    %9u\n",
+        p_muxer_data->receive_pkt_ok_num, p_muxer_data->read_pkt_ok_num,
+        p_muxer_data->muxer_write_pkt_ok_num, p_muxer_data->muxer_write_pkt_fail_num,
+        p_muxer_data->giveback_pkt_ok_num, p_muxer_data->giveback_pkt_fail_num);
+    printf("\nstate: %s\n\n", mm_component_sta_to_str(p_muxer_data->state));
 }
 
-void mm_muxer_component_perf_print(mm_muxer_data *p_muxer_data)
+void mm_muxer_show_perf_info(mm_muxer_data *p_muxer_data, u32 len)
 {
     if (!p_muxer_data->print_flag)
         return;
 
     static u64 total_write_tm = 0;
     static u32 total_cnt = 0;
+    static u64 total_bytes = 0;
     static u64 last_write_tm = 0;
+    u64 time_diff = 0;
 
     total_write_tm += (p_muxer_data->tm_write_end - p_muxer_data->tm_write_start);
     total_cnt++;
-    if (total_cnt >= 30) {
-        if (p_muxer_data->tm_write_end - last_write_tm > 0)
-            printf("muxer: average fps %llu\n",
-                total_cnt * 1000 / (p_muxer_data->tm_write_end - last_write_tm));
+    total_bytes += len;
+    if (total_cnt >= 90) {
+        time_diff = p_muxer_data->tm_write_end - last_write_tm;
+        if (time_diff > 0) {
+            printf("****************************video perf info****************************\n");
+            printf("FPS    Bitrate(KB/S)    TotalTime(ms)    AvgSize    AvgWriteTime(ms)\n");
+            printf("%3llu    %13llu    %13llu    %7llu    %16llu\n\n",
+                total_cnt * 1000 / time_diff, total_bytes / time_diff, time_diff,
+                total_bytes / total_cnt, total_write_tm / total_cnt);
+        }
 
-        printf("muxer: average write frame cost time %llu ms\n",
-            total_write_tm / total_cnt);
         total_cnt = 0;
+        total_bytes = 0;
         total_write_tm = 0;
         last_write_tm = p_muxer_data->tm_write_end;
     }
-    if (p_muxer_data->tm_write_end - p_muxer_data->tm_write_start > 40)
-        printf("muxer: write one frame cost too much time %llu ms\n",
+    if (p_muxer_data->tm_write_end - p_muxer_data->tm_write_start > 80)
+        printf("muxer: write one frame size %u cost too much time %llu ms\n", len,
             p_muxer_data->tm_write_end - p_muxer_data->tm_write_start);
 }
 
@@ -908,9 +912,11 @@ static s32 mm_muxer_component_process_write_packet(mm_muxer_data *p_muxer_data)
             p_muxer_data->create_new_file_flag = 1;
         }
     }
-
+    p_muxer_data->tm_write_start = aic_get_time_ms();
     ret = aic_muxer_write_packet(p_muxer_data->p_muxer, &p_pkt_node->packet);
     if (ret == 0) {
+        p_muxer_data->tm_write_end = aic_get_time_ms();
+        mm_muxer_show_perf_info(p_muxer_data, p_pkt_node->packet.size);
         pthread_mutex_lock(&p_muxer_data->in_pkt_lock);
         mpp_list_del(&p_pkt_node->list);
         mpp_list_add_tail(&p_pkt_node->list, &p_muxer_data->in_processed_pkt);
@@ -970,11 +976,8 @@ static void *mm_muxer_component_thread(void *p_thread_data)
             continue;
         }
         // get packet from process_list and write to muxer
-        p_muxer_data->tm_write_start = aic_get_time_ms();
-        mm_muxer_component_process_write_packet(p_muxer_data);
-        p_muxer_data->tm_write_end = aic_get_time_ms();
 
-        mm_muxer_component_perf_print(p_muxer_data);
+        mm_muxer_component_process_write_packet(p_muxer_data);
     }
 
 _EXIT:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -34,18 +34,18 @@ struct rt_i2c_bus_device *camera_i2c_get(void)
 
 void camera_xclk_enable(void)
 {
-    hal_clk_enable(CLK_OUT1);
+    hal_clk_enable(CAMERA_CLK_OUT);
 }
 
 void camera_xclk_disable(void)
 {
-    hal_clk_disable(CLK_OUT1);
+    hal_clk_disable(CAMERA_CLK_OUT);
 }
 
 u32 camera_xclk_rate_get(void)
 {
-#ifdef AIC_CLK_OUT1_FREQ
-    return AIC_CLK_OUT1_FREQ;
+#ifdef CAMERA_CLK_FREQ
+    return CAMERA_CLK_FREQ;
 #else
     return 0;
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Artinchip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -47,7 +47,7 @@ static int read_userid(struct mtd_dev *mtd, size_t offset, u8 *buf, size_t size)
             continue;
         }
 
-        if (mtd_read(mtd, offset, ptr, remain))
+        if (mtd_read(mtd, offset, ptr, remain) < 0)
             return 1;
 
         offset += remain;

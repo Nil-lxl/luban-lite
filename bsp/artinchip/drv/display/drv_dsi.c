@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,6 +10,13 @@
 #include <mipi_display.h>
 
 #include "drv_fb.h"
+
+#undef pr_debug
+#ifdef AIC_DISP_MIPI_DSI_DEBUG
+#define pr_debug    pr_info
+#else
+#define pr_debug(fmt, ...)
+#endif
 
 struct aic_dsi_comp
 {
@@ -102,11 +109,11 @@ static irqreturn_t aic_dsi_handler(int irq, void *ctx)
 
     for (i = 0; i < ARRAY_SIZE(irq1_info); i++)
         if (irq1_info[i].bit_mask & irq1_status)
-            pr_err("%s\n",irq1_info[i].err_str);
+            pr_debug("%s\n",irq1_info[i].err_str);
 
     for (i = 0; i < ARRAY_SIZE(irq2_info); i++)
         if (irq2_info[i].bit_mask & irq2_status)
-            pr_err("%s\n",irq2_info[i].err_str);
+            pr_debug("%s\n",irq2_info[i].err_str);
 
     aic_dsi_release_drvdata();
     return IRQ_HANDLED;

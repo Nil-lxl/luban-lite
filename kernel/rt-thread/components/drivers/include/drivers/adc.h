@@ -19,10 +19,9 @@ struct rt_adc_ops
 {
     rt_err_t (*enabled)(struct rt_adc_device *device, rt_uint32_t channel, rt_bool_t enabled);
     rt_err_t (*convert)(struct rt_adc_device *device, rt_uint32_t channel, rt_uint32_t *value);
-#ifdef AIC_GPAI_DRV
+    rt_err_t (*active_dma)(struct rt_adc_device *device, void *arg);
     rt_err_t (*config_dma)(struct rt_adc_device *device, void *dma_info);
-    rt_err_t (*get_dma_data)(struct rt_adc_device *device,
-                             rt_uint32_t channel);
+#ifdef AIC_GPAI_DRV
     rt_err_t (*stop_dma)(struct rt_adc_device *device, rt_uint32_t channel);
     rt_err_t (*get_mode)(struct rt_adc_device *device, void *chan_info);
     rt_uint32_t (*get_obtaining_data_mode)(struct rt_adc_device *device,
@@ -56,10 +55,11 @@ typedef enum
     RT_ADC_CMD_DISABLE = RT_DEVICE_CTRL_BASE(ADC) + 2,
     RT_ADC_CMD_GET_RESOLUTION = RT_DEVICE_CTRL_BASE(ADC) + 3, /* get the resolution in bits */
     RT_ADC_CMD_GET_VREF = RT_DEVICE_CTRL_BASE(ADC) + 4, /* get reference voltage */
+    RT_ADC_CMD_ACTIVE_DMA = RT_DEVICE_CTRL_BASE(ADC) + 6,
+    RT_ADC_CMD_CONFIG_DMA = RT_DEVICE_CTRL_BASE(ADC) + 7,
 #ifdef AIC_GPAI_DRV
     RT_ADC_CMD_IRQ_COUNT = RT_DEVICE_CTRL_BASE(ADC) + 5,
-    RT_ADC_CMD_GET_DMA_DATA = RT_DEVICE_CTRL_BASE(ADC) + 6,
-    RT_ADC_CMD_CONFIG_DMA = RT_DEVICE_CTRL_BASE(ADC) + 7,
+    RT_ADC_CMD_GET_DMA_DATA = RT_ADC_CMD_ACTIVE_DMA,
     RT_ADC_CMD_OBTAIN_DATA_MODE = RT_DEVICE_CTRL_BASE(ADC) + 8,
     RT_ADC_CMD_IRQ_CALLBACK = RT_DEVICE_CTRL_BASE(ADC) + 9,
     RT_ADC_CMD_GET_CH_INFO = RT_DEVICE_CTRL_BASE(ADC) + 10,
