@@ -238,7 +238,7 @@ static struct aic_panel_funcs h035a17_funcs = {
 };
 
 static struct display_timing h035a17_timing = {
-    .pixelclock = 30000000,
+    .pixelclock = 30 * 1000 * 1000,
     .hactive = 640,
     .hfront_porch = 20,
     .hback_porch = 20,

@@ -119,7 +119,6 @@ rt_uint8_t st7123_get_touch_num(rt_uint8_t *buf, touch_point_t *touch_point) {
     return touch_num;
 }
 static void st7123_read_point(struct rt_touch_device *touch, void *buf, rt_size_t read_num) {
-#if 1
     rt_uint8_t touch_num = 0;
     rt_uint8_t reg[2];
     rt_uint8_t read_buf[ST7123_MAX_TOUCH * 7 + 5] = { 0 };
@@ -163,9 +162,6 @@ static void st7123_read_point(struct rt_touch_device *touch, void *buf, rt_size_
             st7123_touch_up(buf, touch_point[i].id);
         }
     }
-#else
-
-#endif
 
 }
 
