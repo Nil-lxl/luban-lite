@@ -484,16 +484,16 @@ static void fill_gray_level(lcd_test_param_t param) {
  *       img_path(图片路径)，gray_level_num(灰阶级数)
  */
 static const lcd_test_item_t test_items[] = {
-    // {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      500, true},
-    // {"红色",       fill_color,          .param.color = { RED, 0, 0 },             500, true},
-    // {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           500, true},
-    // {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            500, true},
-    // {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          500, true},
-    {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           2000, true},
-    // {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               500, true},
-    {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           2000, true},
-    {"图片1",      decode_img,          .param.img_path = "white_black_1.jpg", 2000, true},
-    {"图片2",      decode_img,          .param.img_path = "white_black_2.jpg", 2000, true},
+    {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      1000, true},
+    {"红色",       fill_color,          .param.color = { RED, 0, 0 },             1000, true},
+    {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           1000, true},
+    {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            1000, true},
+    {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
+    // {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           2000, true},
+    {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
+    // {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           2000, true},
+    // {"图片1",      decode_img,          .param.img_path = "f1024x600.jpg", 2000, true},
+    // {"图片2",      decode_img,          .param.img_path = "img1024x600_1.jpg", 2000, true},
     // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-4.jpg", 1500, true},
     // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-5.jpg", 1500, true},
     // {"图片5",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-6.jpg", 1500, true},
@@ -536,7 +536,7 @@ void lcd_test_start(void) {
         rt_thread_startup(lcd_test_thread);
     }
 
-    pause_key_config();
+    // pause_key_config();
     // pwm_dev = (struct rt_device_pwm *)rt_device_find("pwm");
 }
 

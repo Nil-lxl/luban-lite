@@ -20,38 +20,11 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_DSI_SIMPLE_PANEL
     &dsi_simple,
 #endif
-#ifdef AIC_PANEL_DSI_XM91080
-    &dsi_xm91080,
-#endif
-#ifdef AIC_PANEL_DSI_ST7797
-    &dsi_st7797,
+#ifdef AIC_PANEL_DSI_EDP_LT9811EXB
+    &dsi_edp_lt9811exb,
 #endif
 #ifdef AIC_PANEL_DSI_ST7703
     &dsi_st7703,
-#endif
-#ifdef AIC_PANEL_DSI_ST77922
-    &dsi_st77922,
-#endif
-#ifdef AIC_PANEL_DSI_ILI9881C
-    &dsi_ili9881c,
-#endif
-#ifdef AIC_PANEL_DSI_HX8394
-    &dsi_hx8394,
-#endif
-#ifdef AIC_PANEL_DSI_JD9365
-    &dsi_jd9365,
-#endif
-#ifdef AIC_PANEL_DSI_AXS15231B
-    &dsi_axs15231b,
-#endif
-#ifdef AIC_PANEL_DSI_NV3051
-    &dsi_nv3051,
-#endif
-#ifdef AIC_PANEL_DSI_FL7707
-    &dsi_fl7707,
-#endif
-#ifdef AIC_PANEL_DSI_FT8201
-    &dsi_ft8201,
 #endif
 #ifdef AIC_PANEL_DSI_H013A08
     &dsi_h013a08,
@@ -113,42 +86,13 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DSI_H103W01
     &dsi_h103w01,
 #endif
-#ifdef AIC_PANEL_DSI_ST7701S
-    &dsi_st7701s,
-#endif
-#ifdef AIC_PANEL_DSI_JD9366TC
-    &dsi_jd9366tc,
-#endif
-#ifdef AIC_PANEL_DSI_EDP_LT9811EXB
-    &dsi_edp_lt9811exb,
-#endif
+
 
 #ifdef AIC_PANEL_DBI_ILI9488
     &dbi_ili9488,
 #endif
-#ifdef AIC_PANEL_DBI_ILI9486L
-    &dbi_ili9486l,
-#endif
 #ifdef AIC_PANEL_DBI_ST7789
     &dbi_st7789,
-#endif
-#ifdef AIC_PANEL_DBI_ILI9341
-    &dbi_ili9341,
-#endif
-#ifdef AIC_PANEL_DBI_ILI9327
-    &dbi_ili9327,
-#endif
-#ifdef AIC_PANEL_DBI_ST77903
-    &dbi_st77903,
-#endif
-#ifdef AIC_PANEL_DBI_ST7789T3
-    &dbi_st7789t3,
-#endif
-#ifdef AIC_PANEL_DBI_ST77912
-    &dbi_st77912,
-#endif
-#ifdef AIC_PANEL_DBI_ST77916
-    &dbi_st77916,
 #endif
 #ifdef AIC_PANEL_DBI_H040A12
     &dbi_h040a12,
@@ -156,30 +100,15 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DBI_H040A27
     &dbi_h040a27,
 #endif
+#ifdef AIC_PANEL_DBI_ST7789V
+    &dbi_st7789v,
+#endif
+#ifdef AIC_PANEL_SPI_GENERAL
+    &spi_general,
+#endif
 
 #ifdef AIC_PANEL_RGB_ST7701S
     &rgb_st7701s,
-#endif
-#ifdef AIC_PANEL_RGB_NV3052
-    &rgb_nv3052,
-#endif
-#ifdef AIC_PANEL_RGB_ST7703
-    &rgb_st7703,
-#endif
-#ifdef AIC_PANEL_RGB_ST77916
-    &rgb_st77916,
-#endif
-#ifdef AIC_PANEL_RGB_JD9855
-    &rgb_jd9855,
-#endif
-#ifdef AIC_PANEL_RGB_GC9A01A
-    &rgb_gc9a01a,
-#endif
-#ifdef AIC_PANEL_RGB_NT35560
-    &rgb_nt35560,
-#endif
-#ifdef AIC_PANEL_RGB_ST77922
-    &rgb_st77922,
 #endif
 #ifdef AIC_PANEL_RGB_H024A13
     &rgb_h024a13,
@@ -244,24 +173,7 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_BRIDGE_LT8911
     &bridge_lt8911,
 #endif
-#ifdef AIC_PANEL_LCOS_HX7033
-    &lcos_hx7033,
-#endif
-#ifdef AIC_PANEL_DBI_ST7789V
-    &dbi_st7789v,
-#endif
-#ifdef AIC_PANEL_DBI_CO5300
-    &dbi_co5300,
-#endif
-#ifdef AIC_PANEL_SPI_GENERAL
-    &spi_general,
-#endif
-#ifdef AIC_PANEL_DBI_GC9108
-    &dbi_gc9108,
-#endif
-#ifdef AIC_PANEL_DBI_GC9B72NA
-    &dbi_gc9b72na,
-#endif
+
 };
 
 struct aic_panel *aic_find_panel(u32 connector_type)

@@ -252,12 +252,13 @@ static int rt_is5328_init(const char *name, struct rt_touch_config *cfg) {
     rt_memcpy(&touch_device->config, cfg, sizeof(struct rt_touch_config));
     touch_device->ops = &is5328_touch_ops;
 
-    if (RT_EOK != rt_hw_touch_register(touch_device, name, RT_DEVICE_FLAG_INT_RX, RT_NULL)) {
+    if (rt_hw_touch_register(touch_device, name, RT_DEVICE_FLAG_INT_RX, RT_NULL) != RT_EOK) {
         LOG_E("touch device is5328 init failed !!!");
         return -RT_ERROR;
+    } else {
+        LOG_I("touch device is5328 init success");
     }
 
-    LOG_I("touch device is5328 init success");
     return RT_EOK;
 }
 
@@ -295,17 +296,27 @@ static int is5328_get_chip_info(struct rt_i2c_client *dev) {
 
     rt_uint8_t *data = (rt_uint8_t *)rt_malloc(64);
 
+    //获取芯片料号信息
     ret = is5328_read(dev, ISTARIC_CHIP_ID, data, 7);
 
-    //获取芯片料号信息
-    for (int i = 0;i < 4;i++) {
-        chip_info[i] = data[i] & 0x0F;
+    if (ret != RT_EOK) {
+        LOG_E("Read chip info error\n");
+        return -RT_ERROR;
+    } else {
+        for (int i = 0;i < 4;i++) {
+            chip_info[i] = data[i] & 0x0F;
+        }
+        LOG_I("Current chip info: IS%x%x%x%x", chip_info[0], chip_info[1], chip_info[2], chip_info[3]);
     }
-    LOG_I("Current chip info: IS%x%x%x%x", chip_info[0], chip_info[1], chip_info[2], chip_info[3]);
 
     //获取固件版本信息
     ret = is5328_read(dev, ISTARIC_FIRM_VERSION, data, 4);
-    LOG_I("firmware version: %02x.%02x.%02x.%02x", data[0], data[1], data[2], data[3]);
+    if (ret != RT_EOK) {
+        LOG_E("Read firmware version error\n");
+        return -RT_ERROR;
+    } else {
+        LOG_I("firmware version: %02x.%02x.%02x.%02x", data[0], data[1], data[2], data[3]);
+    }
 
     // while(1){
     //     is5328_read(dev, 0x840034FC, data, 20);

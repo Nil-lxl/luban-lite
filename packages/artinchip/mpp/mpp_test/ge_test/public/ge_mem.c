@@ -212,7 +212,7 @@ void ge_buf_free(struct ge_buf * buffer)
         return;
 
     for (i = 0; i < 3; i++) {
-        if (!buffer->ori_buf[i])
+        if (buffer->ori_buf[i])
             aicos_free(MEM_CMA, buffer->ori_buf[i]);
     }
 

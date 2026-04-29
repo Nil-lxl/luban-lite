@@ -17,48 +17,9 @@ if !AIC_DISP_PQ_TOOL
 #
 # MIPI-DSI Panel
 #
-    config AIC_PANEL_DSI_XM91080
-        bool "ArtInChip MIPI DSI XM91080 panel"
-        depends on AIC_DISP_MIPI_DSI
-
-    config AIC_PANEL_DSI_ST7797
-        bool "ArtInChip MIPI DSI ST7797 panel"
-        depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_ST7703
         bool "ArtInChip MIPI DSI ST7703 panel"
-        depends on AIC_DISP_MIPI_DSI
-
-     config AIC_PANEL_DSI_ST77922
-        bool "ArtInChip MIPI DSI ST77922 panel"
-        depends on AIC_DISP_MIPI_DSI
-
-    config AIC_PANEL_DSI_ILI9881C
-        bool "ArtInChip MIPI DSI ILI9881C panel"
-        depends on AIC_DISP_MIPI_DSI
-
-    config AIC_PANEL_DSI_HX8394
-        bool "ArtInChip MIPI DSI HX8394 panel"
-        depends on AIC_DISP_MIPI_DSI
-
-    config AIC_PANEL_DSI_JD9365
-        bool "ArtInChip MIPI DSI JD9365 panel"
-        depends on AIC_DISP_MIPI_DSI
-
-    config AIC_PANEL_DSI_AXS15231B
-        bool "ArtInChip MIPI DSI AXS15231B panel"
-        depends on AIC_DISP_MIPI_DSI
-
-    config AIC_PANEL_DSI_NV3051
-        bool "ArtInChip MIPI DSI NV3051 panel"
-        depends on AIC_DISP_MIPI_DSI
-
-    config AIC_PANEL_DSI_FL7707
-        bool "ArtInChip MIPI DSI FL7707 panel"
-        depends on AIC_DISP_MIPI_DSI
-
-    config AIC_PANEL_DSI_FT8201
-        bool "ArtInChip MIPI DSI FT8201 panel"
         depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H013A08
@@ -140,9 +101,7 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DSI_H103W01
         bool "Hotlcd MIPI DSI H103W01 panel"
         depends on AIC_DISP_MIPI_DSI
-    config AIC_PANEL_DSI_JD9366TC
-        bool "ArtInChip MIPI DSI JD9366TC panel"
-        depends on AIC_DISP_MIPI_DSI
+
 #
 # MIPI-DBI Type B I8080 Panel
 #
@@ -151,12 +110,6 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_MIPI_DBI
         help
             MIPI-DBI Type B, I8080_RGB666_16BIT_3CYCLE
-
-    config AIC_PANEL_DBI_ILI9486L
-        bool "ArtInChip MIPI DBI ILI9486L panel"
-        depends on AIC_DISP_MIPI_DBI
-        help
-            MIPI-DBI Type B, I8080_RGB666_8BIT
 
     config AIC_PANEL_DBI_ST7789
         bool "ArtInChip MIPI DBI ST7789 panel"
@@ -172,11 +125,6 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd MIPI DBI H040A27 panel"
         depends on AIC_DISP_MIPI_DBI
 
-    config AIC_PANEL_DBI_GC9B72NA
-        bool "ArtInChip MIPI DBI GC9B72NA panel"
-        depends on AIC_DISP_MIPI_DBI
-        help
-            MIPI-DBI Type B, I8080_RGB565_8BIT
 #
 # MIPI-DBI Type C SPI Panel
 #
@@ -192,37 +140,6 @@ if !AIC_DISP_PQ_TOOL
         help
             MIPI-DBI Type C, SPI_4SDA_RGB666
 
-    config AIC_PANEL_DBI_ILI9327
-        bool "ArtInChip MIPI DBI ILI9327 panel"
-        depends on AIC_DISP_MIPI_DBI
-        help
-            MIPI-DBI Type C, SPI_4LINE_RGB565
-
-    config AIC_PANEL_DBI_CO5300
-        bool "ArtInChip MIPI DBI CO5300 panel"
-        depends on AIC_DISP_MIPI_DBI
-        help
-            MIPI-DBI Type C, SPI_4DA_RGB888
-
-    config AIC_PANEL_DBI_ST77916
-        bool "ArtInChip MIPI DBI ST77916 panel"
-        depends on AIC_DISP_MIPI_DBI
-        help
-            MIPI-DBI Type C, SPI_4LINE_RGB565
-
-    config AIC_PANEL_DBI_GC9108
-        bool "ArtInChip MIPI DBI GC9108 panel"
-        depends on AIC_DISP_MIPI_DBI
-        depends on AIC_DISP_MIPI_DBI_DRV_V13
-        help
-            MIPI-DBI Type C, SPI_4LINE_RGB565
-
-    config AIC_PANEL_DBI_ST77912
-        bool "ArtInChip MIPI DBI ST77912 panel"
-        depends on AIC_DISP_MIPI_DBI
-        help
-            MIPI-DBI Type C, SPI_4LINE_RGB565
-
     config AIC_PANEL_SPI_GENERAL
         bool "ArtInChip SPI General panel"
         depends on AIC_DISP_MIPI_DBI
@@ -233,48 +150,6 @@ if !AIC_DISP_PQ_TOOL
 #
     config AIC_PANEL_RGB_ST7701S
         bool "ArtInChip RGB ST7701S panel"
-        depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION
-
-    config AIC_PANEL_RGB_ST77916
-        bool "ArtInChip RGB ST77916 panel"
-        depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION
-        select AIC_SPI_EMULATION_WITH_DC
-
-    config AIC_PANEL_RGB_JD9855
-        bool "ArtInChip RGB JD9855 panel"
-        depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION
-        select AIC_SPI_EMULATION_WITH_DC
-
-    config AIC_PANEL_RGB_NV3052
-        bool "ArtInChip RGB NV3052 panel"
-        depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION
-
-    config AIC_PANEL_RGB_ST7703
-        bool "ArtInChip RGB ST7703 panel"
-        depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION
-
-    config AIC_PANEL_RGB_GC9A01A
-        bool "ArtInChip RGB GC9A01A panel"
-        depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION
-
-    config AIC_PANEL_RGB_NT35560
-        bool "ArtInChip RGB NT35560 panel"
-        depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION
-
-    config AIC_PANEL_RGB_ST77922
-        bool "ArtInChip RGB ST77922 panel"
-        depends on AIC_DISP_RGB
-        select AIC_PANEL_SPI_EMULATION
-
-    config AIC_PANEL_RGB_ST7102
-        bool "ArtInChip RGB ST7102 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
@@ -563,81 +438,5 @@ config AIC_SIMPLE_PANEL_POWER_DELAY_MS
         Delay in milliseconds after enabling power before
         initializing the panel. Some panels require stabilization time.
 endif
-
-
-config PANEL_HACTIVE_RES
-    int
-    default 480 if AIC_PANEL_480X272
-    default 1024 if AIC_PANEL_1024X600
-    default 1920 if AIC_PANEL_1920X1080_RESOLUTION
-    default 800 if AIC_PANEL_H050A21
-    default 1024 if AIC_PANEL_H070A20
-    default 600 if AIC_PANEL_H086A01
-    default 320 if AIC_PANEL_DBI_H040A12
-    default 320 if AIC_PANEL_DBI_H040A27
-    default 720 if AIC_PANEL_RGB_NV3052
-    default 480 if AIC_PANEL_RGB_H030A10
-    default 640 if AIC_PANEL_RGB_H035A17
-    default 480 if AIC_PANEL_RGB_H043A7
-    default 480 if AIC_PANEL_RGB_H048A02
-    default 480 if AIC_PANEL_RGB_H050A12
-    default 480 if AIC_PANEL_RGB_H068A04
-    default 480 if AIC_PANEL_RGB_H068B06
-    default 320 if AIC_PANEL_DSI_ST7797
-    default 360 if AIC_PANEL_DSI_H013A08
-    default 400 if AIC_PANEL_DSI_H016A01
-    default 480 if AIC_PANEL_DSI_H028B23
-    default 240 if AIC_PANEL_DSI_H024B12
-    default 800 if AIC_PANEL_DSI_H034A01
-    default 320 if AIC_PANEL_DSI_H035A27
-    default 640 if AIC_PANEL_DSI_H035B16
-    default 720 if AIC_PANEL_DSI_H040B24
-    default 480 if AIC_PANEL_DSI_H035B22
-    default 720 if AIC_PANEL_DSI_H050A20
-    default 720 if AIC_PANEL_DSI_H055A03
-    default 800 if AIC_PANEL_DSI_H070B13
-    default 280 if AIC_PANEL_DSI_H070A21
-    default 400 if AIC_PANEL_DSI_H078B06
-    default 800 if AIC_PANEL_DSI_H080A11
-    default 1920 if AIC_PANEL_DSI_H080D16
-
-
-
-config PANEL_VACTIVE_RES
-    int
-    default 272 if AIC_PANEL_480X272
-    default 600 if AIC_PANEL_1024X600
-    default 1080 if AIC_PANEL_1920X1080_RESOLUTION
-    default 480 if AIC_PANEL_H050A21
-    default 600 if AIC_PANEL_H070A20
-    default 1600 if AIC_PANEL_H086A01
-    default 320 if AIC_PANEL_DBI_H040A12
-    default 480 if AIC_PANEL_DBI_H040A27
-    default 720 if AIC_PANEL_RGB_NV3052
-    default 854 if AIC_PANEL_RGB_H030A10
-    default 480 if AIC_PANEL_RGB_H035A17
-    default 800 if AIC_PANEL_RGB_H043A7
-    default 854 if AIC_PANEL_RGB_H050A12
-    default 1280 if AIC_PANEL_RGB_H068A04
-    default 1280 if AIC_PANEL_RGB_H068B06
-    default 480 if AIC_PANEL_DSI_ST7797
-    default 360 if AIC_PANEL_DSI_H013A08
-    default 400 if AIC_PANEL_DSI_H016A01
-    default 320 if AIC_PANEL_DSI_H024B12
-    default 640 if AIC_PANEL_DSI_H028B23
-    default 800 if AIC_PANEL_DSI_H034A01
-    default 480 if AIC_PANEL_DSI_H035A27
-    default 480 if AIC_PANEL_DSI_H035B16
-    default 800 if AIC_PANEL_DSI_H035B22
-    default 720 if AIC_PANEL_DSI_H040B24
-    default 1120 if AIC_PANEL_RGB_H048A02
-    default 1280 if AIC_PANEL_DSI_H050A20
-    default 1280 if AIC_PANEL_DSI_H055A03
-    default 1280 if AIC_PANEL_DSI_H070B13
-    default 1424 if AIC_PANEL_DSI_H070A21
-    default 1280 if AIC_PANEL_DSI_H078B06
-    default 1280 if AIC_PANEL_DSI_H080A11
-    default 1200 if AIC_PANEL_DSI_H080D16
-
 
 endmenu
