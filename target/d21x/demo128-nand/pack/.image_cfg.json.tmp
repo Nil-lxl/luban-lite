@@ -21,6 +21,7 @@
                     "data": { "size": "-" },
                 },
             },
+            "refresh":     { "size": "1m" },
         },
     },
     "image": {

@@ -182,6 +182,19 @@ struct aic_pinmux aic_pinmux_config[] = {
     {2, PIN_PULL_DIS, 3, "PD.26"},
     {2, PIN_PULL_DIS, 3, "PD.27"},
 #endif
+#ifdef AIC_DISP_MIPI_DSI
+    {1, PIN_PULL_DIS, 3, "PB.6"},   //LCD RESET
+    {4, PIN_PULL_DIS, 3, "PD.18"},
+    {4, PIN_PULL_DIS, 3, "PD.19"},
+    {4, PIN_PULL_DIS, 3, "PD.20"},
+    {4, PIN_PULL_DIS, 3, "PD.21"},
+    {4, PIN_PULL_DIS, 3, "PD.22"},
+    {4, PIN_PULL_DIS, 3, "PD.23"},
+    {4, PIN_PULL_DIS, 3, "PD.24"},
+    {4, PIN_PULL_DIS, 3, "PD.25"},
+    {4, PIN_PULL_DIS, 3, "PD.26"},
+    {4, PIN_PULL_DIS, 3, "PD.27"},
+#endif
 #ifdef AIC_LVDS_LINK_1
     {3, PIN_PULL_DIS, 3, "PD.8"},
     {3, PIN_PULL_DIS, 3, "PD.9"},

@@ -492,8 +492,8 @@ static const lcd_test_item_t test_items[] = {
     // {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           2000, true},
     {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
     // {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           2000, true},
-    // {"图片1",      decode_img,          .param.img_path = "f1024x600.jpg", 2000, true},
-    // {"图片2",      decode_img,          .param.img_path = "img1024x600_1.jpg", 2000, true},
+    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/f1024x600.jpg", 2000, true},
+    {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/img1024x600_1.jpg", 2000, true},
     // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-4.jpg", 1500, true},
     // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-5.jpg", 1500, true},
     // {"图片5",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-6.jpg", 1500, true},
@@ -586,8 +586,6 @@ static void pause_key_input_irq_handler(void *args) {
     // brightness += 10;
 
 }
-
-
 
 
 
