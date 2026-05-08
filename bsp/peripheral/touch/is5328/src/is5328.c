@@ -283,7 +283,7 @@ static void is5328_gpio_init(struct rt_touch_config *cfg) {
     rt_thread_mdelay(10);
 
     rt_pin_write(cfg->rst_pin, PIN_HIGH);
-    // rt_thread_mdelay(100);
+    rt_thread_mdelay(100);
 
 
 

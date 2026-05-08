@@ -497,6 +497,7 @@ static int rt_hw_gt911_init(const char *name, struct rt_touch_config *cfg)
         return -RT_ERROR;
     }
 
+    // gt911_client.client_addr = GT911_ADDRESS_HIGH;
     gt911_client.client_addr = GT911_ADDRESS_LOW;
 
     /* register touch device */

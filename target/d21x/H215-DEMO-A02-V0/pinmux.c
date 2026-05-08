@@ -98,12 +98,12 @@ struct aic_pinmux aic_pinmux_config[] = {
     {1, PIN_PULL_DIS, 3, "PF.14"},  //SPI-SDI
     {1, PIN_PULL_DIS, 3, "PF.15"},  //SPI-SCL
 
-    {2, PIN_PULL_DIS, 3, "PC.5"},   //B
-    {2, PIN_PULL_DIS, 3, "PC.4"},
-    {2, PIN_PULL_DIS, 3, "PC.3"},
-    {2, PIN_PULL_DIS, 3, "PC.2"},
-    {2, PIN_PULL_DIS, 3, "PC.1"},
-    {2, PIN_PULL_DIS, 3, "PC.0"},
+    {3, PIN_PULL_DIS, 3, "PC.5"},   //B
+    {3, PIN_PULL_DIS, 3, "PC.4"},
+    {3, PIN_PULL_DIS, 3, "PC.3"},
+    {3, PIN_PULL_DIS, 3, "PC.2"},
+    {3, PIN_PULL_DIS, 3, "PC.1"},
+    {3, PIN_PULL_DIS, 3, "PC.0"},
     {2, PIN_PULL_DIS, 3, "PD.6"},
     {2, PIN_PULL_DIS, 3, "PD.7"},
 
