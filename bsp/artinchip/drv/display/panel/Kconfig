@@ -77,6 +77,10 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DSI_H055A03
         bool "Hotlcd MIPI DSI H055A03 panel"
         depends on AIC_DISP_MIPI_DSI
+    
+    config AIC_PANEL_DSI_H055A05
+        bool "Hotlcd MIPI DSI H055A05 panel"
+        depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H070B13
         bool "Hotlcd MIPI DSI H070B13 panel"

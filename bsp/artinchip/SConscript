@@ -302,6 +302,9 @@ if GetDepend('AIC_PANEL_DSI_H050A20'):
 if GetDepend('AIC_PANEL_DSI_H055A03'):
     src += Glob('drv/display/panel/panel_dsi_h055a03.c')
 
+if GetDepend('AIC_PANEL_DSI_H055A05'):
+    src += Glob('drv/display/panel/panel_dsi_h055a05.c')
+
 if GetDepend('AIC_PANEL_DSI_H070B13'):
     src += Glob('drv/display/panel/panel_dsi_h070b13.c')
 

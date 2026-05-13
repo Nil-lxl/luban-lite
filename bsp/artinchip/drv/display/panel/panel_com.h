@@ -41,6 +41,7 @@ extern struct aic_panel dsi_h043a8;
 extern struct aic_panel dsi_h040b24;
 extern struct aic_panel dsi_h050a20;
 extern struct aic_panel dsi_h055a03;
+extern struct aic_panel dsi_h055a05;
 extern struct aic_panel dsi_h070b13;
 extern struct aic_panel dsi_h070a21;
 extern struct aic_panel dsi_h070a27;

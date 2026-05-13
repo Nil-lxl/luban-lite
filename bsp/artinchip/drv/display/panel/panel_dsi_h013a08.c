@@ -222,9 +222,9 @@ static int panel_enable(struct aic_panel *panel) {
     panel_dsi_generic_send_seq(panel, 0x11, 0x00);
     aic_delay_ms(120);
     panel_dsi_generic_send_seq(panel, 0x29, 0x00);
-    aic_delay_ms(120);
-
     // panel_dsi_generic_send_seq(panel, 0x00, 0x00);
+    aic_delay_ms(120);
+    
     // panel_dsi_generic_send_seq(panel, 0x1C, 0x00);  //BIST自测
     // aic_delay_ms(50);
 
@@ -244,15 +244,15 @@ static struct aic_panel_funcs panel_funcs = {
 };
 
 static struct display_timing h013a08_timing = {
-    .pixelclock = 9 * 1000 * 1000,
+    .pixelclock = 10 * 1000 * 1000,
     .hactive = 360,
-    .hfront_porch = 30,
-    .hback_porch = 20,
+    .hfront_porch = 10,
+    .hback_porch = 10,
     .hsync_len = 10,
     .vactive = 360,
-    .vfront_porch = 16,
-    .vback_porch = 18,
-    .vsync_len = 2,
+    .vfront_porch = 20,
+    .vback_porch = 30,
+    .vsync_len = 30,
 };
 
 struct panel_dsi dsi = {

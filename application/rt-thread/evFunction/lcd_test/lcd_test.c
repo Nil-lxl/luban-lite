@@ -228,7 +228,11 @@ static void lcd_decode_img_path(char *file_path) {
     config.bitstream_buffer_size = (file_len + 1023) & (~1023);
     config.extra_frame_num = 0;
     config.packet_count = 1;
+#ifdef AICFB_RGB565
+    config.pix_fmt = MPP_FMT_RGB_565;
+#else
     config.pix_fmt = MPP_FMT_ARGB_8888;
+#endif
 
 #ifdef AIC_VE_DRV_V10
     if (type == MPP_CODEC_VIDEO_DECODER_MJPEG)
@@ -484,21 +488,21 @@ static void fill_gray_level(lcd_test_param_t param) {
  *       img_path(图片路径)，gray_level_num(灰阶级数)
  */
 static const lcd_test_item_t test_items[] = {
-    {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      1000, true},
-    {"红色",       fill_color,          .param.color = { RED, 0, 0 },             1000, true},
-    {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           1000, true},
-    {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            1000, true},
-    {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
-    {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           1000, true},
+    // {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      1000, true},
+    // {"红色",       fill_color,          .param.color = { RED, 0, 0 },             1000, true},
+    // {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           1000, true},
+    // {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            1000, true},
+    // {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
+    // {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           1000, true},
     // {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           1000, true},
-    {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
-    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit1024x600.jpg", 1000, true},
-    {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/img1024x600_1.jpg", 1000, true},
-    // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-4.jpg", 1500, true},
-    // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-5.jpg", 1500, true},
-    // {"图片5",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-6.jpg", 1500, true},
-    // {"图片6",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x1120-7.jpg", 1500, true},
-    // {"图片7",      decode_img,          .param.img_path = "rodata/lcd_test/image/women.jpg", 1500, true},
+    // {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               2000, true},
+    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/img1.jpg", 2000, true},
+    {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/img2.jpg", 2000, true},
+    {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/img3.jpg", 2000, true},
+    {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/img4.jpg", 2000, true},
+    {"图片5",      decode_img,          .param.img_path = "rodata/lcd_test/image/img5.jpg", 2000, true},
+    {"图片6",      decode_img,          .param.img_path = "rodata/lcd_test/image/img6.jpg", 2000, true},
+    {"图片7",      decode_img,          .param.img_path = "rodata/lcd_test/image/img7.jpg", 2000, true},
     // {"图片8",      decode_img,          .param.img_path = "rodata/lcd_test/image/word.jpg", 1500, true},
     // {"图片9",      decode_img,          .param.img_path = "rodata/lcd_test/image/Image09.jpg", 1500, true},
     // {"图片10",     decode_img,          .param.img_path = "rodata/lcd_test/image/Image10.jpg", 1500, true},
