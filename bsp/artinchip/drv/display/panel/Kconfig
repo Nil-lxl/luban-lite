@@ -45,6 +45,10 @@ if !AIC_DISP_PQ_TOOL
     config AIC_PANEL_DSI_H030B07
         bool "Hotlcd MIPI DSI H030B07 panel"
         depends on AIC_DISP_MIPI_DSI
+    
+    config AIC_PANEL_DSI_H032A06
+        bool "Hotlcd MIPI DSI H032A06 panel"
+        depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H034A01
         bool "Hotlcd MIPI DSI H034A01 panel"
@@ -64,6 +68,10 @@ if !AIC_DISP_PQ_TOOL
 
     config AIC_PANEL_DSI_H040B24
         bool "Hotlcd MIPI DSI H040B24 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H042A01
+        bool "Hotlcd MIPI DSI H042A01 panel"
         depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H043A8
@@ -203,6 +211,11 @@ if !AIC_DISP_PQ_TOOL
 
     config AIC_PANEL_RGB_H043A7
         bool "Hotlcd RGB H043A7 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
+    config AIC_PANEL_RGB_H043A34
+        bool "Hotlcd RGB H043A34 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 

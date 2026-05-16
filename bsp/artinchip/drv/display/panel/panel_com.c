@@ -44,6 +44,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DSI_H030B07
     &dsi_h030b07,
 #endif
+#ifdef AIC_PANEL_DSI_H032A06
+    &dsi_h032a06,
+#endif
 #ifdef AIC_PANEL_DSI_H034A01
     &dsi_h034a01,
 #endif
@@ -55,6 +58,9 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_DSI_H035B22
     &dsi_h035b22,
+#endif
+#ifdef AIC_PANEL_DSI_H042A01
+    &dsi_h042a01,
 #endif
 #ifdef AIC_PANEL_DSI_H043A8
     &dsi_h043a8,
@@ -142,6 +148,9 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_RGB_H043A7
     &rgb_h043a7,
+#endif
+#ifdef AIC_PANEL_RGB_H043A34
+    &rgb_h043a34,
 #endif
 #ifdef AIC_PANEL_RGB_H043B32
     &rgb_h043b32,
@@ -470,6 +479,62 @@ static inline void panel_spi_set_dc(u32 value)
 }
 
 #ifndef AIC_SPI_EMULATION_WITH_DC
+
+/**
+ * @brief spi发送初始化命令序列，适用于不区分命令/数据的SPI设备,有效数据8位
+ * @param data 要发送的数据序列
+ */
+void panel_spi_write_byte(u8 data) {
+    for (int i = 0;i < 8;i++) {
+        if (data & 0x80)
+            panel_spi_set_sdi(1);
+        else
+            panel_spi_set_sdi(0);
+
+        panel_spi_set_scl(0);
+        aic_delay_us(1);
+        panel_spi_set_scl(1);
+        data <<= 1;
+    }
+    panel_spi_set_scl(0);
+    aic_delay_us(1);
+}
+
+/**
+ * @brief 单次写入单个字节数据到SPI设备
+ * @param data 要写入的数据
+ */
+void panel_spi_write_single(u8 data) {
+    panel_spi_set_cs(0);
+    aic_delay_us(1);
+
+    panel_spi_write_byte(data);
+
+    aic_delay_us(1);
+    panel_spi_set_cs(1);
+}
+
+/**
+ * @brief 连续发送多个字节数据到SPI设备
+ * @param data 要写入的数据序列
+ * @param len 数据序列的长度
+ */
+void panel_spi_write_multi(const u8 *data, size_t len) {
+    panel_spi_set_cs(0);
+    aic_delay_us(1);
+
+    for (size_t i = 0; i < len; i++) {
+        panel_spi_write_byte(data[i]);
+    }
+
+    aic_delay_us(1);
+    panel_spi_set_cs(1);
+}
+
+/**
+ * @brief spi发送单字节命令,适用于区分命令/数据的SPI设备,有效数据9位
+ * @param cmd 要发送的命令字节
+ */
 void panel_spi_cmd_wr(u8 cmd)
 {
     u32 i;
@@ -508,6 +573,10 @@ void panel_spi_cmd_wr(u8 cmd)
     aic_delay_us(1);
 }
 
+/**
+ * @brief spi发送单字节数据,适用于区分命令/数据的SPI设备,有效数据9位
+ * @param data 要发送的数据字节
+ */
 void panel_spi_data_wr(u8 data)
 {
     u32 i;

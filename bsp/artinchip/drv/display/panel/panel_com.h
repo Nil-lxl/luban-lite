@@ -33,12 +33,14 @@ extern struct aic_panel dsi_h024b12;
 extern struct aic_panel dsi_h028b23;
 extern struct aic_panel dsi_h028a29;
 extern struct aic_panel dsi_h030b07;
+extern struct aic_panel dsi_h032a06;
 extern struct aic_panel dsi_h034a01;
 extern struct aic_panel dsi_h035a27;
 extern struct aic_panel dsi_h035b16;
 extern struct aic_panel dsi_h035b22;
-extern struct aic_panel dsi_h043a8;
 extern struct aic_panel dsi_h040b24;
+extern struct aic_panel dsi_h042a01;
+extern struct aic_panel dsi_h043a8;
 extern struct aic_panel dsi_h050a20;
 extern struct aic_panel dsi_h055a03;
 extern struct aic_panel dsi_h055a05;
@@ -79,9 +81,10 @@ extern struct aic_panel rgb_h034a02;
 extern struct aic_panel rgb_h035a17;
 extern struct aic_panel rgb_h035a24;
 extern struct aic_panel rgb_h040a18;
-extern struct aic_panel rgb_h048a02;
 extern struct aic_panel rgb_h043a7;
+extern struct aic_panel rgb_h043a34;
 extern struct aic_panel rgb_h043b32;
+extern struct aic_panel rgb_h048a02;
 extern struct aic_panel rgb_h050a12;
 extern struct aic_panel rgb_h050a18;
 extern struct aic_panel rgb_h052a01;
@@ -129,7 +132,8 @@ struct panel_spi_device {
     struct gpio_desc scl;
     struct gpio_desc dc;
 };
-
+void panel_spi_write_single(u8 data);
+void panel_spi_write_multi(const u8 *data, size_t len);
 void panel_spi_data_wr(u8 data);
 void panel_spi_cmd_wr(u8 cmd);
 #ifndef AIC_SPI_EMULATION_WITH_DC
@@ -138,12 +142,17 @@ void panel_spi_device_emulation(char *cs, char *sdi, char *scl);
 void panel_spi_device_emulation(char *cs, char *sdi, char *scl, char *dc);
 #endif
 
-#define panel_spi_send_seq(command, seq...) do {                    \
+#define spi_init_seq_single(command, seq...) do {                    \
         static const u8 d[] = { seq };                              \
         int i;                                                      \
         panel_spi_cmd_wr(command);                                  \
         for (i = 0; i < ARRAY_SIZE(d); i++)                         \
             panel_spi_data_wr(d[i]);                                \
+    } while (0)
+
+#define spi_init_seq_multi(seq...) do {                                 \
+        static const u8 d[] = { seq };                              \
+        panel_spi_write_multi(d, ARRAY_SIZE(d));                      \
     } while (0)
 #endif
 
