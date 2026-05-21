@@ -114,6 +114,8 @@ static rt_err_t gt911_get_info(struct rt_i2c_client *dev, struct rt_touch_device
     info->range_x = (out_info[2] << 8) | out_info[1];
     info->range_y = (out_info[4] << 8) | out_info[3];
     info->point_num = out_info[5] & 0x0f;
+    if (info->point_num > GT911_MAX_TOUCH)
+        info->point_num = GT911_MAX_TOUCH;
 
     // rt_device_control((rt_device_t)touch, RT_TOUCH_CTRL_GET_DYNAMIC_ROTATE, &angle);
     // if (angle == 90 || angle == 270) {

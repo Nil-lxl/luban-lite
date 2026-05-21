@@ -179,6 +179,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_RGB_H070A18
     &rgb_h070a18,
 #endif
+#ifdef AIC_PANEL_RGB_H090A02
+    &rgb_h090a02,
+#endif
 #ifdef AIC_PANEL_RGB_ST7102
     &rgb_st7102,
 #endif

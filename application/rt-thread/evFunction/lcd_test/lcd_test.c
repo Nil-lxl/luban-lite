@@ -403,6 +403,10 @@ static void lcd_fill_color(int start_color, int end_color, int is_gradient) {
 
     mpp_ge_fillrect(ge, &fill);
     lcd_ge_flush();
+
+    /* 释放ge和fb资源,避免内存泄漏导致系统崩溃 */
+    mpp_ge_close(ge);
+    mpp_fb_close(fb);
 }
 
 /**
@@ -431,6 +435,10 @@ static void lcd_fill_border(int bg_color, int border_color, int border_width) {
     lcd_fill_rect(border_color, 0, height - border_width, width, border_width);
 
     lcd_ge_flush();
+
+    /* 释放ge和fb资源,避免内存泄漏导致系统崩溃 */
+    mpp_ge_close(ge);
+    mpp_fb_close(fb);
 }
 const uint32_t gray_color[16] = {
     0x000000, 0x101010, 0x202020, 0x303030,
@@ -459,6 +467,10 @@ static void lcd_fill_gray_level(int level) {
         }
     }
     lcd_ge_flush();
+
+    /* 释放ge和fb资源,避免内存泄漏导致系统崩溃 */
+    mpp_ge_close(ge);
+    mpp_fb_close(fb);
 
 }
 
@@ -495,10 +507,10 @@ static const lcd_test_item_t test_items[] = {
     {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
     {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           1000, true},
     // {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           1000, true},
-    {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               2000, true},
-    // {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/img1.png", 2000, true},
-    // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/img2.png", 2000, true},
-    // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/img3.png", 2000, true},
+    {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
+    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit1024x600.jpg", 1000, true},
+    // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/img1024x600_1.jpg", 200, true},
+    // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit480x800.jpg", 1000, true},
     // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/img4.png", 2000, true},
     // {"图片5",      decode_img,          .param.img_path = "rodata/lcd_test/image/img5.png", 2000, true},
     // {"图片6",      decode_img,          .param.img_path = "rodata/lcd_test/image/img6.png", 2000, true},
@@ -515,7 +527,6 @@ static rt_thread_t lcd_test_thread = RT_NULL;
 
 /* LCD测试线程入口 */
 static void lcd_test_entry(void *param) {
-    lcd_ge_begin();
 
     while (1) {
         for (int i = 0;i < sizeof(test_items) / sizeof(test_items[0]);i++) {
@@ -535,7 +546,7 @@ int brightness = 20;
 
 /* 启动LCD测试线程,主函数调用 */
 void lcd_test_start(void) {
-    lcd_test_thread = rt_thread_create("display_test", lcd_test_entry, NULL, 8 * 1024, 25, 5);
+    lcd_test_thread = rt_thread_create("display_test", lcd_test_entry, NULL, 8 * 1024, 21, 5);
     if (lcd_test_thread != RT_NULL) {
         rt_thread_startup(lcd_test_thread);
     }
