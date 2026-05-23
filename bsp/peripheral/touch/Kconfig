@@ -39,17 +39,14 @@ choice
     config AIC_TOUCH_PANEL_GT911
         bool "GT911"
 
-    config AIC_TOUCH_PANEL_ILI2511
-        bool "ILI2511"
-
     config AIC_TOUCH_PANEL_ILI21XX
         bool "ILI21XX"
 
     config AIC_TOUCH_PANEL_ILI23XX
         bool "ILI23XX"
-
-    config AIC_TOUCH_PANEL_ILI2117
-        bool "ILI2117"
+    
+    config AIC_TOUCH_PANEL_ILI2511
+        bool "ILI2511"
 
     config AIC_TOUCH_PANEL_JD9366
         bool "JD9366"
@@ -212,10 +209,9 @@ config AIC_TOUCH_PANEL_NAME
     default "gsl1680"   if AIC_TOUCH_PANEL_GSL1680
     default "gsl3676"   if AIC_TOUCH_PANEL_GSL3676
     default "gt911"     if AIC_TOUCH_PANEL_GT911
-    default "ili2511"   if AIC_TOUCH_PANEL_ILI2511
     default "ili21xx"   if AIC_TOUCH_PANEL_ILI21XX
-    default "ili2117"   if AIC_TOUCH_PANEL_ILI2117
     default "ili23xx"   if AIC_TOUCH_PANEL_ILI23XX
+    default "ili2511"   if AIC_TOUCH_PANEL_ILI2511
     default "jd9366"    if AIC_TOUCH_PANEL_JD9366
     default "st16xx"    if AIC_TOUCH_PANEL_ST16XX
     default "st77922"   if AIC_TOUCH_PANEL_ST77922

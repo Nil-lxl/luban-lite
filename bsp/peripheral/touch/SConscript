@@ -55,15 +55,15 @@ if GetDepend('AIC_TOUCH_PANEL_C145HAX01'):
     CPPPATH.append(cwd + '/c145hax01/inc')
     src += Glob('c145hax01/src/*.c')
 
-if GetDepend('AIC_TOUCH_PANEL_ILI2511'):
-    CPPPATH.append(cwd + '/ili2511/inc')
-    src += Glob('ili2511/src/*.c')
-
 if GetDepend('AIC_TOUCH_PANEL_ILI21XX'):
-    CPPPATH.append(cwd + '/ili2511/inc')
-    src += Glob('ili2511/src/*.c')
+    CPPPATH.append(cwd + '/ili21xx/inc')
+    src += Glob('ili21xx/src/*.c')
 
 if GetDepend('AIC_TOUCH_PANEL_ILI23XX'):
+    CPPPATH.append(cwd + '/ili2511/inc')
+    src += Glob('ili2511/src/*.c')
+
+if GetDepend('AIC_TOUCH_PANEL_ILI2511'):
     CPPPATH.append(cwd + '/ili2511/inc')
     src += Glob('ili2511/src/*.c')
 
