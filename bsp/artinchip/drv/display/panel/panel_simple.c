@@ -108,17 +108,17 @@ static struct display_timing timing_800_480 = {
 };
 
 static struct display_timing timing_h050a21 = {
-    .pixelclock   = 25 * 1000 * 1000,
+    .pixelclock   = 30 * 1000 * 1000,
 
     .hactive      = 800,
-    .hback_porch  = 8,
-    .hfront_porch = 8,
-    .hsync_len    = 4,
+    .hback_porch  = 80,
+    .hfront_porch = 90,
+    .hsync_len    = 20,
 
     .vactive      = 480,
-    .vback_porch  = 16,
-    .vfront_porch = 16,
-    .vsync_len    = 4,
+    .vback_porch  = 8,
+    .vfront_porch = 20,
+    .vsync_len    = 8,
 
     .flags        = AIC_DISPLAY_FLAGS,
 };

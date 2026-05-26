@@ -47,3 +47,5 @@ static void pause_key_config(void);
 
 static void pause_key_input_irq_handler(void *args);
 
+int lcd_ge_begin(void);
+

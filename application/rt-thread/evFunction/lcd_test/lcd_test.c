@@ -18,8 +18,9 @@
 #include "mpp_ge.h"
 
 #include "lcd_test.h"
+#include "touch_test.h"
 
-static struct aicfb_screeninfo g_screen_info = { 0 };
+struct aicfb_screeninfo screen_info;
 
 static int get_file_size(int fd, char *path) {
     struct stat st;
@@ -71,21 +72,21 @@ static struct aicfb_screeninfo *get_screen_info(void) {
     struct mpp_fb *fb = NULL;
     int ret;
 
-    if (g_screen_info.width)
-        return &g_screen_info;
+    if (screen_info.width)
+        return &screen_info;
 
     fb = mpp_fb_open();
     if (!fb)
         return NULL;
 
-    ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &g_screen_info);
+    ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &screen_info);
     if (ret) {
         loge("get screen info failed\n");
         return NULL;
     }
 
     mpp_fb_close(fb);
-    return &g_screen_info;
+    return &screen_info;
 }
 
 static void ui_layer_buf_sync(void) {
@@ -201,6 +202,48 @@ static void render_frame(struct mpp_fb *fb, struct mpp_frame *frame,
 #endif
 }
 
+#define APP_FB_NUM      2   /* 定义双fb缓冲区 */
+
+static struct mpp_fb *fb = NULL;
+static struct mpp_ge *ge = NULL;
+static int buf_index = 1;
+static unsigned int framebuf[2] = { 0 };
+
+int lcd_ge_begin(void) {
+    fb = mpp_fb_open();
+
+    int ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &screen_info);
+    if (ret) {
+        LOG_E("get screen info failed\n");
+        return RT_ERROR;
+    }
+    framebuf[0] = (unsigned long)screen_info.framebuffer;
+    framebuf[1] = framebuf[0] + screen_info.smem_len;
+
+    ge = mpp_ge_open();
+    if (!ge) {
+        LOG_E("GE open fail\n");
+        return RT_ERROR;
+    }
+    buf_index = !buf_index;
+    return 0;
+}
+
+static void lcd_ge_flush(void) {
+    mpp_ge_emit(ge);
+    mpp_ge_sync(ge);
+    if (APP_FB_NUM > 1) {
+        int ret = mpp_fb_ioctl(fb, AICFB_PAN_DISPLAY, &buf_index);
+        if (ret == 0) {
+            mpp_fb_ioctl(fb, AICFB_WAIT_FOR_VSYNC, &buf_index);
+            if (ret < 0)
+                LOG_E("wait for sync error\n");
+        } else {
+            LOG_E("pan display fail\n");
+        }
+    }
+}
+
 static void lcd_decode_img_path(char *file_path) {
     int type;
     char *ptr = strrchr(file_path, '.');
@@ -215,8 +258,7 @@ static void lcd_decode_img_path(char *file_path) {
         type = MPP_CODEC_VIDEO_DECODER_AICP;
     }
 
-    struct mpp_fb *fb = NULL;
-    fb = mpp_fb_open();
+    lcd_ge_begin();
 
     int input_fd = open(file_path, O_RDONLY);
     int file_len = get_file_size(input_fd, file_path);
@@ -267,7 +309,7 @@ static void lcd_decode_img_path(char *file_path) {
     int ret = mpp_decoder_decode(decoder);
     if (ret < 0) {
         LOG_E("decode error");
-        goto _exit;
+        return;
     }
 
     /* 7. 获取解码后视频帧数据 */
@@ -281,59 +323,16 @@ static void lcd_decode_img_path(char *file_path) {
     /* 9. 归还该视频帧 */
     mpp_decoder_put_frame(decoder, &frame);
 
-_exit:
-
     /* 10. 销毁 mpp_decoder */
     mpp_decoder_destory(decoder);
 
-    if (fb)
-        mpp_fb_close(fb);
+    /* 释放ge和fb资源,避免内存泄漏导致系统崩溃 */
+    mpp_ge_close(ge);
+    mpp_fb_close(fb);
 
     if (input_fd > 0)
         close(input_fd);
 
-}
-
-#define APP_FB_NUM      2   /* 定义双fb缓冲区 */
-
-static struct mpp_ge *ge = NULL;
-static struct mpp_fb *fb = NULL;
-static int buf_index = 1;
-static unsigned int framebuf[2] = { 0 };
-
-static int lcd_ge_begin(void) {
-    fb = mpp_fb_open();
-
-    int ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &g_screen_info);
-    if (ret) {
-        LOG_E("get screen info failed\n");
-        return RT_ERROR;
-    }
-    framebuf[0] = (unsigned long)g_screen_info.framebuffer;
-    framebuf[1] = framebuf[0] + g_screen_info.smem_len;
-
-    ge = mpp_ge_open();
-    if (!ge) {
-        LOG_E("GE open fail\n");
-        return RT_ERROR;
-    }
-    buf_index = !buf_index;
-    return 0;
-}
-
-static void lcd_ge_flush(void) {
-    mpp_ge_emit(ge);
-    mpp_ge_sync(ge);
-    if (APP_FB_NUM > 1) {
-        int ret = mpp_fb_ioctl(fb, AICFB_PAN_DISPLAY, &buf_index);
-        if (ret == 0) {
-            mpp_fb_ioctl(fb, AICFB_WAIT_FOR_VSYNC, &buf_index);
-            if (ret < 0)
-                LOG_E("wait for sync error\n");
-        } else {
-            LOG_E("pan display fail\n");
-        }
-    }
 }
 
 /**
@@ -353,11 +352,11 @@ static void lcd_fill_rect(uint32_t color, int x, int y, int w, int h) {
     fill.end_color = 0;
     fill.dst_buf.buf_type = MPP_PHY_ADDR;
     fill.dst_buf.phy_addr[0] = framebuf[buf_index];
-    fill.dst_buf.stride[0] = g_screen_info.stride;
+    fill.dst_buf.stride[0] = screen_info.stride;
 
-    fill.dst_buf.size.width = g_screen_info.width;
-    fill.dst_buf.size.height = g_screen_info.height;
-    fill.dst_buf.format = g_screen_info.format;
+    fill.dst_buf.size.width = screen_info.width;
+    fill.dst_buf.size.height = screen_info.height;
+    fill.dst_buf.format = screen_info.format;
     fill.ctrl.flags = 0;
     fill.ctrl.alpha_en = 0;
 
@@ -381,7 +380,6 @@ static void lcd_fill_color(int start_color, int end_color, int is_gradient) {
     if (lcd_ge_begin()) {
         return;
     }
-
     struct ge_fillrect fill;
     memset(&fill, 0, sizeof(struct ge_fillrect));
 
@@ -391,11 +389,11 @@ static void lcd_fill_color(int start_color, int end_color, int is_gradient) {
     fill.dst_buf.buf_type = MPP_PHY_ADDR;
 
     fill.dst_buf.phy_addr[0] = framebuf[buf_index];
-    fill.dst_buf.stride[0] = g_screen_info.stride;
+    fill.dst_buf.stride[0] = screen_info.stride;
 
-    fill.dst_buf.size.width = g_screen_info.width;
-    fill.dst_buf.size.height = g_screen_info.height;
-    fill.dst_buf.format = g_screen_info.format;
+    fill.dst_buf.size.width = screen_info.width;
+    fill.dst_buf.size.height = screen_info.height;
+    fill.dst_buf.format = screen_info.format;
 
     fill.ctrl.flags = 0;
     fill.ctrl.alpha_en = 0;
@@ -419,9 +417,8 @@ static void lcd_fill_border(int bg_color, int border_color, int border_width) {
     if (lcd_ge_begin()) {
         return;
     }
-
-    int width = g_screen_info.width;
-    int height = g_screen_info.height;
+    int width = screen_info.width;
+    int height = screen_info.height;
 
     /* 设置背景颜色 */
     lcd_fill_rect(bg_color, 0, 0, width, height);
@@ -456,8 +453,8 @@ static void lcd_fill_gray_level(int level) {
         return;
     }
 
-    int width = g_screen_info.width;
-    int height = g_screen_info.height;
+    int width = screen_info.width;
+    int height = screen_info.height;
 
     for (int i = 0;i < level;i++) {
         if (width > height) {   //横屏
@@ -488,6 +485,10 @@ static void decode_img(lcd_test_param_t param) {
 static void fill_gray_level(lcd_test_param_t param) {
     lcd_fill_gray_level(param.gray_level_num);
 }
+static void touchscreen_test(lcd_test_param_t param) {
+    lcd_ge_begin();
+    TouchScreen_Test(buf_index);
+}
 
 /**
  * @brief LCD测试项数组,每个测试项包含名称、测试函数、参数、延时和是否启用
@@ -500,16 +501,16 @@ static void fill_gray_level(lcd_test_param_t param) {
  *       img_path(图片路径)，gray_level_num(灰阶级数)
  */
 static const lcd_test_item_t test_items[] = {
-    {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      1000, true},
-    {"红色",       fill_color,          .param.color = { RED, 0, 0 },             1000, true},
-    {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           1000, true},
-    {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            1000, true},
-    {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
-    {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           1000, true},
+    {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      500, true},
+    {"红色",       fill_color,          .param.color = { RED, 0, 0 },             500, true},
+    {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           500, true},
+    {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            500, true},
+    // {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          500, true},
+    // {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           500, true},
     // {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           1000, true},
-    {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
-    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit1024x600.jpg", 1000, true},
-    // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/img1024x600_1.jpg", 200, true},
+    {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               500, true},
+    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit1024x600.jpg", 500, true},
+    // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit400x1280.jpg", 1000, true},
     // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit480x800.jpg", 1000, true},
     // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/img4.png", 2000, true},
     // {"图片5",      decode_img,          .param.img_path = "rodata/lcd_test/image/img5.png", 2000, true},
@@ -519,7 +520,8 @@ static const lcd_test_item_t test_items[] = {
     // {"图片9",      decode_img,          .param.img_path = "rodata/lcd_test/image/img9.png", 2000, true},
     // {"图片10",     decode_img,          .param.img_path = "rodata/lcd_test/image/Image10.jpg", 1500, true},
     // {"图片11",     decode_img,          .param.img_path = "rodata/lcd_test/image/Image11.jpg", 1500, true},
-    // {"图片12",     decode_img,          .param.img_path = "rodata/lcd_test/image/Image12.jpg", 1500, true},
+
+    {"触摸测试",      touchscreen_test,    .param = {0},                             10000, true},
 
 };
 
@@ -531,9 +533,16 @@ static void lcd_test_entry(void *param) {
     while (1) {
         for (int i = 0;i < sizeof(test_items) / sizeof(test_items[0]);i++) {
             if (test_items[i].enabled) {
+                if (test_items[i].func == touchscreen_test) {
+                    test_items[i].func(test_items[i].param);
+                    // 触摸测试项执行一次后退出循环，避免重复创建触摸测试线程
+                    LOG_I("Touchscreen test executed, exiting test loop");
+                    return;
+                }
                 test_items[i].func(test_items[i].param);
                 aic_mdelay(test_items[i].delay_ms);
             }
+
         }
     }
 
@@ -551,7 +560,7 @@ void lcd_test_start(void) {
         rt_thread_startup(lcd_test_thread);
     }
 
-    // pause_key_config();
+    pause_key_config();
     // pwm_dev = (struct rt_device_pwm *)rt_device_find("pwm");
 }
 

@@ -4,25 +4,11 @@
 #include "aic_core.h"
 #include "mpp_fb.h"
 
-#include "draw_panel.h"
+#include "touch_test.h"
+#include "lcd_test.h"
 
+#define LOG_TAG "Touch_Test"
 
-#define LOG_TAG "Draw_Panel"
-
-#define UI_BG_COLOR         0x18a000a8
-#define UI_FG_CTRL          0x18a000b0
-#define DE_CONFIG_UPDATE    0x18a00008
-
-#define BG_BLUE_MASK        GENMASK(7, 0)
-#define BG_GREEN_MASK       GENMASK(15, 8)
-#define BG_RED_MASK         GENMASK(23, 16)
-
-#define PIXELS_BLUE(x)      (((x) & 0xff) << 0)
-#define PIXELS_GREEN(x)     (((x) & 0xff) << 8)
-#define PIXELS_RED(x)       (((x) & 0xff) << 16)
-
-static rt_thread_t draw_thread = RT_NULL;
-static rt_thread_t touch_read_thread = RT_NULL;
 static rt_sem_t touch_sem;
 static rt_device_t touch_device;
 
@@ -30,9 +16,7 @@ static struct rt_touch_info touch_info;
 static struct rt_touch_data *touch_data;
 static struct rt_touch_data *prev_data;
 
-static struct mpp_fb *fb = RT_NULL;
-static struct aicfb_screeninfo screen_info;
-
+extern struct aicfb_screeninfo screen_info;
 
 static rt_err_t rx_callback(rt_device_t dev, rt_size_t size) {
     rt_sem_release(touch_sem);
@@ -40,86 +24,7 @@ static rt_err_t rx_callback(rt_device_t dev, rt_size_t size) {
     return 0;
 }
 
-static void open_panel(void) {
-    int ret = 0;
-    fb = mpp_fb_open();
-    if (!fb) {
-        LOG_E("mpp_fb open error!\n");
-        return -1;
-    }
-    ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &screen_info);
-    if (ret < 0) {
-        LOG_E("mpp fb ioctl failed!error:%d\n", ret);
-        return -1;
-    }
-    // memset(screen_info.framebuffer, 0, screen_info.height * screen_info.stride);
-    LOG_I("Screen width: %d, height: %d\n", screen_info.width, screen_info.height);
-
-}
-static void bg_update_bits(unsigned int mask, unsigned int value) {
-    void *base = (void *)UI_BG_COLOR;
-    void *update = (void *)DE_CONFIG_UPDATE;
-    unsigned int tmp, orig;
-
-    orig = readl(base);
-
-    tmp = orig & ~mask;
-    tmp |= value & mask;
-
-    writel(tmp, base);
-    writel(1, update);
-}
-static void fg_color_disable(void) {
-    void *base = (void *)UI_FG_CTRL;
-    void *update = (void *)DE_CONFIG_UPDATE;
-
-    writel(0, base);
-    writel(1, update);
-}
-static void set_bg_color(void) {
-    struct aicfb_layer_data layer = { 0 };
-
-    bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
-    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(0));
-    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
-    fg_color_disable();
-    aic_mdelay(500);
-
-    bg_update_bits(BG_RED_MASK, PIXELS_RED(0));
-    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
-    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
-    aic_mdelay(500);
-
-    bg_update_bits(BG_RED_MASK, PIXELS_RED(0));
-    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(0));
-    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(255));
-    aic_mdelay(500);
-
-    bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
-    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
-    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(0));
-    aic_mdelay(500);
-
-    bg_update_bits(BG_RED_MASK, PIXELS_RED(204));
-    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(108));
-    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(231));
-    aic_mdelay(500);
-
-    bg_update_bits(BG_RED_MASK, PIXELS_RED(255));
-    bg_update_bits(BG_GREEN_MASK, PIXELS_GREEN(255));
-    bg_update_bits(BG_BLUE_MASK, PIXELS_BLUE(255));
-    aic_mdelay(500);
-
-    /* enable fg color */
-    layer.layer_id = AICFB_LAYER_TYPE_UI;
-    layer.rect_id = 0;
-    mpp_fb_ioctl(fb, AICFB_GET_LAYER_CONFIG, &layer);
-
-    layer.enable = 1;
-    mpp_fb_ioctl(fb, AICFB_UPDATE_LAYER_CONFIG, &layer);
-
-}
-void touch_init(void) {
+void TouchScreen_Init(void) {
     touch_device = rt_device_find(AIC_TOUCH_PANEL_NAME);
     if (touch_device != RT_NULL) {
         LOG_I("found touch device %s", AIC_TOUCH_PANEL_NAME);
@@ -152,33 +57,44 @@ void touch_init(void) {
 
 }
 
-void touch_draw(void *param) {
-    touch_init();   /* 初始化触摸设备 */
+void TouchTest_Thread(void *buf_index) {
+    static unsigned char *framebuf = RT_NULL;
+    TouchScreen_Init();   /* 初始化触摸设备 */
     rt_device_control(touch_device, RT_TOUCH_CTRL_ENABLE_INT, &touch_info); /* 使能触摸设备中断 */
 
     /* 获取屏幕信息并初始化帧缓冲区信息结构体 */
-    struct frame_buffer_info fb_info = {
-        .frame_buffer_format = screen_info.format,
-        .frame_buffer_width = screen_info.width,
-        .frame_buffer_height = screen_info.height,
-        .frame_buffer = (uint8_t *)screen_info.framebuffer,
-    };
+    struct frame_buffer_info fb_info = { 0 };
 
-    /* 初始化屏幕为白色 */
-    char *fb_buf = (char *)screen_info.framebuffer;
-    if (fb_buf == NULL) {
+    fb_info.frame_buffer_format = screen_info.format;
+    fb_info.frame_buffer_width = screen_info.width;
+    fb_info.frame_buffer_height = screen_info.height;
+
+    if (buf_index == 0) {
+        framebuf = (unsigned long)screen_info.framebuffer + screen_info.smem_len;
+        fb_info.frame_buffer = (uint8_t *)(screen_info.framebuffer + screen_info.smem_len);
+
+    } else if (buf_index == 1) {
+        framebuf = (unsigned long)screen_info.framebuffer;
+        fb_info.frame_buffer = (uint8_t *)screen_info.framebuffer;
+    }
+
+    LOG_I("buf_index:%d", buf_index);
+
+    if (framebuf == NULL) {
         pr_err("Invalid framebuffer\n");
         return -1;
     }
-    memset(fb_buf, 0, screen_info.smem_len);
+    memset(framebuf, 0, screen_info.smem_len);
+
     int pixel_size = screen_info.bits_per_pixel >> 3;
     int color = 0xFFFFFF;
 
+    /* 初始化屏幕为白色 */
     for (int i = 0;i < screen_info.height;i++) {
-        memset(fb_buf, color, screen_info.width * pixel_size);
-        fb_buf += screen_info.stride;
+        memset(framebuf, color, screen_info.width * pixel_size);
+        framebuf += screen_info.stride;
     }
-    aicos_dcache_clean_range(fb_buf, screen_info.smem_len);
+    aicos_dcache_clean_range(framebuf, screen_info.smem_len);
 
     printf("Framebuf: size %d, width %d, height %d, bits per pixel %d\n", screen_info.smem_len, screen_info.width, screen_info.height, screen_info.bits_per_pixel);
 
@@ -223,7 +139,7 @@ void touch_draw(void *param) {
         draw_line(&border[i], &fb_info);
     }
 #endif
-    aicos_dcache_clean_range((unsigned long *)screen_info.framebuffer, screen_info.smem_len);
+    // aicos_dcache_clean_range(framebuf, screen_info.smem_len);
 
     prev_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * touch_info.point_num);
     touch_data = (struct rt_touch_data *)rt_malloc(sizeof(struct rt_touch_data) * touch_info.point_num);
@@ -291,7 +207,13 @@ void touch_draw(void *param) {
                     // LOG_I("point %d up", touch_data[i].track_id);
                 }
             }
-            aicos_dcache_clean_range((unsigned long *)screen_info.framebuffer, screen_info.smem_len);
+
+            if (buf_index == 0) {
+                aicos_dcache_clean_range(framebuf - screen_info.smem_len, screen_info.smem_len);
+            } else if (buf_index == 1) {
+                aicos_dcache_clean_range((unsigned long *)screen_info.framebuffer, screen_info.smem_len);
+            }
+            LOG_D("framebuf[%d],addr=%x info.framebuf=%x", buf_index, framebuf, screen_info.framebuffer);
             /* 获取上一次的触摸数据 */
             rt_memcpy(prev_data, touch_data, sizeof(struct rt_touch_data) * touch_info.point_num);
         }
@@ -300,19 +222,11 @@ void touch_draw(void *param) {
     }
 }
 
-void panel_draw_start() {
+static rt_thread_t touch_test_thread = RT_NULL;
 
-    open_panel();
-
-    set_bg_color();
-
-    touch_read_thread = rt_thread_create("fb_touch_draw", touch_draw, RT_NULL, 4 * 1024, 20, 10);
-    if (touch_read_thread != RT_NULL) {
-        rt_thread_startup(touch_read_thread);
+void TouchScreen_Test(int buf_index) {
+    touch_test_thread = rt_thread_create("touch_test", TouchTest_Thread, (void *)buf_index, 4096, 20, 10);
+    if (touch_test_thread != RT_NULL) {
+        rt_thread_startup(touch_test_thread);
     }
-
 }
-
-MSH_CMD_EXPORT(panel_draw_start, touch draw panel);
-
-

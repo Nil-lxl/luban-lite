@@ -129,7 +129,6 @@ static rt_size_t ili21xx_read_point(struct rt_touch_device *touch, void *buf, rt
             //     continue;
 
             if (touch_point[i].status) {
-                // LOG_I("id:%d, status:%d, x:%d, y:%d", touch_point[i].id, touch_point[i].status, touch_point[i].touch_x, touch_point[i].touch_y);
                 ili21xx_touch_down(buf, touch_point[i].id, touch_point[i].touch_x, touch_point[i].touch_y);
             } else {
                 ili21xx_touch_up(buf, touch_point[i].id);

@@ -1,7 +1,6 @@
 #pragma once
 
-struct frame_buffer_info
-{
+struct frame_buffer_info {
     int frame_buffer_format;
     int frame_buffer_width;
     int frame_buffer_height;
@@ -17,6 +16,4 @@ struct line_dsc {
     int width;
 };
 
-static void open_panel(void);
-
-void panel_draw_start(void);
+void TouchScreen_Test(int buf_index);
