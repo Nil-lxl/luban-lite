@@ -501,15 +501,15 @@ static void touchscreen_test(lcd_test_param_t param) {
  *       img_path(图片路径)，gray_level_num(灰阶级数)
  */
 static const lcd_test_item_t test_items[] = {
-    {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      500, true},
-    {"红色",       fill_color,          .param.color = { RED, 0, 0 },             500, true},
-    {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           500, true},
-    {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            500, true},
-    // {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          500, true},
+    {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      1000, true},
+    {"红色",       fill_color,          .param.color = { RED, 0, 0 },             1000, true},
+    {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           1000, true},
+    {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            1000, true},
+    {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
     // {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           500, true},
     // {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           1000, true},
-    {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               500, true},
-    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit1024x600.jpg", 500, true},
+    // {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
+    // {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit1024x600.jpg", 1000, true},
     // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit400x1280.jpg", 1000, true},
     // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/fruit480x800.jpg", 1000, true},
     // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/img4.png", 2000, true},
@@ -521,7 +521,7 @@ static const lcd_test_item_t test_items[] = {
     // {"图片10",     decode_img,          .param.img_path = "rodata/lcd_test/image/Image10.jpg", 1500, true},
     // {"图片11",     decode_img,          .param.img_path = "rodata/lcd_test/image/Image11.jpg", 1500, true},
 
-    {"触摸测试",      touchscreen_test,    .param = {0},                             10000, true},
+    // {"触摸测试",      touchscreen_test,    .param = {0},                             10000, true},
 
 };
 
@@ -555,7 +555,7 @@ int brightness = 20;
 
 /* 启动LCD测试线程,主函数调用 */
 void lcd_test_start(void) {
-    lcd_test_thread = rt_thread_create("display_test", lcd_test_entry, NULL, 8 * 1024, 21, 5);
+    lcd_test_thread = rt_thread_create("display_test", lcd_test_entry, NULL, 8 * 1024, 25, 5);
     if (lcd_test_thread != RT_NULL) {
         rt_thread_startup(lcd_test_thread);
     }

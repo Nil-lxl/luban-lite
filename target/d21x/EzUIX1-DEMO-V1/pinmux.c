@@ -38,9 +38,11 @@ struct aic_pinmux aic_pinmux_config[] = {
 
 #ifdef AIC_USING_UART7
     /* BT_uart7 */
-    {5, PIN_PULL_DIS, 3, "PF.6"},
-    {5, PIN_PULL_UP, 3, "PF.7"},
-    {1, PIN_PULL_DIS, 3, "PB.11"},   //BT POWER ON
+    {5, PIN_PULL_DIS, 3, "PF.6"},       //TX
+    {5, PIN_PULL_UP, 3, "PF.7"},        //RX
+    {5, PIN_PULL_DIS, 3, "PF.8"},       //RTS
+    {5, PIN_PULL_DIS, 3, "PF.9"},       //CTS
+    {1, PIN_PULL_DIS, 3, "PB.11"},      //BT POWER ON
 #endif
 
 #ifdef AIC_USING_SDMC1
