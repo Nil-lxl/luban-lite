@@ -227,15 +227,15 @@ static struct aic_panel_funcs panel_funcs = {
 };
 
 static struct display_timing h103w01_timing = {
-    .pixelclock = 56 * 1000 * 1000,
+    .pixelclock = 72 * 1000 * 1000,
     .hactive = 540,
-    .hfront_porch = 46,
-    .hback_porch = 36,
-    .hsync_len = 10,
+    .hfront_porch = 160,
+    .hback_porch = 60,
+    .hsync_len = 40,
     .vactive = 1440,
-    .vfront_porch = 16,
-    .vback_porch = 12,
-    .vsync_len = 4,
+    .vfront_porch = 40,
+    .vback_porch = 10,
+    .vsync_len = 2,
 };
 
 struct panel_dsi dsi = {
