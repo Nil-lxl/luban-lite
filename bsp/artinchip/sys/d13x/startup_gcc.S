@@ -152,6 +152,11 @@ save_boot_params_ret:
     la      a5, dcache_enable
     jalr    a5
 
+#ifdef AIC_EARLY_DEBUG
+    la      a5, early_debug_init
+    jalr    a5
+#endif
+
 #ifndef QEMU_RUN
 
 #ifdef AIC_TCM_EN

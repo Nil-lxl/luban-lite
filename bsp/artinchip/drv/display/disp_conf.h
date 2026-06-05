@@ -131,6 +131,9 @@
 /* mipi-dsi dcs get display id from screen when panel enable */
 #define DCS_GET_DISPLAY_ID  0
 
+/* get panel match id to switch screen */
+#define AICFB_GET_PANEL_MATCH_ID  0
+
 /**
  * FB ROTATION options
  */

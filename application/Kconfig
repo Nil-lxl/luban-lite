@@ -258,7 +258,7 @@ menuconfig AIC_LVGL_DEMO
 if AIC_LVGL_DEMO
 choice
     prompt "select LVGL demo"
-    default AIC_LVGL_BASE_DEMO
+    default AIC_LVGL_METER_DEMO
     depends on AIC_LVGL_DEMO
 
 config AIC_LVGL_UI_BUILDER
@@ -299,9 +299,6 @@ if AIC_WIDGETS_DEMO
     endchoice
 endif
 
-config AIC_LVGL_BASE_DEMO
-    bool "LVGL demo with basic function"
-
 config AIC_LVGL_DM_DAEMON
     bool "LVGL demo with dm daemon function"
 
@@ -313,33 +310,18 @@ config AIC_LVGL_DEMO_HUB_DEMO
     help
     "At present, only 1024x600, 480x272 resoulution in supported, and different resources are used for different resolutions"
 
-config AIC_LLM_DEMO
-    bool "LVGL aic llm demo"
-
-config AIC_LVGL_LAUNCHER_DEMO
-    bool "LVGL launcher demo"
-
 config AIC_LVGL_DASHBOARD_DEMO
     bool "LVGL dashboard demo"
 
 config AIC_LVGL_SERIAL_DEMO
     bool "LVGL serial demo"
 
-config AIC_LVGL_ELEVATOR_DEMO
-    bool "LVGL elevator demo"
-
 config AIC_LVGL_SLIDE_DEMO
     bool "LVGL sliding demo"
-
-config AIC_LVGL_INPUT_TEST_DEMO
-    bool "LVGL input test demo"
 
 config AIC_LVGL_MUSIC_DEMO
     bool "LVGL music demos"
     select LPKG_LVGL_USING_DEMOS
-
-config AIC_LVGL_RTP_RECALIBRATE_DEMO
-    bool "LVGL rtp recalibrate demo"
 
 config AIC_LVGL_DEMO_WIDGETS
     bool "LVGL demo widgets"

@@ -274,7 +274,7 @@ fi
 echo
 if [ $INSTALL_RESULT -ne $FALSE ]; then
 	pr_info "Congratulations! All the package is ready."
-	pr_info "Enjoy the ${SDK_NAME}OS!"
+	pr_info "Enjoy the ${SDK_NAME} SDK!"
 	exit 0
 else
 	pr_warn "The install process is not complete. Please check it!"

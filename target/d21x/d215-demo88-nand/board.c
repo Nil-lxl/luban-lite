@@ -6,6 +6,7 @@
  * Authors: weilin.peng@artinchip.com
  */
 #include <aic_core.h>
+#include <ram_param.h>
 #include "board.h"
 
 extern void aic_board_pinmux_init(void);
@@ -98,6 +99,15 @@ void aic_memheap_free(int type, void *rmem)
     /* Exit critical zone */
     rt_mutex_release(&aic_memheaps[i].lock);
 }
+
+u32 aic_get_sys_heap_size(void)
+{
+#if AIC_DRAM_TOTAL_SIZE
+    if (aic_get_ram_size() > AIC_DRAM_TOTAL_SIZE)
+        return aic_get_ram_size() - AIC_DRAM_TOTAL_SIZE;
+#endif
+    return 0;
+}
 #endif
 
 /**
@@ -106,7 +116,7 @@ void aic_memheap_free(int type, void *rmem)
 void rt_hw_board_init(void)
 {
 #ifdef RT_USING_HEAP
-    rt_system_heap_init((void *)&__heap_start, (void *)&__heap_end);
+    rt_system_heap_init((void *)&__heap_start, (void *)&__heap_end + aic_get_sys_heap_size());
 #if (!defined(QEMU_RUN) && defined(RT_USING_MEMHEAP))
     aic_memheap_init();
 #endif

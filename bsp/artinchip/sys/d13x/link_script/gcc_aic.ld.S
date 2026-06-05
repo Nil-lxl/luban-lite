@@ -41,29 +41,13 @@
 0x40000000+----------+
           |          |
           |  PSRAM   |
-          |  4M/8M   |
-          |          |
-          |          |
-          +----------+
-          |          |
-          | FPGA Ext |
-          |  PSRAM   |
-          | 64M-psram|
-          |     size |
-          |          |
-          |          |
-          |          |
-          |          |
+          |4M/8M/32M |
           |          |
           |          |
 0x43FFFFFF+----------+
  */
 
 #include "rtconfig.h"
-
-#ifdef CONFIG_ENABLE_ROM_API
-INCLUDE rom_api.lds
-#endif
 
 #ifndef AIC_BOOTLOADER_RESERVE_SIZE
     #define AIC_BOOTLOADER_RESERVE_SIZE 0x40000
@@ -86,19 +70,16 @@ MEMORY
 #ifdef AIC_TCM_EN
     ITCM        : ORIGIN = 0x30040000                                             , LENGTH = AIC_ITCM_SIZE
     DTCM        : ORIGIN = 0x30040000 + AIC_ITCM_SIZE                             , LENGTH = AIC_DTCM_SIZE
-    SRAM_S0     : ORIGIN = 0x30040000 + AIC_ITCM_SIZE + AIC_DTCM_SIZE             , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE - AIC_ITCM_SIZE - AIC_DTCM_SIZE - AIC_PM_SRAM_RESERVE_SIZE
+    SRAM_S0     : ORIGIN = 0x30040000 + AIC_ITCM_SIZE + AIC_DTCM_SIZE             , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE - AIC_ITCM_SIZE - AIC_DTCM_SIZE
 #else
-    SRAM_S0     : ORIGIN = 0x30040000 + AIC_XIP_RAMCODE_SIZE                      , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE - AIC_XIP_RAMCODE_SIZE - AIC_PM_SRAM_RESERVE_SIZE
+    SRAM_S0     : ORIGIN = 0x30040000 + AIC_XIP_RAMCODE_SIZE                      , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE - AIC_XIP_RAMCODE_SIZE
 #endif
-    SRAM_S1_SW  : ORIGIN = 0x40000000 - AIC_SRAM_S1_SIZE                          , LENGTH = AIC_SRAM1_SW_SIZE
-    SRAM_S1_CMA : ORIGIN = 0x40000000 - AIC_SRAM_S1_SIZE + AIC_SRAM1_SW_SIZE      , LENGTH = AIC_SRAM_S1_SIZE - AIC_SRAM1_SW_SIZE
-    PSRAM_SW    : ORIGIN = 0x40000000                                             , LENGTH = AIC_PSRAM_SW_SIZE
-    PSRAM_CMA   : ORIGIN = 0x40000000 + AIC_PSRAM_SW_SIZE                         , LENGTH = AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE
-#ifdef FPGA_BOARD_ARTINCHIP
-    PSRAM_ext   : ORIGIN = 0x40000000 + AIC_PSRAM_SIZE                            , LENGTH = 64M - AIC_PSRAM_SIZE
-#endif
+    SRAM_S1_CMA : ORIGIN = 0x40000000 - AIC_SRAM_S1_SIZE                          , LENGTH = AIC_SRAM_S1_SIZE - AIC_SRAM1_SW_SIZE
+    SRAM_S1_SW  : ORIGIN = 0x40000000 - AIC_SRAM1_SW_SIZE                         , LENGTH = AIC_SRAM1_SW_SIZE
+    PSRAM_CMA   : ORIGIN = 0x40000000                                             , LENGTH = AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE
+    PSRAM_SW    : ORIGIN = 0x40000000 + AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE        , LENGTH = AIC_PSRAM_SW_SIZE
 #ifdef AIC_XIP
-    FLASH_XIP   : ORIGIN = 0x60000000 + AIC_XIP_FW_OFFSET			  , LENGTH = 512M - AIC_XIP_FW_OFFSET
+    FLASH_XIP   : ORIGIN = 0x60000000 + AIC_XIP_FW_OFFSET                         , LENGTH = 512M - AIC_XIP_FW_OFFSET
 #endif
 }
 
@@ -108,46 +89,59 @@ PROVIDE (__itcm_end                 = __itcm_start + AIC_ITCM_SIZE);
 PROVIDE (__dtcm_start               = __itcm_end);
 PROVIDE (__dtcm_end                 = __itcm_end + AIC_DTCM_SIZE);
 PROVIDE (__sram_s0_start            = __dtcm_end);
-PROVIDE (__sram_s0_end              = __dtcm_end + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE - AIC_ITCM_SIZE - AIC_DTCM_SIZE - AIC_PM_SRAM_RESERVE_SIZE);
+PROVIDE (__sram_s0_end              = __dtcm_end + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE - AIC_ITCM_SIZE - AIC_DTCM_SIZE);
 #else
 PROVIDE (__sram_s0_start            = 0x30040000);
-PROVIDE (__sram_s0_end              = __sram_s0_start + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE - AIC_PM_SRAM_RESERVE_SIZE);
+PROVIDE (__sram_s0_end              = __sram_s0_start + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE);
 #endif
-PROVIDE (__sram_pm_start           = __sram_s0_end);
-PROVIDE (__sram_pm_end             = __sram_pm_start + AIC_PM_SRAM_RESERVE_SIZE);
-PROVIDE (__sram_s1_sw_start        = 0x40000000 - AIC_SRAM_S1_SIZE);
-PROVIDE (__sram_s1_sw_end          = 0x40000000 - AIC_SRAM_S1_SIZE + AIC_SRAM1_SW_SIZE);
-PROVIDE (__sram_s1_cma_start       = __sram_s1_sw_end);
-PROVIDE (__sram_s1_cma_end         = 0x40000000);
-PROVIDE (__psram_sw_start          = 0x40000000);
-PROVIDE (__psram_sw_end            = 0x40000000 + AIC_PSRAM_SW_SIZE);
-PROVIDE (__psram_cma_start         = __psram_sw_end);
-PROVIDE (__psram_cma_end           = 0x40000000 + AIC_PSRAM_SIZE);
-PROVIDE (__psram_start             = 0x40000000);
-PROVIDE (__psram_end               = 0x40000000 + AIC_PSRAM_SIZE);
-PROVIDE (__dtb_pos_f               = __psram_end - 0x40000);
+
+PROVIDE (__sram_pm_start            = __sram_s0_pm_heap_start);
+PROVIDE (__sram_pm_end              = __sram_s0_pm_heap_end);
+
+PROVIDE (__sram_s1_cma_start        = __sram_s1_cma_heap_start);
+PROVIDE (__sram_s1_cma_end          = 0x40000000 - AIC_SRAM1_SW_SIZE);
+PROVIDE (__sram_s1_sw_start         = 0x40000000 - AIC_SRAM1_SW_SIZE);
+PROVIDE (__sram_s1_sw_end           = 0x40000000);
+
+
+PROVIDE (__psram_cma_start          = __psram_cma_heap_start);
+PROVIDE (__psram_cma_end            = 0x40000000 + AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE);
+PROVIDE (__psram_sw_start           = __psram_sw_heap_start);
+PROVIDE (__psram_sw_end             = 0x40000000 + AIC_PSRAM_SIZE);
+
+PROVIDE (__psram_start              = 0x40000000);
+PROVIDE (__psram_end                = 0x40000000 + AIC_PSRAM_SIZE);
+PROVIDE (__dtb_pos_f                = __psram_end - 0x40000);
 
 #ifdef AIC_TCM_EN
-PROVIDE (__itcm_heap_end           = __itcm_end);
-PROVIDE (__dtcm_heap_end           = __dtcm_end);
+PROVIDE (__itcm_heap_end            = __itcm_end);
+PROVIDE (__dtcm_heap_end            = __dtcm_end);
 #endif
-PROVIDE (__sram_s0_sw_heap_end     = __sram_s0_end);
-PROVIDE (__sram_s1_cma_heap_end    = __sram_s1_cma_end);
-PROVIDE (__sram_s1_sw_heap_end     = __sram_s1_sw_end);
-PROVIDE (__psram_cma_heap_end      = __psram_cma_end);
-PROVIDE (__psram_sw_heap_end       = __psram_sw_end);
+PROVIDE (__sram_s0_sw_heap_end      = __sram_s0_end);
+PROVIDE (__sram_s1_cma_heap_end     = __sram_s1_cma_end);
+PROVIDE (__sram_s1_sw_heap_end      = __sram_s1_sw_end);
+PROVIDE (__psram_cma_heap_end       = __psram_cma_end);
+PROVIDE (__psram_sw_heap_end        = __psram_sw_end);
 
-PROVIDE (__min_heap_size           = 0x200);
-PROVIDE (__sram_sw_heap_start      = __sram_s0_sw_heap_start);
-PROVIDE (__sram_sw_heap_end        = __sram_s0_sw_heap_end);
-PROVIDE (__heap_start              = __sram_s0_sw_heap_start);
-PROVIDE (__heap_end                = __sram_s0_sw_heap_end);
-#ifdef AIC_PSRAM_CMA_EN
-PROVIDE (__cma_heap_start          = __psram_cma_heap_start);
-PROVIDE (__cma_heap_end            = __psram_cma_heap_end);
+
+PROVIDE (__min_heap_size            = 0x200);
+#ifdef AIC_DEFAULT_SYS_HEAP_SRAM
+PROVIDE (__heap_start               = __sram_s0_sw_heap_start);
+PROVIDE (__heap_end                 = __sram_s0_sw_heap_end);
+#elif defined AIC_DEFAULT_SYS_HEAP_PSRAM
+PROVIDE (__heap_start               = __psram_sw_heap_start);
+PROVIDE (__heap_end                 = __psram_sw_heap_end);
 #else
-PROVIDE (__cma_heap_start          = __sram_s1_cma_heap_start);
-PROVIDE (__cma_heap_end            = __sram_s1_cma_heap_end);
+PROVIDE (__heap_start               = __sram_s0_sw_heap_start);
+PROVIDE (__heap_end                 = __sram_s0_sw_heap_end);
+#endif
+
+#ifdef AIC_PSRAM_CMA_EN
+PROVIDE (__cma_heap_start           = __psram_cma_heap_start);
+PROVIDE (__cma_heap_end             = __psram_cma_heap_end);
+#else
+PROVIDE (__cma_heap_start           = __sram_s1_cma_heap_start);
+PROVIDE (__cma_heap_end             = __sram_s1_cma_heap_end);
 #endif
 
 #ifdef AIC_TCM_EN
@@ -202,13 +196,6 @@ REGION_ALIAS("REGION_BSS"           , SRAM_S1_CMA);
 REGION_ALIAS("REGION_BSS"           , PSRAM_CMA);
 #else
 REGION_ALIAS("REGION_BSS"           , PSRAM_CMA);
-#endif
-
-#ifdef FPGA_BOARD_ARTINCHIP
-PROVIDE (__psram_ext_start         = __psram_end);
-PROVIDE (__psram_ext_end           = 0x44000000);
-PROVIDE (__temp_ext_heap_end       = __psram_ext_end);
-REGION_ALIAS("REGION_FPGA_EXT"     , PSRAM_ext);
 #endif
 
 ENTRY(Reset_Handler)
@@ -290,6 +277,7 @@ SECTIONS
 
   __etext = . ;
  } > REGION_TEXT
+
  .eh_frame_hdr : {
   *(.eh_frame_hdr)
  } > REGION_TEXT
@@ -328,6 +316,57 @@ SECTIONS
   __usbh_class_info_start__ = .;
   KEEP(*(.usbh_class_info))
   __usbh_class_info_end__ = .;
+
+#ifdef LPKG_USING_ZEPHYR_BLUETOOTH
+  /* zephyr bluetooth bt_l2cap_fixed_chan */
+  . = ALIGN(0x8) ;
+ _bt_l2cap_fixed_chan_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_l2cap_fixed_chan.static.*)));
+ _bt_l2cap_fixed_chan_list_end = .;
+
+  /* zephyr bluetooth bt_l2cap_br_fixed_chan */
+  . = ALIGN(0x8) ;
+ _bt_l2cap_br_fixed_chan_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_l2cap_br_fixed_chan.static.*)));
+ _bt_l2cap_br_fixed_chan_list_end = .;
+
+  /* zephyr bluetooth bt_conn_cb */
+  . = ALIGN(0x8) ;
+ _bt_conn_cb_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_conn_cb.static.*)));
+ _bt_conn_cb_list_end = .;
+
+  /* zephyr bluetooth bt_sco_conn_cb */
+  . = ALIGN(0x8) ;
+ _bt_sco_conn_cb_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_sco_conn_cb.static.*)));
+ _bt_sco_conn_cb_list_end = .;
+
+  /* zephyr bluetooth bt_sco_hci_cb */
+  . = ALIGN(0x8) ;
+ _bt_sco_hci_cb_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_sco_hci_cb.static.*)));
+ _bt_sco_hci_cb_list_end = .;
+
+  /* zephyr bluetooth bt_gatt_service_static */
+  . = ALIGN(0x8) ;
+ _bt_gatt_service_static_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_gatt_service_static.static.*)));
+ _bt_gatt_service_static_list_end = .;
+
+  /* zephyr bluetooth net_buf_pool */
+  . = ALIGN(0x8) ;
+ _net_buf_pool_list_start = .;
+ KEEP(*(SORT_BY_NAME(._net_buf_pool.static.*)));
+ _net_buf_pool_list_end = .;
+
+  /* zephyr bluetooth k_mem_slab */
+  . = ALIGN(0x8) ;
+ _k_mem_slab_list_start = .;
+ KEEP(*(SORT_BY_NAME(._k_mem_slab.static.*)));
+ _k_mem_slab_list_end = .;
+#endif
+
 
 #ifdef AIC_XIP
   . = ALIGN(0x40) ;
@@ -417,21 +456,22 @@ SECTIONS
   __bss_end__ = .;
  } > REGION_BSS
 
+#ifdef AIC_PM_SRAM_RESERVE_SIZE
+ ._sram_s0_pm_heap : {
+  . = ALIGN(0x4) ;
+  __sram_s0_pm_heap_start = .;
+  . += AIC_PM_SRAM_RESERVE_SIZE;
+  . = ALIGN(0x4) ;
+  __sram_s0_pm_heap_end = .;
+ } > REGION_SRAM_S0_SW AT > REGION_SRAM_S0_SW
+#endif
+
  ._sram_s0_sw_heap : {
   . = ALIGN(0x4) ;
   __sram_s0_sw_heap_start = .;
   . += __min_heap_size;
   . = ALIGN(0x4) ;
  } > REGION_SRAM_S0_SW AT > REGION_SRAM_S0_SW
-
- .sram_s1_sw : {
-  . = ALIGN(0x4) ;
-  __sram_s1_sw_data_start = .;
-  *(.sram1_sw_data)
-  . = ALIGN(0x4) ;
-  __sram_s1_sw_data_end = .;
-  __sram_s1_sw_heap_start = .;
- } > REGION_SRAM_S1_SW AT > REGION_SRAM_S1_SW
 
  .sram_s1_cma : {
   . = ALIGN(0x4) ;
@@ -442,14 +482,14 @@ SECTIONS
   __sram_s1_cma_heap_start = .;
  } > REGION_SRAM_S1_CMA AT > REGION_SRAM_S1_CMA
 
- .psram_sw : {
+ .sram_s1_sw : {
   . = ALIGN(0x4) ;
-  __psram_sw_data_start = .;
-  *(.psram_sw_data)
+  __sram_s1_sw_data_start = .;
+  *(.sram1_sw_data)
   . = ALIGN(0x4) ;
-  __psram_sw_data_end = .;
-  __psram_sw_heap_start = .;
- } > REGION_PSRAM_SW AT > REGION_PSRAM_SW
+  __sram_s1_sw_data_end = .;
+  __sram_s1_sw_heap_start = .;
+ } > REGION_SRAM_S1_SW AT > REGION_SRAM_S1_SW
 
  .psram_cma : {
   . = ALIGN(0x4) ;
@@ -460,14 +500,12 @@ SECTIONS
   __psram_cma_heap_start = .;
  } > REGION_PSRAM_CMA AT > REGION_PSRAM_CMA
 
- #ifdef FPGA_BOARD_ARTINCHIP
- .fpga_ext : {
+ .psram_sw : {
   . = ALIGN(0x4) ;
-  __fpga_ext_data_start = .;
-  *(.fpga_ext_data)
+  __psram_sw_data_start = .;
+  *(.psram_sw_data)
   . = ALIGN(0x4) ;
-  __fpga_ext_data_end = .;
-  __fpga_ext_heap_start = .;
- } > REGION_FPGA_EXT AT > REGION_FPGA_EXT
- #endif
+  __psram_sw_data_end = .;
+  __psram_sw_heap_start = .;
+ } > REGION_PSRAM_SW AT > REGION_PSRAM_SW
 }

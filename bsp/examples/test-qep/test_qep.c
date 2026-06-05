@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -27,6 +27,9 @@ static rt_err_t qep_cb(rt_device_t dev, void *buffer)
     rt_kprintf("qep %d callback\n", temp[0]);
 #endif
 
+#ifdef RT_USING_PM
+    rt_pm_release(PM_SLEEP_MODE_NONE);
+#endif
     return RT_EOK;
 }
 
@@ -72,6 +75,9 @@ int test_qep(int argc, char **argv)
     //set the qep callback function
     rt_device_set_tx_complete(qep_dev, qep_cb);
 
+#ifdef RT_USING_PM
+    rt_pm_request(PM_SLEEP_MODE_NONE);
+#endif
     ret = rt_device_open(qep_dev, RT_DEVICE_OFLAG_RDWR);
     if (ret != RT_EOK) {
         rt_kprintf("Failed to open %s device!\n", device_name);

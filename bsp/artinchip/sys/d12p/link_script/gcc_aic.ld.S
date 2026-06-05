@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -28,37 +28,23 @@
            +----------+
            |   SW     |
  0x403FFFFF+----------+
-/0x407FFFFF|          |
-           | FPGA Ext |
-           |  PSRAM   |
-           | 64M-psram|
-           |     size |
-           |          |
-           |          |
-           |          |
-           |          |
-           |          |
-           |          |
- 0x43FFFFFF+----------+
-
  */
 
 #include "rtconfig.h"
 
-#ifdef CONFIG_ENABLE_ROM_API
-INCLUDE rom_api.lds
+#ifdef AIC_USING_PM
+    #define AIC_PM_SRAM_RESERVE_SIZE 0x400
+#else
+    #define AIC_PM_SRAM_RESERVE_SIZE 0
 #endif
 
 MEMORY
 {
     BROM      : ORIGIN = 0x30000000                                            , LENGTH = 32K
-    SRAM_SW   : ORIGIN = 0x30040000                                            , LENGTH = AIC_SRAM_SW_SIZE
-    SRAM_CMA  : ORIGIN = 0x30040000 + AIC_SRAM_SW_SIZE                         , LENGTH = AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE
-    PSRAM_SW  : ORIGIN = 0x40000000                                            , LENGTH = AIC_PSRAM_SW_SIZE
-    PSRAM_CMA : ORIGIN = 0x40000000 + AIC_PSRAM_SW_SIZE                        , LENGTH = AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE
-#ifdef FPGA_BOARD_ARTINCHIP
-    PSRAM_ext : ORIGIN = 0x40000000 + AIC_PSRAM_SIZE                           , LENGTH = 64M - AIC_PSRAM_SIZE
-#endif
+    SRAM_CMA  : ORIGIN = 0x30040000                                            , LENGTH = AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE
+    SRAM_SW   : ORIGIN = 0x30040000 + AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE         , LENGTH = AIC_SRAM_SW_SIZE
+    PSRAM_CMA : ORIGIN = 0x40000000                                            , LENGTH = AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE
+    PSRAM_SW  : ORIGIN = 0x40000000 + AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE       , LENGTH = AIC_PSRAM_SW_SIZE
 #ifdef AIC_XIP
     FLASH_XIP : ORIGIN = 0x60000000 + AIC_XIP_FW_OFFSET                        , LENGTH = 512M - AIC_XIP_FW_OFFSET
 #endif
@@ -66,16 +52,22 @@ MEMORY
 
 PROVIDE (__sram_start              = 0x30040000);
 PROVIDE (__sram_end                = 0x30040000 + AIC_SRAM_SIZE);
-PROVIDE (__sram_sw_start           = 0x30040000);
+
+PROVIDE (__sram_pm_start           = __sram_pm_heap_start);
+PROVIDE (__sram_pm_end             = __sram_pm_heap_end);
+
+PROVIDE (__sram_cma_start          = __sram_cma_heap_start);
+PROVIDE (__sram_cma_end            = 0x30040000 + AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE);
+PROVIDE (__sram_sw_start           = __sram_sw_heap_start);
 PROVIDE (__sram_sw_end             = 0x30040000 + AIC_SRAM_SW_SIZE);
-PROVIDE (__sram_cma_start          = __sram_sw_end);
-PROVIDE (__sram_cma_end            = 0x30040000 + AIC_SRAM_SIZE);
+
 PROVIDE (__psram_start             = 0x40000000);
 PROVIDE (__psram_end               = 0x40000000 + AIC_PSRAM_SIZE);
-PROVIDE (__psram_sw_start          = __psram_start);
-PROVIDE (__psram_sw_end            = __psram_sw_start + AIC_PSRAM_SW_SIZE);
-PROVIDE (__psram_cma_start         = __psram_sw_end);
-PROVIDE (__psram_cma_end           = 0x40000000 + AIC_PSRAM_SIZE);
+
+PROVIDE (__psram_cma_start         = __psram_cma_heap_start);
+PROVIDE (__psram_cma_end           = 0x40000000 + AIC_PSRAM_SIZE - AIC_PSRAM_SW_SIZE);
+PROVIDE (__psram_sw_start          = __psram_sw_heap_start);
+PROVIDE (__psram_sw_end            = 0x40000000 + AIC_PSRAM_SIZE);
 PROVIDE (__dtb_pos_f               = __psram_end - 0x40000);
 
 PROVIDE (__sram_sw_heap_end        = __sram_sw_end);
@@ -86,6 +78,7 @@ PROVIDE (__psram_cma_heap_end      = __psram_cma_end);
 PROVIDE (__min_heap_size           = 0x200);
 PROVIDE (__heap_start              = __psram_sw_heap_start);
 PROVIDE (__heap_end                = __psram_sw_heap_end);
+
 PROVIDE (__cma_heap_start          = __psram_cma_heap_start);
 PROVIDE (__cma_heap_end            = __psram_cma_heap_end);
 
@@ -98,18 +91,11 @@ REGION_ALIAS("REGION_PSRAM_SW"     , PSRAM_SW);
 REGION_ALIAS("REGION_TEXT"         , FLASH_XIP);
 REGION_ALIAS("REGION_RODATA"       , FLASH_XIP);
 #else
-REGION_ALIAS("REGION_TEXT"         , PSRAM_SW);
-REGION_ALIAS("REGION_RODATA"       , PSRAM_SW);
+REGION_ALIAS("REGION_TEXT"         , PSRAM_CMA);
+REGION_ALIAS("REGION_RODATA"       , PSRAM_CMA);
 #endif
-REGION_ALIAS("REGION_DATA"         , PSRAM_SW);
-REGION_ALIAS("REGION_BSS"          , PSRAM_SW);
-
-#ifdef FPGA_BOARD_ARTINCHIP
-PROVIDE (__psram_ext_start         = __psram_end);
-PROVIDE (__psram_ext_end           = 0x44000000);
-PROVIDE (__temp_ext_heap_end       = __psram_ext_end);
-REGION_ALIAS("REGION_FPGA_EXT"     , PSRAM_ext);
-#endif
+REGION_ALIAS("REGION_DATA"         , PSRAM_CMA);
+REGION_ALIAS("REGION_BSS"          , PSRAM_CMA);
 
 ENTRY(Reset_Handler)
 SECTIONS
@@ -298,12 +284,15 @@ SECTIONS
   __bss_end__ = .;
  } > REGION_BSS
 
- .psram_sw_heap : {
+#ifdef AIC_PM_SRAM_RESERVE_SIZE
+ ._sram_pm_heap : {
   . = ALIGN(0x4) ;
-  __psram_sw_heap_start = .;
-  . += __min_heap_size;
+  __sram_pm_heap_start = .;
+  . += AIC_PM_SRAM_RESERVE_SIZE;
   . = ALIGN(0x4) ;
- } > REGION_PSRAM_SW AT > REGION_PSRAM_SW
+  __sram_pm_heap_end = .;
+ } > REGION_SRAM_CMA AT > REGION_SRAM_CMA
+#endif
 
  .psram_cma : {
   . = ALIGN(0x4) ;
@@ -314,25 +303,12 @@ SECTIONS
   __psram_cma_heap_start = .;
  } > REGION_PSRAM_CMA AT > REGION_PSRAM_CMA
 
- #ifdef FPGA_BOARD_ARTINCHIP
- .fpga_ext : {
+ .psram_sw_heap : {
   . = ALIGN(0x4) ;
-  __fpga_ext_data_start = .;
-  *(.fpga_ext_data)
+  __psram_sw_heap_start = .;
+  . += __min_heap_size;
   . = ALIGN(0x4) ;
-  __fpga_ext_data_end = .;
-  __fpga_ext_heap_start = .;
- } > REGION_FPGA_EXT AT > REGION_FPGA_EXT
- #endif
-
- .sram_sw : {
-  . = ALIGN(0x4) ;
-  __sram_sw_data_start = .;
-  *(.sram_sw_data)
-  . = ALIGN(0x4) ;
-  __sram_sw_data_end = .;
-  __sram_sw_heap_start = .;
- } > REGION_SRAM_SW AT > REGION_SRAM_SW
+ } > REGION_PSRAM_SW AT > REGION_PSRAM_SW
 
  .sram_cma : {
   . = ALIGN(0x4) ;
@@ -342,4 +318,13 @@ SECTIONS
   __sram_cma_data_end = .;
   __sram_cma_heap_start = .;
  } > REGION_SRAM_CMA AT > REGION_SRAM_CMA
+
+ .sram_sw : {
+  . = ALIGN(0x4) ;
+  __sram_sw_data_start = .;
+  *(.sram_sw_data)
+  . = ALIGN(0x4) ;
+  __sram_sw_data_end = .;
+  __sram_sw_heap_start = .;
+ } > REGION_SRAM_SW AT > REGION_SRAM_SW
 }

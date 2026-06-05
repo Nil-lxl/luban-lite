@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -37,6 +37,7 @@ static void aic_profiler_usage_3(void)
     AIC_PROFILER_END;
 }
 
+#if defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)
 static int cmd_aic_profiler_test(int argc, char **argv)
 {
     aic_profiler_config_t config = {0};
@@ -50,6 +51,7 @@ static int cmd_aic_profiler_test(int argc, char **argv)
 
     aic_profiler_flush();
     aic_profiler_uninit();
+    return 0;
 }
 
 #if defined(RT_USING_FINSH)
@@ -57,3 +59,4 @@ MSH_CMD_EXPORT_ALIAS(cmd_aic_profiler_test, aic_profiler_test, aic profiler test
 #elif defined(AIC_CONSOLE_BARE_DRV)
 CONSOLE_CMD(aic_profiler_test, cmd_aic_profiler_test,  "aic profiler test");
 #endif
+#endif // defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)

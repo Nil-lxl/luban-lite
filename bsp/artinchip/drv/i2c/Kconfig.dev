@@ -53,6 +53,10 @@ menu "I2C0 Parameter"
             int "I2C0 Slave Addr"
     endif
 
+    config AIC_DEV_I2C0_STUCK_TIME
+        int "SCL/SDA stuck detection time(in Baud rate cycle)"
+        default 400
+
 endmenu
 
 # i2c1 parameter
@@ -86,6 +90,10 @@ menu "I2C1 Parameter"
         config AIC_DEV_I2C1_SLAVE_ADDR
             int "I2C1 Slave Addr"
     endif
+
+    config AIC_DEV_I2C1_STUCK_TIME
+        int "SCL/SDA stuck detection time(in Baud rate cycle)"
+        default 400
 
 endmenu
 
@@ -121,6 +129,10 @@ menu "I2C2 Parameter"
             int "I2C2 Slave Addr"
     endif
 
+    config AIC_DEV_I2C2_STUCK_TIME
+        int "SCL/SDA stuck detection time(in Baud rate cycle)"
+        default 400
+
 endmenu
 
 # i2c3 parameter
@@ -155,6 +167,10 @@ menu "I2C3 Parameter"
             int "I2C3 Slave Addr"
     endif
 
+    config AIC_DEV_I2C3_STUCK_TIME
+        int "SCL/SDA stuck detection time(in Baud rate cycle)"
+        default 400
+
 endmenu
 
 menu "I2C4 Parameter"
@@ -186,6 +202,10 @@ menu "I2C4 Parameter"
         config AIC_DEV_I2C4_SLAVE_ADDR
             int "I2C4 Slave Addr"
     endif
+
+    config AIC_DEV_I2C4_STUCK_TIME
+        int "SCL/SDA stuck detection time(in Baud rate cycle)"
+        default 400
 
 endmenu
 
@@ -219,6 +239,10 @@ menu "SP_I2C Parameter"
             int "SP-I2C Slave Addr"
     endif
 
+    config AIC_DEV_SP_I2C_STUCK_TIME
+        int "SCL/SDA stuck detection time(in Baud rate cycle)"
+        default 400
+
 endmenu
 
 menu "R_I2C0 Parameter"
@@ -251,6 +275,10 @@ menu "R_I2C0 Parameter"
             int "R-I2C0 Slave Addr"
     endif
 
+    config AIC_DEV_R_I2C0_STUCK_TIME
+        int "SCL/SDA stuck detection time(in Baud rate cycle)"
+        default 400
+
 endmenu
 
 menu "R_I2C1 Parameter"
@@ -282,6 +310,10 @@ menu "R_I2C1 Parameter"
         config AIC_DEV_R_I2C1_SLAVE_ADDR
             int "R-I2C1 Slave Addr"
     endif
+
+    config AIC_DEV_R_I2C1_STUCK_TIME
+        int "SCL/SDA stuck detection time(in Baud rate cycle)"
+        default 400
 
 endmenu
 

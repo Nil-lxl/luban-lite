@@ -13,6 +13,7 @@ choice
 if !AIC_CHIP_D21X
 config AIC_GE_CMDQ
     bool "CMD queue mode"
+    depends on !AIC_CHIP_D21X && !RT_USING_PM
     help
       Enable CMA queue
 endif

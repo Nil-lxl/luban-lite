@@ -190,6 +190,26 @@ config AIC_NO_CONSOLE_SUSPEND
     bool "Enable no console suspend"
     default n
 
+config AIC_EARLY_DEBUG
+    bool "Enable Early debug"
+    default n
+
+if AIC_EARLY_DEBUG
+    config AIC_EARLY_DEBUG_UART
+        int "Early debug UART ID"
+        range 0 8
+        default 0
+
+    config AIC_EARLY_DEBUG_UART_TX_GPIO
+        string "Early debug uart tx gpio"
+        default "PA.0"
+
+    config AIC_EARLY_DEBUG_UART_TX_GPIO_FUN
+        int "Early debug uart tx gpio function"
+        range 0 8
+        default 5
+endif
+
 endmenu
 
 menu "Drivers examples"
@@ -278,6 +298,16 @@ config AIC_MMC_BARE_TEST
     default n
     depends on AIC_SDMC_DRV && DRIVER_BARE_DRV_EN
 
+config AIC_XPWM_BARE_TEST
+    bool "Enable XPWM bare test command"
+    default n
+    depends on AIC_XPWM_DRV && DRIVER_BARE_DRV_EN
+
+config AIC_INPUTCAP_DRV_BARE_TEST
+    bool "Enable INPUTCAP bare test command"
+    default n
+    depends on AIC_INPUTCAP_DRV && DRIVER_BARE_DRV_EN
+
 config AIC_MTD_BARE_TEST
     bool "Enable MTD driver test command"
     default n
@@ -326,6 +356,11 @@ config AIC_CSI_DSP_TEST
     default n
     depends on AIC_CHIP_D13X
 
+config AIC_CANFD_DRV_TEST
+    bool "Enable CANFD driver test command"
+    default n
+    depends on AIC_CANFD_DRV
+
 config AIC_CIR_DRV_TEST
     bool "Enable CIR driver test command"
     default n
@@ -358,8 +393,8 @@ config AIC_DVP_TEST
     default n
     depends on AIC_DVP_DRV_V11
 
-config AIC_DVP_TEST_V2
-    bool "Enable DVP driver V2.0 test command"
+config AIC_VIN_TEST
+    bool "Enable VIN driver test command"
     default n
     depends on AIC_DVP_DRV_V22
 
@@ -419,6 +454,11 @@ config AIC_PWM_TEST
     default n
     depends on RT_USING_PWM || DRIVER_BARE_DRV_EN
 
+config AIC_INPUTCAP_DRV_TEST
+    bool "Enable INPUTCAP driver test command"
+    default n
+    depends on AIC_INPUTCAP_DRV && !DRIVER_BARE_DRV_EN
+
 config AIC_CAP_DRV_TEST
     bool "Enable CAP driver test command"
     default n
@@ -428,6 +468,11 @@ config AIC_QEP_DRV_TEST
     bool "Enable QEP driver test command"
     default n
     depends on AIC_QEP_DRV
+
+config AIC_DCE_DRV_TEST
+    bool "Enable Dce driver test command"
+    default n
+    depends on AIC_DCE_DRV
 
 config AIC_ADCIM_DM_TEST
     bool "Enable ADCIM DM test command"
@@ -594,6 +639,11 @@ menu "Power Management examples"
 
     config AIC_PM_TEST
         bool "Enable PM test"
+        default n
+
+    config AIC_PM_STRESS_TEST
+        bool "Enable PM stress test"
+        depends on AIC_RTC_DRV_V121
         default n
 endmenu
 

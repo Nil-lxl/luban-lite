@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -19,6 +19,7 @@
 struct aic_cap {
     struct rt_inputcapture_device rtdev;
     struct aic_cap_data *data;
+    rt_bool_t cap_clk_pm_flag;
 };
 
 static struct aic_cap *g_cap[AIC_CAP_CH_NUM];
@@ -101,17 +102,22 @@ static rt_err_t aic_cap_close(struct rt_inputcapture_device *capture)
 static rt_err_t aic_cap_get_pulsewidth(struct rt_inputcapture_device *capture, rt_uint32_t *pulsewidth_us)
 {
     struct aic_cap *aic_capture;
+    int cap_clk_rate;
 
     RT_ASSERT(capture != RT_NULL);
 
+    cap_clk_rate = hal_cap_get_clk_rate();
+    if (cap_clk_rate < 0)
+        return -RT_ERROR;
+
     aic_capture = (struct aic_cap *)capture;
 
-    aic_capture->data->freq = round((float)PWMCS_CLK_RATE / (float)hal_cap_reg2(aic_capture->data->id));
+    aic_capture->data->freq = round((float)cap_clk_rate / (float)hal_cap_reg2(aic_capture->data->id));
     aic_capture->data->duty = (float)hal_cap_reg1(aic_capture->data->id) * 100 / (float)hal_cap_reg2(aic_capture->data->id);
 
     aic_capture->rtdev.parent.user_data = (void *)aic_capture->data;
 
-    *pulsewidth_us = hal_cap_reg2(aic_capture->data->id) / (PWMCS_CLK_RATE / 1000000);
+    *pulsewidth_us = hal_cap_reg2(aic_capture->data->id) / (cap_clk_rate / 1000000);
 
     return RT_EOK;
 }
@@ -149,6 +155,72 @@ irqreturn_t aic_cap_irq(int irq, void *arg)
     return IRQ_HANDLED;
 }
 
+#ifdef RT_USING_PM
+static int drv_cap_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_cap *cap_dev = (struct aic_cap *)device;
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        if (hal_clk_is_enabled(CLK_PWMCS)) {
+#ifdef AIC_PM_DRV_V15
+            hal_clk_disable_assertrst(CLK_PWMCS);
+#else
+            hal_clk_disable(CLK_PWMCS);
+#endif
+            cap_dev->cap_clk_pm_flag = RT_TRUE;
+        }
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
+static void drv_cap_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_cap *cap_dev = (struct aic_cap *)device;
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+#if defined (AIC_CAP_DRV_V10)
+        hal_clk_set_freq(CLK_PWMCS, PWMCS_CLK_RATE);
+#elif defined (AIC_CAP_DRV_V11)
+        hal_clk_set_freq(CLK_PWMCS_SDFM, PWMCS_CLK_RATE);
+#endif
+        if (cap_dev->cap_clk_pm_flag && !hal_clk_is_enabled(CLK_PWMCS)) {
+#ifdef AIC_PM_DRV_V15
+            hal_clk_enable_deassertrst(CLK_PWMCS);
+#else
+            hal_clk_enable(CLK_PWMCS);
+#endif
+        }
+        if (cap_dev->cap_clk_pm_flag)
+            cap_dev->cap_clk_pm_flag = RT_FALSE;
+
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops drv_cap_pm_ops =
+{
+    SET_DEVICE_PM_OPS(drv_cap_suspend, drv_cap_resume)
+    NULL,
+};
+#endif
+
 static rt_err_t aic_cap_probe(struct aic_cap_data *pdata)
 {
     struct aic_cap *cap;
@@ -176,6 +248,10 @@ static rt_err_t aic_cap_probe(struct aic_cap_data *pdata)
         LOG_E("%s register failed", aic_cap_device_name);
         goto err;
     }
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&cap->rtdev.parent, &drv_cap_pm_ops);
+#endif
 
     return ret;
 

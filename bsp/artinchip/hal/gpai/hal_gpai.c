@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,8 +16,18 @@
 #define GPAI_CONTROLLER_V1
 #endif
 
+#ifdef GPAI_CONTROLLER_V1
 #define GPAI_MCR            0x000
 #define GPAI_INTR           0x004
+#else
+#define GPAI_MCHS           0x000
+#define GPAI_MCHC           0x004
+#define GPAI_INTS           0x008
+#define GPAI_INTC           0x00C
+#define GPAI_INTSAT         0x010
+#define GPAI_DRQS           0x014
+#define GPAI_DRQC           0x018
+#endif
 
 #define GPAI_CHnCR(n)       (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x00)
 #define GPAI_CHnINT(n)      (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x04)
@@ -27,8 +37,12 @@
 #define GPAI_CHnACR(n)      (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x18)
 #define GPAI_CHnFCR(n)      (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x20)
 #define GPAI_CHnDATA(n)     (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x24)
+#ifndef GPAI_CONTROLLER_V1
+#define GPAI_CHnREGDATA(n)  (0x100 + (((n) & AIC_GPAI_CH_NUM_MASK) << 6) + 0x28)
+#endif
 #define GPAI_VERSION        0xFFC
 
+#ifdef GPAI_CONTROLLER_V1
 #define GPAI_MCR_CH0_EN                 BIT(8)
 #define GPAI_MCR_CH_EN(n)               (GPAI_MCR_CH0_EN << (n))
 #define GPAI_MCR_EN                     BIT(0)
@@ -38,6 +52,29 @@
 #define GPAI_INTR_CH0_INT_EN            BIT(0)
 #define GPAI_INTR_CH_INT_EN(n)          (GPAI_INTR_CH0_INT_EN << (n))
 
+#else
+
+#define GPAI_MCHS_CH0_SET               BIT(8)
+#define GPAI_MCHS_CH_SET(n)             (GPAI_MCHS_CH0_SET << (n))
+#define GPAI_MCHS_MDSET                 BIT(0)
+#define GPAI_MCHC_CH0_CLS               BIT(8)
+#define GPAI_MCHC_CH_CLS(n)             (GPAI_MCHC_CH0_CLS << (n))
+#define GPAI_MCHC_MDCLS                 BIT(0)
+
+#define GPAI_INTS_CH0_INT_SET           BIT(0)
+#define GPAI_INTS_CH_INT_SET(n)         (GPAI_INTS_CH0_INT_SET << (n))
+#define GPAI_INTC_CH0_INT_CLS           BIT(0)
+#define GPAI_INTC_CH_INT_CLS(n)         (GPAI_INTC_CH0_INT_CLS << (n))
+#define GPAI_INTSAT_CH0_INT_FLG         BIT(0)
+#define GPAI_INTSAT_CH_INT_FLG(n)       (GPAI_INTSAT_CH0_INT_FLG << (n))
+
+#define GPAI_DRQS_CH0_DRQ_SAT           BIT(16)
+#define GPAI_DRQS_CH_DRQ_SAT(n)         (GPAI_DRQS_CH0_DRQ_SAT << (n))
+#define GPAI_DRQS_CH0_DRQ_SET           BIT(0)
+#define GPAI_DRQS_CH_DRQ_SET(n)         (GPAI_DRQS_CH0_DRQ_SET << (n))
+#define GPAI_DRQC_CH0_DRQ_CLS           BIT(0)
+#define GPAI_DRQC_CH_DRQ_CLS(n)         (GPAI_DRQC_CH0_DRQ_CLS << (n))
+#endif
 
 
 #define GPAI_CHnCR_SBC_SHIFT        24
@@ -117,6 +154,7 @@ static u32 gpai_ms2itv(u32 pclk_rate, u32 us)
     return tmp;
 }
 
+#ifdef GPAI_CONTROLLER_V1
 static void gpai_reg_enable(int offset, int bit, int enable)
 {
     int tmp = gpai_readl(offset);
@@ -139,10 +177,44 @@ void aich_gpai_ch_enable(u32 ch, int enable)
     gpai_reg_enable(GPAI_MCR, GPAI_MCR_CH_EN(ch), enable);
 }
 
+#else
+
+static void gpai_reg_enable(int offset, int bit)
+{
+    int tmp = gpai_readl(offset);
+    tmp |= bit;
+    gpai_writel(tmp, offset);
+}
+
+void aich_gpai_enable(int enable)
+{
+    if (enable)
+        gpai_reg_enable(GPAI_MCHS, GPAI_MCHS_MDSET);
+    else
+        gpai_reg_enable(GPAI_MCHC, GPAI_MCHC_MDCLS);
+}
+
+void aich_gpai_ch_enable(u32 ch, int enable)
+{
+    if (enable)
+        gpai_reg_enable(GPAI_MCHS, GPAI_MCHS_CH_SET(ch));
+    else
+        gpai_reg_enable(GPAI_MCHC, GPAI_MCHC_CH_CLS(ch));
+}
+
+void hal_gpai_drq_enable(u32 ch, u32 enable)
+{
+    if (enable)
+        gpai_reg_enable(GPAI_DRQS, GPAI_DRQS_CH_DRQ_SET(ch));
+    else
+        gpai_reg_enable(GPAI_DRQC, GPAI_DRQC_CH_DRQ_CLS(ch));
+}
+#endif
 
 
 static void gpai_int_enable(u32 ch, u32 enable, u32 detail)
 {
+#ifdef GPAI_CONTROLLER_V1
 
     u32 val = 0;
     val = gpai_readl(GPAI_INTR);
@@ -155,6 +227,17 @@ static void gpai_int_enable(u32 ch, u32 enable, u32 detail)
     }
     gpai_writel(val, GPAI_INTR);
 
+#else
+
+    if (enable) {
+        gpai_reg_enable(GPAI_INTS, GPAI_INTS_CH_INT_SET(ch));
+        gpai_writel(detail, GPAI_CHnINT(ch));
+    } else {
+        gpai_reg_enable(GPAI_INTC, GPAI_INTC_CH_INT_CLS(ch));
+        gpai_writel(0, GPAI_CHnINT(ch));
+    }
+
+#endif
 }
 
 static void gpai_fifo_init(u32 ch)
@@ -192,8 +275,9 @@ static void gpai_single_mode(u32 ch)
     val = gpai_readl(GPAI_CHnCR(ch));
     val |= GPAI_CHnCR_SINGLE_SAMPLE_EN;
     gpai_writel(val, GPAI_CHnCR(ch));
-    gpai_int_enable(ch, 1,
-            GPAI_CHnINT_DAT_RDY_IE | GPAI_CHnINT_FIFO_ERR_IE);
+    if (chan->obtain_data_mode != AIC_GPAI_OBTAIN_DATA_BY_DMA)
+        gpai_int_enable(ch, 1, GPAI_CHnINT_DAT_RDY_IE |
+                        GPAI_CHnINT_FIFO_ERR_IE);
 }
 
 /* Only in period mode, HLA and LLA are available */
@@ -255,13 +339,34 @@ int aich_gpai_ch_init(struct aic_gpai_ch *chan, u32 pclk)
     if (chan->mode == AIC_GPAI_MODE_PERIOD)
         gpai_period_mode(chan, pclk);
 
+#ifdef AIC_GPAI_DRV_DMA
+    if (!chan->dma_rx_info.dma_chan) {
+        chan->dma_rx_info.dma_chan = hal_request_dma_chan();
+        if (!chan->dma_rx_info.dma_chan) {
+            hal_log_err("GPAI request dma channel error\n");
+            return -1;
+        }
+    }
+#endif
+    chan->enabled = 1;
     /* For single mode, should init the channel in .read() */
+    return 0;
+}
+
+int aich_gpai_ch_deinit(struct aic_gpai_ch *chan)
+{
+    chan->enabled = 0;
+#ifdef AIC_GPAI_DRV_DMA
+    hal_gpai_stop_dma(chan);
+#endif
+    aich_gpai_ch_enable(chan->id, 0);
     return 0;
 }
 
 void aich_gpai_status_show(struct aic_gpai_ch *chan)
 {
     int version = gpai_readl(GPAI_VERSION);
+#ifdef GPAI_CONTROLLER_V1
     int mcr = gpai_readl(GPAI_MCR);
 
     printf("In GPAI V%s:\n"
@@ -271,6 +376,17 @@ void aich_gpai_status_show(struct aic_gpai_ch *chan)
                chan->id, chan->mode ? "P" : "S",
                mcr & GPAI_MCR_CH_EN(chan->id) ? 1 : 0,
                chan->avg_data, chan->lla_thd, chan->hla_thd);
+#else
+    int mcr = gpai_readl(GPAI_MCHS);
+
+    printf("In GPAI V%s:\n"
+               "Ch Mode Enable Value  LTA  HTA\n"
+               "%2d %4s %6d %5d %4d %4d\n",
+               EXPAND_BCD_VER(version),
+               chan->id, chan->mode ? "P" : "S",
+               mcr & GPAI_MCHS_CH_SET(chan->id) ? 1 : 0,
+               chan->avg_data, chan->lla_thd, chan->hla_thd);
+#endif
 }
 
 static int hal_gpai_irq_read_fifo(struct aic_gpai_ch *chan)
@@ -287,15 +403,12 @@ static int hal_gpai_irq_read_fifo(struct aic_gpai_ch *chan)
 
     for (i = 0; i < cnt; i++) {
         chan->fifo_data[i] = gpai_readl(GPAI_CHnDATA(ch));
-        if (chan->mode == AIC_GPAI_MODE_SINGLE)
-            tmp += chan->fifo_data[i];
+        tmp += chan->fifo_data[i];
     }
 
     chan->fifo_valid_cnt = cnt;
-    if (chan->mode == AIC_GPAI_MODE_SINGLE) {
-        chan->avg_data = tmp / cnt;
-        pr_debug("There are %d data ready in ch%d, last %d\n", cnt, ch, chan->avg_data);
-    }
+    chan->avg_data = tmp / cnt;
+    pr_debug("There are %d data ready in ch%d, last %d\n", cnt, ch, chan->avg_data);
 
     return 0;
 }
@@ -306,9 +419,15 @@ int hal_gpai_read_poll(u32 ch, u16 *val, u32 timeout)
     struct aic_gpai_ch *chan = NULL;
 
     while (1) {
+#ifdef GPAI_CONTROLLER_V1
         ch_flag = gpai_readl(GPAI_INTR);
         if (!(ch_flag & GPAI_INTR_CH_INT_FLAG(ch)))
             continue;
+#else
+        ch_flag = gpai_readl(GPAI_INTSAT);
+        if (!(ch_flag & GPAI_INTSAT_CH_INT_FLG(ch)))
+            continue;
+#endif
 
         chan = hal_gpai_ch_is_valid(ch);
         if (!chan)
@@ -316,12 +435,17 @@ int hal_gpai_read_poll(u32 ch, u16 *val, u32 timeout)
         ch_int = gpai_readl(GPAI_CHnINT(ch));
         gpai_writel(ch_int, GPAI_CHnINT(ch));
 
+#ifdef GPAI_CONTROLLER_V1
         if (ch_int & GPAI_CHnINT_DRDY_FLG) {
             hal_gpai_irq_read_fifo(chan);
             if (val)
                 val[0] = chan->avg_data;
             break;
         }
+#else
+        val[0] = gpai_readl(GPAI_CHnREGDATA(ch));
+        break;
+#endif
     }
 
     return 0;
@@ -380,7 +504,7 @@ struct aic_gpai_ch *hal_gpai_ch_is_valid(u32 ch)
         else
             break;
     }
-    pr_warn("Ch%d is unavailable!\n", ch);
+    pr_debug("Ch%d is unavailable!\n", ch);
     return NULL;
 }
 
@@ -390,11 +514,20 @@ irqreturn_t aich_gpai_isr(int irq, void *arg)
     int i;
     struct aic_gpai_ch *chan = NULL;
 
+#ifdef GPAI_CONTROLLER_V1
     ch_flag = gpai_readl(GPAI_INTR);
+#else
+    ch_flag = gpai_readl(GPAI_INTSAT);
+#endif
 
     for (i = 0; i < AIC_GPAI_CH_NUM; i++) {
+#ifdef GPAI_CONTROLLER_V1
         if (!(ch_flag & GPAI_INTR_CH_INT_FLAG(i)))
             continue;
+#else
+        if (!(ch_flag & GPAI_INTSAT_CH_INT_FLG(i)))
+            continue;
+#endif
 
         chan = hal_gpai_ch_is_valid(i);
         if (!chan)
@@ -406,8 +539,8 @@ irqreturn_t aich_gpai_isr(int irq, void *arg)
             chan->irq_count++;
             if (chan->mode == AIC_GPAI_MODE_SINGLE)
                 aicos_sem_give(chan->complete);
-            if (chan->irq_info.callback)
-                chan->irq_info.callback(chan->irq_info.callback_param);
+            if (chan->ev_cb)
+                chan->ev_cb(chan, AIC_GPAI_EV_DRDY);
         }
         gpai_writel(ch_int, GPAI_CHnINT(i));
 
@@ -465,3 +598,73 @@ void hal_gpai_set_ch_num(u32 num)
     aic_gpai_ch_num = num;
 }
 
+#ifdef AIC_GPAI_DRV_DMA
+void hal_gpai_stop_dma(struct aic_gpai_ch *chan)
+{
+    int val;
+
+    val = gpai_readl(GPAI_CHnCR(chan->id));
+    val &= ~GPAI_CHnCR_PERIOD_SAMPLE_EN;
+    gpai_writel(val, GPAI_CHnCR(chan->id));
+    hal_gpai_drq_enable(chan->id, 0);
+
+    if (chan->dma_rx_info.dma_chan) {
+        hal_dma_chan_stop(chan->dma_rx_info.dma_chan);
+        hal_release_dma_chan(chan->dma_rx_info.dma_chan);
+        chan->dma_rx_info.dma_chan = NULL;
+    }
+}
+
+static void hal_dma_transfer_callback(void *arg)
+{
+    struct aic_gpai_ch *chan;
+
+    chan = (struct aic_gpai_ch *)arg;
+
+    aicos_dcache_invalid_range(chan->dma_rx_info.buf,
+                               chan->dma_rx_info.buf_size);
+    if (chan->ev_cb)
+        chan->ev_cb(chan, AIC_GPAI_EV_DRDY);
+}
+
+void hal_gpai_config_dma(struct aic_gpai_ch *chan)
+{
+    struct dma_slave_config config = {0};
+    struct aic_dma_transfer_info *info;
+
+    hal_gpai_drq_enable(chan->id, 1);
+    info = &chan->dma_rx_info;
+
+    config.direction = DMA_DEV_TO_MEM;
+    config.src_addr = GPAI_BASE + GPAI_CHnDATA(chan->id);
+    config.dst_addr = (ulong)info->buf;
+    config.slave_id = chan->dma_port_id;
+    config.src_maxburst = GPAI_SRC_RX_MAXBURST;
+    config.dst_maxburst = info->buf_size / sizeof(u32);
+    config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+    config.dst_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
+
+    hal_dma_chan_config(info->dma_chan, &config);
+    return;
+}
+
+void hal_gpai_start_dma(struct aic_gpai_ch *chan)
+{
+    struct aic_dma_transfer_info *info;
+    int buf_size = 0;
+
+    info = &chan->dma_rx_info;
+    buf_size = info->buf_size;
+    if (chan->mode == AIC_GPAI_MODE_SINGLE)
+        buf_size = sizeof(u32);
+
+    hal_dma_chan_register_cb(info->dma_chan, hal_dma_transfer_callback,
+                             (void *)chan);
+    hal_dma_chan_prep_device(info->dma_chan, (ulong)info->buf,
+                             GPAI_BASE + GPAI_CHnDATA(chan->id),
+                             buf_size, DMA_DEV_TO_MEM);
+    hal_dma_chan_start(info->dma_chan);
+    if (chan->mode == AIC_GPAI_MODE_SINGLE)
+        gpai_single_mode(chan->id);
+}
+#endif

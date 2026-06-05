@@ -18,7 +18,7 @@ enum reset_id {
     RESET_USBD,
     RESET_USBH0,
     RESET_USBPHY0,
-    RESET_CANFD,
+    RESET_CANFD0,
     RESET_XSPI,
     RESET_QSPI0,
     RESET_QSPI1,

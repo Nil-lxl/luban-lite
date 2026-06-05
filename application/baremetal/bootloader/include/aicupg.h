@@ -76,8 +76,8 @@ struct image_header_upgrade {
     char platform[64];
     char product[64];
     char version[64];
-    char media_type[64];
-    u32 media_dev_id;
+    char media_type[64];        /* single flash: "spi-nor" or "spi-nand", multi flash: "spi-nor;spi-nand" */
+    u32 media_dev_id;           /* single flash: controller ID, multi flash: each ID occupies 1 byte, mapped to media_type in order */
     char media_id[64];
     u32 meta_offset;
     u32 meta_size;
@@ -122,6 +122,15 @@ struct upg_init {
     u8 mode_bits;
 };
 
+typedef enum {
+    AICUPG_FAT_WRITE_STATUS_START = 0,
+    AICUPG_FAT_WRITE_STATUS_ONGOING,
+    AICUPG_FAT_WRITE_STATUS_DONE,
+    AICUPG_FAT_WRITE_STATUS_RERROR,
+    AICUPG_FAT_WRITE_STATUS_WERROR,
+    AICUPG_FAT_WRITE_STATUS_CRC32_ERROR,
+} aicupg_fat_write_status;
+
 s32 aicupg_initialize(struct upg_init *param);
 s32 aicupg_set_upg_cfg(struct upg_cfg *cfg);
 s32 aicupg_get_upg_mode(void);
@@ -136,7 +145,7 @@ s32 aicupg_fat_write(char *image_name, char *protection,
 
 int aicupg_fat_direct_write(char *dst_type, u32 intf_id, char *fpath,
                             u32 dst_offset, u32 boot_flag, char *attr);
-typedef void (*progress_cb)(u32 percent);
+typedef void (*progress_cb)(u32 percent, aicupg_fat_write_status sts);
 void aicupg_fat_set_process_cb(progress_cb cb);
 
 void *aicupg_malloc_align(u32 size, size_t align);

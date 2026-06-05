@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -38,8 +38,10 @@ enum pm_module_id {
     PM_DE_ID,
     PM_GE_ID,
     PM_VE_ID,
+    PM_VIN_ID,
     PM_USB_HOST_ID,
     PM_USB_DEV_ID,
+    PM_CIR_ID,
     PM_MODULE_MAX_ID, /* enum must! */
 };
 

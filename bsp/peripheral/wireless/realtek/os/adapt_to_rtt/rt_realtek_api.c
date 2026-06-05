@@ -213,6 +213,36 @@ rt_err_t aic_realtek_softap(struct rt_wlan_device *wlan, struct rt_ap_info *ap_i
     return 0;
 }
 
+#if CONFIG_ENABLE_P2P
+static int p2p_go_active = 0;
+/* Called when P2P GO starts: register STA callbacks and notify framework */
+void rtw_wlan_p2p_go_started(void)
+{
+    if (!s_ap_dev || p2p_go_active)
+        return;
+
+    p2p_go_active = 1;
+    s_current_dev = s_ap_dev;
+
+    wifi_reg_event_handler(WIFI_EVENT_STA_ASSOC, indicate_ap_associated, NULL);
+    wifi_reg_event_handler(WIFI_EVENT_STA_DISASSOC, indicate_ap_disassociated, NULL);
+
+    rt_wlan_dev_indicate_event_handle(s_ap_dev, RT_WLAN_DEV_EVT_AP_START, NULL);
+}
+
+/* Called when P2P GO stops: unregister STA callbacks and notify framework */
+void rtw_wlan_p2p_go_stopped(void)
+{
+    if (s_ap_dev && p2p_go_active) {
+        wifi_unreg_event_handler(WIFI_EVENT_STA_ASSOC, indicate_ap_associated);
+        wifi_unreg_event_handler(WIFI_EVENT_STA_DISASSOC, indicate_ap_disassociated);
+        p2p_go_active = 0;
+        s_current_dev = NULL;
+        rt_wlan_dev_indicate_event_handle(s_ap_dev, RT_WLAN_DEV_EVT_AP_STOP, NULL);
+    }
+}
+#endif
+
 rt_err_t aic_realtek_disconnect(struct rt_wlan_device *wlan)
 {
     int timeout = 20;
@@ -315,6 +345,11 @@ rt_err_t aic_realtek_set_mac(struct rt_wlan_device *wlan, rt_uint8_t *mac)
 void rtw_init_macaddr(char *mac)
 {
     memcpy(rtw_mac, mac, 6);
+}
+
+void rtw_wlan_get_mac(u8 *mac)
+{
+    memcpy(mac, rtw_mac, 6);
 }
 
 rt_err_t aic_realtek_get_mac(struct rt_wlan_device *wlan, rt_uint8_t *mac)

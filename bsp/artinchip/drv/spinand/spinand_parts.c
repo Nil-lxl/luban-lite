@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include "spinand_parts.h"
 
 static struct nftl_volume *nftl_new_volume(char *s)
@@ -242,23 +243,26 @@ err:
 struct mtd_partition *mtd_parts_parse(char *parts, uint32_t spi_bus)
 {
     char *p;
+    char prefix[16];
 
     p = parts;
 
-    if (spi_bus == 2) {
-        while (*p != '2')
-            p++;
-    } else if (spi_bus == 1) {
-        while (*p != '1')
-            p++;
-    }
-    while ((*p != '\0') && (*p != ':'))
-        p++;
-    if (*p != ':') {
-        printf("mtdparts is invalid: %s\n", parts);
+    if (!p)
+        return NULL;
+
+    /* Build the prefix string to search for, e.g. "spi0.0:" or "spi1.0:" */
+    snprintf(prefix, sizeof(prefix), "spi%" PRIu32 ".0:", spi_bus);
+
+    /* Find the prefix in the partition string */
+    p = strstr(parts, prefix);
+    if (p == NULL) {
+        printf("mtdparts: spi_bus %" PRIu32 " not found in: %s\n", spi_bus, parts);
         return NULL;
     }
-    p++;
+
+    /* Skip the prefix to get to the partition list */
+    p += strlen(prefix);
+
     return _part_parse(p, 0);
 }
 

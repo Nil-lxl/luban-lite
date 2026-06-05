@@ -810,7 +810,9 @@ static void usbh_list_all_interface_driver(struct usbh_hub *hub)
 {
     struct usbh_hubport *hport;
     struct usbh_hub *hub_next;
-    const char *speed_table[] = { "error-speed", "low-speed", "full-speed", "high-speed", "wireless-speed", "super-speed", "superplus-speed" };
+    __attribute__((unused)) static const char *speed_table[] = {
+        "error-speed", "low-speed", "full-speed", "high-speed",
+        "wireless-speed", "super-speed", "superplus-speed" };
 
     for (uint8_t port = 0; port < hub->nports; port++) {
         hport = &hub->child[port];

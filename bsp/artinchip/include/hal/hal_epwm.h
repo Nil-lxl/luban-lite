@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -58,6 +58,11 @@ struct aic_epwm_action {
     enum aic_epwm_action_type ZRO;
 };
 
+struct aic_epwm_div {
+    int div1;
+    int div2;
+};
+
 struct aic_epwm_arg {
     bool sync_mode;
     bool available;
@@ -71,6 +76,8 @@ struct aic_epwm_arg {
     u32 period;
     u32 duty;
     s32 def_level;
+    u32 output;
+    struct aic_epwm_div div;
 };
 
 enum aic_epwm_int_event {
@@ -96,6 +103,7 @@ void hal_epwm_pul_out_ct(u32 ch, u32 enable);
 void hal_epwm_pul_sw_updt(u32 ch);
 #endif
 int hal_epwm_get_default_level(u32 ch);
+int hal_epwm_ch_reconf(u32 ch);
 int hal_epwm_set(u32 ch, u32 duty_ns, u32 period_ns, u32 output);
 int hal_epwm_get(u32 ch, u32 *duty_ns, u32 *period_ns);
 int hal_epwm_enable(u32 ch);
@@ -103,7 +111,7 @@ int hal_epwm_disable(u32 ch);
 u32 hal_epwm_int_sts(u32 ch);
 void hal_epwm_clr_int(u32 stat, u32 ch);
 void hal_epwm_int_config(u32 ch, u8 irq_mode, u8 enable);
-
+void hal_epwm_global_enable(u32 en);
 int hal_epwm_init(void);
 int hal_epwm_deinit(void);
 

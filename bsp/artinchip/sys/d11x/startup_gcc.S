@@ -150,6 +150,12 @@ save_boot_params_ret:
     jalr    a5
     la      a5, dcache_enable
     jalr    a5
+
+#ifdef AIC_EARLY_DEBUG
+    la      a5, early_debug_init
+    jalr    a5
+#endif
+
 #ifndef QEMU_RUN
 #ifdef PSRAM_UNCACHED_EN
     /* set psram uncacheable */

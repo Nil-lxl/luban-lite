@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,6 +14,7 @@
 #define LOG_TAG             "TSEN"
 #include "aic_core.h"
 #include "hal_tsen.h"
+#include "aic_hal_clk.h"
 
 struct aic_tsen_dev {
     struct rt_sensor_device dev;
@@ -72,6 +73,9 @@ static rt_size_t aic_tsen_fetch(struct rt_sensor_device *sensor,
         pr_warn("%s is unavailable!\n", chan->name);
         return -ENODEV;
     }
+#ifdef AIC_PM_DRV_V15
+    rt_pm_module_request(PM_SENSOR_ID, PM_SLEEP_MODE_NONE);
+#endif
 
     pr_debug("The ch%d is obtaining data\n", chan->id);
 #ifdef AIC_SID_DRV
@@ -86,6 +90,9 @@ static rt_size_t aic_tsen_fetch(struct rt_sensor_device *sensor,
     else
         data->data.temp = hal_tsen_data2temp(chan);
 
+#ifdef AIC_PM_DRV_V15
+    rt_pm_module_release(PM_SENSOR_ID, PM_SLEEP_MODE_NONE);
+#endif
     return 1;
 }
 
@@ -93,9 +100,25 @@ static rt_err_t aic_tsen_control(struct rt_sensor_device *sensor,
                                  int cmd, void *args)
 {
     struct aic_tsen_ch *data = (struct aic_tsen_ch *)args;
+    rt_uint8_t device_id = sensor->parent.device_id;
+    rt_uint32_t power_stat = 0;
+
     switch (cmd) {
         case RT_SENSOR_CTRL_GET_CH_INFO:
             *data = aic_tsen_chs[sensor->parent.device_id];
+            break;
+        case RT_SENSOR_CTRL_SET_POWER:
+            data = &aic_tsen_chs[device_id];
+            power_stat = (rt_uint32_t)(ptr_t)args;
+
+            if (power_stat == RT_SENSOR_POWER_NORMAL) {
+                hal_tsen_ch_init(data, data->pclk_rate);
+            } else if (power_stat == RT_SENSOR_POWER_DOWN) {
+                hal_tsen_ch_enable(data->id, 0);
+            } else {
+                LOG_D("Unsupported power state: 0x%x", power_stat);
+                return -RT_ERROR;
+            }
             break;
         default:
             LOG_D("Unsupported cmd: 0x%x", cmd);
@@ -104,6 +127,64 @@ static rt_err_t aic_tsen_control(struct rt_sensor_device *sensor,
     }
     return RT_EOK;
 }
+
+#ifdef RT_USING_PM
+static int aic_tsen_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        hal_clk_disable_assertrst(CLK_TSEN);
+#else
+        hal_clk_disable(CLK_TSEN);
+#endif
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_tsen_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+#ifdef AIC_PM_DRV_V15
+    struct aic_tsen_ch *chan = NULL;
+#endif
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        chan = &aic_tsen_chs[device->device_id];
+
+        hal_tsen_clk_init();
+        hal_tsen_enable(1);
+        hal_tsen_ch_init(chan, chan->pclk_rate);
+#else
+        hal_clk_enable(CLK_TSEN);
+#endif
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_tsen_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_tsen_suspend, aic_tsen_resume)
+    NULL,
+};
+#endif
 
 static struct rt_sensor_ops aic_sensor_ops = {
     .fetch_data = aic_tsen_fetch,
@@ -122,9 +203,8 @@ static int drv_tsen_init(void)
 
     for (int i = 0; i < ARRAY_SIZE(aic_tsen_chs); i++) {
         hal_tsen_pclk_get(&aic_tsen_chs[i]);
-        hal_tsen_ch_init(&aic_tsen_chs[i], g_aic_tsen[i].pclk_rate);
-        if (aic_tsen_chs[i].mode == AIC_TSEN_MODE_SINGLE)
-            aic_tsen_chs[i].complete = aicos_sem_create(0);
+
+        aic_tsen_chs[i].complete = aicos_sem_create(0);
 
         g_aic_tsen[i].ch = &aic_tsen_chs[i];
         info = &g_aic_tsen[i].dev.info;
@@ -142,6 +222,9 @@ static int drv_tsen_init(void)
             LOG_E("Failed to register %s. ret %d", aic_tsen_chs[i].name, ret);
             return -RT_ERROR;
         }
+#ifdef RT_USING_PM
+        rt_pm_device_register(&g_aic_tsen[i].dev.parent, &aic_tsen_pm_ops);
+#endif
     }
 
     return 0;

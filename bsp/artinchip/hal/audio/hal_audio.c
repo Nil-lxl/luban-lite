@@ -466,13 +466,13 @@ void hal_audio_dmic_start(aic_audio_ctrl *codec)
     /* AudioCodec only support 16bit sample width */
     if (codec->config.channel == 2)
     {
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
-        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
     }
     else if (codec->config.channel == 1)
     {
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
-        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
     }
 
     info = &codec->dmic_info;

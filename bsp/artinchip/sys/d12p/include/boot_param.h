@@ -9,16 +9,16 @@
 #define __BOOT_PARAM_H__
 
 #define set_boot_device(var, device) \
-    {                                \
+    do {                             \
         (var) &= ~(0xF);             \
         (var) |= (device) & (0xF);   \
-    }
+    } while (0)
 
 #define set_boot_reason(var, reason)    \
-    {                                   \
-        (var) &= ~(0xF << 4);           \
-        (var) |= (reason) & (0xF << 8); \
-    }
+    do {                                \
+        (var) &= ~(0xF << 8);           \
+        (var) |= ((reason) & 0xF) << 8; \
+    } while (0)
 
 #define get_boot_device(var)     ((var)&0xF)
 #define get_boot_controller(var) (((var) >> 4) & 0xF)
@@ -58,6 +58,7 @@ enum boot_device {
     BD_SDFAT32,
     BD_USB,
     BD_UDISK,
+    BD_SKIP_SD = 0xF,
 };
 
 enum boot_controller {

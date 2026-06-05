@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -11,6 +11,8 @@
 
 #include "aic_common.h"
 
+int hal_adcim_init(void);
+int hal_adcim_deinit(void);
 int hal_adcim_calibration_set(unsigned int val);
 s32 hal_adcim_probe(void);
 u32 hal_adcim_auto_calibration(void);

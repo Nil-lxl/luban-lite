@@ -19,7 +19,7 @@ extern "C" {
 /* Luban-Lite version information */
 #define LL_VERSION      1
 #define LL_SUBVERSION   3
-#define LL_REVISION     0
+#define LL_REVISION     1
 
 typedef __signed__ char     s8;
 typedef unsigned char       u8;
@@ -388,6 +388,9 @@ typedef enum {
 #ifdef AIC_SRAM_SW_EN
     MEM_SRAM_SW,
 #endif
+#ifdef AIC_SRAM0_SW_EN
+    MEM_SRAM0_SW,
+#endif
 #ifdef AIC_SRAM1_CMA_EN
     MEM_SRAM1_CMA,
 #endif
@@ -455,6 +458,10 @@ extern size_t __sram_cma_heap_end;
 #ifdef AIC_SRAM_SW_EN
 extern size_t __sram_sw_heap_start;
 extern size_t __sram_sw_heap_end;
+#endif
+#ifdef AIC_SRAM0_SW_EN
+extern size_t __sram_s0_sw_heap_start;
+extern size_t __sram_s0_sw_heap_end;
 #endif
 #ifdef AIC_SRAM1_CMA_EN
 extern size_t __sram_s1_cma_heap_start;

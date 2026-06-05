@@ -1,0 +1,31 @@
+# GATT Services
+
+# Copyright (c) 2018 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+menu "GATT Services"
+	depends on LPKG_BT_CONN
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/Kconfig.ans"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/Kconfig.dis"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/Kconfig.gap_svc"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/Kconfig.cts"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/Kconfig.ets"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/Kconfig.hrs"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/Kconfig.tps"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/nus/Kconfig.nus"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/ias/Kconfig.ias"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/ots/Kconfig"
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/services/bas/Kconfig.bas"
+
+endmenu

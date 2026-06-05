@@ -25,15 +25,11 @@
 
 #include "rtconfig.h"
 
-#ifdef CONFIG_ENABLE_ROM_API
-INCLUDE rom_api.lds
-#endif
-
 MEMORY
 {
     BROM      : ORIGIN = 0x30000000                                            , LENGTH = 32K
-    SRAM_SW   : ORIGIN = 0x30040000                                            , LENGTH = AIC_SRAM_SW_SIZE
-    SRAM_CMA  : ORIGIN = 0x30040000 + AIC_SRAM_SW_SIZE                         , LENGTH = AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE
+    SRAM_CMA  : ORIGIN = 0x30040000                                            , LENGTH = AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE
+    SRAM_SW   : ORIGIN = 0x30040000 + AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE         , LENGTH = AIC_SRAM_SW_SIZE
 #ifdef AIC_XIP
     FLASH_XIP : ORIGIN = 0x60000000 + AIC_XIP_FW_OFFSET                        , LENGTH = 512M - AIC_XIP_FW_OFFSET
 #endif
@@ -41,10 +37,11 @@ MEMORY
 
 PROVIDE (__sram_start              = 0x30040000);
 PROVIDE (__sram_end                = 0x30040000 + AIC_SRAM_SIZE);
-PROVIDE (__sram_sw_start           = 0x30040000);
-PROVIDE (__sram_sw_end             = 0x30040000 + AIC_SRAM_SW_SIZE);
-PROVIDE (__sram_cma_start          = __sram_sw_end);
-PROVIDE (__sram_cma_end            = 0x30040000 + AIC_SRAM_SIZE);
+
+PROVIDE (__sram_cma_start          = __sram_cma_heap_start);
+PROVIDE (__sram_cma_end            = 0x30040000 + AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE);
+PROVIDE (__sram_sw_start           = __sram_sw_heap_start);
+PROVIDE (__sram_sw_end             = 0x30040000 + AIC_SRAM_SIZE);
 
 PROVIDE (__sram_sw_heap_end        = __sram_sw_end);
 PROVIDE (__sram_cma_heap_end       = __sram_cma_end);
@@ -52,6 +49,7 @@ PROVIDE (__sram_cma_heap_end       = __sram_cma_end);
 PROVIDE (__min_heap_size           = 0x200);
 PROVIDE (__heap_start              = __sram_sw_heap_start);
 PROVIDE (__heap_end                = __sram_sw_heap_end);
+
 PROVIDE (__cma_heap_start          = __sram_cma_heap_start);
 PROVIDE (__cma_heap_end            = __sram_cma_heap_end);
 
@@ -63,8 +61,13 @@ REGION_ALIAS("REGION_TEXT"         , FLASH_XIP);
 REGION_ALIAS("REGION_RODATA"       , FLASH_XIP);
 #else
 #endif
+#if (AIC_SRAM_SIZE - AIC_SRAM_SW_SIZE) > 0
+REGION_ALIAS("REGION_DATA"         , SRAM_CMA);
+REGION_ALIAS("REGION_BSS"          , SRAM_CMA);
+#else
 REGION_ALIAS("REGION_DATA"         , SRAM_SW);
 REGION_ALIAS("REGION_BSS"          , SRAM_SW);
+#endif
 
 ENTRY(Reset_Handler)
 SECTIONS
@@ -253,16 +256,14 @@ SECTIONS
   __bss_end__ = .;
  } > REGION_BSS
 
- #ifdef FPGA_BOARD_ARTINCHIP
- .fpga_ext : {
+ .sram_cma : {
   . = ALIGN(0x4) ;
-  __fpga_ext_data_start = .;
-  *(.fpga_ext_data)
+  __sram_cma_data_start = .;
+  *(.sram_cma_data)
   . = ALIGN(0x4) ;
-  __fpga_ext_data_end = .;
-  __fpga_ext_heap_start = .;
- } > REGION_FPGA_EXT AT > REGION_FPGA_EXT
- #endif
+  __sram_cma_data_end = .;
+  __sram_cma_heap_start = .;
+ } > REGION_SRAM_CMA AT > REGION_SRAM_CMA
 
  .sram_sw : {
   . = ALIGN(0x4) ;
@@ -272,13 +273,4 @@ SECTIONS
   __sram_sw_data_end = .;
   __sram_sw_heap_start = .;
  } > REGION_SRAM_SW AT > REGION_SRAM_SW
-
- .sram_cma : {
-  . = ALIGN(0x4) ;
-  __sram_cma_data_start = .;
-  *(.sram_cma_data)
-  . = ALIGN(0x4) ;
-  __sram_cma_data_end = .;
-  __sram_cma_heap_start = .;
- } > REGION_SRAM_CMA AT > REGION_SRAM_CMA
 }

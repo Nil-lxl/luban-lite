@@ -1,6 +1,10 @@
+# RT-Thread building script for component
+
 Import('AIC_ROOT')
 Import('PRJ_KERNEL')
+Import('rtconfig')
 from building import *
+import os
 
 cwd = GetCurrentDir()
 CPPPATH = [cwd]
@@ -8,9 +12,22 @@ CPPPATH = [cwd]
 src = []
 group = []
 
-if GetDepend('LPKG_USING_OTA_DOWNLOADER'):
-    src = Glob('*.c')
+PATH = AIC_ROOT + '/packages/artinchip/ota/'
+prj_chip = GetDepend('PRJ_CHIP').strip('"')
 
-    group = DefineGroup('ota', src, depend = [''], CPPPATH = CPPPATH)
+if GetDepend('LPKG_USING_OTA_DOWNLOADER'):
+    src = Glob('ota.c')
+    src += Glob('burn.c')
+    src += Glob('flash.c')
+    src += Glob('test_ota.c')
+
+    if GetDepend('OTA_SECURITY_UPGRADE'):
+        lib_name = 'firmware_security_ota_' + prj_chip + '.a'
+
+        if os.path.exists(PATH + 'firmware_security.c'):
+            tmp_src = Glob('firmware_security.c')
+            DefineGroup(PATH + lib_name, tmp_src, depend = [''], LIBRARY='')
+
+    group += DefineGroup('FIRMWARE_SECURITY', src, depend = [''], CPPPATH = CPPPATH, LIBS = ['firmware_security_ota_' + prj_chip], LIBPATH = [PATH])
 
 Return('group')

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Dehuang.Wu
-# Copyright (C) 2021-2025 ArtInChip Technology Co., Ltd
+# Copyright (C) 2021-2026 ArtInChip Technology Co., Ltd
 
 import os
 import re
@@ -42,9 +42,15 @@ def mkimage_get_mtdpart_size(outfile):
     with open(partlist) as f:
         lines = f.readlines()
         for ln in lines:
-            name = ln.split(',')[1].replace('"', '').replace('*', '')
+            ln = ln.strip()
+            if not ln:
+                continue
+            parts = ln.split(',')
+            if len(parts) < 3:
+                continue
+            name = parts[1].replace('"', '').replace('*', '')
             if imgname == name:
-                size = int(ln.split(',')[2])
+                size = int(parts[2])
                 return size
     print('Image {} is not used in any partition'.format(imgname))
     print('please check your project\'s image_cfg.json')

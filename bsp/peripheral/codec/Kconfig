@@ -15,6 +15,10 @@ config AIC_I2S_CODEC_CS4344
     bool "cs4344"
     depends on AIC_I2S_CODEC_SELECT
 
+config AIC_I2S_CODEC_ALC5616
+    bool "alc5616"
+    depends on AIC_I2S_CODEC_SELECT
+
 config AIC_I2S_CODEC_ES8311
     bool "es8311"
     depends on AIC_I2S_CODEC_SELECT
@@ -26,6 +30,11 @@ config AIC_I2S_CODEC_JY6311
 if AIC_I2S_CODEC_ES8388
 source "bsp/peripheral/codec/es8388/Kconfig"
 endif
+
+if AIC_I2S_CODEC_ALC5616
+source "bsp/peripheral/codec/alc5616/Kconfig"
+endif
+
 
 if AIC_I2S_CODEC_TLV320
 source "bsp/peripheral/codec/tlv320aic3101/Kconfig"

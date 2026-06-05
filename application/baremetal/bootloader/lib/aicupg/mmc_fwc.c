@@ -85,9 +85,25 @@ s32 mmc_storage_erase(u32 id, struct storage_erase *erase)
 }
 
 
+static unsigned long mmc_write(struct blk_desc *block_dev, u64 start,
+                               u64 blkcnt, void *buffer)
+{
+    return mmc_bwrite(block_dev->priv, start, blkcnt, buffer);
+}
+
+static unsigned long mmc_read(struct blk_desc *block_dev, u64 start, u64 blkcnt,
+                              const void *buffer)
+{
+    return mmc_bread(block_dev->priv, start, blkcnt, (void *)buffer);
+}
+
 s32 mmc_fwc_prepare(struct fwc_info *fwc, u32 mmc_id)
 {
     int ret = 0;
+    struct aic_sdmc *host;
+    struct disk_blk_ops ops;
+    struct blk_desc dev_desc;
+    struct aic_partition *parts;
 
     ret = mmc_init(mmc_id);
     if (ret) {
@@ -95,7 +111,44 @@ s32 mmc_fwc_prepare(struct fwc_info *fwc, u32 mmc_id)
         return ret;
     }
 
-    return ret;
+    /* Create GPT partition table */
+    parts = mmc_create_gpt_part2(mmc_id);
+    if (!parts) {
+        pr_err("sdmc %d create gpt part failed.\n", mmc_id);
+        return -1;
+    }
+
+    /* Get host for dev_desc */
+    host = find_mmc_dev_by_index(mmc_id);
+    if (!host) {
+        pr_err("find mmc dev %d failed.\n", mmc_id);
+        mmc_free_partition(parts);
+        return -1;
+    }
+
+    /* Setup block device operations */
+    ops.blk_write = mmc_write;
+    ops.blk_read = mmc_read;
+    aic_disk_part_set_ops(&ops);
+    dev_desc.blksz = MMC_BLOCK_SIZE;
+    dev_desc.lba_count = host->dev->card_capacity * 2;
+    dev_desc.priv = host;
+
+    /* Write GPT partition table to disk */
+    ret = aic_disk_write_gpt(&dev_desc, parts);
+    if (ret) {
+        pr_err("Write PART table failed.\n");
+        mmc_free_partition(parts);
+        return ret;
+    }
+
+    /* Refresh MMC block device */
+    mmc_block_refresh(host);
+
+    /* Free the temporary partition table */
+    mmc_free_partition(parts);
+
+    return 0;
 }
 
 struct aic_partition *mmc_fwc_get_part_by_name(struct fwc_info *fwc, char *name)
@@ -115,24 +168,10 @@ struct aic_partition *mmc_fwc_get_part_by_name(struct fwc_info *fwc, char *name)
     return NULL;
 }
 
-static unsigned long mmc_write(struct blk_desc *block_dev, u64 start,
-                               u64 blkcnt, void *buffer)
-{
-    return mmc_bwrite(block_dev->priv, start, blkcnt, buffer);
-}
-
-static unsigned long mmc_read(struct blk_desc *block_dev, u64 start, u64 blkcnt,
-                              const void *buffer)
-{
-    return mmc_bread(block_dev->priv, start, blkcnt, (void *)buffer);
-}
-
 void mmc_fwc_start(struct fwc_info *fwc)
 {
     struct aicupg_mmc_priv *priv;
-    struct disk_blk_ops ops;
-    struct blk_desc dev_desc;
-    int mmc_id = 0, ret;
+    int mmc_id = 0;
 
     mmc_id = get_current_device_id();
 
@@ -149,6 +188,7 @@ void mmc_fwc_start(struct fwc_info *fwc)
         goto out;
     }
 
+    /* Create partition table and assign to priv->parts */
     priv->parts = mmc_create_gpt_part2(mmc_id);
     if (!priv->parts) {
         pr_err("sdmc %d create gpt part failed.\n", mmc_id);
@@ -157,19 +197,6 @@ void mmc_fwc_start(struct fwc_info *fwc)
     fwc->priv = priv;
     fwc->block_size = MMC_BLOCK_SIZE;
 
-    ops.blk_write = mmc_write;
-    ops.blk_read = mmc_read;
-    aic_disk_part_set_ops(&ops);
-    dev_desc.blksz = MMC_BLOCK_SIZE;
-    dev_desc.lba_count = priv->host->dev->card_capacity * 2;
-    dev_desc.priv = priv->host;
-
-    ret = aic_disk_write_gpt(&dev_desc, priv->parts);
-    if (ret) {
-        printf("Write PART table failed.\n");
-    }
-
-    mmc_block_refresh(priv->host);
     return;
 out:
     if (priv->parts)

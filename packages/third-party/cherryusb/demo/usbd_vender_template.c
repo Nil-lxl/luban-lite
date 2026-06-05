@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -212,6 +212,7 @@ int vender_device_init(void)
 }
 USB_INIT_APP_EXPORT(vender_device_init);
 
+#if defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)
 static int cmd_test_vender(int argc, char **argv)
 {
     memset(write_buffer, 'a', 2038);
@@ -219,4 +220,10 @@ static int cmd_test_vender(int argc, char **argv)
     return 0;
 }
 
+#if defined(RT_USING_FINSH)
 MSH_CMD_EXPORT_ALIAS(cmd_test_vender, test_vender_usb, Test CMU CLK);
+#elif defined(AIC_CONSOLE_BARE_DRV)
+#include <console.h>
+CONSOLE_CMD(test_vender_usb, cmd_test_vender, "Test CMU CLK");
+#endif
+#endif // defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)

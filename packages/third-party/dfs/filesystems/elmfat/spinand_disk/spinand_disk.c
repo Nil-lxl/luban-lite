@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,6 +14,12 @@
 #include "aic_osal.h"
 #include "spinand_disk.h"
 #include "mtd.h"
+
+#ifdef AIC_NFTL_SUPPORT
+#ifndef AIC_NFTL_MINI_RESERVED_BLOCK
+#define AIC_NFTL_MINI_RESERVED_BLOCK 50
+#endif
+#endif
 
 static DRESULT spinand_disk_nonftl_read(struct spinand_blk_device *blk_device,
                                         uint8_t *buf, uint32_t sector,
@@ -306,6 +312,7 @@ void *spinand_disk_initialize(const char *device_name)
 #ifdef AIC_NFTL_SUPPORT
     if (blk_device->mtd_device->attr == PART_ATTR_NFTL) {
         struct nftl_api_handler_t *nftl_hdl;
+        struct nftl_api_nand_cfg_t nftl_cfg;
         u32 nftl_bbm_reserver_sectors = 0;
 
         nftl_hdl = malloc(sizeof(struct nftl_api_handler_t));
@@ -318,6 +325,10 @@ void *spinand_disk_initialize(const char *device_name)
 
         nftl_hdl->priv_mtd = (void *)mtd;
         nftl_hdl->nandt = malloc(sizeof(struct nftl_api_nand_t));
+        if (!nftl_hdl->nandt) {
+            pr_err("Failed to allocate memory for nftl nand info");
+            goto err;
+        }
 
         nftl_hdl->nandt->page_size = mtd->writesize;
         nftl_hdl->nandt->oob_size = mtd->oobsize;
@@ -325,13 +336,18 @@ void *spinand_disk_initialize(const char *device_name)
         nftl_hdl->nandt->block_total = mtd->size / mtd->erasesize;
         nftl_hdl->nandt->block_start = mtd->start / mtd->erasesize;
         nftl_hdl->nandt->block_end = (mtd->start + mtd->size) / mtd->erasesize;
-        if (nftl_api_init(nftl_hdl, 1)) {
+        memset(&nftl_cfg, 0, sizeof(nftl_cfg));
+        nftl_cfg.version = NFTL_NAND_CFG_VERSION;
+        nftl_cfg.free_block_reserved = AIC_NFTL_MINI_RESERVED_BLOCK;
+
+        if (nftl_api_init_ex(nftl_hdl, 1, &nftl_cfg)) {
             pr_err("[NE]nftl_initialize failed\n");
             goto err;
         }
 
-        /* Reserve 51 blocks for bad block management in NFTL blk device. */
-        nftl_bbm_reserver_sectors = 51 * mtd->erasesize / blk_device->info.bytes_per_sector;
+        nftl_bbm_reserver_sectors = (AIC_NFTL_MINI_RESERVED_BLOCK + 1) *
+                                    mtd->erasesize /
+                                    blk_device->info.bytes_per_sector;
         if (blk_device->info.sector_count < nftl_bbm_reserver_sectors) {
             pr_err("total sectors is not enough for NFTL bad block management\n");
             goto err;

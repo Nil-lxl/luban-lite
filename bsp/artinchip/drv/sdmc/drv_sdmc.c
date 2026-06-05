@@ -9,6 +9,9 @@
 #include <string.h>
 #include <drivers/mmcsd_core.h>
 #include <drivers/sdio.h>
+#ifdef RT_USING_PM
+#include <drivers/pm.h>
+#endif
 
 #define LOG_TAG         "SDMC"
 
@@ -71,8 +74,13 @@ struct aic_sdmc {
     int fifo_mode;
 
     struct aic_sdmc_pdata *pdata;
+#ifdef RT_USING_PM
+    struct rt_device *rt_dev;
+    u8 suspended;
+#endif
 
     u8 is_enable;
+    u8 sdio_irq_enabled;
 };
 
 static inline int resp_crc_type(struct rt_mmcsd_cmd *cmd)
@@ -191,6 +199,10 @@ static void aic_sdmc_request(struct rt_mmcsd_host *rthost,
 
     cmd = req->cmd;
     RT_ASSERT(cmd != RT_NULL);
+
+#ifdef RT_USING_PM
+    rt_pm_request(PM_SLEEP_MODE_NONE);
+#endif
 
     if (cmd->cmd_code != STOP_TRANSMISSION) {
         while (hal_sdmc_is_busy(&host->host)) {
@@ -312,6 +324,9 @@ static void aic_sdmc_request(struct rt_mmcsd_host *rthost,
 
 out:
     mmcsd_req_complete(rthost);
+#ifdef RT_USING_PM
+    rt_pm_release(PM_SLEEP_MODE_NONE);
+#endif
 }
 
 static u32 aic_sdmc_get_best_div(u32 sclk, u32 target_freq)
@@ -404,17 +419,9 @@ static int aic_sdmc_init(struct aic_sdmc *host)
     return 0;
 }
 
-static void aic_sdmc_set_iocfg(struct rt_mmcsd_host *rthost,
-                               struct rt_mmcsd_io_cfg *io_cfg)
+static void aic_sdmc_apply_iocfg(struct aic_sdmc *host,
+                                 struct rt_mmcsd_io_cfg *io_cfg)
 {
-    struct aic_sdmc *host;
-
-    RT_ASSERT(rthost != RT_NULL);
-    RT_ASSERT(rthost->private_data != RT_NULL);
-    RT_ASSERT(io_cfg != RT_NULL);
-
-    host = (struct aic_sdmc *)rthost->private_data;
-
     switch (io_cfg->bus_width) {
     case MMCSD_DDR_BUS_WIDTH_8:
         // host->ddr_mode = 1;
@@ -461,6 +468,25 @@ static void aic_sdmc_set_iocfg(struct rt_mmcsd_host *rthost,
     }
 }
 
+static void aic_sdmc_set_iocfg(struct rt_mmcsd_host *rthost,
+                               struct rt_mmcsd_io_cfg *io_cfg)
+{
+    struct aic_sdmc *host;
+
+    RT_ASSERT(rthost != RT_NULL);
+    RT_ASSERT(rthost->private_data != RT_NULL);
+    RT_ASSERT(io_cfg != RT_NULL);
+
+    host = (struct aic_sdmc *)rthost->private_data;
+#ifdef RT_USING_PM
+    rt_pm_request(PM_SLEEP_MODE_NONE);
+#endif
+    aic_sdmc_apply_iocfg(host, io_cfg);
+#ifdef RT_USING_PM
+    rt_pm_release(PM_SLEEP_MODE_NONE);
+#endif
+}
+
 static void aic_sdmc_enable_sdio_irq(struct rt_mmcsd_host *rthost,
                                rt_int32_t en)
 {
@@ -471,7 +497,14 @@ static void aic_sdmc_enable_sdio_irq(struct rt_mmcsd_host *rthost,
 
     host = (struct aic_sdmc *)rthost->private_data;
 
+#ifdef RT_USING_PM
+    rt_pm_request(PM_SLEEP_MODE_NONE);
+#endif
+    host->sdio_irq_enabled = en ? 1 : 0;
     hal_sdmc_sdio_irq_enable(&host->host, en);
+#ifdef RT_USING_PM
+    rt_pm_release(PM_SLEEP_MODE_NONE);
+#endif
 }
 
 static const struct rt_mmcsd_host_ops ops =
@@ -561,6 +594,112 @@ s32 aic_sdmc_clk_init(struct aic_sdmc *host)
     return 0;
 }
 
+#ifdef RT_USING_PM
+static rt_bool_t aic_sdmc_is_busy(struct aic_sdmc *host)
+{
+#ifdef AIC_SDMC_IRQ_MODE
+    if (host->host.is_busy)
+        return RT_TRUE;
+#endif
+
+    return hal_sdmc_is_busy(&host->host) ? RT_TRUE : RT_FALSE;
+}
+
+static int aic_sdmc_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_sdmc *host;
+
+    if (!device || !device->user_data)
+        return -RT_EINVAL;
+
+    host = (struct aic_sdmc *)device->user_data;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+    case PM_SLEEP_MODE_SHUTDOWN:
+        if (host->suspended)
+            break;
+
+        if (aic_sdmc_is_busy(host)) {
+            pr_warn("SDMC%d is busy, suspend skipped\n", host->index);
+            return -RT_EBUSY;
+        }
+
+        hal_sdmc_sdio_irq_enable(&host->host, 0);
+        hal_sdmc_int_clr(&host->host, SDMC_INT_ALL);
+
+        if (host->is_enable) {
+            hal_sdmc_clk_disable(&host->host);
+            hal_sdmc_set_cmd(&host->host,
+                    SDMC_CMD_PRV_DAT_WAIT | SDMC_CMD_UPD_CLK | SDMC_CMD_START);
+            if (hal_sdmc_wait_cmd_started(&host->host))
+                pr_warn("SDMC%d update clock failed before suspend\n", host->index);
+        }
+
+        hal_clk_disable_assertrst(host->clk);
+        hal_clk_disable(host->clk);
+        host->suspended = 1;
+        break;
+    default:
+        break;
+    }
+
+    return RT_EOK;
+}
+
+static void aic_sdmc_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_sdmc *host;
+
+    if (!device || !device->user_data)
+        return;
+
+    host = (struct aic_sdmc *)device->user_data;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+    case PM_SLEEP_MODE_SHUTDOWN:
+        if (!host->suspended)
+            break;
+
+        if (aic_sdmc_clk_init(host) < 0) {
+            pr_err("SDMC%d clock resume failed\n", host->index);
+            host->suspended = 0;
+            break;
+        }
+
+        if (aic_sdmc_init(host)) {
+            pr_err("SDMC%d controller resume failed\n", host->index);
+            host->suspended = 0;
+            break;
+        }
+
+        aic_sdmc_apply_iocfg(host, &host->rthost->io_cfg);
+        if (host->sdio_irq_enabled)
+            hal_sdmc_sdio_irq_enable(&host->host, 1);
+
+        host->suspended = 0;
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_sdmc_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_sdmc_suspend, aic_sdmc_resume)
+    NULL,
+};
+#endif /* RT_USING_PM */
+
 static struct aic_sdmc_pdata sdmc_pdata[] = {
 #ifdef AIC_USING_SDMC0
     {
@@ -646,6 +785,9 @@ s32 aic_sdmc_probe(struct aic_sdmc_pdata *pdata)
 {
     struct rt_mmcsd_host *rthost = NULL;
     struct aic_sdmc *host = NULL;
+#ifdef RT_USING_PM
+    char str[32] = { 0 };
+#endif
 
     rthost = mmcsd_alloc_host();
     if (!rthost)
@@ -679,6 +821,27 @@ s32 aic_sdmc_probe(struct aic_sdmc_pdata *pdata)
     aic_sdmc_init(host);
     pr_info("SDMC%d driver loaded\n", pdata->id);
 
+#ifdef RT_USING_PM
+    host->rt_dev = (struct rt_device *)rt_malloc(sizeof(struct rt_device));
+    if (!host->rt_dev) {
+        pr_warn("Failed to malloc(%d), SDMC%d PM disabled\n",
+                (u32)sizeof(struct rt_device), pdata->id);
+    } else {
+        rt_memset(host->rt_dev, 0, sizeof(struct rt_device));
+
+        rt_sprintf(str, "sdmc%u", rthost->id);
+        host->rt_dev->user_data = host;
+
+        if (rt_device_register(host->rt_dev, str, RT_DEVICE_FLAG_RDWR) != RT_EOK) {
+            pr_warn("Failed to register SDMC%d PM device\n", pdata->id);
+            rt_free(host->rt_dev);
+            host->rt_dev = RT_NULL;
+        } else {
+            rt_pm_device_register(host->rt_dev, &aic_sdmc_pm_ops);
+        }
+    }
+#endif
+
     g_aic_sdmc_host[pdata->id] = host;
 
     mmcsd_change(rthost);
@@ -687,8 +850,13 @@ s32 aic_sdmc_probe(struct aic_sdmc_pdata *pdata)
 
 err:
 
-    if (host)
+    if (host) {
+#ifdef RT_USING_PM
+        if (host->rt_dev)
+            rt_free(host->rt_dev);
+#endif
         free(host);
+    }
 
     if (rthost)
         mmcsd_free_host(rthost);

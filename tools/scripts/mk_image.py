@@ -35,6 +35,27 @@ import gmssl.func as func
 DATA_ALIGNED_SIZE = 2048
 META_ALIGNED_SIZE = 512
 
+# Signature algorithm to (algo_id, sign_length) mapping
+_SIGN_ALGO_MAP = {
+    "rsa,2048": {"algo": 1, "len": 256},
+    "sm2": {"algo": 2, "len": 64},
+    "hmac,sha256": {"algo": 3, "len": 32},
+}
+
+# Encryption algorithm to algo_id mapping
+_ENC_ALGO_MAP = {
+    "aes-128-cbc": 1,
+    "sm4-ecb": 2,
+    "sm4-cbc": 3,
+    "aes-128-ctr": 4,
+}
+
+# Checksum algorithm to auxiliary data length mapping
+_CKSUM_ALGO_MAP = {
+    "md5": 16,
+    "sm3": 32,
+}
+
 # Whether or not to generate the image used by the burner
 BURNER = False
 VERBOSE = False
@@ -101,94 +122,98 @@ def get_file_path(fpath, dirpath):
     return None
 
 
+def _get_sign_len(cfg):
+    """ Get signature length from config, return 0 if no signature """
+    if "signature" not in cfg:
+        return 0
+    algo = cfg["signature"]["algo"]
+    return _SIGN_ALGO_MAP.get(algo, {}).get("len", 0)
+
+
+def _resolve_file_stat(filename, dirs, label):
+    """ Search for a file in given directories and return its stat info
+
+    Args:
+        filename: File name to search
+        dirs: List of directory paths to search in
+        label: Label for error message if file not found
+    """
+    for d in dirs:
+        if d is not None and os.path.exists(d + filename):
+            statinfo = os.stat(d + filename)
+            return statinfo
+        if os.path.exists(filename):
+            statinfo = os.stat(filename)
+            return statinfo
+    print("Error, {} is not found.".format(label))
+    sys.exit(1)
+
+
+def _add_file_size_entry(files, key, statinfo, align, sign_len_key=None, sign_len=0):
+    """ Add file size and aligned size entry to the files dict
+
+    Args:
+        files: Dict to store file sizes
+        key: Key prefix for the entries (e.g. "resource/private")
+        statinfo: os.stat result for the file
+        align: Alignment size for round_up
+        sign_len_key: If set, also store sign_len under this key
+        sign_len: Signature length value to store
+    """
+    files[key] = statinfo.st_size
+    files["round({})".format(key)] = round_up(statinfo.st_size, align)
+    if sign_len_key is not None:
+        files["round({}/sign_len)".format(key)] = sign_len
+
+
+def _add_resource_file_sizes(files, cfg_resource, key, dirs, default_align, sign_len=0):
+    """ Add resource file size entries for a specific resource key
+
+    Args:
+        files: Dict to store file sizes
+        cfg_resource: Resource section of config dict
+        key: Resource key name (e.g. "private", "private2", "pubkey", "pbp", "pbp2")
+        dirs: List of directory paths to search in
+        default_align: Default alignment size when sign_len is 0
+        sign_len: Signature length for alignment override
+    """
+    if key not in cfg_resource:
+        return
+    align = sign_len if sign_len else default_align
+    # private2/pbp2 use simple directory search without get_file_path
+    if key in ("private2", "pbp2"):
+        for d in dirs:
+            if d is not None and os.path.exists(d + cfg_resource[key]):
+                statinfo = os.stat(d + cfg_resource[key])
+                _add_file_size_entry(files, "resource/" + key, statinfo, align,
+                                     "resource/" + key, sign_len)
+                return
+        print("Error, {} is not found.".format(cfg_resource[key]))
+        sys.exit(1)
+    else:
+        statinfo = _resolve_file_stat(cfg_resource[key], dirs, cfg_resource[key])
+        _add_file_size_entry(files, "resource/" + key, statinfo, align)
+
+
 def aic_boot_get_resource_file_size(cfg, keydir, datadir):
     """ Get size of all resource files
     """
 
     files = {}
-    filepath = ""
+    dirs = [keydir, datadir]
     if "resource" in cfg:
-        sign_len = 0
-        if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
-            sign_len = 256
-        if "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
-            sign_len = 32
-        if "signature" in cfg and cfg["signature"]["algo"] == "sm2":
-            sign_len = 64
-        if "private" in cfg["resource"]:
-            filepath = get_file_path(cfg["resource"]["private"], keydir)
-            if filepath is None:
-                filepath = get_file_path(cfg["resource"]["private"], datadir)
-            if filepath is None:
-                print("Error, {} is not found.".format(cfg["resource"]["private"]))
-                sys.exit(1)
-            statinfo = os.stat(filepath)
-            files["resource/private"] = statinfo.st_size
-            files["round(resource/private)"] = round_up(statinfo.st_size, 32)
-        if "private2" in cfg["resource"]:
-            align_len = 4
-            if sign_len:
-                align_len = sign_len
-            if os.path.exists(keydir + cfg["resource"]["private2"]):
-                statinfo = os.stat(keydir + cfg["resource"]["private2"])
-                files["resource/private2"] = statinfo.st_size
-                files["round(resource/private2)"] = round_up(statinfo.st_size, align_len)
-                files["round(resource/private2/sign_len)"] = sign_len
-            elif os.path.exists(datadir + cfg["resource"]["private2"]):
-                statinfo = os.stat(datadir + cfg["resource"]["private2"])
-                files["resource/private2"] = statinfo.st_size
-                files["round(resource/private2)"] = round_up(statinfo.st_size, align_len)
-                files["round(resource/private2/sign_len)"] = sign_len
-            else:
-                print("Error, {} is not found.".format(cfg["resource"]["private2"]))
-                sys.exit(1)
-
-        if "pubkey" in cfg["resource"]:
-            filepath = get_file_path(cfg["resource"]["pubkey"], keydir)
-            if filepath is None:
-                filepath = get_file_path(cfg["resource"]["pubkey"], datadir)
-            if filepath is None:
-                print("Error, {} is not found.".format(cfg["resource"]["pubkey"]))
-                sys.exit(1)
-            statinfo = os.stat(filepath)
-            files["resource/pubkey"] = statinfo.st_size
-            files["round(resource/pubkey)"] = round_up(statinfo.st_size, 32)
-        if "pbp" in cfg["resource"]:
-            filepath = get_file_path(cfg["resource"]["pbp"], datadir)
-            if filepath is None:
-                print("Error, {} is not found.".format(cfg["resource"]["pbp"]))
-                sys.exit(1)
-            statinfo = os.stat(filepath)
-            files["resource/pbp"] = statinfo.st_size
-            files["round(resource/pbp)"] = round_up(statinfo.st_size, 32)
-        if "pbp2" in cfg["resource"]:
-            align_len = 16
-            if sign_len:
-                align_len = sign_len
-            if os.path.exists(keydir + cfg["resource"]["pbp2"]):
-                statinfo = os.stat(keydir + cfg["resource"]["pbp2"])
-                files["resource/pbp2"] = statinfo.st_size
-                files["round(resource/pbp2)"] = round_up(statinfo.st_size, align_len)
-                files["round(resource/pbp2/sign_len)"] = sign_len
-            elif os.path.exists(datadir + cfg["resource"]["pbp2"]):
-                statinfo = os.stat(datadir + cfg["resource"]["pbp2"])
-                files["resource/pbp2"] = statinfo.st_size
-                files["round(resource/pbp2)"] = round_up(statinfo.st_size, align_len)
-                files["round(resource/pbp2/sign_len)"] = sign_len
-            else:
-                print("Error, {} is not found.".format(cfg["resource"]["pbp2"]))
-                sys.exit(1)
+        sign_len = _get_sign_len(cfg)
+        res = cfg["resource"]
+        _add_resource_file_sizes(files, res, "private", dirs, 32)
+        _add_resource_file_sizes(files, res, "private2", dirs, 4, sign_len)
+        _add_resource_file_sizes(files, res, "pubkey", dirs, 32)
+        _add_resource_file_sizes(files, res, "pbp", dirs, 32)
+        _add_resource_file_sizes(files, res, "pbp2", dirs, 16, sign_len)
     if "encryption" in cfg:
         if "iv" in cfg["encryption"]:
-            filepath = get_file_path(cfg["encryption"]["iv"], keydir)
-            if filepath is None:
-                filepath = get_file_path(cfg["encryption"]["iv"], datadir)
-            if filepath is None:
-                print("Error, {} is not found.".format(cfg["encryption"]["iv"]))
-                sys.exit(1)
-            statinfo = os.stat(filepath)
-            files["encryption/iv"] = statinfo.st_size
-            files["round(encryption/iv)"] = round_up(statinfo.st_size, 32)
+            statinfo = _resolve_file_stat(cfg["encryption"]["iv"], dirs,
+                                          cfg["encryption"]["iv"])
+            _add_file_size_entry(files, "encryption/iv", statinfo, 32)
     if "loader" in cfg:
         if "file" in cfg["loader"]:
             filepath = get_file_path(cfg["loader"]["file"], datadir)
@@ -744,26 +769,203 @@ def aic_boot_use_ssk_derived_key(cfg):
     return False
 
 
+def _get_sign_info(cfg, img_len, default_len=16):
+    """ Get signature algorithm info from config
+
+    Args:
+        cfg: Configuration dict
+        img_len: Total image length
+        default_len: Default sign length when no signature is configured
+
+    Returns:
+        Tuple of (sign_algo, sign_length, sign_offset)
+    """
+    if "signature" in cfg:
+        algo = cfg["signature"]["algo"]
+        if algo in _SIGN_ALGO_MAP:
+            info = _SIGN_ALGO_MAP[algo]
+            return info["algo"], info["len"], img_len - info["len"]
+    return 0, default_len, img_len - default_len
+
+
+def _get_enc_info_v1(cfg, next_res_offset, filesizes, loader_length):
+    """ Get encryption algorithm info for v1 header (legacy)
+
+    In v1, IV data is only valid when loader_length != 0 for cbc/ctr modes.
+
+    Args:
+        cfg: Configuration dict
+        next_res_offset: Next available resource offset
+        filesizes: Dict of file sizes
+        loader_length: Loader binary length
+
+    Returns:
+        Tuple of (enc_algo, iv_data_offset, iv_data_length, next_res_offset)
+    """
+    enc_algo = 0
+    iv_data_offset = 0
+    iv_data_length = 0
+    if "encryption" in cfg:
+        algo = cfg["encryption"]["algo"]
+        if loader_length != 0 and algo in ("aes-128-cbc", "aes-128-ctr", "sm4-cbc"):
+            enc_algo = _ENC_ALGO_MAP[algo]
+            iv_data_offset = next_res_offset
+            iv_data_length = 16
+            next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+        elif algo == "sm4-ecb":
+            enc_algo = _ENC_ALGO_MAP[algo]
+    return enc_algo, iv_data_offset, iv_data_length, next_res_offset
+
+
+def _get_enc_info_v2(cfg, next_res_offset, filesizes):
+    """ Get encryption algorithm info for v2 header
+
+    In v2, IV data is always valid for cbc/ctr modes regardless of loader.
+
+    Args:
+        cfg: Configuration dict
+        next_res_offset: Next available resource offset
+        filesizes: Dict of file sizes
+
+    Returns:
+        Tuple of (enc_algo, iv_data_offset, iv_data_length, next_res_offset)
+    """
+    enc_algo = 0
+    iv_data_offset = 0
+    iv_data_length = 0
+    if "encryption" in cfg:
+        algo = cfg["encryption"]["algo"]
+        if algo in ("aes-128-cbc", "aes-128-ctr", "sm4-cbc"):
+            enc_algo = _ENC_ALGO_MAP[algo]
+            iv_data_offset = next_res_offset
+            iv_data_length = 16
+            next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+        elif algo == "sm4-ecb":
+            enc_algo = _ENC_ALGO_MAP[algo]
+    return enc_algo, iv_data_offset, iv_data_length, next_res_offset
+
+
+def _calc_resource_offsets(cfg, filesizes):
+    """ Calculate resource data offsets and lengths for header fields
+
+    Computes the offset and length of pbp, private, and pubkey resource data
+    based on the resource_start offset and file sizes.
+
+    Args:
+        cfg: Configuration dict
+        filesizes: Dict of file sizes including "resource_start"
+
+    Returns:
+        Tuple of (pbp_data_offset, pbp_data_length, priv_data_offset,
+                  priv_data_length, sign_key_offset, sign_key_length,
+                  next_res_offset)
+    """
+    next_res_offset = filesizes["resource_start"]
+    # Calculate PBP data offset and length
+    pbp_data_offset = 0
+    pbp_data_length = 0
+    if "resource" in cfg:
+        res = cfg["resource"]
+        for key, round_key in [("pbp2", "round(resource/pbp2)"), ("pbp", "round(resource/pbp)")]:
+            if key in res:
+                pbp_data_offset = next_res_offset
+                if key == "pbp2":
+                    pbp_data_length = filesizes[round_key]
+                else:
+                    pbp_data_length = filesizes["resource/pbp"]
+                next_res_offset = pbp_data_offset + filesizes[round_key]
+                break
+    # Calculate private data offset and length
+    priv_data_offset = 0
+    priv_data_length = 0
+    if "resource" in cfg:
+        res = cfg["resource"]
+        for key, round_key in [("private2", "round(resource/private2)"),
+                               ("private", "round(resource/private)")]:
+            if key in res:
+                priv_data_offset = next_res_offset
+                if key == "private2":
+                    priv_data_length = filesizes[round_key]
+                else:
+                    priv_data_length = filesizes["resource/private"]
+                next_res_offset = priv_data_offset + filesizes[round_key]
+                break
+    # Calculate sign key offset and length
+    sign_key_offset = 0
+    sign_key_length = 0
+    if "resource" in cfg and "pubkey" in cfg["resource"]:
+        sign_key_offset = next_res_offset
+        # Set the length value equal to real size
+        sign_key_length = filesizes["resource/pubkey"]
+        # Calculate offset use the size after alignment
+        next_res_offset = sign_key_offset + filesizes["round(resource/pubkey)"]
+    return (pbp_data_offset, pbp_data_length, priv_data_offset,
+            priv_data_length, sign_key_offset, sign_key_length, next_res_offset)
+
+
+def _gen_header_bytes(magic, fields):
+    """ Generate 256-byte header from magic string and field values
+
+    Args:
+        magic: Magic string (e.g. "AIC ")
+        fields: List of integer field values to append
+
+    Returns:
+        256-byte header as bytearray
+    """
+    header_bytes = magic.encode(encoding="utf-8")
+    for f in fields:
+        header_bytes = aic_boot_add_header(header_bytes, f)
+    header_bytes = header_bytes + bytearray(256 - len(header_bytes))
+    return header_bytes
+
+
+def _get_loader_addr(cfg):
+    """ Get loader load address and entry point from config
+
+    If only load address is provided, entry point defaults to load_address + 256.
+    If only entry point is provided, load address defaults to entry_point - 256.
+
+    Args:
+        cfg: Configuration dict
+
+    Returns:
+        Tuple of (load_address, entry_point)
+    """
+    load_address = 0
+    entry_point = 0
+    if "loader" in cfg:
+        if "load address" in cfg["loader"]:
+            if cfg["loader"]["load address"] == "CONFIG_AIC_BOOTLOADER_LOAD_BASE":
+                print("Error: Please compile the bootloader first.")
+                sys.exit(1)
+            load_address = int(cfg["loader"]["load address"], 16)
+        if "entry point" in cfg["loader"]:
+            if cfg["loader"]["entry point"] == "CONFIG_AIC_BOOTLOADER_TEXT_BASE":
+                print("Error: Please compile the bootloader first.")
+                sys.exit(1)
+            entry_point = int(cfg["loader"]["entry point"], 16)
+        if "load address" in cfg["loader"] and "entry point" not in cfg["loader"]:
+            entry_point = load_address + 256
+        if "load address" not in cfg["loader"] and "entry point" in cfg["loader"]:
+            load_address = entry_point - 256
+    return load_address, entry_point
+
+
 def aic_boot_gen_header_bytes(cfg, filesizes):
     """ Generate header bytes
 
         Legacy code, will be removed in later's version
     """
-    # Prepare header information
     magic = "AIC "
     checksum = 0
     header_ver = int("0x00010001", 16)
     if "head_ver" in cfg:
         header_ver = int(cfg["head_ver"], 16)
 
-    if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
-        img_len = aic_boot_calc_image_length(filesizes, 256)
-    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
-        img_len = aic_boot_calc_image_length(filesizes, 64)
-    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
-        img_len = aic_boot_calc_image_length(filesizes, 32)
-    else:
-        img_len = aic_boot_calc_image_length(filesizes, 16)
+    sign_len = _get_sign_len(cfg)
+    default_sign_len = 16 if sign_len == 0 else sign_len
+    img_len = aic_boot_calc_image_length(filesizes, default_sign_len)
     fw_ver = 0
     if "anti-rollback counter" in cfg:
         fw_ver = cfg["anti-rollback counter"]
@@ -775,116 +977,22 @@ def aic_boot_gen_header_bytes(cfg, filesizes):
     loader_ext_offset = 0
     if check_loader_run_in_dram(cfg):
         loader_length = 0
-        loader_ext_offset = img_len
-        # ensure ext loader start position is aligned to 512
         loader_ext_offset = round_up(img_len, META_ALIGNED_SIZE)
 
-    load_address = 0
-    entry_point = 0
-    if "loader" in cfg:
-        if cfg["loader"]["load address"] == "CONFIG_AIC_BOOTLOADER_LOAD_BASE":
-            print("Error: Please compile the bootloader first.")
-            sys.exit(1)
-        if cfg["loader"]["entry point"] == "CONFIG_AIC_BOOTLOADER_TEXT_BASE":
-            print("Error: Please compile the bootloader first.")
-            sys.exit(1)
+    load_address, entry_point = _get_loader_addr(cfg)
+    sign_algo, sign_length, sign_offset = _get_sign_info(cfg, img_len, 16)
+    (pbp_data_offset, pbp_data_length, priv_data_offset,
+     priv_data_length, sign_key_offset, sign_key_length,
+     next_res_offset) = _calc_resource_offsets(cfg, filesizes)
+    enc_algo, iv_data_offset, iv_data_length, _ = _get_enc_info_v1(
+        cfg, next_res_offset, filesizes, loader_length)
 
-        load_address = int(cfg["loader"]["load address"], 16)
-        entry_point = int(cfg["loader"]["entry point"], 16)
-    sign_algo = 0
-    sign_offset = 0
-    sign_length = 0
-    sign_key_offset = 0
-    sign_key_length = 0
-    next_res_offset = filesizes["resource_start"]
-    pbp_data_offset = 0
-    pbp_data_length = 0
-    if "resource" in cfg and "pbp2" in cfg["resource"]:
-        pbp_data_offset = next_res_offset
-        pbp_data_length = filesizes["round(resource/pbp2)"]
-        next_res_offset = pbp_data_offset + filesizes["round(resource/pbp2)"]
-    elif "resource" in cfg and "pbp" in cfg["resource"]:
-        pbp_data_offset = next_res_offset
-        pbp_data_length = filesizes["resource/pbp"]
-        next_res_offset = pbp_data_offset + filesizes["round(resource/pbp)"]
-    priv_data_offset = 0
-    priv_data_length = 0
-    if "resource" in cfg and "private2" in cfg["resource"]:
-        priv_data_offset = next_res_offset
-        priv_data_length = filesizes["round(resource/private2)"]
-        next_res_offset = priv_data_offset + filesizes["round(resource/private2)"]
-    elif "resource" in cfg and "private" in cfg["resource"]:
-        priv_data_offset = next_res_offset
-        priv_data_length = filesizes["resource/private"]
-        next_res_offset = priv_data_offset + filesizes["round(resource/private)"]
-    if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
-        sign_algo = 1
-        sign_length = 256
-        sign_offset = img_len - sign_length
-    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
-        sign_algo = 2
-        sign_length = 64
-        sign_offset = img_len - sign_length
-    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
-        sign_algo = 3
-        sign_length = 32
-        sign_offset = img_len - sign_length
-    else:
-        # Append md5 result to the end
-        sign_algo = 0
-        sign_length = 16
-        sign_offset = img_len - sign_length
-
-    if "resource" in cfg and "pubkey" in cfg["resource"]:
-        sign_key_offset = next_res_offset
-        # Set the length value equal to real size
-        sign_key_length = filesizes["resource/pubkey"]
-        # Calculate offset use the size after alignment
-        next_res_offset = sign_key_offset + filesizes["round(resource/pubkey)"]
-    enc_algo = 0
-    iv_data_offset = 0
-    iv_data_length = 0
-    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc" and loader_length != 0:
-        enc_algo = 1
-        iv_data_offset = next_res_offset
-        iv_data_length = 16
-        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
-    elif "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-ctr" and loader_length != 0:
-        enc_algo = 4
-        iv_data_offset = next_res_offset
-        iv_data_length = 16
-        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
-    elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-cbc" and loader_length != 0:
-        enc_algo = 3
-        iv_data_offset = next_res_offset
-        iv_data_length = 16
-        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
-    elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-ecb":
-        enc_algo = 2
-    # Generate header bytes
-    header_bytes = magic.encode(encoding="utf-8")
-    header_bytes = aic_boot_add_header(header_bytes, checksum)
-    header_bytes = aic_boot_add_header(header_bytes, header_ver)
-    header_bytes = aic_boot_add_header(header_bytes, img_len)
-    header_bytes = aic_boot_add_header(header_bytes, fw_ver)
-    header_bytes = aic_boot_add_header(header_bytes, loader_length)
-    header_bytes = aic_boot_add_header(header_bytes, load_address)
-    header_bytes = aic_boot_add_header(header_bytes, entry_point)
-    header_bytes = aic_boot_add_header(header_bytes, sign_algo)
-    header_bytes = aic_boot_add_header(header_bytes, enc_algo)
-    header_bytes = aic_boot_add_header(header_bytes, sign_offset)
-    header_bytes = aic_boot_add_header(header_bytes, sign_length)
-    header_bytes = aic_boot_add_header(header_bytes, sign_key_offset)
-    header_bytes = aic_boot_add_header(header_bytes, sign_key_length)
-    header_bytes = aic_boot_add_header(header_bytes, iv_data_offset)
-    header_bytes = aic_boot_add_header(header_bytes, iv_data_length)
-    header_bytes = aic_boot_add_header(header_bytes, priv_data_offset)
-    header_bytes = aic_boot_add_header(header_bytes, priv_data_length)
-    header_bytes = aic_boot_add_header(header_bytes, pbp_data_offset)
-    header_bytes = aic_boot_add_header(header_bytes, pbp_data_length)
-    header_bytes = aic_boot_add_header(header_bytes, loader_ext_offset)
-    header_bytes = header_bytes + bytearray(256 - len(header_bytes))
-    return header_bytes
+    return _gen_header_bytes(magic, [
+        checksum, header_ver, img_len, fw_ver, loader_length,
+        load_address, entry_point, sign_algo, enc_algo,
+        sign_offset, sign_length, sign_key_offset, sign_key_length,
+        iv_data_offset, iv_data_length, priv_data_offset, priv_data_length,
+        pbp_data_offset, pbp_data_length, loader_ext_offset])
 
 
 def aic_boot_gen_header_for_ext(cfg, filesizes):
@@ -1013,30 +1121,17 @@ def aic_boot_gen_header_for_ext(cfg, filesizes):
 def aic_boot_gen_header_bytes_v2(cfg, filesizes):
     """ Generate header bytes
     """
-    # Prepare header information
     magic = "AIC "
     checksum = 0
     header_ver = int("0x00010001", 16)
     if "head_ver" in cfg:
         header_ver = int(cfg["head_ver"], 16)
 
-    # Default is MD5
-    cksum_aux_len = 0
-    cksum_algo = "md5"
-    if "checksum-algo" in cfg:
-        cksum_algo = cfg["checksum-algo"].strip().lower()
-    if cksum_algo == "md5":
-        cksum_aux_len = 16
-    if cksum_algo == "sm3":
-        cksum_aux_len = 32
-    if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
-        img_len = aic_boot_calc_image_length(filesizes, 256)
-    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
-        img_len = aic_boot_calc_image_length(filesizes, 64)
-    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
-        img_len = aic_boot_calc_image_length(filesizes, 32)
-    else:
-        img_len = aic_boot_calc_image_length(filesizes, cksum_aux_len)
+    cksum_algo = cfg.get("checksum-algo", "md5").strip().lower()
+    cksum_aux_len = _CKSUM_ALGO_MAP.get(cksum_algo, 0)
+    sign_len = _get_sign_len(cfg)
+    default_sign_len = sign_len if sign_len else cksum_aux_len
+    img_len = aic_boot_calc_image_length(filesizes, default_sign_len)
     fw_ver = 0
     if "anti-rollback counter" in cfg:
         fw_ver = cfg["anti-rollback counter"]
@@ -1048,121 +1143,22 @@ def aic_boot_gen_header_bytes_v2(cfg, filesizes):
     loader_ext_offset = 0
     if aic_boot_with_ext_loader(cfg):
         loader_length = 0
-        loader_ext_offset = img_len
-        # ensure ext loader start position is aligned to 512
         loader_ext_offset = round_up(img_len, META_ALIGNED_SIZE)
 
-    load_address = 0
-    entry_point = 0
-    if "loader" in cfg:
-        if "load address" in cfg["loader"]:
-            if cfg["loader"]["load address"] == "CONFIG_AIC_BOOTLOADER_LOAD_BASE":
-                print("Error: Please compile the bootloader first.")
-                sys.exit(1)
-            load_address = int(cfg["loader"]["load address"], 16)
-        if "entry point" in cfg["loader"]:
-            if cfg["loader"]["entry point"] == "CONFIG_AIC_BOOTLOADER_TEXT_BASE":
-                print("Error: Please compile the bootloader first.")
-                sys.exit(1)
-            entry_point = int(cfg["loader"]["entry point"], 16)
-        if "load address" in cfg["loader"] and "entry point" not in cfg["loader"]:
-            entry_point = load_address + 256
-        if "load address" not in cfg["loader"] and "entry point" in cfg["loader"]:
-            load_address = entry_point - 256
-    sign_algo = 0
-    sign_offset = 0
-    sign_length = 0
-    sign_key_offset = 0
-    sign_key_length = 0
-    next_res_offset = filesizes["resource_start"]
-    pbp_data_offset = 0
-    pbp_data_length = 0
-    if "resource" in cfg and "pbp2" in cfg["resource"]:
-        pbp_data_offset = next_res_offset
-        pbp_data_length = filesizes["round(resource/pbp2)"]
-        next_res_offset = pbp_data_offset + filesizes["round(resource/pbp2)"]
-    elif "resource" in cfg and "pbp" in cfg["resource"]:
-        pbp_data_offset = next_res_offset
-        pbp_data_length = filesizes["resource/pbp"]
-        next_res_offset = pbp_data_offset + filesizes["round(resource/pbp)"]
-    priv_data_offset = 0
-    priv_data_length = 0
-    if "resource" in cfg and "private2" in cfg["resource"]:
-        priv_data_offset = next_res_offset
-        priv_data_length = filesizes["round(resource/private2)"]
-        next_res_offset = priv_data_offset + filesizes["round(resource/private2)"]
-    elif "resource" in cfg and "private" in cfg["resource"]:
-        priv_data_offset = next_res_offset
-        priv_data_length = filesizes["resource/private"]
-        next_res_offset = priv_data_offset + filesizes["round(resource/private)"]
-    if "signature" in cfg and cfg["signature"]["algo"] == "rsa,2048":
-        sign_algo = 1
-        sign_length = 256
-        sign_offset = img_len - sign_length
-    elif "signature" in cfg and cfg["signature"]["algo"] == "sm2":
-        sign_algo = 2
-        sign_length = 64
-        sign_offset = img_len - sign_length
-    elif "signature" in cfg and cfg["signature"]["algo"] == "hmac,sha256":
-        sign_algo = 3
-        sign_length = 32
-        sign_offset = img_len - sign_length
-    else:
-        # Append other checksum algo result to the end
-        sign_algo = 0
-        sign_length = cksum_aux_len
-        sign_offset = img_len - sign_length
+    load_address, entry_point = _get_loader_addr(cfg)
+    sign_algo, sign_length, sign_offset = _get_sign_info(cfg, img_len, cksum_aux_len)
+    (pbp_data_offset, pbp_data_length, priv_data_offset,
+     priv_data_length, sign_key_offset, sign_key_length,
+     next_res_offset) = _calc_resource_offsets(cfg, filesizes)
+    enc_algo, iv_data_offset, iv_data_length, _ = _get_enc_info_v2(
+        cfg, next_res_offset, filesizes)
 
-    if "resource" in cfg and "pubkey" in cfg["resource"]:
-        sign_key_offset = next_res_offset
-        # Set the length value equal to real size
-        sign_key_length = filesizes["resource/pubkey"]
-        # Calculate offset use the size after alignment
-        next_res_offset = sign_key_offset + filesizes["round(resource/pubkey)"]
-    enc_algo = 0
-    iv_data_offset = 0
-    iv_data_length = 0
-    if "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-cbc":
-        enc_algo = 1
-        iv_data_offset = next_res_offset
-        iv_data_length = 16
-        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
-    elif "encryption" in cfg and cfg["encryption"]["algo"] == "aes-128-ctr":
-        enc_algo = 4
-        iv_data_offset = next_res_offset
-        iv_data_length = 16
-        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
-    elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-cbc":
-        enc_algo = 3
-        iv_data_offset = next_res_offset
-        iv_data_length = 16
-        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
-    elif "encryption" in cfg and cfg["encryption"]["algo"] == "sm4-ecb":
-        enc_algo = 2
-    # Generate header bytes
-    header_bytes = magic.encode(encoding="utf-8")
-    header_bytes = aic_boot_add_header(header_bytes, checksum)
-    header_bytes = aic_boot_add_header(header_bytes, header_ver)
-    header_bytes = aic_boot_add_header(header_bytes, img_len)
-    header_bytes = aic_boot_add_header(header_bytes, fw_ver)
-    header_bytes = aic_boot_add_header(header_bytes, loader_length)
-    header_bytes = aic_boot_add_header(header_bytes, load_address)
-    header_bytes = aic_boot_add_header(header_bytes, entry_point)
-    header_bytes = aic_boot_add_header(header_bytes, sign_algo)
-    header_bytes = aic_boot_add_header(header_bytes, enc_algo)
-    header_bytes = aic_boot_add_header(header_bytes, sign_offset)
-    header_bytes = aic_boot_add_header(header_bytes, sign_length)
-    header_bytes = aic_boot_add_header(header_bytes, sign_key_offset)
-    header_bytes = aic_boot_add_header(header_bytes, sign_key_length)
-    header_bytes = aic_boot_add_header(header_bytes, iv_data_offset)
-    header_bytes = aic_boot_add_header(header_bytes, iv_data_length)
-    header_bytes = aic_boot_add_header(header_bytes, priv_data_offset)
-    header_bytes = aic_boot_add_header(header_bytes, priv_data_length)
-    header_bytes = aic_boot_add_header(header_bytes, pbp_data_offset)
-    header_bytes = aic_boot_add_header(header_bytes, pbp_data_length)
-    header_bytes = aic_boot_add_header(header_bytes, loader_ext_offset)
-    header_bytes = header_bytes + bytearray(256 - len(header_bytes))
-    return header_bytes
+    return _gen_header_bytes(magic, [
+        checksum, header_ver, img_len, fw_ver, loader_length,
+        load_address, entry_point, sign_algo, enc_algo,
+        sign_offset, sign_length, sign_key_offset, sign_key_length,
+        iv_data_offset, iv_data_length, priv_data_offset, priv_data_length,
+        pbp_data_offset, pbp_data_length, loader_ext_offset])
 
 
 def aic_boot_gen_rsa_signature_bytes(cfg, bootimg):
@@ -1700,6 +1696,70 @@ def gen_bytes(n, length):
     return bytearray([n] * length)
 
 
+def _extract_media_info(cfg):
+    """Extract and normalize media info from config (support both old and new format)
+
+    Args:
+        cfg: Configuration dictionary
+
+    Returns:
+        list: List of dicts with keys: "name", "type", "controller"
+
+    Old format: {"type": "spi-nor", "device_id": 0}
+    New format: {"name": ["spi-nor0", "spi-nand1"], "controller": [0, 1]}
+    """
+    media_cfg = cfg["image"]["info"]["media"]
+    media_list = []
+
+    if "type" in media_cfg:
+        # Old format: type and device_id
+        media_type = media_cfg["type"]
+        device_id = media_cfg.get("device_id", 0)
+
+        # Normalize to list (handle both string and list formats)
+        if isinstance(media_type, str):
+            media_types_list = [media_type]
+        else:
+            media_types_list = media_type
+
+        if isinstance(device_id, (int, str)):
+            device_ids_list = [device_id]
+        else:
+            device_ids_list = device_id
+
+        # Ensure device_ids_list has same length as media_types_list
+        while len(device_ids_list) < len(media_types_list):
+            device_ids_list.append(0)
+
+        for mt, ctrl_id in zip(media_types_list, device_ids_list):
+            # Convert ctrl_id to int if it's a string
+            if isinstance(ctrl_id, str):
+                ctrl_id = int(ctrl_id)
+
+            media_list.append({
+                "name": mt,
+                "type": mt,
+                "controller": ctrl_id
+            })
+    else:
+        # New format: name and controller list
+        device_names = media_cfg["name"]
+        controllers = media_cfg.get("controller", [])
+
+        for idx, device_name in enumerate(device_names):
+            # Get media type from device config (if no "type" key, device_name is the type)
+            media_type = cfg[device_name].get("type", device_name)
+            ctrl_id = controllers[idx] if idx < len(controllers) else 0
+
+            media_list.append({
+                "name": device_name,
+                "type": media_type,
+                "controller": ctrl_id
+            })
+
+    return media_list
+
+
 """
 struct artinchip_fw_hdr{
     char magic[8];
@@ -1736,17 +1796,25 @@ def img_write_fw_header(imgfile, cfg, meta_area_size, file_area_size):
             param_str += "P={},B={};".format(item["page"].upper(), item["block"].upper())
         param_str = param_str[0:-1]
         nand_array_org = param_str
-    dev_id = 0
-    if "device_id" in cfg["image"]["info"]["media"]:
-        val = cfg["image"]["info"]["media"]["device_id"]
-        dev_id = val_to_int(val)
+
+    # Get media info (support both old and new format)
+    media_list = _extract_media_info(cfg)
 
     magic = "AIC.FW"
     platform = str(cfg["image"]["info"]["platform"])
     product = str(cfg["image"]["info"]["product"])
     version = str(cfg["image"]["info"]["version"])
-    media_type = str(cfg["image"]["info"]["media"]["type"])
-    media_dev_id = dev_id
+
+    # media_type: join multiple types with semicolon
+    media_types = [str(m["type"]) for m in media_list]
+    media_type = ";".join(media_types)
+
+    # media_dev_id: pack controller IDs as bytes (max 4 devices)
+    dev_ids = [m["controller"] for m in media_list[:4]]  # Limit to 4 devices
+    while len(dev_ids) < 4:
+        dev_ids.append(0)  # Pad with 0
+    media_dev_id = bytes(dev_ids)  # 4 bytes
+
     meta_offset = DATA_ALIGNED_SIZE
     meta_size = meta_area_size
     file_offset = DATA_ALIGNED_SIZE + meta_area_size
@@ -1757,7 +1825,7 @@ def img_write_fw_header(imgfile, cfg, meta_area_size, file_area_size):
     buff = buff + str_to_nbytes(product, 64)
     buff = buff + str_to_nbytes(version, 64)
     buff = buff + str_to_nbytes(media_type, 64)
-    buff = buff + int_to_uint32_bytes(media_dev_id)
+    buff = buff + media_dev_id  # Already 4 bytes
     buff = buff + str_to_nbytes(nand_array_org, 64)
     buff = buff + int_to_uint32_bytes(meta_offset)
     buff = buff + int_to_uint32_bytes(meta_size)
@@ -1995,12 +2063,15 @@ def check_partition_exist(table, partval):
 
 def img_write_fwc_meta_section(imgfile, cfg, sect, meta_off, file_off, datadir):
     fwcset = cfg["image"][sect]
-    media_type = cfg["image"]["info"]["media"]["type"]
 
-    if media_type not in cfg:
-        print("Cannot find partitions for {}".format(media_type))
-        return (-1, -1)
-    partitions = cfg[media_type]["partitions"]
+    # Build partition lookup table across all devices for validation
+    media_list = _extract_media_info(cfg)
+    all_partitions = {}
+    for media in media_list:
+        device_name = media["name"]
+        if device_name in cfg and "partitions" in cfg[device_name]:
+            all_partitions.update(cfg[device_name]["partitions"])
+
     for fwc in fwcset:
         file_size = fwcset[fwc]["filesize"]
         if sect == "target":
@@ -2032,7 +2103,7 @@ def img_write_fwc_meta_section(imgfile, cfg, sect, meta_off, file_off, datadir):
 
         if "part" in fwcset[fwc]:
             partval = fwcset[fwc]["part"]
-            if check_partition_exist(partitions, partval) is False:
+            if check_partition_exist(all_partitions, partval) is False:
                 print("Partition {} not exist".format(partval))
                 return (-1, -1)
             if isinstance(partval, list):
@@ -2136,6 +2207,61 @@ def img_write_fwc_file_to_imgfile(imgfile, cfg, file_start, datadir):
 BIN_FILE_MAX_SIZE = 300 * 1024 * 1024
 
 
+def _calc_block_info(media_type, part_offset, part_size, filesize, block_size):
+    """ Calculate block info (start_block, last_block, used_block, total_block) for different
+        media types
+
+    Args:
+        media_type: Media type string ("spi-nand", "spi-nor", "mmc")
+        part_offset: Partition offset in bytes
+        part_size: Partition size in bytes
+        filesize: File data size in bytes
+        block_size: Block size in bytes (only used for spi-nand)
+
+    Returns:
+        Tuple of (start_block, last_block, used_block, total_block, block_size)
+    """
+    last_block = 0
+    total_block = 0
+    if media_type == "spi-nand":
+        start_block = part_offset // block_size // 1024
+        used_block = filesize // block_size // 1024
+        if filesize % (block_size * 1024) != 0:
+            used_block += 1
+        total_block = part_size // block_size // 1024
+        last_block = start_block + total_block - 1
+    elif media_type == "spi-nor":
+        block_size = 64
+        start_block = part_offset // block_size // 1024
+        used_block = filesize // block_size // 1024
+        if filesize % (block_size * 1024) != 0:
+            used_block += 1
+        last_block = start_block + used_block - 1
+    elif media_type == "mmc":
+        block_size = 512
+        start_block = part_offset // block_size
+        used_block = filesize // block_size
+        if filesize % (block_size * 1024) != 0:
+            used_block += 1
+        last_block = start_block + used_block - 1
+    return start_block, last_block, used_block, total_block, block_size
+
+
+def _fill_padding(binfile, size, fill_byte=0xFF, step=1024 * 1024):
+    """ Write padding bytes to binfile in chunks
+
+    Args:
+        binfile: Binary file handle to write to
+        size: Total padding size in bytes
+        fill_byte: Fill byte value (default 0xFF)
+        step: Chunk size for each write operation
+    """
+    while size > 0:
+        write_size = min(size, step)
+        binfile.write(gen_bytes(fill_byte, write_size))
+        size -= write_size
+
+
 def img_write_fwc_file_to_binfile(binfile, cfg, datadir):
     """ Write FW component's file data
     Args:
@@ -2146,7 +2272,6 @@ def img_write_fwc_file_to_binfile(binfile, cfg, datadir):
     """
     page_size = 0
     block_size = 0
-    media_size = 0
 
     if "array_organization" in cfg["image"]["info"]["media"]:
         orglist = cfg["image"]["info"]["media"]["array_organization"]
@@ -2154,30 +2279,19 @@ def img_write_fwc_file_to_binfile(binfile, cfg, datadir):
             page_size = int(re.sub(r"[^0-9]", "", item["page"]))
             block_size = int(re.sub(r"[^0-9]", "", item["block"]))
 
-    media_type = str(cfg["image"]["info"]["media"]["type"])
-    media_size = size_str_to_int(cfg[media_type]["size"])
+    media_list = _extract_media_info(cfg)
+    first_device_name = media_list[0]["name"]
+    media_size = size_str_to_int(cfg[first_device_name]["size"])
 
     if (media_size > BIN_FILE_MAX_SIZE):
         media_size = BIN_FILE_MAX_SIZE
 
-    step = 1024 * 1024
-    while True:
-        remain = int(media_size) - int(binfile.tell())
-        if remain > step:
-            binfile.write(gen_bytes(0xFF, step))
-        else:
-            binfile.write(gen_bytes(0xFF, remain))
-
-        if int(binfile.tell()) >= int(media_size):
-            break
+    # Fill the entire bin file with 0xFF padding up to media size
+    _fill_padding(binfile, int(media_size) - int(binfile.tell()))
 
     page_table_size = page_size * 1024
 
     buff = bytes()
-    start_block = 0
-    last_block = 0
-    used_block = 0
-    total_block = 0
 
     if VERBOSE:
         print("\tPacking file data:")
@@ -2194,55 +2308,44 @@ def img_write_fwc_file_to_binfile(binfile, cfg, datadir):
                     continue
             if VERBOSE:
                 print("\t\t" + os.path.split(path)[1])
-            # Read fwc file content, and write to image file
+
+            device_name = fwcset[fwc].get("device_name", media_list[0]["name"])
+            media_type = fwcset[fwc].get("media_type", media_list[0]["type"])
+
+            if device_name != first_device_name:
+                if VERBOSE:
+                    msg = "\t\tSkipping " + os.path.split(path)[1]
+                    msg += " (belongs to " + device_name + ")"
+                    print(msg)
+                continue
+
             part_offset = fwcset[fwc]["part_offset"]
             part_size = fwcset[fwc]["part_size"]
             part_name = fwcset[fwc]["part"][0]
             filesize = round_up(os.stat(path).st_size, DATA_ALIGNED_SIZE)
 
-            # gen part table
-            if fwc == "spl" and cfg["image"]["info"]["media"]["type"] == "spi-nand":
+            # SPL on SPI-NAND needs extra page table space
+            is_spl_nand = fwc == "spl" and media_type == "spi-nand"
+            if is_spl_nand:
                 filesize += page_table_size
 
-            if cfg["image"]["info"]["media"]["type"] == "spi-nand":
-                start_block = part_offset // block_size // 1024
-                if filesize % (block_size * 1024) != 0:
-                    used_block = filesize // block_size // 1024 + 1
-                else:
-                    used_block = filesize // block_size // 1024
-                total_block = (part_size // block_size // 1024)
+            start_block, last_block, used_block, total_block, block_size = \
+                _calc_block_info(media_type, part_offset, part_size, filesize, block_size)
+
+            if media_type == "spi-nand":
                 if (total_block - used_block) <= (total_block // 50):
                     print("\t\tPart {} reserved blocks are less than 2%, \
                             bad blocks may cause burning failures".format(part_name))
-
-                last_block = start_block + total_block - 1
                 if last_block < (start_block + used_block - 1):
                     print("\t\tFile {} exceeds the part {} size".format(path, part_name))
                     sys.exit(1)
-
-            elif cfg["image"]["info"]["media"]["type"] == "spi-nor":
-                block_size = 64
-                start_block = part_offset // block_size // 1024
-                if filesize % (block_size * 1024) != 0:
-                    used_block = filesize // block_size // 1024 + 1
-                else:
-                    used_block = filesize // block_size // 1024
-                last_block = start_block + used_block - 1
-            elif cfg["image"]["info"]["media"]["type"] == "mmc":
-                block_size = 512
-                start_block = part_offset // block_size
-                if filesize % (block_size * 1024) != 0:
-                    used_block = filesize // block_size + 1
-                else:
-                    used_block = filesize // block_size
-                last_block = start_block + used_block - 1
 
             buff = buff + int_to_uint32_bytes(start_block)
             buff = buff + int_to_uint32_bytes(last_block)
             buff = buff + int_to_uint32_bytes(used_block)
             buff = buff + int_to_uint32_bytes(0xFFFFFFFF)
 
-            if fwc == "spl" and cfg["image"]["info"]["media"]["type"] == "spi-nand":
+            if is_spl_nand:
                 part_offset += page_table_size
                 filesize -= page_table_size
             binfile.seek(part_offset, 0)
@@ -2255,7 +2358,7 @@ def img_write_fwc_file_to_binfile(binfile, cfg, datadir):
                     binfile.write(bindata)
             binfile.seek(part_offset + filesize, 0)
 
-            if fwc == "spl" and cfg["image"]["info"]["media"]["type"] == "spi-nand":
+            if is_spl_nand:
                 filesize += page_table_size
 
             if (part_size - filesize < 0):
@@ -2265,14 +2368,7 @@ def img_write_fwc_file_to_binfile(binfile, cfg, datadir):
                                                                               part_size))
                 sys.exit(1)
 
-            remain = part_size - filesize
-            while remain > 0:
-                if (remain < step):
-                    binfile.write(gen_bytes(0xFF, remain))
-                    remain -= remain
-                else:
-                    binfile.write(gen_bytes(0xFF, step))
-                    remain -= step
+            _fill_padding(binfile, part_size - filesize)
     binfile.flush()
 
     buff = buff + gen_bytes(0xFF, 16)
@@ -2315,27 +2411,45 @@ def img_get_part_size(cfg, datadir):
     total_siz = 0
 
     fwcset = cfg["image"]["target"]
-    media_type = cfg["image"]["info"]["media"]["type"]
-    if media_type not in cfg:
-        print("Partition table is empty for {}".format(media_type))
-        return -1
-    if media_type == "spi-nand" or media_type == "spi-nor":
-        total_siz = size_str_to_int(cfg[media_type]["size"])
-        partitions = cfg[media_type]["partitions"]
-        if len(partitions) == 0:
-            print("Partition table is empty")
+
+    # Get media info for all devices
+    media_list = _extract_media_info(cfg)
+
+    # Build a partition lookup table across all devices
+    # partition_table[part_name] = {"size": ..., "offset": ..., "device_name": ...,
+    #                               "media_type": ..., "total_size": ...}
+    partition_table = {}
+
+    for media in media_list:
+        device_name = media["name"]
+        media_type = media["type"]
+
+        if media_type not in ["spi-nand", "spi-nor", "mmc"]:
+            print("Not supported media type: {}".format(media_type))
             return -1
 
+        if device_name not in cfg:
+            print("Device {} not found in config".format(device_name))
+            return -1
+
+        total_siz = size_str_to_int(cfg[device_name]["size"])
+        partitions = cfg[device_name]["partitions"]
+        if len(partitions) == 0:
+            continue
+
+        part_offs = 0
         for part in partitions:
             if "size" not in partitions[part]:
                 print("No size value for partition: {}".format(part))
                 return -1
+
             # get part size
             part_size = size_str_to_int(partitions[part]["size"])
             if partitions[part]["size"] == "-":
                 part_size = total_siz - part_offs
             if "offset" in partitions[part]:
                 part_offs = size_str_to_int(partitions[part]["offset"])
+
             if "ubi" in partitions[part]:
                 volumes = partitions[part]["ubi"]
                 if len(volumes) == 0:
@@ -2349,46 +2463,39 @@ def img_get_part_size(cfg, datadir):
                     if volumes[vol]["size"] == "-":
                         vol_size = part_size
                     if "offset" in volumes[vol]:
-                        part_offs = size_str_to_int(volumes[vol]["offset"])
-                    part_name = part + ":" + vol
-                    for fwc in fwcset:
-                        if fwcset[fwc]["part"][0] == part_name:
-                            fwcset[fwc]["part_size"] = vol_size
-                            fwcset[fwc]["part_offset"] = part_offs
-                    part_offs += vol_size
+                        vol_offs = size_str_to_int(volumes[vol]["offset"])
+                    else:
+                        vol_offs = 0
+                    vol_name = part + ":" + vol
+                    partition_table[vol_name] = {
+                        "size": vol_size,
+                        "offset": vol_offs,
+                        "device_name": device_name,
+                        "media_type": media_type,
+                        "total_size": total_siz
+                    }
             else:
-                part_name = part
-                for fwc in fwcset:
-                    if fwcset[fwc]["part"][0] == part_name:
-                        fwcset[fwc]["part_size"] = part_size
-                        fwcset[fwc]["part_offset"] = part_offs
-                part_offs += part_size
-    elif media_type == "mmc":
-        total_siz = size_str_to_int(cfg[media_type]["size"])
-        partitions = cfg[media_type]["partitions"]
-        if len(partitions) == 0:
-            print("Partition table is empty")
-            return -1
-        for part in partitions:
-            if "size" not in partitions[part]:
-                print("No size value for partition: {}".format(part))
-                return -1
-
-            # get part size
-            part_size = size_str_to_int(partitions[part]["size"])
-            if partitions[part]["size"] == "-":
-                part_size = total_siz - part_offs
-            if "offset" in partitions[part]:
-                part_offs = size_str_to_int(partitions[part]["offset"])
-            part_name = part
-            for fwc in fwcset:
-                if fwcset[fwc]["part"][0] == part_name:
-                    fwcset[fwc]["part_size"] = part_size
-                    fwcset[fwc]["part_offset"] = part_offs
+                partition_table[part] = {
+                    "size": part_size,
+                    "offset": part_offs,
+                    "device_name": device_name,
+                    "media_type": media_type,
+                    "total_size": total_siz
+                }
             part_offs += part_size
-    else:
-        print("Not supported media type: {}".format(media_type))
-        return -1
+
+    # Match targets with partitions
+    for fwc in fwcset:
+        if fwcset[fwc]["part"][0] in partition_table:
+            part_info = partition_table[fwcset[fwc]["part"][0]]
+            fwcset[fwc]["part_size"] = part_info["size"]
+            fwcset[fwc]["part_offset"] = part_info["offset"]
+            fwcset[fwc]["device_name"] = part_info["device_name"]
+            fwcset[fwc]["media_type"] = part_info["media_type"]
+            fwcset[fwc]["total_size"] = part_info["total_size"]
+        else:
+            print("Partition {} not found in any device".format(fwcset[fwc]["part"][0]))
+            return -1
 
     return 0
 
@@ -2398,68 +2505,85 @@ def round_up(x, y):
 
 
 def aic_create_parts_for_env(cfg):
-    mtd = ""
-    ubi = ""
-    gpt = ""
+    mtd_list = []
+    ubi_list = []
+    gpt_list = []
 
     part_str = ""
-    media_type = cfg["image"]["info"]["media"]["type"]
-    if media_type == "spi-nand" or media_type == "spi-nor":
-        partitions = cfg[media_type]["partitions"]
-        mtd = "spi{}.0:".format(cfg["image"]["info"]["media"]["device_id"])
-        if len(partitions) == 0:
-            print("Partition table is empty")
+
+    # Get media info for all devices
+    media_list = _extract_media_info(cfg)
+
+    for media in media_list:
+        device_name = media["name"]
+        media_type = media["type"]
+        ctrl_id = media["controller"]
+
+        if media_type == "spi-nand" or media_type == "spi-nor":
+            partitions = cfg[device_name]["partitions"]
+            mtd = "spi{}.0:".format(ctrl_id)
+            if len(partitions) == 0:
+                print("Partition table is empty")
+                sys.exit(1)
+            for part in partitions:
+                itemstr = ""
+                if "size" not in partitions[part]:
+                    print("No size value for partition: {}".format(part))
+                itemstr += partitions[part]["size"]
+                if "offset" in partitions[part]:
+                    itemstr += "@{}".format(partitions[part]["offset"])
+                itemstr += "({})".format(part)
+                mtd += itemstr + ","
+                if "ubi" in partitions[part]:
+                    volumes = partitions[part]["ubi"]
+                    if len(volumes) == 0:
+                        print("Volume of {} is empty".format(part))
+                        sys.exit(1)
+                    ubi = "{}:".format(part)
+                    for vol in volumes:
+                        itemstr = ""
+                        if "size" not in volumes[vol]:
+                            print("No size value for ubi volume: {}".format(vol))
+                        itemstr += volumes[vol]["size"]
+                        if "offset" in volumes[vol]:
+                            itemstr += "@{}".format(volumes[vol]["offset"])
+                        itemstr += "({})".format(vol)
+                        ubi += itemstr + ","
+                    ubi = ubi[0:-1]
+                    ubi_list.append(ubi)
+            mtd = mtd[0:-1]
+            mtd_list.append(mtd)
+        elif media_type == "mmc":
+            partitions = cfg[device_name]["partitions"]
+            if len(partitions) == 0:
+                print("Partition table is empty")
+                sys.exit(1)
+            gpt = ""
+            for part in partitions:
+                itemstr = ""
+                if "size" not in partitions[part]:
+                    print("No size value for partition: {}".format(part))
+                itemstr += partitions[part]["size"]
+                if "offset" in partitions[part]:
+                    itemstr += "@{}".format(partitions[part]["offset"])
+                itemstr += "({})".format(part)
+                gpt += itemstr + ","
+            gpt = gpt[0:-1]
+            gpt_list.append(gpt)
+        else:
+            print("Not supported media type: {}".format(media_type))
             sys.exit(1)
-        for part in partitions:
-            itemstr = ""
-            if "size" not in partitions[part]:
-                print("No size value for partition: {}".format(part))
-            itemstr += partitions[part]["size"]
-            if "offset" in partitions[part]:
-                itemstr += "@{}".format(partitions[part]["offset"])
-            itemstr += "({})".format(part)
-            mtd += itemstr + ","
-            if "ubi" in partitions[part]:
-                volumes = partitions[part]["ubi"]
-                if len(volumes) == 0:
-                    print("Volume of {} is empty".format(part))
-                    sys.exit(1)
-                ubi += "{}:".format(part)
-                for vol in volumes:
-                    itemstr = ""
-                    if "size" not in volumes[vol]:
-                        print("No size value for ubi volume: {}".format(vol))
-                    itemstr += volumes[vol]["size"]
-                    if "offset" in volumes[vol]:
-                        itemstr += "@{}".format(volumes[vol]["offset"])
-                    itemstr += "({})".format(vol)
-                    ubi += itemstr + ","
-                ubi = ubi[0:-1] + ";"
-        mtd = mtd[0:-1]
-        part_str = "MTD={}\n".format(mtd)
-        if len(ubi) > 0:
-            ubi = ubi[0:-1]
-            part_str += "UBI={}\n".format(ubi)
-    elif media_type == "mmc":
-        partitions = cfg[media_type]["partitions"]
-        if len(partitions) == 0:
-            print("Partition table is empty")
-            sys.exit(1)
-        for part in partitions:
-            itemstr = ""
-            if "size" not in partitions[part]:
-                print("No size value for partition: {}".format(part))
-            itemstr += partitions[part]["size"]
-            if "offset" in partitions[part]:
-                itemstr += "@{}".format(partitions[part]["offset"])
-            itemstr += "({})".format(part)
-            gpt += itemstr + ","
-        gpt = gpt[0:-1]
-        part_str = "GPT={}\nparts_mmc={}\n".format(gpt, gpt)
-        # parts_mmc will be deleted later, keep it just for old version AiBurn tool
-    else:
-        print("Not supported media type: {}".format(media_type))
-        sys.exit(1)
+
+    # Build final partition string
+    if mtd_list:
+        part_str = "MTD={}".format(";".join(mtd_list))
+        if ubi_list:
+            part_str += "\nUBI={}".format(";".join(ubi_list))
+        part_str += "\n"
+
+    if gpt_list:
+        gpt_str = ";".join(gpt_list)
+        part_str += "GPT={}\nparts_mmc={}\n".format(gpt_str, gpt_str)
 
     return part_str
 
@@ -3022,8 +3146,12 @@ def build_firmware_image(cfg, datadir, outdir):
         os.makedirs(outdir + "burner/", exist_ok=True)
         img_bin_fn = outdir + "burner/" + img_gen_fw_file_name(cfg).replace(".img", ".bin")
         with open(img_bin_fn, 'wb') as binfile:
+            # Get media info
+            media_list = _extract_media_info(cfg)
+            media_type = media_list[0]["type"]
+
             # Only spi-nand need gen page table
-            if cfg["image"]["info"]["media"]["type"] == "spi-nand":
+            if media_type == "spi-nand":
                 ret = img_gen_page_table(binfile, cfg, datadir)
                 if ret != 0:
                     return ret
@@ -3171,7 +3299,12 @@ if __name__ == "__main__":
     cfg["image"]["part_table"] = "image_part_table.bin"
     # Finally build the firmware image
     imglist = []
-    if cfg["image"]["info"]["media"]["type"] == "spi-nand":
+
+    # Get media info
+    media_list = _extract_media_info(cfg)
+    media_type = media_list[0]["type"]
+
+    if media_type == "spi-nand":
         imglist, orglist = get_spinand_image_list(cfg, args.datadir)
     if len(imglist) > 0:
         # SPI-NAND UBI case

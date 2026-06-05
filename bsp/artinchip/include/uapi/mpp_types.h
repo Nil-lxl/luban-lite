@@ -1,7 +1,7 @@
 /*
  * Definitions for the ArtInChip media process platform interface
  *
- * Copyright (C) 2021-2024 ArtInChip Technology Co., Ltd.
+ * Copyright (C) 2021-2026 ArtInChip Technology Co., Ltd.
  * Authors:  Ning Fang <ning.fang@artinchip.com>
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -136,6 +136,7 @@ enum mpp_mbus_type {
     MEDIA_BUS_UNKNOWN,
     MEDIA_BUS_PARALLEL,
     MEDIA_BUS_BT656,
+    MEDIA_BUS_BT1120,
     MEDIA_BUS_CSI1,
     MEDIA_BUS_CCP2,
     MEDIA_BUS_CSI2_DPHY,
@@ -231,6 +232,7 @@ struct dma_buf_info {
  * @code:   data format code
  * @colorspace: colorspace of the data
  * @flag:   the polarity of input signal
+ * @mux:    the number of mux channels
  */
 struct mpp_video_fmt {
     unsigned int width;
@@ -239,7 +241,39 @@ struct mpp_video_fmt {
     enum mpp_mbus_type bus_type;
     unsigned int colorspace;
     unsigned int flags;
+    unsigned int mux;
 };
+
+/**
+ * enum mpp_stitch_mode - Video input stitch mode
+ *
+ * MPP_STITCH_INVALID: Invalid mode, only channel 0 is enabled
+ * MPP_STITCH_NONE:    No stitch, each channel outputs to its own buffer
+ * MPP_STITCH_V_MODE:  Vertical stitch, CH0 on top, CH1 on bottom
+ * MPP_STITCH_H_MODE:  Horizontal stitch, CH0 on left, CH1 on right
+ *
+ * Buffer layout for stitch mode:
+ *
+ *    MPP_STITCH_V_MODE              MPP_STITCH_H_MODE
+ *    +-----------+                  +-----------+-----------+
+ *    | CH0       |                  | CH0       | CH1       | Y
+ *    +-----------+ Y                +-----------+-----------+
+ *    | CH1       |                  | CH0       | CH1       | UV
+ *    +-----------+                  +-----------+-----------+
+ *    | CH0       |
+ *    +-----------+ UV
+ *    | CH1       |
+ *    +-----------+
+ *
+ * This enum is used by DVP, CSI and other video input modules.
+ */
+enum mpp_stitch_mode {
+    MPP_STITCH_INVALID = -1,
+    MPP_STITCH_NONE = 0,
+    MPP_STITCH_V_MODE = 1,
+    MPP_STITCH_H_MODE = 2,
+};
+#define MPP_IS_STITCH(m)  (((m) == MPP_STITCH_V_MODE) || ((m) == MPP_STITCH_H_MODE))
 
 #if defined(__cplusplus)
 }

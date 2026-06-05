@@ -5,8 +5,8 @@
             "spl":        { "size": "512k" },
             "env":        { "size": "128k" },
             "env_r":      { "size": "128k" },
-            "os":         { "size": "512k" },
-            "os_r":       { "size": "512k" },
+            "os":         { "size": "640k" },
+            "os_r":       { "size": "640k" },
 
         },
     },

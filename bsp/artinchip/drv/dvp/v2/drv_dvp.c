@@ -28,9 +28,7 @@
 #define DVP_FIRST_BUF       0
 #define BUF_IS_INVALID(index)   (((index) < 0) || ((index) >= VIN_MAX_BUF_NUM))
 
-struct aic_dvp g_dvp = {0};
-static u32 g_dvp_full_cnt[DVP_MAX_CH_NUM] = {0};
-static bool g_dvp_resumed[DVP_MAX_CH_NUM] = {false};
+static struct aic_dvp g_dvp = {0};
 
 static const struct {
     u32 fmt;
@@ -105,6 +103,7 @@ int aic_dvp_set_in_fmt(struct mpp_video_fmt *fmt)
 #else
     cfg->flags = fmt->flags;
 #endif
+    cfg->mux = fmt->mux;
 
     if (fmt->flags & MEDIA_SIGNAL_INTERLACED_MODE)
         cfg->interlaced = 1;
@@ -153,6 +152,8 @@ int aic_dvp_set_out_fmt(struct dvp_out_fmt *fmt)
     g_dvp.cfg.height = g_dvp.fmt.height;
     g_dvp.cfg.crop_x = g_dvp.fmt.crop_x;
     g_dvp.cfg.crop_y = g_dvp.fmt.crop_y;
+    g_dvp.cfg.stitch_mode = fmt->stitch_mode;
+
     for (i = 0; i < DVP_PLANE_NUM; i++) {
         g_dvp.cfg.stride[i] = g_dvp.fmt.plane_fmt[i].bytesperline;
         g_dvp.cfg.sizeimage[i] = g_dvp.fmt.plane_fmt[i].sizeimage;
@@ -185,32 +186,93 @@ void aic_dvp_stream_resume(u32 ch)
 {
     hal_dvp_clr_fifo();
     hal_dvp_clr_int(ch);
-    g_dvp_resumed[ch] = true;
+    g_dvp.ch[ch].resumed = true;
     hal_dvp_enable_int(&g_dvp.cfg, ch, 1);
+}
+
+#define PLANE_NUM       vbuf->num_planes
+#define VBUF_NUM        vbuf->num_buffers
+#define PLANE_S_SIZE    sizeof(struct vin_video_plane)
+#define VBUF_S_SIZE     (PLANE_S_SIZE * vbuf->num_planes)
+
+/* Split the plane for stitch mode */
+static void aic_dvp_split_plane(struct vin_video_buf *vbuf,
+                                enum mpp_stitch_mode stitch,
+                                struct aic_dvp_config *cfg)
+{
+    struct vin_video_plane planes1[VIN_MAX_BUF_NUM] = {0};
+    int i;
+
+    /**
+    * Buffer layout for stitch mode:
+    *
+    *    MPP_STITCH_V_MODE              MPP_STITCH_H_MODE
+    *    +-----------+                  +-----------+-----------+
+    *    | CH0       |                  | CH0       | CH1       | Y
+    *    +-----------+ Y                +-----------+-----------+
+    *    | CH1       |                  | CH0       | CH1       | UV
+    *    +-----------+                  +-----------+-----------+
+    *    | CH0       |
+    *    +-----------+ UV
+    *    | CH1       |
+    *    +-----------+
+    */
+
+    if (stitch == MPP_STITCH_V_MODE) {
+        for (i = 0; i < PLANE_NUM * VBUF_NUM; i++) {
+            planes1[i].buf = vbuf->planes[i].buf + vbuf->planes[i].len;
+            planes1[i].len = vbuf->planes[i].len;
+        }
+    }
+
+    if (stitch == MPP_STITCH_H_MODE) {
+        for (i = 0; i < PLANE_NUM * VBUF_NUM; i++) {
+            planes1[i].buf = vbuf->planes[i].buf + cfg->width;
+            planes1[i].len = vbuf->planes[i].len;
+        }
+    }
+    memcpy(&vbuf->planes[PLANE_NUM * VBUF_NUM], planes1, VBUF_S_SIZE * VBUF_NUM);
 }
 
 int aic_dvp_req_buf(char *buf, u32 size, struct vin_video_buf *vbuf, u32 ch)
 {
     struct aic_dvp_config *cfg = &g_dvp.cfg;
-    int i;
+    enum mpp_stitch_mode stitch = cfg->stitch_mode;
+    int i, ret = 0;
 
-    if (!vbuf) {
-        pr_err("Invalid parameter\n");
+    if (!vbuf || !buf || size == 0) {
+        pr_err("[DVP%d] Invalid parameter\n", ch);
         return -1;
     }
 
-    memset(vbuf, 0, sizeof(struct vin_video_buf));
     vbuf->num_planes = DVP_PLANE_NUM;
-    for (i = 0; i < DVP_PLANE_NUM; i++)
+    for (i = 0; i < PLANE_NUM; i++)
         vbuf->planes[i].len = cfg->sizeimage[i];
 
-    return vin_vb_req_buf(&g_dvp.ch[ch].queue, buf, size, vbuf);
+    if (MPP_IS_STITCH(stitch)) {
+        if (ch > 0)
+            return vin_vb_req_stitch_buf(&g_dvp.ch[ch].queue, vbuf);
+
+        /* Request the buffer with the double size */
+        for (i = 0; i < PLANE_NUM; i++)
+            vbuf->planes[i].len *= 2;
+    }
+
+    ret = vin_vb_req_buf(&g_dvp.ch[ch].queue, buf, size, vbuf);
+    if (MPP_IS_STITCH(stitch)) { /* It's surely CH0 */
+        /* Revert the size of all planes */
+        for (i = 0; i < PLANE_NUM * VBUF_NUM; i++)
+            vbuf->planes[i].len /= 2;
+
+        aic_dvp_split_plane(vbuf, stitch, cfg);
+    }
+    return ret;
 }
 
 int aic_dvp_q_buf(u32 index, u32 ch)
 {
     if (index >= g_dvp.ch[ch].queue.num_buffers) {
-        pr_err("Invalid index %d for channel %d\n", index, ch);
+        pr_err("[DVP%d] Invalid index %d\n", ch, index);
         return -EINVAL;
     }
 
@@ -220,7 +282,7 @@ int aic_dvp_q_buf(u32 index, u32 ch)
 int aic_dvp_dq_buf(u32 *pindex, u32 ch)
 {
     if (pindex == NULL) {
-        pr_err("Invalid parameter\n");
+        pr_err("[DVP%d] Invalid parameter\n", ch);
         return -EINVAL;
     }
 
@@ -231,7 +293,7 @@ int aic_dvp_dq_buf(u32 *pindex, u32 ch)
 u32 aic_dvp_get_timestamp(u32 index, u32 ch)
 {
     if (index >= g_dvp.ch[ch].queue.num_buffers) {
-        pr_err("Invalid index out of range: %d\n", index);
+        pr_err("[DVP%d] Invalid index out of range: %d\n", ch, index);
         return 0;
     }
 
@@ -241,7 +303,7 @@ u32 aic_dvp_get_timestamp(u32 index, u32 ch)
 static int aic_dvp_buf_reload(struct aic_dvp *dvp, struct vb_buffer *buf, u32 ch)
 {
     buf->hw_using = 1;
-    pr_debug("[%u] Set %d buf 0x%x-0x%x to register\n", aic_get_time_ms(), buf->index,
+    pr_debug("[DVP%d] Set buf%d 0x%x-0x%x to register\n", ch, buf->index,
              (long)buf->planes[0].buf, (long)buf->planes[1].buf);
 
     if (buf->planes[1].length)
@@ -264,22 +326,24 @@ static void aic_dvp_buf_mark_done(struct aic_dvp *dvp,
 
 static int aic_dvp_top_field_done(struct aic_dvp *dvp, u32 err, u32 ch)
 {
+    struct aic_dvp_ch *dvp_ch = &g_dvp.ch[ch];
     struct vb_buffer *cur_buf = NULL;
 
-    if (list_empty(&dvp->ch[ch].active_list)) {
-        pr_err("No buf available!\n");
+    dvp_ch->update_cnt++;
+    if (list_empty(&dvp_ch->active_list)) {
+        pr_err("[DVP%d] No buf available!\n", ch);
         return 0;
     }
 
-    cur_buf = list_first_entry(&dvp->ch[ch].active_list, struct vb_buffer, active_entry);
-    pr_debug("cur: index %d, dvp_using %d\n",
+    cur_buf = list_first_entry(&dvp_ch->active_list, struct vb_buffer, active_entry);
+    pr_debug("[DVP%d] cur: index %d, dvp_using %d\n", ch,
              cur_buf->index, cur_buf->hw_using);
     if (BUF_IS_INVALID(cur_buf->index)) {
-        pr_err("Invalid buf %d\n", cur_buf->index);
+        pr_err("[DVP%d] Invalid buf %d\n", ch, cur_buf->index);
         return -1;
     }
 
-    pr_debug("Add offset %d of cur buf %d", dvp->cfg.stride[0], cur_buf->index);
+    pr_debug("[DVP%d] Add offset %d of cur buf %d\n", ch, dvp->cfg.stride[0], cur_buf->index);
 
 #ifdef DVP_SFIELD_MODE
     hal_dvp_update_buf_addr(cur_buf->planes[0].buf, cur_buf->planes[1].buf, ch,
@@ -288,91 +352,92 @@ static int aic_dvp_top_field_done(struct aic_dvp *dvp, u32 err, u32 ch)
     hal_dvp_update_buf_addr(cur_buf->planes[0].buf, cur_buf->planes[1].buf, ch,
                             dvp->cfg.stride[0], dvp->cfg.stride[0]);
 #endif
-    dvp->ch[ch].sequence++;
+    dvp_ch->sequence++;
     return 0;
 }
 
 static int aic_dvp_frame_done(struct aic_dvp *dvp, int err, u32 ch)
 {
     static bool need_skip[DVP_MAX_CH_NUM] = {false};
+    struct aic_dvp_ch *dvp_ch = &g_dvp.ch[ch];
     struct vb_buffer *cur_buf = NULL;
 
+    dvp_ch->frame_cnt++;
     if (need_skip[ch]) {
         need_skip[ch] = false;
         return 0;
     }
 
-    if (list_empty(&dvp->ch[ch].active_list)) {
+    if (list_empty(&dvp_ch->active_list)) {
 #ifndef AIC_DVP_IGNORE_LOSS
         pr_err("No buf available!\n");
 #endif
         return 0;
     }
 
-    cur_buf = list_first_entry(&dvp->ch[ch].active_list, struct vb_buffer, active_entry);
-    pr_debug("[%u] cur: index %d, hw_using %d, err %d\n\n", aic_get_time_ms(),
+    cur_buf = list_first_entry(&dvp_ch->active_list, struct vb_buffer, active_entry);
+    pr_debug("[DVP%d] cur: index %d, hw_using %d, err %d\n\n", ch,
              cur_buf->index, cur_buf->hw_using, err);
     if (BUF_IS_INVALID(cur_buf->index)) {
-        pr_err("Invalid buf %d\n", cur_buf->index);
+        pr_err("[DVP%d] Invalid buf %d\n", ch, cur_buf->index);
         return -1;
     }
 
     /* If cur_buf is a new one queued, DVP should use it first */
     if (!cur_buf->hw_using) {
-        pr_debug("Buf %d is free just now\n", cur_buf->index);
+        pr_debug("[DVP%d] Buf %d is free just now\n", ch, cur_buf->index);
         aic_dvp_buf_reload(dvp, cur_buf, ch);
-        dvp->ch[ch].sequence++;
+        dvp_ch->sequence++;
         need_skip[ch] = true;
         return 0;
     }
 
     /* Release the current buffer from DVP driver */
     list_del(&cur_buf->active_entry);
-    aic_dvp_buf_mark_done(dvp, cur_buf, dvp->ch[ch].sequence, err);
-
-    if (!g_dvp.ch[ch].streaming)
-        aicos_sem_give(g_dvp.ch[ch].finished);
+    aic_dvp_buf_mark_done(dvp, cur_buf, dvp_ch->sequence, err);
 
     return 0;
 }
 
 static int aic_dvp_update_addr(struct aic_dvp *dvp, u32 ch)
 {
+    struct aic_dvp_ch *dvp_ch = &g_dvp.ch[ch];
     struct vb_buffer *cur_buf;
     struct vb_buffer *next_buf;
 
-    if (!dvp->ch[ch].streaming)
+    dvp_ch->update_cnt++;
+    if (!dvp_ch->streaming)
         return 0;
 
-    if (list_empty(&dvp->ch[ch].active_list)) {
+    if (list_empty(&dvp_ch->active_list)) {
 #ifndef AIC_DVP_IGNORE_LOSS
-        pr_warn("No buf available!\n");
+        pr_warn("[DVP%d] No buf available!\n", ch);
 #endif
         return -1;
     }
 
-    cur_buf = list_first_entry(&dvp->ch[ch].active_list, struct vb_buffer, active_entry);
-    pr_debug("cur: index %d, hw_using %d\n", cur_buf->index, cur_buf->hw_using);
+    cur_buf = list_first_entry(&dvp_ch->active_list, struct vb_buffer, active_entry);
+    pr_debug("[DVP%d] cur: index %d, hw_using %d\n", ch, cur_buf->index, cur_buf->hw_using);
     if (BUF_IS_INVALID(cur_buf->index)) {
-        pr_err("Cur buf %d is invalid\n", cur_buf->index);
+        pr_err("[DVP%d] Cur buf %d is invalid\n", ch, cur_buf->index);
         return -1;
     }
 
-    if (cur_buf == list_last_entry(&dvp->ch[ch].active_list, struct vb_buffer,
+    if (cur_buf == list_last_entry(&dvp_ch->active_list, struct vb_buffer,
                                    active_entry)) {
 #ifndef AIC_DVP_IGNORE_LOSS
-        pr_warn("It's the last buf!\n");
+        pr_warn("[DVP%d] It's the last buf!\n", ch);
 #endif
         return 0;
     }
 
     next_buf = list_next_entry(cur_buf, active_entry);
     if (!next_buf || BUF_IS_INVALID(next_buf->index)) {
-        pr_err("Next buf is invalid\n");
+        pr_err("[DVP%d] Next buf is invalid\n", ch);
         return -1;
     }
-    pr_debug("Next: index %d, hw_using %d\n",
-             next_buf->index, next_buf->hw_using);
+    pr_debug("[DVP%d] Next: index %d, hw_using %d\n",
+             ch, next_buf->index, next_buf->hw_using);
 
     /* DVP can use the next buf as output. */
     if (!next_buf->hw_using) {
@@ -381,8 +446,8 @@ static int aic_dvp_update_addr(struct aic_dvp *dvp, u32 ch)
     } else {
         /* This should not happened! */
         if (!dvp->cfg.interlaced)
-            pr_debug("[%u] Weird! DVP is using two buf %d & %d!\n",
-                     aic_get_time_ms(), cur_buf->index, next_buf->index);
+            pr_debug("[DVP%d] Weird! DVP is using two buf %d & %d!\n",
+                      ch, cur_buf->index, next_buf->index);
         return -1;
     }
 
@@ -391,7 +456,7 @@ static int aic_dvp_update_addr(struct aic_dvp *dvp, u32 ch)
 
 static void aic_dvp_buf_queue(struct vb_buffer *vb)
 {
-    pr_debug("Queue buf %d\n", vb->index);
+    pr_debug("[DVP%d] Queue buf %d\n", vb->queue->ch, vb->index);
 
     list_add_tail(&vb->active_entry, &g_dvp.ch[vb->queue->ch].active_list);
     vb->hw_using = 0;
@@ -420,8 +485,7 @@ static int aic_dvp_start_streaming(struct vb_queue *q)
     int ch = q->ch;
     int ret = 0;
 
-    pr_debug("Starting capture\n");
-
+    pr_debug("[DVP%d] Starting capture\n", ch);
     dvp->ch[ch].sequence = 0;
     hal_dvp_field_tag_clr(ch);
 
@@ -452,32 +516,13 @@ err_disable_pipeline:
     return ret;
 }
 
-static int aic_dvp_wait_irq_sta_set(u32 ch, u32 flag, u32 timeout_ms)
-{
-    u32 wait_time = 0;
-    u32 check_interval = 10;
-
-    while (wait_time < timeout_ms) {
-        u32 reg_val = hal_dvp_irq_sta_get(ch);
-
-        if (reg_val & flag) {
-            return reg_val & flag;
-        }
-
-        aicos_msleep(check_interval);
-        wait_time += check_interval;
-    }
-
-    return 0;
-}
-
 static void aic_dvp_wait_streaming(struct aic_dvp *dvp, u32 ch)
 {
     if (!dvp->ch[ch].streaming)
         return;
 
     dvp->ch[ch].streaming = 0;
-    pr_debug("Wait streaming done\n");
+    pr_debug("[DVP%d] Wait streaming done\n", ch);
     if (aicos_sem_take(dvp->ch[ch].finished, 200) < 0)
         pr_warn("Wait for stop streaming timeout!\n");
 }
@@ -487,8 +532,7 @@ static void aic_dvp_stop_streaming(struct vb_queue *q)
     struct aic_dvp *dvp = &g_dvp;
     int ch = q->ch;
 
-    pr_debug("Stopping capture\n");
-
+    pr_debug("[DVP%d] Stopping capture\n", ch);
     hal_dvp_capture_stop(ch);
     aic_dvp_wait_streaming(dvp, ch);
     hal_dvp_enable_int(&dvp->cfg, ch, 0);
@@ -504,83 +548,130 @@ static const struct vb_ops aic_dvp_vb_ops = {
     .stop_streaming     = aic_dvp_stop_streaming,
 };
 
-static irqreturn_t aic_dvp_isr(int irq, void *data)
+static void aic_dvp_ch_isr(u32 ch, u32 sta)
 {
-    static u32 recv_first_field = 0;
     struct aic_dvp *dvp = &g_dvp;
-    u32 ch = (u32)(long)data;
-    u32 sta, err = 0;
+    struct aic_dvp_config *dvp_cfg = &dvp->cfg;
+    struct aic_dvp_ch *dvp_ch = &dvp->ch[ch];
+    static u32 all_ch_done = 0;
+    u32 err = 0;
 
-    sta = hal_dvp_clr_int(ch);
-    pr_debug("[%u] IRQ status 0x%x, sequence %d\n", aic_get_time_ms(),
-             sta, dvp->ch[ch].sequence);
+    pr_debug("[DVP%d] IRQ status 0x%x, sequence %d\n",
+             ch, sta, dvp_ch->sequence);
+
+    if ((sta & DVP_IRQ_STA_CLOSE_DONE) && !dvp_ch->streaming) {
+        aicos_sem_give(dvp_ch->finished);
+        return;
+    }
 
     if (sta & DVP_IRQ_STA_BUF_FULL) {
-        g_dvp_full_cnt[ch]++;
+        dvp_ch->full_cnt++;
         /* should tag the buf error, so APP can ignore it */
         err = 1;
-        pr_warn("DVP FIFO is full! Count %d (0x%x)\n", g_dvp_full_cnt[ch], sta);
+        pr_warn("[DVP%d] FIFO is full! Count %d (0x%x)\n", ch, dvp_ch->full_cnt, sta);
     } else if (sta & DVP_IRQ_STA_XY_CODE_ERR) {
         err = 1;
-        pr_warn("DVP checksum has error! (0x%x)\n", sta);
+        pr_warn("[DVP%d] checksum has error! (0x%x)\n", ch, sta);
         hal_dvp_clr_fifo();
-        return IRQ_HANDLED;
+        return;
     }
 
     if (sta & DVP_IRQ_EN_FRAME_DONE) {
         if (err)
             hal_dvp_clr_fifo();
 
-        if (g_dvp_resumed[ch]) {
+        if (dvp_ch->resumed) {
             hal_dvp_clr_fifo();
             hal_dvp_clr_fifo();
-            g_dvp_resumed[ch] = false;
+            dvp_ch->resumed = false;
         }
 
-        if (dvp->cfg.interlaced) {
+        if (dvp_cfg->interlaced) {
             /* If the first field is a bottom field, ignore it */
-            if (!recv_first_field && hal_dvp_is_bottom_field(ch)) {
-                pr_info("The first is bottom field - ignored\n");
+            if (!dvp_ch->recv_first_field && hal_dvp_is_bottom_field(ch)) {
+                pr_info("[DVP%d] The first is bottom field - ignored\n", ch);
                 hal_dvp_clr_fifo();
-                recv_first_field = 1;
-                return IRQ_HANDLED;
+                dvp_ch->recv_first_field = true;
+                return;
             }
 
             if (hal_dvp_is_top_field(ch)) {
-                recv_first_field = 1;
+                dvp_ch->recv_first_field = true;
 #ifdef DVP_SFIELD_MODE
             } else {
                 /* Ignore the bottom field */
-                return IRQ_HANDLED;
+                return;
             }
         }
 #else
-                return IRQ_HANDLED;
+                return;
             }
         }
 #endif
 
-        aic_dvp_frame_done(dvp, err, ch);
+        if (MPP_IS_STITCH(dvp_cfg->stitch_mode)) {
+            all_ch_done |= BIT(ch);
+            if ((ch != 0) && (all_ch_done == DVP_CH_IRQ_ALL_PENDING))
+                all_ch_done &= ~BIT(0); // SO, wait for next CH0 done
+
+            /* Only consider frame done when CH0 is done */
+            if ((all_ch_done == DVP_CH_IRQ_ALL_PENDING) && (ch == 0)) {
+                for (int i = DVP_MAX_CH_NUM - 1; i >= 0; i--)
+                    aic_dvp_frame_done(dvp, err, i);
+                all_ch_done = 0;
+            }
+        } else {
+            aic_dvp_frame_done(dvp, err, ch);
+        }
     }
 
     if (sta & DVP_IRQ_STA_HNUM) {
-        if (dvp->cfg.interlaced) {
+        if (dvp_cfg->interlaced) {
             hal_dvp_get_current_xy(ch);
 
             if (hal_dvp_is_top_field(ch)) {
                 aic_dvp_top_field_done(dvp, err, ch);
-                recv_first_field = 1;
-                return IRQ_HANDLED;
+                dvp_ch->recv_first_field = true;
+                return;
             }
 
             /* If the first field is a bottom field, ignore it */
-            if (!recv_first_field) {
+            if (!dvp_ch->recv_first_field) {
                 pr_debug("The first is bottom field - ignore\n");
-                return IRQ_HANDLED;
+                return;
             }
         }
 
         aic_dvp_update_addr(dvp, ch);
+    }
+}
+
+static irqreturn_t aic_dvp_isr(int irq, void *data)
+{
+    s32 ch, pending, sta;
+
+    pending = hal_dvp_ch_irq_sta_get();
+    if (pending)
+        pr_debug("DVP IRQ channel pending: 0x%x\n", pending);
+
+    for (ch = DVP_MAX_CH_NUM - 1; ch >= 0; ch--) {
+        sta = hal_dvp_clr_int(ch);
+
+        if (!sta)
+            continue;
+
+        if (!g_dvp.ch[ch].available) {
+            pr_debug("[DVP%d] IRQ is unavailable! sta 0x%x\n", ch, sta);
+            continue;
+        }
+
+        if (!hal_dvp_int_is_enabled(ch)) {
+            pr_warn("[DVP%d] IRQ is not enabled! sta 0x%x\n", ch, sta);
+            continue;
+        }
+
+        if (pending & BIT(ch))
+            aic_dvp_ch_isr(ch, sta);
     }
 
     return IRQ_HANDLED;
@@ -598,42 +689,54 @@ bool aic_dvp_sfield_mode(void)
 #endif
 }
 
-int aic_dvp_probe(u32 ch)
+int aic_dvp_probe(void)
 {
     int ret = 0;
 
-    ret = aicos_request_irq(DVP_IRQn, aic_dvp_isr, 0, "AIC_DVP_NAME", (void *)(long)ch);
+    ret = aicos_request_irq(DVP_IRQn, aic_dvp_isr, 0, AIC_DVP_NAME, NULL);
     if (ret < 0) {
         pr_err("Failed to request DVP IRQ\n");
         return -1;
     }
-
-    memset(&g_dvp, 0, sizeof(struct aic_dvp));
-    INIT_LIST_HEAD(&g_dvp.ch[ch].active_list);
 
     return ret;
 }
 
 int aic_dvp_vb_init(u32 ch)
 {
-    mpp_vin_sel_ch(ch);
+    struct aic_dvp_ch *dvp_ch = &g_dvp.ch[ch];
 
-    if (vin_vb_init(&g_dvp.ch[ch].queue, &aic_dvp_vb_ops))
+    if (vin_vb_init(&dvp_ch->queue, &aic_dvp_vb_ops))
         return -1;
 
-    INIT_LIST_HEAD(&g_dvp.ch[ch].active_list);
-    if (!g_dvp.ch[ch].finished)
-        g_dvp.ch[ch].finished = aicos_sem_create(0);
+    dvp_ch->queue.ch = ch;
+    INIT_LIST_HEAD(&dvp_ch->active_list);
+    if (!dvp_ch->finished)
+        dvp_ch->finished = aicos_sem_create(0);
 
+    dvp_ch->available = true;
     return 0;
 }
 
 void aic_dvp_vb_deinit(u32 ch)
 {
-    vin_vb_deinit(&g_dvp.ch[ch].queue);
+    struct aic_dvp_ch *dvp_ch = &g_dvp.ch[ch];
+
+    if (!dvp_ch->available) {
+        pr_err("[DVP%d] VB is not initialized\n", ch);
+        return;
+    }
+
+    vin_vb_deinit(&dvp_ch->queue);
+    dvp_ch->available = false;
+
+    if (dvp_ch->finished) {
+        aicos_sem_delete(dvp_ch->finished);
+        dvp_ch->finished = NULL;
+    }
 }
 
-int aic_dvp_open(u32 ch)
+int aic_dvp_open(void)
 {
     int ret = 0;
 
@@ -657,54 +760,177 @@ int aic_dvp_open(u32 ch)
     hal_dvp_qos_cfg(AIC_DVP_QOS_HIGH, AIC_DVP_QOS_LOW, 0x100, 0x80);
     hal_dvp_enable(&g_dvp.cfg, 1);
 
-    /* Channel 0 and channel 1 process the input of the 0th data separately */
-    if (ch == DVP_CH0)
-        hal_dvp_ch_index_config(DVP_CH_INDEX_0, DVP_CH_INDEX_1);
-
-    if (ch == DVP_CH1)
-        hal_dvp_ch_index_config(DVP_CH_INDEX_1, DVP_CH_INDEX_0);
-
-    /* Select single channel mode */
-    hal_dvp_channel_sel(SINGLE_CHANNEL);
-
-    /* Initialize the data counter for the specified channel */
-    g_dvp_full_cnt[ch] = 0;
+    memset(g_dvp.ch, 0, sizeof(struct aic_dvp_ch) * DVP_MAX_CH_NUM);
+    g_dvp.inited = true;
     return 0;
 }
 
-int aic_dvp_close(u32 ch)
+int aic_dvp_close(void)
 {
-    int ret = 0, dvp_sta = 0;
-    dvp_sta = aic_dvp_wait_irq_sta_set(ch, DVP_IRQ_STA_CLOSE_STA, 100);
+    struct aic_dvp_ch *dvp_ch = g_dvp.ch;
+    int ret = 0;
+    u32 i;
 
-    if (g_dvp.ch[ch].streaming)
-        aic_dvp_wait_streaming(&g_dvp, ch);
+    for (i = 0, dvp_ch = g_dvp.ch; i < DVP_MAX_CH_NUM; i++, dvp_ch++) {
+        if (dvp_ch->available && dvp_ch->streaming)
+            aic_dvp_wait_streaming(&g_dvp, i);
+    }
 
     hal_dvp_enable(&g_dvp.cfg, 0);
 
-    if (dvp_sta) {
-        ret = hal_clk_disable_assertrst(CLK_DVP);
-        if (ret < 0) {
-            pr_err("DVP reset disable failed!\n");
-            return -1;
+    ret = hal_clk_disable_assertrst(CLK_DVP);
+    if (ret < 0) {
+        pr_err("DVP reset disable failed!\n");
+        return -1;
+    }
+
+    for (i = 0, dvp_ch = g_dvp.ch; i < DVP_MAX_CH_NUM; i++, dvp_ch++) {
+        if (dvp_ch->full_cnt)
+            pr_info("[DVP%d] FIFO full happened %d times\n", i, dvp_ch->full_cnt);
+    }
+
+    g_dvp.inited = false;
+    return 0;
+}
+
+void cmd_dvp_vb_info(int argc, char **argv)
+{
+    struct aic_dvp_ch *dvp_ch = g_dvp.ch;
+    struct vb_buffer *vb = NULL;
+    u32 i;
+
+    printf("\nDVP Driver info:\n");
+    printf("===============================================\n");
+    printf("No. Streaming Sequence Frame    Update     Full\n");
+    printf("--- --------- -------- -------- -------- ------\n");
+
+    for (i = 0, dvp_ch = g_dvp.ch; i < DVP_MAX_CH_NUM; i++, dvp_ch++) {
+        if (!dvp_ch->available)
+            continue;
+        printf("%3d %9s %8d %8d %8d %6d\n", i, dvp_ch->streaming ? "yes" : "no",
+               dvp_ch->sequence, dvp_ch->frame_cnt, dvp_ch->update_cnt,
+               dvp_ch->full_cnt);
+    }
+    printf("===============================================\n");
+
+    for (i = 0, dvp_ch = g_dvp.ch; i < DVP_MAX_CH_NUM; i++, dvp_ch++) {
+        if (!dvp_ch->available)
+            continue;
+
+        printf("[DVP%d] VB info:\n", i);
+        vin_vb_show_info(&dvp_ch->queue);
+
+        printf("Active list  : [");
+        list_for_each_entry(vb, &dvp_ch->active_list, active_entry)
+            printf("%d%s", vb->index, vb->hw_using ? "* " : " ");
+        printf("]\n");
+    }
+    printf("\n");
+}
+MSH_CMD_EXPORT_ALIAS(cmd_dvp_vb_info, vbinfo, Show VB status);
+
+#ifdef RT_USING_PM
+static int aic_dvp_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_dvp *dvp_dev = (struct aic_dvp *)device->user_data;
+    struct aic_dvp_ch *dvp_ch = dvp_dev->ch;
+    u32 i;
+
+    if (!dvp_dev->inited) {
+        pr_debug("DVP is not initialized\n");
+        return 0;
+    }
+
+    for (i = 0; i < DVP_MAX_CH_NUM; i++, dvp_ch++) {
+        if (dvp_ch->available && dvp_ch->streaming) {
+            pr_err("[DVP%d] is streaming, cannot suspend\n", i);
+            return -EBUSY;
         }
     }
 
-    if (g_dvp_full_cnt[ch])
-        pr_info("DVP FIFO full happened %d times\n", g_dvp_full_cnt[ch]);
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        hal_clk_disable_assertrst(CLK_DVP);
+#else
+        hal_clk_disable(CLK_DVP);
+#endif
+        LOG_I("DVP suspend\n");
+        break;
+    case PM_SLEEP_MODE_IDLE:
+    default:
+        break;
+    }
 
     return 0;
 }
 
-void cmd_dvp_vb_info(int argc, char **argv, u32 ch)
+static void aic_dvp_resume(const struct rt_device *device, rt_uint8_t mode)
 {
-    struct vb_buffer *vb = NULL;
+    struct aic_dvp *dvp_dev = (struct aic_dvp *)device->user_data;
+    int ret = 0;
 
-    vin_vb_show_info(&g_dvp.ch[ch].queue);
+    if (!dvp_dev->inited) {
+        pr_debug("DVP is not initialized\n");
+        return;
+    }
 
-    printf("Active list  : [");
-    list_for_each_entry(vb, &g_dvp.ch[ch].active_list, active_entry)
-        printf("%d%s", vb->index, vb->hw_using ? "* " : " ");
-    printf("]\n");
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        ret = hal_clk_set_freq(CLK_DVP, AIC_DVP_CLK_RATE);
+        if (ret < 0) {
+            pr_err("Failed to set DVP clk %d\n", AIC_DVP_CLK_RATE);
+            break;
+        }
+#ifdef AIC_PM_DRV_V15
+        hal_clk_enable_deassertrst(CLK_DVP);
+#else
+        hal_clk_enable(CLK_DVP);
+#endif
+
+        hal_dvp_qos_cfg(AIC_DVP_QOS_HIGH, AIC_DVP_QOS_LOW, 0x100, 0x80);
+        hal_dvp_enable(&dvp_dev->cfg, 1);
+        LOG_I("DVP resume\n");
+        break;
+    case PM_SLEEP_MODE_IDLE:
+    default:
+        break;
+    }
 }
-MSH_CMD_EXPORT_ALIAS(cmd_dvp_vb_info, vbinfo, Show VB status);
+
+static struct rt_device_pm_ops aic_dvp_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_dvp_suspend, aic_dvp_resume)
+    NULL,
+};
+#endif /* RT_USING_PM */
+
+static int drv_dvp_init(void)
+{
+    rt_err_t ret = RT_EOK;
+
+#ifdef RT_USING_DEVICE_OPS
+    g_dvp.dev.ops = RT_NULL;
+#endif
+    g_dvp.dev.type = RT_Device_Class_Miscellaneous;
+
+    ret = rt_device_register(&g_dvp.dev, AIC_DVP_NAME, 0);
+    if (ret != RT_EOK) {
+        pr_err("Failed to register DVP device\n");
+        return ret;
+    }
+    g_dvp.dev.user_data = &g_dvp;
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&g_dvp.dev, &aic_dvp_pm_ops);
+#endif
+
+    return 0;
+}
+INIT_PREV_EXPORT(drv_dvp_init);

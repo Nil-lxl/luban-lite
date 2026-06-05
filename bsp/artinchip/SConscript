@@ -155,8 +155,9 @@ if GetDepend('AIC_WDT_DRV'):
 if GetDepend('AIC_MTOP_DRV'):
     ver = GetConfigValue('AIC_MTOP_DRV_VER')
     ver = ver.replace('"','')
-    if GetDepend('DRIVER_HAL_EN'):
+    if GetDepend('DRIVER_DRV_EN'):
         src += Glob('drv/mtop/*.c')
+    if GetDepend('DRIVER_HAL_EN'):
         src += Glob('hal/mtop/*.c', exclude=['hal/mtop/*_v*.c'])
         src += Glob('hal/mtop/*_v%s.c' % ver)
 
@@ -174,11 +175,14 @@ if GetDepend('AIC_SPINOR_DRV'):
         src += Glob('drv_bare/spinor/*.c')
         CPPPATH.append(cwd + '/drv_bare/spinor/inc')
 
-if GetDepend('AIC_SPIENC_DRV'):
+if GetDepend('AIC_SPIENC_DRV') or GetDepend('LPKG_USING_AIC_SPIENC_AUTHORIZATION'):
+    ver = GetConfigValue('AIC_SPIENC_DRV_VER')
+    ver = ver.replace('"','')
     if GetDepend('DRIVER_DRV_EN'):
         src += Glob('drv/spienc/*.c')
     if GetDepend('DRIVER_HAL_EN'):
-        src += Glob('hal/spienc/*.c')
+        src += Glob('hal/spienc/*.c', exclude=['hal/spienc/*_v*.c'])
+        src += Glob('hal/spienc/*_v%sx.c' % (ver[0]))
 
 if GetDepend('AIC_SDMC_DRV'):
     if GetDepend('DRIVER_DRV_EN'):
@@ -516,6 +520,26 @@ if GetDepend('AIC_PWM_DRV'):
     if GetDepend('DRIVER_HAL_EN'):
         src += Glob('hal/pwm/*.c')
 
+if GetDepend('AIC_XPWM_DRV'):
+    if GetDepend('DRIVER_DRV_EN'):
+        src += Glob('drv/xpwm/drv_xpwm.c')
+    if GetDepend('DRIVER_BARE_DRV_EN'):
+        src += Glob('drv_bare/xpwm/drv_xpwm.c')
+    if GetDepend('AIC_XPWM_DRV_V10'):
+        src += Glob('hal/xpwm/xpwm_info_v10.c')
+    if GetDepend('AIC_XPWM_DRV_V11'):
+        src += Glob('hal/xpwm/xpwm_info_v11.c')
+    if GetDepend('DRIVER_HAL_EN'):
+        src += Glob('hal/xpwm/hal_xpwm.c')
+
+if GetDepend('AIC_INPUTCAP_DRV'):
+    if GetDepend('DRIVER_DRV_EN'):
+        src += Glob('drv/inputcap/*.c')
+    if GetDepend('DRIVER_BARE_DRV_EN'):
+        src += Glob('drv_bare/inputcap/*.c')
+    if GetDepend('DRIVER_HAL_EN'):
+        src += Glob('hal/inputcap/*.c')
+
 if GetDepend('AIC_HRTIMER_DRV_V12'):
     if GetDepend('DRIVER_DRV_EN'):
         src += Glob('drv/hrtimer/drv_hrtimer_pwm.c')
@@ -553,6 +577,12 @@ if GetDepend('AIC_CAN_DRV'):
         src += Glob('drv/can/*.c')
     if GetDepend('DRIVER_HAL_EN'):
         src += Glob('hal/can/*.c')
+
+if GetDepend('AIC_CANFD_DRV'):
+    if GetDepend('DRIVER_DRV_EN'):
+        src += Glob('drv/canfd/*.c')
+    if GetDepend('DRIVER_HAL_EN'):
+        src += Glob('hal/canfd/*.c')
 
 if GetDepend('AIC_SID_DRV'):
     if GetDepend('DRIVER_DRV_EN'):
@@ -635,6 +665,12 @@ if GetDepend('AIC_GMAC_DRV'):
         CPPPATH.append(cwd + '/hal/mac/')
     if GetDepend('RT_USING_LWIP'):
         src += Glob('drv/mac/*.c')
+
+if GetDepend('AIC_MAC_CHIPID_DRV'):
+    if not GetDepend('AIC_GMAC_DRV'):
+        src += Glob('hal/mac/aicmac_macaddr.c')
+        src += Glob('hal/mac/md5.c')
+        CPPPATH.append(cwd + '/hal/mac/')
 
 if GetDepend('AIC_PBUS_DRV'):
     if GetDepend('DRIVER_DRV_EN'):

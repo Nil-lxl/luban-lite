@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -19,6 +19,11 @@ void drv_pin_mux_set(unsigned int pin, unsigned int func);
 unsigned int drv_pin_mux_get(unsigned int pin);
 long drv_pin_get(const char *name);
 int drv_pin_init(void);
+
+#ifdef RT_USING_PM
+int gpio_pm_register(rt_base_t pin, void (*restore_fn)(void *data), void *data);
+void gpio_pm_unregister(rt_base_t pin);
+#endif
 
 #ifdef __cplusplus
 }

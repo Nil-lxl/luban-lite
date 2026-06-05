@@ -216,6 +216,7 @@ static const struct qspi_cfg qspi = {
     .priv = &st77916,
 };
 
+#ifdef RT_USING_FINSH
 static int cmd_spi_st77916(int argc, char **argv)
 {
     aic_spi_lcd_cfg_t config = {
@@ -285,3 +286,4 @@ static int cmd_spi_st77916(int argc, char **argv)
 }
 
 MSH_CMD_EXPORT_ALIAS(cmd_spi_st77916, spi_st77916, Test panel_st77916);
+#endif // defined(RT_USING_FINSH)

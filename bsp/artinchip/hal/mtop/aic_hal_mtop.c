@@ -62,6 +62,20 @@ void hal_mtop_enable(struct aic_mtop_dev *phandle)
     writel(reg_value, phandle->reg_base + MTOP_CTL);
 }
 
+void hal_mtop_disable(struct aic_mtop_dev *phandle)
+{
+    uint32_t reg_value;
+
+    reg_value = readl(phandle->reg_base + MTOP_CTL);
+    reg_value &= ~MTOP_EN;
+    writel(reg_value, phandle->reg_base + MTOP_CTL);
+}
+
+void hal_mtop_clear_irq_status(struct aic_mtop_dev *phandle)
+{
+    writel(1, phandle->reg_base + MTOP_IRQ_STA);
+}
+
 void hal_mtop_set_period_cnt(struct aic_mtop_dev *phandle, uint32_t period_cnt)
 {
     writel(period_cnt, phandle->reg_base + MTOP_TIME_CNT);
@@ -84,7 +98,7 @@ irqreturn_t hal_mtop_irq_handler(int irq_num, void *can_handle)
     uint32_t i, j, pos, offset;
     struct aic_mtop_dev *phandle = (struct aic_mtop_dev *)can_handle;
 
-    if (readl(MTOP_BASE + MTOP_IRQ_STA)) {
+    if (readl(phandle->reg_base + MTOP_IRQ_STA)) {
         for (i = 0; i < MTOP_GROUP_MAX; i++)
             for (j = 0; j < MTOP_PORT_MAX; j++) {
                 /* calculate the corresponding position of the port in BITMAP */
@@ -101,7 +115,7 @@ irqreturn_t hal_mtop_irq_handler(int irq_num, void *can_handle)
         if (phandle->callback)
             phandle->callback(phandle, phandle->arg);
 
-        writel(1, MTOP_BASE + MTOP_IRQ_STA);
+        hal_mtop_clear_irq_status(phandle);
         return 0;
     }
 

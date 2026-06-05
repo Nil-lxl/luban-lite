@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -412,30 +412,6 @@ struct usbd_comp_dev_t *get_usbdcomp_dev(void)
     return &g_usbdcomp_dev;
 }
 
-int _create_dev_class(uint8_t dev_class, void *data)
-{
-    struct function_intf_t *func = NULL;
-    struct usbd_comp_dev_t *c = get_usbdcomp_dev();
-
-    func = usb_malloc(sizeof(struct function_intf_t));
-    memset(func, 0, sizeof(struct function_intf_t));
-
-    for (int i = 0; i < MAX_COMPOSITE_DEV; i++) {
-        if (c->func_table[i] == NULL) {
-            func->dev_class = dev_class;
-            if (data == NULL)
-                snprintf((char *)func->class_name, sizeof(func->class_name), "null-%d", i);
-            else
-                memcpy((char *)func->class_name, (char *)data, strlen((char *)data));
-            func->data = NULL;
-            c->func_table[i] = func;
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 int _find_dev_class_byname(char *name)
 {
     if (name != NULL) {
@@ -462,7 +438,7 @@ bool _check_func_table(char *name)
         goto __end;
 
     while(c->cur_func_table[func_cnt] != NULL) {
-        if (strcmp(c->cur_func_table[func_cnt], name) == 0) {
+        if (strncmp(c->cur_func_table[func_cnt], name, strlen(name)) == 0) {
             found = true;
             return found;
         }
@@ -760,6 +736,8 @@ int _make_uvc_intf_cs_desc(uint8_t *src)
 
     if (intf_desc->bInterfaceSubClass == 0x01U) {   /* VIDEO_SC_VIDEOCONTROL */
         desc = (uint8_t *)_get_desc(src, 0x24U, 0); /* VIDEO_CS_INTERFACE_DESCRIPTOR_TYPE */
+        if (desc == NULL)
+            return -1;
         if (desc[2] == 0x01U) /* VIDEO_VC_HEADER_DESCRIPTOR_SUBTYPE */ {
             desc[desc[0] - 1] = c->intf_index;
         }
@@ -1145,6 +1123,7 @@ static int usbd_compsite_device_start_default(void)
 }
 INIT_APP_EXPORT(usbd_compsite_device_start_default);
 
+#ifdef RT_USING_FINSH
 #include <finsh.h>
 #include <getopt.h>
 
@@ -1252,4 +1231,5 @@ static void cmd_test_usb_comp(int argc, char **argv)
     }
 }
 MSH_CMD_EXPORT_ALIAS(cmd_test_usb_comp, test_usb_comp, usb composite device test);
-#endif
+#endif // defined(RT_USING_FINSH)
+#endif // defined(KERNEL_RTTHREAD)

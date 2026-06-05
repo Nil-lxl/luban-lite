@@ -282,6 +282,9 @@ extern const struct spinand_manufacturer xincun_spinand_manufacturer;
 #ifdef SPI_NAND_FUDANMICRO
 extern const struct spinand_manufacturer fudanmicro_spinand_manufacturer;
 #endif
+#ifdef SPI_NAND_UNIM
+extern const struct spinand_manufacturer unim_spinand_manufacturer;
+#endif
 
 extern struct spi_nand_cmd_cfg cmd_cfg_table[];
 

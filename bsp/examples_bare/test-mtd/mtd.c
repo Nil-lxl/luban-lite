@@ -89,12 +89,8 @@ static int do_mtd_list(int argc, char *argv[])
     printf("MTD devices:\n");
     for (i = 0; i < cnt; i++) {
         mtd = mtd_get_device_by_id(i);
-        if (i == 0)
-            printf("%-24s 0x%08lx ~ 0x%08lx\n", mtd->name, mtd->start,
-                   mtd->start + mtd->size);
-        else
-            printf("    %-20s 0x%08lx ~ 0x%08lx\n", mtd->name, mtd->start,
-                   mtd->start + mtd->size);
+        printf("%-24s 0x%08lx ~ 0x%08lx\n", mtd->name, mtd->start,
+               mtd->start + mtd->size);
     }
     return 0;
 }

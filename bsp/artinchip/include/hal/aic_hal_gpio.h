@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -103,6 +103,10 @@ int hal_gpio_set_irq_mode(unsigned int group, unsigned int pin, unsigned int irq
 int hal_gpio_direction_input(unsigned int group, unsigned int pin);
 int hal_gpio_direction_output(unsigned int group, unsigned int pin);
 int hal_gpio_set_debounce(unsigned int group, unsigned int pin, unsigned int debounce);
+
+int hal_gpio_get_drive_strength(unsigned int group, unsigned int pin, unsigned int *pstrength);
+int hal_gpio_get_irq_mode(unsigned int group, unsigned int pin, unsigned int *pirq_mode);
+int hal_gpio_get_debounce(unsigned int group, unsigned int pin, unsigned int *pdebounce);
 
 int hal_gpio_cfg(struct gpio_cfg *cfg, u32 cnt);
 int hal_gpio_get_pincfg(unsigned int group, unsigned int pin, int check_type);

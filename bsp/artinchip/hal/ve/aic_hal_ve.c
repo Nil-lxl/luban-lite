@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2020-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -47,11 +47,13 @@
 #define FINISH_EVENT 1
 
 #define VE_TIMEOUT  2000 // 2s
+#define VE_CLOSE_TIMEOUT_MS 50
 
 struct aic_ve_client {
     u32 status;                     // finish status
     aicos_event_t wait_event;
     aicos_mutex_t lock;
+    u32 is_busy;
 };
 
 struct aic_ve_client client = {0};
@@ -133,6 +135,7 @@ static irqreturn_t hal_ve_handle(int irq, void* ctx)
 
     writel(VE_DISABLE_IRQ, VE_BASE + VE_IRQ_REG);
 
+    client.is_busy = 0;
     aicos_event_send(client.wait_event, FINISH_EVENT);
     return 0;
 }
@@ -141,7 +144,16 @@ int hal_ve_probe(void)
 {
     memset(&client, 0, sizeof(struct aic_ve_client));
     client.lock = aicos_mutex_create();
+    if (client.lock == NULL) {
+        hal_log_err("Create mutex failed");
+        return -1;
+    }
     client.wait_event = aicos_event_create();
+    if (client.wait_event == NULL) {
+        aicos_mutex_delete(client.lock);
+        hal_log_err("Create wait_event failed");
+        return -1;
+    }
     aicos_request_irq(VE_IRQn, hal_ve_handle, 0, NULL, (void*)&client);
     aicos_irq_enable(VE_IRQn);
     pr_debug("++++ aich_ve_probe, client: %p", &client);
@@ -165,6 +177,19 @@ int hal_ve_close(struct aic_ve_client *client)
     return 0;
 }
 
+int hal_ve_close_with_wait(void)
+{
+    int ret = 0;
+
+    if(client.is_busy && aicos_event_recv(client.wait_event, FINISH_EVENT, NULL, VE_CLOSE_TIMEOUT_MS) < 0) {
+        hal_log_err("VE wait irq failed");
+        ret = -1;
+    }
+
+    hal_ve_power_off();
+    return ret;
+}
+
 int hal_ve_control(struct aic_ve_client *client, int cmd, void *arg)
 {
     switch(cmd) {
@@ -185,6 +210,7 @@ int hal_ve_control(struct aic_ve_client *client, int cmd, void *arg)
             hal_log_info("VE get client failed");
             return -1;
         }
+        client->is_busy = 1;
         break;
     case IOC_VE_PUT_CLIENT:
         aicos_mutex_give(client->lock);

@@ -5,6 +5,7 @@
  *
  * Authors: matteo <duanmt@artinchip.com>
  */
+#define LOG_TAG "camera"
 
 #include "aic_core.h"
 #include "aic_hal_clk.h"
@@ -53,32 +54,42 @@ u32 camera_xclk_rate_get(void)
 
 u32 camera_rst_pin_get(void)
 {
-    u32 pin = 0;
+    s32 pin = 0;
 
-    pin = rt_pin_get(AIC_CAMERA_RST_PIN);
-    if (pin) {
-        rt_pin_mode(pin, PIN_MODE_OUTPUT);
-        LOG_I("Camera use reset PIN: %s", AIC_CAMERA_RST_PIN);
-    } else {
-        LOG_E("Failed to get reset PIN");
+    if (!strlen(AIC_CAMERA_RST_PIN)) {
+        LOG_I("No reset PIN defined");
+        return 0;
     }
 
-    return pin;
+    pin = rt_pin_get(AIC_CAMERA_RST_PIN);
+    if (pin > 0) {
+        rt_pin_mode(pin, PIN_MODE_OUTPUT);
+        LOG_I("Camera use reset PIN: %s", AIC_CAMERA_RST_PIN);
+        return pin;
+    } else {
+        LOG_E("Failed to get reset PIN");
+        return 0;
+    }
 }
 
 u32 camera_pwdn_pin_get(void)
 {
-    u32 pin = 0;
+    s32 pin = 0;
 
-    pin = rt_pin_get(AIC_CAMERA_PWDN_PIN);
-    if (pin) {
-        rt_pin_mode(pin, PIN_MODE_OUTPUT);
-        LOG_I("Camera use power down PIN: %s", AIC_CAMERA_PWDN_PIN);
-    } else {
-        LOG_E("Failed to get power down PIN");
+    if (!strlen(AIC_CAMERA_PWDN_PIN)) {
+        LOG_I("No power down PIN defined");
+        return 0;
     }
 
-    return pin;
+    pin = rt_pin_get(AIC_CAMERA_PWDN_PIN);
+    if (pin > 0) {
+        rt_pin_mode(pin, PIN_MODE_OUTPUT);
+        LOG_I("Camera use power down PIN: %s", AIC_CAMERA_PWDN_PIN);
+        return pin;
+    } else {
+        LOG_E("Failed to get power down PIN");
+        return 0;
+    }
 }
 
 void camera_pin_set_high(u32 pin)

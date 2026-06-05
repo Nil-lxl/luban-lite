@@ -132,7 +132,7 @@ void hal_dvp_set_cfg(struct aic_dvp_config *cfg)
         val |= DVP_CTL_DROP_FRAME_EN;
     dvp_writel(val, DVP_CTL);
 
-    if (cfg->output == DVP_OUT_RAW_PASSTHROUGH)
+    if (cfg->input == DVP_IN_RAW)
         val = DVP_OUT_HOR_NUM_RAW(cfg->width) | DVP_OUT_HOR_BEG_RAW(cfg->crop_x);
     else
         val = DVP_OUT_HOR_NUM(cfg->width) | DVP_OUT_HOR_BEG(cfg->crop_x);

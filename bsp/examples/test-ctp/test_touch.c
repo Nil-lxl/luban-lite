@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -104,6 +104,9 @@ static void test_touch(int argc, char *argv[]) {
     }
 
     rt_device_set_rx_indicate(g_dev, rx_callback);
+#ifdef AIC_USING_RTP
+    rt_device_control(g_dev, RT_TOUCH_CTRL_ENABLE_INT, RT_NULL);
+#endif
 
     g_touch_sem = rt_sem_create("dsem", 0, RT_IPC_FLAG_FIFO);
     if (g_touch_sem == RT_NULL) {

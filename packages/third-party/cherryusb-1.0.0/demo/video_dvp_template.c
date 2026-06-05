@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,7 +22,7 @@
 #endif
 
 /* Video Gloabl marco */
-#define VID_BUF_NUM             10
+#define VID_BUF_NUM             3
 #define VID_BUF_PLANE_NUM       2
 #define SENSOR_FORMAT           MPP_FMT_NV12
 
@@ -261,6 +261,10 @@ static int sensor_set_outfmt(int width, int height, int format)
     f.height = height;
     f.pixelformat = format;
     f.num_planes = VID_BUF_PLANE_NUM;
+    if (format == MPP_FMT_YUV400)
+        f.framesize = width * height;
+    else
+        f.framesize = width * height * 3 / 2; // NV12
 
     ret = mpp_dvp_ioctl(DVP_OUT_S_FMT, &f);
     if (ret < 0) {
@@ -274,6 +278,8 @@ static int sensor_request_buf(struct vin_video_buf *vbuf)
 {
     int i = 0;
 
+    vbuf->num_buffers = VID_BUF_NUM;
+    vbuf->num_planes = VID_BUF_PLANE_NUM;
     if (mpp_dvp_ioctl(DVP_REQ_BUF, (void *)vbuf) < 0) {
         USB_LOG_ERR("Failed to request buf!\n");
         return -1;
@@ -521,17 +527,17 @@ static int camera_init(void)
 
     if (sensor_get_fmt()) {
         USB_LOG_ERR("get sensor fmt failed\n");
-        return -1;
+        goto error;
     }
 
     if (sensor_set_infmt()) {
         USB_LOG_ERR("set sensor infmt failed\n");
-        return -1;
+        goto error;
     }
 
     if (sensor_set_outfmt(g_uvc_video.w, g_uvc_video.h, g_uvc_video.dst_fmt)) {
         USB_LOG_ERR("set sensor outfmt failed\n");
-        return -1;
+        goto error;
     }
 
     usb_set_fmt(g_uvc_video.w, g_uvc_video.h, g_uvc_video.dst_fmt);
@@ -542,24 +548,37 @@ static int camera_init(void)
     g_uvc_video.stream_sem = usb_osal_sem_create(0);
     if (!g_uvc_video.stream_sem) {
         USB_LOG_ERR("stream_sem create failed\n");
-        return -1;
+        goto error;
     }
 
     g_uvc_video.tx_sem = usb_osal_sem_create(0);
     if (!g_uvc_video.tx_sem) {
         USB_LOG_ERR("create dynamic semaphore failed.\n");
-        return -1;
+        goto error;
     }
 
     video_thread = usb_osal_thread_create("usbd_video_thread", 2048, CONFIG_USBHOST_PSC_PRIO + 1, usbd_video_thread, NULL);
     if (video_thread == NULL) {
         USB_LOG_ERR("video_thread create failed\n");
-        return -1;
+        goto error;
     }
 
     USB_LOG_INFO("UVC init success!\n");
-
     return 0;
+
+error:
+    if (g_uvc_video.stream_sem) {
+        usb_osal_sem_delete(g_uvc_video.stream_sem);
+        g_uvc_video.stream_sem = NULL;
+    }
+
+    if (g_uvc_video.tx_sem) {
+        usb_osal_sem_delete(g_uvc_video.tx_sem);
+        g_uvc_video.tx_sem = NULL;
+    }
+
+    mpp_vin_deinit();
+    return -1;
 }
 
 #ifdef LPKG_CHERRYUSB_DEVICE_COMPOSITE
@@ -620,7 +639,8 @@ int usbd_comp_video_init(uint8_t *ep_table, void *data)
 
     video_in_ep.ep_addr = ep_table[0];
 
-    camera_init();
+    if (camera_init())
+        return -1;
 
     max_frame_size = g_uvc_video.w * g_uvc_video.h * 2;
 
@@ -683,7 +703,8 @@ int video_init(void)
 #ifndef LPKG_CHERRYUSB_DEVICE_COMPOSITE
     uint32_t max_frame_size = 0;
 
-    camera_init();
+    if (camera_init())
+        return -1;
 
     max_frame_size = g_uvc_video.w * g_uvc_video.h * 2;
 

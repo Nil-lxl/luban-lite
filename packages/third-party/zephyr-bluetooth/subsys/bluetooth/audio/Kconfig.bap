@@ -1,0 +1,337 @@
+# Bluetooth Audio - Basic Audio Profile configuration options
+#
+# Copyright (c) 2020 Intel Corporation
+# Copyright (c) 2022-2025 Nordic Semiconductor ASA
+
+# SPDX-License-Identifier: Apache-2.0
+#
+
+config LPKG_BT_BAP_UNICAST
+	bool
+	default y if (LPKG_BT_BAP_UNICAST_SERVER || LPKG_BT_BAP_UNICAST_CLIENT)
+
+config LPKG_BT_BAP_UNICAST_SERVER
+	bool "Bluetooth Unicast Audio Server Support"
+	depends on LPKG_BT_GATT_DYNAMIC_DB
+	depends on LPKG_BT_PERIPHERAL
+	depends on LPKG_BT_ISO_PERIPHERAL
+	depends on LPKG_BT_ASCS
+	depends on LPKG_BT_BONDABLE
+	select LPKG_BT_PAC_SNK if LPKG_BT_ASCS_ASE_SNK
+	select LPKG_BT_PAC_SRC if LPKG_BT_ASCS_ASE_SRC
+	help
+	  This option enables support for Bluetooth Unicast Audio Server
+	  using Isochronous channels.
+
+config LPKG_BT_BAP_UNICAST_CLIENT
+	bool "Bluetooth Unicast Audio Client Support"
+	depends on LPKG_BT_GATT_CLIENT
+	depends on LPKG_BT_GATT_AUTO_DISCOVER_CCC
+	depends on LPKG_BT_GATT_AUTO_UPDATE_MTU
+	depends on LPKG_BT_CENTRAL
+	depends on LPKG_BT_ISO_CENTRAL
+	depends on LPKG_BT_BONDABLE
+	help
+	  This option enables support for Bluetooth Unicast Audio Client
+	  using Isochronous channels.
+
+config LPKG_BT_AUDIO_CODEC_CFG_MAX_DATA_SIZE
+	int "Codec Specific Configuration Data Size"
+	default 19
+	range 0 255
+	help
+	  Number of octets to support for Codec Specific Configuration data.
+	  The default value 19 matches the required fields for the LC3 codec.
+
+config LPKG_BT_AUDIO_CODEC_CFG_MAX_METADATA_SIZE
+	int "Codec Specific Configuration Metadata Size"
+	default 4
+	range 0 255
+	help
+	  Number of octets to support for Codec Specific Configuration metadata.
+
+config LPKG_BT_BAP_BASS_MAX_SUBGROUPS
+	int "Maximum number of subgroups supported for the BASS receive states"
+	default 1
+	range 1 24
+	help
+	  This option sets the maximum number of subgroups supported.
+	  Due to limitations in advertising data, the maximum size of all subgroups are 249.
+	  The minimum size of a subgroup is 10 octets.
+	  So effectively there can be a maximum of 24 subgroups in a BASE.
+
+config LPKG_BT_AUDIO_CODEC_CAP_MAX_DATA_SIZE
+	int "Codec Capabilities Data Size"
+	default 19
+	range 0 255
+	help
+	  Number of octets to support for Codec Specific Capabilities data.
+	  The default value 19 matches the required fields for the LC3 codec.
+
+config LPKG_BT_AUDIO_CODEC_CAP_MAX_METADATA_SIZE
+	int "Codec Capabilities Metadata Size"
+	default 4
+	range 0 255
+	help
+	  Number of octets to support for Codec Specific Capabilities metadata.
+
+if LPKG_BT_BAP_UNICAST_CLIENT
+config LPKG_BT_BAP_UNICAST_CLIENT_GROUP_COUNT
+	int "Basic Audio Unicast Group count"
+	default LPKG_BT_ISO_MAX_CIG
+	range 1 LPKG_BT_ISO_MAX_CIG
+	help
+	  This option sets the number of connected audio groups to support as
+	  the unicast client.
+
+config LPKG_BT_BAP_UNICAST_CLIENT_GROUP_STREAM_COUNT
+	int "Basic Audio Profile Unicast Group Connected Isochronous Stream (CIS) count"
+	depends on LPKG_BT_BAP_UNICAST_CLIENT_GROUP_COUNT > 0
+	default 1
+	range 1 LPKG_BT_ISO_MAX_CHAN if LPKG_BT_ISO_MAX_CHAN < 31
+	range 1 31
+	help
+	  This option sets the maximum number of CIS per unicast group to support.
+	  Since BAP streams are unidirectional, two BAP streams may use a single CIS, the number of
+	  BAP audio streams per group may be up to twice of this value.
+
+config LPKG_BT_BAP_UNICAST_CLIENT_ASE_SNK_COUNT
+	int "Basic Audio Profile ASE Sink count"
+	default 2
+	range 0 255
+	help
+	  This option enables caching a number of Audio Stream Endpoint Sink
+	  instances for Basic Audio Profile on a per connection basis.
+
+config LPKG_BT_BAP_UNICAST_CLIENT_ASE_SRC_COUNT
+	int "Basic Audio Profile ASE Source count"
+	default 2
+	range 0 255
+	help
+	  This option enables caching a number of Audio Stream Endpoint Source
+	  instances for Basic Audio Profile on a per connection basis.
+
+config LPKG_BT_BAP_UNICAST_CLIENT_ASE_SNK
+	bool
+	default y if (LPKG_BT_BAP_UNICAST_CLIENT_ASE_SNK_COUNT > 0)
+
+config LPKG_BT_BAP_UNICAST_CLIENT_ASE_SRC
+	bool
+	default y if (LPKG_BT_BAP_UNICAST_CLIENT_ASE_SRC_COUNT > 0)
+
+endif # LPKG_BT_BAP_UNICAST_CLIENT
+
+config LPKG_BT_BAP_BROADCAST_SOURCE
+	bool "Bluetooth Broadcast Source Audio Support"
+	depends on LPKG_BT_ISO_BROADCASTER
+	help
+	  This option enables support for Bluetooth Broadcast Source Audio using
+	  Isochronous channels.
+if LPKG_BT_BAP_BROADCAST_SOURCE
+
+config LPKG_BT_BAP_BROADCAST_SRC_SUBGROUP_COUNT
+	int "Basic Audio Broadcast Source subgroup count"
+	default 1
+	range 1 LPKG_BT_ISO_MAX_CHAN if LPKG_BT_ISO_MAX_CHAN < 31
+	range 1 31
+	help
+	  This option sets the maximum number of subgroups per broadcast source
+	  to support.
+
+config LPKG_BT_BAP_BROADCAST_SRC_COUNT
+	int "Basic Audio Broadcaster source count"
+	default 1
+	range 1 LPKG_BT_ISO_MAX_BIG
+	help
+	  This option sets the number of broadcast sources to support.
+	  One broadcast source can send multiple streams
+	  (up to LPKG_BT_BAP_BROADCAST_SRC_STREAM_COUNT per broadcast source).
+
+
+config LPKG_BT_BAP_BROADCAST_SRC_STREAM_COUNT
+	int "Basic Audio Broadcast Source Stream count"
+	default 1
+	range 1 LPKG_BT_ISO_MAX_CHAN if LPKG_BT_ISO_MAX_CHAN < 31
+	range 1 31
+	help
+	  This option sets the maximum number of streams per broadcast source
+	  to support.
+
+endif # LPKG_BT_BAP_BROADCAST_SOURCE
+
+config LPKG_BT_BAP_BROADCAST_SINK
+	bool "Bluetooth Broadcast Sink Audio Support"
+	depends on LPKG_BT_ISO_SYNC_RECEIVER
+	depends on LPKG_BT_PAC_SNK
+	depends on LPKG_BT_PERIPHERAL
+	depends on LPKG_BT_BAP_SCAN_DELEGATOR
+	help
+	  This option enables support for Bluetooth Broadcast Sink Audio using
+	  Isochronous channels.
+
+if LPKG_BT_BAP_BROADCAST_SINK
+
+config LPKG_BT_BAP_BROADCAST_SNK_SUBGROUP_COUNT
+	int "Basic Audio Profile Broadcast Sink subgroup count"
+	default LPKG_BT_BAP_BASS_MAX_SUBGROUPS
+	range 1 LPKG_BT_BAP_BASS_MAX_SUBGROUPS
+	help
+	  This option sets the maximum number of subgroups per broadcast sink
+	  to support.
+
+config LPKG_BT_BAP_BROADCAST_SNK_COUNT
+	int "Basic Audio Broadcaster Sink count"
+	default 1
+	range 0 LPKG_BT_ISO_MAX_BIG
+	help
+	  This option sets the number of broadcast sinks to support.
+	  One broadcast sink can receive multiple streams
+	  (up to LPKG_BT_BAP_BROADCAST_SNK_STREAM_COUNT per broadcast sink).
+
+config LPKG_BT_BAP_BROADCAST_SNK_STREAM_COUNT
+	int "Basic Audio Broadcast Sink Stream count"
+	depends on LPKG_BT_BAP_BROADCAST_SNK_COUNT > 0
+	default 1
+	range 1 LPKG_BT_ISO_MAX_CHAN if LPKG_BT_ISO_MAX_CHAN < 31
+	range 1 31
+	help
+	  This option sets the maximum number of streams per broadcast sink
+	  to support.
+
+endif # LPKG_BT_BAP_BROADCAST_SINK
+
+config LPKG_BT_BAP_SCAN_DELEGATOR
+	bool "Basic Audio Profile Scan Delegator role support"
+	depends on LPKG_BT_EXT_ADV
+	depends on LPKG_BT_PER_ADV_SYNC
+	depends on LPKG_BT_ISO_SYNC_RECEIVER
+	depends on LPKG_BT_OBSERVER
+	depends on LPKG_BT_GATT_DYNAMIC_DB
+	depends on LPKG_BT_BONDABLE
+	help
+	  This option enables support for the Scan Delegator role and the
+	  Broadcast Audio Scan Service (BASS).
+
+if LPKG_BT_BAP_SCAN_DELEGATOR
+
+config LPKG_BT_BAP_SCAN_DELEGATOR_RECV_STATE_COUNT
+	int "Scan Delegator Receive State Count"
+	default 1
+	range 1 3
+	help
+	  Sets the number of receive state characteristics present on the
+	  server. Each characteristic may hold information to sync to a
+	  periodic advertise or a broadcast isochronous stream.
+
+config LPKG_BT_BAP_SCAN_DELEGATOR_BUF_TIMEOUT
+	int "Milliseconds of timeout when handle concurrent access to the long read ASE buffer"
+	range 0 1000
+	default 50
+	help
+	  The maximum number of milliseconds that the scan delegator implementation will wait
+	  before rejecting a read or dropping a notification if the scan delegator state is
+	  being accessed by another thread.
+
+endif # LPKG_BT_BAP_SCAN_DELEGATOR
+
+config LPKG_BT_BAP_BROADCAST_ASSISTANT
+	bool "Basic Audio Profile Broadcast Assistant role support"
+	depends on LPKG_BT_EXT_ADV
+	depends on LPKG_BT_PER_ADV_SYNC
+	depends on LPKG_BT_ISO_SYNC_RECEIVER
+	depends on LPKG_BT_GATT_CLIENT
+	depends on LPKG_BT_GATT_AUTO_DISCOVER_CCC
+	depends on LPKG_BT_GATT_AUTO_UPDATE_MTU
+	depends on LPKG_BT_OBSERVER
+	depends on LPKG_BT_BONDABLE
+	help
+	  This option enables support for the Broadcast Assistant role.
+
+if LPKG_BT_BAP_BROADCAST_ASSISTANT
+
+config LPKG_BT_BAP_BROADCAST_ASSISTANT_RECV_STATE_COUNT
+	int "Broadcast Assistant Max Receive State Count"
+	default 1
+	range 1 255
+	help
+	  Sets the number of maximum receive stat characteristics that will be
+	  discovered and ready to use. Each characteristic may hold information
+	  to sync to a periodic advertise or a broadcast isochronous stream.
+
+endif # LPKG_BT_BAP_BROADCAST_ASSISTANT
+
+config LPKG_BT_BAP_DEBUG_STREAM_DATA
+	bool "Bluetooth Audio Stream data debug"
+	depends on LPKG_BT_BAP_STREAM_LOG_LEVEL_DBG
+	help
+	  Use this option to enable Bluetooth Audio Stream data debug logs for
+	  the Bluetooth Audio functionality. This will enable debug logs for all
+	  audio data received and sent.
+
+config LPKG_BT_BAP_STREAM
+	# Virtual/hidden option
+	bool
+	default y if LPKG_BT_ASCS || LPKG_BT_BAP_UNICAST_CLIENT || \
+			BT_BAP_BROADCAST_SOURCE || LPKG_BT_BAP_BROADCAST_SINK
+
+config LPKG_BT_BAP_DEBUG_STREAM_SEQ_NUM
+	bool "Bluetooth Audio Stream sequence number debug"
+	depends on LPKG_BT_BAP_STREAM_LOG_LEVEL >= LPKG_BT_BAP_STREAM_LOG_LEVEL_WRN
+	default y
+	help
+	  Use this option to enable Bluetooth Audio Stream sequence number debugging logs for
+	  the Bluetooth Audio functionality. This will provide a warning if the application
+	  provides unexpected sequence numbers.
+
+config LPKG_BT_BAP_BASE
+	bool
+	default y if (LPKG_BT_BAP_BROADCAST_SINK || LPKG_BT_BAP_BROADCAST_ASSISTANT || LPKG_BT_BAP_SCAN_DELEGATOR)
+
+# We use LPKG_BT_BAP_STREAM as a common ground for audio, as that is set whenever
+# any audio stream functionality is enabled.
+if LIBLC3 && USBD_AUDIO2_CLASS && LPKG_BT_SHELL && LPKG_BT_BAP_STREAM
+config LPKG_BT_BAP_SHELL_USB_PRODUCT
+	string "USB device sample product string"
+	default "Zephyr Audio Shell"
+	help
+	  USB device sample product string.
+
+config LPKG_BT_BAP_SHELL_USB_VID
+	hex "USB device sample Vendor ID"
+	default 0x2fe3
+	help
+	  USB device sample Vendor ID. Defaults to the Zephyr Project.
+
+config LPKG_BT_BAP_SHELL_USB_PID
+	hex "USB device sample Product ID"
+	default 0x0001
+	help
+	  USB device sample Product ID.
+
+config LPKG_BT_BAP_SHELL_USB_SELF_POWERED
+	bool "USB device sample Self-powered attribute"
+	default y
+	help
+	  Set the Self-powered attribute in the sample configuration.
+
+config LPKG_BT_BAP_SHELL_USB_REMOTE_WAKEUP
+	bool "USB device sample Remote Wakeup attribute"
+	help
+	  Set the Remote Wakeup attribute in the sample configuration.
+
+config LPKG_BT_BAP_SHELL_USB_MAX_POWER
+	int "USB device sample bMaxPower value"
+	default 125
+	range 0 250
+	help
+	  bMaxPower value in the sample configuration in 2 mA units.
+
+config LPKG_BT_BAP_SHELL_USB_20_EXTENSION_DESC
+	bool "Use default USB 2.0 Extension Descriptor"
+	depends on USBD_BOS_SUPPORT
+	help
+	  Set bcdUSB value to 0201 and use default USB 2.0 Extension Descriptor.
+endif # LIBLC3 && USBD_AUDIO2_CLASS && LPKG_BT_SHELL && LPKG_BT_BAP_STREAM
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.pacs"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.ascs"

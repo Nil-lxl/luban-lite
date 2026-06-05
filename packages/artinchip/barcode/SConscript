@@ -3,15 +3,45 @@ Import('PRJ_KERNEL')
 from building import *
 
 cwd = GetCurrentDir()
-CPPPATH = []
-src = []
+CPPPATH = [
+    cwd,
+    cwd + "/include",
+    cwd + "/core",
+    cwd + "/camera",
+    cwd + "/decoder",
+    cwd + "/display",
+    cwd + "/comm",
+    cwd + "/led",
+    cwd + "/config",
+]
 
-LIBS = ['decoder.a']
-LIBPATH = [cwd + "/lib/"]
+src = []
+LIBS = []
+LIBPATH = [cwd + "/lib"]
+
+# Check if chip is g72x or g72 to exclude decoder library and source files
+prj_chip = GetDepend('PRJ_CHIP')
+# Remove possible quotes from the chip name
+prj_chip_clean = str(prj_chip).strip('"').strip("'")
+is_g72_series = (prj_chip_clean == 'g72x' or prj_chip_clean == 'g72' or prj_chip_clean.startswith('g72'))
+
+if not is_g72_series:
+    LIBS += ['decoder.a']
 
 if GetDepend('AIC_USING_BARCODE_DEMO'):
-    src = Glob('*.c')
+    src += Glob('*.c')
+    src += Glob('core/*.c')
+    src += Glob('camera/*.c')
+    src += Glob('decoder/*.c')
+    src += Glob('display/*.c')
+    src += Glob('comm/*.c')
+    src += Glob('led/*.c')
 
-group = DefineGroup('aic_barcode_demo', src, depend = ['AIC_USING_BARCODE_DEMO'], CPPPATH = CPPPATH, LIBS=LIBS, LIBPATH=LIBPATH)
+group = DefineGroup('aic_barcode_demo', src,
+                   depend=['AIC_USING_BARCODE_DEMO'],
+                   CPPPATH=CPPPATH,
+                   LIBS=LIBS,
+                   LIBPATH=LIBPATH,
+                   LOCAL_CCFLAGS='-DBARCODE_ENABLE_DECODER' if not is_g72_series else '')
 
 Return('group')

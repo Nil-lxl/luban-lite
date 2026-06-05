@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -208,6 +208,7 @@ struct aic_sdmc_host {
     u32 fifoth_val;
 #ifdef AIC_SDMC_IRQ_MODE
     aicos_sem_t complete;
+    u32 is_busy;
 #endif
 };
 

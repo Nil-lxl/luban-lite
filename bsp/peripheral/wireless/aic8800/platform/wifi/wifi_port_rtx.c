@@ -6,6 +6,7 @@
 #include "aic_plat_log.h"
 
 #include "lmac_mac.h"
+#include "rwnx_utils.h"
 #include "wlan_if.h"
 #include "wifi_port.h"
 #include "fhost.h"
@@ -273,8 +274,10 @@ rt_err_t aic8800_scan_stop(struct rt_wlan_device *wlan)
 
 int aic8800_get_rssi(struct rt_wlan_device *wlan)
 {
-    AIC_LOG_PRINTF("%s\n", __func__);
-    return -1;
+    if (wlan->mode == RT_WLAN_STATION) {
+        return data_pkt_rssi_get(NULL);
+    }
+    return 0;
 }
 
 rt_err_t aic8800_set_channel(struct rt_wlan_device *wlan, int channel)

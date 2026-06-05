@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -49,7 +49,10 @@ static void show_speed(char *msg, u32 len, u32 us)
 
     /* Split to serval step to avoid overflow */
     tmp = 1000 * len;
-    tmp = tmp / us;
+    if (us)
+        tmp = tmp / us;
+    else
+        tmp = 0;
     tmp = 1000 * tmp;
     speed = tmp / 1024;
 
@@ -123,7 +126,7 @@ static void fal_do_read(uint8_t argc, char **argv)
     }
 
     if (flash_dev)
-        result = flash_dev->ops.read(addr, data, size);
+        result = flash_dev->ops.read(flash_dev, addr, data, size);
     else if (part_dev)
         result = fal_partition_read(part_dev, addr, data, size);
     else
@@ -166,6 +169,7 @@ static void fal_do_read(uint8_t argc, char **argv)
         rt_kprintf("\n");
     }
     rt_kprintf("\n");
+    rt_free(data);
     return;
 }
 
@@ -197,7 +201,7 @@ static void fal_do_write(uint8_t argc, char **argv)
     }
 
     if (flash_dev)
-        result = flash_dev->ops.write(addr, data, size);
+        result = flash_dev->ops.write(flash_dev, addr, data, size);
     else if (part_dev)
         result = fal_partition_write(part_dev, addr, data, size);
     else
@@ -238,7 +242,7 @@ static void fal_do_erase(uint8_t argc, char **argv)
     size = strtol(argv[1], NULL, 0);
     start_us =  aic_get_time_us();
     if (flash_dev)
-        result = flash_dev->ops.erase(addr, size);
+        result = flash_dev->ops.erase(flash_dev, addr, size);
     else if (part_dev)
         result = fal_partition_erase(part_dev, addr, size);
     else
@@ -292,7 +296,7 @@ static void fal_do_bench(uint8_t argc, char **argv)
         start_time = rt_tick_get();
         if (flash_dev)
         {
-            result = flash_dev->ops.erase(0, size);
+            result = flash_dev->ops.erase(flash_dev, 0, size);
         }
         else if (part_dev)
         {
@@ -323,7 +327,7 @@ static void fal_do_bench(uint8_t argc, char **argv)
             }
             if (flash_dev)
             {
-                result = flash_dev->ops.write(i, write_data, cur_op_size);
+                result = flash_dev->ops.write(flash_dev, i, write_data, cur_op_size);
             }
             else if (part_dev)
             {
@@ -359,7 +363,7 @@ static void fal_do_bench(uint8_t argc, char **argv)
             }
             if (flash_dev)
             {
-                result = flash_dev->ops.read(i, read_data, cur_op_size);
+                result = flash_dev->ops.read(flash_dev, i, read_data, cur_op_size);
             }
             else if (part_dev)
             {

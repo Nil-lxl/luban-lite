@@ -164,6 +164,7 @@ if LPKG_USING_NIMBLE
 
             config LPKG_NIMBLE_HCI_H5
                 bool "HCI Protocol using H5"
+                select RT_USING_SYSTEM_WORKQUEUE
         endchoice
     endmenu
 
@@ -222,6 +223,11 @@ if LPKG_USING_NIMBLE
         config LPKG_NIMBLE_SAMPLE_PER_HR
             bool "BLE peripheral heartrate sensor"
             select NIMBT_ROLE_PERIPHERAL
+
+        config LPKG_NIMBLE_SAMPLE_GATT_CLIENT
+            bool "BLE GATT client sample"
+            select NIMBT_ROLE_CENTRAL
+            select LPKG_NIMBLE_HCI_USING_RTT_UART
 
         config LPKG_NIMBLE_SAMPLE_BLECSC
             bool "BLE peripheral cycling speed and cadence sensor"

@@ -70,6 +70,9 @@ static const struct spinand_manufacturer *spinand_manufacturers[] = {
 #ifdef SPI_NAND_FUDANMICRO
     &fudanmicro_spinand_manufacturer,
 #endif
+#ifdef SPI_NAND_UNIM
+    &unim_spinand_manufacturer,
+#endif
 };
 
 #define SPINAND_LIST_NUM \
@@ -237,24 +240,27 @@ int spinand_isbusy(struct aic_spinand *flash, u8 *status)
     int result;
 
     do {
-        aic_udelay(1);
-        i++;
         result = spinand_read_status(flash, &SR);
         if (result != SPINAND_SUCCESS)
             return result;
 
-        if (i > cnt) {
-            pr_warn("spinand timeout.\n");
-            goto spinand_isbusy_out;
-        }
+        if (!(SR & 0x1))
+            goto out;
 
-    } while ((SR & 0x1) != 0x00);
+        aic_udelay(1);
+        i++;
 
+    } while (i <= cnt);
+
+    /*
+     * Extra read, just in case the STATUS_READY bit has changed
+     * since our last check
+     */
     result = spinand_read_status(flash, &SR);
     if (result != SPINAND_SUCCESS)
         return result;
 
-spinand_isbusy_out:
+out:
     if (status)
         *status = SR;
 
@@ -1012,6 +1018,7 @@ int spinand_read(struct aic_spinand *flash, u8 *addr, u32 offset, u32 size)
     buf = malloc(flash->info->page_size + flash->info->oob_size);
     if (!buf) {
         pr_err("Failed to malloc spinand buf.\n");
+        err = -SPINAND_ERR;
         goto exit_spinand_read;
     }
 

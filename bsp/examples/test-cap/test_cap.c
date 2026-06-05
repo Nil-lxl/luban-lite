@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "boot_param.h"
+#include "aic_core.h"
 
 #define WATER_MARK      50
 
@@ -17,6 +18,9 @@ struct aic_cap_usr {
     rt_uint32_t freq;
     float duty;
 };
+
+static unsigned long g_start_us[AIC_CAPS_CH_NUM] = {0};
+static unsigned long g_test_time_us[AIC_CAPS_CH_NUM] = {0};
 
 /* callback function */
 static rt_err_t cap_cb(rt_device_t dev, rt_size_t size)
@@ -32,6 +36,17 @@ static rt_err_t cap_cb(rt_device_t dev, rt_size_t size)
     for (int i = 0; i < size; i++)
         rt_kprintf("%s: pulsewidth:%d us\n", &dev->parent.name, inputcap_data[i].pulsewidth_us);
 #endif
+
+    if ((aic_timer_get_us() - g_start_us[data->id]) > g_test_time_us[data->id]) {
+        rt_device_close(dev);
+#ifdef ULOG_USING_ISR_LOG
+        rt_kprintf("the timeout period has expired, cap%d close\n", data->id);
+#endif
+#ifdef RT_USING_PM
+        rt_pm_release(PM_SLEEP_MODE_NONE);
+#endif
+    }
+
     return RT_EOK;
 }
 
@@ -41,11 +56,19 @@ int test_cap(int argc, char **argv)
     rt_device_t cap_dev = RT_NULL;
     char device_name[8] = {"cap"};
     int ret;
+    int ch;
 
-    if (argc != 2) {
-        rt_kprintf("Usage: test_cap <channel>\n");
+    if (argc < 2) {
+        rt_kprintf("Usage: test_cap channel [second]\n");
         return -RT_ERROR;
     }
+
+    ch = atoi(argv[1]);
+
+    if (argc == 3)
+        g_test_time_us[ch] = atoi(argv[2]) * US_PER_SEC;
+    else
+        g_test_time_us[ch] = 10 * US_PER_SEC;//default 10s
 
     strcat(device_name, argv[1]);
 
@@ -58,6 +81,9 @@ int test_cap(int argc, char **argv)
     /* set callback function */
     rt_device_set_rx_indicate(cap_dev, cap_cb);
 
+#ifdef RT_USING_PM
+    rt_pm_request(PM_SLEEP_MODE_NONE);
+#endif
     ret = rt_device_open(cap_dev, RT_DEVICE_OFLAG_RDWR);
     if (ret != RT_EOK) {
         rt_kprintf("Failed to open %s device!\n", device_name);
@@ -70,7 +96,9 @@ int test_cap(int argc, char **argv)
         return ret;
     }
 
-    rt_kprintf("cap%d open.\n", atoi(argv[1]));
+    rt_kprintf("cap%d open.\n", ch);
+
+    g_start_us[ch] = aic_timer_get_us();
 
     return RT_EOK;
 }

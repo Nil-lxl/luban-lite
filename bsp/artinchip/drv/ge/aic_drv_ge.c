@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,6 +17,7 @@
 #include "aic_common.h"
 #include <aic_hal_ge.h>
 #include "aic_hal_clk.h"
+#include "aic_hal_reset.h"
 
 #ifdef RT_USING_PM
 struct rt_device ge_device = { 0 };
@@ -33,7 +34,11 @@ static int aic_ge_suspend(const struct rt_device *device, rt_uint8_t mode)
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
         if (hal_clk_is_enabled(CLK_GE))
+#ifdef AIC_PM_DRV_V15
+            hal_clk_disable_assertrst(CLK_GE);
+#else
             hal_clk_disable(CLK_GE);
+#endif
         break;
     default:
         break;
@@ -54,7 +59,11 @@ static void aic_ge_resume(const struct rt_device *device, rt_uint8_t mode)
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
         if (!hal_clk_is_enabled(CLK_GE))
+#ifdef AIC_PM_DRV_V15
+            hal_clk_enable_deassertrst(CLK_GE);
+#else
             hal_clk_enable(CLK_GE);
+#endif
         break;
     default:
         break;
@@ -88,18 +97,33 @@ int aic_ge_close(struct aic_ge_client *client)
 
 int aic_ge_write(struct aic_ge_client *client, const char *buff, size_t count)
 {
+    int ret = 0;
+
     if (!client)
         return -1;
-
-    return hal_ge_write(client, buff, count);
+#ifdef RT_USING_PM
+    rt_pm_module_request(PM_GE_ID, PM_SLEEP_MODE_NONE);
+#endif
+    ret = hal_ge_write(client, buff, count);
+#ifdef RT_USING_PM
+    rt_pm_module_release(PM_GE_ID, PM_SLEEP_MODE_NONE);
+#endif
+    return ret;
 }
 
 int aic_ge_ioctl(struct aic_ge_client *client, int cmd, void *arg)
 {
+    int ret = 0;
     if (!client)
         return -1;
-
-    return hal_ge_control(client, cmd, arg);
+#ifdef RT_USING_PM
+    rt_pm_module_request(PM_GE_ID, PM_SLEEP_MODE_NONE);
+#endif
+    ret = hal_ge_control(client, cmd, arg);
+#ifdef RT_USING_PM
+    rt_pm_module_release(PM_GE_ID, PM_SLEEP_MODE_NONE);
+#endif
+    return ret;
 }
 
 int aic_ge_probe(void)

@@ -1,0 +1,24 @@
+menuconfig PKG_USING_LIBOPUS
+    bool "Enable libopus"
+    default n
+
+
+if PKG_USING_LIBOPUS
+
+config LPKG_USING_LIBOPUS_STATIC
+    bool "Build libopus as static library (.a)"
+    default y
+    depends on PKG_USING_LIBOPUS
+    help
+        Build libopus into a standalone static library (libOPUS.a) under
+        packages/third-party/libopus/, then link it into the final image.
+
+config LPKG_USING_LIBOPUS_PREBUILT
+    bool "Use prebuilt libOPUS.a (do not compile libopus sources)"
+    default y
+    depends on PKG_USING_LIBOPUS && LPKG_USING_LIBOPUS_STATIC
+    help
+        Link existing packages/third-party/libopus/libOPUS.a directly.
+        In this mode, SCons will not compile libopus source files.
+
+endif # PKG_USING_LIBOPUS

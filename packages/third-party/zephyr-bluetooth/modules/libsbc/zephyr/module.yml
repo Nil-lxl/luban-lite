@@ -1,0 +1,4 @@
+name: libsbc
+build:
+  cmake-ext: True
+  kconfig-ext: True

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -326,9 +326,10 @@ static rt_err_t spi_master_init(struct aic_qspi *qspi, struct qspi_master_config
         pr_err("spi init failed.\n");
         return ret;
     }
-
     if (!qspi->inited) {
 #ifdef AIC_DMA_DRV
+        /* Only request DMA channels on first init.
+         * After deep sleep, old dma_rx/dma_tx are still valid. */
         struct qspi_master_dma_config dmacfg;
         rt_memset(&dmacfg, 0, sizeof(dmacfg));
         dmacfg.port_id = qspi->dma_port_id;
@@ -339,8 +340,7 @@ static rt_err_t spi_master_init(struct aic_qspi *qspi, struct qspi_master_config
             return ret;
         }
 #endif
-        ret = hal_qspi_master_register_cb(&qspi->handle,
-                                            qspi_master_async_callback, qspi);
+        ret = hal_qspi_master_register_cb(&qspi->handle, qspi_master_async_callback, qspi);
         if (ret) {
             pr_err("qspi register async callback failed.\n");
             return ret;
@@ -348,12 +348,7 @@ static rt_err_t spi_master_init(struct aic_qspi *qspi, struct qspi_master_config
         aicos_request_irq(qspi->irq_num, qspi_irq_handler, 0, NULL, (void *)&qspi->handle);
         aicos_irq_enable(qspi->irq_num);
     }
-
     hal_qspi_master_set_bus_freq(&qspi->handle, cfg->max_hz);
-    if (ret) {
-        pr_err("qspi set bus frequency failed.\n");
-        return ret;
-    }
 
     return ret;
 }
@@ -404,17 +399,156 @@ static rt_err_t spi_slave_init(struct aic_qspi *qspi, struct qspi_master_config 
         aicos_request_irq(qspi->irq_num, spi_slave_irq_handler, 0, NULL, (void *)h);
         aicos_irq_enable(qspi->irq_num);
     }
+    return ret;
+}
+#endif
+
+static rt_err_t spi_hw_init(struct aic_qspi *qspi)
+{
+    struct qspi_master_config cfg;
+    rt_uint32_t bus_hz;
+    rt_err_t ret = RT_EOK;
+
+    rt_memset(&cfg, 0, sizeof(cfg));
+    cfg.idx = qspi->idx;
+    cfg.clk_id = qspi->clk_id;
+
+    bus_hz = qspi->configuration.parent.max_hz;
+    if (bus_hz < HAL_QSPI_MIN_FREQ_HZ)
+        bus_hz = HAL_QSPI_MIN_FREQ_HZ;
+    if (bus_hz > HAL_QSPI_MAX_FREQ_HZ)
+        bus_hz = HAL_QSPI_MAX_FREQ_HZ;
+    cfg.max_hz = bus_hz;
+    cfg.clk_in_hz = qspi->clk_in_hz;
+    if (cfg.clk_in_hz > HAL_QSPI_MAX_FREQ_HZ)
+        cfg.clk_in_hz = HAL_QSPI_MAX_FREQ_HZ;
+    if (qspi->clk_in_hz % bus_hz)
+        cfg.clk_in_hz = bus_hz;
+    if (cfg.clk_in_hz < HAL_QSPI_INPUT_MIN_FREQ_HZ)
+        cfg.clk_in_hz = HAL_QSPI_INPUT_MIN_FREQ_HZ;
+
+    if (qspi->configuration.parent.mode & RT_SPI_MSB)
+        cfg.lsb_en = false;
+    else
+        cfg.lsb_en = true;
+    if (qspi->configuration.parent.mode & RT_SPI_CPHA)
+        cfg.cpha = HAL_QSPI_CPHA_SECOND_EDGE;
+    else
+        cfg.cpha = HAL_QSPI_CPHA_FIRST_EDGE;
+
+    if (qspi->configuration.parent.mode & RT_SPI_CPOL)
+        cfg.cpol = HAL_QSPI_CPOL_ACTIVE_LOW;
+    else
+        cfg.cpol = HAL_QSPI_CPOL_ACTIVE_HIGH;
+    if (qspi->configuration.parent.mode & RT_SPI_CS_HIGH)
+        cfg.cs_polarity = HAL_QSPI_CS_POL_VALID_HIGH;
+    else
+        cfg.cs_polarity = HAL_QSPI_CS_POL_VALID_LOW;
+    if (qspi->configuration.parent.mode & RT_SPI_3WIRE)
+        cfg.wire3_en = true;
+    else
+        cfg.wire3_en = false;
+
+    cfg.rx_dlymode = qspi->rxd_dlymode;
+    cfg.tx_dlymode = aic_convert_tx_dlymode(qspi->txc_dlymode, qspi->txd_dlymode);
+
+    if (qspi->slave_en) {
+        cfg.slave_en = true;
+#ifdef AIC_CHIP_D13X
+        ret = spi_slave_init(qspi, &cfg);
+#endif
+    } else {
+        cfg.slave_en = false;
+        ret = spi_master_init(qspi, &cfg);
+    }
 
     return ret;
 }
+
+#ifdef AIC_PM_DRV_V15
+static int spi_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_qspi *qspi = rt_container_of(device, struct aic_qspi, dev.parent);
+    rt_uint32_t status;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_STANDBY:
+        if (!qspi->slave_en) {
+            status = hal_qspi_master_get_status(&qspi->handle);
+            if (status & HAL_QSPI_STATUS_IN_PROGRESS) {
+                pr_warn("spi%d transfer in progress, block light sleep\n",
+                        qspi->idx);
+                return -EBUSY;
+            }
+        }
+        hal_clk_disable(qspi->clk_id);
+        break;
+    case PM_SLEEP_MODE_DEEP:
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void spi_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_qspi *qspi = rt_container_of(device, struct aic_qspi, dev.parent);
+    rt_err_t ret;
+
+    if (!qspi->inited) {
+        /* If QSPI was not initialized before sleep,
+         * no need to reinit hardware or enable clk. */
+        return;
+    }
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_STANDBY:
+        hal_clk_enable(qspi->clk_id);
+        break;
+    case PM_SLEEP_MODE_DEEP:
+        /* DMA channel does not need to be re-requested.
+         * hal_dma_init() keeps 'used' and clears 'desc'.
+         * hal_qspi_master_init() enables clk and deasserts reset internally.
+         * Just call spi_hw_init() directly here. */
+        ret = spi_hw_init(qspi);
+        if (ret)
+            pr_err("spi%d resume reinit failed: %d\n", qspi->idx, ret);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_spi_pm_ops = {
+    SET_DEVICE_PM_OPS(spi_suspend, spi_resume)
+    NULL,
+};
+
+static int spi_pm_init(void)
+{
+    int i;
+
+    for (i = 0; i < ARRAY_SIZE(spi_controller); i++) {
+        rt_pm_device_register(&spi_controller[i].dev.parent,
+                              &aic_spi_pm_ops);
+    }
+
+    return 0;
+}
+INIT_DEVICE_EXPORT(spi_pm_init);
 #endif
 
 static rt_err_t spi_configure(struct rt_spi_device *device,
                                struct rt_spi_configuration *configuration)
 {
-    struct qspi_master_config cfg;
     struct aic_qspi *qspi;
-    rt_uint32_t bus_hz;
     rt_err_t ret = RT_EOK;
 
     RT_ASSERT(device != RT_NULL);
@@ -432,62 +566,15 @@ static rt_err_t spi_configure(struct rt_spi_device *device,
         (qspi->handle.bit_mode == true)) {
         rt_memcpy(&qspi->configuration, configuration,
                   sizeof(struct rt_spi_configuration));
-        rt_memset(&cfg, 0, sizeof(cfg));
-        cfg.idx = qspi->idx;
-        cfg.clk_id = qspi->clk_id;
 
-        bus_hz = configuration->max_hz;
-        if (bus_hz < HAL_QSPI_MIN_FREQ_HZ)
-            bus_hz = HAL_QSPI_MIN_FREQ_HZ;
-        if (bus_hz > HAL_QSPI_MAX_FREQ_HZ)
-            bus_hz = HAL_QSPI_MAX_FREQ_HZ;
-        cfg.max_hz = bus_hz;
-        cfg.clk_in_hz = qspi->clk_in_hz;
-        if (cfg.clk_in_hz > HAL_QSPI_MAX_FREQ_HZ)
-            cfg.clk_in_hz = HAL_QSPI_MAX_FREQ_HZ;
-        if (qspi->clk_in_hz % bus_hz)
-            cfg.clk_in_hz = bus_hz;
-        if (cfg.clk_in_hz < HAL_QSPI_INPUT_MIN_FREQ_HZ)
-            cfg.clk_in_hz = HAL_QSPI_INPUT_MIN_FREQ_HZ;
-
-        if (configuration->mode & RT_SPI_MSB)
-            cfg.lsb_en = false;
-        else
-            cfg.lsb_en = true;
-        if (configuration->mode & RT_SPI_CPHA)
-            cfg.cpha = HAL_QSPI_CPHA_SECOND_EDGE;
-        else
-            cfg.cpha = HAL_QSPI_CPHA_FIRST_EDGE;
-
-        if (configuration->mode & RT_SPI_CPOL)
-            cfg.cpol = HAL_QSPI_CPOL_ACTIVE_LOW;
-        else
-            cfg.cpol = HAL_QSPI_CPOL_ACTIVE_HIGH;
-        if (configuration->mode & RT_SPI_CS_HIGH)
-            cfg.cs_polarity = HAL_QSPI_CS_POL_VALID_HIGH;
-        else
-            cfg.cs_polarity = HAL_QSPI_CS_POL_VALID_LOW;
-        if (configuration->mode & RT_SPI_3WIRE)
-            cfg.wire3_en = true;
-        else
-            cfg.wire3_en = false;
-
-        cfg.rx_dlymode = qspi->rxd_dlymode;
-        cfg.tx_dlymode = aic_convert_tx_dlymode(qspi->txc_dlymode, qspi->txd_dlymode);
-
-        if (configuration->mode & RT_SPI_SLAVE) {
-            cfg.slave_en = true;
-#ifdef AIC_CHIP_D13X    // only d13x support spi slave mode
+        if (configuration->mode & RT_SPI_SLAVE)
             qspi->slave_en = true;
-            ret = spi_slave_init(qspi, &cfg);
-#else
-            ret = spi_master_init(qspi, &cfg);
-#endif
-        } else {
-            cfg.slave_en = false;
+        else
             qspi->slave_en = false;
-            ret = spi_master_init(qspi, &cfg);
-        }
+
+        ret = spi_hw_init(qspi);
+        if (ret)
+            return ret;
     }
     qspi->inited = true;
     return ret;
@@ -586,6 +673,7 @@ static int rt_hw_spi_bus_init(void)
             ret = RT_ENOMEM;
             break;
         }
+
     }
 
     return ret;

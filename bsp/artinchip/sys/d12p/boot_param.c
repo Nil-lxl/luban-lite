@@ -8,7 +8,10 @@
 
 #include <stdio.h>
 #include <aic_common.h>
+#include <aic_io.h>
+#include <aic_soc.h>
 #include <boot_param.h>
+#include "hal_wri.h"
 
 /*
  * Save boot parameters and context when save_boot_params is called.
@@ -37,7 +40,7 @@ static void show_boot_device(u32 dev)
 
     if (show_flag) {
         /* Print once only */
-        if (dev < 8)
+        if (dev < ARRAY_SIZE(boot_device_name))
             p = boot_device_name[dev];
         else
             p = "BD_NONE";
@@ -51,6 +54,8 @@ enum boot_device aic_get_boot_device(void)
 {
     enum boot_device dev;
 
+    /* clear boot_info */
+    BOOT_INFO_WRITEB(BD_NONE);
     /* SPL use a0 */
     dev = get_boot_device(boot_params_stash.r.a[0]);
     show_boot_device(dev);

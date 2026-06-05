@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -546,61 +546,64 @@ static void tsen_ch_acq_set(u32 ch)
 #endif
 }
 
-static void tsen_single_mode(u32 ch)
+static void tsen_single_smp(u32 ch)
 {
-    tsen_writel(TSENn_FIL_8_POINTS, TSENn_FIL(ch));
-
-    tsen_ch_acq_set(ch);
-
     tsen_writel(TSENn_CFG_SINGLE_SAMPLE_EN | tsen_readl(TSENn_CFG(ch)),
            TSENn_CFG(ch));
-
-    tsen_int_enable(ch, 1, TSENn_INT_DATA_RDY_IE);
 }
 
 /* Only in period mode, HTA, LTA and OTP are available */
-static void tsen_period_mode(struct aic_tsen_ch *chan, u32 pclk)
+static void tsen_setup_mode(struct aic_tsen_ch *chan, u32 pclk)
 {
     u32 val, detail = TSENn_INT_DATA_RDY_IE;
+    u32 cfg_val = 0;
 
+    val = 0;
     if (chan->hta_enable) {
         detail |= TSENn_INT_HTA_RM_IE | TSENn_INT_HTA_VALID_IE;
         val = TSENn_HLTA_EN
             | ((chan->hta_rm_thd << TSENn_HLTA_RM_THD_SHIFT)
             & TSENn_HLTA_RM_THD_MASK)
             | (chan->hta_thd & TSENn_HLTA_THD_MASK);
-        tsen_writel(val, TSENn_HTAV(chan->id));
     }
+    tsen_writel(val, TSENn_HTAV(chan->id));
 
+    val = 0;
     if (chan->lta_enable) {
         detail |= TSENn_INT_LTA_RM_IE | TSENn_INT_LTA_VALID_IE;
         val = TSENn_HLTA_EN
             | ((chan->lta_rm_thd << TSENn_HLTA_RM_THD_SHIFT)
             & TSENn_HLTA_RM_THD_MASK)
             | (chan->lta_thd & TSENn_HLTA_THD_MASK);
-        tsen_writel(val, TSENn_LTAV(chan->id));
     }
+    tsen_writel(val, TSENn_LTAV(chan->id));
 
 #ifndef AIC_TSEN_DRV_V10
+    val = 0;
     if (chan->otp_enable) {
         detail |= TSENn_INT_OTP_RESET;
         val = TSENn_OTPV_EN | (chan->otp_thd & TSENn_OTPV_VAL_MASK);
-        tsen_writel(val, TSENn_OTPV(chan->id));
     }
+    tsen_writel(val, TSENn_OTPV(chan->id));
 #endif
     tsen_int_enable(chan->id, 1, detail);
 
     tsen_writel(TSENn_FIL_8_POINTS, TSENn_FIL(chan->id));
 
-    val = tsen_sec2itv(pclk, chan->smp_period);
-    tsen_writel(val << TSENn_ITV_SHIFT | 0xFFFF, TSENn_ITV(chan->id));
-
     tsen_ch_acq_set(chan->id);
 
-    tsen_writel(tsen_readl(TSENn_CFG(chan->id)) | TSENn_CFG_PERIOD_SAMPLE_EN,
-           TSENn_CFG(chan->id));
+    val = 0;
+    cfg_val = tsen_readl(TSENn_CFG(chan->id));
+    cfg_val &= ~(TSENn_CFG_PERIOD_SAMPLE_EN | TSENn_CFG_SINGLE_SAMPLE_EN);
+    if (chan->mode == AIC_TSEN_MODE_PERIOD) {
+        val = tsen_sec2itv(pclk, chan->smp_period);
+        cfg_val |= TSENn_CFG_PERIOD_SAMPLE_EN;
+    }
+    tsen_writel(val << TSENn_ITV_SHIFT | 0xFFFF, TSENn_ITV(chan->id));
+    tsen_writel(cfg_val, TSENn_CFG(chan->id));
 
-    hal_tsen_ch_enable(chan->id, 1);
+    if (chan->mode == AIC_TSEN_MODE_PERIOD)
+        hal_tsen_ch_enable(chan->id, 1);
 }
 
 static void tsen_diff_mode(u32 ch, u32 diff, u32 inverted)
@@ -622,8 +625,7 @@ static void tsen_diff_mode(u32 ch, u32 diff, u32 inverted)
 
 int hal_tsen_ch_init(struct aic_tsen_ch *chan, u32 pclk)
 {
-    if (chan->mode == AIC_TSEN_MODE_PERIOD)
-        tsen_period_mode(chan, pclk);
+    tsen_setup_mode(chan, pclk);
 
 #ifdef AIC_ADCIM_DM_DRV
     chan->inverted = 1;
@@ -645,23 +647,20 @@ int hal_tsen_get_temp(struct aic_tsen_ch *chan, s32 *val)
         return -ENODATA;
     }
 
-#ifndef AIC_ADCIM_DM_DRV
-    if (chan->mode == AIC_TSEN_MODE_PERIOD) {
-        *val = hal_tsen_data2temp(chan);
-        return 0;
+    if (chan->mode == AIC_TSEN_MODE_SINGLE) {
+        tsen_single_smp(chan->id);
+        hal_tsen_ch_enable(chan->id, 1);
     }
-#endif
 
-    tsen_single_mode(chan->id);
-    hal_tsen_ch_enable(chan->id, 1);
-
+    aicos_sem_reset(chan->complete, 0);
     ret = aicos_sem_take(chan->complete, AIC_TSEN_TIMEOUT);
     if (ret < 0) {
         hal_log_err("%s read timeout!\n", chan->name);
         hal_tsen_ch_enable(chan->id, 0);
         return -ETIMEDOUT;
     }
-    hal_tsen_ch_enable(chan->id, 0);
+    if (chan->mode == AIC_TSEN_MODE_SINGLE)
+        hal_tsen_ch_enable(chan->id, 0);
 
     if (val)
         *val = hal_tsen_data2temp(chan);
@@ -705,8 +704,7 @@ irqreturn_t hal_tsen_irq_handle(int irq, void *arg)
             chan->latest_data = tsen_readl(TSENn_DATA(i));
             hal_log_debug("ch%d data %d\n", i, chan->latest_data);
 
-            if (chan->mode == AIC_TSEN_MODE_SINGLE)
-                aicos_sem_give(chan->complete);
+            aicos_sem_give(chan->complete);
         }
         tsen_writel(detail, TSENn_INT(i));
 

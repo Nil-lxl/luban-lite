@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2021, RT-Thread Development Team
+ * Copyright (c) 2006-2026, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -30,6 +30,7 @@
 #define DBG_TAG    "newlib.syscalls"
 #define DBG_LVL    DBG_INFO
 #include <rtdbg.h>
+#include <rthw.h>
 
 #ifdef RT_USING_HEAP /* Memory routine */
 void *_malloc_r(struct _reent *ptr, size_t size)
@@ -300,8 +301,12 @@ _ssize_t _write_r(struct _reent *ptr, int fd, const void *buf, size_t nbytes)
         rt_device_t console;
 
         console = rt_console_get_device();
-        if (console)
+        if (console) {
             return rt_device_write(console, -1, buf, nbytes);
+        } else {
+            rt_hw_console_output(buf);
+            return nbytes;
+        }
 #else
         ptr->_errno = ENOTSUP;
         return -1;
@@ -328,7 +333,9 @@ __attribute__ ((noreturn)) void _exit (int status)
 {
     extern void __rt_libc_exit(int status);
     __rt_libc_exit(status);
-    while(1);
+    while(1) {
+        continue;
+    }
 }
 
 /*

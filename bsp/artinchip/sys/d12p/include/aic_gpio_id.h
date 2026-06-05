@@ -13,6 +13,8 @@ extern "C" {
 
 #define GPIO_GROUP_BEGIN        'A'
 
+#define AIC_GPIO_PS_ALIAS_EN    1
+
 enum {
     PA_GROUP,
     PB_GROUP,
@@ -20,6 +22,9 @@ enum {
     PD_GROUP,
     PE_GROUP,
     PF_GROUP,
+    PM_GROUP = 12,
+    PN_GROUP,
+
 #ifdef FPGA_BOARD_ARTINCHIP
     PP_GROUP = 15,
 #endif
@@ -35,12 +40,22 @@ extern const int aic_gpio_group_size;
 #define PD_BASE  96
 #define PE_BASE  128
 #define PF_BASE  160
+#define PM_BASE  384
+#define PN_BASE  416
+
 #define GPIOA(n) (PA_BASE + (n))
 #define GPIOB(n) (PB_BASE + (n))
 #define GPIOC(n) (PC_BASE + (n))
 #define GPIOD(n) (PD_BASE + (n))
 #define GPIOE(n) (PE_BASE + (n))
 #define GPIOF(n) (PF_BASE + (n))
+#define GPIOM(n) (PM_BASE + (n))
+#define GPION(n) (PN_BASE + (n))
+
+/* PS is hardware alias for PM (same register group) */
+#ifdef AIC_GPIO_PS_ALIAS_EN
+#define GPIOS(n) (PM_BASE + (n))
+#endif
 
 typedef enum {
     PA0  = GPIOA(0),
@@ -68,6 +83,13 @@ typedef enum {
     PB9  = GPIOB(9),
     PB10 = GPIOB(10),
     PB11 = GPIOB(11),
+    PB12 = GPIOB(12),
+    PB13 = GPIOB(13),
+    PB14 = GPIOB(14),
+    PB15 = GPIOB(15),
+    PB16 = GPIOB(16),
+    PB17 = GPIOB(17),
+    PB18 = GPIOB(18),
 
     PC0 = GPIOC(0),
     PC1 = GPIOC(1),
@@ -77,6 +99,10 @@ typedef enum {
     PC5 = GPIOC(5),
     PC6 = GPIOC(6),
     PC7 = GPIOC(7),
+    PC8  = GPIOC(8),
+    PC9  = GPIOC(9),
+    PC10 = GPIOC(10),
+    PC11 = GPIOC(11),
 
     PD0  = GPIOD(0),
     PD1  = GPIOD(1),
@@ -125,8 +151,26 @@ typedef enum {
     PE15 = GPIOE(15),
     PE16 = GPIOE(16),
     PE17 = GPIOE(17),
-    PE18 = GPIOE(18),
-    PE19 = GPIOE(19),
+
+    PF0  = GPIOF(0),
+    PF1  = GPIOF(1),
+
+    PM0  = GPIOM(0),
+    PM1  = GPIOM(1),
+    PM2  = GPIOM(2),
+    PM3  = GPIOM(3),
+
+#ifdef AIC_GPIO_PS_ALIAS_EN
+    /* PS aliases (same as PM) */
+    PS0  = GPIOS(0),
+    PS1  = GPIOS(1),
+    PS2  = GPIOS(2),
+    PS3  = GPIOS(3),
+#endif
+
+    PN0  = GPION(0),
+    PN1  = GPION(1),
+    PN2  = GPION(2),
 
     /* To aviod compile warnings. */
     GPIO_MAX_PIN,

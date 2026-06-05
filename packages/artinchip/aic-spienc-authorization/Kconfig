@@ -1,0 +1,12 @@
+menuconfig LPKG_USING_AIC_SPIENC_AUTHORIZATION
+    bool "aic-spienc-authorization"
+    default n
+
+if LPKG_USING_AIC_SPIENC_AUTHORIZATION
+
+config AIC_SPIENC_AUTHORIZATION_TEST
+    bool "aic spienc authorization test"
+    depends on LPKG_USING_AIC_SPIENC_AUTHORIZATION
+    default n
+
+endif

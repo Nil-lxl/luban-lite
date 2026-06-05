@@ -62,6 +62,7 @@ struct aic_camera_ctx_s {
     lv_mutex_t mutex;
     lv_thread_sync_t video_sync;
     lv_thread_t video_thread;
+    lv_thread_sync_t video_exit_sync;
 
 #if AIC_CAMERA_USE_BARCODE
     lv_thread_sync_t barcdoe_sync;
@@ -69,6 +70,7 @@ struct aic_camera_ctx_s {
     void *barcode_buffer;
     bool barcode_create;
     bool barcode_ready;
+    lv_thread_sync_t barcode_exit_sync;
 #endif
 };
 
@@ -131,17 +133,16 @@ lv_res_t lv_aic_camera_set_format(lv_obj_t * obj, lv_aic_camera_format format)
 lv_res_t lv_aic_camera_open(lv_obj_t * obj)
 {
     lv_aic_camera_t *camera = (lv_aic_camera_t *)obj;
-    struct aic_camera_ctx_s * aic_ctx = NULL;
+    struct aic_camera_ctx_s * aic_ctx = camera->aic_ctx;
     bool vin_init_status = false;
 
-    if (camera->aic_ctx == NULL) {
+    if (aic_ctx == NULL) {
         aic_ctx = lv_mem_alloc(sizeof(struct aic_camera_ctx_s));
         if(aic_ctx == NULL) {
             LV_LOG_ERROR("lv_aic_camera_open failed");
             return LV_RES_INV;
         }
         lv_memset(aic_ctx, 0x0, sizeof(struct aic_camera_ctx_s));
-        camera->aic_ctx = aic_ctx;
         aic_ctx->status = LV_AIC_CAMERA_STATUS_INIT;
     }
 
@@ -205,6 +206,7 @@ lv_res_t lv_aic_camera_open(lv_obj_t * obj)
     lv_mutex_init(&aic_ctx->mutex);
     lv_thread_sync_init(&aic_ctx->video_sync);
     lv_thread_init(&aic_ctx->video_thread, 20, lv_camera_draw_video_layer_entry, 4 * 1024, camera);
+    lv_thread_sync_init(&aic_ctx->video_exit_sync);
 
 #if AIC_CAMERA_USE_BARCODE
     if (camera->barcode_en) {
@@ -213,12 +215,14 @@ lv_res_t lv_aic_camera_open(lv_obj_t * obj)
         lv_thread_init(&aic_ctx->barcdoe_thread, 20, barcode_decode_entry, 32 * 1024, camera);
         aic_ctx->barcode_create = true;
         aic_ctx->barcode_ready = true;
+        lv_thread_sync_init(&aic_ctx->barcode_exit_sync);
     }
 #endif
     aic_ctx->status = LV_AIC_CAMERA_STATUS_READY;
 
     lv_obj_refresh_self_size(obj);
 
+    camera->aic_ctx = aic_ctx;
     return LV_RES_OK;
 CAMERA_ERROR:
     if (vin_init_status)
@@ -230,7 +234,6 @@ CAMERA_ERROR:
 
     if (aic_ctx)
         lv_mem_free(aic_ctx);
-    camera->aic_ctx = NULL;
 
     return LV_RES_INV;
 }
@@ -240,11 +243,16 @@ lv_res_t lv_aic_camera_start(lv_obj_t * obj)
     lv_aic_camera_t *camera = (lv_aic_camera_t *)obj;
     struct aic_camera_ctx_s * aic_ctx = camera->aic_ctx;
     if (aic_ctx && (aic_ctx->status == LV_AIC_CAMERA_STATUS_READY)) {
+        lv_mutex_lock(&aic_ctx->mutex);
         aic_ctx->status = LV_AIC_CAMERA_STATUS_START;
+        lv_mutex_unlock(&aic_ctx->mutex);
         lv_thread_sync_signal(&camera->aic_ctx->video_sync);
         return LV_RES_OK;
     } else {
-        LV_LOG_WARN("the camera status error, status = %ld", aic_ctx->status);
+        if (aic_ctx)
+            LV_LOG_WARN("the camera status error, status = %ld", aic_ctx->status);
+        else
+            LV_LOG_WARN("the camera ctx is NULL");
     }
     return LV_RES_INV;
 }
@@ -259,7 +267,10 @@ lv_res_t lv_aic_camera_stop(lv_obj_t * obj)
         lv_mutex_unlock(&aic_ctx->mutex);
         return LV_RES_OK;
     } else {
-        LV_LOG_WARN("the camera status error, status = %ld", aic_ctx->status);
+        if (aic_ctx)
+            LV_LOG_WARN("the camera status error, status = %ld", aic_ctx->status);
+        else
+            LV_LOG_WARN("the camera ctx is NULL");
     }
     return LV_RES_OK;
 }
@@ -397,14 +408,19 @@ static int lv_camera_video_layer_set(struct aic_camera_ctx_s *aic_ctx, int index
     int i;
     struct aicfb_layer_data layer = {0};
     struct vin_video_buf *binfo = &aic_ctx->binfo;
+    struct mpp_rect dst_rect = {0};
 
     layer.layer_id = AICFB_LAYER_TYPE_VIDEO;
     layer.enable = 1;
 
-    layer.scale_size.width = aic_ctx->dst_rect.width;
-    layer.scale_size.height = aic_ctx->dst_rect.height;
-    layer.pos.x = aic_ctx->dst_rect.x;
-    layer.pos.y = aic_ctx->dst_rect.y;
+    lv_mutex_lock(&aic_ctx->mutex);
+    memcpy(&dst_rect, &aic_ctx->dst_rect, sizeof(struct mpp_rect));
+    lv_mutex_unlock(&aic_ctx->mutex);
+
+    layer.scale_size.width = dst_rect.width;
+    layer.scale_size.height = dst_rect.height;
+    layer.pos.x = dst_rect.x;
+    layer.pos.y = dst_rect.y;
 
     if (aic_ctx->rotation == MPP_ROTATION_0
         || aic_ctx->rotation == MPP_ROTATION_180) {
@@ -425,7 +441,7 @@ static int lv_camera_video_layer_set(struct aic_camera_ctx_s *aic_ctx, int index
 
     if (mpp_fb_ioctl(aic_ctx->fb, AICFB_UPDATE_LAYER_CONFIG, &layer) < 0) {
         LV_LOG_ERROR("Failed to update layer config!, x %d y %d w %d h %d",
-        aic_ctx->dst_rect.x, aic_ctx->dst_rect.y, aic_ctx->dst_rect.width, aic_ctx->dst_rect.height);
+        dst_rect.x, dst_rect.y, dst_rect.width, dst_rect.height);
         return -1;
     }
 
@@ -452,15 +468,20 @@ static void lv_camera_draw_video_layer_entry(void *ptr)
 
     lv_thread_sync_wait(&aic_ctx->video_sync);
 
+    /* If destructor has set STOP before we started, exit directly */
+    if (aic_ctx->status == LV_AIC_CAMERA_STATUS_STOP) {
+        goto thread_exit;
+    }
+
     if (lv_camera_request_buf(&aic_ctx->binfo) < 0) {
         LV_LOG_ERROR("lv_camera_request_buf error");
-        return;
+        goto thread_exit;
     }
 
     for (i = 0; i < VID_BUF_NUM; i++) {
         if (lv_camera_queue_buf(i) < 0) {
             LV_LOG_ERROR("lv_camera_queue_buf error");
-            return;
+            goto thread_exit;
         }
     }
 
@@ -470,7 +491,7 @@ static void lv_camera_draw_video_layer_entry(void *ptr)
 
     if (lv_camera_start() < 0) {
         LV_LOG_WARN("camera start error");
-        return;
+        goto thread_exit;
     }
 
     while (aic_ctx->status == LV_AIC_CAMERA_STATUS_RUNNING) {
@@ -504,7 +525,11 @@ static void lv_camera_draw_video_layer_entry(void *ptr)
         lv_camera_queue_buf(index);
     }
 
+thread_exit:
+    lv_mutex_lock(&aic_ctx->mutex);
     aic_ctx->status = LV_AIC_CAMERA_STATUS_DELETE;
+    lv_mutex_unlock(&aic_ctx->mutex);
+    lv_thread_sync_signal(&aic_ctx->video_exit_sync);
 }
 
 #if AIC_CAMERA_USE_BARCODE
@@ -513,14 +538,17 @@ static void barcode_decode_entry(void *ptr)
     lv_aic_camera_t *camera = (lv_aic_camera_t *)ptr;
     struct aic_camera_ctx_s *aic_ctx = camera->aic_ctx;
 
-    while (1) {
+    while (aic_ctx->status != LV_AIC_CAMERA_STATUS_DELETE) {
         lv_thread_sync_wait(&aic_ctx->barcdoe_sync);
+        if (aic_ctx->status == LV_AIC_CAMERA_STATUS_DELETE)
+            break;
 
         barcode_decode((lv_obj_t *)camera);
         lv_mutex_lock(&aic_ctx->mutex);
         aic_ctx->barcode_ready = true;
         lv_mutex_unlock(&aic_ctx->mutex);
     }
+    lv_thread_sync_signal(&aic_ctx->barcode_exit_sync);
 }
 #endif
 
@@ -628,7 +656,7 @@ static int lv_camera_queue_buf(int index)
     return 0;
 }
 
-int lv_camera_request_buf(struct vin_video_buf *vbuf)
+static int lv_camera_request_buf(struct vin_video_buf *vbuf)
 {
     int i, min_num = 3;
 
@@ -675,15 +703,36 @@ static void lv_aic_camera_destructor(const lv_obj_class_t * class_p,
     struct aic_camera_ctx_s * aic_ctx = camera->aic_ctx;
 
     if (aic_ctx) {
+        /* Step 1: Notify video thread to exit the while loop */
+        lv_mutex_lock(&aic_ctx->mutex);
+        aic_ctx->status = LV_AIC_CAMERA_STATUS_STOP;
+        lv_mutex_unlock(&aic_ctx->mutex);
+
+        /* Step 2: Signal video thread in case it hasn't been started yet */
+        lv_thread_sync_signal(&aic_ctx->video_sync);
+
+        /* Step 3: Wait for video thread to exit */
+        lv_thread_sync_wait(&aic_ctx->video_exit_sync);
+        lv_thread_sync_delete(&aic_ctx->video_exit_sync);
+
+        /* Step 4: Stop stream */
+        lv_camera_stop();
+
+        /* Step 5: Safe to delete thread handle after entry returns */
         lv_thread_delete(&aic_ctx->video_thread);
 
         lv_camera_release_buf(0);
-        lv_camera_stop();
         lv_camera_video_layer_disable(aic_ctx);
         mpp_vin_deinit();
         mpp_fb_close(aic_ctx->fb);
+
 #if AIC_CAMERA_USE_BARCODE
         if (aic_ctx->barcode_create) {
+            lv_thread_sync_signal(&aic_ctx->barcdoe_sync);
+
+            /* Wait for barcode thread to exit */
+            lv_thread_sync_wait(&aic_ctx->barcode_exit_sync);
+            lv_thread_sync_delete(&aic_ctx->barcode_exit_sync);
             lv_thread_delete(&aic_ctx->barcdoe_thread);
             lv_thread_sync_delete(&aic_ctx->barcdoe_sync);
             barcode_decode_delete(aic_ctx);
@@ -691,7 +740,7 @@ static void lv_aic_camera_destructor(const lv_obj_class_t * class_p,
 #endif
         lv_mutex_delete(&aic_ctx->mutex);
         lv_thread_sync_delete(&aic_ctx->video_sync);
-        free(aic_ctx);
+        lv_mem_free(aic_ctx);
     }
     LV_TRACE_OBJ_CREATE("finished");
 }
@@ -724,10 +773,12 @@ static void lv_aic_camera_event(const lv_obj_class_t * class_p, lv_event_t * e)
         lv_obj_get_coords(obj, &fill_area);
 
         /* update the video layer */
+        lv_mutex_lock(&aic_ctx->mutex);
         aic_ctx->dst_rect.x = fill_area.x1;
         aic_ctx->dst_rect.y = fill_area.y1;
         aic_ctx->dst_rect.width = fill_area.x2 - fill_area.x1 + 1;
         aic_ctx->dst_rect.height = fill_area.y2 - fill_area.y1 + 1;
+        lv_mutex_unlock(&aic_ctx->mutex);
 
         int alpha_en = 0;
         int width = fill_area.x2 - fill_area.x1 + 1;

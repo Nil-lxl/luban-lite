@@ -6,6 +6,7 @@
 
 #include "drv_fb.h"
 #include "drv_de.h"
+#include <aic_iopoll.h>
 
 #ifndef AIC_DE_DRV_V10
 #include "disp_ccm.h"
@@ -16,6 +17,7 @@
 #define DITHER_RGB666   0x2
 
 #define DE_TIMEOUT_MS     100
+#define DE_PREFETCH_LINE  2
 
 static struct aic_de_comp *g_aic_de_comp;
 
@@ -327,7 +329,7 @@ static int aic_de_timing_enable(void)
     de_set_ui_layer_size(comp->regs, active_w, active_h, 0, 0);
     de_scaler0_active_handle(comp->regs, 0);
 
-    de_config_prefetch_line_set(comp->regs, 2);
+    de_config_prefetch_line_set(comp->regs, DE_PREFETCH_LINE);
     de_soft_reset_ctrl(comp->regs, 1);
 
     de_set_qos(comp->regs);
@@ -522,6 +524,7 @@ static int update_one_layer_config(struct aic_de_comp *comp,
                     layer_data->rect_id);
         } else {
             de_video_layer_enable(comp->regs, 0);
+            comp->layer_mask &= ~BIT(AICFB_LAYER_TYPE_VIDEO);
         }
         return 0;
     }
@@ -545,6 +548,7 @@ static int update_one_layer_config(struct aic_de_comp *comp,
         if (!is_valid_video_size(comp, layer_data)) {
             comp->layers[index].enable = 0;
             de_video_layer_enable(comp->regs, 0);
+            comp->layer_mask &= ~BIT(AICFB_LAYER_TYPE_VIDEO);
             return -EINVAL;
         }
 
@@ -552,38 +556,49 @@ static int update_one_layer_config(struct aic_de_comp *comp,
         if (ret != 0) {
             comp->layers[index].enable = 0;
             de_video_layer_enable(comp->regs, 0);
+            comp->layer_mask &= ~BIT(AICFB_LAYER_TYPE_VIDEO);
         } else {
             memcpy(&comp->layers[index], layer_data,
                    sizeof(struct aicfb_layer_data));
+            comp->layer_mask |= BIT(AICFB_LAYER_TYPE_VIDEO);
         }
         return ret;
     }
     return 0;
 }
 
+static void aic_de_skip_prefetch_line(struct aic_de_comp *comp)
+{
+    u32 flags = BIT(AICFB_LAYER_TYPE_UI) | BIT(AICFB_LAYER_TYPE_VIDEO);
+    u32 output_line = 0;
+    u32 val;
+
+    if ((comp->layer_mask & flags) != flags)
+        /* Skip prefetch line only when both UI and VIDEO layers are enabled */
+        return;
+
+    output_line = reg_read(comp->regs + TIMING_DEBUG);
+    if (output_line >= comp->accum_line || output_line <= DE_PREFETCH_LINE) {
+        readl_poll_timeout(comp->regs + TIMING_DEBUG, val,
+                           val > DE_PREFETCH_LINE, 100);
+    }
+}
+
 static int aic_de_update_layer_config(struct aicfb_layer_data *layer_data)
 {
     struct aic_de_comp *comp = aic_de_request_drvdata();
-    u32 output_line = 0;
-    u32 lock = 1;
     size_t flag;
     int ret;
 
-    flag = aicos_enter_critical_section();
+    aic_de_skip_prefetch_line(comp);
 
-    output_line = reg_read(comp->regs + TIMING_DEBUG);
-    if (output_line >= comp->accum_line || output_line <= 2) {
-        aicos_leave_critical_section(flag);
-        aic_delay_ms(1);
-        lock = 0;
-    }
+    flag = aicos_enter_critical_section();
 
     de_config_update_enable(comp->regs, 0);
     ret = update_one_layer_config(comp, layer_data);
     de_config_update_enable(comp->regs, 1);
 
-    if (lock)
-        aicos_leave_critical_section(flag);
+    aicos_leave_critical_section(flag);
 
     aic_de_release_drvdata();
     return ret;

@@ -995,10 +995,9 @@ int rwnx_fdrv_init(struct rwnx_hw *rwnx_hw)
     }
 
     // read & set base mac address
+    rwnx_read_efuse_mac(rwnx_hw);
     #ifdef CONFIG_USE_LOCAL_MAC_ADDR
     rwnx_read_local_mac();
-    #else
-    rwnx_read_efuse_mac(rwnx_hw);
     #endif
 
     /* Reset FW */
@@ -1074,29 +1073,26 @@ int rwnx_read_efuse_mac(struct rwnx_hw *rwnx_hw)
     return 0;
 }
 
+#ifdef CONFIG_USE_LOCAL_MAC_ADDR
+extern void aicmac_get_macaddr_from_chipid(int port, unsigned char out_addr[6]);
 int rwnx_read_local_mac(void)
 {
-    int ret = 0;
     uint8_t mac_addr_local[ETH_ALEN] = {0x00,};
-    uint8_t *mac_addr_ptr = NULL;
 
-    //ret = get_local_mac_addr(mac_addr_local);
-    if (ret) {
-        AIC_LOG_PRINTF("get mac req fail:%d\n",ret);
-        return -1;
-    }
+    aicmac_get_macaddr_from_chipid(1, mac_addr_local);
 
-    AIC_LOG_PRINTF("get local mac %02x:%02x:%02x:%02x:%02x:%02x\n", mac_addr_local[0],mac_addr_local[1],
-           mac_addr_local[2],mac_addr_local[3],mac_addr_local[4],mac_addr_local[5]);
+    AIC_LOG_PRINTF("get local mac %02x:%02x:%02x:%02x:%02x:%02x\n",
+                   mac_addr_local[0], mac_addr_local[1],
+                   mac_addr_local[2], mac_addr_local[3],
+                   mac_addr_local[4], mac_addr_local[5]);
 
     if (mac_addr_local[0] | mac_addr_local[1] | mac_addr_local[2] |
         mac_addr_local[3] | mac_addr_local[4] | mac_addr_local[5]) {
-        mac_addr_ptr = mac_addr_local;
+        set_mac_address(mac_addr_local);
     }
-    set_mac_address(mac_addr_ptr);
     return 0;
 }
-
+#endif
 // reset fdrv env
 int rwnx_fdrv_deinit(struct rwnx_hw *rwnx_hw)
 {

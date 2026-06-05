@@ -33,7 +33,8 @@
 if (!(EXPR))                                                                   \
 {                                                                              \
     FAL_PRINTF("(%s) has assert failed at %s.\n", #EXPR, __FUNCTION__);        \
-    while (1);                                                                 \
+    while (1) {                                                                \
+    }                                                                          \
 }
 
 /* debug level log */
@@ -91,16 +92,22 @@ struct fal_flash_dev
 
     struct
     {
-        int (*init)(void);
-        int (*read)(long offset, uint8_t *buf, size_t size);
-        int (*write)(long offset, const uint8_t *buf, size_t size);
-        int (*erase)(long offset, size_t size);
+        int (*init)(struct fal_flash_dev *dev);
+        int (*read)(const struct fal_flash_dev *dev, long offset,
+                    uint8_t *buf, size_t size);
+        int (*write)(const struct fal_flash_dev *dev, long offset,
+                     const uint8_t *buf, size_t size);
+        int (*erase)(const struct fal_flash_dev *dev, long offset,
+                     size_t size);
     } ops;
 
     /* write minimum granularity, unit: bit.
        1(nor flash)/ 8(stm32f2/f4)/ 32(stm32f1)/ 64(stm32l4)
        0 will not take effect. */
     size_t write_gran;
+
+    /* User-defined context pointer for ops functions */
+    void *user_data;
 };
 typedef struct fal_flash_dev *fal_flash_dev_t;
 

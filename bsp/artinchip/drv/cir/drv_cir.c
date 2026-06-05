@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  * Authors:  dwj <weijie.ding@artinchip.com>
@@ -53,21 +53,37 @@ rt_size_t drv_cir_read(rt_device_t pdev, rt_off_t pos, void *buffer,
                        rt_size_t size)
 {
     int ret;
+    unsigned long flags;
     aic_cir_t *p_aic_cir = (aic_cir_t *)pdev;
     aic_cir_ctrl_t *p_cir_ctrl = &p_aic_cir->aic_cir_ctrl;
     cir_config_t *config = &p_aic_cir->config;
+    uint32_t rx_idx;
+
+    RT_ASSERT(buffer);
 
     rt_mutex_take(&p_aic_cir->lock, RT_WAITING_FOREVER);
+
+    aicos_local_irq_save(&flags);
+    rx_idx = p_cir_ctrl->rx_idx;
+    aicos_local_irq_restore(flags);
+
+    if (rx_idx == 0) {
+        rt_mutex_release(&p_aic_cir->lock);
+        return 0;
+    }
+
     ret = ir_raw_decode_scancode(config->protocol,
                                  (uint8_t *)&p_cir_ctrl->rx_data,
-                                 p_cir_ctrl->rx_idx, (uint32_t *)buffer);
+                                 rx_idx, (uint32_t *)buffer);
     if (ret)
     {
         LOG_D("ir_raw_decode_scancode error\n");
         size = 0;
     }
 
+    aicos_local_irq_save(&flags);
     hal_cir_rx_reset_status(p_cir_ctrl);
+    aicos_local_irq_restore(flags);
     rt_mutex_release(&p_aic_cir->lock);
 
     return size;
@@ -79,21 +95,34 @@ rt_size_t drv_cir_write(rt_device_t pdev, rt_off_t pos, const void *buffer,
     int encode_size;
     aic_cir_t *p_aic_cir = (aic_cir_t *)pdev;
     aic_cir_ctrl_t *p_cir_ctrl = &p_aic_cir->aic_cir_ctrl;
-    uint32_t scancode = *(uint32_t *)buffer;
+    uint32_t scancode;
     cir_config_t *config = &p_aic_cir->config;
     void *tx_data = (void *)p_cir_ctrl->tx_data;
 
+    RT_ASSERT(buffer);
+    scancode = *(uint32_t *)buffer;
+
     rt_mutex_take(&p_aic_cir->lock, RT_WAITING_FOREVER);
+#ifdef RT_USING_PM
+    rt_pm_module_request(PM_CIR_ID, PM_SLEEP_MODE_NONE);
+#endif
     encode_size = ir_raw_encode_scancode(config->protocol, scancode, tx_data,
                                          sizeof(p_cir_ctrl->tx_data));
     if (encode_size < 0)
     {
         LOG_E("ir_raw_encode_scancode error\n");
+#ifdef RT_USING_PM
+        rt_pm_module_release(PM_CIR_ID, PM_SLEEP_MODE_NONE);
+#endif
+        rt_mutex_release(&p_aic_cir->lock);
         return 0;
     }
 
     hal_cir_enable_transmitter(p_cir_ctrl);
     hal_cir_send_data(p_cir_ctrl, tx_data, encode_size);
+#ifdef RT_USING_PM
+    rt_pm_module_release(PM_CIR_ID, PM_SLEEP_MODE_NONE);
+#endif
     rt_mutex_release(&p_aic_cir->lock);
 
     return size;
@@ -106,6 +135,9 @@ rt_err_t drv_cir_control(rt_device_t pdev, int cmd, void *args)
     aic_cir_ctrl_t *p_cir_ctrl = &p_aic_cir->aic_cir_ctrl;
     cir_config_t *config;
 
+    RT_ASSERT(args);
+
+    rt_mutex_take(&p_aic_cir->lock, RT_WAITING_FOREVER);
     switch (cmd)
     {
     case IOC_CIR_CONFIGURE:
@@ -119,6 +151,7 @@ rt_err_t drv_cir_control(rt_device_t pdev, int cmd, void *args)
         if (ret)
         {
             LOG_E("hal_cir_set_tx_carrier error\n");
+            rt_mutex_release(&p_aic_cir->lock);
             return -RT_ERROR;
         }
 
@@ -130,6 +163,8 @@ rt_err_t drv_cir_control(rt_device_t pdev, int cmd, void *args)
     default:
         break;
     }
+
+    rt_mutex_release(&p_aic_cir->lock);
 
     return RT_EOK;
 }
@@ -166,6 +201,58 @@ static const struct rt_device_ops aic_cir_ops =
 };
 #endif
 
+#ifdef RT_USING_PM
+static int aic_cir_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    aic_cir_t *p_aic_cir = (aic_cir_t *)device;
+    aic_cir_ctrl_t *p_cir_ctrl = &p_aic_cir->aic_cir_ctrl;
+
+    if (hal_cir_is_busy(p_cir_ctrl))
+        return -RT_EBUSY;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+    case PM_SLEEP_MODE_SHUTDOWN:
+        hal_cir_uninit(p_cir_ctrl);
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_cir_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    aic_cir_t *p_aic_cir = (aic_cir_t *)device;
+    aic_cir_ctrl_t *p_cir_ctrl = &p_aic_cir->aic_cir_ctrl;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+    case PM_SLEEP_MODE_SHUTDOWN:
+        hal_cir_init(p_cir_ctrl);
+        drv_cir_control((rt_device_t)device, IOC_CIR_CONFIGURE, &p_aic_cir->config);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_cir_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_cir_suspend, aic_cir_resume)
+    NULL,
+};
+#endif
+
 int rt_hw_aic_cir_init(void)
 {
 #ifdef RT_USING_DEVICE_OPS
@@ -192,6 +279,10 @@ int rt_hw_aic_cir_init(void)
     rt_mutex_init(&aic_cir_dev.lock, "cir_mutex", RT_IPC_FLAG_PRIO);
     rt_device_register(&aic_cir_dev.dev, "cir", 0);
     LOG_I("ArtInChip CIR device register success\n");
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&aic_cir_dev.dev, &aic_cir_pm_ops);
+#endif
 
     return 0;
 }

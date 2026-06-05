@@ -42,6 +42,10 @@ int8_t data_pkt_rssi_get(uint8_t *mac_addr)
 {
     struct vif_info_tag *mac_vif = fhost_env.vif[0].mac_vif; // TODO:
 
+    if (mac_vif && (VIF_STA == mac_vif->type)) {
+        return rssi_saved[0];
+    }
+
     if (mac_vif && (VIF_AP == mac_vif->type)) {
         struct mac_addr mac;
         MAC_ADDR_CPY(mac.array, mac_addr);
@@ -55,6 +59,11 @@ int8_t data_pkt_rssi_get(uint8_t *mac_addr)
 void data_pkt_rssi_set(uint8_t *addr, int8_t rssi)
 {
     struct vif_info_tag *mac_vif = fhost_env.vif[0].mac_vif; // TODO:
+
+    if (mac_vif && (VIF_STA == mac_vif->type)) {
+        rssi_saved[0] = rssi;
+        return;
+    }
 
     if (mac_vif && (VIF_AP == mac_vif->type)) {
         struct mac_addr mac;

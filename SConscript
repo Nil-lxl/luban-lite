@@ -37,6 +37,12 @@ abs_path = os.path.join(AIC_ROOT, rel_path)
 if os.path.isfile(abs_path):
     objs = objs + SConscript(rel_path)
 
+# bsp/artinchip/common
+rel_path = os.path.join('bsp', 'artinchip', 'common', 'SConscript')
+abs_path = os.path.join(AIC_ROOT, rel_path)
+if os.path.isfile(abs_path):
+    objs = objs + SConscript(rel_path)
+
 # packages
 rel_path = os.path.join('packages', 'SConscript')
 abs_path = os.path.join(AIC_ROOT, rel_path)

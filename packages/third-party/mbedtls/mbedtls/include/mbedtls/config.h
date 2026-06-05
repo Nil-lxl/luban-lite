@@ -1,14 +1,5 @@
-/**
- * \file tls_config.h
- *
- * \brief Configuration options (set of defines)
- *
- *  This set of compile-time options may be used to enable
- *  or disable features selectively, and reduce the global
- *  memory footprint.
- */
 /*
- *  Copyright (C) 2006-2019, ARM Limited, All Rights Reserved
+ *  Copyright (C) 2006-2026, ARM Limited, All Rights Reserved
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -2212,7 +2203,7 @@
  *
  * This module provides networking routines.
  */
-//#define MBEDTLS_NET_C
+#define MBEDTLS_NET_C
 
 /**
  * \def MBEDTLS_OID_C
@@ -2393,6 +2384,71 @@
  * This module enables abstraction of common (libc) functions.
  */
 #define MBEDTLS_PLATFORM_C
+
+/**
+ * \def MBEDTLS_POLY1305_C
+ *
+ * Enable the Poly1305 MAC algorithm.
+ *
+ * Module:  library/poly1305.c
+ * Caller:  library/chachapoly.c
+ */
+#define MBEDTLS_POLY1305_C
+
+/**
+ * \def MBEDTLS_PSA_CRYPTO_C
+ *
+ * Enable the Platform Security Architecture cryptography API.
+ *
+ * Module:  library/psa_crypto.c
+ *
+ * Requires: either MBEDTLS_CTR_DRBG_C and MBEDTLS_ENTROPY_C,
+ *           or MBEDTLS_HMAC_DRBG_C and MBEDTLS_ENTROPY_C,
+ *           or MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG.
+ *
+ */
+#define MBEDTLS_PSA_CRYPTO_C
+
+/**
+ * \def MBEDTLS_PSA_CRYPTO_SE_C
+ *
+ * Enable secure element support in the Platform Security Architecture
+ * cryptography API.
+ *
+ * \warning This feature is not yet suitable for production. It is provided
+ *          for API evaluation and testing purposes only.
+ *
+ * Module:  library/psa_crypto_se.c
+ *
+ * Requires: MBEDTLS_PSA_CRYPTO_C, MBEDTLS_PSA_CRYPTO_STORAGE_C
+ *
+ */
+//#define MBEDTLS_PSA_CRYPTO_SE_C
+
+/**
+ * \def MBEDTLS_PSA_CRYPTO_STORAGE_C
+ *
+ * Enable the Platform Security Architecture persistent key storage.
+ *
+ * Module:  library/psa_crypto_storage.c
+ *
+ * Requires: MBEDTLS_PSA_CRYPTO_C,
+ *           either MBEDTLS_PSA_ITS_FILE_C or a native implementation of
+ *           the PSA ITS interface
+ */
+#define MBEDTLS_PSA_CRYPTO_STORAGE_C
+
+/**
+ * \def MBEDTLS_PSA_ITS_FILE_C
+ *
+ * Enable the emulation of the Platform Security Architecture
+ * Internal Trusted Storage (PSA ITS) over files.
+ *
+ * Module:  library/psa_its_file.c
+ *
+ * Requires: MBEDTLS_FS_IO
+ */
+#define MBEDTLS_PSA_ITS_FILE_C
 
 /**
  * \def MBEDTLS_RIPEMD160_C

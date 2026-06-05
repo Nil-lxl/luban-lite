@@ -40,7 +40,7 @@ enum clk_id {
     CLK_USBD,
     CLK_USBH0,
     CLK_USB_PHY0,
-    CLK_CANFD,
+    CLK_CANFD0,
     CLK_XSPI,
     CLK_QSPI0,
     CLK_QSPI1,
@@ -140,7 +140,7 @@ enum clk_id {
 #define CLK_USB_DEV_REG         (0x041C)
 #define CLK_USB_HOST_REG        (0x0420)
 #define CLK_USB_PHY_REG         (0x0430)
-#define CLK_CANFD_REG           (0x0450)
+#define CLK_CANFD0_REG          (0x0450)
 #define CLK_XSPI_REG            (0x045C)
 #define CLK_QSPI0_REG           (0x0460)
 #define CLK_QSPI1_REG           (0x0464)

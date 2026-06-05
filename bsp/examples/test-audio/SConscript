@@ -10,6 +10,7 @@ if GetDepend('RT_USING_FINSH'):
         src += Glob('a*.c')
     if GetDepend('AIC_I2S_DRV_TEST'):
         src += Glob('test_i2s_loopback.c')
+        src += Glob('test_audio_loopback.c')
 
 group = DefineGroup('test-aplay', src, depend = [''], CPPPATH = CPPPATH)
 

@@ -109,6 +109,10 @@ static uint32_t g_tx_fifo_sz_array[USB_NUM_BIDIR_ENDPOINTS] = {0};
 uint8_t ep0_ctrl_stage = 0; /* 1 = setup stage, 2 = data stage, 3 = status stage */
 static int setup_handler_immediately = 0;
 
+#ifdef RT_USING_PM
+static int usbd_pm_init(void);
+#endif
+
 #ifdef CONFIG_USB_AIC_DMA_ENABLE
 static uint8_t g_aic_udc_ibuf[USB_RAM_SIZE] __ALIGNED(CACHE_LINE_SIZE);
 static uint8_t g_aic_udc_obuf[USB_RAM_SIZE] __ALIGNED(CACHE_LINE_SIZE);
@@ -791,6 +795,9 @@ int usb_dc_init(uint8_t busid)
     writel(tmpreg, &AIC_UDC_REG->usbdevfunc);
 #if defined(KERNEL_RTTHREAD) && defined(LPKG_CHERRYUSB_DEVICE_PLUG_CHECK)
     ret = usbd_plug_irq_init();
+#endif
+#ifdef RT_USING_PM
+    ret = usbd_pm_init();
 #endif
     return ret;
 }
@@ -1952,3 +1959,69 @@ int usbd_plug_irq_init(void)
 }
 #endif
 
+#ifdef RT_USING_PM
+static int aic_usbd_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+    case PM_SLEEP_MODE_SHUTDOWN:
+        usb_dc_deinit(0);
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_usbd_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+    case PM_SLEEP_MODE_SHUTDOWN:
+        usb_dc_init(0);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_usbd_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_usbd_suspend, aic_usbd_resume)
+    NULL,
+};
+
+struct rt_device *usbd_device = RT_NULL;
+
+static int usbd_pm_init(void)
+{
+    if (usbd_device)
+        return 0;
+
+    usbd_device = (struct rt_device *)rt_malloc(sizeof(struct rt_device));
+    if (usbd_device) {
+        rt_memset(usbd_device, 0, sizeof(struct rt_device));
+        usbd_device->user_data = &g_aic_udc;
+        if (rt_device_register(usbd_device, "usbd", RT_DEVICE_FLAG_RDWR) != RT_EOK) {
+            USB_LOG_WRN("Failed to register usbd device\n");
+            rt_free(usbd_device);
+            usbd_device = RT_NULL;
+            return -1;
+        } else {
+            rt_pm_device_register(usbd_device, &aic_usbd_pm_ops);
+        }
+    }
+
+    return 0;
+}
+
+#endif

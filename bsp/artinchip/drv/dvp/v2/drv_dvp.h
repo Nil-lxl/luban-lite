@@ -33,19 +33,28 @@
 extern const struct v4l2_subdev_ops aic_dvp_subdev_ops;
 
 struct aic_dvp_ch {
+    bool             available;
     /* Videobuf */
-    struct vb_queue         queue;
-    struct list_head        active_list;
-    unsigned int            sequence;
-    unsigned int            streaming;
-    aicos_sem_t             finished;
+    struct vb_queue  queue;
+    struct list_head active_list;
+    bool             streaming;
+    bool             resumed;
+    bool             recv_first_field;
+    aicos_sem_t      finished;
+
+    u32              sequence;
+    u32              frame_cnt;
+    u32              update_cnt;
+    u32              full_cnt;
 };
 
 struct aic_dvp {
+    struct rt_device        dev;
     struct aic_dvp_config   cfg; /* The configuration of DVP HW */
     struct dvp_out_fmt      fmt; /* The format of output data */
+    bool                    inited;
 
-    struct aic_dvp_ch ch[DVP_MAX_CH_NUM];
+    struct aic_dvp_ch       ch[DVP_MAX_CH_NUM];
 };
 
 int aic_dvp_set_in_fmt(struct mpp_video_fmt *fmt);
@@ -60,11 +69,11 @@ int aic_dvp_q_buf(u32 index, u32 ch);
 int aic_dvp_dq_buf(u32 *pindex, u32 ch);
 u32 aic_dvp_get_timestamp(u32 index, u32 ch);
 
-int aic_dvp_probe(u32 ch);
+int aic_dvp_probe(void);
 int aic_dvp_vb_init(u32 ch);
 void aic_dvp_vb_deinit(u32 ch);
-int aic_dvp_open(u32 ch);
-int aic_dvp_close(u32 ch);
+int aic_dvp_open(void);
+int aic_dvp_close(void);
 
 bool aic_dvp_sfield_mode(void);
 

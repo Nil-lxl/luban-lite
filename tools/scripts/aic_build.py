@@ -871,6 +871,42 @@ g_mem_items = {
       [['.heap_cma', 0], ['__cma_heap_start', '__cma_heap_end'], [0x0, 0x0]],
     ],
   ],
+  ('d12p'):
+  [
+    # 'regions_level0':
+    [
+      [['sram', 0], ['__sram_start', '__sram_end'], [0x0, 0x0]],
+      [['psram', 0], ['__psram_start', '__psram_end'], [0x0, 0x0]],
+      [['xip', 0], ['__xip_start', '__xip_end'], [0x0, 0x0]]
+    ],
+    # 'regions_level1':
+    [
+      [['sram_sw', 0], ['__sram_sw_start', '__sram_sw_end'], [0x0, 0x0]],
+      [['sram_cma', 0], ['__sram_cma_start', '__sram_cma_end'], [0x0, 0x0]],
+      [['psram_sw', 0], ['__psram_sw_start', '__psram_sw_end'], [0x0, 0x0]],
+      [['psram_cma', 0], ['__psram_cma_start', '__psram_cma_end'], [0x0, 0x0]],
+    ],
+    # 'regions_level2':
+    [
+      [['sram_sw_static', 0], ['__sram_sw_start', '__sram_sw_heap_start'], [0x0, 0x0]],
+      [['sram_sw_heap', 0], ['__sram_sw_heap_start', '__sram_sw_heap_end'], [0x0, 0x0]],
+      [['sram_cma_static', 0], ['__sram_cma_start', '__sram_cma_heap_start'], [0x0, 0x0]],
+      [['sram_cma_heap', 0], ['__sram_cma_heap_start', '__sram_cma_heap_end'], [0x0, 0x0]],
+      [['psram_sw_static', 0], ['__psram_sw_start', '__psram_sw_heap_start'], [0x0, 0x0]],
+      [['psram_sw_heap', 0], ['__psram_sw_heap_start', '__psram_sw_heap_end'], [0x0, 0x0]],
+      [['psram_cma_static', 0], ['__psram_cma_start', '__psram_cma_heap_start'], [0x0, 0x0]],
+      [['psram_cma_heap', 0], ['__psram_cma_heap_start', '__psram_cma_heap_end'], [0x0, 0x0]],
+    ],
+    # 'regions_level3':
+    [
+      [['.text', 0], ['__stext', '__etext'], [0x0, 0x0]],
+      [['.rodata', 0], ['__srodata', '__erodata'], [0x0, 0x0]],
+      [['.data', 0], ['__sdata', '__edata'], [0x0, 0x0]],
+      [['.bss', 0], ['__sbss', '__ebss'], [0x0, 0x0]],
+      [['.heap_sys', 0], ['__heap_start', '__heap_end'], [0x0, 0x0]],
+      [['.heap_cma', 0], ['__cma_heap_start', '__cma_heap_end'], [0x0, 0x0]],
+    ],
+  ],
 }
 
 
@@ -1248,9 +1284,15 @@ def mkimage_get_mtdpart_size(imgname):
     with open(partlist) as f:
         lines = f.readlines()
         for ln in lines:
-            name = ln.split(',')[1].replace('"', '').replace('*', '')
+            ln = ln.strip()
+            if not ln:
+                continue
+            parts = ln.split(',')
+            if len(parts) < 3:
+                continue
+            name = parts[1].replace('"', '').replace('*', '')
             if imgname == re.sub(".sparse", "", name):
-                size = int(ln.split(',')[2])
+                size = int(parts[2])
                 return size
     print('Image {} is not used in any partition'.format(imgname))
     print('please check your project\'s image_cfg.json')
@@ -1349,6 +1391,11 @@ def mkimage_gen_mkfs_action(img_id):
         cluster_size = 'CONFIG_AIC_USING_FS_IMAGE_TYPE_FATFS_CLUSTER_SIZE'
         cluster = int(get_config(prj_root_dir + '.config', cluster_size))
 
+        reserved_blks = 50
+        reserved_opt = 'CONFIG_AIC_NFTL_MINI_RESERVED_BLOCK'
+        if get_config(prj_root_dir + '.config', reserved_opt):
+            reserved_blks = get_config(prj_root_dir + '.config', reserved_opt).replace('"', '')
+
         cmdstr = 'python3 ' + aic_script_dir + 'makefatfs.py '
         if auto_siz == 'y':
             sector_siz = 512
@@ -1368,7 +1415,8 @@ def mkimage_gen_mkfs_action(img_id):
         cmdstr += '--sector {} '.format(sector_siz)
         cmdstr += '--tooldir {} '.format(aic_script_dir)
         cmdstr += '--inputdir {} '.format(srcdir)
-        cmdstr += '--outfile {}\n'.format(outimg)
+        cmdstr += '--outfile {} '.format(outimg)
+        cmdstr += '--reserved {}\n'.format(reserved_blks)
         mkfscmd += cmdstr
     if get_config(prj_root_dir + '.config', littlefs_enable) == 'y':
         imgname_opt = 'CONFIG_AIC_FS_IMAGE_NAME_{}'.format(img_id)
@@ -1550,15 +1598,15 @@ def mkimage_prebuild(aic_root, prj_chip, prj_board, prj_kernel, prj_app, prj_def
         POST_ACTION += '@cp -r ' + aic_pack_dir + '* ' + prj_out_dir + '\n'
         if os.path.exists(aic_common_dir + '/pbp_cfg.json'):
             POST_ACTION += '@cp -r ' + aic_common_dir + '/pbp_cfg.json ' + prj_out_dir + '\n'
+        if os.path.exists(aic_pack_dir + '/pbp_cfg.json'):
+            POST_ACTION += '@cp -r ' + aic_pack_dir + '/pbp_cfg.json ' + prj_out_dir + '\n'
         if os.path.exists(aic_pack_dir + '.image_cfg.json.tmp'):
             POST_ACTION += '@cp ' + aic_pack_dir + '.image_cfg.json.tmp ' \
                     + prj_out_dir + 'image_cfg.json\n'
-        if platform.system() == 'Linux':
-            MAKE_DDR_TOOL = 'python3 ' + aic_script_dir + 'mk_private_resource.py'
-            MAKE_PBP_TOOL = 'python3 ' + aic_script_dir + 'mk_prebootprog.py'
-        elif platform.system() == 'Windows':
-            MAKE_DDR_TOOL = aic_script_dir + 'mk_private_resource.exe'
-            MAKE_PBP_TOOL = 'python3 ' + aic_script_dir + 'mk_prebootprog.exe'
+
+        MAKE_DDR_TOOL = 'python3 ' + aic_script_dir + 'mk_private_resource.py'
+        MAKE_PBP_TOOL = 'python3 ' + aic_script_dir + 'mk_prebootprog.py'
+
         DDR_JSON = prj_out_dir + 'ddr_init.json'
         PART_JSON = prj_out_dir + 'partition.json'
         DDR_BIN = prj_out_dir + 'ddr_init.bin'

@@ -32,7 +32,10 @@
 
 #if defined(AIC_USING_GE) && !defined(AIC_CHIP_D13X)
 #define SUPPORT_ROTATION
+#define VID_BUF_FOR_ROTATION    1
 #include "mpp_ge.h"
+#else
+#define VID_BUF_FOR_ROTATION    0
 #endif
 
 /* MUST and ONLY enable one of follow mode: */
@@ -40,9 +43,13 @@
 #define DE_CROP_ENABLE         0    // Crop by DE video layer
 #define DVP_CROP_ENABLE        1    // Crop by DVP
 
+#if (DE_SCALE_ENABLE + DE_CROP_ENABLE + DVP_CROP_ENABLE) != 1
+#error "MUST and ONLY enable one: DE_SCALE_ENABLE, DE_CROP_ENABLE, DVP_CROP_ENABLE"
+#endif
+
 /* Global macro and variables */
 
-#define VID_BUF_NUM             3
+#define VID_BUF_NUM             (3 + VID_BUF_FOR_ROTATION)
 #define VID_BUF_PLANE_NUM       2
 #define VID_SCALE_OFFSET        0
 
@@ -60,7 +67,7 @@ static enum dvp_state g_dvp_status = DVP_STATUS_INIT;
 static const char sopts[] = "f:c:a:wh";
 static const struct option lopts[] = {
     {"format",        required_argument, NULL, 'f'},
-    {"capture",       required_argument, NULL, 'c'},
+    {"count",         required_argument, NULL, 'c'},
     {"angle",         required_argument, NULL, 'a'},
     {"wait",          required_argument, NULL, 'w'},
     {"usage",               no_argument, NULL, 'h'},
@@ -96,7 +103,7 @@ static struct mpp_ge *g_ge_dev = NULL;
 static void usage(char *program)
 {
     printf("Usage: %s [options]: \n", program);
-    printf("\t -f, --format\t\tformat of input video, NV16/NV12/YUV400 etc\n");
+    printf("\t -f, --format\t\tformat of output video, NV16/NV12/YUV400 etc\n");
     printf("\t -c, --count\t\tthe number of capture frame.(0 means infinity) \n");
 #ifdef SUPPORT_ROTATION
     printf("\t -a, --angle\t\tthe angle of rotation \n");
@@ -204,11 +211,11 @@ int dvp_cfg(void)
 #endif
 
     if (dst->pixelformat == MPP_FMT_NV16)
-        g_vdata.frame_size = g_vdata.w * g_vdata.h * 2;
+        dst->framesize = dst->width * dst->height * 2;
     else if (dst->pixelformat == MPP_FMT_NV12)
-        g_vdata.frame_size = (g_vdata.w * g_vdata.h * 3) >> 1;
+        dst->framesize = (dst->width * dst->height * 3) >> 1;
     else if (dst->pixelformat == MPP_FMT_YUV400)
-        g_vdata.frame_size = g_vdata.w * g_vdata.h;
+        dst->framesize = dst->width * dst->height;
 
     dst->num_planes = VID_BUF_PLANE_NUM;
     dst->frame_offset = 0;
@@ -224,8 +231,10 @@ int dvp_cfg(void)
 
 int dvp_request_buf(struct vin_video_buf *vbuf)
 {
-    int i, min_num = VID_BUF_NUM;
+    int i;
 
+    vbuf->num_buffers = VID_BUF_NUM;
+    vbuf->num_planes  = VID_BUF_PLANE_NUM;
     if (mpp_dvp_ioctl(DVP_REQ_BUF, (void *)vbuf) < 0) {
         pr_err("Failed to request buf!\n");
         return -1;
@@ -240,37 +249,17 @@ int dvp_request_buf(struct vin_video_buf *vbuf)
             vbuf->planes[i * vbuf->num_planes + 1].len);
     }
 
-#ifdef SUPPORT_ROTATION
-    if (g_vdata.rotation)
-        min_num++;
-
-    g_vdata.num_buffers = g_vdata.binfo.num_buffers - 1;
-#else
-    g_vdata.num_buffers = g_vdata.binfo.num_buffers;
-#endif
-
-    if (vbuf->num_buffers < min_num) {
-        pr_err("The number of video buf must >= %d!\n", min_num);
+    if (vbuf->num_buffers < VID_BUF_NUM) {
+        pr_err("The number of video buf must >= %d!\n", VID_BUF_NUM);
         return -1;
     }
 
-    return 0;
-}
-
-void dvp_release_buf(int num)
-{
-#if 0
-    int i;
-    struct video_buf_info *binfo = NULL;
-
-    for (i = 0; i < num; i++) {
-        binfo = &g_vdata.binfo[i];
-        if (binfo->vaddr) {
-            munmap(binfo->vaddr, binfo->len);
-            binfo->vaddr = NULL;
-        }
-    }
+#ifdef SUPPORT_ROTATION
+    g_vdata.num_buffers = g_vdata.binfo.num_buffers - VID_BUF_FOR_ROTATION;
+#else
+    g_vdata.num_buffers = g_vdata.binfo.num_buffers;
 #endif
+    return 0;
 }
 
 int dvp_queue_buf(int index)
@@ -546,20 +535,20 @@ void dvp_thread_stop(void)
 
 static void test_dvp_thread(void *arg)
 {
-    int i, index = 0;
+    int i = 0, index = 0;
     struct timespec begin, now;
 
     if (dvp_request_buf(&g_vdata.binfo) < 0)
-        return;
+        goto exit;
 
     for (i = 0; i < g_vdata.num_buffers; i++) {
         if (dvp_queue_buf(i) < 0)
-            return;
+            goto exit;
     }
     g_dvp_status = DVP_STATUS_READY;
 
     if (dvp_start() < 0)
-        return;
+        goto exit;
 
 #if DE_SCALE_ENABLE
 
@@ -567,7 +556,7 @@ static void test_dvp_thread(void *arg)
     if (dvp_set_output_pos(VID_SCALE_OFFSET, VID_SCALE_OFFSET,
                            g_fb_info.width - VID_SCALE_OFFSET * 2,
                            g_fb_info.height - VID_SCALE_OFFSET * 2))
-        return;
+        goto exit;
 
 #elif DVP_CROP_ENABLE
 
@@ -575,12 +564,12 @@ static void test_dvp_thread(void *arg)
     if (dvp_set_output_pos(0, 0,
                            min(g_fb_info.width, g_vdata.src_fmt.width),
                            min(g_fb_info.height, g_vdata.src_fmt.height)))
-        return;
+        goto exit;
 
 #else
 
     if (dvp_set_output_pos(0, 0, g_vdata.dst_fmt.width, g_vdata.dst_fmt.height))
-        return;
+        goto exit;
 
 #endif // end of DE_SCALE_ENABLE
 
@@ -638,8 +627,8 @@ static void test_dvp_thread(void *arg)
         }
     }
 
+exit:
     dvp_stop();
-    dvp_release_buf(g_vdata.binfo.num_buffers);
     mpp_vin_deinit();
     if (g_fb) {
         video_layer_disable();

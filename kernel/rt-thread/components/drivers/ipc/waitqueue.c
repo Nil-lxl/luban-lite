@@ -227,5 +227,7 @@ int rt_wqueue_wait(rt_wqueue_t *queue, int condition, int msec)
 
     rt_schedule();
 
+    rt_wqueue_remove(&__wait);
+
     return tid->error;
 }

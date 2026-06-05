@@ -15,8 +15,12 @@
 
 #define RTC_REG_CTL                     (0x0000)
 #define RTC_REG_INIT                    (0x0004)
-#define RTC_REG_IRQ_EN                  (0x0008)
-#define RTC_REG_IRQ_STA                 (0x000C)
+#define RTC_REG_AON_IRQ_EN              (0x0008)
+#define RTC_REG_AON_IRQ_STA             (0x000C)
+#ifdef AIC_RTC_DRV_V121
+#define RTC_REG_IO1_CFG                 (0x0010)
+#define RTC_SLEEP_CFG                   (0x0014)
+#endif
 #define RTC_REG_TIME0                   (0x0020)
 #define RTC_REG_TIME1                   (0x0024)
 #define RTC_REG_TIME2                   (0x0028)
@@ -32,11 +36,32 @@
 #define RTC_REG_ANALOG2                 (0x0058)
 #define RTC_REG_ANALOG3                 (0x005C)
 #define RTC_REG_WR_EN                   (0x00FC)
+#ifdef AIC_RTC_DRV_V121
+#define RTC_REG_WAKEUP_ADDR0            (0x0110)
+#define RTC_REG_WAKEUP_ADDR1            (0x0114)
+#define RTC_REG_WAKEUP_ADDR2            (0x0118)
+#define RTC_REG_WAKEUP_ADDR3            (0x011C)
+#define RTC_REG_SYSBAK                  (0x0120)
+#define RTC_REG_WAKEUP_STATUS           (0x0130)
+#define RTC_REG_BOOT_INFO               (0x0134)
+#else
 #define RTC_REG_SYSBAK                  (0x0100)
+#endif
 #define RTC_REG_TCNT                    (0x0800)
 #define RTC_REG_32K_DET                 (0x0804)
+#ifdef AIC_RTC_DRV_V121
+#define RTC_REG_IRQ_EN                  (0x0808)
+#define RTC_REG_IRQ_STA                 (0x080C)
+#endif
 #define RTC_REG_VER                     (0x08FC)
 
+#ifdef AIC_RTC_DRV_V121
+#define RTC_IO1_CFG                     BIT(7)
+#define RTC_IO0_CFG                     BIT(6)
+#define RTC_CTL_IO0_SEL_SHIFT           4
+#define RTC_CTL_IO0_SEL_MASK            GENMASK(5, 4)
+#define RTC_CTL_IO0_SEL(x)              (((x) & 0x3) << RTC_CTL_IO0_SEL_SHIFT)
+#endif
 #define RTC_CTL_IO_OUTPUT_ENABLE        1
 #define RTC_CTL_IO_ALARM_OUTPUT         2
 #define RTC_CTL_IO_32K_CLK_OUTPUT       3
@@ -46,9 +71,25 @@
 #define RTC_CTL_ALARM_EN                BIT(2)
 #define RTC_CTL_TCNT_EN                 BIT(0)
 
+#ifdef AIC_RTC_DRV_V121
+#define RTC_IO1_RISE_IRQ_EN             BIT(7)
+#define RTC_IO1_FALL_IRQ_EN             BIT(6)
+#endif
 #define RTC_IRQ_32K_ERR_EN              BIT(2)
 #define RTC_IRQ_ALARM_EN                BIT(0)
 
+#ifdef AIC_RTC_DRV_V121
+#define RTC_IO1_TRIG_SEL_SHIFT          2
+#define RTC_IO1_TRIG_SEL_MASK           GENMASK(3, 2)
+#define RTC_IO1_TRIG_SEL(x)             (((x) & 0x3) << RTC_IO1_TRIG_SEL_SHIFT)
+#define RTC_IO1_TRG_OUT_EN              BIT(1)
+#define RTC_IO1_TRG_EN                  BIT(0)
+#endif
+
+#ifdef AIC_RTC_DRV_V121
+#define RTC_IO1_RISE_IRQ_STA            BIT(7)
+#define RTC_IO1_FALL_IRQ_STA            BIT(6)
+#endif
 #define RTC_IRQ_STA_32K_ERR             BIT(2)
 #define RTC_IRQ_STA_ALARM_IO            BIT(1)
 #define RTC_IRQ_STA_ALARM               BIT(0)
@@ -124,6 +165,9 @@
 
 struct aic_rtc_dev {
     rtc_callback_t callback;
+#ifdef AIC_RTC_DRV_V121
+    rtc_callback_t io1back;
+#endif
     u32 clk_rate;
     u32 clk_drv;
     u32 alarm_io;
@@ -193,7 +237,7 @@ void hal_rtc_read_time(u32 *sec)
 
 void hal_rtc_set_time(u32 sec)
 {
-#ifdef AIC_RTC_DRV_V12
+#if defined(AIC_RTC_DRV_V12) || defined(AIC_RTC_DRV_V121)
     //must clear TCNT_INIT before setting time in RTC V1.2
     RTC_WRITEB(0, RTC_REG_INIT);
 #endif
@@ -208,13 +252,19 @@ s32 hal_rtc_read_alarm(u32 *sec)
     /* get alarm target time */
     *sec = RTC_READL(RTC_REG_ALARM0);
 
-    return RTC_READB(RTC_REG_IRQ_EN) & RTC_IRQ_ALARM_EN;
+    return RTC_READB(RTC_REG_AON_IRQ_EN) & RTC_IRQ_ALARM_EN;
 }
 
-static int hal_rtc_alarm_irq_enable(unsigned int enabled)
+static int hal_rtc_alarm_irq_enable(u32 enabled)
 {
-    RTC_WRITEB(enabled ? (RTC_IRQ_32K_ERR_EN | RTC_IRQ_ALARM_EN) : 0,
-           RTC_REG_IRQ_EN);
+    u32 val = 0;
+
+    val = RTC_READB(RTC_REG_AON_IRQ_EN);
+    val &=~(RTC_IRQ_32K_ERR_EN | RTC_IRQ_ALARM_EN);
+    if (enabled)
+        val |= (RTC_IRQ_32K_ERR_EN | RTC_IRQ_ALARM_EN);
+
+    RTC_WRITEB(val, RTC_REG_AON_IRQ_EN);
     return 0;
 }
 
@@ -256,6 +306,68 @@ void hal_rtc_set_alarm(u32 sec)
     hal_rtc_alarm_irq_enable(1);
 }
 
+#ifdef AIC_RTC_DRV_V121
+void hal_rtc_io_cfg(u32 sel)
+{
+    u32 val;
+
+    val = RTC_READB(RTC_REG_CTL);
+    val &=~RTC_CTL_IO0_SEL_MASK;
+    val |= RTC_CTL_IO0_SEL(sel) | (RTC_IO0_CFG | RTC_IO1_CFG);
+    RTC_WRITEL(val, RTC_REG_CTL);
+}
+
+void hal_rtc_io1_cfg(u32 trg_en, u32 out_en, u32 trg_sel)
+{
+    u32 val;
+
+    val = RTC_READB(RTC_REG_IO1_CFG);
+    val &= ~(RTC_IO1_TRG_EN | RTC_IO1_TRG_OUT_EN);
+    if (trg_en)
+        val |= RTC_IO1_TRG_EN;
+    if (out_en)
+        val |= RTC_IO1_TRG_OUT_EN;
+    RTC_WRITEL(val, RTC_REG_IO1_CFG);
+
+    val = RTC_READB(RTC_REG_IO1_CFG);
+    val &=~RTC_IO1_TRIG_SEL_MASK;
+    val |= RTC_IO1_TRIG_SEL(trg_sel);
+    RTC_WRITEL(val, RTC_REG_IO1_CFG);
+}
+
+void hal_rtc_io1_irq_en(u32 irq_en)
+{
+    u32 val;
+
+    val = RTC_READB(RTC_REG_AON_IRQ_EN);
+    val &= ~RTC_IO1_RISE_IRQ_EN;
+    if (irq_en)
+        val |= RTC_IO1_RISE_IRQ_EN;
+    RTC_WRITEB(val, RTC_REG_AON_IRQ_EN);
+}
+
+s32 hal_rtc_io1_register_callback(rtc_callback_t callback)
+{
+    if (callback == NULL) {
+        hal_log_err("Invalid callback function!\n");
+        return -1;
+    }
+
+    aich_rtc.io1back = callback;
+    return 0;
+}
+
+void hal_rtc_set_wakeup_addr(u32 addr)
+{
+    RTC_WRITEL(addr, RTC_REG_WAKEUP_ADDR0);
+}
+
+void hal_rtc_set_boot_info(u8 info)
+{
+    RTC_WRITEL(info, RTC_REG_BOOT_INFO);
+}
+#endif
+
 static void hal_rtc_low_power(void)
 {
 #ifdef AIC_RTC_LOW_POWER
@@ -270,7 +382,7 @@ static void hal_rtc_low_power(void)
     val |= RTC_ANA1_LDO11_LPEN;
     RTC_WRITEB(val, RTC_REG_ANALOG1);
 
-#if defined(AIC_RTC_DRV_V11) || defined(AIC_RTC_DRV_V12)
+#if defined(AIC_RTC_DRV_V11) || defined(AIC_RTC_DRV_V12) || defined(AIC_RTC_DRV_V121)
     val = RTC_ANA3_LDO12_XTAL32K_SW | RTC_ANA3_XTAL32K_EN;
     RTC_WRITEB(val, RTC_REG_ANALOG3);
 
@@ -296,8 +408,8 @@ irqreturn_t hal_rtc_irq(int irq, void *arg)
 {
     u8 val = 0;
 
-    val = RTC_READB(RTC_REG_IRQ_STA);
-    RTC_WRITEB(val, RTC_REG_IRQ_STA);
+    val = RTC_READB(RTC_REG_AON_IRQ_STA);
+    RTC_WRITEB(val, RTC_REG_AON_IRQ_STA);
     hal_log_debug("IRQ status %#x\n", val);
 
     if (val & RTC_IRQ_STA_32K_ERR)
@@ -307,13 +419,20 @@ irqreturn_t hal_rtc_irq(int irq, void *arg)
         if (aich_rtc.callback)
             aich_rtc.callback();
     }
+
+#ifdef AIC_RTC_DRV_V121
+    if (val & (RTC_IO1_FALL_IRQ_STA | RTC_IO1_RISE_IRQ_STA)) {
+        if (aich_rtc.io1back)
+            aich_rtc.io1back();
+    }
+#endif
     return IRQ_HANDLED;
 }
 
 s32 hal_rtc_init(void)
 {
     s32 ret = 0;
-#if defined(AIC_RTC_DRV_V10) || defined(AIC_RTC_DRV_V20) || defined(AIC_RTC_DRV_V12)
+#if defined(AIC_RTC_DRV_V10) || defined(AIC_RTC_DRV_V20) || defined(AIC_RTC_DRV_V12) || defined(AIC_RTC_DRV_V121)
     u8 val = 0;
 #endif
 
@@ -329,10 +448,10 @@ s32 hal_rtc_init(void)
     }
 #endif
     /* Check & clean poweroff alarm status */
-    ret = RTC_READB(RTC_REG_IRQ_STA);
+    ret = RTC_READB(RTC_REG_AON_IRQ_STA);
     if (ret) {
         hal_log_debug("IRQ_STA is %#x\n", ret);
-        RTC_WRITEB(ret, RTC_REG_IRQ_STA);
+        RTC_WRITEB(ret, RTC_REG_AON_IRQ_STA);
         if (ret & RTC_IRQ_STA_ALARM_IO)
             hal_log_info("Powered by RTC alarm.\n");
     }
@@ -345,7 +464,7 @@ s32 hal_rtc_init(void)
     val = RTC_READB(RTC_REG_ANALOG2);
     val |= RTC_ANA2_XTAL32K_EN;
     RTC_WRITEB(val, RTC_REG_ANALOG2);
-#elif defined(AIC_RTC_DRV_V12)
+#elif defined(AIC_RTC_DRV_V12) || defined(AIC_RTC_DRV_V121)
     val = RTC_READB(RTC_REG_ANALOG3);
     val |= RTC_ANA3_XTAL32K_EN;
     RTC_WRITEB(val, RTC_REG_ANALOG3);

@@ -14,6 +14,7 @@
 #include <string.h>
 #include <aic_osal.h>
 #include <hal_rtc.h>
+#include <aic_drv_gpio.h>
 #if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
 #include <drv_fb.h>
 #endif
@@ -23,11 +24,26 @@
 #define TOUCH_TIMEOUT       (1 << 2)
 struct rt_event pm_event;
 rt_timer_t touch_timer;
+static rt_bool_t sleep_req = RT_FALSE;
 
-#ifdef AIC_RTC_DRV_V121
+#ifdef AIC_PM_DRV_V15
+static volatile rt_uint8_t use_deep_sleep_mode = 0;
+#endif
+
+static void pm_reset_sleep_req(void)
+{
+    sleep_req = RT_FALSE;
+    rt_kprintf("sleep_req has been reset to FALSE.\n");
+}
+MSH_CMD_EXPORT(pm_reset_sleep_req, Reset sleep request flag);
+
+#if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
 int pm_rtc_io_irq_callback(void)
 {
-    rt_pm_default_set(PM_SLEEP_MODE_DEEP);
+    rt_uint8_t current_mode = rt_pm_get_sleep_mode();
+
+    if (current_mode == PM_SLEEP_MODE_NONE)
+        use_deep_sleep_mode = 1;
 
     rt_event_send(&pm_event, BUTTON_FLAG);
     return 0;
@@ -43,21 +59,19 @@ static void pm_thread(void *parameter)
 {
     rt_uint8_t current_mode, touch_int_occurred = 0;
     rt_uint32_t e;
+    unsigned long level;
 
     while (1)
     {
         if (rt_event_recv(&pm_event, (BUTTON_FLAG | TOUCH_FLAG | TOUCH_TIMEOUT),
                     RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,
-                    RT_WAITING_FOREVER, &e) == RT_EOK)
-        {
+                    RT_WAITING_FOREVER, &e) == RT_EOK) {
             current_mode = rt_pm_get_sleep_mode();
 
-            if (current_mode != PM_SLEEP_MODE_NONE)
-            {
+            if (current_mode != PM_SLEEP_MODE_NONE) {
                 /* current mode is sleep mode, so execute exit sleep flow */
                 if ((e & BUTTON_FLAG) ||
-                    ((e & TOUCH_FLAG) && !touch_int_occurred))
-                {
+                    ((e & TOUCH_FLAG) && !touch_int_occurred)) {
                     rt_pm_module_request(PM_POWER_ID, PM_SLEEP_MODE_NONE);
                     #if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
                     panel_backlight_enable(0, 0);
@@ -65,27 +79,37 @@ static void pm_thread(void *parameter)
                     rt_timer_start(touch_timer);
                     if (e & TOUCH_FLAG)
                         touch_int_occurred = 1;
-                }
 
-            }
-            else
-            {
-                /* current mode is NONE mode */
-                if ((e & BUTTON_FLAG) || (e & TOUCH_TIMEOUT))
-                {
-                    #if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
-                    panel_backlight_disable(0, 0);
-                    #endif
-                    /* request sleep */
-                    rt_pm_module_release(PM_POWER_ID, PM_SLEEP_MODE_NONE);
-                    rt_timer_stop(touch_timer);
+                    sleep_req = RT_FALSE;
                 }
-                else if (e & TOUCH_FLAG)
-                {
+            } else {
+                /* current mode is NONE mode */
+                if ((e & BUTTON_FLAG) || (e & TOUCH_TIMEOUT)) {
+                    if (!sleep_req) {
+                        #if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
+                        panel_backlight_disable(0, 0);
+                        #endif
+
+                        #if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
+                        /* Set the default sleep mode based on the flag */
+                        aicos_local_irq_save(&level);
+                        if (use_deep_sleep_mode)
+                            rt_pm_default_set(PM_SLEEP_MODE_DEEP);
+                        else
+                            rt_pm_default_set(PM_SLEEP_MODE_LIGHT);
+                        aicos_local_irq_restore(level);
+                        #endif
+
+                        /* request sleep */
+                        rt_pm_module_release(PM_POWER_ID, PM_SLEEP_MODE_NONE);
+                        rt_timer_stop(touch_timer);
+
+                        sleep_req = RT_TRUE;
+                    }
+                } else if (e & TOUCH_FLAG) {
                     /* There is a click on the screen to reset the timer */
                     rt_timer_start(touch_timer);
                 }
-
                 touch_int_occurred = 0;
             }
         }
@@ -133,9 +157,28 @@ void pm_key_init(void)
     rt_pin_irq_enable(pin, PIN_IRQ_ENABLE);
     /* Set AIC_PM_POWER_KEY_GPIO pin as wakeup source */
     rt_pm_set_pin_wakeup_source(pin);
+
+    /* Register the pin to PM framework */
+    gpio_pm_register(pin, RT_NULL, RT_NULL);
 }
 
-#ifdef AIC_RTC_DRV_V121
+#if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
+static void pm_demo_notify_callback(rt_uint8_t event, rt_uint8_t pm_mode, void *data)
+{
+    unsigned long level;
+
+    /* When waking up from sleep, reset the default mode to LIGHT */
+    if (event == RT_PM_EXIT_SLEEP)
+    {
+        aicos_local_irq_save(&level);
+        use_deep_sleep_mode = 0;
+        aicos_local_irq_restore(level);
+
+        sleep_req = RT_FALSE;
+        rt_pm_default_set(PM_SLEEP_MODE_LIGHT);
+    }
+}
+
 void pm_rtc_io_init(void)
 {
 #define RTC_CTL_IO0_WAKE_HIZ_SLEEP_LOW  3
@@ -159,26 +202,34 @@ int pm_demo(void)
     rt_thread_t thread;
 
     pm_key_init();
-#ifdef AIC_RTC_DRV_V121
+#if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
+    rt_pm_notify_set(pm_demo_notify_callback, RT_NULL);
+
+    rt_device_t rtc_dev = rt_device_find("rtc");
+    if (rtc_dev == NULL) {
+        rt_kprintf("can't find rtc device!\n");
+        return -RT_ERROR;
+    }
+    ret = rt_device_init(rtc_dev);
+    if (ret != RT_EOK) {
+        rt_kprintf("Failed to open rtc device!\n");
+        return ret;
+    }
     pm_rtc_io_init();
 #endif
     touch_timer_init();
 
     ret = rt_event_init(&pm_event, "pm_event", RT_IPC_FLAG_PRIO);
-    if (ret != RT_EOK)
-    {
+    if (ret != RT_EOK) {
         rt_kprintf("init pm_event failed\n");
-        return -1;
+        return -RT_ERROR;
     }
 
     thread = rt_thread_create("pm_thread", pm_thread, RT_NULL,
                                   2048, 30, 10);
-    if (thread != RT_NULL)
-    {
+    if (thread != RT_NULL) {
         rt_thread_startup(thread);
-    }
-    else
-    {
+    } else {
         rt_kprintf("create pm thread failed!\n");
         ret = -RT_ERROR;
     }

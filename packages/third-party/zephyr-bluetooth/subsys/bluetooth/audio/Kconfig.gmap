@@ -1,0 +1,33 @@
+# Bluetooth Audio - Gaming Audio Profile (GMAP) options
+#
+# Copyright (c) 2023 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+config LPKG_BT_GMAP_UGG_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_INITIATOR && LPKG_BT_BAP_UNICAST_CLIENT && LPKG_BT_VCP_VOL_CTLR)
+
+config LPKG_BT_GMAP_UGT_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_ACCEPTOR && LPKG_BT_BAP_UNICAST_SERVER)
+
+config LPKG_BT_GMAP_BGS_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_INITIATOR && LPKG_BT_BAP_BROADCAST_SOURCE && LPKG_BT_BAP_BROADCAST_ASSISTANT)
+
+config LPKG_BT_GMAP_BGR_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_ACCEPTOR && LPKG_BT_BAP_BROADCAST_SINK && LPKG_BT_VCP_VOL_REND)
+
+config LPKG_BT_GMAP
+	bool "Gaming Audio Profile"
+	depends on LPKG_BT_CAP_ACCEPTOR || LPKG_BT_CAP_INITIATOR
+	help
+	  Enabling this will enable GMAP.
+
+#parent-module = BT
+#module = LPKG_BT_GMAP
+#module-str = "Bluetooth Gaming Audio Profile"
+#source "subsys/logging/Kconfig.template.log_config_inherit"

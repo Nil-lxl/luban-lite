@@ -38,9 +38,15 @@ def mkimage_get_part_size(outfile):
     with open(partlist) as f:
         lines = f.readlines()
         for ln in lines:
-            name = ln.split(',')[1].replace('"', '').replace('*', '')
+            ln = ln.strip()
+            if not ln:
+                continue
+            parts = ln.split(',')
+            if len(parts) < 3:
+                continue
+            name = parts[1].replace('"', '').replace('*', '')
             if any(imgname == re.sub(pat, "", name) for pat in [".enc", ".sparse.enc", ".sparse"]):
-                size = int(ln.split(',')[2])
+                size = int(parts[2])
                 return size
     print('Image {} is not used in any partition'.format(imgname))
     print('please check your project\'s image_cfg.json')
@@ -197,8 +203,8 @@ def set_image_info_to_boot_sector(imgfile, total_size, used_size):
     data = data + version.to_bytes(4, byteorder='little', signed=False)
     data = data + image_size.to_bytes(8, byteorder='little', signed=False)
     data = data + used_size.to_bytes(8, byteorder='little', signed=False)
-    data = data + dirent_sect_id.to_bytes(0, byteorder='little', signed=False)
-    data = data + dirent_datalen.to_bytes(0, byteorder='little', signed=False)
+    data = data + dirent_sect_id.to_bytes(4, byteorder='little', signed=False)
+    data = data + dirent_datalen.to_bytes(4, byteorder='little', signed=False)
 
     # Update cksum
     cksum = aic_calc_checksum(data, len(data))
@@ -277,20 +283,32 @@ def main(args):
         imgsiz = cluster_siz * int(((imgsiz + cluster_siz - 1) / cluster_siz))
         if check_is_nftl_part(args.outfile):
             # Space reserved for bad block management in NFTL
-            NFTL_RESERVED = 51 * 64 * 2048
+            if args.reserved and (int(args.reserved) > 50):
+                NFTL_RESERVED = (int(args.reserved) + 1) * 64 * 2048
+            else:
+                NFTL_RESERVED = 51 * 64 * 2048
             imgsiz = part_size - NFTL_RESERVED
             if imgsiz < 0:
-                print('Error, partition size: {} is less than NFTL reserved: {}.'.format(part_size, NFTL_RESERVED))
+                print(
+                    f'Error, partition size: {part_size} '
+                    f'is less than NFTL reserved: {NFTL_RESERVED}.'
+                )
                 sys.exit(1)
             # Round to cluster alignment
             imgsiz = cluster_siz * int(((imgsiz + cluster_siz - 1) / cluster_siz))
     elif args.fullpart:
         if check_is_nftl_part(args.outfile):
             # Space reserved for bad block management in NFTL
-            NFTL_RESERVED = 51 * 64 * 2048
+            if args.reserved and (int(args.reserved) > 50):
+                NFTL_RESERVED = (int(args.reserved) + 1) * 64 * 2048
+            else:
+                NFTL_RESERVED = 51 * 64 * 2048
             imgsiz = part_size - NFTL_RESERVED
             if imgsiz < 0:
-                print('Error, partition size: {} is less than NFTL reserved: {}.'.format(part_size, NFTL_RESERVED))
+                print(
+                    f'Error, partition size: {part_size} '
+                    f'is less than NFTL reserved: {NFTL_RESERVED}.'
+                )
                 sys.exit(1)
         else:
             imgsiz = part_size
@@ -361,5 +379,7 @@ if __name__ == "__main__":
                         help="volume label")
     parser.add_argument("-r", "--raw", action='store_true',
                         help="Don't strip FAT image, keep raw image")
+    parser.add_argument("-b", "--reserved", type=str,
+                        help="reserved block count for NFTL")
     args = parser.parse_args()
     main(args)

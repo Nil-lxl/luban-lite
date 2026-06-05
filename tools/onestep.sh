@@ -133,12 +133,16 @@ cd_back()
 
 function checkout_binary()
 {
-	which git 2>&1 > /dev/null
+	which git > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		return
 	fi
 
-	git status 2>&1 > /dev/null
+	if [ ! -f .git ]; then
+		return
+	fi
+
+	git status > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		return
 	fi
@@ -633,7 +637,7 @@ function build_check_all()
 	done
 	echo -------------------------------------------------------------- >> $RESULT_FILE
 	printf "Total: %d, Success: %d, Failed: %d\n" \
-		$SOLUTION_TOTAL $SOLUTION_OK_CNT $(expr $SOLUTION_TOTAL - $SOLUTION_OK_CNT) >> $RESULT_FILE
+		$SOLUTION_TOTAL $SOLUTION_OK_CNT "$(expr $SOLUTION_TOTAL - $SOLUTION_OK_CNT)" >> $RESULT_FILE
 
 	echo
 	echo --------------------------------------------------------------
@@ -976,7 +980,7 @@ function _key_loop()
 
 			# Enter/Return/Tab
 			""|$'\t')
-				array=(${display_list[@]})
+				array=("${display_list[@]}")
 				select_item=${array[$scroll]}
 				return
 			;;
@@ -1027,13 +1031,13 @@ function _update_display_with_kw()
 		match_list=`echo "${backup_list}" | sed -n '/'"${kw}"'/p'`
 		# debug
 		# echo "${match_list}" >match.list
-		display_list=(${match_list[@]})
+		IFS=$'\n' read -d '' -ra display_list <<< "${match_list}"
 		# ((display_list_total=${#display_list[@]}-1))
 		((display_list_total=${#display_list[@]}))
 
 	else
 		match_list=${backup_list}
-		display_list=(${match_list[@]})
+		IFS=$'\n' read -d '' -ra display_list <<< "${match_list}"
 		# ((display_list_total=${#display_list[@]}-1))
 		((display_list_total=${#display_list[@]}))
 	fi

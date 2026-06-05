@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -10,6 +10,7 @@
 #define _ARTINCHIP_HAL_WRI_H_
 
 #include "aic_common.h"
+#include "aic_reboot_reason.h"
 
 /* Register of WRI */
 #define WRI_RST_FLAG            (WRI_BASE + 0x0)

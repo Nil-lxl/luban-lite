@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -130,7 +130,7 @@ struct aic_qspi *get_qspi_by_index(u32 idx)
 
     qspi = NULL;
     for (i = 0; i < ARRAY_SIZE(qspi_controller); i++) {
-        if (i == idx) {
+        if (qspi_controller[i].idx == idx) {
             qspi = &qspi_controller[i];
             break;
         }

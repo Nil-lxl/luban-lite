@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -1042,6 +1042,36 @@ static const struct rt_device_ops n5_ops =
 };
 #endif
 
+#ifdef RT_USING_PM
+static int n5_pm_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    return RT_EOK;
+}
+
+static void n5_pm_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct n5_dev *sensor = (struct n5_dev *)device;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_LIGHT:
+        break;
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        sensor->rst_pin = camera_rst_pin_get();
+        sensor->pwdn_pin = camera_pwdn_pin_get();
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops n5_pm_ops =
+{
+    SET_DEVICE_PM_OPS(n5_pm_suspend, n5_pm_resume)
+    NULL,
+};
+#endif /* RT_USING_PM */
+
 int rt_hw_n5_init(void)
 {
 #ifdef RT_USING_DEVICE_OPS
@@ -1055,6 +1085,11 @@ int rt_hw_n5_init(void)
     g_n5_dev.dev.type = RT_Device_Class_CAMERA;
 
     rt_device_register(&g_n5_dev.dev, CAMERA_DEV_NAME, 0);
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&g_n5_dev.dev, &n5_pm_ops);
+#endif
+
     return 0;
 }
 INIT_DEVICE_EXPORT(rt_hw_n5_init);

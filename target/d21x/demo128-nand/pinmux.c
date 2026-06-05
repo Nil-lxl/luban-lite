@@ -11,6 +11,12 @@
 #include "board.h"
 #include <aic_utils.h>
 
+#ifdef AIC_NO_CONSOLE_SUSPEND
+#define KEEP_CONSOLE_IN_SUSPEND     FLAG_WAKEUP_SOURCE
+#else
+#define KEEP_CONSOLE_IN_SUSPEND     0
+#endif
+
 struct aic_pinmux aic_pinmux_config[] = {
 
     {1, PIN_PULL_DIS, 3, "PA.3"},   //LCD RESET
@@ -21,8 +27,8 @@ struct aic_pinmux aic_pinmux_config[] = {
     // {1, PIN_PULL_DIS, 3, "PA.3"},
 #ifdef AIC_USING_UART0
     /* uart0 */
-    {5, PIN_PULL_DIS, 3, "PA.0"},
-    {5, PIN_PULL_UP, 3, "PA.1"},
+    {5, PIN_PULL_DIS, 3, "PA.0", KEEP_CONSOLE_IN_SUSPEND},
+    {5, PIN_PULL_UP, 3, "PA.1", KEEP_CONSOLE_IN_SUSPEND},
 #endif
 #ifdef AIC_USING_UART1
     /* uart1 */
@@ -395,7 +401,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PE.19"},
 #endif
 #ifdef AIC_WIRELESS_LAN
-    {1, PIN_PULL_DIS, 3, AIC_WIRELESS_PWR_GPIO},  // PWR
+    {1, PIN_PULL_DIS, 3, AIC_WIRELESS_PWR_GPIO, FLAG_POWER_PIN},  // PWR
 #endif
 
 #ifdef AIC_USING_CTP

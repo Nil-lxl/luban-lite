@@ -147,33 +147,50 @@ static int aic_platform_wireless_pin_init(void)
     unsigned int p;
     int pin = 0;
 
+    /* init wifi wk host pin */
+    pin = hal_gpio_name2pin(AIC_WIRELESS_WIFI_WK_HOST_GPIO);
+    if (pin > 0) {
+        g = GPIO_GROUP(pin);
+        p = GPIO_GROUP_PIN(pin);
+        hal_gpio_direction_output(g, p);
+        hal_gpio_set_value(g, p, 0);
+        aicos_msleep(10);
+        hal_gpio_set_value(g, p, 1);
+        aicos_msleep(10);
+    } else {
+        LOG_E("Failed to get wifi wk host pin, invalid GPIO: %s, pin[%d]",
+                  AIC_WIRELESS_WIFI_WK_HOST_GPIO, pin);
+    }
+
     /* init wifi pwr pin */
     pin = hal_gpio_name2pin(AIC_WIRELESS_PWR_GPIO);
-    if (pin < 0)
-        return -1;
-
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-    hal_gpio_direction_output(g, p);
-
-    hal_gpio_set_value(g, p, 0);
-    aicos_msleep(10);
-    hal_gpio_set_value(g, p, 1);
-    aicos_msleep(10);
+    if (pin > 0) {
+        g = GPIO_GROUP(pin);
+        p = GPIO_GROUP_PIN(pin);
+        hal_gpio_direction_output(g, p);
+        hal_gpio_set_value(g, p, 0);
+        aicos_msleep(10);
+        hal_gpio_set_value(g, p, 1);
+        aicos_msleep(10);
+    } else {
+        LOG_E("Failed to get wifi pwr pin, invalid GPIO: %s, pin[%d]",
+                  AIC_WIRELESS_PWR_GPIO, pin);
+    }
 
     /* init BT pwr pin */
     pin = hal_gpio_name2pin(AIC_WIRELESS_BT_PWR_GPIO);
-    if (pin < 0)
-        return -1;
-
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-    hal_gpio_direction_output(g, p);
-
-    hal_gpio_set_value(g, p, 0);
-    aicos_msleep(10);
-    hal_gpio_set_value(g, p, 1);
-    aicos_msleep(10);
+    if (pin > 0) {
+        g = GPIO_GROUP(pin);
+        p = GPIO_GROUP_PIN(pin);
+        hal_gpio_direction_output(g, p);
+        hal_gpio_set_value(g, p, 0);
+        aicos_msleep(10);
+        hal_gpio_set_value(g, p, 1);
+        aicos_msleep(10);
+    } else {
+        LOG_E("Failed to get BT pwr pin, invalid GPIO: %s, pin[%d]",
+                  AIC_WIRELESS_BT_PWR_GPIO, pin);
+    }
 
     return 0;
 }

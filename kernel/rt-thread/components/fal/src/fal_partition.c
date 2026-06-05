@@ -149,16 +149,18 @@ int fal_partition_init(void)
         return partition_table_len;
     }
 
+    /* On ArtInChip platforms, always try to load partition table from norflash0 first.
+     * If loading from flash fails, fallback to the table defined by macros in partition_table.h.
+     */
     partition_table_len = aic_get_fal_partition_table(FAL_USING_NOR_FLASH_DEV_NAME, &aic_part);
     if (partition_table_len > 0) {
         partition_table = aic_part;
         if (check_and_update_part_cache(partition_table, partition_table_len) == 0) {
             init_ok = 1;
-#if !defined(AIC_FLASH_NUM_TWO)
             return partition_table_len;
-#endif
         }
     }
+
 #ifdef FAL_PART_HAS_TABLE_CFG
     partition_table = &partition_table_def[0];
     partition_table_len = sizeof(partition_table_def) / sizeof(partition_table_def[0]);
@@ -201,7 +203,7 @@ int fal_partition_init(void)
         part_table_offset -= sizeof(read_buf);
         while (part_table_offset >= 0)
         {
-            if (flash_dev->ops.read(part_table_offset, read_buf, sizeof(read_buf)) > 0)
+            if (flash_dev->ops.read(flash_dev, part_table_offset, read_buf, sizeof(read_buf)) > 0)
             {
                 /* find magic word in read buf */
                 for (i = 0; i < sizeof(read_buf) - sizeof(read_magic_word) + 1; i++)
@@ -252,7 +254,7 @@ int fal_partition_init(void)
     while (part_table_find_ok)
     {
         memset(new_part, 0x00, table_num);
-        if (flash_dev->ops.read(part_table_offset - table_item_size * (table_num), (uint8_t *) new_part,
+        if (flash_dev->ops.read(flash_dev, part_table_offset - table_item_size * (table_num), (uint8_t *) new_part,
                 table_item_size) < 0)
         {
             log_e("Initialize failed! Flash device (%s) read error!", flash_dev->name);
@@ -414,7 +416,7 @@ int fal_partition_read(const struct fal_partition *part, uint32_t addr, uint8_t 
         return -1;
     }
 
-    ret = flash_dev->ops.read(part->offset + addr, buf, size);
+    ret = flash_dev->ops.read(flash_dev, part->offset + addr, buf, size);
     if (ret < 0)
     {
         log_e("Partition read error! Flash device(%s) read error!", part->flash_name);
@@ -455,7 +457,7 @@ int fal_partition_write(const struct fal_partition *part, uint32_t addr, const u
         return -1;
     }
 
-    ret = flash_dev->ops.write(part->offset + addr, buf, size);
+    ret = flash_dev->ops.write(flash_dev, part->offset + addr, buf, size);
     if (ret < 0)
     {
         log_e("Partition write error! Flash device(%s) write error!", part->flash_name);
@@ -494,7 +496,7 @@ int fal_partition_erase(const struct fal_partition *part, uint32_t addr, size_t 
         return -1;
     }
 
-    ret = flash_dev->ops.erase(part->offset + addr, size);
+    ret = flash_dev->ops.erase(flash_dev, part->offset + addr, size);
     if (ret < 0)
     {
         log_e("Partition erase error! Flash device(%s) erase error!", part->flash_name);

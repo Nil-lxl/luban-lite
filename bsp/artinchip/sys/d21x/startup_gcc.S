@@ -70,6 +70,11 @@ save_boot_params_ret:
     la      a5, dcache_enable
     jalr    a5
 
+#ifdef AIC_EARLY_DEBUG
+    la      a5, early_debug_init
+    jalr    a5
+#endif
+
     /* Load data section */
 #if defined(AIC_XIP)
     la      a0, __erodata

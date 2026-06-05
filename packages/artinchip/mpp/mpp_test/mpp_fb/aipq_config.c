@@ -31,6 +31,8 @@
 #define MIPI_DBI_UPDATE_COMMAND  0
 #define MIPI_DBI_SEND_COMMAND    1
 
+#define AIPQ_DBI_CONNECTOR_LEN   18
+
 #define RGB_SPI_COMMAND_UPDATE  0
 #define RGB_SPI_COMMAND_DISABLE 1
 #define RGB_SPI_COMMAND_CLEAR   2
@@ -62,6 +64,9 @@ struct panel_dbi {
     unsigned int format;
     unsigned int first_line;
     unsigned int other_line;
+#ifdef AIC_DISP_MIPI_DBI_DRV_V13
+    unsigned int flags;
+#endif
     struct panel_dbi_commands commands;
     struct spi_cfg *spi;
 };
@@ -648,6 +653,13 @@ static void handle_mipi_config(struct panel_dsi *dsi, char *con_info)
 static int handle_dbi_config(struct panel_dbi *dbi, char *con_info)
 {
     char str[3] = {0};
+    size_t n = strlen(con_info);
+
+    if (n != AIPQ_DBI_CONNECTOR_LEN) {
+        pr_err("aipq_cfg: DBI -c must be exactly %d chars (got %u).\n",
+               AIPQ_DBI_CONNECTOR_LEN, (unsigned int)n);
+        return -1;
+    }
 
     dbi->spi = aicos_malloc(MEM_CMA, sizeof(struct spi_cfg));
     if (!dbi->spi) {
@@ -665,16 +677,18 @@ static int handle_dbi_config(struct panel_dbi *dbi, char *con_info)
     dbi->other_line = strtoll(str, NULL, 16);
 
     dbi->spi->qspi_mode = char2int(con_info[7]);
-    dbi->spi->vbp_num = char2int(con_info[8]);
 
-    memcpy(str, con_info + 9, 2);
+    memcpy(str, con_info + 8, 2);
+    dbi->spi->vbp_num = (unsigned int)strtoll(str, NULL, 16);
+
+    memcpy(str, con_info + 10, 2);
     dbi->spi->code1_cfg = strtoll(str, NULL, 16);
 
-    memcpy(str, con_info + 11, 2);
+    memcpy(str, con_info + 12, 2);
     dbi->spi->code[0] = strtoll(str, NULL, 16);
-    memcpy(str, con_info + 13, 2);
+    memcpy(str, con_info + 14, 2);
     dbi->spi->code[1] = strtoll(str, NULL, 16);
-    memcpy(str, con_info + 15, 2);
+    memcpy(str, con_info + 16, 2);
     dbi->spi->code[2] = strtoll(str, NULL, 16);
 
     dbi->commands.command_flag = MIPI_DBI_SEND_COMMAND;

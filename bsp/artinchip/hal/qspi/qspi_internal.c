@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -84,6 +84,11 @@ u32 qspi_master_get_best_div_param(u32 sclk, u32 bus_hz, u32 *div)
     if (cdr2 > 0xFF)
         cdr2 = 0xFF;
     cdr2_clk = sclk / (2 * (cdr2 + 1));
+    while (sclk / (2 * (cdr2 + 1)) > bus_hz) {
+        cdr2++;
+        if (cdr2 > 0xFF)
+            break;
+    }
 
     cdr1_clk = sclk >> cdr1;
     cdr2_clk = sclk / (2 * (cdr2 + 1));

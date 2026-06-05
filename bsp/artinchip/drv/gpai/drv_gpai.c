@@ -34,8 +34,6 @@ static rt_err_t drv_gpai_enabled(struct rt_adc_device *dev,
         return -RT_EINVAL;
 
     hal_gpai_clk_get(chan);
-    if (!chan)
-        return -RT_EINVAL;
 
     if (enabled) {
         aich_gpai_ch_init(chan, chan->pclk_rate);
@@ -45,11 +43,18 @@ static rt_err_t drv_gpai_enabled(struct rt_adc_device *dev,
             chan->complete = aicos_sem_create(0);
         }
     } else {
-        aich_gpai_ch_enable(chan->id, 0);
+        aich_gpai_ch_deinit(chan);
         if (chan->mode == AIC_GPAI_MODE_SINGLE) {
             aicos_sem_delete(chan->complete);
             chan->complete = NULL;
         }
+#ifdef AIC_GPAI_DRV_DMA
+        if (chan->dma_rx_info.buf != NULL) {
+            aicos_free_align(MEM_DEFAULT, chan->dma_rx_info.buf);
+            chan->dma_rx_info.buf = NULL;
+            chan->dma_rx_info.buf_size = 0;
+        }
+#endif
     }
 
     return RT_EOK;
@@ -128,8 +133,93 @@ static rt_err_t drv_gpai_irq_callback(struct rt_adc_device *dev,
     return RT_EOK;
 }
 
+#ifdef AIC_GPAI_DRV_DMA
+static rt_err_t drv_gpai_config_dma(struct rt_adc_device *dev, void *dma_info)
+{
+    struct aic_dma_transfer_info *chan_info = NULL;
+    struct aic_gpai_ch *chan = NULL;
+    int buf_size = 0;
+
+    if (!dma_info)
+        return -RT_EINVAL;
+
+    chan_info = (struct aic_dma_transfer_info *)dma_info;
+    chan = hal_gpai_ch_is_valid(chan_info->chan_id);
+
+    if (!chan || chan->obtain_data_mode == AIC_GPAI_OBTAIN_DATA_BY_CPU)
+        return -RT_EINVAL;
+
+    if (chan->mode == AIC_GPAI_MODE_SINGLE) {
+        if (chan_info->smp_cnt != 1)
+            hal_log_warn("Single mode only support one sample\n");
+        chan_info->smp_cnt = 1;
+    }
+    chan_info->buf_size = chan_info->smp_cnt * sizeof(u32);
+    buf_size = ALIGN_UP(chan_info->buf_size, CACHE_LINE_SIZE);
+    if (chan->dma_rx_info.buf_size != buf_size) {
+        if (chan->dma_rx_info.buf != NULL) {
+            aicos_free_align(MEM_DEFAULT, chan->dma_rx_info.buf);
+            chan->dma_rx_info.buf = NULL;
+            chan->dma_rx_info.buf_size = 0;
+        }
+
+        chan_info->buf = aicos_malloc_align(MEM_DEFAULT, buf_size, CACHE_LINE_SIZE);
+        if (!chan_info->buf) {
+            hal_log_err("Failed to malloc dma buffer\n");
+            return -ENOMEM;
+        }
+        chan_info->buf_size = buf_size;
+        if (chan->mode == AIC_GPAI_MODE_PERIOD)
+            chan_info->smp_cnt = buf_size / sizeof(u32);
+
+        chan->dma_rx_info.buf = chan_info->buf;
+        chan->dma_rx_info.buf_size = buf_size;
+        chan->irq_info.callback = chan_info->callback;
+        chan->irq_info.callback_param = chan_info->callback_param;
+    }
+    hal_gpai_config_dma(chan);
+
+    return RT_EOK;
+}
+
+static rt_err_t drv_gpai_active_dma(struct rt_adc_device *dev,
+                                    void *arg)
+{
+    rt_uint32_t channel = (rt_uint32_t)arg;
+    struct aic_gpai_ch *chan = NULL;
+
+    chan = hal_gpai_ch_is_valid(channel);
+    if (!chan)
+        return -RT_EINVAL;
+#ifdef RT_USING_PM
+    rt_pm_module_request(PM_NONE_ID, PM_SLEEP_MODE_NONE);
+#endif
+
+    hal_gpai_start_dma(chan);
+
+    return RT_EOK;
+}
+#endif
 
 #ifdef RT_USING_PM
+#ifdef AIC_PM_DRV_V15
+static void aic_gpai_resume_chan(void)
+{
+    struct aic_gpai_ch *chan = NULL;
+    rt_uint8_t i = 0;
+
+    for (i = 0; i < AIC_GPAI_CH_NUM; i++) {
+        chan = hal_gpai_ch_is_valid(i);
+        if (chan && chan->enabled) {
+            aich_gpai_ch_init(chan, chan->pclk_rate);
+#ifdef AIC_GPAI_DRV_DMA
+            if (chan->dma_rx_info.buf)
+                hal_gpai_config_dma(chan);
+#endif
+        }
+    }
+}
+#endif
 static int aic_gpai_suspend(const struct rt_device *device, rt_uint8_t mode)
 {
     switch (mode)
@@ -139,7 +229,11 @@ static int aic_gpai_suspend(const struct rt_device *device, rt_uint8_t mode)
     case PM_SLEEP_MODE_LIGHT:
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        hal_gpai_deinit();
+#else
         hal_clk_disable(CLK_GPAI);
+#endif
         break;
     default:
         break;
@@ -157,7 +251,13 @@ static void aic_gpai_resume(const struct rt_device *device, rt_uint8_t mode)
     case PM_SLEEP_MODE_LIGHT:
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        hal_gpai_init();
+        aich_gpai_enable(1);
+        aic_gpai_resume_chan();
+#else
         hal_clk_enable(CLK_GPAI);
+#endif
         break;
     default:
         break;
@@ -175,6 +275,10 @@ static const struct rt_adc_ops aic_adc_ops =
 {
     .enabled = drv_gpai_enabled,
     .convert = drv_gpai_convert,
+#ifdef AIC_GPAI_DRV_DMA
+    .config_dma = drv_gpai_config_dma,
+    .active_dma = drv_gpai_active_dma,
+#endif
     .get_resolution = drv_gpai_resolution,
     .get_obtaining_data_mode = drv_gpai_obtain_data_mode,
     .irq_callback = drv_gpai_irq_callback,
@@ -182,9 +286,28 @@ static const struct rt_adc_ops aic_adc_ops =
     .get_mode = drv_gpai_get_mode,
 };
 
+static void drv_gpai_event_cb(struct aic_gpai_ch *chan, enum aic_gpai_event ev)
+{
+    irq_callback user_cb = NULL;
+    void *user_data = NULL;
+
+    if (!chan)
+        return;
+    user_cb = chan->irq_info.callback;
+    user_data = chan->irq_info.callback_param;
+    if (user_cb)
+        user_cb(user_data);
+#ifdef AIC_GPAI_DRV_DMA
+#ifdef RT_USING_PM
+    rt_pm_module_release(PM_NONE_ID, PM_SLEEP_MODE_NONE);
+#endif
+#endif
+}
+
 static int drv_gpai_init(void)
 {
     struct rt_adc_device *dev = NULL;
+    struct aic_gpai_ch *chan = NULL;
     s32 ret = 0;
 
     if (hal_gpai_init())
@@ -206,7 +329,13 @@ static int drv_gpai_init(void)
     ret = rt_hw_adc_register(dev, AIC_GPAI_NAME, &aic_adc_ops, NULL);
     if (ret) {
         LOG_E("Failed to register ADC. ret %d", ret);
+        aicos_free(0, dev);
         return ret;
+    }
+    for (int i = 0; i < AIC_GPAI_CH_NUM; i++) {
+        chan = hal_gpai_ch_is_valid(i);
+        if (chan)
+            chan->ev_cb = drv_gpai_event_cb;
     }
 #ifdef RT_USING_PM
     rt_pm_device_register(&dev->parent, &aic_gpai_pm_ops);

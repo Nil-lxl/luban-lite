@@ -1,0 +1,563 @@
+# Bluetooth logging configuration options
+
+# Copyright (c) 2023 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+config LPKG_BT_LOG
+	# convenience symbol, _no touchy_
+	bool
+	default y if LOG && BT
+
+if LPKG_BT_LOG
+
+menu "Bluetooth logging"
+
+# (subsys/bluetooth/Kconfig)
+
+module = BT
+module-str = "Bluetooth"
+source "subsys/logging/Kconfig.template.log_config"
+
+# Set BT as the parent module for all the symbols that will use
+# `Kconfig.template.log_config_inherit`. This is more convenient to do it here
+# instead of setting it for every modules.
+#
+# The downside of doing that is that people need to be careful when adding a new
+# parent module because  all the following symbol will use it.
+parent-module = BT
+
+# COMMON (subsys/bluetooth/common/Kconfig)
+
+menu "Common"
+module = LPKG_BT_HCI_DRIVER
+module-str = "Bluetooth HCI driver"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_RPA
+module-str = "Bluetooth Resolvable Private Address (RPA)"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endmenu # Common
+
+menu "Libraries"
+
+if LPKG_BT_EAD
+module = LPKG_BT_EAD
+module-str = "Bluetooth Encrypted Advertising Data"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_EAD
+
+if LPKG_BT_CRYPTO
+module = LPKG_BT_CRYPTO
+module-str = "Bluetooth Cryptographic Toolbox"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_CRYPTO
+
+endmenu # Libraries
+
+if LPKG_BT_HCI_HOST
+menu "Host"
+module = LPKG_BT_ATT
+module-str = "Bluetooth Attribute Protocol (ATT)"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_GATT
+module-str = "Bluetooth Generic Attribute Profile (GATT)"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_L2CAP
+module-str = "Bluetooth L2CAP"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+if LPKG_BT_DF
+module = LPKG_BT_DF
+module-str = "Bluetooth Direction Finding"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_DF
+
+if LPKG_BT_SETTINGS
+module = LPKG_BT_SETTINGS
+module-str = "Bluetooth storage"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_SETTINGS
+
+module = LPKG_BT_HCI_CORE
+module-str = "Bluetooth HCI core"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+if LPKG_BT_CONN
+module = LPKG_BT_CONN
+module-str = "Bluetooth connection"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_CONN
+
+if LPKG_BT_ISO
+module = LPKG_BT_ISO
+module-str = "ISO channel"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_ISO
+
+module = LPKG_BT_KEYS
+module-str = "Bluetooth security keys"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+if LPKG_BT_SMP
+module = LPKG_BT_SMP
+module-str = "Bluetooth Security Manager Protocol"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_SMP
+
+module = LPKG_BT_SERVICE
+module-str = "Bluetooth Services"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endmenu # LE Host
+endif # LPKG_BT_HCI_HOST
+
+if LPKG_BT_AUDIO
+menu "Audio"
+
+if LPKG_BT_AICS
+module = LPKG_BT_AICS
+module-str = "Audio Input Control Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_AICS
+
+if LPKG_BT_AICS_CLIENT
+module = LPKG_BT_AICS_CLIENT
+module-str = "Audio Input Control Service client"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_AICS_CLIENT
+
+if LPKG_BT_BAP_STREAM
+module = LPKG_BT_BAP_STREAM
+module-str = "Bluetooth Audio Stream"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_STREAM
+
+if LPKG_BT_BAP_BASE
+module = LPKG_BT_BAP_BASE
+module-str = "Bluetooth Basic Audio Profile Broadcast Audio Source Endpoint"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_BASE
+
+if LPKG_BT_BAP_STREAM
+module = LPKG_BT_AUDIO_CODEC
+module-str = "Bluetooth Audio Codec"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_STREAM
+
+if LPKG_BT_ASCS
+module = LPKG_BT_ASCS
+module-str = "Audio Stream Control Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_ASCS
+
+if LPKG_BT_BAP_UNICAST_SERVER
+module = LPKG_BT_BAP_UNICAST_SERVER
+module-str = "Bluetooth Audio Unicast Server"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_UNICAST_SERVER
+
+if LPKG_BT_BAP_UNICAST_CLIENT
+module = LPKG_BT_BAP_UNICAST_CLIENT
+module-str = "Basic Audio Profile"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_UNICAST_CLIENT
+
+if LPKG_BT_BAP_BROADCAST_SOURCE
+module = LPKG_BT_BAP_BROADCAST_SOURCE
+module-str = "Bluetooth Audio Broadcast Source"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_BROADCAST_SOURCE
+
+if LPKG_BT_BAP_BROADCAST_SINK
+module = LPKG_BT_BAP_BROADCAST_SINK
+module-str = "Bluetooth Audio Broadcast Sink"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_BROADCAST_SINK
+
+if LPKG_BT_BAP_SCAN_DELEGATOR
+module = LPKG_BT_BAP_SCAN_DELEGATOR
+module-str = "Broadcast Audio Scan Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_SCAN_DELEGATOR
+
+if LPKG_BT_BAP_BROADCAST_ASSISTANT
+module = LPKG_BT_BAP_BROADCAST_ASSISTANT
+module-str = "Broadcast Audio Scan Service client debug"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_BROADCAST_ASSISTANT
+
+if LPKG_BT_BAP_STREAM
+module = LPKG_BT_BAP_ISO
+module-str = "Bluetooth Audio ISO"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_BAP_STREAM
+
+# CAP
+
+if LPKG_BT_CAP_ACCEPTOR
+module = LPKG_BT_CAP_ACCEPTOR
+module-str = "Common Audio Profile Acceptor"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_CAP_ACCEPTOR
+
+if LPKG_BT_CAP_INITIATOR
+module = LPKG_BT_CAP_INITIATOR
+module-str = "Common Audio Profile Initiator"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_CAP_INITIATOR
+
+if LPKG_BT_CAP_COMMANDER
+module = LPKG_BT_CAP_COMMANDER
+module-str = "Common Audio Profile Commander"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_CAP_COMMANDER
+
+if LPKG_BT_AUDIO
+module = LPKG_BT_CAP_COMMON
+module-str = "Common Audio Profile Common"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_AUDIO
+
+if LPKG_BT_CAP
+module = LPKG_BT_CAP_STREAM
+module-str = "Common Audio Profile Stream"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_CAP
+
+# CSIP
+
+if LPKG_BT_CSIP_SET_MEMBER
+module = LPKG_BT_CSIP_SET_MEMBER
+module-str = "Coordinated Set Identification Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_CSIP_SET_MEMBER
+
+if LPKG_BT_CSIP_SET_COORDINATOR
+module = LPKG_BT_CSIP_SET_COORDINATOR
+module-str = "Coordinated Set Identification Profile Set Coordinator"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_CSIP_SET_COORDINATOR
+
+if LPKG_BT_AUDIO
+module = LPKG_BT_CSIP_SET_MEMBER_CRYPTO
+module-str = "Coordinated Set Identification Profile crypto functions"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_AUDIO
+
+# HAS
+
+if LPKG_BT_HAS
+module = LPKG_BT_HAS
+module-str = "Hearing Access Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_HAS
+
+if LPKG_BT_HAS_CLIENT
+module = LPKG_BT_HAS_CLIENT
+module-str = "Hearing Access Service Client"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_HAS_CLIENT
+
+# MCS
+
+if LPKG_BT_MCS
+module = LPKG_BT_MCS
+module-str = "Media Control Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_MCS
+
+if LPKG_BT_MCC
+module = LPKG_BT_MCC
+module-str = "Media Control Client"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_MCC
+
+# MCTL
+
+if MCTL
+module = MCTL
+module-str = "Media control"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # MCTL
+
+# MICP
+
+if LPKG_BT_MICP_MIC_DEV
+module = LPKG_BT_MICP_MIC_DEV
+module-str = "Microphone Control Profile Microphone Device"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_MICP_MIC_DEV
+
+if LPKG_BT_MICP_MIC_CTLR
+module = LPKG_BT_MICP_MIC_CTLR
+module-str = "Microphone Control Profile Microphone Controller"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_MICP_MIC_CTLR
+
+# MPL
+
+if LPKG_BT_MPL
+module = LPKG_BT_MPL
+module-str = "Media player"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_MPL
+
+# PACS
+
+if LPKG_BT_PACS
+module = LPKG_BT_PACS
+module-str = "Published Audio Capabilities Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_PACS
+
+# TBS
+
+if LPKG_BT_TBS
+module = LPKG_BT_TBS
+module-str = "Telephone Bearer Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_TBS
+
+if LPKG_BT_TBS_CLIENT
+module = LPKG_BT_TBS_CLIENT
+module-str = "Telephone Bearer Service client"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_TBS_CLIENT
+
+# VCP
+
+if LPKG_BT_VCP_VOL_REND
+module = LPKG_BT_VCP_VOL_REND
+module-str = "Volume Control Profile Volume Renderer"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_VCP_VOL_REND
+
+if LPKG_BT_VCP_VOL_CTLR
+module = LPKG_BT_VCP_VOL_CTLR
+module-str = "Volume Control Profile Volume Controller"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_VCP_VOL_CTLR
+
+# VOCS
+
+if LPKG_BT_VOCS
+module = LPKG_BT_VOCS
+module-str = "Volume Offset Control Service"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_VOCS
+
+if LPKG_BT_VOCS_CLIENT
+module = LPKG_BT_VOCS_CLIENT
+module-str = "Volume Offset Control Service client"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_VOCS_CLIENT
+
+# PBP
+
+if LPKG_BT_PBP
+module = LPKG_BT_PBP
+module-str = "Public Broadcast Profile"
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+endif # LPKG_BT_PBP
+
+endmenu # Audio
+endif # LPKG_BT_AUDIO
+
+if LPKG_BT_CLASSIC
+menu "Bluetooth Classic"
+
+module = LPKG_BT_RFCOMM
+module-str = "Bluetooth RFCOMM"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_HFP_HF
+module-str = "Bluetooth Hands Free Profile (HFP)"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_HFP_AG
+module-str = "Bluetooth Hands Free Audio Gateway Profile (HFP AG)"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_AVDTP
+module-str = "Bluetooth AVDTP debug"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_A2DP
+module-str = "Bluetooth A2DP"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_AVCTP
+module-str = "Bluetooth AVCTP"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_AVRCP
+module-str = "Bluetooth AVRCP"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_SDP
+module-str = "Bluetooth Service Discovery Protocol (SDP)"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+endmenu # Bluetooth Classic
+endif # LPKG_BT_CLASSIC
+
+# MESH (subsys/bluetooth/mesh/Kconfig)
+
+if LPKG_BT_MESH
+menu "Mesh"
+
+module = LPKG_BT_MESH
+module-str = "Debug logs"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_NET
+module-str = "Network layer"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_BRG
+module-str = "Subnet Bridging layer"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_RPL
+module-str = "Replay protection list"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_TRANS
+module-str = "Transport layer"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_BEACON
+module-str = "Beacon"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_CRYPTO
+module-str = "Crypto"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_KEYS
+module-str = "Key management"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_PROV
+module-str = "Provisioning"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_PROVISIONER
+module-str = "Provisioner"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_PROVISIONEE
+module-str = "Provisioning device"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_ACCESS
+module-str = "Access layer"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_MODEL
+module-str = "Foundation model"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_DFU
+module-str = "DFU model"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_ADV
+module-str = "Advertising"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_LOW_POWER
+module-str = "Low Power"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_FRIEND
+module-str = "Friend"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_PROXY
+module-str = "Proxy"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_SETTINGS
+module-str = "Persistent settings"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_CDB
+module-str = "Configuration database"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+module = LPKG_BT_MESH_CFG
+module-str = "Configuration"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+
+endmenu # Mesh
+endif # LPKG_BT_MESH
+
+menu "Services"
+
+# BAS
+
+if LPKG_BT_BAS
+module = LPKG_BT_BAS
+module-str = BAS
+source "subsys/logging/Kconfig.template.log_config"
+endif # LPKG_BT_BAS
+
+# CTS
+
+if LPKG_BT_CTS
+module = LPKG_BT_CTS
+module-str = CTS
+source "subsys/logging/Kconfig.template.log_config"
+endif # LPKG_BT_CTS
+
+# HRS
+
+if LPKG_BT_HRS
+module = LPKG_BT_HRS
+module-str = HRS
+source "subsys/logging/Kconfig.template.log_config"
+endif # LPKG_BT_HRS
+
+# TPS
+
+if LPKG_BT_TPS
+module = LPKG_BT_TPS
+module-str = TPS
+source "subsys/logging/Kconfig.template.log_config"
+endif # LPKG_BT_TPS
+
+# IAS
+
+if LPKG_BT_IAS_CLIENT
+module = LPKG_BT_IAS_CLIENT
+module-str = "Immediate Alert Service Client"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_IAS_CLIENT
+
+if LPKG_BT_IAS
+module = LPKG_BT_IAS
+module-str = IAS
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+endif # LPKG_BT_IAS
+
+# OTS (subsys/bluetooth/services/ots/Kconfig)
+
+if LPKG_BT_OTS_CLIENT
+module = LPKG_BT_OTS_CLIENT
+module-str = "Object Transfer Service Client"
+source "subsys/logging/Kconfig.template.log_config_inherit"
+endif # LPKG_BT_OTS_CLIENT
+
+if LPKG_BT_OTS
+module = LPKG_BT_OTS
+module-str = LPKG_BT_OTS
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+endif # LPKG_BT_OTS
+
+endmenu # Services
+
+endmenu # Bluetooth logging
+
+endif # LPKG_BT_LOG

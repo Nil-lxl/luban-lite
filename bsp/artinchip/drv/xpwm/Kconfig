@@ -1,0 +1,507 @@
+#-----------------------------
+# XPWM devices local parameter
+#-----------------------------
+
+# XPWM0 parameter
+
+menu "XPWM0 Parameter"
+    depends on AIC_USING_XPWM0
+
+config AIC_XPWM0_TB_CLK_RATE
+    int "xpwm0 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select XPWM0 MODE"
+    default AIC_XPWM0_NORMAL_MODE
+    config AIC_XPWM0_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_XPWM0_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_XPWM0_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_XPWM0_NORMAL_MODE
+        bool "normal mode"
+    config AIC_XPWM0_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_XPWM0_XPWM_MODE
+    int
+    default 0 if AIC_XPWM0_PWM_MODE
+    default 1 if AIC_XPWM0_NORMAL_MODE
+    default 2 if AIC_XPWM0_REG_UPDT_MODE
+    default 3 if AIC_XPWM0_FIFO_NORMAL_MODE
+    default 4 if AIC_XPWM0_FIFO_DMA_MODE
+
+endmenu
+
+# XPWM1 parameter
+
+menu "XPWM1 Parameter"
+    depends on AIC_USING_XPWM1
+
+config AIC_XPWM1_TB_CLK_RATE
+    int "xpwm1 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select XPWM1 MODE"
+    default AIC_XPWM1_NORMAL_MODE
+    config AIC_XPWM1_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_XPWM1_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_XPWM1_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_XPWM1_NORMAL_MODE
+        bool "normal mode"
+    config AIC_XPWM1_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_XPWM1_XPWM_MODE
+    int
+    default 0 if AIC_XPWM1_PWM_MODE
+    default 1 if AIC_XPWM1_NORMAL_MODE
+    default 2 if AIC_XPWM1_REG_UPDT_MODE
+    default 3 if AIC_XPWM1_FIFO_NORMAL_MODE
+    default 4 if AIC_XPWM1_FIFO_DMA_MODE
+
+endmenu
+
+# XPWM2 parameter
+
+menu "XPWM2 Parameter"
+    depends on AIC_USING_XPWM2
+
+config AIC_XPWM2_TB_CLK_RATE
+    int "xpwm2 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select XPWM2 MODE"
+    default AIC_XPWM2_NORMAL_MODE
+    config AIC_XPWM2_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_XPWM2_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_XPWM2_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_XPWM2_NORMAL_MODE
+        bool "normal mode"
+    config AIC_XPWM2_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_XPWM2_XPWM_MODE
+    int
+    default 0 if AIC_XPWM2_PWM_MODE
+    default 1 if AIC_XPWM2_NORMAL_MODE
+    default 2 if AIC_XPWM2_REG_UPDT_MODE
+    default 3 if AIC_XPWM2_FIFO_NORMAL_MODE
+    default 4 if AIC_XPWM2_FIFO_DMA_MODE
+
+endmenu
+
+# XPWM3 parameter
+
+menu "XPWM3 Parameter"
+    depends on AIC_USING_XPWM3
+
+config AIC_XPWM3_TB_CLK_RATE
+    int "xpwm3 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select XPWM3 MODE"
+    default AIC_XPWM3_NORMAL_MODE
+    config AIC_XPWM3_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_XPWM3_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_XPWM3_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_XPWM3_NORMAL_MODE
+        bool "normal mode"
+    config AIC_XPWM3_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_XPWM3_XPWM_MODE
+    int
+    default 0 if AIC_XPWM3_PWM_MODE
+    default 1 if AIC_XPWM3_NORMAL_MODE
+    default 2 if AIC_XPWM3_REG_UPDT_MODE
+    default 3 if AIC_XPWM3_FIFO_NORMAL_MODE
+    default 4 if AIC_XPWM3_FIFO_DMA_MODE
+
+endmenu
+
+# XPWM4 parameter
+
+menu "XPWM4 Parameter"
+    depends on AIC_USING_XPWM4
+
+config AIC_XPWM4_TB_CLK_RATE
+    int "xpwm4 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select XPWM4 MODE"
+    default AIC_XPWM4_NORMAL_MODE
+    config AIC_XPWM4_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_XPWM4_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_XPWM4_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_XPWM4_NORMAL_MODE
+        bool "normal mode"
+    config AIC_XPWM4_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_XPWM4_XPWM_MODE
+    int
+    default 0 if AIC_XPWM4_PWM_MODE
+    default 1 if AIC_XPWM4_NORMAL_MODE
+    default 2 if AIC_XPWM4_REG_UPDT_MODE
+    default 3 if AIC_XPWM4_FIFO_NORMAL_MODE
+    default 4 if AIC_XPWM4_FIFO_DMA_MODE
+
+endmenu
+
+# XPWM5 parameter
+
+menu "XPWM5 Parameter"
+    depends on AIC_USING_XPWM5
+
+config AIC_XPWM5_TB_CLK_RATE
+    int "xpwm5 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select XPWM5 MODE"
+    default AIC_XPWM5_NORMAL_MODE
+    config AIC_XPWM5_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_XPWM5_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_XPWM5_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_XPWM5_NORMAL_MODE
+        bool "normal mode"
+    config AIC_XPWM5_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_XPWM5_XPWM_MODE
+    int
+    default 0 if AIC_XPWM5_PWM_MODE
+    default 1 if AIC_XPWM5_NORMAL_MODE
+    default 2 if AIC_XPWM5_REG_UPDT_MODE
+    default 3 if AIC_XPWM5_FIFO_NORMAL_MODE
+    default 4 if AIC_XPWM5_FIFO_DMA_MODE
+
+endmenu
+
+# XPWM6 parameter
+
+menu "XPWM6 Parameter"
+    depends on AIC_USING_XPWM6
+
+config AIC_XPWM6_TB_CLK_RATE
+    int "xpwm6 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select XPWM6 MODE"
+    default AIC_XPWM6_NORMAL_MODE
+    config AIC_XPWM6_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_XPWM6_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_XPWM6_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_XPWM6_NORMAL_MODE
+        bool "normal mode"
+    config AIC_XPWM6_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_XPWM6_XPWM_MODE
+    int
+    default 0 if AIC_XPWM6_PWM_MODE
+    default 1 if AIC_XPWM6_NORMAL_MODE
+    default 2 if AIC_XPWM6_REG_UPDT_MODE
+    default 3 if AIC_XPWM6_FIFO_NORMAL_MODE
+    default 4 if AIC_XPWM6_FIFO_DMA_MODE
+
+endmenu
+
+# XPWM7 parameter
+
+menu "XPWM7 Parameter"
+    depends on AIC_USING_XPWM7
+
+config AIC_XPWM7_TB_CLK_RATE
+    int "xpwm7 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select XPWM7 MODE"
+    default AIC_XPWM7_NORMAL_MODE
+    config AIC_XPWM7_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_XPWM7_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_XPWM7_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_XPWM7_NORMAL_MODE
+        bool "normal mode"
+    config AIC_XPWM7_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_XPWM7_XPWM_MODE
+    int
+    default 0 if AIC_XPWM7_PWM_MODE
+    default 1 if AIC_XPWM7_NORMAL_MODE
+    default 2 if AIC_XPWM7_REG_UPDT_MODE
+    default 3 if AIC_XPWM7_FIFO_NORMAL_MODE
+    default 4 if AIC_XPWM7_FIFO_DMA_MODE
+
+endmenu
+
+# R_XPWM0 parameter
+
+menu "R_XPWM0 Parameter"
+    depends on AIC_USING_R_XPWM0
+
+config AIC_R_XPWM0_TB_CLK_RATE
+    int "r_xpwm0 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select R_XPWM0 MODE"
+    default AIC_R_XPWM0_NORMAL_MODE
+    config AIC_R_XPWM0_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_R_XPWM0_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_R_XPWM0_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_R_XPWM0_NORMAL_MODE
+        bool "normal mode"
+    config AIC_R_XPWM0_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_R_XPWM0_XPWM_MODE
+    int
+    default 0 if AIC_R_XPWM0_PWM_MODE
+    default 1 if AIC_R_XPWM0_NORMAL_MODE
+    default 2 if AIC_R_XPWM0_REG_UPDT_MODE
+    default 3 if AIC_R_XPWM0_FIFO_NORMAL_MODE
+    default 4 if AIC_R_XPWM0_FIFO_DMA_MODE
+
+endmenu
+
+# R_XPWM1 parameter
+
+menu "R_XPWM1 Parameter"
+    depends on AIC_USING_R_XPWM1
+
+config AIC_R_XPWM1_TB_CLK_RATE
+    int "r_xpwm1 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select R_XPWM1 MODE"
+    default AIC_R_XPWM1_NORMAL_MODE
+    config AIC_R_XPWM1_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_R_XPWM1_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_R_XPWM1_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_R_XPWM1_NORMAL_MODE
+        bool "normal mode"
+    config AIC_R_XPWM1_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_R_XPWM1_XPWM_MODE
+    int
+    default 0 if AIC_R_XPWM1_PWM_MODE
+    default 1 if AIC_R_XPWM1_NORMAL_MODE
+    default 2 if AIC_R_XPWM1_REG_UPDT_MODE
+    default 3 if AIC_R_XPWM1_FIFO_NORMAL_MODE
+    default 4 if AIC_R_XPWM1_FIFO_DMA_MODE
+
+endmenu
+
+# R_XPWM2 parameter
+
+menu "R_XPWM2 Parameter"
+    depends on AIC_USING_R_XPWM2
+
+config AIC_R_XPWM2_TB_CLK_RATE
+    int "r_xpwm2 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select R_XPWM2 MODE"
+    default AIC_R_XPWM2_NORMAL_MODE
+    config AIC_R_XPWM2_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_R_XPWM2_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_R_XPWM2_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_R_XPWM2_NORMAL_MODE
+        bool "normal mode"
+    config AIC_R_XPWM2_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_R_XPWM2_XPWM_MODE
+    int
+    default 0 if AIC_R_XPWM2_PWM_MODE
+    default 1 if AIC_R_XPWM2_NORMAL_MODE
+    default 2 if AIC_R_XPWM2_REG_UPDT_MODE
+    default 3 if AIC_R_XPWM2_FIFO_NORMAL_MODE
+    default 4 if AIC_R_XPWM2_FIFO_DMA_MODE
+
+endmenu
+
+# R_XPWM3 parameter
+
+menu "R_XPWM3 Parameter"
+    depends on AIC_USING_R_XPWM3
+
+config AIC_R_XPWM3_TB_CLK_RATE
+    int "r_xpwm3 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+choice
+    prompt "Select R_XPWM3 MODE"
+    default AIC_R_XPWM3_NORMAL_MODE
+    config AIC_R_XPWM3_REG_UPDT_MODE
+        bool "continuous mode"
+    config AIC_R_XPWM3_FIFO_NORMAL_MODE
+        bool "fifo normal mode"
+    config AIC_R_XPWM3_FIFO_DMA_MODE
+        bool "fifo dma mode"
+        select AIC_USING_DMA
+    config AIC_R_XPWM3_NORMAL_MODE
+        bool "normal mode"
+    config AIC_R_XPWM3_PWM_MODE
+        bool "pwm mode"
+endchoice
+
+config AIC_R_XPWM3_XPWM_MODE
+    int
+    default 0 if AIC_R_XPWM3_PWM_MODE
+    default 1 if AIC_R_XPWM3_NORMAL_MODE
+    default 2 if AIC_R_XPWM3_REG_UPDT_MODE
+    default 3 if AIC_R_XPWM3_FIFO_NORMAL_MODE
+    default 4 if AIC_R_XPWM3_FIFO_DMA_MODE
+
+endmenu
+
+# R_PWM0 parameter
+
+menu "R_PWM0 Parameter"
+    depends on AIC_USING_R_PWM0
+
+config AIC_R_PWM0_TB_CLK_RATE
+    int "R_PWM0 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+endmenu
+
+# R_PWM1 parameter
+
+menu "R_PWM1 Parameter"
+    depends on AIC_USING_R_PWM1
+
+config AIC_R_PWM1_TB_CLK_RATE
+    int "R_PWM1 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+endmenu
+
+# R_PWM2 parameter
+
+menu "R_PWM2 Parameter"
+    depends on AIC_USING_R_PWM2
+
+config AIC_R_PWM2_TB_CLK_RATE
+    int "R_PWM2 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+endmenu
+
+# R_PWM3 parameter
+
+menu "R_PWM3 Parameter"
+    depends on AIC_USING_R_PWM3
+
+config AIC_R_PWM3_TB_CLK_RATE
+    int "R_PWM3 time base clock"
+    default 24000000
+    range 6250000 200000000
+    depends on AIC_XPWM_DRV_V11
+
+endmenu
+
+config XPWM_FIFO_MAX
+    int
+    default 2 if AIC_CHIP_D12P
+
+config XPWM_FIFO_TH_DEFAULT_VALUE
+    int
+    default 3 if AIC_CHIP_D12P

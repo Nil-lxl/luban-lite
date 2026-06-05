@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -53,7 +53,7 @@ struct lv_mpp_buf *lv_mpp_image_alloc(int width, int height, enum mpp_pixel_form
     image->buf.size.width = width;
     image->buf.size.height = height;
     image->buf.format = fmt;
-    image->data = (unsigned char *)aicos_malloc(MEM_CMA, size + 1023);
+    image->data = (unsigned char *)aicos_malloc_try_cma(size + 1023);
     if (!image->data) {
         aicos_free(MEM_DEFAULT, image);
         return NULL;

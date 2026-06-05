@@ -7,7 +7,7 @@ menuconfig RT_USING_FAL
 if RT_USING_FAL
     config FAL_DEBUG_CONFIG
         bool "Enable debug log output"
-        default y
+        default n
 
     config FAL_DEBUG
        int

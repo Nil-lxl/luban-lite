@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,6 +8,7 @@
 #define _AIC_HAL_QSPI_REGS_H_
 #include <aic_common.h>
 #include <aic_soc.h>
+#include <aic_iopoll.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,9 +89,9 @@ extern "C" {
 #define TCFG_BIT_TXDLY_EN_OFS           (14)
 #define TCFG_BIT_TXDLY_EN_MSK           (1UL << 14)
 #define TCFG_BIT_TXDLY_EN_VAL(v)        (((v) << TCFG_BIT_TXDLY_EN_OFS) & TCFG_BIT_TXDLY_EN_MSK)
-#define TCFG_BIT_3WIERE_EN_OFS          (25)
-#define TCFG_BIT_3WIERE_EN_MSK          (1UL << 25)
-#define TCFG_BIT_3WIERE_EN_VAL(v)       (((v) << TCFG_BIT_3WIERE_EN_OFS) & TCFG_BIT_3WIERE_EN_MSK)
+#define TCFG_BIT_3WIRE_EN_OFS          (25)
+#define TCFG_BIT_3WIRE_EN_MSK          (1UL << 25)
+#define TCFG_BIT_3WIRE_EN_VAL(v)       (((v) << TCFG_BIT_3WIRE_EN_OFS) & TCFG_BIT_3WIRE_EN_MSK)
 #define TCFG_BIT_START_OFS              (31)
 #define TCFG_BIT_START_MSK              (1UL << 31)
 #define TCFG_BIT_START_VAL(v)           (((v) << TCFG_BIT_START_OFS) & TCFG_BIT_START_MSK)
@@ -249,7 +250,7 @@ static inline u32 qspi_hw_index_to_base(u32 idx)
         case 3:
             return QSPI3_BASE;
         default:
-            return 0;
+            break;
     }
     return 0;
 }
@@ -266,7 +267,7 @@ static inline u32 qspi_hw_base_to_index(u32 base)
         case QSPI3_BASE:
             return 3;
         default:
-            return QSPI_INVALID_BASE;
+            break;
     }
     return QSPI_INVALID_BASE;
 }
@@ -285,6 +286,9 @@ static inline void qspi_hw_init_default(u32 base)
     val = CFG_BIT_CTRL_EN_MSK | CFG_BIT_CTRL_MODE_SEL_MSK |
           CFG_BIT_RXFULL_STOP_MSK | CFG_BIT_CTRL_RST_MSK;
     writel(val, QSPI_REG_CFG(base));
+    if (readl_poll_timeout(QSPI_REG_CFG(base), val, !(val & CFG_BIT_CTRL_RST_MSK), 100000))
+        pr_warn("QSPI base 0x%lx, CFG_BIT_CTRL_RST not cleared after init_default, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 #define QSPI_CTRL_MODE_SLAVE 0
@@ -430,15 +434,15 @@ static inline void qspi_hw_set_cs_level(u32 base, u32 level)
 static inline void qspi_hw_set_3wire_en(u32 base, u32 en)
 {
     u32 val = readl(QSPI_REG_TCFG(base));
-    val &= ~(TCFG_BIT_3WIERE_EN_MSK);
-    val |= TCFG_BIT_3WIERE_EN_VAL(en);
+    val &= ~(TCFG_BIT_3WIRE_EN_MSK);
+    val |= TCFG_BIT_3WIRE_EN_VAL(en);
     writel(val, QSPI_REG_TCFG(base));
 }
 
 static inline u32 qspi_hw_get_3wire_en(u32 base)
 {
     u32 val = readl(QSPI_REG_TCFG(base));
-    return ((val & TCFG_BIT_3WIERE_EN_MSK) >> TCFG_BIT_3WIERE_EN_OFS);
+    return ((val & TCFG_BIT_3WIRE_EN_MSK) >> TCFG_BIT_3WIRE_EN_OFS);
 }
 
 #define QSPI_CS_CTL_BY_HW 0
@@ -468,27 +472,47 @@ static inline void qspi_hw_ctrl_reset(u32 base)
     val = readl(QSPI_REG_CFG(base));
     val |= CFG_BIT_CTRL_RST_MSK;
     writel(val, QSPI_REG_CFG(base));
+    if (readl_poll_timeout(QSPI_REG_CFG(base), val, !(val & CFG_BIT_CTRL_RST_MSK), 100000))
+        pr_warn("QSPI base 0x%lx, CFG_BIT_CTRL_RST not cleared after ctrl_reset, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 static inline void qspi_hw_reset_fifo(u32 base)
 {
-    u32 val = readl(QSPI_REG_FCTL(base));
-    val |= (FCTL_BIT_RF_RST_MSK | FCTL_BIT_TF_RST_MSK);
+    u32 val;
+    u32 mask = FCTL_BIT_RF_RST_MSK | FCTL_BIT_TF_RST_MSK;
+
+    val = readl(QSPI_REG_FCTL(base));
+    val |= mask;
     writel(val, QSPI_REG_FCTL(base));
+
+    if (readl_poll_timeout(QSPI_REG_FCTL(base), val, !(val & mask), 100000))
+        pr_warn("QSPI base 0x%lx, FIFO reset bits not cleared, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 static inline void qspi_hw_reset_rx_fifo(u32 base)
 {
-    u32 val = readl(QSPI_REG_FCTL(base));
+    u32 val;
+
+    val = readl(QSPI_REG_FCTL(base));
     val |= (FCTL_BIT_RF_RST_MSK);
     writel(val, QSPI_REG_FCTL(base));
+    if (readl_poll_timeout(QSPI_REG_FCTL(base), val, !(val & FCTL_BIT_RF_RST_MSK), 100000))
+        pr_warn("QSPI base 0x%lx, RX FIFO reset bit not cleared, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 static inline void qspi_hw_reset_tx_fifo(u32 base)
 {
-    u32 val = readl(QSPI_REG_FCTL(base));
+    u32 val;
+
+    val = readl(QSPI_REG_FCTL(base));
     val |= (FCTL_BIT_TF_RST_MSK);
     writel(val, QSPI_REG_FCTL(base));
+    if (readl_poll_timeout(QSPI_REG_FCTL(base), val, !(val & FCTL_BIT_TF_RST_MSK), 100000))
+        pr_warn("QSPI base 0x%lx, TX FIFO reset bit not cleared, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 #define QSPI_RX_WATERMARK 32
@@ -707,7 +731,7 @@ static inline bool qspi_hw_check_transfer_done(u32 base)
     return ((val & ISTS_BIT_TDONE) != 0);
 }
 
-static inline u32 qspi_hw_bit_mode_set_cs_num(u32 chipselect, u32 base)
+static inline int qspi_hw_bit_mode_set_cs_num(u32 chipselect, u32 base)
 {
     u32 val;
 

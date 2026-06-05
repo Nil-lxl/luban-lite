@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -348,6 +348,7 @@ int bl_upgmode_get_mode(void)
 int bl_upgmode_detect(enum boot_device bd)
 {
     int ret = 0, cont_boot = 1;
+    char cmd[32];
 
     ret = upg_type_check(bd);
 
@@ -363,7 +364,12 @@ int bl_upgmode_detect(enum boot_device bd)
         return cont_boot;
     } else {
         if (upg_type == UPG_TYPE_SDCARD) {
-            ret = RUNCMD("aicupg fat mmc 1");
+#ifdef AICUPG_SDCARD_CONTROLLER_ID
+            snprintf(cmd, sizeof(cmd), "aicupg fat mmc %d", AICUPG_SDCARD_CONTROLLER_ID);
+#else
+            snprintf(cmd, sizeof(cmd), "aicupg fat mmc %d", 1);
+#endif
+            ret = RUNCMD(cmd);
             /* SDCARD FAT32 information is from BROM, if upgrading failure, just
              * stop in command line mode
              */
@@ -417,7 +423,7 @@ int bl_upgmode_detect(enum boot_device bd)
                 ret = RUNCMD("aicupg uart 0 userid");
             } else if (upg_mode == UPG_MODE_FORCE) {
                 /* If no host connect to device, skip it and continue to boot app */
-                ret = RUNCMD("aicupg usb 0 force");
+                ret = RUNCMD("aicupg uart 0 force");
             }
             if (ret)
                 cont_boot = 1;

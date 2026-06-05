@@ -17,16 +17,25 @@ extern "C" {
 
 #define CAMERA_DEV_NAME     "camera"
 
+#define CAMERA_CLK_FREQ     24000000
+
 #ifdef AIC_CHIP_D12P
 #define CAMERA_CLK_OUT      CLK_OUT0
+#ifdef AIC_CLK_OUT0_FREQ
+#undef CAMERA_CLK_FREQ
 #define CAMERA_CLK_FREQ     AIC_CLK_OUT0_FREQ
+#endif
 #else
 #define CAMERA_CLK_OUT      CLK_OUT1
+#ifdef AIC_CLK_OUT1_FREQ
+#undef CAMERA_CLK_FREQ
 #define CAMERA_CLK_FREQ     AIC_CLK_OUT1_FREQ
+#endif
 #endif
 
 /* ioctl command of Camera device */
 
+/* Argument type: none */
 #define CAMERA_CMD_START                (RT_DEVICE_CTRL_BASE(CAMERA) + 0x01)
 #define CAMERA_CMD_STOP                 (RT_DEVICE_CTRL_BASE(CAMERA) + 0x02)
 #define CAMERA_CMD_PAUSE                (RT_DEVICE_CTRL_BASE(CAMERA) + 0xA1)
@@ -37,6 +46,7 @@ extern "C" {
 /* Argument type: unsigned int */
 #define CAMERA_CMD_SET_CHANNEL          (RT_DEVICE_CTRL_BASE(CAMERA) + 0x08)
 #define CAMERA_CMD_SET_FPS              (RT_DEVICE_CTRL_BASE(CAMERA) + 0x09)
+#define CAMERA_CMD_SET_MUX              (RT_DEVICE_CTRL_BASE(CAMERA) + 0x0A)
 /* Argument type: unsigned int，percent, [0, 100] */
 #define CAMERA_CMD_SET_BRIGHTNESS       (RT_DEVICE_CTRL_BASE(CAMERA) + 0x10)
 #define CAMERA_CMD_SET_CONTRAST         (RT_DEVICE_CTRL_BASE(CAMERA) + 0x11)
@@ -65,6 +75,7 @@ int camera_set_fmt(struct rt_device *dev, void *fmt);
 
 int camera_set_channel(struct rt_device *dev, u32 chan);
 int camera_set_fps(struct rt_device *dev, u32 fps);
+int camera_set_mux(struct rt_device *dev, u32 mux);
 
 int camera_set_brightness(struct rt_device *dev, u32 percent);
 int camera_set_contrast(struct rt_device *dev, u32 percent);

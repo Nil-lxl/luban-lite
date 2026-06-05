@@ -468,6 +468,36 @@ static const struct rt_device_ops bf3a_ops =
 };
 #endif
 
+#ifdef RT_USING_PM
+static int bf3a_pm_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    return RT_EOK;
+}
+
+static void bf3a_pm_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct bf3a_dev *sensor = (struct bf3a_dev *)device;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_LIGHT:
+        break;
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        sensor->rst_pin = camera_rst_pin_get();
+        sensor->pwdn_pin = camera_pwdn_pin_get();
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops bf3a_pm_ops =
+{
+    SET_DEVICE_PM_OPS(bf3a_pm_suspend, bf3a_pm_resume)
+    NULL,
+};
+#endif /* RT_USING_PM */
+
 int rt_hw_bf3a_init(void)
 {
 #ifdef RT_USING_DEVICE_OPS
@@ -481,6 +511,10 @@ int rt_hw_bf3a_init(void)
     g_bf3a_dev.dev.type = RT_Device_Class_CAMERA;
 
     rt_device_register(&g_bf3a_dev.dev, CAMERA_DEV_NAME, 0);
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&g_bf3a_dev.dev, &bf3a_pm_ops);
+#endif
 
     return 0;
 }

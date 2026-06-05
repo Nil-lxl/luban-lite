@@ -8,6 +8,11 @@
 #include "wps_protocol_handler.h"
 
 #if CONFIG_ENABLE_P2P
+__attribute__((weak)) void rtw_wlan_p2p_pre_init(void) { }
+__attribute__((weak)) void rtw_wlan_p2p_go_started(void) { }
+__attribute__((weak)) void rtw_wlan_p2p_go_stopped(void) { }
+__attribute__((weak)) void rtw_wlan_get_mac(u8 *mac) { memset(mac, 0, 6); }
+
 enum p2p_wps_method {
         WPS_NOT_READY, WPS_PIN_DISPLAY, WPS_PIN_KEYPAD, WPS_PBC
 };
@@ -130,11 +135,11 @@ void app_callback(char *msg)
 
 void cmd_wifi_p2p_start(int argc, char **argv)
 {
-	extern struct netif xnetif[NET_IF_NUM];
 	int listen_ch = 1;
 	int op_ch = 5;
 	int go_intent = 1;
 	u32 r = 0;
+	u8 mac[6] = {0};
 	os_get_random((u8 *) &r, sizeof(r));
 	go_intent = r%15+1; /*1-15*/
 
@@ -148,10 +153,20 @@ void cmd_wifi_p2p_start(int argc, char **argv)
 		listen_ch = 1 + (r % 3) * 5;
 	}
 
+#if !CONFIG_LWIP_LAYER
+	//rtw_wlan_p2p_pre_init();
+#endif
 	wifi_off();
 	os_sleep(0, 20000);
 	wifi_on(RTW_MODE_P2P);
-	wifi_p2p_init(xnetif[0].hwaddr, go_intent, listen_ch, op_ch);
+
+#if !CONFIG_LWIP_LAYER
+	rtw_wlan_get_mac(mac);
+#else
+	extern struct netif xnetif[NET_IF_NUM];
+	memcpy(mac, xnetif[0].hwaddr, NETIF_MAX_HWADDR_LEN);
+#endif
+	wifi_p2p_init(mac, go_intent, listen_ch, op_ch);
 }
 
 void cmd_wifi_p2p_auto_go_start(int argc, char **argv)
@@ -195,11 +210,20 @@ void cmd_wifi_p2p_auto_go_start(int argc, char **argv)
 	wifi_p2p_set_ssid(ssid_in);
 	wifi_p2p_set_config_methods(config_methods);
 	wifi_p2p_init_auto_go_params(res, passphrase, channel);
-	wifi_p2p_start_auto_go(res);
+	if (wifi_p2p_start_auto_go(res) == 0) {
+#if !CONFIG_LWIP_LAYER
+		rtw_wlan_p2p_go_started();
+#endif
+	} else {
+		printf("\r\n%s(): start auto go fail\n", __func__);
+	}
 	//return;
 }
 void cmd_wifi_p2p_stop(int argc, char **argv)
 {
+#if !CONFIG_LWIP_LAYER
+	rtw_wlan_p2p_go_stopped();
+#endif
 	wifi_p2p_deinit();
 	wifi_off();
 }

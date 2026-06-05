@@ -13,6 +13,203 @@
 #include <partition_table.h>
 #include "upg_internal.h"
 
+/* Include necessary headers for device type detection */
+#if defined(AICUPG_NAND_ARTINCHIP) || defined(AICUPG_NOR_ARTINCHIP)
+#include <mtd.h>
+#endif
+
+#if defined(AICUPG_MMC_ARTINCHIP)
+#include <disk_part.h>
+
+/* MMC read/write wrapper functions for partition detection */
+static unsigned long mmc_bread_wrapper(struct blk_desc *block_dev, u64 start, u64 blkcnt, const void *buffer)
+{
+    return mmc_bread(block_dev->priv, start, blkcnt, (void *)buffer);
+}
+
+static unsigned long mmc_bwrite_wrapper(struct blk_desc *block_dev, u64 start, u64 blkcnt, void *buffer)
+{
+    return mmc_bwrite(block_dev->priv, start, blkcnt, buffer);
+}
+#endif
+
+/*
+ * Check if a semicolon-separated media_type string contains the target type.
+ * For multi-flash, media_type may be "spi-nor;spi-nand".
+ * Returns 1 if found, 0 otherwise.
+ */
+static int __attribute__((unused)) media_type_match(const char *media_types, const char *target)
+{
+    char *copy = strdup(media_types);
+    char *token;
+    char *saveptr;
+    int match = 0;
+
+    if (!copy)
+        return 0;
+
+    token = strtok_r(copy, ";", &saveptr);
+    while (token != NULL) {
+        if (strcmp(token, target) == 0) {
+            match = 1;
+            break;
+        }
+        token = strtok_r(NULL, ";", &saveptr);
+    }
+    free(copy);
+
+    return match;
+}
+
+#if defined(AICUPG_MMC_ARTINCHIP)
+/**
+ * Check if partition exists in MMC device
+ *
+ * @param part_name: Partition name to search for
+ * @param dev_id: MMC device ID
+ * @return: true if found, false otherwise
+ */
+static bool check_mmc_partition(const char *part_name, u8 dev_id)
+{
+    struct aic_sdmc *host;
+    struct blk_desc dev_desc;
+    struct disk_blk_ops ops;
+    struct aic_partition *parts, *part;
+    bool found = false;
+
+    host = find_mmc_dev_by_index(dev_id);
+    if (!host || !host->dev)
+        return false;
+
+    /* Setup block device descriptor */
+    ops.blk_read = mmc_bread_wrapper;
+    ops.blk_write = mmc_bwrite_wrapper;
+    aic_disk_part_set_ops(&ops);
+    dev_desc.blksz = 512;
+    dev_desc.lba_count = host->dev->card_capacity * 2;
+    dev_desc.priv = host;
+
+    /* Get partition list and search */
+    parts = aic_disk_get_parts(&dev_desc);
+    if (!parts)
+        return false;
+
+    part = parts;
+    while (part) {
+        if (strcmp(part->name, part_name) == 0) {
+            found = true;
+            break;
+        }
+        part = part->next;
+    }
+
+    mmc_free_partition(parts);
+    return found;
+}
+#endif
+
+#if defined(AICUPG_NAND_ARTINCHIP) || defined(AICUPG_NOR_ARTINCHIP)
+/**
+ * Check if partition exists in MTD device and get device type
+ *
+ * @param part_name: Partition name to search for
+ * @param type: Output parameter for device type
+ * @return: true if found, false otherwise
+ */
+static bool check_mtd_partition(const char *part_name, enum upg_dev_type *type)
+{
+    struct mtd_dev *mtd;
+
+    mtd = mtd_get_device(part_name);
+    if (!mtd)
+        return false;
+
+    /* Determine device type by name or characteristics */
+    if (strstr(mtd->name, "nand") != NULL) {
+        *type = UPG_DEV_TYPE_SPI_NAND;
+    } else if (strstr(mtd->name, "nor") != NULL) {
+        *type = UPG_DEV_TYPE_SPI_NOR;
+    } else {
+        /* Use writesize and oobsize to determine */
+        *type = (mtd->writesize < 1024 || mtd->oobsize == 0) ?
+                UPG_DEV_TYPE_SPI_NOR : UPG_DEV_TYPE_SPI_NAND;
+    }
+
+    return true;
+}
+#endif
+
+/**
+ * Get device type and device ID by partition name
+ *
+ * @param part_name: Partition name to search for
+ * @param dev_type: Output parameter for device type
+ * @param dev_id: Output parameter for device ID
+ * @return: 0 if found, -1 if not found
+ */
+int get_device_by_part_name(const char *part_name, enum upg_dev_type *dev_type, int *dev_id)
+{
+    char media_type_copy[64];
+    char *token;
+    char *saveptr;
+    int flash_index = 0;
+    const char *media_type;
+    u32 media_dev_id;
+
+    if (!part_name || !dev_type)
+        return -1;
+
+    /* Get media_type and media_dev_id through API */
+    media_type = get_upg_media_type();
+    media_dev_id = get_upg_media_dev_id();
+
+    if (!media_type || !media_type[0])
+        return -1;
+
+    /* Initialize output parameters */
+    *dev_type = UPG_DEV_TYPE_UNKNOWN;
+    if (dev_id)
+        *dev_id = -1;
+
+    /* Copy media_type to avoid modifying the original */
+    strncpy(media_type_copy, media_type, sizeof(media_type_copy) - 1);
+    media_type_copy[sizeof(media_type_copy) - 1] = '\0';
+
+    /* Parse media_type string (separated by ";") */
+    token = strtok_r(media_type_copy, ";", &saveptr);
+    while (token != NULL) {
+        u8 current_dev_id = (media_dev_id >> (flash_index * 8)) & 0xFF;
+
+        /* Check MMC devices */
+        if (strcmp(token, "mmc") == 0) {
+#if defined(AICUPG_MMC_ARTINCHIP)
+            if (check_mmc_partition(part_name, current_dev_id)) {
+                *dev_type = UPG_DEV_TYPE_MMC;
+                if (dev_id)
+                    *dev_id = current_dev_id;
+                return 0;
+            }
+#endif
+        } else if (strcmp(token, "spi-nand") == 0 || strcmp(token, "spi-nor") == 0) {
+           /* Check MTD devices (SPI NAND/NOR) */
+#if defined(AICUPG_NAND_ARTINCHIP) || defined(AICUPG_NOR_ARTINCHIP)
+            enum upg_dev_type type;
+            if (check_mtd_partition(part_name, &type)) {
+                *dev_type = type;
+                if (dev_id)
+                    *dev_id = current_dev_id;
+                return 0;
+            }
+#endif
+        }
+
+        token = strtok_r(NULL, ";", &saveptr);
+        flash_index++;
+    }
+
+    return -1;
+}
+
 #ifdef IMAGE_CFG_JSON_PARTS_GPT
 #define GPT_PART_TABLE IMAGE_CFG_JSON_PARTS_GPT
 #else
@@ -31,7 +228,7 @@
  *   be written.
  */
 static struct fwc_info *fwc_info_data;
-static void set_fwc_meta_cmdstart(struct upg_cmd *cmd, s32 cmd_data_len)
+static void set_fwc_meta_cmd_start(struct upg_cmd *cmd, s32 cmd_data_len)
 {
     pr_debug("%s data len %d\n", __func__, cmd_data_len);
     if (cmd->cmd != UPG_PROTO_CMD_SET_FWC_META)
@@ -52,7 +249,7 @@ static void set_fwc_meta_cmdstart(struct upg_cmd *cmd, s32 cmd_data_len)
     cmd->priv = fwc_info_data;
 }
 
-static s32 set_fwc_meta_cmdwrite_input_data(struct upg_cmd *cmd, u8 *buf,
+static s32 set_fwc_meta_cmd_write_input_data(struct upg_cmd *cmd, u8 *buf,
                                              s32 len)
 {
     struct fwc_info *fwc;
@@ -78,7 +275,7 @@ static s32 set_fwc_meta_cmdwrite_input_data(struct upg_cmd *cmd, u8 *buf,
     return clen;
 }
 
-static s32 set_fwc_meta_cmdread_output_data(struct upg_cmd *cmd, u8 *buf,
+static s32 set_fwc_meta_cmd_read_output_data(struct upg_cmd *cmd, u8 *buf,
                                              s32 len)
 {
     struct resp_header resp;
@@ -103,7 +300,7 @@ static s32 set_fwc_meta_cmdread_output_data(struct upg_cmd *cmd, u8 *buf,
     return siz;
 }
 
-static void set_fwc_meta_cmdend(struct upg_cmd *cmd)
+static void set_fwc_meta_cmd_end(struct upg_cmd *cmd)
 {
     enum upg_dev_type dev_type;
     struct fwc_info *fwc;
@@ -120,6 +317,14 @@ static void set_fwc_meta_cmdend(struct upg_cmd *cmd)
         if (!memcmp(fwc->meta.name, "image.updater", 13)) {
             set_current_device_type(UPG_DEV_TYPE_RAM);
             set_current_device_id(0);
+        } else {
+            int dev_id;
+            enum upg_dev_type dev_type;
+
+            if (get_device_by_part_name(fwc->meta.partition, &dev_type, &dev_id) == 0) {
+                set_current_device_type(dev_type);
+                set_current_device_id(dev_id);
+            }
         }
 
         fwc->start_us = aic_get_time_us();
@@ -1273,10 +1478,10 @@ static void erase_storage_cmd_end(struct upg_cmd *cmd)
 static struct upg_cmd fwc_cmd_list[] = {
     {
         UPG_PROTO_CMD_SET_FWC_META,
-        set_fwc_meta_cmdstart,
-        set_fwc_meta_cmdwrite_input_data,
-        set_fwc_meta_cmdread_output_data,
-        set_fwc_meta_cmdend,
+        set_fwc_meta_cmd_start,
+        set_fwc_meta_cmd_write_input_data,
+        set_fwc_meta_cmd_read_output_data,
+        set_fwc_meta_cmd_end,
     },
     {
         UPG_PROTO_CMD_GET_BLOCK_SIZE,

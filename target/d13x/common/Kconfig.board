@@ -797,6 +797,10 @@ menu "SRAM parameter"
         hex "SRAM Total Size"
         default 0x100000
 
+    config AIC_SRAM0_SW_EN
+        bool
+        default y if AIC_SRAM_TOTAL_SIZE > 0
+
     # 1.1 tcm region
     # itcm: section(".tcm_code") + itcm_heap "MEM_ITCM"
     # itcm: section(".tcm_data") + dtcm_heap "MEM_DTCM"
@@ -810,12 +814,14 @@ menu "SRAM parameter"
         range 0 AIC_SRAM_TOTAL_SIZE
         default 0x0 if !AIC_TCM_EN
         default 0x20000 if AIC_TCM_EN
+        depends on AIC_TCM_EN
 
     config AIC_DTCM_SIZE
         hex
         range 0 AIC_SRAM_TOTAL_SIZE
         default 0x0 if !AIC_TCM_EN
         default 0x20000 if AIC_TCM_EN
+        depends on AIC_TCM_EN
 
     # 1.2 sram_s0 region
     # sram_sw: section(".text" + ".data" + ".bss") + sram_sw_heap ‘MEM_DEFAULT’
@@ -922,7 +928,23 @@ menu "PSRAM parameter"
         depends on !AIC_NO_PSRAM
 endmenu
 
-# 3. XIP
+# 3. Choice default sys heap
+
+    choice
+        prompt "Default system heap"
+        default AIC_DEFAULT_SYS_HEAP_SRAM
+	help
+	    select default system heap
+
+        config AIC_DEFAULT_SYS_HEAP_SRAM
+            bool "SRAM Heap"
+
+        config AIC_DEFAULT_SYS_HEAP_PSRAM
+            bool "PSRAM Heap"
+
+    endchoice
+
+# 4. XIP
 
 config AIC_XIP
     bool "Enable XIP"
@@ -939,7 +961,7 @@ config AIC_XIP_FLASH_WRITE
     default n
     help
         Write Flash during XIP, but it will cause system low performence. Every time flash erasing
-	and writing need to work in critical section, system disable interrupt and scheduling.
+        and writing need to work in critical section, system disable interrupt and scheduling.
 
 endmenu
 
@@ -950,7 +972,7 @@ config AIC_XIP_RAMCODE_SIZE
     default 0x0 if !AIC_XIP_FLASH_WRITE
     default 0x1000 if AIC_XIP_FLASH_WRITE
 
-# 4. Sections memory location
+# 5. Sections memory location
 
 menu "ELF Sections memory location"
     depends on !AIC_BOOTLOADER
@@ -1024,7 +1046,7 @@ menu "ELF Sections memory location"
     endchoice
 endmenu
 
-# 5. Interrupt Stack Size
+# 6. Interrupt Stack Size
 
 config AIC_INTERRUPTSTACK_SIZE
     hex "Interrupt stack size"
@@ -1033,7 +1055,7 @@ config AIC_INTERRUPTSTACK_SIZE
     range 0 AIC_SRAM_TOTAL_SIZE
     default 0x1000
 
-# 6. Support seconed Flash
+# 7. Support seconed Flash
 
     menu "Support another Flash"
         choice

@@ -35,11 +35,21 @@ int vin_vb_req_buf(struct vb_queue *q,
     u32 i, j, one_buf_size = 0, offset = 0;
     struct vin_video_plane *cur_plane = NULL;
 
+    if (!q || !vbuf) {
+        pr_err("[VIN%d] Invalid parameter\n", q->ch);
+        return -EINVAL;
+    }
+
     for (i = 0; i < vbuf->num_planes; i++)
         one_buf_size += vbuf->planes[i].len;
 
+    if (one_buf_size == 0 || size == 0) {
+        pr_err("[VIN%d] Invalid parameter %d/%d\n", q->ch, one_buf_size, size);
+        return -1;
+    }
+
     if (one_buf_size * 2 > size) {
-        pr_err("The buffer size is too small: %d/%d\n", size, one_buf_size);
+        pr_err("[VIN%d] The buffer size is too small: %d/%d\n", q->ch, size, one_buf_size);
         return -1;
     }
 
@@ -66,7 +76,42 @@ int vin_vb_req_buf(struct vb_queue *q,
         q->bufs[i].state = VB_BUF_STATE_DEQUEUED;
     }
     vbuf->num_buffers = q->num_buffers;
-    pr_debug("Requested %d buffers(size %d)\n", i, one_buf_size);
+    pr_debug("[VIN%d] Requested %d buffers(size %d)\n", q->ch, i, one_buf_size);
+    return 0;
+}
+
+/**
+ * @brief Initialize the video buffer queue，only for stitch V&H mode
+ * @param q The video buffer queue to initialize.
+ * @param vbuf The video buffer structure of CH1
+ * @return int 0 on success, -1 on error.
+ */
+int vin_vb_req_stitch_buf(struct vb_queue *q, struct vin_video_buf *vbuf)
+{
+    struct vin_video_plane *cur_plane = NULL;
+    u32 i, j;
+
+    if (!q || !vbuf) {
+        pr_err("[VIN%d] Invalid parameter\n", q->ch);
+        return -EINVAL;
+    }
+
+    for (i = 0; i < vbuf->num_buffers; i++) {
+        if (i >= VIN_MAX_BUF_NUM)
+            break;
+
+        cur_plane = &vbuf->planes[i * vbuf->num_planes];
+        for (j = 0; j < vbuf->num_planes; j++, cur_plane++) {
+            q->bufs[i].planes[j].buf = cur_plane->buf;
+            q->bufs[i].planes[j].length = cur_plane->len;
+            q->bufs[i].planes[j].bytesused = cur_plane->len;
+        }
+        q->num_buffers++;
+        q->bufs[i].index = i;
+        q->bufs[i].queue = q;
+        q->bufs[i].num_planes = vbuf->num_planes;
+        q->bufs[i].state = VB_BUF_STATE_DEQUEUED;
+    }
     return 0;
 }
 
@@ -87,19 +132,19 @@ int vin_vb_q_buf(struct vb_queue *q, u32 index)
     rt_base_t level = 0;
 
     if (q->error) {
-        pr_err("Fatal error occurred on queue\n");
+        pr_err("[VIN%d] Fatal error occurred on queue\n", q->ch);
         return -EIO;
     }
 
     if (!g_vb_ops) {
-        pr_err("Should init VideoBuf ops first!\n");
+        pr_err("[VIN%d] Should init VideoBuf ops first!\n", q->ch);
         return -EPERM;
     }
 
     vb = &q->bufs[index];
     if (vb->state != VB_BUF_STATE_DEQUEUED) {
-        pr_err("buffer %d state is invalid: %s\n",
-               vb->index, vb_state_name(vb->state));
+        pr_err("[VIN%d] buffer %d state is invalid: %s\n",
+               q->ch, vb->index, vb_state_name(vb->state));
         return -EINVAL;
     }
 
@@ -121,14 +166,14 @@ int vin_vb_q_buf(struct vb_queue *q, u32 index)
     if (q->streaming)
         vin_vb_stream_on(q);
 
-    pr_debug("[%d] Qbuf buffer %d [%d]\n", vb->timestamp, vb->index, q->queued_count);
+    pr_debug("[VIN%d] Qbuf buffer %d [%d]\n", q->ch, vb->index, q->queued_count);
     return 0;
 }
 
 static int __wait_for_done_vb(struct vb_queue *q)
 {
     if (!q->streaming) {
-        pr_err("streaming off, will not wait for buffers\n");
+        pr_err("[VIN%d] streaming off, will not wait for buffers\n", q->ch);
         return -EINVAL;
     }
 
@@ -164,16 +209,16 @@ int vin_vb_dq_buf(struct vb_queue *q, u32 *pindex)
     vb = list_first_entry(&q->done_list, struct vb_buffer, done_entry);
     list_del(&vb->done_entry);
 
-    pr_debug("DQ buf %d [%d], state: %s\n",
-             vb->index, q->queued_count, vb_state_name(vb->state));
+    pr_debug("[VIN%d] DQ buf %d [%d], state: %s\n",
+             q->ch, vb->index, q->queued_count, vb_state_name(vb->state));
     switch (vb->state) {
     case VB_BUF_STATE_DONE:
         break;
     case VB_BUF_STATE_ERROR:
-        pr_err("Get done buffer %d with errors\n", vb->index);
+        pr_err("[VIN%d] Get done buffer %d with errors\n", q->ch, vb->index);
         break;
     default:
-        pr_err("Buffer %d state: %s\n", vb->index, vb_state_name(vb->state));
+        pr_err("[VIN%d] Buffer %d state: %s\n", q->ch, vb->index, vb_state_name(vb->state));
         return -EINVAL;
     }
 
@@ -207,10 +252,10 @@ void vin_vb_buffer_done(struct vb_buffer *vb, enum vb_buffer_state state)
         state = VB_BUF_STATE_ERROR;
     }
 
-    pr_debug("Buffer %d done, state: %s\n\n", vb->index, vb_state_name(state));
+    pr_debug("[VIN%d] Buffer %d done, state: %s\n\n", q->ch, vb->index, vb_state_name(state));
 
     if (state == VB_BUF_STATE_ERROR)
-        pr_warn("Buffer %d has error!\n", vb->index);
+        pr_warn("[VIN%d] Buffer %d has error!\n", q->ch, vb->index);
 
     if (state == VB_BUF_STATE_QUEUED) {
         /* Reclaim the buf from DVP driver to queued_list */
@@ -287,11 +332,11 @@ int vin_vb_stream_on(struct vb_queue *q)
 
         /* Must be zero now */
         if (q->owned_by_drv_count)
-            pr_warn("Driver did hold %d buf\n", q->owned_by_drv_count);
+            pr_warn("[VIN%d] Driver did hold %d buf\n", q->ch, q->owned_by_drv_count);
     }
 
     if (!list_empty(&q->done_list))
-        pr_warn("done_list is not empty!\n");
+        pr_warn("[VIN%d] done_list is not empty!\n", q->ch);
 
     return ret;
 }
@@ -303,7 +348,7 @@ int vin_vb_stream_off(struct vb_queue *q)
     u32 i;
 
     if (!g_vb_ops) {
-        pr_err("Should init VideoBuf ops first!\n");
+        pr_err("[VIN%d] Should init VideoBuf ops first!\n", q->ch);
         return -EPERM;
     }
 
@@ -312,18 +357,18 @@ int vin_vb_stream_off(struct vb_queue *q)
         g_vb_ops->stop_streaming(q);
 
     if (q->owned_by_drv_count) {
-        pr_warn("owned_by_drv_count is %d\n", q->owned_by_drv_count);
+        pr_warn("[VIN%d] owned_by_drv_count is %d\n", q->ch, q->owned_by_drv_count);
 
         for (i = 0; i < q->num_buffers; ++i)
             if (q->bufs[i].state == VB_BUF_STATE_ACTIVE) {
-                pr_warn("stop_streaming operation is leaving buf %d in active state\n", i);
+                pr_warn("[VIN%d] stop_streaming operation is leaving buf %d in active state\n", q->ch, i);
                 vin_vb_buffer_done(&q->bufs[i], VB_BUF_STATE_ERROR);
             }
 
         /* Must be zero now */
         if (q->owned_by_drv_count)
-            pr_warn("owned_by_drv_count should be 0, but %d\n",
-                    q->owned_by_drv_count);
+            pr_warn("[VIN%d] owned_by_drv_count should be 0, but %d\n",
+                    q->ch, q->owned_by_drv_count);
     }
 
     q->streaming = 0;
@@ -345,14 +390,14 @@ int vin_vb_stream_off(struct vb_queue *q)
 
     aicos_sem_reset(q->done, 0);
 
-    pr_debug("Stop steaming successfully\n");
+    pr_debug("[VIN%d] Stop steaming successfully\n", q->ch);
     return 0;
 }
 
 int vin_vb_init(struct vb_queue *q, const struct vb_ops *ops)
 {
     if (!q || !ops) {
-        pr_err("Invalid parameter: q %#lx, ops %#lx\n", (long)q, (long)ops);
+        pr_err("[VIN%d] Invalid parameter: q %#lx, ops %#lx\n", q->ch, (long)q, (long)ops);
         return -1;
     }
 
@@ -364,17 +409,13 @@ int vin_vb_init(struct vb_queue *q, const struct vb_ops *ops)
         q->done = aicos_sem_create(0);
 
     g_vb_ops = ops;
-
-#ifdef AIC_DVP_SUPPORT_DEMUX
-    q->ch = g_mpp_vin_ch;
-#endif
     return 0;
 }
 
 void vin_vb_deinit(struct vb_queue *q)
 {
     if (!q) {
-        pr_err("Invalid parameter: q %#lx\n", (long)q);
+        pr_err("[VIN%d] Invalid parameter: q %#lx\n", q->ch, (long)q);
         return;
     }
 

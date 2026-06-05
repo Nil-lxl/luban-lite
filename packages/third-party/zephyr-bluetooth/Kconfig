@@ -1,0 +1,191 @@
+# Kconfig file for package zephyr-bluetooth
+menuconfig LPKG_USING_ZEPHYR_BLUETOOTH
+    bool "zephyr-bluetooth: Bluetooth Stack"
+    select RT_USING_MESSAGEQUEUE
+    depends on !SMP
+    select LPKG_NET_BUF
+    default n
+    help
+        This option enables Bluetooth support.
+
+if LPKG_USING_ZEPHYR_BLUETOOTH
+
+    menu "General Kernel Options"
+
+        config MULTITHREADING
+            bool "Multi-threading"
+            default y
+
+        config NUM_PREEMPT_PRIORITIES
+            int "Number of preemptible priorities" if MULTITHREADING
+            default 0 if !MULTITHREADING
+            default 15
+            range 0 128
+
+        config NUM_COOP_PRIORITIES
+            int "Number of coop priorities" if MULTITHREADING
+            default 1 if !MULTITHREADING
+            default 16
+            range 0 128
+
+        config LPKG_ATOMIC_OPERATIONS_BUILTIN
+            bool "ATOMIC OPERATIONS BUILTIN"
+            default y
+
+        config LPKG_RISCV
+            bool "RISCV"
+            default y
+
+        config LPKG_LITTLE_ENDIAN
+            bool "LITTLE ENDIAN"
+            default y
+
+        source "packages/third-party/zephyr-bluetooth/modules/libsbc/Kconfig"
+        source "packages/third-party/zephyr-bluetooth/lib/net_buf/Kconfig"
+
+    endmenu
+
+    choice
+        prompt "Select ChipSet"
+        default LPKG_ZEPHYR_BLUETOOTH_CHIPSET_RTL8733
+        help
+            select the zephyr_polling chipset
+
+        config LPKG_ZEPHYR_BLUETOOTH_CHIPSET_RTL8733
+            bool "RTL8733"
+
+        config LPKG_ZEPHYR_BLUETOOTH_CHIPSET_AIC8800D40
+            bool "AIC8800D40"
+
+    endchoice
+
+    config LPKG_ZEPHYR_BLUETOOTH_CHIPSET
+        string
+        default "rtl8733"    if LPKG_ZEPHYR_BLUETOOTH_CHIPSET_RTL8733
+        default "aic8800d40"    if LPKG_ZEPHYR_BLUETOOTH_CHIPSET_AIC8800D40
+
+    menu "Bluetooth HCI Driver Options"
+        config LPKG_BT_UART
+            string "The uart device name"
+            default "uart7"
+
+        config LPKG_BT_H4
+            bool "H:4 UART"
+            default y
+            help
+                Bluetooth H:4 UART driver. Requires hardware flow control
+                lines to be available.
+
+        config LPKG_BT_H5
+            bool "H:5 UART [EXPERIMENTAL]"
+            select EXPERIMENTAL
+            default y
+            help
+                Bluetooth three-wire (H:5) UART driver. Implementation of HCI
+                Three-Wire UART Transport Layer.
+
+        config LPKG_BT_HCI_SETUP
+            bool "BT HCI SETUP"
+            default y
+            help
+                Enable the HCI vendor-specific Setup function.
+
+        config LPKG_BT_DRV_TX_STACK_SIZE
+            int "BT DRV TX STACK SIZE"
+            default 256
+            help
+                Stack size for the HCI driver's TX thread.
+
+        config LPKG_BT_DRV_RX_STACK_SIZE
+            int "BT DRV RX STACK SIZE"
+        	default 640 if (LPKG_BT_SPI || LPKG_BT_AMBIQ_HCI)
+        	default LPKG_BT_RX_STACK_SIZE if (LPKG_BT_H4 || LPKG_BT_HCI_RAW_H4)
+        	default 512
+        	help
+        	  Stack size for the HCI driver's RX thread.
+    endmenu
+
+    source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/Kconfig"
+
+    choice
+        prompt "Bluetooth Samples"
+        default LPKG_ZEPHYR_BLUETOOTH_SAMPLE_DISABLE
+        help
+            select the NimBLE samples
+
+        config LPKG_ZEPHYR_BLUETOOTH_SAMPLE_DISABLE
+            bool "Not enable sample"
+
+        config LPKG_ZEPHYR_BLUETOOTH_SAMPLE_A2DP_SINK
+            bool "A2DP sink demo"
+            select AIC_AUDIO_DRV
+
+        config LPKG_ZEPHYR_BLUETOOTH_SAMPLE_PERIPHERAL_HR
+            bool "BLE peripheral heartrate demo"
+            select AIC_AUDIO_DRV
+
+        config LPKG_ZEPHYR_BLUETOOTH_SAMPLE_BEACON
+            bool "BLE beacon"
+
+        config LPKG_ZEPHYR_BLUETOOTH_SAMPLE_BROADCASTER
+            bool "BLE broadcaster"
+
+        config LPKG_ZEPHYR_BLUETOOTH_SAMPLE_CENTRAL
+            bool "BLE central"
+
+    endchoice
+
+    if LPKG_ZEPHYR_BLUETOOTH_SAMPLE_A2DP_SINK
+        source "packages/third-party/zephyr-bluetooth/samples/bluetooth/classic/a2dp_sink/Kconfig"
+    endif
+
+    choice
+        prompt "Zephyr bluetooth log level"
+        default LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_INFO
+        help
+            select the ZEPHYR_BLUETOOTH log level
+
+        config LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_NONE
+            bool "none"
+
+        config LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_ERR
+            bool "error"
+
+        config LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_WARN
+            bool "warn"
+
+        config LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_INFO
+            bool "info"
+
+        config LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_DEBUG
+            bool "debug"
+
+    endchoice
+
+    config LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL
+        int
+        default 0 if LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_NONE
+        default 3 if LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_ERR
+        default 4 if LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_WARN
+        default 6 if LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_INFO
+        default 7 if LPKG_ZEPHYR_BLUETOOTH_DEBUG_LEVEL_DEBUG
+
+    choice
+        prompt "Version"
+        default LPKG_USING_ZEPHYR_BLUETOOTH_V440
+        help
+            Select the package version
+
+        config LPKG_USING_ZEPHYR_BLUETOOTH_V440
+            bool "v4.4.0"
+
+        config LPKG_USING_ZEPHYR_BLUETOOTH_LATEST_VERSION
+            bool "latest"
+    endchoice
+
+    config LPKG_ZEPHYR_BLUETOOTH_VER
+       string
+       default "v4.4.0"    if LPKG_USING_ZEPHYR_BLUETOOTH_V440
+       default "latest"    if LPKG_USING_ZEPHYR_BLUETOOTH_LATEST_VERSION
+
+endif

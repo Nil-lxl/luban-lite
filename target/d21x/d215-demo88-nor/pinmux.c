@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -11,11 +11,17 @@
 #include "board.h"
 #include <aic_utils.h>
 
+#ifdef AIC_NO_CONSOLE_SUSPEND
+#define KEEP_CONSOLE_IN_SUSPEND     FLAG_WAKEUP_SOURCE
+#else
+#define KEEP_CONSOLE_IN_SUSPEND     0
+#endif
+
 struct aic_pinmux aic_pinmux_config[] = {
 #ifdef AIC_USING_UART0
     /* uart0 */
-    {5, PIN_PULL_DIS, 3, "PA.0"},
-    {5, PIN_PULL_UP, 3, "PA.1"},
+    {5, PIN_PULL_DIS, 3, "PA.0", KEEP_CONSOLE_IN_SUSPEND},
+    {5, PIN_PULL_UP, 3, "PA.1", KEEP_CONSOLE_IN_SUSPEND},
 #endif
 #ifdef AIC_USING_UART1
     /* uart1 */

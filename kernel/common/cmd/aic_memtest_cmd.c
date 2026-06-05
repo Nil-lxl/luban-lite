@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -75,8 +75,12 @@ static int cmd_meminfo(int argc, char **argv)
 
 #ifdef AIC_SRAM_TOTAL_SIZE
     PRINT_MEM_ITEM_EX("SRAM S0 Total", __sram_s0_start, __sram_s0_end);
+#ifdef AIC_SRAM1_SW_EN
     PRINT_MEM_ITEM_EX("SRAM S1 SW", __sram_s1_sw_start, __sram_s1_sw_end);
+#endif
+#ifdef AIC_SRAM1_CMA_EN
     PRINT_MEM_ITEM_EX("SRAM S1 CMA", __sram_s1_cma_start, __sram_s1_cma_end);
+#endif
 #endif
 
 #ifdef AIC_SRAM_SIZE

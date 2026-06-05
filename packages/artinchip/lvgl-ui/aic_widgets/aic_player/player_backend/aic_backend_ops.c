@@ -79,9 +79,6 @@ static void aic_player_backend_destroy(void *ctx);
 static lv_res_t aic_player_backend_set_src(void *ctx, const char *src);
 static lv_res_t aic_player_backend_control(void *ctx, player_cmd_t cmd, void *data);
 
-/* Auxiliary drawing and format conversion functions */
-static int check_player_configuration(uint32_t layer);
-
 /* Core player functionality functions */
 static int player_alloc_image_buf(struct aic_player_ctx *aic_ctx);
 static int player_free_image_buf(struct aic_player_ctx *aic_ctx);
@@ -89,6 +86,8 @@ static int player_alloc_frame_buffer(struct aic_player_ctx *aic_ctx);
 static void player_free_frame_buffer(struct aic_player_ctx *aic_ctx);
 static uint8_t *player_get_image_date(struct aic_player_ctx *aic_ctx);
 static int player_select_layer(struct aic_player_ctx *aic_ctx);
+static int player_set_ui_alpha_global(struct aic_player_ctx *aic_ctx);
+static int player_config_check(struct aic_player_ctx *aic_ctx);
 static int player_check_hw_capability(uint32_t rotate, uint32_t scale_x, uint32_t scale_y);
 static void player_resource_cleanup(struct aic_player_ctx *aic_ctx);
 
@@ -189,12 +188,12 @@ static void aic_player_backend_destroy(void *ctx)
 
     player_decode_thread_destroy(aic_ctx);
 
-    player_resource_cleanup(aic_ctx);
-
     if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_VIDEO && aic_ctx->keep_last_frame) {
         int enable = 0;
         aic_player_control(aic_ctx->player, AIC_PLAYER_CMD_SET_VIDEO_RENDER_KEEP_LAST_FRAME, &enable);
     }
+
+    player_resource_cleanup(aic_ctx);
 
     if (aic_ctx->player)
         aic_player_destroy(aic_ctx->player);
@@ -204,8 +203,6 @@ static void aic_player_backend_destroy(void *ctx)
 
     if (ops)
         lv_mem_free(ops);
-
-    aic_ctx->image_data = NULL;
 }
 
 static lv_res_t aic_player_backend_set_src(void *ctx, const char *src)
@@ -215,8 +212,8 @@ static lv_res_t aic_player_backend_set_src(void *ctx, const char *src)
     lv_aic_player_t *player = (lv_aic_player_t *)player_ctx->obj;
     struct aic_player_ctx *aic_ctx = player_ctx->ctx;
 
-    if (!aic_ctx) {
-        LV_LOG_ERROR("aic_ctx is NULL");
+    if (!aic_ctx || !src) {
+        LV_LOG_ERROR("aic_ctx is NULL or src is NULL");
         return LV_RES_INV;
     }
 
@@ -257,8 +254,8 @@ static lv_res_t aic_player_backend_set_src(void *ctx, const char *src)
             aic_ctx->draw_layer = player->draw_layer;
         }
 
-        /* check the configuration */
-        if (check_player_configuration(aic_ctx->draw_layer) < 0)
+        player_set_ui_alpha_global(aic_ctx);
+        if (player_config_check(aic_ctx) != 0)
             goto src_failed;
     }
 
@@ -388,41 +385,6 @@ static lv_res_t aic_player_backend_control(void *ctx, player_cmd_t cmd, void *da
     }
 
     return res;
-}
-
-/* Auxiliary drawing and format conversion functions */
-static int check_player_configuration(uint32_t layer)
-{
-    /* check the configuration */
-    if (layer == LV_AIC_PLAYER_LAYER_UI_SINGLE_BUF ||
-        layer == LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF) {
-#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
-        LV_LOG_ERROR("Setting src is wrong, the configuration is incorrect.\n"
-                     "Please use command scons --menuconfig, and open the configuration according to the path:\n"
-                     "-----------------ArtInChip Luban-Lite SDK Configuration------------ \n"
-                     "Local packages options  ---> \n"
-                     "  ArtInChip packages options  ---> \n"
-                     "    [*] aic-mpp  ---> \n"
-                     "      [*] Enable player using external video render \n"
-                     "------------------------------------------------------------------ \n");
-        return -1;
-#endif
-    }
-    if (layer == LV_AIC_PLAYER_LAYER_VIDEO) {
-#ifdef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
-        LV_LOG_ERROR("Setting src is wrong, the configuration is incorrect.\n"
-                     "Please use command scons --menuconfig, and close the configuration according to the path:\n"
-                     "-----------------ArtInChip Luban-Lite SDK Configuration------------ \n"
-                     "Local packages options  ---> \n"
-                     "  ArtInChip packages options  ---> \n"
-                     "    [*] aic-mpp  ---> \n"
-                     "      [ ] Enable player using external video render\n"
-                     "------------------------------------------------------------------ \n");
-        return -1;
-#endif
-    }
-
-    return 0;
 }
 
 /* Core player functionality functions */
@@ -594,19 +556,84 @@ static int player_select_layer(struct aic_player_ctx *aic_ctx)
     if (aic_ctx->media_info.has_video == 1) {
         if (strcmp(PRJ_CHIP, "d12x") == 0) {
             draw_layer = LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF;
-        } else if ((strcmp(PRJ_CHIP, "d13x") == 0)) {
-#if LV_COLOR_DEPTH == 16
-            draw_layer = LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF;
+        } else if ((strcmp(PRJ_CHIP, "d13x") == 0) || (strcmp(PRJ_CHIP, "d21x") == 0) || (strcmp(PRJ_CHIP, "d12p") == 0)) {
+#if defined(AIC_MPP_PLAYER_VIDEO_EXT_RENDER)
+        draw_layer = LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF;
 #else
-            draw_layer = LV_AIC_PLAYER_LAYER_VIDEO;
-#endif
-        } else if ((strcmp(PRJ_CHIP, "d21x") == 0)) {
-            draw_layer = LV_AIC_PLAYER_LAYER_VIDEO;
+        draw_layer = LV_AIC_PLAYER_LAYER_VIDEO;
+#endif /* AIC_MPP_PLAYER_VIDEO_EXT_RENDER */
         }
     }
 #endif
 
     return draw_layer;
+}
+
+static int player_set_ui_alpha_global(struct aic_player_ctx *aic_ctx)
+{
+#if defined(AICFB_RGB565)
+    if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_VIDEO) {
+        struct aicfb_alpha_config alpha = {0};
+        struct mpp_fb *fb = NULL;
+        fb = mpp_fb_open();
+        if (!fb) {
+            LV_LOG_ERROR("Failed to open FB");
+            return -1;
+        }
+
+        alpha.layer_id = AICFB_LAYER_TYPE_UI;
+        alpha.enable = 1;
+        alpha.mode = 1;
+        alpha.value = 0;
+
+        if (mpp_fb_ioctl(fb, AICFB_UPDATE_ALPHA_CONFIG, &alpha) < 0) {
+            LV_LOG_ERROR("Failed to update alpha!\n");
+        }
+        mpp_fb_close(fb);
+    }
+#endif
+    return 0;
+}
+
+static int player_config_check(struct aic_player_ctx *aic_ctx)
+{
+    if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_VIDEO) {
+#if defined(AICFB_RGB565)
+        LV_LOG_WARN("UI sets global alpha zero to ensure video can be rendered.\n"
+                    "But the LVGL rendering logic has been modified, causing video to overlay the UI, which may lead to rendering abnormalities. \n"
+                    "This mode is only potentially used during the optimization phase. For other stages, \n"
+                    "it is recommended to follow the configuration below to ensure correct rendering.\n"
+                    "Please use command scons --menuconfig, and open the configuration according to the path:\n"
+                    "-----------------ArtInChip Luban-Lite SDK Configuration------------ \n"
+                    "Local packages options  ---> \n"
+                    "  ArtInChip packages options  ---> \n"
+                    "    [*] aic-mpp  ---> \n"
+                    "      [*] Enable player using external video render \n"
+                    "------------------------------------------------------------------ \n");
+#endif
+        return 0;
+    }
+
+    if (aic_ctx->draw_layer == LV_AIC_PLAYER_LAYER_UI_DOUBLE_BUF) {
+#ifdef PRJ_CHIP
+#ifndef AIC_MPP_PLAYER_VIDEO_EXT_RENDER
+        if (strcmp(PRJ_CHIP, "d12x") == 0) {
+            LV_LOG_ERROR("D12 can't nor render video:\n"
+                 "Please use command scons --menuconfig, and open the configuration according to the path:\n"
+                 "-----------------ArtInChip Luban-Lite SDK Configuration------------ \n"
+                 "Local packages options  ---> \n"
+                 "  ArtInChip packages options  ---> \n"
+                 "    [*] aic-mpp  ---> \n"
+                 "      [*] Enable player using external video render \n"
+                 "------------------------------------------------------------------ \n");
+            return -1;
+        }
+#endif
+#endif
+        return 0;
+    }
+
+    return 0;
 }
 
 static int player_check_hw_capability(uint32_t rotate, uint32_t scale_x, uint32_t scale_y)

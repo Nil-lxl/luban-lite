@@ -1,0 +1,106 @@
+# GATT Generic Access Service - default implementation
+#
+# Copyright (c) 2019-2025 Intel Corporation
+# Copyright (c) 2025 Koppel Electronic
+#
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig LPKG_BT_GAP_SVC
+	bool "GATT Generic Access Service"
+	default y
+	help
+	  Enable the default GATT Generic Access Service.
+	  Enabled by default provides basic GAP functionality.
+	  If disabled, it is the application responsibility to provide its own
+	  implementation of GAP service, otherwise the system is not Bluetooth
+	  qualification compliant.
+
+if LPKG_BT_GAP_SVC
+
+config LPKG_BT_DEVICE_NAME_GATT_WRITABLE
+	bool "Allow to write device name by remote GATT clients"
+	depends on LPKG_BT_DEVICE_NAME_DYNAMIC
+	default y
+	help
+	  Enabling this option allows remote GATT clients to write to device
+	  name GAP characteristic.
+
+if LPKG_BT_DEVICE_NAME_GATT_WRITABLE
+choice LPKG_BT_DEVICE_NAME_GATT_WRITABLE_SECURITY
+	prompt "Security requirements"
+	default LPKG_BT_DEVICE_NAME_GATT_WRITABLE_NONE if DEVICE_NAME_GATT_WRITABLE_NONE
+	default LPKG_BT_DEVICE_NAME_GATT_WRITABLE_AUTHEN if DEVICE_NAME_GATT_WRITABLE_AUTHEN
+	default LPKG_BT_DEVICE_NAME_GATT_WRITABLE_ENCRYPT if DEVICE_NAME_GATT_WRITABLE_ENCRYPT
+	default LPKG_BT_DEVICE_NAME_GATT_WRITABLE_ENCRYPT
+	help
+	  Select security requirements for writing device name by remote GATT
+	  clients.
+
+config LPKG_BT_DEVICE_NAME_GATT_WRITABLE_NONE
+	bool "No requirements"
+
+config LPKG_BT_DEVICE_NAME_GATT_WRITABLE_ENCRYPT
+	bool "Encryption required"
+
+config LPKG_BT_DEVICE_NAME_GATT_WRITABLE_AUTHEN
+	bool "Encryption and authentication required"
+
+endchoice  #LPKG_BT_DEVICE_NAME_GATT_WRITABLE_SECURITY
+
+config DEVICE_NAME_GATT_WRITABLE_NONE
+	select DEPRECATED
+	bool "No requirements [DEPRECATED]"
+	help
+	  This option is deprecated. Select LPKG_BT_DEVICE_NAME_GATT_WRITABLE_NONE instead.
+
+config DEVICE_NAME_GATT_WRITABLE_ENCRYPT
+	select DEPRECATED
+	bool "Encryption required [DEPRECATED]"
+	help
+	  This option is deprecated. Select LPKG_BT_DEVICE_NAME_GATT_WRITABLE_ENCRYPT instead.
+
+config DEVICE_NAME_GATT_WRITABLE_AUTHEN
+	select DEPRECATED
+	bool "Encryption and authentication required [DEPRECATED]"
+	help
+	  This option is deprecated. Select LPKG_BT_DEVICE_NAME_GATT_WRITABLE_AUTHEN instead.
+
+endif #LPKG_BT_DEVICE_NAME_GATT_WRITABLE
+
+config LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE
+	bool "Allow to write GAP Appearance by remote GATT clients"
+	depends on LPKG_BT_DEVICE_APPEARANCE_DYNAMIC
+	default y
+	help
+	  Enabling this option allows remote GATT clients to write to device
+	  appearance GAP characteristic.
+
+if LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE
+choice LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE_SECURITY
+	prompt "Security requirements"
+	default LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE_AUTHEN if DEVICE_APPEARANCE_GATT_WRITABLE_AUTHEN
+	default LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE_AUTHEN
+	help
+	  Select security requirements for writing device appearance by remote
+	  GATT clients.
+
+config LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE_NONE
+	bool "No requirements"
+
+config LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE_ENCRYPT
+	bool "Encryption required"
+
+config LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE_AUTHEN
+	bool "Encryption and authentication required"
+
+endchoice  #LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE_SECURITY
+
+config LPKG_DEVICE_APPEARANCE_GATT_WRITABLE_AUTHEN
+	select DEPRECATED
+	bool "Encryption and authentication required [DEPRECATED]"
+	help
+	  This option is deprecated. Select LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE_AUTHEN instead.
+
+endif #LPKG_BT_DEVICE_APPEARANCE_GATT_WRITABLE
+
+endif #LPKG_BT_GAP_SVC

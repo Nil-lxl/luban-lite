@@ -129,7 +129,7 @@ FPCLK(CLK_DCE, "dce", CLK_AHB0, PARENT("ahb0"), CLK_DCE_REG, ahb_gates, no_div, 
 FPCLK(CLK_USBD, "usb_dev", CLK_AHB0, PARENT("ahb0"), CLK_USB_DEV_REG, ahb_gates, no_div, 0);
 FPCLK(CLK_USBH0, "usb_host", CLK_AHB0, PARENT("ahb0"), CLK_USB_HOST_REG, ahb_gates, no_div, 0);
 FPCLK(CLK_USB_PHY0, "usb_phy", CLK_OSC24M, PARENT("osc24m"), CLK_USB_PHY_REG, mod_gates, no_div, 0);
-FPCLK(CLK_CANFD, "canfd", CLK_PLL_INT1, PARENT("pll_int1"), CLK_CANFD_REG,
+FPCLK(CLK_CANFD0, "canfd0", CLK_PLL_INT1, PARENT("pll_int1"), CLK_CANFD0_REG,
       pre_mod_ahb_gates, mod_div1, 0);
 FPCLK(CLK_XSPI, "xspi", CLK_PLL_FRA0, PARENT("pll_fra0"), CLK_XSPI_REG,
       pre_mod_ahb_axi_gates, mod_div2, 0);
@@ -304,7 +304,7 @@ const struct aic_clk_comm_cfg *aic_clk_cfgs[AIC_CLK_NUM] = {
     AIC_CLK_CFG(CLK_USBD),
     AIC_CLK_CFG(CLK_USBH0),
     AIC_CLK_CFG(CLK_USB_PHY0),
-    AIC_CLK_CFG(CLK_CANFD),
+    AIC_CLK_CFG(CLK_CANFD0),
     AIC_CLK_CFG(CLK_XSPI),
     AIC_CLK_CFG(CLK_QSPI0),
     AIC_CLK_CFG(CLK_QSPI1),

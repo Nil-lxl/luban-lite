@@ -7,6 +7,10 @@ if AIC_WIRELESS_LAN
         config AIC_WIRELESS_BT_PWR_GPIO
             string "Bt reset gpio"
             depends on AIC_WIRELESS_LAN
+
+        config AIC_WIRELESS_WIFI_WK_HOST_GPIO
+            string "wifi wakeup host gpio"
+            depends on AIC_WIRELESS_LAN
     endmenu
 endif
 

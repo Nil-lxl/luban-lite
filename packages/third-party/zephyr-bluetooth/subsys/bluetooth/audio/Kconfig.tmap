@@ -1,0 +1,43 @@
+# Bluetooth Audio - Telephony and Media Audio Profile (TMAP) options
+#
+# Copyright 2023 NXP
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+config LPKG_BT_TMAP_CG_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_INITIATOR && LPKG_BT_CAP_COMMANDER && LPKG_BT_BAP_UNICAST_CLIENT && \
+		  LPKG_BT_BAP_UNICAST_CLIENT_ASE_SRC > 0 && LPKG_BT_BAP_UNICAST_CLIENT_ASE_SNK > 0 && \
+		  LPKG_BT_VCP_VOL_CTLR && LPKG_BT_TBS)
+
+config LPKG_BT_TMAP_CT_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_ACCEPTOR && (LPKG_BT_ASCS_ASE_SNK > 0 || LPKG_BT_ASCS_ASE_SRC > 0))
+
+config LPKG_BT_TMAP_UMS_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_INITIATOR && LPKG_BT_CAP_COMMANDER && LPKG_BT_BAP_UNICAST_CLIENT && \
+		  LPKG_BT_BAP_UNICAST_CLIENT_ASE_SNK_COUNT > 0 && LPKG_BT_VCP_VOL_CTLR && LPKG_BT_MCS)
+
+config LPKG_BT_TMAP_UMR_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_ACCEPTOR && LPKG_BT_ASCS_ASE_SNK > 0 && LPKG_BT_VCP_VOL_REND)
+
+config LPKG_BT_TMAP_BMS_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_INITIATOR && LPKG_BT_BAP_BROADCAST_SOURCE)
+
+config LPKG_BT_TMAP_BMR_SUPPORTED
+	bool
+	default y if (LPKG_BT_CAP_ACCEPTOR && LPKG_BT_BAP_BROADCAST_SINK && LPKG_BT_VCP_VOL_REND)
+
+config LPKG_BT_TMAP
+	bool "Telephony and Media Audio Profile"
+	depends on LPKG_BT_CAP_ACCEPTOR || LPKG_BT_CAP_INITIATOR
+	help
+	  Enabling this will enable TMAP.
+
+#parent-module = BT
+#module = LPKG_BT_TMAP
+#module-str = "Telephony and Media Audio Profile"
+#source "subsys/logging/Kconfig.template.log_config_inherit"

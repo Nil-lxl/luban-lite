@@ -75,6 +75,11 @@ int drv_gpai_get_data_mode(int ch)
     case AIC_GPAI_OBTAIN_DATA_BY_CPU:
         printf("Starting CPU interrupt mode\n");
         break;
+#ifdef AIC_GPAI_DRV_DMA
+    case AIC_GPAI_OBTAIN_DATA_BY_DMA:
+        printf("Starting DMA mode\n");
+        break;
+#endif
     case AIC_GPAI_OBTAIN_DATA_BY_POLL:
         printf("Starting polling mode\n");
         break;
@@ -136,3 +141,43 @@ int drv_gpai_get_ch_info(struct aic_gpai_ch_info *chan_info)
     return EOK;
 }
 
+#ifdef AIC_GPAI_DRV_DMA
+int drv_gpai_config_dma(struct aic_dma_transfer_info *dma_info)
+{
+    if (!dma_info)
+        return -EINVAL;
+
+    struct aic_dma_transfer_info *chan_info;
+    chan_info = (struct aic_dma_transfer_info *)dma_info;
+    struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(chan_info->chan_id);
+
+    if (!chan || chan->obtain_data_mode == AIC_GPAI_OBTAIN_DATA_BY_CPU)
+        return -EINVAL;
+
+    chan->dma_rx_info.buf = chan_info->buf;
+    chan->dma_rx_info.buf_size = chan_info->buf_size;
+    chan->dma_rx_info.callback = chan_info->callback;
+    chan->dma_rx_info.callback_param = chan_info->callback_param;
+    hal_gpai_config_dma(chan);
+
+    return EOK;
+}
+
+int drv_gpai_get_dma_data(int ch)
+{
+    struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(ch);
+
+    hal_gpai_start_dma(chan);
+
+    return EOK;
+}
+
+int drv_gpai_stop_dma(int ch)
+{
+    struct aic_gpai_ch *chan = hal_gpai_ch_is_valid(ch);
+
+    hal_gpai_stop_dma(chan);
+
+    return EOK;
+}
+#endif

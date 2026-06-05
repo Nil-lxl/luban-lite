@@ -353,6 +353,9 @@ static int aicfb_suspend(const struct rt_device *device, rt_uint8_t mode)
     struct aicfb_info *fbi = device->user_data;
     struct platform_driver *de = fbi->de;
 
+    if (!aicfb_probed)
+        return 0;
+
     switch (mode)
     {
     case PM_SLEEP_MODE_IDLE:
@@ -389,6 +392,9 @@ static void aicfb_resume(const struct rt_device *device, rt_uint8_t mode)
 {
     struct aicfb_info *fbi = device->user_data;
     struct platform_driver *de = fbi->de;
+
+    if (!aicfb_probed)
+        return;
 
     switch (mode)
     {
@@ -653,7 +659,7 @@ int aicfb_probe(void)
     aicfb_update_alpha(fbi);
     aicfb_update_layer(fbi);
 
-#if defined(AIC_DISP_COLOR_BLOCK)
+#if defined(AIC_DISP_COLOR_BLOCK) || defined(AIC_DISP_BLACK_SCREEN)
     fbi->power_on = true;
     aicfb_enable_panel(fbi, AICFB_ON);
 #endif

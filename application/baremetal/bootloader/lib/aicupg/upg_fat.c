@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -24,6 +24,18 @@ static progress_cb g_progress_cb = NULL;
 void aicupg_fat_set_process_cb(progress_cb cb)
 {
     g_progress_cb = cb;
+}
+
+static void progress_and_status_update(aicupg_fat_write_status status)
+{
+    u32 percent;
+
+    if (g_progress_cb && image_size) {
+        percent = write_size * 100 / image_size;
+        if (percent == 100)
+            percent = 99; /* Ensure only one DONE point */
+        g_progress_cb(percent, status);
+    }
 }
 
 static void *upg_fat_malloc_align(struct fwc_info *fwc, u32 *size, size_t align)
@@ -69,7 +81,6 @@ static s32 media_device_write(struct dfs_fd *fd, struct fwc_meta *pmeta)
     s32 ret;
     ulong actread, off, total_len = 0;
     u64 start_us;
-    u32 percent;
 
     fwc = NULL;
     buf = NULL;
@@ -85,6 +96,17 @@ static s32 media_device_write(struct dfs_fd *fd, struct fwc_meta *pmeta)
     printf("    partition: %s programming ...\n", pmeta->partition);
     /*config fwc */
     fwc_meta_config(fwc, pmeta);
+
+    /* Update current device type and ID based on partition name */
+    if (memcmp(fwc->meta.name, "image.updater", 13) != 0) {
+        int dev_id;
+        enum upg_dev_type dev_type;
+
+        if (get_device_by_part_name(fwc->meta.partition, &dev_type, &dev_id) == 0) {
+            set_current_device_type(dev_type);
+            set_current_device_id(dev_id);
+        }
+    }
 
     /*start write data*/
     start_us = aic_get_time_us();
@@ -122,6 +144,7 @@ static s32 media_device_write(struct dfs_fd *fd, struct fwc_meta *pmeta)
         actread = dfs_file_read(fd, buf, len);
         if (actread != len && actread != remaining_size) {
             pr_err("Error:read file %s failed!\n", pmeta->name);
+            progress_and_status_update(AICUPG_FAT_WRITE_STATUS_RERROR);
             goto err;
         }
 
@@ -129,15 +152,14 @@ static s32 media_device_write(struct dfs_fd *fd, struct fwc_meta *pmeta)
         ret = media_data_write(fwc, buf, len);
         if (ret == 0) {
             pr_err("Error: media write failed!..\n");
+            progress_and_status_update(AICUPG_FAT_WRITE_STATUS_WERROR);
             goto err;
         }
         total_len += ret;
         offset += len;
 
         write_size += ret;
-        percent = write_size * 100 / image_size;
-        if (g_progress_cb)
-            g_progress_cb(percent);
+        progress_and_status_update(AICUPG_FAT_WRITE_STATUS_ONGOING);
     }
 
     /* write data end */
@@ -146,6 +168,7 @@ static s32 media_device_write(struct dfs_fd *fd, struct fwc_meta *pmeta)
     if (fwc->calc_partition_crc != pmeta->crc) {
         pr_err("calc partition crc:0x%x, expect partition crc:0x%x\n",
                fwc->calc_partition_crc, pmeta->crc);
+        progress_and_status_update(AICUPG_FAT_WRITE_STATUS_CRC32_ERROR);
         goto err;
     }
     /* show burn time */
@@ -219,7 +242,7 @@ s32 aicupg_fat_write(char *image_name, char *protection,
     }
 
     if (g_progress_cb)
-        g_progress_cb(0);
+        g_progress_cb(0, AICUPG_FAT_WRITE_STATUS_START);
     image_size = header->file_size;
 
     p = pmeta;
@@ -240,7 +263,7 @@ s32 aicupg_fat_write(char *image_name, char *protection,
         write_len += ret;
     }
     if (g_progress_cb)
-        g_progress_cb(100);
+        g_progress_cb(100, AICUPG_FAT_WRITE_STATUS_DONE);
 
     total_len = write_len;
     start_us = aic_get_time_us() - start_us;

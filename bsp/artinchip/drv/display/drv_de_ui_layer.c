@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -135,8 +135,10 @@ int ui_rect_disable(struct aic_de_comp *comp,
                   u32 layer_id, u32 rect_id)
 {
     de_ui_layer_rect_enable(comp->regs, rect_id, 0);
-    if (is_all_rect_win_disabled(comp, layer_id))
+    if (is_all_rect_win_disabled(comp, layer_id)) {
         de_ui_layer_enable(comp->regs, 0);
+        comp->layer_mask &= ~BIT(AICFB_LAYER_TYPE_UI);
+    }
     return 0;
 }
 
@@ -206,6 +208,7 @@ int config_ui_layer_rect(struct aic_de_comp *comp,
     if (is_all_rect_win_disabled(comp, layer_data->layer_id)) {
         de_set_ui_layer_format(comp->regs, format);
         de_ui_layer_enable(comp->regs, 1);
+        comp->layer_mask |= BIT(AICFB_LAYER_TYPE_UI);
     }
 
 #ifdef AIC_SCREEN_CROP

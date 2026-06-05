@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,8 +8,8 @@
 #include <aic_core.h>
 #include <aic_hal.h>
 
-extern void Default_Handler(void);
-extern void SysTick_Handler(void);
+extern void Default_Handler(int irq_num, void *data);
+extern void SysTick_Handler(int irq_num, void *data);
 
 void * g_irqvector[MAX_IRQ_ENTRY];
 void * g_irqdata[MAX_IRQ_ENTRY];
@@ -121,10 +121,11 @@ void drv_irq_unregister(uint32_t irq_num)
     if (irq_num >= MAX_IRQ_ENTRY)
             return;
 
-    g_irqvector[irq_num] = (void *)Default_Handler;
+    g_irqvector[irq_num] = Default_Handler;
     g_irqdata[irq_num] = NULL;
 }
 
+#if defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)
 static int cmd_list_irq(int argc, char **argv)
 {
     int i;
@@ -148,3 +149,4 @@ MSH_CMD_EXPORT_ALIAS(cmd_list_irq, list_irq, list system irq);
 #include "console.h"
 CONSOLE_CMD(list_irq, cmd_list_irq, "list system irq");
 #endif
+#endif // defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)

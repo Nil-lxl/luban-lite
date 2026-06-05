@@ -323,7 +323,7 @@ static int aic_touch_suspend(const struct rt_device *device, rt_uint8_t mode)
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
 #ifndef AIC_TOUCH_PANEL_WAKE_UP
-        touch->ops->touch_control(touch, RT_TOUCH_CTRL_POWER_OFF, NULL);
+        touch->ops->touch_control(touch, RT_TOUCH_CTRL_POWER_OFF, (void*)(rt_base_t)mode);
 #endif
         RT_UNUSED(touch);
         break;
@@ -348,7 +348,7 @@ static void aic_touch_resume(const struct rt_device *device, rt_uint8_t mode)
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
 #ifndef AIC_TOUCH_PANEL_WAKE_UP
-        touch->ops->touch_control(touch, RT_TOUCH_CTRL_POWER_ON, NULL);
+        touch->ops->touch_control(touch, RT_TOUCH_CTRL_POWER_ON, (void*)(rt_base_t)mode);
 #endif
         RT_UNUSED(touch);
         break;

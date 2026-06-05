@@ -1,0 +1,60 @@
+# Bluetooth Audio configuration options
+
+#
+# Copyright (c) 2020 Intel Corporation
+# Copyright (c) 2022-2026 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig LPKG_BT_AUDIO
+	bool "Bluetooth Audio support"
+	depends on UTF8
+	help
+	  This option enables Bluetooth Audio support. The specific
+	  features that are available may depend on other features
+	  that have been enabled in the stack, such as Periodic
+	  Advertisement for Broadcast and L2CAP Dynamic Channel
+	  for Unicast.
+
+if LPKG_BT_AUDIO
+
+config LPKG_BT_AUDIO_RX
+	bool
+    default y if (LPKG_BT_ASCS_ASE_SNK || LPKG_BT_BAP_UNICAST_CLIENT_ASE_SRC || LPKG_BT_BAP_BROADCAST_SINK)
+
+config LPKG_BT_AUDIO_TX
+	bool
+    default y if (LPKG_BT_ASCS_ASE_SRC || LPKG_BT_BAP_UNICAST_CLIENT_ASE_SNK || LPKG_BT_BAP_BROADCAST_SOURCE)
+
+config LPKG_BT_AUDIO_NOTIFY_RETRY_DELAY
+	int "Delay for notification sending retried attempt in 1.25 ms units"
+	range 6 3200
+	default 20
+	help
+	  This option sets the time in 1.25 ms units before the stack will
+	  retry to send notification that failed due to lack of TX buffers
+	  available.
+
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.bap"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.ccp"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.vocs"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.aics"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.vcp"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.micp"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.csip"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.tbs"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.mcs"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.has"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.mpl"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.mctl"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.cap"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.tmap"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.gmap"
+source "packages/third-party/zephyr-bluetooth/subsys/bluetooth/audio/Kconfig.pbp"
+
+#module = LPKG_BT_AUDIO
+#module-str = "Bluetooth Audio"
+#source "subsys/logging/Kconfig.template.log_config"
+
+endif # LPKG_BT_AUDIO

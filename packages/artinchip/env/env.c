@@ -855,6 +855,10 @@ static int bar_mmc_load_env_simple(void *buf, size_t size)
     dev_desc.lba_count = host->dev->card_capacity * 2;
     dev_desc.priv = host;
     parts = aic_disk_get_parts(&dev_desc);
+    if (!parts) {
+        pr_err("Not found SDMC%d partition info.\n", id);
+        return -1;
+    }
 
     if (dev_current == 0) {
         part = aic_part_get_byname(parts, AIC_ENV_PART_NAME);
@@ -892,6 +896,10 @@ static int bar_mmc_save_env_simple(void *buf, size_t size)
     dev_desc.lba_count = host->dev->card_capacity * 2;
     dev_desc.priv = host;
     parts = aic_disk_get_parts(&dev_desc);
+    if (!parts) {
+        pr_err("Not found SDMC%d partition info.\n", id);
+        return -1;
+    }
 
     if (dev_current == 0) {
         part = aic_part_get_byname(parts, AIC_ENV_REDUNDAND_PART_NAME);
@@ -1055,6 +1063,8 @@ static int flash_io(int mode)
         size = AIC_ENV_SIZE;
         ret = flash_env_read(buf, size);
     }
+    if (ret)
+        return ret;
 
 #ifndef KERNEL_BAREMETAL
     ret = env_unlock();
@@ -1271,6 +1281,7 @@ int fw_env_close(void)
     return ret;
 }
 
+#if defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)
 static int cmd_fw_printenv(int argc, char **argv)
 {
     int i, ret = 0;
@@ -1314,9 +1325,9 @@ static int cmd_fw_printenv(int argc, char **argv)
     return ret;
 }
 
-#ifndef KERNEL_BAREMETAL
+#if defined(RT_USING_FINSH)
 MSH_CMD_EXPORT_ALIAS(cmd_fw_printenv, fw_printenv, Print env);
-#else
+#elif defined(AIC_CONSOLE_BARE_DRV)
 CONSOLE_CMD(fw_printenv, cmd_fw_printenv, "Print env");
 #endif
 
@@ -1348,8 +1359,9 @@ fw_setenv_err:
     return ret;
 }
 
-#ifndef KERNEL_BAREMETAL
+#if defined(RT_USING_FINSH)
 MSH_CMD_EXPORT_ALIAS(cmd_fw_setenv, fw_setenv, Set env);
-#else
+#elif defined(AIC_CONSOLE_BARE_DRV)
 CONSOLE_CMD(fw_setenv, cmd_fw_setenv, "Set env");
 #endif
+#endif // defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)

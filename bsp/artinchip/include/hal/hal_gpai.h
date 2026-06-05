@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -27,6 +27,14 @@ enum aic_gpai_obtain_data_mode {
     AIC_GPAI_OBTAIN_DATA_BY_DO = 4
 };
 
+enum aic_gpai_event {
+    AIC_GPAI_EV_NONE = 0,
+    AIC_GPAI_EV_DRDY
+};
+
+struct aic_gpai_ch;
+typedef void (*aic_gpai_event_cb)(struct aic_gpai_ch *chan, enum aic_gpai_event ev);
+
 
 typedef void (*dma_callback)(void *dma_param);
 typedef void (*irq_callback)(void *cb_param);
@@ -38,6 +46,7 @@ struct aic_dma_transfer_info
 
     void *buf;
     int buf_size;
+    int smp_cnt;
     void *callback_param;
     dma_callback callback;
 };
@@ -82,13 +91,16 @@ struct aic_gpai_ch {
     u8 dma_port_id;
     struct aic_dma_transfer_info dma_rx_info;
     struct aic_gpai_irq_info irq_info;
+    aic_gpai_event_cb ev_cb;
 
     aicos_sem_t complete;
+    u8 enabled;
 };
 
 void aich_gpai_enable(int enable);
 void aich_gpai_ch_enable(u32 ch, int enable);
 int aich_gpai_ch_init(struct aic_gpai_ch *chan, u32 pclk);
+int aich_gpai_ch_deinit(struct aic_gpai_ch *chan);
 
 irqreturn_t aich_gpai_isr(int irq, void *arg);
 
@@ -102,4 +114,9 @@ void aich_gpai_status_show(struct aic_gpai_ch *chan);
 s32 hal_gpai_init(void);
 s32 hal_gpai_deinit(void);
 void hal_gpai_clk_get(struct aic_gpai_ch *chan);
+#ifdef AIC_GPAI_DRV_DMA
+void hal_gpai_config_dma(struct aic_gpai_ch *chan);
+void hal_gpai_start_dma(struct aic_gpai_ch *chan);
+void hal_gpai_stop_dma(struct aic_gpai_ch *chan);
+#endif
 #endif // end of _ARTINCHIP_HAL_GPAI_H_

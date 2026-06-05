@@ -67,6 +67,14 @@ heap_def_t heap_def[MAX_MEM_REGION] = {
         .end = (size_t)(&__dtcm_heap_end),
     },
     #endif
+    #if defined(AIC_SRAM0_SW_EN) && !defined(AIC_DEFAULT_SYS_HEAP_SRAM)
+    {
+        .name = "s0sw",
+        .type = MEM_SRAM0_SW,
+        .start = (size_t)(&__sram_s0_sw_heap_start),
+        .end = (size_t)(&__sram_s0_sw_heap_end),
+    },
+    #endif
     #ifdef AIC_SRAM1_CMA_EN
     {
         .name = "s1cma",
@@ -80,7 +88,7 @@ heap_def_t heap_def[MAX_MEM_REGION] = {
         .name = "s1sw",
         .type = MEM_SRAM1_SW,
         .start = (size_t)(&__sram_s1_sw_heap_start),
-        .end = (size_t)(&__sram_s1_sw_heap_end),
+        .end = (size_t)(&__sram_sw_s1_heap_end),
     },
     #endif
     #ifdef AIC_PSRAM_CMA_EN
@@ -91,7 +99,7 @@ heap_def_t heap_def[MAX_MEM_REGION] = {
         .end = (size_t)(&__psram_cma_heap_end),
     },
     #endif
-    #ifdef AIC_PSRAM_SW_EN
+    #if defined(AIC_PSRAM_SW_EN) && !defined(AIC_DEFAULT_SYS_HEAP_PSRAM)
     {
         .name = "psw",
         .type = MEM_PSRAM_SW,
@@ -125,6 +133,31 @@ heap_def_t heap_def[MAX_MEM_REGION] = {
         .end = (size_t)(&__sram_cma_heap_end),
     },
         #endif
+    #ifdef AIC_SRAM_SW_EN
+    {
+        .name = "ssw",
+        .type = MEM_SRAM_SW,
+        .start = (size_t)(&__sram_sw_heap_start),
+        .end = (size_t)(&__sram_sw_heap_end),
+    },
+    #endif
+    #ifdef AIC_PSRAM_CMA_EN
+    {
+        .name = "cma",
+        .type = MEM_PSRAM_CMA,
+        .start = (size_t)(&__psram_cma_heap_start),
+        .end = (size_t)(&__psram_cma_heap_end),
+    },
+    #endif
+#elif defined(AIC_CHIP_D12P)
+    #ifdef AIC_SRAM_CMA_EN
+    {
+        .name = "scma",
+        .type = MEM_SRAM_CMA,
+        .start = (size_t)(&__sram_cma_heap_start),
+        .end = (size_t)(&__sram_cma_heap_end),
+    },
+    #endif
     #ifdef AIC_SRAM_SW_EN
     {
         .name = "ssw",
@@ -268,18 +301,38 @@ void aic_tlsf_heap_init(void)
     size_t m_start;
 
     for (; i < MAX_MEM_REGION; i++) {
+#if AIC_PSRAM_SIZE
+#ifdef AIC_PSRAM_SW_EN
+#include <ram_param.h>
+    #if !defined(AIC_DEFAULT_SYS_HEAP_PSRAM)
+        if (heap_def[i].type == MEM_PSRAM_SW) {
+            heap_def[i].end += (aic_get_ram_size() - AIC_PSRAM_SIZE);
+        }
+    #else
+        if (heap_def[i].type == MEM_DEFAULT) {
+            heap_def[i].end += (aic_get_ram_size() - AIC_PSRAM_SIZE);
+        }
+    #endif
+#endif
+
+#elif defined(AIC_DRAM_TOTAL_SIZE)
+#include <ram_param.h>
+        if (heap_def[i].type == MEM_DEFAULT) {
+            heap_def[i].end += (aic_get_ram_size() - AIC_DRAM_TOTAL_SIZE);
+        }
+#endif
         m_start = heap_def[i].start;
         m_end = heap_def[i].end;
         if (m_start >= m_end) {
             pr_err("%s: region %d addr err. start = 0x%lx, end = 0x%lx\n",
                    __func__, i, (unsigned long)m_start, (unsigned long)m_end);
-            return;
+            continue;
         }
 
         heap = tlsf_create_with_pool((void *)m_start, (m_end - m_start));
         if (heap == NULL) {
             pr_err("%s: region %d tlsf_create_with_pool fial.\n", __func__, i);
-            return;
+            continue;
         }
 
         tlsf_heap[i].heap = heap;

@@ -72,7 +72,7 @@ menuconfig AICUPG_SUPPORT
 if AICUPG_SUPPORT
     config AICUPG_SINGLE_TRANS_BURN_CRC32_VERIFY
         bool "CRC32 verify transfer data"
-        default n
+        default y
 
     config AICUPG_FORCE_UPGRADE_SUPPORT
         bool "Force upgrading check during boot"
@@ -119,6 +119,11 @@ if AICUPG_SUPPORT
         int  "SDMC controller id for SD Card"
         default 1
         depends on AICUPG_SDCARD_ENABLE
+
+    config AICUPG_SDCARD_AUTO_REBOOT
+        bool "Auto reboot after SD CARD upgrading"
+        default n
+        depends on AICUPG_SDCARD_ENABLE && AIC_CHIP_D12P
 
     config AICUPG_UDISK_ENABLE
         bool "Upgrading by UDISK"

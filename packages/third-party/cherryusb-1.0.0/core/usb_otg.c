@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -19,7 +19,7 @@ struct usb_otg g_usb_otg;
 static int usb_otg_get_id(void);
 static void usb_otg_sw_mode(unsigned int mode);
 
-static void usb_otg_irq(void *args)
+static void usb_otg_irq(int irq_num, void *data)
 {
     struct usb_otg *d = &g_usb_otg;
 
@@ -85,6 +85,7 @@ static int usb_otg_id_detect_en(void)
     d->otg_thread = usb_osal_thread_create("usbh_enum", CONFIG_USBHOST_PSC_STACKSIZE, CONFIG_USBHOST_PSC_PRIO + 1, usbh_otg_thread, NULL);
     if (d->otg_thread == NULL) {
         USB_LOG_ERR("Failed to create hub thread\r\n");
+        usb_osal_sem_delete(d->waitsem);
         return -1;
     }
 
@@ -115,7 +116,8 @@ static void usb_otg_id_detect_dis(void)
 #if defined(KERNEL_RTTHREAD)
     rt_pin_irq_enable(pin, 0);
     rt_pin_detach_irq(pin);
-    usb_osal_thread_delete(d->otg_thread);
+    if (d->otg_thread)
+        usb_osal_thread_delete(d->otg_thread);
 #elif defined(KERNEL_BAREMETAL)
     unsigned int g, p;
     g = GPIO_GROUP(pin);
@@ -123,7 +125,8 @@ static void usb_otg_id_detect_dis(void)
     aicos_irq_disable(AIC_GPIO_TO_IRQ(pin));
     hal_gpio_disable_irq(g, p);
 #endif
-    usb_osal_sem_delete(d->waitsem);
+    if (d->waitsem)
+        usb_osal_sem_delete(d->waitsem);
 }
 
 static void usb_otg_set_vbus(unsigned char on)
@@ -135,7 +138,7 @@ static void usb_otg_set_vbus(unsigned char on)
 
     if (pin < 0) {
         USB_LOG_ERR("get vbus-en gpio err.\n");
-        return -1;
+        return;
     }
 
     g = GPIO_GROUP(pin);
@@ -457,6 +460,7 @@ int usb_otg_init(void)
     return ret;
 }
 
+#if defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)
 static void cmd_set_otg_mode_usage(void)
 {
     printf("Usage: set_otg_mode [auto/host/device]\n");
@@ -509,6 +513,7 @@ MSH_CMD_EXPORT_ALIAS(cmd_get_otg_mode, get_otg_mode, Get usb otg mode);
 CONSOLE_CMD(set_otg_mode, cmd_set_otg_mode, "Set usb otg mode");
 CONSOLE_CMD(get_otg_mode, cmd_get_otg_mode, "Get usb otg mode");
 #endif
+#endif // defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)
 
 #if defined(KERNEL_RTTHREAD)
 INIT_BOARD_EXPORT(usb_otg_init);

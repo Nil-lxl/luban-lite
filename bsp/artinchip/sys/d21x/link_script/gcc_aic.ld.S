@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,6 +10,11 @@
  ******************************************************************************
 
 0x40000000+----------+
+          |   CMA    |
+          |          |
+          | ge/ve/de |
+          |          |
+          +----------+
           |          |
           | Software |
           |          |
@@ -22,33 +27,25 @@
           |          |
           |          |
           |          |
-          +----------+
-          |   CMA    |
-          |          |
-          | ge/ve/de |
-          |          |
 0x43FFFFFF+----------+
  */
 
 #include "rtconfig.h"
 
-#ifdef CONFIG_ENABLE_ROM_API
-INCLUDE rom_api.lds
-#endif
-
 MEMORY
 {
     BROM        : ORIGIN = 0x00000000                                             , LENGTH = 64K
-    DRAM_SW     : ORIGIN = 0x40000000                                             , LENGTH = AIC_DRAM_TOTAL_SIZE - AIC_DRAM_CMA_SIZE - 0x100
-    DRAM_CMA    : ORIGIN = 0x40000000 + AIC_DRAM_TOTAL_SIZE - AIC_DRAM_CMA_SIZE   , LENGTH = AIC_DRAM_CMA_SIZE
+    DRAM_CMA    : ORIGIN = 0x40000000                                             , LENGTH = AIC_DRAM_CMA_SIZE
+    DRAM_SW     : ORIGIN = 0x40000000 + AIC_DRAM_CMA_SIZE                         , LENGTH = AIC_DRAM_TOTAL_SIZE - AIC_DRAM_CMA_SIZE - 0x100
 }
 
 PROVIDE (__dram_start             = 0x40000000);
 PROVIDE (__dram_end               = 0x40000000 + AIC_DRAM_TOTAL_SIZE);
-PROVIDE (__dram_sw_start          = __dram_start);
-PROVIDE (__dram_sw_end            = __dram_end - AIC_DRAM_CMA_SIZE);
-PROVIDE (__dram_cma_start         = __dram_sw_end);
-PROVIDE (__dram_cma_end           = __dram_end);
+
+PROVIDE (__dram_cma_start         = __dram_cma_heap_start);
+PROVIDE (__dram_cma_end           = 0x40000000 + AIC_DRAM_CMA_SIZE);
+PROVIDE (__dram_sw_start          = __dram_sw_heap_start);
+PROVIDE (__dram_sw_end            = 0x40000000 + AIC_DRAM_TOTAL_SIZE);
 PROVIDE (__dtb_pos_f              = __dram_end - 0x40000);
 
 PROVIDE (__dram_cma_heap_end      = __dram_cma_end);
@@ -57,15 +54,16 @@ PROVIDE (__dram_sw_heap_end       = __dram_sw_end);
 PROVIDE (__min_heap_size           = 0x200);
 PROVIDE (__heap_start              = __dram_sw_heap_start);
 PROVIDE (__heap_end                = __dram_sw_heap_end);
+
 PROVIDE (__cma_heap_start          = __dram_cma_heap_start);
 PROVIDE (__cma_heap_end            = __dram_cma_heap_end);
 
-REGION_ALIAS("REGION_TEXT"          , DRAM_SW);
-REGION_ALIAS("REGION_RODATA"        , DRAM_SW);
-REGION_ALIAS("REGION_DATA"          , DRAM_SW);
-REGION_ALIAS("REGION_BSS"           , DRAM_SW);
-REGION_ALIAS("REGION_DRAM_SW"       , DRAM_SW);
+REGION_ALIAS("REGION_TEXT"          , DRAM_CMA);
+REGION_ALIAS("REGION_RODATA"        , DRAM_CMA);
+REGION_ALIAS("REGION_DATA"          , DRAM_CMA);
+REGION_ALIAS("REGION_BSS"           , DRAM_CMA);
 REGION_ALIAS("REGION_DRAM_CMA"      , DRAM_CMA);
+REGION_ALIAS("REGION_DRAM_SW"       , DRAM_SW);
 
 ENTRY(Reset_Handler)
 SECTIONS
@@ -166,6 +164,56 @@ SECTIONS
   KEEP(*(.usbh_class_info))
   __usbh_class_info_end__ = .;
 
+#ifdef LPKG_USING_ZEPHYR_BLUETOOTH
+  /* zephyr bluetooth bt_l2cap_fixed_chan */
+  . = ALIGN(0x8) ;
+ _bt_l2cap_fixed_chan_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_l2cap_fixed_chan.static.*)));
+ _bt_l2cap_fixed_chan_list_end = .;
+
+  /* zephyr bluetooth bt_l2cap_br_fixed_chan */
+  . = ALIGN(0x8) ;
+ _bt_l2cap_br_fixed_chan_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_l2cap_br_fixed_chan.static.*)));
+ _bt_l2cap_br_fixed_chan_list_end = .;
+
+  /* zephyr bluetooth bt_conn_cb */
+  . = ALIGN(0x8) ;
+ _bt_conn_cb_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_conn_cb.static.*)));
+ _bt_conn_cb_list_end = .;
+
+  /* zephyr bluetooth bt_sco_conn_cb */
+  . = ALIGN(0x8) ;
+ _bt_sco_conn_cb_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_sco_conn_cb.static.*)));
+ _bt_sco_conn_cb_list_end = .;
+
+  /* zephyr bluetooth bt_sco_hci_cb */
+  . = ALIGN(0x8) ;
+ _bt_sco_hci_cb_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_sco_hci_cb.static.*)));
+ _bt_sco_hci_cb_list_end = .;
+
+  /* zephyr bluetooth bt_gatt_service_static */
+  . = ALIGN(0x8) ;
+ _bt_gatt_service_static_list_start = .;
+ KEEP(*(SORT_BY_NAME(._bt_gatt_service_static.static.*)));
+ _bt_gatt_service_static_list_end = .;
+
+  /* zephyr bluetooth net_buf_pool */
+  . = ALIGN(0x8) ;
+ _net_buf_pool_list_start = .;
+ KEEP(*(SORT_BY_NAME(._net_buf_pool.static.*)));
+ _net_buf_pool_list_end = .;
+
+  /* zephyr bluetooth k_mem_slab */
+  . = ALIGN(0x8) ;
+ _k_mem_slab_list_start = .;
+ KEEP(*(SORT_BY_NAME(._k_mem_slab.static.*)));
+ _k_mem_slab_list_end = .;
+ #endif
+
   . = ALIGN(0x8) ;
   __erodata = .;
   __rodata_end__ = .;
@@ -235,13 +283,6 @@ SECTIONS
   __bss_end__ = .;
  } > REGION_BSS
 
- ._dram_sw_sw_heap : {
-  . = ALIGN(0x8) ;
-  __dram_sw_heap_start = .;
-  . += __min_heap_size;
-  . = ALIGN(0x8) ;
- } > REGION_DRAM_SW AT > REGION_DRAM_SW
-
  .dram_cma : {
   . = ALIGN(0x8) ;
   __dram_cma_data_start = .;
@@ -250,4 +291,11 @@ SECTIONS
   __dram_cma_data_end = .;
   __dram_cma_heap_start = .;
  } > REGION_DRAM_CMA AT > REGION_DRAM_CMA
+
+ .dram_sw : {
+  . = ALIGN(0x8) ;
+  __dram_sw_heap_start = .;
+  . += __min_heap_size;
+  . = ALIGN(0x8) ;
+ } > REGION_DRAM_SW AT > REGION_DRAM_SW
 }

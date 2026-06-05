@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2021, RT-Thread Development Team
+ * Copyright (c) 2006-2026, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -138,6 +138,9 @@ static rt_bool_t pm_check_device_wakeup_is_enabled(const struct rt_device *dev)
 static int _pm_device_suspend(rt_uint8_t mode)
 {
     int index, ret = RT_EOK;
+    int rb_idx = 0, rb_start = 0;
+    int failed_normal = -1;
+    int failed_late = -1;
 
     for (index = 0; index < _pm.device_pm_number; index++)
     {
@@ -148,7 +151,10 @@ static int _pm_device_suspend(rt_uint8_t mode)
         {
             ret = _pm.device_pm[index].ops->suspend(_pm.device_pm[index].device, mode);
             if(ret != RT_EOK)
-                break;
+            {
+                failed_normal = index;
+                goto rollback_and_exit;
+            }
         }
     }
 
@@ -161,16 +167,90 @@ static int _pm_device_suspend(rt_uint8_t mode)
         {
             ret = _pm.device_pm_late[index].ops->suspend_late(_pm.device_pm_late[index].device, mode);
             if(ret != RT_EOK)
-                break;
+            {
+                failed_late = index;
+                goto rollback_and_exit;
+            }
         }
     }
 
-#ifdef AIC_NO_CONSOLE_SUSPEND
-        for (index = 0; index < _pm.device_pm_number; index++)
-                rt_kprintf("%s calls the suspend function.\n", _pm.device_pm[index].device->parent.name);
-#endif
-
     rt_pm_disable_pin_irq_nonwakeup();
+
+#ifdef AIC_NO_CONSOLE_SUSPEND
+    rt_kprintf("All devices suspended successfully.\n");
+    for (index = 0; index < _pm.device_pm_number; index++)
+    {
+        rt_kprintf("  [SUSPEND OK]   %s\n", _pm.device_pm[index].device->parent.name);
+    }
+    for (index = 0; index < _pm.device_pm_late_number; index++)
+    {
+        rt_kprintf("  [SUSPEND_LATE OK]   %s\n", _pm.device_pm_late[index].device->parent.name);
+    }
+#endif
+    return RT_EOK;
+
+rollback_and_exit:
+    if (failed_late >= 0)
+    {
+        for (rb_idx = failed_late - 1; rb_idx >= 0; rb_idx--)
+        {
+            if (pm_check_device_wakeup_is_enabled(_pm.device_pm_late[rb_idx].device))
+                continue;
+            if (_pm.device_pm_late[rb_idx].ops->resume_early != RT_NULL)
+                _pm.device_pm_late[rb_idx].ops->resume_early(_pm.device_pm_late[rb_idx].device, mode);
+        }
+    }
+
+    if (failed_normal >= 0 || failed_late >= 0)
+    {
+        rb_start = (failed_normal >= 0) ? failed_normal - 1 : _pm.device_pm_number - 1;
+        for (rb_idx = rb_start; rb_idx >= 0; rb_idx--)
+        {
+            if (pm_check_device_wakeup_is_enabled(_pm.device_pm[rb_idx].device))
+                continue;
+            if (_pm.device_pm[rb_idx].ops->resume != RT_NULL)
+                _pm.device_pm[rb_idx].ops->resume(_pm.device_pm[rb_idx].device, mode);
+        }
+    }
+#ifdef AIC_NO_CONSOLE_SUSPEND
+    if (failed_normal >= 0)
+    {
+        rt_kprintf("[SUSPEND FAILED] %s (ret=%d)\n",
+                   _pm.device_pm[failed_normal].device->parent.name, ret);
+    }
+    else if (failed_late >= 0)
+    {
+        rt_kprintf("[SUSPEND_LATE FAILED] %s (ret=%d)\n",
+                   _pm.device_pm_late[failed_late].device->parent.name, ret);
+    }
+    if (failed_normal >= 0)
+    {
+        for (int i = failed_normal - 1; i >= 0; i--)
+            rt_kprintf("  [RESUME] %s\n", _pm.device_pm[i].device->parent.name);
+    }
+    else if (failed_late >= 0)
+    {
+        for (int i = _pm.device_pm_number - 1; i >= 0; i--)
+            rt_kprintf("  [RESUME] %s\n", _pm.device_pm[i].device->parent.name);
+        for (int i = failed_late - 1; i >= 0; i--)
+            rt_kprintf("  [RESUME_EARLY] %s\n", _pm.device_pm_late[i].device->parent.name);
+    }
+    rt_kprintf("Suspend attempt list:\n");
+    for (index = 0; index < _pm.device_pm_number; index++)
+    {
+        if (index == failed_normal)
+            rt_kprintf("  [SUSPEND FAIL] %s\n", _pm.device_pm[index].device->parent.name);
+        else
+            rt_kprintf("  [SUSPEND OK]   %s\n", _pm.device_pm[index].device->parent.name);
+    }
+    for (index = 0; index < _pm.device_pm_late_number; index++)
+    {
+        if (index == failed_late)
+            rt_kprintf("  [SUSPEND_LATE FAIL] %s\n", _pm.device_pm_late[index].device->parent.name);
+        else
+            rt_kprintf("  [SUSPEND_LATE OK]   %s\n", _pm.device_pm_late[index].device->parent.name);
+    }
+#endif
 
     return ret;
 }
@@ -186,6 +266,9 @@ static void _pm_device_resume(rt_uint8_t mode)
     {
         if (_pm.device_pm_late[index].ops->resume_early != RT_NULL)
         {
+#ifdef AIC_NO_CONSOLE_SUSPEND
+            rt_kprintf("  [RESUME_EARLY] %s\n", _pm.device_pm_late[index].device->parent.name);
+#endif
             _pm.device_pm_late[index].ops->resume_early(_pm.device_pm_late[index].device, mode);
         }
     }
@@ -195,7 +278,7 @@ static void _pm_device_resume(rt_uint8_t mode)
         if (_pm.device_pm[index].ops->resume != RT_NULL)
         {
 #ifdef AIC_NO_CONSOLE_SUSPEND
-            rt_kprintf("%s calls the resume function.\n", _pm.device_pm[index].device->parent.name);
+            rt_kprintf("  [RESUME] %s\n", _pm.device_pm[index].device->parent.name);
 #endif
             _pm.device_pm[index].ops->resume(_pm.device_pm[index].device, mode);
         }
@@ -278,6 +361,7 @@ static rt_uint8_t _pm_select_sleep_mode(struct rt_pm *pm)
 
     mode = _pm_default_deepsleep;
     rt_uint8_t request_mode = _judge_sleep_mode();
+
     for (index = PM_SLEEP_MODE_NONE; index < PM_SLEEP_MODE_MAX; index ++)
     {
         if (pm->modes[index])
@@ -442,6 +526,8 @@ void pm_dump_wakeup_source(void)
 }
 #endif
 
+static const char *_pm_sleep_str[] = PM_SLEEP_MODE_NAMES;
+
 /**
  * This function changes the power sleep mode base on the result of selection
  */
@@ -474,7 +560,7 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
     }
     else
     {
-        rt_kprintf("Enter sleep mode (id:%d)\n", pm->sleep_mode);
+        rt_kprintf("Enter %s.\n", _pm_sleep_str[pm->sleep_mode]);
 
         /* Notify app will enter sleep mode */
         if (_pm_notify.notify)
@@ -485,15 +571,12 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
         int ret = _pm_device_suspend(pm->sleep_mode);
         if (ret != RT_EOK)
         {
-            _pm_device_resume(pm->sleep_mode);
             if (_pm_notify.notify)
                 _pm_notify.notify(RT_PM_EXIT_SLEEP, pm->sleep_mode, _pm_notify.data);
-            if (pm->sleep_mode > PM_SUSPEND_SLEEP_MODE)
-            {
-                pm->sleep_mode = PM_SUSPEND_SLEEP_MODE;
-            }
-            pm->ops->sleep(pm, pm->sleep_mode); /* suspend failed */
+
+            rt_pm_request(PM_SLEEP_MODE_NONE);
             rt_pm_exit_critical(level, pm->sleep_mode);
+            pm->sleep_mode = PM_SLEEP_MODE_NONE;
             return;
         }
 #else
@@ -544,7 +627,7 @@ static void _pm_change_sleep_mode(struct rt_pm *pm)
         pm_dump_wakeup_source();
         #endif
 
-        rt_kprintf("Wake up from sleep mode (id:%d)\n", pm->sleep_mode);
+        rt_kprintf("Wake up from %s.\n", _pm_sleep_str[pm->sleep_mode]);
 
         if (_pm_notify.notify)
             _pm_notify.notify(RT_PM_EXIT_SLEEP, pm->sleep_mode, _pm_notify.data);
@@ -1089,7 +1172,7 @@ int rt_pm_run_enter(rt_uint8_t mode)
 }
 
 #ifdef RT_USING_DEVICE_OPS
-const static struct rt_device_ops pm_ops =
+static const struct rt_device_ops pm_ops =
 {
     RT_NULL,
     RT_NULL,
@@ -1161,7 +1244,6 @@ void rt_system_pm_init(const struct rt_pm_ops *ops,
 #ifdef RT_USING_FINSH
 #include <finsh.h>
 
-static const char *_pm_sleep_str[] = PM_SLEEP_MODE_NAMES;
 static const char *_pm_run_str[] = PM_RUN_MODE_NAMES;
 
 static void rt_pm_release_mode(int argc, char **argv)
@@ -1357,6 +1439,46 @@ static void pm_sleep_release(int argc, char **argv)
     }
 }
 MSH_CMD_EXPORT(pm_sleep_release, pm_sleep_release module sleep_mode);
+
+void rt_pm_list_devices(int argc, char **argv)
+{
+    int i;
+
+    rt_kprintf("\n");
+    rt_kprintf("+-------+-----------------+--------+----------+\n");
+    rt_kprintf("|              PM Device List                 |\n");
+    rt_kprintf("+-------+-----------------+--------+----------+\n");
+
+    rt_kprintf("| Normal devices: %-2d                          |\n", _pm.device_pm_number);
+    rt_kprintf("+-------+-----------------+--------+----------+\n");
+    rt_kprintf("| Index | Name            | Flag   | Wakeup   |\n");
+    rt_kprintf("+-------+-----------------+--------+----------+\n");
+    for (i = 0; i < _pm.device_pm_number; i++)
+    {
+        rt_kprintf("| %5d | %-15s | 0x%-4x | %-8s |\n",
+                  i,
+                  _pm.device_pm[i].device->parent.name,
+                  _pm.device_pm[i].device->flag,
+                  (_pm.device_pm[i].device->flag & RT_DEVICE_FLAG_WAKEUP) ? "YES" : "NO");
+    }
+    rt_kprintf("+-------+-----------------+--------+----------+\n");
+
+    rt_kprintf("| Late devices: %-2d                            |\n", _pm.device_pm_late_number);
+    rt_kprintf("+-------+-----------------+--------+----------+\n");
+    rt_kprintf("| Index | Name            | Flag   | Wakeup   |\n");
+    rt_kprintf("+-------+-----------------+--------+----------+\n");
+    for (i = 0; i < _pm.device_pm_late_number; i++)
+    {
+        rt_kprintf("| %5d | %-15s | 0x%-4x | %-8s |\n",
+                  i,
+                  _pm.device_pm_late[i].device->parent.name,
+                  _pm.device_pm_late[i].device->flag,
+                  (_pm.device_pm_late[i].device->flag & RT_DEVICE_FLAG_WAKEUP) ? "YES" : "NO");
+    }
+    rt_kprintf("+-------+-----------------+--------+----------+\n");
+    rt_kprintf("\n");
+}
+MSH_CMD_EXPORT_ALIAS(rt_pm_list_devices, pm_list, List all PM registered devices);
 #endif
 
 static void rt_pm_dump_status(void)

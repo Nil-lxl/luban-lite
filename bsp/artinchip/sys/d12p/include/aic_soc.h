@@ -123,7 +123,7 @@ IRQn_Type;
 #define DCE_BASE                    0x10010000UL /* - 0x10010FFF,  4KB	,4KB	*/
 #define USB_DEV_BASE                0x10200000UL /* - 0x1020FFFF, 64KB	,--	*/
 #define USB_HOST0_BASE              0x10210000UL /* - 0x1021FFFF, 64KB	,--	*/
-#define CAN_FD                      0x102C0000UL /* - 0x102CFFFF, 64KB */
+#define CANFD0_BASE                 0x102C0000UL /* - 0x102CFFFF, 64KB */
 #define XSPI_BASE                   0x10300000UL /* - 0x10030FFF,  4KB	,4KB	*/
 #define QSPI0_BASE                  0x10400000UL /* - 0x1040FFFF, 64KB	,--	*/
 #define QSPI1_BASE                  0x10401000UL /* - 0x1041FFFF, 64KB	,256KB	*/

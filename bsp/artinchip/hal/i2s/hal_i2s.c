@@ -543,20 +543,20 @@ void hal_i2s_record_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
     switch (format->width)
     {
     case 8:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
-        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         break;
     case 16:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
-        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         break;
     case 24:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
-        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_3_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_3_BYTES;
+        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         break;
     case 32:
-        config.src_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
-        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+        config.dst_addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
         break;
     default:
         hal_log_err("I2S%ld not support %u sample rate\n",

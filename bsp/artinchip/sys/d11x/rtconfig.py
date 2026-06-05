@@ -99,7 +99,7 @@ if PLATFORM == 'gcc':
     if CPUNAME == 'e906' or CPUNAME == 'e907':
         DEVICE = ' -march=rv32imac' + ISA_TAG + '_xtheade -mabi=ilp32'
 
-    B_CFLAGS  += ' -c -g -ffunction-sections -fdata-sections -Wall -Werror -mcmodel=medlow'
+    B_CFLAGS  += ' -c -g -ffunction-sections -fdata-sections -Wall -mcmodel=medlow'
     B_AFLAGS  += ' -c' + ' -x assembler-with-cpp' + ' -D__ASSEMBLY__'
     CFLAGS  = DEVICE + B_CFLAGS + CFLAGS_DBG + ' -mno-dup-loop-header'
     AFLAGS  = DEVICE + B_AFLAGS + AFLAGS_DBG
@@ -109,7 +109,7 @@ if PLATFORM == 'gcc':
                     -Wno-error=declaration-missing-parameter-type -Wno-error=implicit-int'
     if PRJ_TOOLCHAIN_VER == 'V2.6.1':
         CFLAGS_GCC14 = ''
-    # CFLAGS += CFLAGS_GCC14
+    CFLAGS += CFLAGS_GCC14
 
     PRJ_KERNEL = os.getenv('PRJ_KERNEL')
     if PRJ_KERNEL == 'rt-thread':
@@ -133,7 +133,7 @@ if PLATFORM == 'gcc':
     M_CFLAGS  = M_DEVICE + B_CFLAGS + CFLAGS_DBG + ' -fPIC -shared'
     M_AFLAGS  = M_DEVICE + B_AFLAGS + AFLAGS_DBG
     M_CXXFLAGS = M_CFLAGS
-    # M_CFLAGS += CFLAGS_GCC14
+    M_CFLAGS += CFLAGS_GCC14
     M_LFLAGS  = M_DEVICE + ' -Wl,--gc-sections,-z,max-page-size=0x4 -shared -fPIC -nostartfiles -nostdlib -static-libgcc'
     M_POST_ACTION = M_STRIP + ' -R .hash $TARGET\n' + M_SIZE + ' $TARGET \n'
     M_BIN_PATH = ''

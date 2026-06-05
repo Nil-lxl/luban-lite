@@ -21,6 +21,7 @@ else:
 
 ins_src = 'assets/'
 install = [(ins_src, ins_dst)]
+install += [(ins_src, 'data')]
 
 group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_SLIDE_DEMO'], CPPPATH = CPPPATH,
         INSTALL = install)

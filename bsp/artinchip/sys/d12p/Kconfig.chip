@@ -174,13 +174,13 @@ config AIC_QSPI_DRV
     select RT_USING_QSPI if DRIVER_DRV_EN
     select RT_USING_SPI  if DRIVER_DRV_EN
 
-config AIC_QSPI_DRV_V11
+config AIC_QSPI_DRV_V34
     bool
     default y if AIC_QSPI_DRV
 
 config AIC_QSPI_DRV_VER
     string
-    default "11" if AIC_QSPI_DRV_V11
+    default "34" if AIC_QSPI_DRV_V34
 
 #--------------------------------------------
 # xspi driver global option
@@ -281,13 +281,13 @@ config AIC_RTC_DRV
     select RT_USING_RTC   if DRIVER_DRV_EN
     select RT_USING_ALARM if DRIVER_DRV_EN
 
-config AIC_RTC_DRV_V12
+config AIC_RTC_DRV_V121
     bool
     default y if AIC_RTC_DRV
 
 config AIC_RTC_DRV_VER
     string
-    default "12" if AIC_RTC_DRV_V12
+    default "121" if AIC_RTC_DRV_V121
 
 #--------------------------------------------
 # WDT driver global option
@@ -314,13 +314,13 @@ config AIC_SPIENC_DRV
     bool
     default n
 
-config AIC_SPIENC_DRV_V11
+config AIC_SPIENC_DRV_V20
     bool
-    default y if AIC_SPIENC_DRV
+    default y if AIC_SPIENC_DRV || LPKG_USING_AIC_SPIENC_AUTHORIZATION
 
 config AIC_SPIENC_DRV_VER
     string
-    default "11" if AIC_SPIENC_DRV_V11
+    default "20" if AIC_SPIENC_DRV_V20
 
 #--------------------------------------------
 # SDMC driver global option
@@ -509,6 +509,10 @@ config AIC_GPAI_CH_NUM
     int
     default 8 if AIC_GPAI_DRV_V22
 
+config AIC_GPAI_SUPPORT_DMA
+    bool
+    default y if AIC_GPAI_DRV
+
 config AIC_GPAI_CH_NUM_MASK
     hex
     default 0x7 if AIC_GPAI_DRV_V22
@@ -667,20 +671,20 @@ config AIC_MTOP_DRV_VER
     default "21" if AIC_MTOP_DRV_V21
 
 #--------------------------------------------
-# CAN driver global option
+# CANFD driver global option
 #--------------------------------------------
 
-config AIC_CAN_DRV
+config AIC_CANFD_DRV
     bool
     default n
 
-config AIC_CAN_DRV_V10
+config AIC_CANFD_DRV_V10
     bool
-    default y if AIC_CAN_DRV
+    default y if AIC_CANFD_DRV
 
-config AIC_CAN_DRV_VER
+config AIC_CANFD_DRV_VER
     string
-    default "10" if AIC_CAN_DRV_V10
+    default "10" if AIC_CANFD_DRV_V10
 
 #--------------------------------------------
 # CIR driver global option

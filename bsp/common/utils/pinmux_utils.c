@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -25,7 +25,8 @@
 
 extern const int aic_gpio_groups_list[];
 
-int list_pinmux(int argc, char *argv[])
+#if defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)
+static int list_pinmux(int argc, char *argv[])
 {
     unsigned int group, pin, func, i, j;
     pin_name_t pin_name, pin_name_max;
@@ -65,11 +66,13 @@ int list_pinmux(int argc, char *argv[])
     return 0;
 }
 
-#if defined(KERNEL_RTTHREAD)
+#if defined(RT_USING_FINSH)
 MSH_CMD_EXPORT_ALIAS(list_pinmux, list_pinmux, list pin function config);
-#elif defined(KERNEL_BAREMETAL)
+#elif defined(AIC_CONSOLE_BARE_DRV)
+#include <console.h>
 CONSOLE_CMD(list_pinmux, list_pinmux, "list pin function config");
 #endif
+#endif // defined(RT_USING_FINSH) || defined(AIC_CONSOLE_BARE_DRV)
 
 #ifdef LPKG_USING_FDTLIB
 /*
@@ -103,8 +106,8 @@ int pinmux_fdt_parse(void)
 {
     u8 group, pin, func, pull, strength;
     ofnode pinctrl, node;
-    int i, cell_cnt;
-    u32 pinmux;
+    int i, cell_cnt = 0;
+    u32 pinmux = 0;
 
     of_find_node_by_path("/soc/pinctrl", &pinctrl);
     if (pinctrl.offset < 0)

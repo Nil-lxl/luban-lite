@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,6 +15,17 @@ static inline int panel_dbi_command_stackbuf(struct aic_panel *panel, u32 code,
                     const u8 *data, size_t size)
 {
     return panel->callbacks.di_send_cmd((u32)code, 0, data, size);
+}
+
+int mipi_dbi_dcs_send(struct aic_panel *panel, const u8 *data, size_t size)
+{
+    if (size == 0)
+        return -EINVAL;
+
+    if (size == 1)
+        return panel_dbi_command(panel, data[0]);
+
+    return panel_dbi_command_stackbuf(panel, data[0], &data[1], size - 1);
 }
 
 int panel_dbi_commands_execute(struct aic_panel *panel,

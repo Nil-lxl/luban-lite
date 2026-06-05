@@ -6,6 +6,7 @@
  * Authors: weilin.peng@artinchip.com
  */
 #include <aic_core.h>
+#include <ram_param.h>
 #include <rtconfig.h>
 #include "board.h"
 
@@ -39,13 +40,16 @@ struct aic_memheap aic_memheaps[] = {
     {MEM_ITCM, "heap_itcm", (void *)&__itcm_heap_start, (void *)&__itcm_heap_end},
     {MEM_DTCM, "heap_dtcm", (void *)&__dtcm_heap_start, (void *)&__dtcm_heap_end},
 #endif
+#if defined(AIC_SRAM0_SW_EN) && !defined(AIC_DEFAULT_SYS_HEAP_SRAM)
+    {MEM_SRAM0_SW, "heap_sram0_sw", (void *)&__sram_s0_sw_heap_start, (void *)&__sram_s0_sw_heap_end},
+#endif
 #ifdef AIC_SRAM1_SW_EN
     {MEM_SRAM1_SW, "heap_sram1_sw", (void *)&__sram_s1_sw_heap_start, (void *)&__sram_s1_sw_heap_end},
 #endif
 #ifdef AIC_SRAM1_CMA_EN
     //{MEM_SRAM1_CMA, "heap_sram1_cma", (void *)&__sram_s1_cma_heap_start, (void *)&__sram_s1_cma_heap_end},
 #endif
-#ifdef AIC_PSRAM_SW_EN
+#if defined(AIC_PSRAM_SW_EN) && !defined(AIC_DEFAULT_SYS_HEAP_PSRAM)
     {MEM_PSRAM_SW, "heap_psram_sw", (void *)&__psram_sw_heap_start, (void *)&__psram_sw_heap_end},
 #endif
 #ifdef AIC_PSRAM_CMA_EN
@@ -63,6 +67,15 @@ void aic_memheap_init(void)
     int i = 0;
 
     for (i=0; i<sizeof(aic_memheaps)/sizeof(struct aic_memheap); i++) {
+#if AIC_PSRAM_SIZE
+#ifdef AIC_PSRAM_SW_EN
+    #if !defined(AIC_DEFAULT_SYS_HEAP_PSRAM)
+        if (aic_memheaps[i].type == MEM_PSRAM_SW) {
+            aic_memheaps[i].end_addr += (aic_get_ram_size() - AIC_PSRAM_SIZE);
+        }
+    #endif
+#endif
+#endif
         begin_align = RT_ALIGN((rt_ubase_t)aic_memheaps[i].begin_addr, RT_ALIGN_SIZE);
         end_align   = RT_ALIGN_DOWN((rt_ubase_t)aic_memheaps[i].end_addr, RT_ALIGN_SIZE);
         RT_ASSERT(end_align > begin_align);
@@ -115,6 +128,19 @@ void aic_memheap_free(int type, void *rmem)
     /* Exit critical zone */
     rt_mutex_release(&aic_memheaps[i].lock);
 }
+
+u32 aic_get_sys_heap_size(void)
+{
+#if AIC_PSRAM_SIZE
+#ifdef AIC_PSRAM_SW_EN
+    #if defined(AIC_DEFAULT_SYS_HEAP_PSRAM)
+    if (aic_get_ram_size() > AIC_PSRAM_SIZE)
+        return aic_get_ram_size() - AIC_PSRAM_SIZE;
+    #endif
+#endif
+#endif
+    return 0;
+}
 #endif
 
 /**
@@ -123,7 +149,7 @@ void aic_memheap_free(int type, void *rmem)
 void rt_hw_board_init(void)
 {
 #ifdef RT_USING_HEAP
-    rt_system_heap_init((void *)&__heap_start, (void *)&__heap_end);
+    rt_system_heap_init((void *)&__heap_start, (void *)&__heap_end + aic_get_sys_heap_size());
 #if (!defined(QEMU_RUN) && defined(RT_USING_MEMHEAP))
     aic_memheap_init();
 #endif

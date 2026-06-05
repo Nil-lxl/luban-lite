@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
 #if defined(KERNEL_RTTHREAD)
 #include <rtthread.h>
-#elif defined(KERNERL_UCOS_II)
+#elif defined(KERNEL_UCOS_II)
 #include "ucos_ii.h"
 #endif
 #include <aic_core.h>
@@ -15,7 +15,7 @@ extern void systick_handler(void);
 extern void xPortSysTickHandler(void);
 extern void OSTimeTick(void);
 
-void SysTick_Handler(void)
+void SysTick_Handler(int irq_num, void *data)
 {
     csi_clint_config(CORET_BASE, (drv_get_sys_freq() / CONFIG_SYSTICK_HZ), CORET_IRQn);
 

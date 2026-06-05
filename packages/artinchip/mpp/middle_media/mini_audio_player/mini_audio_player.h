@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,7 +15,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
 
 struct mini_audio_player;
 
@@ -34,7 +33,9 @@ struct mini_player_audio_info {
     s32 sample_rate;
 };
 
-struct mini_audio_player* mini_audio_player_create(void);
+typedef void (*pcm_data_callback_t)(void *user_data, void *pcm_data, int byte_size);
+
+struct mini_audio_player *mini_audio_player_create(void);
 
 int mini_audio_player_destroy(struct mini_audio_player *player);
 
@@ -48,13 +49,17 @@ int mini_audio_player_pause(struct mini_audio_player *player);
 
 int mini_audio_player_resume(struct mini_audio_player *player);
 
-int mini_audio_player_get_media_info(struct mini_audio_player *player,struct mini_player_audio_info *audio_info);
+int mini_audio_player_get_media_info(struct mini_audio_player *player,
+                                     struct mini_player_audio_info *audio_info);
 
-int mini_audio_player_set_volume(struct mini_audio_player *player,int vol);
+int mini_audio_player_set_volume(struct mini_audio_player *player, int vol);
 
-int mini_audio_player_get_volume(struct mini_audio_player *player,int *vol);
+int mini_audio_player_get_volume(struct mini_audio_player *player, int *vol);
 
 int mini_audio_player_get_state(struct mini_audio_player *player);
+
+void mini_audio_player_set_pcm_callback(struct mini_audio_player *player,
+                                        pcm_data_callback_t callback, void *user_data);
 
 #ifdef __cplusplus
 }

@@ -374,6 +374,9 @@ class LVGLCompressData:
                  cf: ColorFormat,
                  method: CompressMethod,
                  raw_data: bytes = b''):
+        if cf == ColorFormat.UNKNOWN:
+            raise ParameterError("Cannot compress image with UNKNOWN color format")
+
         self.blk_size = (cf.bpp + 7) // 8
         self.compress = method
         self.raw_data = raw_data
@@ -386,7 +389,8 @@ class LVGLCompressData:
 
         if self.compress == CompressMethod.RLE:
             # RLE compression performs on pixel unit, pad data to pixel unit
-            pad = b'\x00' * (self.blk_size - self.raw_data_len % self.blk_size)
+            remainder = self.raw_data_len % self.blk_size
+            pad = b'\x00' * ((self.blk_size - remainder) % self.blk_size)
             self.raw_data_len += len(pad)
             compressed = RLEImage().rle_compress(raw_data + pad, self.blk_size)
         elif self.compress == CompressMethod.LZ4:
@@ -608,14 +612,7 @@ class LVGLImage:
         compressed = LVGLCompressData(self.cf, compress, self.data)
 
         header = f'''
-#if defined(LV_LVGL_H_INCLUDE_SIMPLE)
 #include "lvgl.h"
-#elif defined(LV_BUILD_TEST)
-#include "../lvgl.h"
-#else
-#include "lvgl/lvgl.h"
-#endif
-
 
 #ifndef LV_ATTRIBUTE_MEM_ALIGN
 #define LV_ATTRIBUTE_MEM_ALIGN
@@ -1027,6 +1024,7 @@ class OutputFormat(Enum):
     BIN_FILE = "BIN"
     RAW_DATA = "RAW"  # option of not writing any file
     PNG_FILE = "PNG"  # convert to lvgl image and then to png
+    RAW_JPEG = "RAW_JPEG"  # output raw JPEG data as C array
 
 
 class PNGConverter:
@@ -1062,19 +1060,87 @@ class PNGConverter:
     def convert(self):
         output = []
         for f in self.files:
-            img = LVGLImage().from_png(f, self.cf, background=self.background)
-            img.adjust_stride(align=self.align)
-            output.append((f, img))
-            if self.ofmt == OutputFormat.BIN_FILE:
-                img.to_bin(self._replace_ext(f, ".bin"),
-                           compress=self.compress)
-            elif self.ofmt == OutputFormat.C_ARRAY:
-                img.to_c_array(self._replace_ext(f, ".c"),
+            if self.ofmt == OutputFormat.RAW_JPEG:
+                # Raw JPEG mode: read file directly and output C array
+                self._convert_raw_jpeg(f)
+                output.append((f, None))
+            else:
+                img = LVGLImage().from_png(f, self.cf, background=self.background)
+                img.adjust_stride(align=self.align)
+                output.append((f, img))
+                if self.ofmt == OutputFormat.BIN_FILE:
+                    img.to_bin(self._replace_ext(f, ".bin"),
                                compress=self.compress)
-            elif self.ofmt == OutputFormat.PNG_FILE:
-                img.to_png(self._replace_ext(f, ".png"))
+                elif self.ofmt == OutputFormat.C_ARRAY:
+                    img.to_c_array(self._replace_ext(f, ".c"),
+                                   compress=self.compress)
+                elif self.ofmt == OutputFormat.PNG_FILE:
+                    img.to_png(self._replace_ext(f, ".png"))
 
         return output
+
+    def _convert_raw_jpeg(self, filename: str):
+        """Convert JPEG file to C array format"""
+        with open(filename, 'rb') as f:
+            data = f.read()
+
+        # Try to get image dimensions (requires PIL library)
+        width, height = 0, 0
+        try:
+            from PIL import Image
+            with Image.open(filename) as img:
+                width, height = img.size
+        except ImportError:
+            logging.warning("PIL not available, cannot get image dimensions")
+        except Exception as e:
+            logging.warning(f"Failed to get image dimensions: {e}")
+
+        varname = path.basename(filename).split('.')[0]
+        varname = varname.replace("-", "_").replace(".", "_")
+
+        output_path = self._replace_ext(filename, ".c")
+
+        # Ensure output directory exists
+        output_dir = path.dirname(output_path)
+        if output_dir and not path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        # Generate C file content
+        header = f'''#include "lvgl.h"
+
+// JPEG image: {path.basename(filename)}
+// Size: {width}x{height}, {len(data)} bytes
+
+static const uint8_t {varname}_data[] = {{
+'''
+
+        # Write hexadecimal data
+        data_str = ""
+        for i, b in enumerate(data):
+            if i % 16 == 0:
+                data_str += "\n    "
+            data_str += f"0x{b:02x}, "
+
+        ending = f'''
+}};
+
+const lv_image_dsc_t {varname} = {{
+    .header.magic = LV_IMAGE_HEADER_MAGIC,
+    .header.cf = LV_COLOR_FORMAT_RAW,
+    .header.flags = 0,
+    .header.w = {width},
+    .header.h = {height},
+    .header.stride = 0,
+    .data_size = sizeof({varname}_data),
+    .data = {varname}_data,
+}};
+
+'''
+
+        with open(output_path, "w") as f:
+            f.write(header + data_str + ending)
+
+        logging.info(f"Generated raw JPEG C array: {output_path}")
 
 
 def main():
@@ -1082,7 +1148,7 @@ def main():
     parser.add_argument('--ofmt',
                         help="output filename format, C or BIN",
                         default="BIN",
-                        choices=["C", "BIN", "PNG"])
+                        choices=["C", "BIN", "PNG", "RAW_JPEG"])
     parser.add_argument(
         '--cf',
         help=("bin image color format, use AUTO for automatically "
@@ -1123,7 +1189,12 @@ def main():
     if path.isfile(args.input):
         files = [args.input]
     elif path.isdir(args.input):
-        files = list(Path(args.input).rglob("*.[pP][nN][gG]"))
+        if args.ofmt == "RAW_JPEG":
+            # RAW_JPEG mode supports JPG/JPEG files
+            files = list(Path(args.input).rglob("*.[jJ][pP][gG]")) + \
+                    list(Path(args.input).rglob("*.[jJ][pP][eE][gG]"))
+        else:
+            files = list(Path(args.input).rglob("*.[pP][nN][gG]"))
     else:
         raise BaseException(f"invalid input: {args.input}")
 
@@ -1150,7 +1221,8 @@ def main():
                              keep_folder=False)
     output = converter.convert()
     for f, img in output:
-        logging.info(f"len: {img.data_len} for {path.basename(f)} ")
+        if img is not None:
+            logging.info(f"len: {img.data_len} for {path.basename(f)} ")
 
     print(f"done {len(files)} files")
 

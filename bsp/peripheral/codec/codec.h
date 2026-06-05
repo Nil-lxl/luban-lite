@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,20 +15,20 @@ extern struct codec *register_codec;
 struct codec;
 
 struct codec_ops {
-    int     (*init)(struct codec *codec);
-    int     (*start)(struct codec *codec, i2s_stream_t stream);
-    int     (*stop)(struct codec *codec, i2s_stream_t stream);
-    int     (*set_protocol)(struct codec *codec, i2s_format_t *format);
-    int     (*set_polarity)(struct codec *codec, i2s_format_t *format);
-    int     (*set_channel)(struct codec *codec, i2s_format_t *format);
-    int     (*set_sample_width)(struct codec *codec, i2s_format_t *format);
-    int     (*set_sample_rate)(struct codec *codec, i2s_format_t *format);
-    int     (*set_sclk)(struct codec *codec, i2s_format_t *format);
-    int     (*set_mclk)(struct codec *codec, i2s_format_t *format);
-    void    (*set_volume)(struct codec *codec, uint8_t volume);
+    int (*init)(struct codec *codec);
+    int (*start)(struct codec *codec, i2s_stream_t stream);
+    int (*stop)(struct codec *codec, i2s_stream_t stream);
+    int (*set_protocol)(struct codec *codec, i2s_format_t *format);
+    int (*set_polarity)(struct codec *codec, i2s_format_t *format);
+    int (*set_channel)(struct codec *codec, i2s_format_t *format);
+    int (*set_sample_width)(struct codec *codec, i2s_format_t *format);
+    int (*set_sample_rate)(struct codec *codec, i2s_format_t *format);
+    int (*set_sclk)(struct codec *codec, i2s_format_t *format);
+    int (*set_mclk)(struct codec *codec, i2s_format_t *format);
+    void (*set_volume)(struct codec *codec, uint8_t volume);
     uint8_t (*get_volume)(struct codec *codec);
-    void    (*pa_power)(struct codec *codec, uint8_t enable);
-    void    (*dump_reg)(struct codec *codec);
+    void (*pa_power)(struct codec *codec, uint8_t enable);
+    void (*dump_reg)(struct codec *codec);
 };
 
 struct codec {

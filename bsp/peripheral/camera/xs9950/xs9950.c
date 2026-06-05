@@ -769,6 +769,35 @@ static const struct rt_device_ops xs9950_ops = {
 };
 #endif
 
+#ifdef RT_USING_PM
+static int xs9950_pm_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    return RT_EOK;
+}
+
+static void xs9950_pm_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct xs9950_dev *sensor = (struct xs9950_dev *)device;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_LIGHT:
+        break;
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        sensor->pwdn_pin = camera_pwdn_pin_get();
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops xs9950_pm_ops =
+{
+    SET_DEVICE_PM_OPS(xs9950_pm_suspend, xs9950_pm_resume)
+    NULL,
+};
+#endif /* RT_USING_PM */
+
 /**
  * @brief Driver registration
  */
@@ -785,6 +814,11 @@ int rt_hw_xs9950_init(void)
 
     g_xs_dev.dev.type = RT_Device_Class_CAMERA;
     rt_device_register(&g_xs_dev.dev, CAMERA_DEV_NAME, 0);
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&g_xs_dev.dev, &xs9950_pm_ops);
+#endif
+
 #ifdef XS9950_INTERRUPT
     // Register interrupt (assuming IRQ pin is configured)
     rt_pin_attach_irq(camera_irq_pin_get(), PIN_IRQ_MODE_FALLING, xs9950_irq_handler, &g_xs_dev);

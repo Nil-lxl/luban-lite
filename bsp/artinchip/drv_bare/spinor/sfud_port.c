@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -493,6 +493,7 @@ sfud_flash *sfud_probe(u32 spi_bus)
 #endif
 
     mtd = malloc(sizeof(*mtd));
+    memset(mtd, 0, sizeof(*mtd));
     mtd->name = strdup("nor0");
     mtd->name[3] += spi_bus;
     mtd->start = 0;
@@ -517,6 +518,7 @@ sfud_flash *sfud_probe(u32 spi_bus)
             p->attr = PART_ATTR_MTD;
 
         mtd = malloc(sizeof(*mtd));
+        memset(mtd, 0, sizeof(*mtd));
         mtd->name = strdup(p->name);
         mtd->start = p->start;
         mtd->size = p->size;

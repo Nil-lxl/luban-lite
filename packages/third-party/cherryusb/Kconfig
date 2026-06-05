@@ -713,8 +713,6 @@ if LPKG_USING_CHERRYUSB
                     bool
                     prompt "Use display template"
                     default n
-                    select LPKG_USING_AIC_AUTHORIZATION
-                    select AIC_USING_CE
                 if LPKG_CHERRYUSB_DEVICE_DISPLAY_TEMPLATE
                     choice
                         prompt "select USB coding format"

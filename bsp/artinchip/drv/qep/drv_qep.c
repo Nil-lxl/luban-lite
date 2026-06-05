@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -18,6 +18,7 @@
 struct aic_qep {
     struct rt_pulse_encoder_device rtdev;
     struct aic_qep_data *data;
+    rt_bool_t qep_clk_pm_flag;
 };
 
 static struct aic_qep *g_qep[AIC_QEP_CH_NUM];
@@ -138,6 +139,75 @@ static struct rt_pulse_encoder_ops aic_qep_ops =
     .control = aic_qep_control,
 };
 
+#ifdef RT_USING_PM
+static int drv_qep_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_qep *qep_dev = (struct aic_qep *)device;
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        if (hal_clk_is_enabled(CLK_PWMCS)) {
+#ifdef AIC_PM_DRV_V15
+            hal_clk_disable_assertrst(CLK_PWMCS);
+#else
+            hal_clk_disable(CLK_PWMCS);
+#endif
+            qep_dev->qep_clk_pm_flag = RT_TRUE;
+        }
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
+static void drv_qep_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_qep *qep_dev = (struct aic_qep *)device;
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+#if defined (AIC_QEP_DRV_V10)
+        hal_clk_set_freq(CLK_PWMCS, QEP_CLK_RATE);
+#elif defined (AIC_QEP_DRV_V11)
+        hal_clk_set_freq(CLK_PWMCS_SDFM, QEP_CLK_RATE);
+#endif
+        if (qep_dev->qep_clk_pm_flag && !hal_clk_is_enabled(CLK_PWMCS)) {
+#ifdef AIC_PM_DRV_V15
+            hal_clk_enable_deassertrst(CLK_PWMCS);
+#else
+            hal_clk_enable(CLK_PWMCS);
+#endif
+        }
+        if (qep_dev->qep_clk_pm_flag)
+            qep_dev->qep_clk_pm_flag = RT_FALSE;
+
+#ifdef AIC_PM_DRV_V15
+        aic_qep_init((struct rt_pulse_encoder_device *)device);
+#endif
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops drv_qep_pm_ops =
+{
+    SET_DEVICE_PM_OPS(drv_qep_suspend, drv_qep_resume)
+    NULL,
+};
+#endif
+
 irqreturn_t aic_qep_irq(int irq, void *arg)
 {
     u32 global_stat;
@@ -187,6 +257,10 @@ static rt_err_t aic_qep_probe(struct aic_qep_data *pdata)
         LOG_E("%s register failed", aic_qep_device_name);
         goto err;
     }
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&qep->rtdev.parent, &drv_qep_pm_ops);
+#endif
 
     return ret;
 

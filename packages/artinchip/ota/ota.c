@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,6 +29,7 @@
 #include <burn.h>
 #include <ctype.h>
 #include <rtdbg.h>
+#include "firmware_security.h"
 
 #if defined(OTA_DATA_DIRECT) || defined(OTA_RODATA_DIRECT)
 #include <dfs_fs.h>
@@ -111,6 +112,7 @@ static struct fileinfo finfo = { 0 }; /* cpio file info */
 /*for ota check*/
 u8 g_ota_read_buf[OTA_BURN_LEN] = { 0 };
 unsigned int g_ota_read_sum = 0;
+unsigned int g_ota_write_sum = 0;
 
 unsigned int cpio_file_checksum(unsigned char *buffer, unsigned int length)
 {
@@ -458,6 +460,12 @@ download_buf_pop_last:
 
     fhdr->sum += cpio_file_checksum((unsigned char *)bhdr->buf, burn_len);
 
+#if defined(OTA_SECURITY_UPGRADE)
+    firmware_security_decrypt((unsigned char *)bhdr->buf, burn_len);
+#endif
+
+    g_ota_write_sum += cpio_file_checksum((unsigned char *)bhdr->buf, burn_len);
+
     /* Write the data to the corresponding partition address */
     ret = aic_ota_part_write(fhdr->begin_offset, (const uint8_t *)bhdr->buf,
                              burn_len);
@@ -700,6 +708,7 @@ int ota_init(void)
     memset(&finfo, 0, sizeof(struct fileinfo));
 
     g_ota_read_sum = 0;
+    g_ota_write_sum = 0;
     memset(g_ota_read_buf, 0, OTA_BURN_LEN);
 
 #ifdef OTA_DOWNLOADER_DEBUG
@@ -818,6 +827,10 @@ int ota_shard_download_fun(char *buffer, int length)
 
             LOG_I("Start upgrade %s!", fhdr.filename);
 
+#if defined(OTA_SECURITY_UPGRADE)
+            firmware_security_init();
+#endif
+
             ret = download_buf_pop(&bhdr, &fhdr);
             if (ret < 0) {
                 LOG_E("download_buf_pop error! len = %d\n", len);
@@ -859,18 +872,19 @@ int ota_shard_download_fun(char *buffer, int length)
                 LOG_I("fhdr.size = %d fhdr.begin_offset = %d\n", fhdr.size,
                       fhdr.begin_offset);
 #endif
-                if ((fhdr.sum == fhdr.chksum) && (g_ota_read_sum == fhdr.chksum)) {
+                if ((fhdr.sum == fhdr.chksum) && (g_ota_read_sum == g_ota_write_sum)) {
 #ifdef OTA_DOWNLOADER_DEBUG
-                    LOG_I("recv sum:0x%x, read sum:0x%x, chksum:0x%x", fhdr.sum, g_ota_read_sum, fhdr.chksum);
+                    LOG_I("recv sum:0x%x, read sum:0x%x, write sum:0x%x, chksum:0x%x", fhdr.sum, g_ota_read_sum, g_ota_write_sum, fhdr.chksum);
 #endif
                     LOG_I("Sum check success!");
                     LOG_I("download %s success!\n", fhdr.filename);
                     g_ota_read_sum = 0;
+                    g_ota_write_sum = 0;
                     aic_set_upgrade_status(fhdr.filename);
                 } else {
                     LOG_E(
-                        "Sum check failed, recv sum = 0x%x, read sum = 0x%x, fhdr->chksum = 0x%x\n",
-                        fhdr.sum, g_ota_read_sum, fhdr.chksum);
+                        "Sum check failed, recv sum = 0x%x, read sum = 0x%x, write sum = 0x%x, fhdr->chksum = 0x%x\n",
+                        fhdr.sum, g_ota_read_sum, g_ota_write_sum, fhdr.chksum);
                     ret = -RT_ERROR;
                     goto __download_exit;
                 }

@@ -9,6 +9,7 @@
  */
 
 #include "drv_fb_helper.h"
+#include "disp_conf.h"
 
 void aicfb_enable_clk(struct aicfb_info *fbi, u32 on)
 {
@@ -129,6 +130,129 @@ void aicfb_enable_panel(struct aicfb_info *fbi, u32 on)
     }
 }
 
+#if AICFB_GET_PANEL_MATCH_ID
+#ifdef AIC_DISP_MIPI_DSI
+static struct display_timing panel_dsi_rx_timing = {
+    .pixelclock = 60000000,
+    .hactive = 720,
+    .hfront_porch = 180,
+    .hback_porch = 180,
+    .hsync_len = 100,
+    .vactive = 720,
+    .vfront_porch = 40,
+    .vback_porch = 22,
+    .vsync_len = 18,
+};
+
+static struct panel_dsi panel_dsi_dsi = {
+    .mode = DSI_MOD_VID_BURST,
+    .format = DSI_FMT_RGB888,
+    .lane_num = 4,
+};
+
+/*
+ * The panel_dsr_rx_desc is only used for reading the panel ID.
+ * The display interface needs a set of default parameters to read the panel ID,
+ * and the panel driver parameters will be reloaded according to the ID after reading.
+ */
+static struct panel_desc panel_dsr_rx_desc = {
+        .name = "panel-dsi-rx",
+        .dsi = &panel_dsi_dsi,
+        .timings = &panel_dsi_rx_timing,
+};
+
+#include <mipi_display.h>
+static int aicfb_dsi_set_maximum_return_packet_size(struct aicfb_info *fbi, u16 value)
+{
+    struct platform_driver *di = fbi->di;
+    u8 type = MIPI_DSI_SET_MAXIMUM_RETURN_PACKET_SIZE;
+    u8 tx[2] = { value & 0xff, value >> 8 };
+
+    if (!di->di_funcs->send_cmd)
+        return -1;
+
+    return di->di_funcs->send_cmd((u32)type, 0, tx, sizeof(tx));
+}
+
+static unsigned int panel_match_module(u32 id)
+{
+    unsigned int index = 0;
+
+#define FL7707_ID 0x1f2138
+#define JD9365_ID 0x046593
+    /*
+     * FIXME: The panel ID comes from the panel IC driver datasheet.
+     * For example, FL7707's ID is 0x1f2138 and JD9365's ID is 0x046593.
+     *
+     * Modify the index according to the ID read back from the screen.
+     */
+    if (id == FL7707_ID)
+        index = 0;
+    else if (id == JD9365_ID)
+        index = 1;
+    else
+        index = 0;
+
+    return index;
+}
+
+static unsigned int aicfb_dsi_read_id(struct aicfb_info *fbi, u8 cmd)
+{
+    struct platform_driver *di = fbi->di;
+    unsigned int id = 0;
+
+    if (di->di_funcs->attach_panel)
+        di->di_funcs->attach_panel(fbi->panel, &panel_dsr_rx_desc);
+
+    if (di->di_funcs->clk_enable)
+        di->di_funcs->clk_enable();
+
+    if (di->di_funcs->enable)
+        di->di_funcs->enable();
+
+    if (di->di_funcs->set_videomode)
+        di->di_funcs->set_videomode(&panel_dsi_rx_timing, false);
+
+    /*
+     * TODO: If the panel needs GPIO initialization, please add it here.
+     * We can implement a GPIO init function in the specific panel driver
+     * and declare it as extern. For example:
+     *
+     * extern void jd9365_panel_gpio_init();
+     * jd9365_panel_gpio_init();
+     */
+
+    aicfb_dsi_set_maximum_return_packet_size(fbi, 3);
+
+    if (di->di_funcs->read_cmd)
+        id = di->di_funcs->read_cmd(cmd);
+
+    if (di->di_funcs->clk_disable)
+        di->di_funcs->clk_disable();
+
+    return panel_match_module(id);
+}
+#endif /* AIC_DISP_MIPI_DSI */
+#endif /* AICFB_GET_PANEL_MATCH_ID */
+
+#if AICFB_GET_PANEL_MATCH_ID
+static unsigned int aicfb_get_panel_id(struct aicfb_info *fbi)
+{
+#ifdef AIC_DISP_MIPI_DSI
+    return aicfb_dsi_read_id(fbi, MIPI_DCS_GET_DISPLAY_ID);
+#else
+/*
+ * TODO: RGB and LVDS interfaces cannot read the panel ID from the screen.
+ * We can get the panel ID from an input GPIO, a system file, or other
+ * methods, which need to be customized.
+ */
+#error AICFB_GET_PANEL_MATCH_ID only supports MIPI-DSI interface
+    return 0;
+#endif
+    return 0;
+}
+#endif /* AICFB_GET_PANEL_MATCH_ID */
+
 void aicfb_get_panel_info(struct aicfb_info *fbi)
 {
     struct platform_driver *de = fbi->de;
@@ -140,6 +264,10 @@ void aicfb_get_panel_info(struct aicfb_info *fbi)
 
     if (panel->desc && panel->match_num) {
         id = panel->match_id;
+#if AICFB_GET_PANEL_MATCH_ID
+        id = aicfb_get_panel_id(fbi);
+        panel->match_id = id;
+#endif
         desc = &panel->desc[id];
         fbi->desc = desc;
     }
@@ -660,7 +788,7 @@ void aicfb_pq_set_config(struct aicfb_info *fbi, struct aicfb_pq_config *config)
             target_dbi->first_line = dbi->first_line;
             target_dbi->other_line = dbi->other_line;
 
-            if (target_dbi->spi != NULL) {
+            if (target_dbi->spi != NULL && dbi->spi != NULL) {
                 target_dbi->spi->qspi_mode = dbi->spi->qspi_mode;
                 target_dbi->spi->vbp_num   = dbi->spi->vbp_num;
                 target_dbi->spi->code1_cfg = dbi->spi->code1_cfg;
@@ -752,7 +880,7 @@ void aicfb_pq_get_config(struct aicfb_info *fbi, struct aicfb_pq_config *config)
             dbi->other_line = 0x3C;
         }
 
-        if (src_dbi->spi != NULL) {
+        if (src_dbi->spi != NULL && dbi->spi != NULL) {
             dbi->spi->qspi_mode  = src_dbi->spi->qspi_mode;
             dbi->spi->vbp_num    = src_dbi->spi->vbp_num;
             dbi->spi->code1_cfg  = src_dbi->spi->code1_cfg;

@@ -1,0 +1,277 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+import rtconfig
+
+cwd = GetCurrentDir()
+path = []
+src = []
+
+path += [cwd + '/include']
+path += [cwd + '/porting']
+path += [cwd + '/subsys/bluetooth']
+path += [cwd + '/subsys/bluetooth/audio']
+path += [cwd + '/subsys/bluetooth/audio/shell']
+path += [cwd + '/subsys/bluetooth/crypto']
+path += [cwd + '/subsys/bluetooth/host/shell']
+path += [cwd + '/subsys/bluetooth/mesh']
+path += [cwd + '/subsys/bluetooth/mesh/shell']
+path += [cwd + '/subsys/bluetooth/services']
+path += [cwd + '/subsys/bluetooth/services/bas']
+path += [cwd + '/subsys/bluetooth/services/ias']
+path += [cwd + '/subsys/bluetooth/services/nus']
+path += [cwd + '/subsys/bluetooth/services/ots']
+
+
+### Bluetooth General Kernel Config ###
+if GetDepend(['LPKG_USING_ZEPHYR_BLUETOOTH']):
+    src += Glob('porting/porting.c')
+    src += Glob('porting/os_thread.c')
+    src += Glob('porting/k_queue.c')
+    src += Glob('porting/k_work_q.c')
+    src += Glob('porting/k_poll.c')
+    src += Glob('porting/k_mem_slab.c')
+
+
+    src += Glob('subsys/bluetooth/host/uuid.c')
+    src += Glob('subsys/bluetooth/host/addr.c')
+    src += Glob('subsys/bluetooth/host/buf.c')
+    src += Glob('subsys/bluetooth/host/data.c')
+    src += Glob('subsys/bluetooth/host/hci_core.c')
+    src += Glob('subsys/bluetooth/host/hci_common.c')
+    src += Glob('subsys/bluetooth/host/id.c')
+
+    src += Glob('subsys/bluetooth/common/addr.c')
+    src += Glob('subsys/bluetooth/common/dummy.c')
+    src += Glob('subsys/bluetooth/common/bt_str.c')
+
+
+### Bluetooth lib ###
+src += Glob('subsys/bluetooth/lib/crc16_sw.c')
+if GetDepend(['LPKG_NET_BUF']):
+    src += Glob('lib/net_buf/buf.c')
+    src += Glob('lib/net_buf/buf_simple.c')
+
+if GetDepend(['LPKG_BT_EAD']):
+    src += Glob('subsys/bluetooth/lib/ead.c')
+
+if GetDepend(['LPKG_LIBSBC']):
+    path += [cwd + '/modules/libsbc/encoder/include']
+    path += [cwd + '/modules/libsbc/decoder/include']
+    path += [cwd + '/modules/libsbc/decoder/srce']
+
+    src += Glob('subsys/bluetooth/lib/sbc.c')
+
+    src += Glob('modules/libsbc/encoder/srce/sbc_analysis.c')
+    src += Glob('modules/libsbc/encoder/srce/sbc_dct.c')
+    src += Glob('modules/libsbc/encoder/srce/sbc_dct_coeffs.c')
+    src += Glob('modules/libsbc/encoder/srce/sbc_enc_bit_alloc_mono.c')
+    src += Glob('modules/libsbc/encoder/srce/sbc_enc_bit_alloc_ste.c')
+    src += Glob('modules/libsbc/encoder/srce/sbc_enc_coeffs.c')
+    src += Glob('modules/libsbc/encoder/srce/sbc_encoder.c')
+    src += Glob('modules/libsbc/encoder/srce/sbc_packing.c')
+
+    src += Glob('modules/libsbc/decoder/srce/alloc.c')
+    src += Glob('modules/libsbc/decoder/srce/bitalloc.c')
+    src += Glob('modules/libsbc/decoder/srce/bitalloc-sbc.c')
+    src += Glob('modules/libsbc/decoder/srce/bitstream-decode.c')
+    src += Glob('modules/libsbc/decoder/srce/decoder-oina.c')
+    src += Glob('modules/libsbc/decoder/srce/decoder-private.c')
+    src += Glob('modules/libsbc/decoder/srce/decoder-sbc.c')
+    src += Glob('modules/libsbc/decoder/srce/dequant.c')
+    src += Glob('modules/libsbc/decoder/srce/framing.c')
+    src += Glob('modules/libsbc/decoder/srce/framing-sbc.c')
+    src += Glob('modules/libsbc/decoder/srce/oi_codec_version.c')
+#    src += Glob('modules/libsbc/decoder/srce/readsamplesjoint.inc')
+    src += Glob('modules/libsbc/decoder/srce/synthesis-8-generated.c')
+    src += Glob('modules/libsbc/decoder/srce/synthesis-dct8.c')
+    src += Glob('modules/libsbc/decoder/srce/synthesis-sbc.c')
+
+
+### Bluetooth Driver ###
+if GetDepend(['LPKG_BT_UART']):
+    src += Glob('drivers/bluetooth/hci/bt_uart.c')
+
+if GetDepend(['LPKG_BT_H4']):
+    src += Glob('drivers/bluetooth/hci/h4.c')
+
+if GetDepend(['LPKG_BT_H5']):
+    src += Glob('drivers/bluetooth/hci/h5.c')
+
+if GetDepend(['LPKG_ZEPHYR_BLUETOOTH_CHIPSET_RTL8733']):
+    src += Glob('drivers/bluetooth/hci/realtek/*.c')
+
+
+### GATT Services ###
+if GetDepend(['LPKG_BT_ANS']):
+    src += Glob('subsys/bluetooth/services/ans.c')
+
+if GetDepend(['LPKG_BT_DIS']):
+    src += Glob('subsys/bluetooth/services/dis.c')
+
+if GetDepend(['LPKG_BT_GAP_SVC']):
+    src += Glob('subsys/bluetooth/services/gap_svc.c')
+
+if GetDepend(['LPKG_BT_CTS']):
+    src += Glob('subsys/bluetooth/services/cts.c')
+
+if GetDepend(['LPKG_BT_ETS']):
+    src += Glob('subsys/bluetooth/services/ets.c')
+
+if GetDepend(['LPKG_BT_HRS']):
+    src += Glob('subsys/bluetooth/services/hrs.c')
+
+if GetDepend(['LPKG_BT_TPS']):
+    src += Glob('subsys/bluetooth/services/tps.c')
+
+if GetDepend(['LPKG_BT_BAS']):
+    if GetDepend(['LPKG_BT_BAS']):
+        src += Glob('subsys/bluetooth/services/bas/bas.c')
+    if GetDepend(['LPKG_BT_BAS_BLS']):
+        src += Glob('subsys/bluetooth/services/bas/bas_bls.c')
+    if GetDepend(['LPKG_BT_BAS_BCS']):
+        src += Glob('subsys/bluetooth/services/bas/bas_bcs.c')
+
+if GetDepend(['LPKG_BT_OTS']) or GetDepend(['LPKG_BT_OTS_CLIENT']):
+    if GetDepend(['LPKG_BT_OTS']):
+        src += Glob('subsys/bluetooth/services/ots/ots.c')
+        src += Glob('subsys/bluetooth/services/ots/ots_l2cap.c')
+        src += Glob('subsys/bluetooth/services/ots/ots_obj_manager.c')
+        src += Glob('subsys/bluetooth/services/ots/ots_oacp.c')
+        src += Glob('subsys/bluetooth/services/ots/ots_olcp.c')
+    if GetDepend(['LPKG_BT_OTS_DIR_LIST_OBJ']):
+        src += Glob('subsys/bluetooth/services/ots/ots_dir_list.c')
+    if GetDepend(['LPKG_BT_OTS_CLIENT']):
+        src += Glob('subsys/bluetooth/services/ots/ots_client.c')
+        src += Glob('subsys/bluetooth/services/ots/ots_l2cap.c')
+
+if GetDepend(['LPKG_BT_IAS']) or GetDepend(['LPKG_BT_IAS_CLIENT']):
+    if GetDepend(['LPKG_BT_IAS']):
+        src += Glob('subsys/bluetooth/services/ias/ias.c')
+    if GetDepend(['LPKG_BT_IAS_CLIENT']):
+        src += Glob('subsys/bluetooth/services/ias/ias_client.c')
+
+
+if GetDepend(['LPKG_BT_NUS']):
+    src += Glob('subsys/bluetooth/services/nus/nus.c')
+    src += Glob('subsys/bluetooth/services/nus/nus_inst.c')
+
+    if GetDepend(['LPKG_BT_ZEPHYR_NUS_AUTO_START_BLUETOOTH']):
+        src += Glob('subsys/bluetooth/services/nus/bt_nus_auto_start_bt.c')
+
+
+if GetDepend(['LPKG_BT_RPA']):
+    src += Glob('subsys/bluetooth/common/rpa.c')
+
+if GetDepend(['LPKG_BT_RPA_PRIVATE_SHELL']):
+    src += Glob('subsys/bluetooth/common/bt_shell_private.c')
+
+
+### Bluetooth Classic Options ###
+if GetDepend(['LPKG_BT_CLASSIC']):
+    src += Glob('subsys/bluetooth/host/classic/br.c')
+    src += Glob('subsys/bluetooth/host/classic/conn_br.c')
+    src += Glob('subsys/bluetooth/host/classic/keys_br.c')
+    src += Glob('subsys/bluetooth/host/classic/l2cap_br.c')
+    src += Glob('subsys/bluetooth/host/classic/sdp.c')
+    src += Glob('subsys/bluetooth/host/classic/ssp.c')
+    src += Glob('subsys/bluetooth/host/classic/sco.c')
+
+if GetDepend(['LPKG_BT_A2DP']):
+    src += Glob('subsys/bluetooth/host/classic/a2dp.c')
+    src += Glob('subsys/bluetooth/host/classic/a2dp_codec_sbc.c')
+
+if GetDepend(['LPKG_BT_AVDTP']):
+    src += Glob('subsys/bluetooth/host/classic/avdtp.c')
+
+if GetDepend(['LPKG_BT_AVRCP']):
+    src += Glob('subsys/bluetooth/host/classic/avrcp.c')
+
+if GetDepend(['LPKG_BT_AVRCP_CT_COVER_ART']) or GetDepend(['LPKG_BT_AVRCP_TG_COVER_ART']):
+    src += Glob('subsys/bluetooth/host/classic/avrcp_cover_art.c')
+
+if GetDepend(['LPKG_BT_AVCTP']):
+    src += Glob('subsys/bluetooth/host/classic/avctp.c')
+
+if GetDepend(['LPKG_BT_RFCOMM']):
+    src += Glob('subsys/bluetooth/host/classic/rfcomm.c')
+
+if GetDepend(['LPKG_BT_GOEP']):
+    src += Glob('subsys/bluetooth/host/classic/obex.c')
+    src += Glob('subsys/bluetooth/host/classic/goep.c')
+
+if GetDepend(['LPKG_BT_BIP']):
+    src += Glob('subsys/bluetooth/host/classic/bip.c')
+
+
+### Bluetooth Stack ###
+if GetDepend(['LPKG_BT_BROADCASTER']):
+    src += Glob('subsys/bluetooth/host/adv.c')
+
+if GetDepend(['LPKG_BT_OBSERVER']):
+    src += Glob('subsys/bluetooth/host/scan.c')
+
+if GetDepend(['LPKG_BT_HOST_CRYPTO']):
+    src += Glob('subsys/bluetooth/host/crypto_psa.c')
+
+if GetDepend(['LPKG_BT_ECC']):
+    src += Glob('subsys/bluetooth/host/ecc.c')
+
+if GetDepend(['LPKG_BT_CONN']):
+    src += Glob('subsys/bluetooth/host/conn.c')
+    src += Glob('subsys/bluetooth/host/l2cap.c')
+    src += Glob('subsys/bluetooth/host/att.c')
+    src += Glob('subsys/bluetooth/host/gatt.c')
+
+if GetDepend(['LPKG_BT_GATT_GAP_SVC_VALIDATE']):
+    src += Glob('subsys/bluetooth/host/gatt_gap_svc_validate.c')
+
+if GetDepend(['LPKG_BT_SMP']):
+    src += Glob('subsys/bluetooth/host/smp.c')
+    src += Glob('subsys/bluetooth/host/keys.c')
+else:
+    src += Glob('subsys/bluetooth/host/smp_null.c')
+
+if GetDepend(['LPKG_BT_ISO']):
+    src += Glob('subsys/bluetooth/host/conn.c')
+    src += Glob('subsys/bluetooth/host/iso.c')
+
+if GetDepend(['LPKG_BT_CHANNEL_SOUNDING']):
+    src += Glob('subsys/bluetooth/host/cs.c')
+
+if GetDepend(['LPKG_BT_DF']):
+    src += Glob('subsys/bluetooth/host/direction.c')
+
+if GetDepend(['LPKG_BT_MONITOR']):
+    src += Glob('subsys/bluetooth/host/monitor.c')
+
+if GetDepend(['LPKG_BT_CRYPTO']):
+    src += Glob('subsys/bluetooth/crypto/bt_crypto.c')
+    src += Glob('subsys/bluetooth/crypto/bt_crypto_psa.c')
+
+if GetDepend(['LPKG_BT_SETTINGS']):
+    src += Glob('subsys/bluetooth/host/settings.c')
+
+
+### Bluetooth Sample ###
+if GetDepend(['LPKG_ZEPHYR_BLUETOOTH_SAMPLE_A2DP_SINK']):
+    src += Glob('samples/bluetooth/classic/a2dp_sink/src/main.c')
+    src += Glob('samples/bluetooth/classic/a2dp_sink/src/codec_play.c')
+    src += Glob('samples/bluetooth/classic/a2dp_sink/src/audio_buf.c')
+    src += Glob('samples/bluetooth/classic/a2dp_sink/src/avrcp_shell.c')
+
+if GetDepend(['LPKG_ZEPHYR_BLUETOOTH_SAMPLE_PERIPHERAL_HR']):
+    src += Glob('samples/bluetooth/peripheral_hr/src/main.c')
+
+
+LOCAL_CCFLAGS = ''
+CFLAGS = ' -w -c -ffunction-sections -include zephyr/autoconf.h'
+
+if rtconfig.CROSS_TOOL == 'keil':
+    LOCAL_CCFLAGS += ' --gnu --diag_suppress=111'
+
+#group = DefineGroup('zephyr-bluetooth', src, depend = ['LPKG_USING_ZEPHYR_BLUETOOTH'], CPPPATH = path, LOCAL_CCFLAGS = LOCAL_CCFLAGS, CFLAGS=CFLAGS)
+group = DefineGroup('zephyr-bluetooth', src, depend = ['LPKG_USING_ZEPHYR_BLUETOOTH'], CPPPATH = path, CFLAGS=CFLAGS)
+
+Return('group')

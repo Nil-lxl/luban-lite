@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2020-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -24,6 +24,7 @@ struct aic_ve_client;
 
 struct aic_ve_client *hal_ve_open(void);
 int hal_ve_close(struct aic_ve_client *client);
+int hal_ve_close_with_wait(void);
 int hal_ve_control(struct aic_ve_client *client, int cmd, void *arg);
 int hal_ve_probe(void);
 

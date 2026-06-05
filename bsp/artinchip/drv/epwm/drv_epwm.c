@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,13 +15,19 @@
 
 #include "hal_epwm.h"
 
-static struct rt_device_pwm g_aic_epwm = {0};
-static struct aic_epwm_pulse_para g_pulse_para[AIC_EPWM_CH_NUM] = {0};
+struct aic_epwm {
+    struct rt_device_pwm rtdev;
+    struct aic_epwm_pulse_para pulse_para[AIC_EPWM_CH_NUM];
+#if defined (AIC_EPWM_DRV_V11) || defined (AIC_EPWM_DRV_V12)
+    u8 epwm_pul_flag[AIC_EPWM_CH_NUM];
+#endif
+    rt_bool_t epwm_clk_pm_flag;
+};
+
 extern struct aic_epwm_arg epwm_pdata[];
 extern const int epwm_pdata_size;
-#if defined (AIC_EPWM_DRV_V11) || defined (AIC_EPWM_DRV_V12)
-static u8 g_epwm_pul_flag[AIC_EPWM_CH_NUM] = {0};
-#endif
+
+static struct aic_epwm g_aic_epwm = {0};
 
 static rt_bool_t drv_epwm_ch_valid(struct rt_pwm_configuration *cfg)
 {
@@ -76,14 +82,16 @@ static rt_err_t drv_epwm_set_pul(struct rt_device_pwm *device,
     if (drv_epwm_ch_valid(cfg))
         return -RT_EINVAL;
 
-    g_pulse_para[cfg->channel].pulse_cnt = cfg->pul_cnt;
-    g_pulse_para[cfg->channel].duty_ns = cfg->pulse;
-    g_pulse_para[cfg->channel].prd_ns = cfg->period;
+    struct aic_epwm *epwm_dev = (struct aic_epwm *)device;
+
+    epwm_dev->pulse_para[cfg->channel].pulse_cnt = cfg->pul_cnt;
+    epwm_dev->pulse_para[cfg->channel].duty_ns = cfg->pulse;
+    epwm_dev->pulse_para[cfg->channel].prd_ns = cfg->period;
 
 #if defined (AIC_EPWM_DRV_V11) || defined (AIC_EPWM_DRV_V12)
     hal_epwm_pul_config(cfg->channel);
 
-    g_epwm_pul_flag[cfg->channel] = 1;
+    epwm_dev->epwm_pul_flag[cfg->channel] = 1;
 
     /* temporarily control two outputs simultaneously */
     if (hal_epwm_pul_set(cfg->channel, cfg->pulse, cfg->period, EPWM_SET_CMPA_CMPB, cfg->pul_cnt))
@@ -152,6 +160,8 @@ static struct rt_pwm_ops aic_epwm_ops = {
 #ifdef RT_USING_PM
 static int drv_epwm_suspend(const struct rt_device *device, rt_uint8_t mode)
 {
+    struct aic_epwm *epwm_dev = (struct aic_epwm *)device;
+
     switch (mode)
     {
     case PM_SLEEP_MODE_IDLE:
@@ -159,7 +169,14 @@ static int drv_epwm_suspend(const struct rt_device *device, rt_uint8_t mode)
     case PM_SLEEP_MODE_LIGHT:
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
-        hal_clk_disable(CLK_PWMCS);
+        if (hal_clk_is_enabled(CLK_PWMCS)) {
+#ifdef AIC_PM_DRV_V15
+            hal_clk_disable_assertrst(CLK_PWMCS);
+#else
+            hal_clk_disable(CLK_PWMCS);
+#endif
+            epwm_dev->epwm_clk_pm_flag = RT_TRUE;
+        }
         break;
     default:
         break;
@@ -170,6 +187,8 @@ static int drv_epwm_suspend(const struct rt_device *device, rt_uint8_t mode)
 
 static void drv_epwm_resume(const struct rt_device *device, rt_uint8_t mode)
 {
+    struct aic_epwm *epwm_dev = (struct aic_epwm *)device;
+
     switch (mode)
     {
     case PM_SLEEP_MODE_IDLE:
@@ -182,8 +201,23 @@ static void drv_epwm_resume(const struct rt_device *device, rt_uint8_t mode)
 #elif defined (AIC_EPWM_DRV_V10)
         hal_clk_set_freq(CLK_PWMCS, EPWM_CLK_RATE);
 #endif
-#if defined (AIC_EPWM_DRV_V10) || defined (AIC_EPWM_DRV_V11)
-        hal_clk_enable(CLK_PWMCS);
+        if (epwm_dev->epwm_clk_pm_flag && !hal_clk_is_enabled(CLK_PWMCS)) {
+#ifdef AIC_PM_DRV_V15
+            hal_clk_enable_deassertrst(CLK_PWMCS);
+#else
+            hal_clk_enable(CLK_PWMCS);
+#endif
+        }
+        if (epwm_dev->epwm_clk_pm_flag)
+            epwm_dev->epwm_clk_pm_flag = RT_FALSE;
+
+#ifdef AIC_PM_DRV_V15
+            int i;
+            hal_epwm_global_enable(1);
+            for (i = 0; i < epwm_pdata_size; i++) {
+                hal_epwm_ch_init(&epwm_pdata[i]);
+                hal_epwm_ch_reconf(epwm_pdata[i].id);
+            }
 #endif
         break;
     default:
@@ -193,7 +227,7 @@ static void drv_epwm_resume(const struct rt_device *device, rt_uint8_t mode)
 
 static struct rt_device_pm_ops drv_epwm_pm_ops =
 {
-    SET_LATE_DEVICE_PM_OPS(drv_epwm_suspend, drv_epwm_resume)
+    SET_DEVICE_PM_OPS(drv_epwm_suspend, drv_epwm_resume)
     NULL,
 };
 #endif
@@ -213,17 +247,18 @@ irqreturn_t aic_epwm_irq(int irq, void *arg)
 #if defined (AIC_EPWM_DRV_V11)
             int level = hal_epwm_get_default_level(i);
             hal_epwm_act_sw_ct(i, EPWM_SET_CMPA_CMPB, level + EPWM_ACT_SW_LOW);
-            if (g_epwm_pul_flag[i] == 0) {
+            if (g_aic_epwm.epwm_pul_flag[i] == 0) {
                 /* enable the EPWM_PUL_OUT_EN will enter the interrupt */
                 hal_epwm_count_ct(i, (u32)EPWM_MODE_STOP_COUNT);
             }
-            if (g_epwm_pul_flag[i] == 1) {
-                g_epwm_pul_flag[i] = 0;
+            if (g_aic_epwm.epwm_pul_flag[i] == 1) {
+                g_aic_epwm.epwm_pul_flag[i] = 0;
             }
 #elif defined (AIC_EPWM_DRV_V10)
             isr_cnt[i]++;
-            if (isr_cnt[i] == g_pulse_para[i].pulse_cnt) {
-                hal_epwm_set(i, g_pulse_para[i].prd_ns, g_pulse_para[i].prd_ns, (rt_uint32_t)EPWM_SET_CMPA_CMPB);
+            if (isr_cnt[i] == g_aic_epwm.pulse_para[i].pulse_cnt) {
+                hal_epwm_set(i, g_aic_epwm.pulse_para[i].prd_ns, \
+                    g_aic_epwm.pulse_para[i].prd_ns, (rt_uint32_t)EPWM_SET_CMPA_CMPB);
                 hal_epwm_int_config(i, 0, 0);
                 pr_info("\nisr cnt:%d,disabled the epwm%d interrupt now.\n", isr_cnt[i], i);
                 isr_cnt[i] = 0;
@@ -239,12 +274,12 @@ irqreturn_t aic_epwm_irq(int irq, void *arg)
     u32 ch = irq - EPWM0_IRQn;
     stat = hal_epwm_int_sts(ch);
         if (stat & EPWM_INT_FLG) {
-            if (g_epwm_pul_flag[ch] == 0) {
+            if (g_aic_epwm.epwm_pul_flag[ch] == 0) {
                 /* enable the EPWM_PUL_OUT_EN will enter the interrupt */
                 hal_epwm_count_ct(ch, (u32)EPWM_MODE_STOP_COUNT);
             }
-            if (g_epwm_pul_flag[ch] == 1) {
-                g_epwm_pul_flag[ch] = 0;
+            if (g_aic_epwm.epwm_pul_flag[ch] == 1) {
+                g_aic_epwm.epwm_pul_flag[ch] = 0;
             }
             hal_epwm_clr_int(stat, ch);
         }
@@ -272,11 +307,11 @@ int drv_epwm_init(void)
     aicos_request_irq(PWMCS_PWM_IRQn, aic_epwm_irq, 0, NULL, NULL);
 #endif
 
-    if (rt_device_pwm_register(&g_aic_epwm, "epwm", &aic_epwm_ops, NULL))
+    if (rt_device_pwm_register(&g_aic_epwm.rtdev, "epwm", &aic_epwm_ops, NULL))
         return -RT_ERROR;
 
 #ifdef RT_USING_PM
-    rt_pm_device_register(&g_aic_epwm.parent, &drv_epwm_pm_ops);
+    rt_pm_device_register(&g_aic_epwm.rtdev.parent, &drv_epwm_pm_ops);
 #endif
 
     LOG_I("ArtInChip EPWM loaded");

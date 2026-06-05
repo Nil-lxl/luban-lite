@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -295,11 +295,17 @@ void dsi_set_vm(void *base, enum dsi_mode mode, enum dsi_format format,
     reg_set_bit(VIDCFG, DSI_VID_MODE_CFG_LP_EN_VBP);
     reg_set_bit(VIDCFG, DSI_VID_MODE_CFG_LP_EN_VFP);
     reg_set_bit(VIDCFG, DSI_VID_MODE_CFG_LP_EN_VACT);
-    reg_set_bit(VIDCFG, DSI_VID_MODE_CFG_LP_EN_HBP);
+
+    if (mode & DSI_MOD_VID_HBP)
+        reg_clr_bit(VIDCFG, DSI_VID_MODE_CFG_LP_EN_HBP);
+    else
+        reg_set_bit(VIDCFG, DSI_VID_MODE_CFG_LP_EN_HBP);
+
     if (mode & DSI_MOD_VID_BURST)
         reg_set_bit(VIDCFG, DSI_VID_MODE_CFG_LP_EN_HFP);
     else
         reg_clr_bit(VIDCFG, DSI_VID_MODE_CFG_LP_EN_HFP);
+
     reg_clr_bit(VIDCFG, DSI_VID_MODE_CFG_FRAME_BTA_ACK_EN);
     reg_set_bit(VIDCFG, DSI_VID_MODE_CFG_CMD_LPTX_FORCE);
 

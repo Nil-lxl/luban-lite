@@ -397,6 +397,7 @@ struct aic_spinand *spinand_probe(u32 spi_bus)
     }
 
     mtd = malloc(sizeof(*mtd));
+    memset(mtd, 0, sizeof(*mtd));
     mtd->name = strdup("nand0");
     mtd->name[4] += spi_bus;
     mtd->start = 0;
@@ -454,6 +455,7 @@ struct aic_spinand *spinand_probe(u32 spi_bus)
         }
 
         mtd = malloc(sizeof(*mtd));
+        memset(mtd, 0, sizeof(*mtd));
         mtd->name = strdup(p->name);
         mtd->start = p->start;
         mtd->size = p->size;

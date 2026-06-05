@@ -1,0 +1,15 @@
+Import('AIC_ROOT')
+Import('PRJ_KERNEL')
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+
+if GetDepend('AIC_EARLY_DEBUG'):
+    src += Glob('early/early_debug.c')
+
+CPPPATH = [cwd + '/include', ]
+
+group = DefineGroup('aic_common', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

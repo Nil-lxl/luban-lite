@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -38,6 +38,9 @@ static int g_sample_num = -1;
 static u32 g_cal_param;
 static rt_sem_t g_gpai_sem = RT_NULL;
 
+#ifdef AIC_GPAI_DRV_DMA
+static struct aic_dma_transfer_info g_dma_info;
+#endif
 /* Functions */
 
 static void cmd_gpai_usage(char *program)
@@ -106,6 +109,82 @@ static int gpai_get_adc_period(struct aic_gpai_ch_info ch_info,
     return voltage;
 }
 
+#ifdef AIC_GPAI_DRV_DMA
+static int gpai_dma_get_data(int loop_cnt)
+{
+    u32 *dma_data = (u32 *)g_dma_info.buf;
+    int i;
+
+    rt_kprintf("[%2d]", loop_cnt);
+    for(i = 0; i < g_dma_info.smp_cnt; i++) {
+        rt_kprintf(" %4d", dma_data[i]);
+    }
+    rt_kprintf("\n");
+
+    return 0;
+}
+
+
+static void gpai_dma_callback(void *arg)
+{
+    rt_sem_t dma_sem;
+
+    rt_kprintf("dma callback happened\n");
+    dma_sem = (rt_sem_t)arg;
+    rt_sem_release(dma_sem);
+}
+
+static int gpai_get_adc_by_dma(int chan)
+{
+    rt_sem_t dma_sem;
+    int loop_cnt = 0;
+    int ret;
+
+    dma_sem = rt_sem_create("gpai_dma_sem", 0, RT_IPC_FLAG_FIFO);
+    gpai_dev = (rt_adc_device_t)rt_device_find(AIC_GPAI_NAME);
+    if (!gpai_dev) {
+        rt_kprintf("Failed to open %s device\n", AIC_GPAI_NAME);
+        return -RT_ERROR;
+    }
+
+    ret = rt_adc_enable(gpai_dev, chan);
+    if (ret) {
+        rt_kprintf("Failed to enable %s device\n", AIC_GPAI_NAME);
+        return -RT_ERROR;
+    }
+
+    g_dma_info.chan_id = chan;
+    g_dma_info.smp_cnt = g_sample_num;
+    g_dma_info.callback = gpai_dma_callback;
+    g_dma_info.callback_param = (void *)dma_sem;
+
+    ret = rt_adc_control(gpai_dev, RT_ADC_CMD_CONFIG_DMA, &g_dma_info);
+    if (ret) {
+        rt_kprintf("Failed to config DMA\n");
+        return -RT_ERROR;
+    }
+
+    do {
+        ret = rt_adc_control(gpai_dev, RT_ADC_CMD_GET_DMA_DATA, (void *)chan);
+        if (ret) {
+            rt_kprintf("Failed to get DMA data\n");
+            break;
+        }
+        ret = rt_sem_take(dma_sem, RT_WAITING_FOREVER);
+        if (ret != RT_EOK) {
+            rt_kprintf("Failed to take semaphore\n");
+            break;
+        }
+        gpai_dma_get_data(loop_cnt);
+        loop_cnt++;
+    } while (loop_cnt < 10);
+
+    rt_adc_disable(gpai_dev, chan);
+    rt_sem_delete(dma_sem);
+
+    return ret;
+}
+#endif
 
 static int gpai_get_adc_single(struct aic_gpai_ch_info ch_info,
                                float def_voltage)
@@ -203,11 +282,12 @@ static int adc_check_gpai_by_cpu_mode(long ch, float def_voltage)
 
 static int cmd_test_gpai(int argc, char **argv)
 {
-    int c;
+    int c, ret;
     int ch = 0;
     float def_voltage = AIC_GPAI_DEFAULT_VOLTAGE;
     int voltage = -1;
     int obtain_data_mode = 0;
+    struct aic_gpai_ch_info ch_info = {0};
 
     if (argc < 2) {
         cmd_gpai_usage(argv[0]);
@@ -250,10 +330,18 @@ static int cmd_test_gpai(int argc, char **argv)
         return -RT_ERROR;
     }
     g_cal_param = hal_adcim_auto_calibration();
+    rt_kprintf("Calibration param: %d\n", g_cal_param);
 
     obtain_data_mode = rt_adc_control(gpai_dev, RT_ADC_CMD_OBTAIN_DATA_MODE, (void *)(ptr_t)ch);
     if (obtain_data_mode < 0) {
         rt_kprintf("Failed to get obtain data mode\n");
+        return -RT_ERROR;
+    }
+
+    ch_info.chan_id = ch;
+    ret = rt_adc_control(gpai_dev, RT_ADC_CMD_GET_MODE, (void *)&ch_info);
+    if (ret) {
+        rt_kprintf("Failed to get GPAI mode\n");
         return -RT_ERROR;
     }
 
@@ -266,6 +354,22 @@ static int cmd_test_gpai(int argc, char **argv)
         rt_kprintf("Starting CPU interrupt mode\n");
         voltage = adc_check_gpai_by_cpu_mode(ch, def_voltage);
         break;
+#ifdef AIC_GPAI_DRV_DMA
+    case AIC_GPAI_OBTAIN_DATA_BY_DMA:
+        rt_kprintf("Starting DMA");
+        switch (ch_info.mode) {
+        case AIC_GPAI_MODE_SINGLE:
+            rt_kprintf("/Single mode\n");
+            break;
+        case AIC_GPAI_MODE_PERIOD:
+            rt_kprintf("/Period mode\n");
+            break;
+        default:
+            return -RT_ERROR;
+        }
+        gpai_get_adc_by_dma(ch);
+        break;
+#endif
     case AIC_GPAI_OBTAIN_DATA_BY_POLL:
         rt_kprintf("Starting polling mode\n");
         gpai_get_adc_by_poll(ch, def_voltage);

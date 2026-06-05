@@ -48,12 +48,14 @@ uint8_t usbdisp_encode_format = PIXEL_ENCODE_ARGB8888;
 
 #define YUV_FORMAT_420P         0x00
 #define YUV_FORMAT_444P         0x01
+#define YUV_FORMAT_NV12         0x02
+
 #ifdef AIC_USB_DISP_HIGH_QUALITY_PIC
 uint8_t usbdisp_cap_yuv_format = YUV_FORMAT_420P | YUV_FORMAT_444P;
 #else
 uint8_t usbdisp_cap_yuv_format = YUV_FORMAT_420P;
 #endif
-uint8_t usbdisp_cur_yuv_format = YUV_FORMAT_420P;
+uint8_t usbdisp_cur_yuv_format = YUV_FORMAT_NV12;
 
 #ifdef AIC_USB_DISP_JPEG_QUALITY_LOWTHRESH
 uint8_t usbdisp_jpeg_quality_lowthresh = AIC_USB_DISP_JPEG_QUALITY_LOWTHRESH;
@@ -244,9 +246,9 @@ static int test_usb_fps(int argc, char *argv[])
         return -RT_EINVAL;
     }
 
-    if (strcmp(argv[1], "on") == 0) {
+    if (strncmp(argv[1], "on", 2) == 0) {
         fps_print = 1;
-    } else if (strcmp(argv[1], "off") == 0) {
+    } else if (strncmp(argv[1], "off", 3) == 0) {
         fps_print = 0;
     } else {
         usage_fps(argv[0]);
@@ -274,11 +276,11 @@ static int test_usb_display_dbg(int argc, char *argv[])
         return -RT_EINVAL;
     }
 
-    if (strcmp(argv[1], "on") == 0) {
+    if (strncmp(argv[1], "on", 2) == 0) {
         usb_disp_debug_en = 1;
-    } else if (strcmp(argv[1], "off") == 0) {
+    } else if (strncmp(argv[1], "off", 3) == 0) {
         usb_disp_debug_en = 0;
-    } else if (strcmp(argv[1], "info") == 0) {
+    } else if (strncmp(argv[1], "info", 4) == 0) {
         usb_display_show_debug();
     } else {
         usage_display_dbg(argv[0]);
@@ -315,13 +317,13 @@ static int test_usb_display_rotate(int argc, char *argv[])
         return -RT_EINVAL;
     }
 
-    if (strcmp(argv[1], "0") == 0) {
+    if (strncmp(argv[1], "0", 1) == 0) {
         usb_display_set_rotate(0);
-    } else if (strcmp(argv[1], "90") == 0) {
+    } else if (strncmp(argv[1], "90", 2) == 0) {
         usb_display_set_rotate(90);
-    } else if (strcmp(argv[1], "180") == 0) {
+    } else if (strncmp(argv[1], "180", 3) == 0) {
         usb_display_set_rotate(180);
-    } else if (strcmp(argv[1], "270") == 0) {
+    } else if (strncmp(argv[1], "270", 3) == 0) {
         usb_display_set_rotate(270);
     } else {
         usage_display_rotate(argv[0]);
@@ -378,7 +380,7 @@ static int test_usb_display_enable(int argc, char *argv[])
         return -RT_EINVAL;
     }
 
-    if (strcmp(argv[1], "0") == 0)
+    if (strncmp(argv[1], "0", 1) == 0)
         usb_display_disable();
     else
         usb_display_enable();
@@ -520,10 +522,10 @@ void disp_vendor_upgrade_get_version(uint8_t **data, uint32_t *len)
     }
 
     boot_args = aic_get_boot_args();
-    memcpy(*data, boot_args->image_version, strlen(boot_args->image_version));
+    memcpy(*data, boot_args->image_version, strlen(boot_args->image_version) + 1);
     *len = strlen(boot_args->image_version) + 1;
 
-    USB_LOG_INFO("get image version: %s, len:%d.\n", *data, *len);
+    USB_LOG_INFO("get image version: %s, len:%d.\n", *data, (int)*len);
 }
 
 int disp_vendor_upgrade_handler_cb(int upg_type, uint8_t **data, uint32_t *len)
@@ -626,6 +628,32 @@ USB_INIT_APP_EXPORT(usbd_usb_display_init);
 #endif
 
 #ifdef AIC_USB_DISP_SW_GPIO_EN
+static rt_sem_t lcd_sw_key_sem = NULL;
+static rt_thread_t lcd_sw_key_tid = NULL;
+static volatile int lcd_sw_key_val = 0;
+
+static void lcd_sw_key_thread(void *parameter)
+{
+    while (1) {
+        rt_sem_take(lcd_sw_key_sem, RT_WAITING_FOREVER);
+
+        int val = lcd_sw_key_val;
+#if defined(AIC_USB_DISP_SW_GPIO_BACKLIGHT)
+        if (val ^ AIC_USB_DISP_SW_GPIO_NAME_POLARITY)
+            aic_panel_backlight_enable();
+        else
+            aic_panel_backlight_disable();
+#elif defined(AIC_USB_DISP_SW_GPIO_USBDISPLAY)
+        extern void usb_display_enable(void);
+        extern void usb_display_disable(void);
+        if (val ^ AIC_USB_DISP_SW_GPIO_NAME_POLARITY)
+            usb_display_enable();
+        else
+            usb_display_disable();
+#endif
+    }
+}
+
 void lcd_sw_key_irq_callback(void *args)
 {
     rt_base_t pin;
@@ -637,26 +665,27 @@ void lcd_sw_key_irq_callback(void *args)
     p = GPIO_GROUP_PIN(pin);
 
     hal_gpio_get_value(g, p, &val);
-
-#if defined(AIC_USB_DISP_SW_GPIO_BACKLIGHT)
-    if (val ^ AIC_USB_DISP_SW_GPIO_NAME_POLARITY)
-        aic_panel_backlight_enable();
-    else
-        aic_panel_backlight_disable();
-#elif defined(AIC_USB_DISP_SW_GPIO_USBDISPLAY)
-    extern void usb_display_enable(void);
-    extern void usb_display_disable(void);
-    if (val ^ AIC_USB_DISP_SW_GPIO_NAME_POLARITY)
-        usb_display_enable();
-    else
-        usb_display_disable();
-#endif
+    lcd_sw_key_val = val;
+    rt_sem_release(lcd_sw_key_sem);
 }
 
 int lcd_sw_key_init(void)
 {
     rt_base_t pin;
     unsigned int g, p;
+
+    lcd_sw_key_sem = rt_sem_create("lcd_sw_key", 0, RT_IPC_FLAG_FIFO);
+    if (lcd_sw_key_sem == RT_NULL) {
+        printf("create lcd_sw_key semaphore failed.\n");
+        return -1;
+    }
+
+    lcd_sw_key_tid = rt_thread_create("lcd_sw_key", lcd_sw_key_thread, RT_NULL,
+                                      2048, RT_THREAD_PRIORITY_MAX - 2, 20);
+    if (lcd_sw_key_tid != RT_NULL)
+        rt_thread_startup(lcd_sw_key_tid);
+    else
+        printf("create lcd_sw_key thread err!\n");
 
     pin = rt_pin_get(AIC_USB_DISP_SW_GPIO_NAME);
 

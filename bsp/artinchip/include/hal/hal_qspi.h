@@ -195,7 +195,7 @@ struct qspi_bm_transfer {
     u32 tx_bits_len;
 };
 
-#ifdef AIC_QSPI_DRV_V11
+#if defined(AIC_QSPI_DRV_V11) || defined(AIC_QSPI_DRV_V34)
 /*
  * SPI NOR device's wrap bits setting value.
  * Should check SPI NOR datasheet to get these values.

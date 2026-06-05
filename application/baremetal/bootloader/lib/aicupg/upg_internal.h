@@ -74,6 +74,8 @@ struct upg_internal {
     struct upg_cmd *cur_cmd;
     int dev_type;
     int dev_id;
+    char media_type[64];   /* Media type string, e.g. "spi-nor;spi-nand" */
+    u32 media_dev_id;      /* Media device ID, each flash ID occupies 1 byte */
     struct upg_cfg cfg;
     struct upg_init init;
 };
@@ -139,11 +141,16 @@ void aicupg_gen_resp(struct resp_header *h, u8 cmd, u8 sts, u32 len);
 enum upg_dev_type get_current_device_type(void);
 void set_current_device_type(enum upg_dev_type type);
 const char *get_current_device_name(enum upg_dev_type type);
+int get_device_by_part_name(const char *part_name, enum upg_dev_type *dev_type, int *dev_id);
 struct upg_cmd *get_current_command(void);
 enum upg_cmd_state get_current_command_state(void);
 void set_current_command(struct upg_cmd *cmd);
 int get_current_device_id(void);
 void set_current_device_id(int id);
+const char *get_upg_media_type(void);
+u32 get_upg_media_dev_id(void);
+/* Multi-flash: media_type uses ";" as separator, e.g. "spi-nor;spi-nand".
+ * media_dev_id packs each flash ID in 1 byte, ordered by media_type tokens. */
 int aicupg_get_fwc_attr(struct fwc_info *fwc);
 
 struct upg_cmd *find_basic_command(struct cmd_header *h);

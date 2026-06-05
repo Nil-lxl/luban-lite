@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -394,12 +394,19 @@ static rt_size_t aic_i2c_master_xfer(struct rt_i2c_bus_device *bus,
     idx = bus->parent.device_id;
     i2c_dev = &g_aic_i2c_dev[idx].aic_bus;
 
+#ifdef RT_USING_PM
+    rt_pm_module_request(PM_I2C_ID, PM_SLEEP_MODE_NONE);
+#endif
+
     for (index = 0; index < num; index++) {
         i2c_dev->msg = (struct aic_i2c_msg*)msgs;
         ret = aic_i2c_xfer_msg(i2c_dev, &i2c_dev->msg[index], index == 0, index == (num-1));
     }
     hal_i2c_module_disable(i2c_dev);
 
+#ifdef RT_USING_PM
+    rt_pm_module_release(PM_I2C_ID, PM_SLEEP_MODE_NONE);
+#endif
     return (ret < 0) ? 0 : num;
 }
 #else
@@ -418,6 +425,9 @@ static rt_size_t aic_i2c_master_xfer(struct rt_i2c_bus_device *bus,
     index = bus->parent.device_id;
     i2c_dev = &g_aic_i2c_dev[index].aic_bus;
 
+#ifdef RT_USING_PM
+    rt_pm_module_request(PM_I2C_ID, PM_SLEEP_MODE_NONE);
+#endif
     for (uint32_t i = 0; i < num; i++) {
         msg = &msgs[i];
         if (i == num -1)
@@ -438,6 +448,9 @@ static rt_size_t aic_i2c_master_xfer(struct rt_i2c_bus_device *bus,
         }
     }
 
+#ifdef RT_USING_PM
+    rt_pm_module_release(PM_I2C_ID, PM_SLEEP_MODE_NONE);
+#endif
     return ret_msg_len;
 }
 #endif
@@ -490,6 +503,60 @@ const struct rt_i2c_bus_device_ops i2c_ops = {
     aic_i2c_slave_control,
 };
 
+#ifdef RT_USING_PM
+static int aic_i2c_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_i2c_bus *i2c_bus = (struct aic_i2c_bus *)device;
+    aic_i2c_ctrl *i2c_dev = &i2c_bus->aic_bus;
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        hal_clk_disable_assertrst(i2c_dev->clk_id);
+#else
+        hal_clk_disable(i2c_dev->clk_id);
+#endif
+        break;
+    case PM_SLEEP_MODE_IDLE:
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_i2c_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct aic_i2c_bus *i2c_bus = (struct aic_i2c_bus *)device;
+    aic_i2c_ctrl *i2c_dev = &i2c_bus->aic_bus;
+
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        hal_i2c_init(i2c_dev);
+#else
+        hal_clk_enable(i2c_dev->clk_id);
+#endif
+        break;
+    case PM_SLEEP_MODE_IDLE:
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops aic_i2c_pm_ops =
+{
+    SET_DEVICE_PM_OPS(aic_i2c_suspend, aic_i2c_resume)
+    NULL,
+};
+#endif /* RT_USING_PM */
+
 static struct aic_i2c_bus aic_i2c_dev[] = {
 #ifdef AIC_USING_I2C0
     {
@@ -504,6 +571,7 @@ static struct aic_i2c_bus aic_i2c_dev[] = {
             .slave_addr = AIC_DEV_I2C0_SLAVE_ADDR,
             .irq_index = I2C0_IRQn,
             .clk_id = CLK_I2C0,
+            .stuck_time = AIC_DEV_I2C0_STUCK_TIME,
         },
     },
 #endif
@@ -521,6 +589,7 @@ static struct aic_i2c_bus aic_i2c_dev[] = {
             .slave_addr = AIC_DEV_I2C1_SLAVE_ADDR,
             .irq_index = I2C1_IRQn,
             .clk_id = CLK_I2C1,
+            .stuck_time = AIC_DEV_I2C1_STUCK_TIME,
         },
     },
 #endif
@@ -538,6 +607,7 @@ static struct aic_i2c_bus aic_i2c_dev[] = {
             .slave_addr = AIC_DEV_I2C2_SLAVE_ADDR,
             .irq_index = I2C2_IRQn,
             .clk_id = CLK_I2C2,
+            .stuck_time = AIC_DEV_I2C2_STUCK_TIME,
         },
     },
 #endif
@@ -555,6 +625,7 @@ static struct aic_i2c_bus aic_i2c_dev[] = {
             .slave_addr = AIC_DEV_I2C3_SLAVE_ADDR,
             .irq_index = I2C3_IRQn,
             .clk_id = CLK_I2C3,
+            .stuck_time = AIC_DEV_I2C3_STUCK_TIME,
         },
     },
 #endif
@@ -572,6 +643,7 @@ static struct aic_i2c_bus aic_i2c_dev[] = {
             .slave_addr = AIC_DEV_I2C4_SLAVE_ADDR,
             .irq_index = I2C4_IRQn,
             .clk_id = CLK_I2C4,
+            .stuck_time = AIC_DEV_I2C4_STUCK_TIME,
         },
     },
 #endif
@@ -589,6 +661,7 @@ static struct aic_i2c_bus aic_i2c_dev[] = {
             .slave_addr = AIC_DEV_SP_I2C_SLAVE_ADDR,
             .irq_index = I2C_IRQn,
             .clk_id = CLK_SP_I2C,
+            .stuck_time = AIC_DEV_SP_I2C_STUCK_TIME,
         },
     },
 #endif
@@ -605,6 +678,7 @@ static struct aic_i2c_bus aic_i2c_dev[] = {
             .slave_addr = AIC_DEV_R_I2C0_SLAVE_ADDR,
             .irq_index = R_I2C0_IRQn,
             .clk_id = CLK_R_I2C0,
+            .stuck_time = AIC_DEV_R_I2C0_STUCK_TIME,
         },
     },
 #endif
@@ -621,6 +695,7 @@ static struct aic_i2c_bus aic_i2c_dev[] = {
             .slave_addr = AIC_DEV_R_I2C1_SLAVE_ADDR,
             .irq_index = R_I2C1_IRQn,
             .clk_id = CLK_R_I2C1,
+            .stuck_time = AIC_DEV_R_I2C1_STUCK_TIME,
         },
     },
 #endif
@@ -657,3 +732,23 @@ static int aic_hw_i2c_register()
     return 0;
 }
 INIT_BOARD_EXPORT(aic_hw_i2c_register);
+
+#ifdef RT_USING_PM
+static int aic_hw_i2c_pm_register()
+{
+    rt_device_t i2c_bus = NULL;
+    int ret = RT_EOK;
+
+    for (uint8_t i = 0; i < ARRAY_SIZE(aic_i2c_dev); i++) {
+        i2c_bus = rt_device_find(aic_i2c_dev[i].aic_bus.device_name);
+        if (i2c_bus) {
+            rt_pm_device_register(i2c_bus, &aic_i2c_pm_ops);
+        } else {
+            pr_err("[I2C PM] ERROR: %s device not found!\n", aic_i2c_dev[i].aic_bus.device_name);
+            ret = RT_ERROR;
+        }
+    }
+    return ret;
+}
+INIT_DEVICE_EXPORT(aic_hw_i2c_pm_register);
+#endif

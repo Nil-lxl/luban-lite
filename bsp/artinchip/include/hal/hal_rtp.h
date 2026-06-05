@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -23,6 +23,8 @@
 #define RTP_ADC_ACC_RANGE           (1 << RTP_ADC_ACC_BIT)
 
 #define AIC_RTP_EVT_BUF_SIZE        64
+
+struct aic_dma_chan;
 
 enum aic_rtp_mode {
     RTP_MODE_MANUAL = 0,
@@ -87,6 +89,13 @@ struct aic_rtp_dev {
     u16 point_num;
     aicos_sem_t complete;
     struct aic_rtp_adc_info adc_info;
+    bool running;
+
+#ifdef AIC_RTP_ENABLE_DMA
+    struct aic_dma_chan *dma_chan;
+    u8 fifo_thd;
+    u32 fifo_dma_buf[AIC_RTP_FIFO_DEPTH] __attribute__((aligned(CACHE_LINE_SIZE)));
+#endif
 };
 
 typedef struct {

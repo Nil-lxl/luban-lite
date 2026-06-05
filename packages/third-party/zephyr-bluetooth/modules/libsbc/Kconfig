@@ -1,0 +1,7 @@
+# Copyright (c) 2024 NXP
+# SPDX-License-Identifier: Apache-2.0
+
+config LPKG_LIBSBC
+	bool "libsbc Support"
+	help
+	  This option enables Low Complexity Subband Codec (SBC)

@@ -236,22 +236,38 @@ config AIC_USING_HRTIMER1
 endmenu
 
 #---------------------------
-# CAN device global option
+# CANFD device global option
 #---------------------------
 
-config AIC_USING_CAN0
-    bool "Using CAN0"
+config AIC_USING_CANFD0
+    bool "Using CANFD0"
     default n
-    select AIC_CAN_DRV
+    select AIC_CANFD_DRV
     select RT_USING_CAN
     select RT_CAN_USING_HDR
+    select RT_CAN_USING_CANFD
 
-config AIC_USING_CAN1
-    bool "Using CAN1"
-    default n
-    select AIC_CAN_DRV
-    select RT_USING_CAN
-    select RT_CAN_USING_HDR
+menu "CANFD options"
+    depends on AIC_CANFD_DRV
+
+choice
+    prompt "Obtaning data mode"
+    default AIC_CANFD_GET_DATA_BY_CPU
+    help
+        Select the mode of getting data
+
+    config AIC_CANFD_GET_DATA_BY_CPU
+         bool "CPU interrupt mode"
+    config AIC_CANFD_GET_DATA_BY_DMA
+        depends on AIC_USING_DMA
+        bool "DMA mode"
+endchoice
+
+config AIC_CANFD_FILTER_MAX_CNT
+    int
+    default 16 if AIC_CANFD_DRV_V10
+
+endmenu
 
 #---------------------------
 # CIR device global option
@@ -563,7 +579,6 @@ config AIC_USING_DVP
     bool "Using DVP"
     default n
     select AIC_DVP_DRV
-    select AIC_DVP_TEST_V2
     help
         Enable DVP interface
 
@@ -843,6 +858,7 @@ config AIC_USING_SID
     select AIC_SID_DRV
 
 source "bsp/artinchip/drv/efuse/Kconfig.dev"
+source "bsp/artinchip/hal/mac/Kconfig.dev"
 
 #---------------------------
 # dce device global option

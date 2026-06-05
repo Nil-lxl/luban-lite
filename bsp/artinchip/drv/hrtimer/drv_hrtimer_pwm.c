@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -12,6 +12,7 @@
 
 #define LOG_TAG                 "HRTimer"
 #include "aic_core.h"
+#include "aic_hal_clk.h"
 #include "hal_pwm.h"
 
 #define HRTIMER_DEV_NAME        "hrtimer"
@@ -126,6 +127,48 @@ static const struct rt_hwtimer_ops drv_hrtimer_ops =
     .control = drv_hrtimer_ctrl,
 };
 
+#ifdef RT_USING_PM
+static int drv_hrtimer_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        hal_clk_disable(CLK_PWM);
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
+static void drv_hrtimer_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        hal_clk_set_freq(CLK_PWM, PWM_CLK_RATE);
+        hal_clk_enable(CLK_PWM);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops drv_hrtimer_pm_ops =
+{
+    SET_DEVICE_PM_OPS(drv_hrtimer_suspend, drv_hrtimer_resume)
+    NULL,
+};
+#endif
+
 static int drv_hwtimer_init(void)
 {
     u32 i;
@@ -140,6 +183,9 @@ static int drv_hwtimer_init(void)
             LOG_D("%s register success", info->name);
         else
             LOG_E("%s register failed", info->name);
+#ifdef RT_USING_PM
+        rt_pm_device_register(&info->hrtimer.parent, &drv_hrtimer_pm_ops);
+#endif
     }
 
     hal_pwm_init();

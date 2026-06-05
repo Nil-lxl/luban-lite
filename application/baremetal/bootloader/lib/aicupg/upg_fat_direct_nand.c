@@ -22,6 +22,13 @@
 #include <spienc.h>
 #include <dfs_file.h>
 
+#ifdef AIC_NFTL_SUPPORT
+#include <nftl_api.h>
+#ifndef AIC_NFTL_MINI_RESERVED_BLOCK
+#define AIC_NFTL_MINI_RESERVED_BLOCK 50
+#endif
+#endif
+
 extern struct aic_spinand *spinand_probe(u32 spi_bus);
 static struct mtd_dev *fat_direct_spinand_probe(u32 spi_id)
 {
@@ -197,6 +204,7 @@ static int fat_direct_spinand_write_nftl(char *fpath, u32 doffset)
     ulong dolen, actread, writecnt;
     struct mtd_dev *mtd;
     struct nftl_api_handler_t *nftl;
+    struct nftl_api_nand_cfg_t nftl_cfg;
     struct dfs_fd fd;
 
     part_cnt = mtd_get_device_count();
@@ -240,7 +248,11 @@ static int fat_direct_spinand_write_nftl(char *fpath, u32 doffset)
         offset_e += mtd->erasesize;
     }
 
-    if (nftl_api_init(nftl, i)) {
+    memset(&nftl_cfg, 0, sizeof(nftl_cfg));
+    nftl_cfg.version = NFTL_NAND_CFG_VERSION;
+    nftl_cfg.free_block_reserved = AIC_NFTL_MINI_RESERVED_BLOCK;
+
+    if (nftl_api_init_ex(nftl, i, &nftl_cfg)) {
         pr_err("[NE]nftl_initialize failed\n");
         ret = -1;
         goto out;

@@ -1,0 +1,91 @@
+#-----------------------------
+# Inputcap devices local parameter
+#-----------------------------
+
+# INPUTCAP0 parameter
+
+menu "INPUTCAP0 Parameter"
+    depends on AIC_USING_INPUTCAP0
+
+    config AIC_INPUTCAP0_EVENT0
+        int "INPUTCAP0 event0 polarity"
+        range 0 3
+        default 1
+
+    config AIC_INPUTCAP0_EVENT1
+        int "INPUTCAP0 event1 polarity"
+        range 0 3
+        default 3
+
+endmenu
+
+# INPUTCAP1 parameter
+
+menu "INPUTCAP1 Parameter"
+    depends on AIC_USING_INPUTCAP1
+
+    config AIC_INPUTCAP1_EVENT0
+        int "INPUTCAP1 event0 polarity"
+        range 0 3
+        default 1
+
+    config AIC_INPUTCAP1_EVENT1
+        int "INPUTCAP1 event1 polarity"
+        range 0 3
+        default 3
+
+endmenu
+
+# INPUTCAP2 parameter
+
+menu "INPUTCAP2 Parameter"
+    depends on AIC_USING_INPUTCAP2
+
+    config AIC_INPUTCAP2_EVENT0
+        int "INPUTCAP2 event0 polarity"
+        range 0 3
+        default 1
+
+    config AIC_INPUTCAP2_EVENT1
+        int "INPUTCAP2 event1 polarity"
+        range 0 3
+        default 0
+
+endmenu
+
+# INPUTCAP3 parameter
+
+menu "INPUTCAP3 Parameter"
+    depends on AIC_USING_INPUTCAP3
+
+    config AIC_INPUTCAP3_EVENT0
+        int "INPUTCAP3 event0 polarity"
+        range 0 3
+        default 1
+
+    config AIC_INPUTCAP3_EVENT1
+        int "INPUTCAP3 event1 polarity"
+        range 0 3
+        default 0
+
+endmenu
+
+# INPUTCAP4 parameter
+
+menu "INPUTCAP4 Parameter"
+    depends on AIC_USING_INPUTCAP4
+
+    config AIC_INPUTCAP4_EVENT0
+        int "INPUTCAP4 event0 polarity"
+        range 0 3
+        default 1
+
+    config AIC_INPUTCAP4_EVENT1
+        int "INPUTCAP4 event1 polarity"
+        range 0 3
+        default 0
+
+endmenu
+
+# common parameter
+

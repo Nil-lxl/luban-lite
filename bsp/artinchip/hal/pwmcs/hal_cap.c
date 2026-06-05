@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -74,6 +74,7 @@ struct aic_cap_arg {
     u32 freq;
     u32 prd;
     u32 irq_cnt;
+    u32 clk_rate;
 };
 
 static struct aic_cap_arg g_cap_args[AIC_CAP_CH_NUM] = {{0}};
@@ -272,7 +273,7 @@ int hal_cap_set_freq(u32 ch, u32 freq)
         return -ERANGE;
     }
     arg->freq = freq;
-    arg->prd  = PWMCS_CLK_RATE / freq;
+    arg->prd  = arg->clk_rate / freq;
     return 0;
 }
 
@@ -285,7 +286,7 @@ int hal_cap_set_cnt(u32 ch, u32 cnt)
         return -EINVAL;
     }
 
-    arg->prd = (PWMCS_CLK_RATE / arg->freq) * cnt;
+    arg->prd = (arg->clk_rate / arg->freq) * cnt;
     writel(arg->prd, CAP_CNT_PRDV(ch));
 #ifdef CAP_USE_CMP_INT
     writel(arg->prd - (arg->prd >> 4), CAP_CNT_CMPV(ch));
@@ -300,16 +301,27 @@ int hal_cap_get(u32 ch)
     return readl(CAP_CNT_V(ch));
 }
 
+int hal_cap_get_clk_rate()
+{
+#if defined (AIC_HRTIMER_DRV_V10) || defined (AIC_CAP_DRV_V10) || defined (AIC_CAP_DRV_V12)
+    return hal_clk_get_freq(CLK_PWMCS);
+#elif defined (AIC_HRTIMER_DRV_V11) || defined (AIC_CAP_DRV_V11)
+    return hal_clk_get_freq(CLK_PWMCS_SDFM);
+#else
+    return -1;
+#endif
+}
+
 int hal_cap_init(void)
 {
     int i, ret = 0;
+    int clock_rate;
 
     if (g_cap_inited) {
         hal_log_debug("PWMCS was already inited\n");
         return 0;
     }
-
-#if defined (AIC_HRTIMER_DRV_V10) || defined (AIC_CAP_DRV_V10)
+#if defined (AIC_HRTIMER_DRV_V10) || defined (AIC_CAP_DRV_V10) || defined (AIC_CAP_DRV_V12)
     u32 clk_id = CLK_PWMCS;
 #elif defined (AIC_HRTIMER_DRV_V11) || defined (AIC_CAP_DRV_V11)
     u32 clk_id = CLK_PWMCS_SDFM;
@@ -317,29 +329,34 @@ int hal_cap_init(void)
 
 #if defined (AIC_HRTIMER_DRV_V10) || defined (AIC_CAP_DRV_V10) \
     || defined (AIC_HRTIMER_DRV_V11) || defined (AIC_CAP_DRV_V11)
-
     ret = hal_clk_set_freq(clk_id, PWMCS_CLK_RATE);
     if (ret < 0) {
         hal_log_err("Failed to set PWMCS clk %d\n", PWMCS_CLK_RATE);
         return -1;
     }
 #endif
-    ret = hal_clk_enable(CLK_PWMCS);
-    if (ret < 0) {
-        hal_log_err("Failed to enable PWMCS clk\n");
+
+    clock_rate = hal_clk_get_freq(clk_id);
+    if (clock_rate < 0) {
+        hal_log_err("Failed to get PWMCS clk\n");
         return -1;
     }
 
-    ret = hal_clk_enable_deassertrst(CLK_PWMCS);
-    if (ret < 0) {
-        hal_log_err("Failed to reset PWMCS deassert\n");
-        return -1;
+    if (!hal_clk_is_enabled(CLK_PWMCS)) {
+        ret = hal_clk_enable_deassertrst(CLK_PWMCS);
+        if (ret < 0) {
+            hal_log_err("Failed to reset EPWM deassert\n");
+            return -1;
+        }
+    } else {
+        hal_log_debug("PWMCS clk has already been enabled in other sub-modules.\n");
     }
 
     /* default configuration */
     for (i = 0; i < AIC_CAP_CH_NUM; i++) {
         g_cap_args[i].id = i;
         g_cap_args[i].freq = CAP_MAX_FREQ;
+        g_cap_args[i].clk_rate = clock_rate;
     }
 
     g_cap_inited = 1;
@@ -349,6 +366,11 @@ int hal_cap_init(void)
 int hal_cap_deinit(void)
 {
     u32 i;
+
+    if (!g_cap_inited) {
+        hal_log_debug("PWMCS was already deinited\n");
+        return 0;
+    }
 
     for (i = 0; i < AIC_CAP_CH_NUM; i++)
         if (g_cap_args[i].available)

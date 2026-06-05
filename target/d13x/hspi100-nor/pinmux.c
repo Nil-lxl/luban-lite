@@ -9,20 +9,19 @@
 #include <aic_core.h>
 #include <aic_hal.h>
 #include "board.h"
+#include <aic_utils.h>
 
-struct aic_pinmux
-{
-    unsigned char       func;
-    unsigned char       bias;
-    unsigned char       drive;
-    char *              name;
-};
+#ifdef AIC_NO_CONSOLE_SUSPEND
+#define KEEP_CONSOLE_IN_SUSPEND     FLAG_WAKEUP_SOURCE
+#else
+#define KEEP_CONSOLE_IN_SUSPEND     0
+#endif
 
 struct aic_pinmux aic_pinmux_config[] = {
 #ifdef AIC_USING_UART0
     /* uart0 */
-    {5, PIN_PULL_DIS, 3, "PA.0"},
-    {5, PIN_PULL_DIS, 3, "PA.1"},
+    {5, PIN_PULL_DIS, 3, "PA.0", KEEP_CONSOLE_IN_SUSPEND},
+    {5, PIN_PULL_DIS, 3, "PA.1", KEEP_CONSOLE_IN_SUSPEND},
 #endif
 #ifdef AIC_USING_UART1
     /* uart1 */
@@ -312,6 +311,8 @@ struct aic_pinmux aic_pinmux_config[] = {
 #endif
 };
 
+uint32_t aic_pinmux_config_size = ARRAY_SIZE(aic_pinmux_config);
+
 void aic_board_pinmux_init(void)
 {
     uint32_t i = 0;
@@ -319,7 +320,7 @@ void aic_board_pinmux_init(void)
     unsigned int g;
     unsigned int p;
 
-    for (i=0; i<ARRAY_SIZE(aic_pinmux_config); i++) {
+    for (i = 0; i < aic_pinmux_config_size; i++) {
         pin = hal_gpio_name2pin(aic_pinmux_config[i].name);
         if (pin < 0)
             continue;

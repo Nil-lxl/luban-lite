@@ -99,4 +99,10 @@ config SPI_NAND_FUDANMICRO
 	default n
 	help
 	  Enable this driver for FUDANMICRO SPI NAND flash.
+
+config SPI_NAND_UNIM
+	bool "Support UNIM SPI NAND"
+	default n
+	help
+	  Enable this driver for UNIM SPI NAND flash.
 endif

@@ -57,7 +57,7 @@ menu "gmac0 parameter"
     config AIC_DEV_GMAC0_USE_CHIPID
         bool "gmac0 mac address use chip-id"
         default y
-        select AIC_USING_SID
+        select AIC_MAC_CHIPID_DRV
 
     config AIC_DEV_GMAC0_MACADDR
         string "gmac0 mac addr"
@@ -126,7 +126,7 @@ menu "gmac1 parameter"
     config AIC_DEV_GMAC1_USE_CHIPID
         bool "gmac1 mac address use chip-id"
         default y
-        select AIC_USING_SID
+        select AIC_MAC_CHIPID_DRV
 
     config AIC_DEV_GMAC1_MACADDR
         string "gmac1 mac addr"
@@ -141,4 +141,8 @@ menu "gmac1 parameter"
 endmenu
 
 # common parameter
+
+config AIC_MAC_CHIPID_DRV
+    bool
+    select AIC_USING_SID
 

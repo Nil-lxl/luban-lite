@@ -1,0 +1,93 @@
+{
+    "spi-nor": { // Device, The name should be the same with string in image:info:media:type
+        "size": "2m", // Size of SPI NOR
+        "partitions": {
+            "spl":        { "size": "512k" },
+            "env":        { "size": "128k" },
+            "env_r":      { "size": "128k" },
+            "os":         { "size": "512k" },
+            "os_r":       { "size": "512k" },
+        },
+    },
+    "image": {
+        "info": { // Header information about image
+            "platform": "g72x",
+            "product": "demo48-nor",
+            "version": "1.0.0",
+            "media": {
+                "type": "spi-nor",
+                "device_id": 0,
+            },
+        },
+        "updater": { // Image writer which is downloaded to RAM by USB
+            "psram": {
+                "file": "usbupg-psram-init.aic",
+                "attr": ["required", "run"],
+                "ram": "0x30043000"
+            },
+             "spl": {
+                 "file": "bootloader.aic",
+                 "attr": ["required", "run"],
+                 "ram": "CONFIG_AIC_BOOTLOADER_LOAD_BASE",
+             },
+        },
+        "target": { // Image components which will be burn to device's partitions
+             "spl": {
+                 "file": "bootloader.aic",
+                 "attr": ["mtd", "required"],
+                 "part": ["spl"],
+             },
+            "env": {
+                "file": "env.bin",
+                "attr": ["mtd", "optional"],
+                "part": ["env"]
+            },
+            "env_r": {
+                "file": "env.bin",
+                "attr": ["mtd", "optional"],
+                "part": ["env_r"]
+            },
+            "os": {
+                "file": "g72x_os.itb",
+                "attr": ["mtd", "required"],
+                "part": ["os"],
+            },
+        },
+    },
+    "pre-process": {
+	"aicimage": {
+            "usbupg-psram-init.aic": { // No loader, only PreBootProgram to initialize PSRAM
+                "head_ver": "0x00010001",
+                "resource": {
+                    "private2": "pbp_cfg.bin",
+                    "pbp2": "g72x.pbp",
+                },
+            },
+             "bootloader.aic": {
+                 "head_ver": "0x00010001",
+                 "loader": {
+                     "file": "bootloader.bin",
+                     "load address": "CONFIG_AIC_BOOTLOADER_LOAD_BASE",
+                     "entry point": "CONFIG_AIC_BOOTLOADER_TEXT_BASE", // 256 byte aic header
+                     "run in dram": "false",
+                 },
+                "resource": {
+                    "private2": "pbp_cfg.bin",
+                    "pbp2": "g72x.pbp",
+                },
+             },
+         },
+        "itb": {
+            "g72x_os.itb": {
+                "its": "g72x_os.its",
+            },
+        },
+        "uboot_env": {
+            "env.bin": {
+                "file": "env.txt",
+                "size": "4096",
+                "redundant": "enable",
+            },
+        },
+    },
+}

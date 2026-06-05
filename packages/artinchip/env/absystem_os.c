@@ -8,19 +8,26 @@
 #define DBG_ENABLE
 #define DBG_SECTION_NAME "absystem"
 #define DBG_COLOR
+
 #include <rtconfig.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <aic_core.h>
 #include <env.h>
 #include <absystem_os.h>
 #include <dfs.h>
 #include <dfs_fs.h>
-#include <boot_param.h>
+
+#include "aic_core.h"
+#include "boot_param.h"
 
 #define MOUNT_POINT_NAME_MAX 32
+
+#ifndef KERNEL_RTTHREAD
+#define LOG_I(...)      pr_info(__VA_ARGS__)
+#define LOG_E(...)      pr_err(__VA_ARGS__)
+#endif
 
 bool os_status = 0;
 bool rodatafs_status = 0;
@@ -50,6 +57,12 @@ int aic_ota_status_update(void)
     }
 
     status = fw_getenv("upgrade_available");
+    if (status == NULL) {
+        pr_err("upgrade_available not found\n");
+        ret = -1;
+        goto aic_get_upgrade_status_err;
+    }
+
 #ifdef AIC_ENV_DEBUG
     printf("upgrade_available = %s\n", status);
 #endif
@@ -87,6 +100,11 @@ int aic_upgrade_end(void)
     /* update os */
     if (os_status) {
         now = fw_getenv("osAB_now");
+        if (now == NULL) {
+            pr_err("osAB_now not found\n");
+            ret = -1;
+            goto aic_upgrade_end_out;
+        }
         if (strncmp(now, "A", 1) == 0) {
             ret = fw_env_write("osAB_next", "B");
             LOG_I("os Next startup in B system");
@@ -105,6 +123,11 @@ int aic_upgrade_end(void)
     if (rodatafs_status) {
 #ifndef OTA_RODATA_DIRECT
         now = fw_getenv("rodataAB_now");
+        if (now == NULL) {
+            pr_err("rodataAB_now not found\n");
+            ret = -1;
+            goto aic_upgrade_end_out;
+        }
         if (strncmp(now, "A", 1) == 0) {
             ret = fw_env_write("rodataAB_next", "B");
             LOG_I("rodata Next mount in B system");
@@ -124,6 +147,11 @@ int aic_upgrade_end(void)
     if (datafs_status) {
 #ifndef OTA_DATA_DIRECT
         now = fw_getenv("dataAB_now");
+        if (now == NULL) {
+            pr_err("dataAB_now not found\n");
+            ret = -1;
+            goto aic_upgrade_end_out;
+        }
         if (strncmp(now, "A", 1) == 0) {
             ret = fw_env_write("dataAB_next", "B");
             LOG_I("data Next mount in B system");
@@ -169,6 +197,11 @@ int aic_get_rodata_to_mount(char *target_rodata)
     }
 
     now = fw_getenv("rodataAB_now");
+    if (now == NULL) {
+        pr_err("rodataAB_now not found\n");
+        ret = -1;
+        goto aic_get_rodata_to_mount_err;
+    }
 #ifdef AIC_ENV_DEBUG
     printf("rodataAB_now = %s\n", now);
 #endif
@@ -176,14 +209,16 @@ int aic_get_rodata_to_mount(char *target_rodata)
         rodata = fw_getenv("rodata_partname");
         if (rodata == NULL) {
             pr_err("failed to get rodata partname\n");
-            return -1;
+            ret = -1;
+            goto aic_get_rodata_to_mount_err;
         }
         strncpy(target_rodata, rodata, MOUNT_POINT_NAME_MAX - 1);
     } else if (strncmp(now, "B", 2) == 0) {
         rodata = fw_getenv("rodata_partname_r");
         if (rodata == NULL) {
             pr_err("failed to get rodata partname\n");
-            return -1;
+            ret = -1;
+            goto aic_get_rodata_to_mount_err;
         }
         strncpy(target_rodata, rodata, MOUNT_POINT_NAME_MAX - 1);
     } else {
@@ -191,6 +226,7 @@ int aic_get_rodata_to_mount(char *target_rodata)
         pr_err("invalid rodataAB_now\n");
     }
 
+aic_get_rodata_to_mount_err:
     fw_env_close();
 
     return ret;
@@ -208,6 +244,11 @@ int aic_get_data_to_mount(char *target_data)
     }
 
     now = fw_getenv("dataAB_now");
+    if (now == NULL) {
+        pr_err("dataAB_now not found\n");
+        ret = -1;
+        goto aic_get_data_to_mount_err;
+    }
 #ifdef AIC_ENV_DEBUG
     printf("dataAB_now = %s\n", now);
 #endif
@@ -215,14 +256,16 @@ int aic_get_data_to_mount(char *target_data)
         data = fw_getenv("data_partname");
         if (data == NULL) {
             pr_err("failed to get data partname\n");
-            return -1;
+            ret = -1;
+            goto aic_get_data_to_mount_err;
         }
         strncpy(target_data, data, MOUNT_POINT_NAME_MAX - 1);
     } else if (strncmp(now, "B", 2) == 0) {
         data = fw_getenv("data_partname_r");
         if (data == NULL) {
             pr_err("failed to get data partname\n");
-            return -1;
+            ret = -1;
+            goto aic_get_data_to_mount_err;
         }
         strncpy(target_data, data, MOUNT_POINT_NAME_MAX - 1);
     } else {
@@ -230,6 +273,7 @@ int aic_get_data_to_mount(char *target_data)
         pr_err("invalid dataAB_now\n");
     }
 
+aic_get_data_to_mount_err:
     fw_env_close();
 
     return ret;

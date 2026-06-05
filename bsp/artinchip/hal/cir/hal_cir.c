@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  * Authors:  dwj <weijie.ding@artinchip.com>
@@ -39,6 +39,9 @@ int hal_cir_init(aic_cir_ctrl_t *aic_cir_ctrl)
     reg_val = readl(gen_reg(aic_cir_ctrl->cir_base + CIR_INTEN_REG));
     reg_val |= CIR_INTEN_RX_INT_EN;
     writel(reg_val, gen_reg(aic_cir_ctrl->cir_base + CIR_INTEN_REG));
+
+    /* Reset software state to avoid stale data after close/open or suspend/resume */
+    hal_cir_rx_reset_status(aic_cir_ctrl);
 
     return ret;
 }
@@ -164,7 +167,7 @@ irqreturn_t hal_cir_irq(int irq_num, void *arg)
     unsigned int int_status, rx_status;
     unsigned int i, count = 0, free_space;
     aic_cir_ctrl_t *aic_cir_ctrl = (aic_cir_ctrl_t *)arg;
-    uint8_t *rx_data = &aic_cir_ctrl->rx_data[aic_cir_ctrl->rx_idx];
+    uint8_t *rx_data = (uint8_t *)&aic_cir_ctrl->rx_data[aic_cir_ctrl->rx_idx];
     uint8_t need_inverse;
 
     int_status = readl(gen_reg(aic_cir_ctrl->cir_base + CIR_INTR_REG)) & 7;
@@ -233,4 +236,15 @@ void hal_cir_rx_reset_status(aic_cir_ctrl_t * aic_cir_ctrl)
 {
     memset((void *)aic_cir_ctrl->rx_data, 0, sizeof(aic_cir_ctrl->rx_data));
     aic_cir_ctrl->rx_idx = 0;
+    aic_cir_ctrl->rx_flag = 0;
+}
+
+int hal_cir_is_busy(aic_cir_ctrl_t * aic_cir_ctrl)
+{
+    uint32_t tx_active, rx_active;
+
+    tx_active = readl(gen_reg(aic_cir_ctrl->cir_base + CIR_TXSTAT_REG)) & (1 << CIR_TXSTAT_TX_STA);
+    rx_active = readl(gen_reg(aic_cir_ctrl->cir_base + CIR_RXSTAT_REG)) & (1 << CIR_RXSTAT_RX_STA);
+
+    return tx_active || rx_active;
 }

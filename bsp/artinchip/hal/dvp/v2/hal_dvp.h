@@ -9,64 +9,55 @@
 #ifndef _ARTINCHIP_HAL_DVP_H_
 #define _ARTINCHIP_HAL_DVP_H_
 
+#include "mpp_types.h"
+
 #define DVP_MAX_CH_NUM		    2
 #define DVP_PLANE_NUM           2
+#define DVP_DEMUX_CH0_ID        0
+#define DVP_DEMUX_CH1_ID        1
 #define DVP_MAX_HEIGHT          4096U
 #define DVP_MAX_WIDTH           4096U
 #define DVP_SFIELD_MODE
 
-#define DVP_CTL                     0x000
-#define DVP_CH_REF_ID               0x004
-#define DVP_CAP_CTL                 0x008
-#define DVP_CH_IRQ_STA              0x00C
+#define DVP_CTL                         0x000
+#define DVP_CH_REF_ID                   0x004
+#define DVP_CAP_CTL                     0x008
+#define DVP_CH_IRQ_STA                  0x00C
 
-#define DVP_DLL_PHA_CFG2            0x034
-#define DVP_QOS_CFG                 0x1B8
-#define DVP_AXI_CFG                 0x1BC
+#define DVP_DLL_PHA_CFG2                0x034
+#define DVP_QOS_CFG                     0x1B8
+#define DVP_AXI_CFG                     0x1BC
 
 #define DVP_CH_BASE(ch)                 (0x100 * (ch))
 
-#define DVP_IRQ_EN(ch)                   (DVP_CH_BASE(ch) + 0x100)
-#define DVP_IRQ_STA(ch)                  (DVP_CH_BASE(ch) + 0x104)
-#define DVP_IRQ_CFG(ch)                  (DVP_CH_BASE(ch) + 0x108)
-#define DVP_IN_CFG(ch)                   (DVP_CH_BASE(ch) + 0x10C)
-#define DVP_IN_HOR_SIZE(ch)              (DVP_CH_BASE(ch) + 0x110)
-#define DVP_IN_VER_SIZE(ch)              (DVP_CH_BASE(ch) + 0x114)
-#define DVP_OUT_HOR_SIZE(ch)             (DVP_CH_BASE(ch) + 0x120)
-#define DVP_OUT_VER_SIZE(ch)             (DVP_CH_BASE(ch) + 0x128)
-#define DVP_OUT_FRA_NUM(ch)              (DVP_CH_BASE(ch) + 0x130)
-#define DVP_OUT_CUR_FRA(ch)              (DVP_CH_BASE(ch) + 0x134)
-#define DVP_OUT_CTL(ch)                  (DVP_CH_BASE(ch) + 0x138)
-#define DVP_OUT_UPDATE_CTL(ch)           (DVP_CH_BASE(ch) + 0x13C)
-#define DVP_OUT_ADDR_BUF0(ch)            (DVP_CH_BASE(ch) + 0x140)
-#define DVP_OUT_ADDR_BUF1(ch)            (DVP_CH_BASE(ch) + 0x144)
-#define DVP_OUT_READ_ADDR0(ch)           (DVP_CH_BASE(ch) + 0x148)
-#define DVP_OUT_READ_ADDR1(ch)           (DVP_CH_BASE(ch) + 0x14C)
-#define DVP_OUT_LINE_STRIDE0(ch)         (DVP_CH_BASE(ch) + 0x150)
-#define DVP_OUT_LINE_STRIDE1(ch)         (DVP_CH_BASE(ch) + 0x154)
-#define DVP_OUT_ADDR_BUF0_SHA(ch)        (DVP_CH_BASE(ch) + 0x158)
-#define DVP_OUT_ADDR_BUF1_SHA(ch)        (DVP_CH_BASE(ch) + 0x15C)
-#define DVP_OUT_LINE_STRIDE_SHA(ch)      (DVP_CH_BASE(ch) + 0x160)
+#define DVP_IRQ_EN(ch)                  (DVP_CH_BASE(ch) + 0x100)
+#define DVP_IRQ_STA(ch)                 (DVP_CH_BASE(ch) + 0x104)
+#define DVP_IRQ_CFG(ch)                 (DVP_CH_BASE(ch) + 0x108)
+#define DVP_IN_CFG(ch)                  (DVP_CH_BASE(ch) + 0x10C)
+#define DVP_IN_HOR_SIZE(ch)             (DVP_CH_BASE(ch) + 0x110)
+#define DVP_IN_VER_SIZE(ch)             (DVP_CH_BASE(ch) + 0x114)
+#define DVP_OUT_HOR_SIZE(ch)            (DVP_CH_BASE(ch) + 0x120)
+#define DVP_OUT_VER_SIZE(ch)            (DVP_CH_BASE(ch) + 0x128)
+#define DVP_OUT_FRA_NUM(ch)             (DVP_CH_BASE(ch) + 0x130)
+#define DVP_OUT_CUR_FRA(ch)             (DVP_CH_BASE(ch) + 0x134)
+#define DVP_OUT_CTL(ch)                 (DVP_CH_BASE(ch) + 0x138)
+#define DVP_OUT_UPDATE_CTL(ch)          (DVP_CH_BASE(ch) + 0x13C)
+#define DVP_OUT_ADDR_BUF0(ch)           (DVP_CH_BASE(ch) + 0x140)
+#define DVP_OUT_ADDR_BUF1(ch)           (DVP_CH_BASE(ch) + 0x144)
+#define DVP_OUT_READ_ADDR0(ch)          (DVP_CH_BASE(ch) + 0x148)
+#define DVP_OUT_READ_ADDR1(ch)          (DVP_CH_BASE(ch) + 0x14C)
+#define DVP_OUT_LINE_STRIDE0(ch)        (DVP_CH_BASE(ch) + 0x150)
+#define DVP_OUT_LINE_STRIDE1(ch)        (DVP_CH_BASE(ch) + 0x154)
+#define DVP_OUT_ADDR_BUF0_SHA(ch)       (DVP_CH_BASE(ch) + 0x158)
+#define DVP_OUT_ADDR_BUF1_SHA(ch)       (DVP_CH_BASE(ch) + 0x15C)
+#define DVP_OUT_LINE_STRIDE_SHA(ch)     (DVP_CH_BASE(ch) + 0x160)
 
-#define DVP_HIST_RESULT0(ch)             (DVP_CH_BASE(ch) + 0x1C0)
-#define DVP_HIST_RESULT1(ch)             (DVP_CH_BASE(ch) + 0x1C4)
-#define DVP_HIST_RESULT2(ch)             (DVP_CH_BASE(ch) + 0x1C8)
-#define DVP_HIST_RESULT3(ch)             (DVP_CH_BASE(ch) + 0x1CC)
-#define DVP_HIST_RESULT4(ch)             (DVP_CH_BASE(ch) + 0x1D0)
-#define DVP_HIST_RESULT5(ch)             (DVP_CH_BASE(ch) + 0x1D4)
-#define DVP_HIST_RESULT6(ch)             (DVP_CH_BASE(ch) + 0x1D8)
-#define DVP_HIST_RESULT7(ch)             (DVP_CH_BASE(ch) + 0x1DC)
-#define DVP_HIST_RESULT8(ch)             (DVP_CH_BASE(ch) + 0x1E0)
-#define DVP_HIST_RESULT9(ch)             (DVP_CH_BASE(ch) + 0x1E4)
-#define DVP_HIST_RESULT10(ch)            (DVP_CH_BASE(ch) + 0x1E8)
-#define DVP_HIST_RESULT11(ch)            (DVP_CH_BASE(ch) + 0x1EC)
-#define DVP_HIST_RESULT12(ch)            (DVP_CH_BASE(ch) + 0x1F0)
-#define DVP_HIST_RESULT13(ch)            (DVP_CH_BASE(ch) + 0x1F4)
-#define DVP_HIST_RESULT14(ch)            (DVP_CH_BASE(ch) + 0x1F8)
-#define DVP_HIST_RESULT15(ch)            (DVP_CH_BASE(ch) + 0x1FC)
+#define DVP_HIST_RESULT(ch, n)          (DVP_CH_BASE(ch) + 0x1C0 + (n) * 4)
 
 #define DVP_DEBUG_SEL               0xFF0
 #define DVP_VER                     0xFFC
+
+#define DVP_CH_IRQ_ALL_PENDING      0x3
 
 #define DVP_CTL_AXI_INTI_THR(v)     ((v) << 24)
 #define DVP_CTL_AXI_INTI_THR_MASK   GENMASK(31, 24)
@@ -76,7 +67,7 @@
 #define DVP_CTL_CLR_MODE            BIT(19)
 #define DVP_CTL_CLK_GATE            BIT(18)
 #define DVP_CTL_HIST_EN             BIT(17)
-#define DVP_CTL_CHANNEL_SEL         BIT(16)
+#define DVP_CTL_DEMUX_EN            BIT(16)
 #define DVP_CTL_OUT_FMT(v)          ((v) << 12)
 #define DVP_CTL_OUT_FMT_MASK        GENMASK(14, 12)
 #define DVP_CTL_DDR_EN              BIT(11)
@@ -90,13 +81,13 @@
 #define DVP_CTL_CLR                 BIT(1)
 #define DVP_CTL_EN                  BIT(0)
 
-#define DVP_CH_REF_ID_EN            BIT(0)
-#define DVP_CH_REF_ID0(v)           ((v) << 4)
-#define DVP_CH_REF_ID0_MASK         GENMASK(7, 4)
-#define DVP_CH_REF_ID1(v)           ((v) << 8)
-#define DVP_CH_REF_ID1_MASK         GENMASK(11, 8)
-#define DVP_CH_REF_ID0_INDEX        BIT(12)
 #define DVP_CH_REF_ID1_INDEX        BIT(16)
+#define DVP_CH_REF_ID0_INDEX        BIT(12)
+#define DVP_CH_REF_ID1_CFG(v)       ((v) << 8)
+#define DVP_CH_REF_ID1_MASK         GENMASK(11, 8)
+#define DVP_CH_REF_ID0_CFG(v)       ((v) << 4)
+#define DVP_CH_REF_ID0_MASK         GENMASK(7, 4)
+#define DVP_CH_REF_ID_EN            BIT(0)
 
 #define DVP_CAP_CTL_PATH_SEL        BIT(0)
 #define DVP_CAP_CTL_CHAIN_SEL(v)    ((v) << 4)
@@ -114,7 +105,7 @@
 #define DVP_IRQ_EN_FRAME_DONE       BIT(1)
 #define DVP_IRQ_EN_CAP_DONE         BIT(0)
 
-#define DVP_IRQ_STA_CLOSE_STA       BIT(8)
+#define DVP_IRQ_STA_CLOSE_DONE      BIT(8)
 #define DVP_IRQ_STA_UPDATE_DONE     BIT(7)
 #define DVP_IRQ_STA_XY_CODE_ERR     BIT(6)
 #define DVP_IRQ_STA_IN_VER_CHG      BIT(5)
@@ -173,7 +164,6 @@
 #define DVP_QOS_HIGH_SHIFT          4
 #define DVP_QOS_LOW_MASK            GENMASK(3, 0)
 
-
 enum dvp_input {
     DVP_IN_RAW      = 0,
     DVP_IN_YUV422   = 1,
@@ -212,6 +202,7 @@ struct aic_dvp_config {
     enum dvp_input_yuv_seq  input_seq;
     u32                     flags;
     u32                     interlaced;
+    u32                     mux;
 
     /* Output format */
     enum dvp_output output;
@@ -221,19 +212,25 @@ struct aic_dvp_config {
     u32             crop_y;
     u32             stride[DVP_PLANE_NUM];
     u32             sizeimage[DVP_PLANE_NUM];
+
+    /* Stitch mode configuration */
+    enum mpp_stitch_mode stitch_mode;
 };
 
 /* Some API of register, Defined in hal_dvp.c */
 void hal_dvp_enable(struct aic_dvp_config *cfg, int enable);
-void hal_dvp_channel_sel(u32 ch);
+void hal_dvp_demux_en(int enable);
 void hal_dvp_clr_mode(void);
 void hal_dvp_hist_en(void);
-void hal_dvp_ch_index_config(bool ch0_index, bool ch1_index);
+void hal_dvp_ch_id_cfg(u32 id0, u32 id1);
+u32 hal_dvp_ch_irq_sta_get(void);
 u32 hal_dvp_irq_sta_get(u32 ch);
+
 void hal_dvp_capture_start(u32 ch);
 void hal_dvp_capture_stop(u32 ch);
 void hal_dvp_clr_fifo(void);
 int  hal_dvp_clr_int(u32 ch);
+bool hal_dvp_int_is_enabled(u32 ch);
 void hal_dvp_enable_int(struct aic_dvp_config *cfg, u32 ch, int enable);
 void hal_dvp_set_pol(u32 flags, u32 ch);
 void hal_dvp_set_cfg(struct aic_dvp_config *cfg, u32 ch);

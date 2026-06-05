@@ -8,6 +8,11 @@ if LPKG_USING_OTA_DOWNLOADER
         bool "Enable OTA downloader debug"
         default n
 
+    config OTA_SECURITY_UPGRADE
+        bool "Enable spienc security upgrade"
+        depends on AIC_USING_SPIENC
+        default n
+
     config AIC_OTA_INTERFACE
         bool "Enable OTA interface"
         select AIC_ENV_INTERFACE

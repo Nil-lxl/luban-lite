@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  * Authors:  dwj <weijie.ding@artinchip.com>
@@ -43,14 +43,14 @@
 #define CIR_INTEN_RX_INT_EN             (7)
 
 #define CIR_TXSTAT_REG                  0x0C
-#define CIR_TXSTAT_TX_STA               (16)
+#define CIR_TXSTAT_TX_STA               (11)
 #define CIR_TXSTAT_TXFIFO_ERR           (10)
 #define CIR_TXSTAT_TXFIFO_FULL          (9)
 #define CIR_TXSTAT_TXFIFO_EMPTY         (8)
 #define CIR_TXSTAT_TXFIFO_DLEN          (0)
 
 #define CIR_RXSTAT_REG                  0x10
-#define CIR_RXSTAT_RX_STA               (16)
+#define CIR_RXSTAT_RX_STA               (11)
 #define CIR_RXSTAT_RXFIFO_ERR           (10)
 #define CIR_RXSTAT_RXFIFO_FULL          (9)
 #define CIR_RXSTAT_RXFIFO_EMPTY         BIT(8)
@@ -98,11 +98,11 @@ struct aic_cir_ctrl {
         void (*callback)(aic_cir_ctrl_t *aic_cir_ctrl, cir_event_t event,
                          void *arg);
         void                *arg;
-        uint8_t             tx_data[128];
-        uint8_t             rx_data[128];
-        uint32_t            rx_idx;
-        uint8_t             rx_level;
-        uint8_t             rx_flag; /* Indicates if rxfifo has received data */
+        __IOM uint8_t       tx_data[128];
+        __IOM uint8_t       rx_data[128];
+        __IOM uint32_t      rx_idx;
+        __IOM uint8_t       rx_level;
+        __IOM uint8_t       rx_flag; /* Indicates if rxfifo has received data */
 };
 
 int hal_cir_init(aic_cir_ctrl_t *aic_cir_ctrl);
@@ -123,5 +123,6 @@ void hal_cir_attach_callback(aic_cir_ctrl_t * aic_cir_ctrl,
                              void *callback, void *arg);
 void hal_cir_detach_callback(aic_cir_ctrl_t * aic_cir_ctrl);
 void hal_cir_rx_reset_status(aic_cir_ctrl_t * aic_cir_ctrl);
+int hal_cir_is_busy(aic_cir_ctrl_t * aic_cir_ctrl);
 
 #endif /* _HAL_CIR_H_ */

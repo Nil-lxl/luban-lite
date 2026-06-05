@@ -899,7 +899,7 @@ uint8_t hid_touch_fingers_event_update(struct rt_touch_data *data)
         data++;
     }
 
-    return hid_touch->data[id].event;
+    return hid_touch->data[TOUCH_MAX_POINT_NUM - 1].event;
 }
 
 uint8_t _finger_alloc(uint8_t id)
@@ -1811,7 +1811,7 @@ void usbd_hid_touch_set_crop(int x, int y, int width, int height)
         return;
 
     USB_LOG_INFO("set hid_touch crop:x %d, y %d, w:h %dx%d->%dx%d.\n",
-        x, y, crop_info.width, crop_info.height, width, height);
+        x, y, (int)crop_info.width, (int)crop_info.height, width, height);
 
     crop_info.enable = true;
     crop_info.width = width;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -95,9 +95,9 @@ static struct display_timing timing_800_480 = {
     .pixelclock   = 28 * 1000000,
 
     .hactive      = 800,
-    .hback_porch  = 10,
-    .hfront_porch = 5,
-    .hsync_len    = 40,
+    .hback_porch  = 20,
+    .hfront_porch = 50,
+    .hsync_len    = 20,
 
     .vactive      = 480,
     .vback_porch  = 32,

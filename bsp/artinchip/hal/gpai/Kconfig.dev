@@ -11,6 +11,10 @@ config AIC_GPAI_DRV_POLL
     bool
     default n
 
+config AIC_GPAI_DRV_DMA
+    bool
+    default n
+
 menu "GPAI0 Parameter"
     depends on AIC_USING_GPAI0
 
@@ -25,11 +29,16 @@ menu "GPAI0 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI0_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI0_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI0_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI0_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI0_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI0_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI0_OBTAIN_DATA_BY_DO
 
@@ -76,11 +85,16 @@ menu "GPAI1 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI1_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI1_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI1_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI1_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI1_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI1_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI1_OBTAIN_DATA_BY_DO
 
@@ -127,11 +141,16 @@ menu "GPAI2 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI2_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI2_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI2_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI2_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI2_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI2_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI2_OBTAIN_DATA_BY_DO
 
@@ -178,11 +197,16 @@ menu "GPAI3 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI3_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI3_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI3_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI3_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI3_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI3_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI3_OBTAIN_DATA_BY_DO
 
@@ -229,11 +253,16 @@ menu "GPAI4 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI4_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI4_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI4_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI4_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI4_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI4_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI4_OBTAIN_DATA_BY_DO
 
@@ -280,11 +309,16 @@ menu "GPAI5 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI5_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI5_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI5_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI5_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI5_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI5_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI5_OBTAIN_DATA_BY_DO
 
@@ -331,11 +365,16 @@ menu "GPAI6 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI6_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI6_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI6_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI6_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI6_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI6_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI6_OBTAIN_DATA_BY_DO
 
@@ -382,11 +421,16 @@ menu "GPAI7 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI7_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI7_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI7_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI7_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI7_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI7_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI7_OBTAIN_DATA_BY_DO
 
@@ -433,11 +477,16 @@ menu "GPAI8 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI8_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI8_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI8_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI8_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI8_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI8_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI8_OBTAIN_DATA_BY_DO
 
@@ -484,11 +533,16 @@ menu "GPAI9 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI9_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI9_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI9_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI9_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI9_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI9_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI9_OBTAIN_DATA_BY_DO
 
@@ -535,11 +589,16 @@ menu "GPAI10 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI10_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI10_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI10_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI10_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI10_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI10_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI10_OBTAIN_DATA_BY_DO
 
@@ -586,11 +645,16 @@ menu "GPAI11 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI11_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI11_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI11_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI11_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI11_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI11_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI11_OBTAIN_DATA_BY_DO
 
@@ -637,11 +701,16 @@ menu "GPAI12 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI12_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI12_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI12_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI12_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI12_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI12_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI12_OBTAIN_DATA_BY_DO
 
@@ -688,11 +757,16 @@ menu "GPAI13 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI13_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI13_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI13_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI13_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI13_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI13_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI13_OBTAIN_DATA_BY_DO
 
@@ -739,11 +813,16 @@ menu "GPAI14 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI14_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI14_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI14_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI14_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI14_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI14_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI14_OBTAIN_DATA_BY_DO
 
@@ -790,11 +869,16 @@ menu "GPAI15 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI15_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI15_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI15_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI15_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI15_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI15_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI15_OBTAIN_DATA_BY_DO
 
@@ -841,11 +925,16 @@ menu "GPAI16 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI16_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI16_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI16_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI16_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI16_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI16_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI16_OBTAIN_DATA_BY_DO
 
@@ -892,11 +981,16 @@ menu "GPAI17 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI17_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI17_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI17_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI17_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI17_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI17_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI17_OBTAIN_DATA_BY_DO
 
@@ -943,11 +1037,16 @@ menu "GPAI18 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI18_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI18_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI18_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI18_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI18_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI18_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI18_OBTAIN_DATA_BY_DO
 
@@ -994,11 +1093,16 @@ menu "GPAI19 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI19_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI19_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI19_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI19_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI19_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI19_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI19_OBTAIN_DATA_BY_DO
 
@@ -1045,11 +1149,16 @@ menu "GPAI20 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI20_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI20_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI20_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI20_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI20_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI20_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI20_OBTAIN_DATA_BY_DO
 
@@ -1096,11 +1205,16 @@ menu "GPAI21 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI21_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI21_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI21_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI21_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI21_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI21_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI21_OBTAIN_DATA_BY_DO
 
@@ -1147,11 +1261,16 @@ menu "GPAI22 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI22_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI22_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI22_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI22_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI22_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI22_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI22_OBTAIN_DATA_BY_DO
 
@@ -1198,11 +1317,16 @@ menu "GPAI23 Parameter"
             select AIC_GPAI_DRV_POLL
         config AIC_GPAI23_OBTAIN_DATA_BY_CPU
             bool "CPU interrupt mode"
+        config AIC_GPAI23_OBTAIN_DATA_BY_DMA
+            bool "DMA mode"
+            select AIC_GPAI_DRV_DMA
+            depends on AIC_GPAI_SUPPORT_DMA && AIC_USING_DMA
     endchoice
 
     config AIC_GPAI23_OBTAIN_DATA_MODE
         int
         default 1     if AIC_GPAI23_OBTAIN_DATA_BY_CPU
+        default 2     if AIC_GPAI23_OBTAIN_DATA_BY_DMA
         default 3     if AIC_GPAI23_OBTAIN_DATA_BY_POLL
         default 4     if AIC_GPAI23_OBTAIN_DATA_BY_DO
 

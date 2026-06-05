@@ -38,9 +38,9 @@ void hal_dvp_enable(struct aic_dvp_config *cfg, int enable)
     hal_dvp_reg_enable(DVP_CTL, DVP_CTL_EN, enable);
 }
 
-void hal_dvp_channel_sel(u32 ch)
+void hal_dvp_demux_en(int enable)
 {
-    hal_dvp_reg_enable(DVP_CTL, DVP_CTL_CHANNEL_SEL, ch);
+    hal_dvp_reg_enable(DVP_CTL, DVP_CTL_DEMUX_EN, enable);
 }
 
 void hal_dvp_clr_mode(void)
@@ -53,24 +53,29 @@ void hal_dvp_hist_en(void)
     dvp_writel(DVP_CTL_HIST_EN, DVP_CTL);
 }
 
-void hal_dvp_ch_index_config(bool ch0_index, bool ch1_index)
+void hal_dvp_ch_id_cfg(u32 id0, u32 id1)
 {
-    u32 reg_val = dvp_readl(DVP_CH_REF_ID);
+    u32 val = dvp_readl(DVP_CH_REF_ID);
 
-    reg_val &= ~DVP_CH_REF_ID0_INDEX;
-    if (ch0_index)
-        reg_val |= DVP_CH_REF_ID0_INDEX;
+    val &= ~(DVP_CH_REF_ID0_MASK | DVP_CH_REF_ID1_MASK);
+    val |= DVP_CH_REF_ID0_CFG(id0) | DVP_CH_REF_ID1_CFG(id1);
+    val |= DVP_CH_REF_ID_EN;
 
-    reg_val &= ~DVP_CH_REF_ID1_INDEX;
-    if (ch1_index)
-        reg_val |= DVP_CH_REF_ID1_INDEX;
+    dvp_writel(val, DVP_CH_REF_ID);
+}
 
-    dvp_writel(reg_val, DVP_CH_REF_ID);
+u32 hal_dvp_ch_irq_sta_get(void)
+{
+    u32 val = dvp_readl(DVP_CH_IRQ_STA);
+
+    if (val)
+        dvp_writel(val, DVP_CH_IRQ_STA);
+    return val;
 }
 
 u32 hal_dvp_irq_sta_get(u32 ch)
 {
-    return readl(DVP_BASE + DVP_IRQ_STA(ch));
+    return dvp_readl(DVP_IRQ_STA(ch));
 }
 
 void hal_dvp_capture_start(u32 ch)
@@ -92,8 +97,17 @@ int hal_dvp_clr_int(u32 ch)
 {
     int sta = dvp_readl(DVP_IRQ_STA(ch));
 
-    dvp_writel(sta, DVP_IRQ_STA(ch));
+    if (sta)
+        dvp_writel(sta, DVP_IRQ_STA(ch));
     return sta;
+}
+
+bool hal_dvp_int_is_enabled(u32 ch)
+{
+    if (dvp_readl(DVP_IRQ_EN(ch)) & (DVP_IRQ_EN_FRAME_DONE | DVP_IRQ_EN_HNUM))
+        return true;
+    else
+        return false;
 }
 
 void hal_dvp_enable_int(struct aic_dvp_config *cfg, u32 ch, int enable)
@@ -156,6 +170,11 @@ void hal_dvp_set_cfg(struct aic_dvp_config *cfg, u32 ch)
         stride1 = cfg->stride[1];
     }
 
+    if (cfg->stitch_mode == MPP_STITCH_H_MODE) {
+        stride0 *= 2;
+        stride1 *= 2;
+    }
+
     val = DVP_CTL_IN_FMT(cfg->input)
             | DVP_CTL_IN_SEQ(cfg->input_seq)
             | DVP_CTL_OUT_FMT(cfg->output)
@@ -163,9 +182,13 @@ void hal_dvp_set_cfg(struct aic_dvp_config *cfg, u32 ch)
             | DVP_CTL_EN;
     if (!cfg->interlaced)
         val |= DVP_CTL_DROP_FRAME_EN;
+    if (cfg->mux > 1) {
+        val |= DVP_CTL_DEMUX_EN;
+        hal_dvp_ch_id_cfg(DVP_DEMUX_CH0_ID, DVP_DEMUX_CH1_ID);
+    }
     dvp_writel(val, DVP_CTL);
 
-    if (cfg->output == DVP_OUT_RAW_PASSTHROUGH)
+    if (cfg->input == DVP_IN_RAW)
         val = DVP_OUT_HOR_NUM_RAW(cfg->width) | DVP_OUT_HOR_BEG_RAW(cfg->crop_x);
     else
         val = DVP_OUT_HOR_NUM(cfg->width) | DVP_OUT_HOR_BEG(cfg->crop_x);

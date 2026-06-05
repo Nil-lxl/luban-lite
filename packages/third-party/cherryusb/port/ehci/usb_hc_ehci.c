@@ -7,6 +7,11 @@
 #if defined(LPKG_CHERRYUSB_HOST_OHCI)
 #include "../ohci/usb_hc_ohci.h"
 #endif
+#ifdef RT_USING_PM
+#include <rtdevice.h>
+
+static int usbh_ehci_pm_init(struct usbh_bus *bus);
+#endif
 
 #define EHCI_TUNE_CERR    3 /* 0-3 qtd retries; 0 == don't stop */
 #define EHCI_TUNE_RL_HS   4 /* nak throttle; see 4.9 */
@@ -1153,6 +1158,9 @@ int usb_hc_init(struct usbh_bus *bus)
 
     /* Enable EHCI interrupts. */
     EHCI_HCOR->usbintr = EHCI_USBIE_INT | EHCI_USBIE_ERR | EHCI_USBIE_PCD | EHCI_USBIE_FATAL | EHCI_USBIE_IAA;
+#ifdef RT_USING_PM
+    usbh_ehci_pm_init(bus);
+#endif
     return 0;
 }
 
@@ -1687,3 +1695,115 @@ void usbh_irq_handler(uint32_t irq_num, struct usbh_bus *bus)
     if (usbsts & EHCI_USBSTS_FATAL) {
     }
 }
+
+#ifdef RT_USING_PM
+static int ehci_is_busy(struct usbh_bus *bus)
+{
+    bool has_device = false;
+
+    /* Quick check: if no device is connected at all, definitely not busy */
+    for (uint8_t port = 0; port < g_ehci_hcd[bus->hcd.hcd_id].n_ports; port++) {
+        if (EHCI_HCOR->portsc[port] & EHCI_PORTSC_CCS) {
+            has_device = true;
+            break;
+        }
+    }
+
+    if (!has_device)
+        return 0;
+
+    /* Only block sleep for in-flight bulk/control transfers.
+     * Interrupt transfers (HID) will be re-established on resume;
+     * an idle U-disk has no QH allocated at all.
+     */
+    for (uint32_t i = 0; i < CONFIG_USB_EHCI_QH_NUM; i++) {
+        if (!g_ehci_hcd[bus->hcd.hcd_id].ehci_qh_used[i])
+            continue;
+
+        struct ehci_qh_hw *qh = &ehci_qh_pool[bus->hcd.hcd_id][i];
+        if (!qh->urb || !qh->urb->ep)
+            continue;
+
+        uint8_t ep_type = USB_GET_ENDPOINT_TYPE(qh->urb->ep->bmAttributes);
+        if (ep_type == USB_ENDPOINT_TYPE_BULK ||
+            ep_type == USB_ENDPOINT_TYPE_CONTROL)
+            return 1;
+    }
+
+    return 0;
+}
+
+static int ehci_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct usbh_bus *bus = (struct usbh_bus *)device->user_data;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+    case PM_SLEEP_MODE_SHUTDOWN:
+        if (ehci_is_busy(bus))
+            return -RT_EBUSY;
+        usb_hc_deinit(bus);
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void ehci_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct usbh_bus *bus = (struct usbh_bus *)device->user_data;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_IDLE:
+        break;
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+    case PM_SLEEP_MODE_SHUTDOWN:
+        usb_hc_init(bus);
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops ehci_pm_ops =
+{
+    SET_DEVICE_PM_OPS(ehci_suspend, ehci_resume)
+    NULL,
+};
+
+static struct rt_device *usbh_dev[CONFIG_USBHOST_MAX_BUS];
+
+static int usbh_ehci_pm_init(struct usbh_bus *bus)
+{
+    char str[32] = {0};
+
+    if (usbh_dev[bus->busid])
+        return 0;
+
+    rt_snprintf(str, sizeof(str), "usbh%d", bus->busid);
+    usbh_dev[bus->busid] = (struct rt_device *)rt_malloc(sizeof(struct rt_device));
+
+    if (usbh_dev[bus->busid]) {
+        rt_memset(usbh_dev[bus->busid], 0, sizeof(struct rt_device));
+        usbh_dev[bus->busid]->user_data = bus;
+
+        if (rt_device_register(usbh_dev[bus->busid], str, RT_DEVICE_FLAG_RDWR) != RT_EOK) {
+            USB_LOG_WRN("Failed to register usbh%d\n", bus->busid);
+            rt_free(usbh_dev[bus->busid]);
+            usbh_dev[bus->busid] = RT_NULL;
+        } else {
+            rt_pm_device_register(usbh_dev[bus->busid], &ehci_pm_ops);
+        }
+    }
+
+    return 0;
+}
+#endif

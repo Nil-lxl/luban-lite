@@ -220,8 +220,8 @@ int aic_ota_nand_write(uint32_t addr, const uint8_t *buf, size_t size)
     rt_err_t ret = 0;
     uint32_t i = 0;
 
-    if (size != OTA_BURN_LEN) {
-        LOG_E("page write size must be OTA_BURN_LEN, but got %d", size);
+    if ((nand_mtd == NULL) || (size % nand_mtd->page_size)) {
+        LOG_E("write size %d must be align page_size %d", size, nand_mtd->page_size);
         return -RT_ERROR;
     }
 
@@ -318,8 +318,8 @@ int aic_ota_nand_read(uint32_t addr, uint8_t *buf, size_t size)
     rt_err_t ret = 0;
     uint32_t i = 0;
 
-    if (size != OTA_BURN_LEN) {
-        LOG_E("page read size must be OTA_BURN_LEN, but got %d", size);
+    if ((nand_mtd == NULL) || (size % nand_mtd->page_size)) {
+        LOG_E("write size %d must be align page_size %d", size, nand_mtd->page_size);
         return -RT_ERROR;
     }
 
@@ -431,11 +431,6 @@ int aic_ota_mmc_write(uint32_t addr, const uint8_t *buf, size_t size)
 {
     unsigned long blkcnt, blkoffset;
 
-    if (size != OTA_BURN_LEN) {
-        LOG_E("page write size must be OTA_BURN_LEN, but got %d", size);
-        return -RT_ERROR;
-    }
-
     blkcnt = size / block_size;
     blkoffset = addr / block_size;
 
@@ -451,11 +446,6 @@ int aic_ota_mmc_write(uint32_t addr, const uint8_t *buf, size_t size)
 int aic_ota_mmc_read(uint32_t addr, uint8_t *buf, size_t size)
 {
     unsigned long blkcnt, blkoffset;
-
-    if (size != OTA_BURN_LEN) {
-        LOG_E("page write size must be OTA_BURN_LEN, but got %d", size);
-        return -RT_ERROR;
-    }
 
     blkcnt = size / block_size;
     blkoffset = addr / block_size;
@@ -501,10 +491,6 @@ int aic_ota_part_write(uint32_t addr, const uint8_t *buf, size_t size)
     switch (aic_get_boot_device()) {
 #ifdef AIC_SPINOR_DRV
         case BD_SPINOR:
-            if (size != OTA_BURN_LEN) {
-                LOG_E("size must be OTA_BURN_LEN, but got %d", size);
-                return -RT_ERROR;
-            }
             ret = fal_partition_erase(dl_part, addr, size);
             if (ret < 0) {
                 LOG_E(

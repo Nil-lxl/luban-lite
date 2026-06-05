@@ -15,6 +15,7 @@
 #include "aic_core.h"
 
 #include "hal_rtp.h"
+#include "aic_hal_clk.h"
 
 #ifdef AIC_GPAI_USING_RTP_CHAN
 #define AIC_RTP_DEFAULT_MODE    RTP_MODE_MANUAL
@@ -81,7 +82,7 @@ static rt_size_t drv_rtp_read_point(struct rt_touch_device *touch, void *buf,
     struct rt_touch_data *data = (struct rt_touch_data *)buf;
 
     RT_ASSERT(buf);
-    RT_ASSERT(read_num == 1);
+    RT_ASSERT(touch_num == 1);
 
     if (g_last_count != touch_num) {
         hal_rtp_ebuf_sync(&g_rtp_dev.ebuf);
@@ -106,6 +107,66 @@ static rt_size_t drv_rtp_read_point(struct rt_touch_device *touch, void *buf,
     return touch_num;
 }
 
+static void drv_rtp_get_info(struct rt_touch_device *touch, struct rt_touch_info *info)
+{
+    RT_ASSERT(info);
+    info->type = RT_TOUCH_TYPE_RESISTANCE;
+    info->point_num = 1;
+    info->range_x = AIC_RTP_MAX_VAL;
+    info->range_y = AIC_RTP_MAX_VAL;
+}
+
+#ifdef RT_USING_PM
+static int aic_rtp_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        if (g_rtp_dev.running)
+            hal_rtp_int_enable(&g_rtp_dev, 0);
+        hal_rtp_enable(&g_rtp_dev, 0);
+#ifdef AIC_PM_DRV_V15
+        hal_clk_disable_assertrst(CLK_RTP);
+#else
+        hal_clk_disable(CLK_RTP);
+#endif
+        break;
+    case PM_SLEEP_MODE_IDLE:
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static void aic_rtp_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    switch (mode)
+    {
+    case PM_SLEEP_MODE_LIGHT:
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        hal_rtp_clk_init();
+#else
+        hal_clk_enable(CLK_RTP);
+#endif
+        hal_rtp_enable(&g_rtp_dev, 1);
+        if (g_rtp_dev.running) {
+            hal_rtp_ebuf_init(&g_rtp_dev.ebuf);
+            hal_rtp_auto_mode(&g_rtp_dev);
+            hal_rtp_int_enable(&g_rtp_dev, 1);
+        }
+        break;
+    case PM_SLEEP_MODE_IDLE:
+    default:
+        break;
+    }
+}
+#endif /* RT_USING_PM */
+
 static rt_err_t drv_rtp_control(struct rt_touch_device *touch,
                                 int cmd, void *arg)
 {
@@ -113,13 +174,15 @@ static rt_err_t drv_rtp_control(struct rt_touch_device *touch,
 
     switch (cmd) {
     case RT_TOUCH_CTRL_ENABLE_INT:
-        hal_rtp_int_enable(&g_rtp_dev, 1);
+        g_rtp_dev.running = true;
         hal_rtp_ebuf_init(&g_rtp_dev.ebuf);
         hal_rtp_auto_mode(&g_rtp_dev);
+        hal_rtp_int_enable(&g_rtp_dev, 1);
         break;
 
     case RT_TOUCH_CTRL_DISABLE_INT:
         hal_rtp_int_enable(&g_rtp_dev, 0);
+        g_rtp_dev.running = false;
         break;
 
 #if 0
@@ -137,10 +200,21 @@ static rt_err_t drv_rtp_control(struct rt_touch_device *touch,
     case RT_TOUCH_CTRL_SET_X_TO_Y:
         drv_rtp_plate_check(&g_rtp_dev, arg);
         break;
+    case RT_TOUCH_CTRL_GET_INFO:
+        drv_rtp_get_info(touch, arg);
+        break;
 
+#ifdef RT_USING_PM
+    case RT_TOUCH_CTRL_POWER_ON:
+        aic_rtp_resume(&touch->parent, (rt_uint8_t)(ptr_t)arg);
+        break;
+    case RT_TOUCH_CTRL_POWER_OFF:
+        return aic_rtp_suspend(&touch->parent, (rt_uint8_t)(ptr_t)arg);
+#else
     case RT_TOUCH_CTRL_POWER_ON:
     case RT_TOUCH_CTRL_POWER_OFF:
         return -RT_EINVAL;
+#endif /* RT_USING_PM */
     default:
         LOG_I("Unsupported cmd: 0x%x", cmd);
         return -RT_EINVAL;

@@ -25,6 +25,16 @@ config AIC_RTP_DELAY
     default 0x4f00004f
     depends on AIC_USING_RTP
 
+config AIC_RTP_HARDWARE_PRESSURE
+    bool "Enable hardware pressure"
+    depends on (AIC_RTP_DRV_V20 || AIC_RTP_DRV_V21) && AIC_USING_RTP
+    default y
+
+config AIC_RTP_ENABLE_DMA
+    bool "Enable DMA"
+    depends on (AIC_RTP_DRV_V20 || AIC_RTP_DRV_V21) && AIC_USING_RTP
+    default n
+
 config AIC_TOUCH_PANEL_NAME
     string
     default "aic-rtp"  if AIC_USING_RTP

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,6 +16,7 @@
 #include <aic_common.h>
 #include <aic_errno.h>
 
+#ifdef AIC_CONSOLE_BARE_DRV
 #include <dfs_bare.h>
 #include <dfs.h>
 #include <dfs_file.h>
@@ -96,7 +97,8 @@ static int cmd_chdir(int argc, char **argv)
     if (argc != 2)
     {
         rt_kprintf("Usage: cd DIRECTORY\n");
-        rt_kprintf("Change DIRECTORY, if they do not already exist.\n");
+        rt_kprintf("Change the current working directory to DIRECTORY.\n");
+        return -1;
     }
 
     chdir(argv[1]);
@@ -228,3 +230,4 @@ static int cmd_umount(int argc, char **argv)
     }
 }
 CONSOLE_CMD(umount, cmd_umount, "Unmount device from file system");
+#endif // defined(AIC_CONSOLE_BARE_DRV)

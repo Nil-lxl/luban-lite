@@ -1,0 +1,60 @@
+# Bluetooth Audio - Common Audio Profile (CAP) options
+#
+# Copyright (c) 2022 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+config LPKG_BT_CAP
+	bool
+	default y if (LPKG_BT_CAP_ACCEPTOR || LPKG_BT_CAP_INITIATOR)
+
+config LPKG_BT_CAP_ACCEPTOR
+	bool "Common Audio Profile Acceptor Role Support"
+	depends on LPKG_BT_BAP_UNICAST_SERVER || (LPKG_BT_BAP_BROADCAST_SINK && LPKG_BT_BAP_SCAN_DELEGATOR)
+	depends on LPKG_BT_AUDIO_CODEC_CFG_MAX_METADATA_SIZE >= 4
+	help
+	  Enabling this will enable the CAP Acceptor role. This instantiates the
+	  common audio service (CAS).
+
+config LPKG_BT_CAP_ACCEPTOR_SET_MEMBER
+	bool "Common Audio Profile Acceptor Role Set Member support"
+	depends on LPKG_BT_CAP_ACCEPTOR
+	depends on LPKG_BT_CSIP_SET_MEMBER
+	depends on LPKG_BT_GATT_DYNAMIC_DB
+	help
+	  Enabling this will allow a CAP acceptor to be a set member.
+	  Enabling this will require a manual register of the CAS service.
+	  Enabling will take one of the allocated CSIS instances
+	  (LPKG_BT_CSIP_SET_MEMBER_MAX_INSTANCE_COUNT).
+
+config LPKG_BT_CAP_INITIATOR_UNICAST
+	bool
+	default y if (LPKG_BT_CAP_INITIATOR && LPKG_BT_BAP_UNICAST_CLIENT)
+
+config LPKG_BT_CAP_INITIATOR
+	bool "Common Audio Profile Initiator Role Support"
+	depends on (LPKG_BT_BAP_UNICAST_CLIENT && LPKG_BT_CSIP_SET_COORDINATOR) || LPKG_BT_BAP_BROADCAST_SOURCE
+	depends on LPKG_BT_AUDIO_CODEC_CFG_MAX_METADATA_SIZE >= 4
+	help
+	  Enabling this will enable the CAP Initiator role.
+
+
+config LPKG_BT_CAP_COMMANDER
+	bool "Common Audio Profile Initiator Role Support"
+	depends on (LPKG_BT_BAP_BROADCAST_ASSISTANT && LPKG_BT_BAP_SCAN_DELEGATOR && LPKG_BT_CSIP_SET_COORDINATOR) || \
+		   (LPKG_BT_BAP_SCAN_DELEGATOR && LPKG_BT_CSIP_SET_COORDINATOR) || \
+		   (LPKG_BT_VCP_VOL_CTLR && LPKG_BT_CSIP_SET_COORDINATOR) || \
+		   (LPKG_BT_MICP_MIC_CTLR && LPKG_BT_CSIP_SET_COORDINATOR) || \
+		   LPKG_BT_TBS_CLIENT || \
+		   LPKG_BT_MCC
+	help
+	  Enabling this will enable the CAP Initiator role.
+
+config LPKG_BT_CAP_HANDOVER
+	bool "Common Audio Profile Handover Procedures"
+	depends on LPKG_BT_CAP_COMMANDER && LPKG_BT_CAP_INITIATOR && LPKG_BT_BAP_BROADCAST_ASSISTANT && \
+		   LPKG_BT_BAP_BROADCAST_SOURCE && LPKG_BT_BAP_UNICAST_CLIENT_ASE_SNK_COUNT > 0
+	help
+	  Enable support for the CAP Handover procedures, allowing a device to switch between
+	  broadcast and unicast for a usecase.

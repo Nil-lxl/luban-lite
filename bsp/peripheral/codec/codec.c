@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -146,6 +146,16 @@ void codec_dump_reg(struct codec *codec)
 void codec_register(struct codec *codec)
 {
     CHECK_PARAM_RET(codec);
+
+    if (codec->i2c_name != RT_NULL) {
+        struct rt_i2c_bus_device *i2c_bus;
+        i2c_bus = rt_i2c_bus_device_find(codec->i2c_name);
+        if (i2c_bus == RT_NULL) {
+            rt_kprintf("[CODEC] ERROR: I2C bus '%s' not found!\n", codec->i2c_name);
+            return;
+        }
+        rt_kprintf("[%s] I2C bus '%s' found: %p\n", codec->name, codec->i2c_name, i2c_bus);
+    }
 
     register_codec = codec;
 }

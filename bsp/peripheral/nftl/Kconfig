@@ -30,4 +30,12 @@ if AIC_NFTL_SUPPORT
         int
         default 0 if AIC_NFTL_DISABLE_OOB_VERIFY
         default 1 if AIC_NFTL_ENABLE_OOB_VERIFY
+
+    config AIC_NFTL_MINI_RESERVED_BLOCK
+        int "Minimum NFTL reserved block count"
+        default 50
+        range 50 4096
+        help
+            Reserve at least this many blocks as NFTL free/backup space for
+            bad-block management and recovery after flash operation failures.
 endif

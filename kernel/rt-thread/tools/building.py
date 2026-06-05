@@ -795,7 +795,8 @@ def DoBuilding(target, objects):
             CCFLAGS = Env.get('CCFLAGS', '') + group.get('LOCAL_CCFLAGS', '')
             CXXFLAGS = Env.get('CXXFLAGS', '') + group.get('LOCAL_CXXFLAGS', '')
             CPPPATH = Env.get('CPPPATH', ['']) + group.get('LOCAL_CPPPATH', [''])
-            CPPDEFINES = Env.get('CPPDEFINES', ['']) + group.get('LOCAL_CPPDEFINES', [''])
+            CPPDEFINES = (list(Env.get('CPPDEFINES', ['']))
+                          + list(group.get('LOCAL_CPPDEFINES', [''])))
             ASFLAGS = Env.get('ASFLAGS', '') + group.get('LOCAL_ASFLAGS', '')
 
             for source in group['src']:

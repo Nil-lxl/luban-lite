@@ -534,6 +534,8 @@ int hal_qspi_master_dma_config(qspi_master_handle *h,
     tx_chan = hal_request_dma_chan();
     if (!tx_chan) {
         hal_log_err("Request dma chan error.\n");
+        hal_release_dma_chan(rx_chan);
+        rx_chan = NULL;
         goto err;
     }
 
@@ -549,6 +551,8 @@ dma_dynamic:
 
     return 0;
 err:
+    if (rx_chan)
+        hal_release_dma_chan(rx_chan);
     return -ENODEV;
 }
 
@@ -583,6 +587,10 @@ static int qspi_master_can_dma(struct qspi_master_state *qspi,
             qspi->dma_rx = hal_request_dma_chan();
             if (qspi->dma_rx == NULL) {
                 hal_log_err("RX request dma chan failed.\n");
+                if (qspi->dma_tx) {
+                    hal_release_dma_chan(qspi->dma_tx);
+                    qspi->dma_tx = NULL;
+                }
                 return 0;
             }
         }
@@ -676,9 +684,9 @@ static int qspi_txrx_dma_sync(qspi_master_handle *h,
         dmacfg.src_addr_width = qspi->dma_cfg.dev_bus_width;
     else
         dmacfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-    dmacfg.src_maxburst = qspi->dma_cfg.mem_max_burst;
-    dmacfg.dst_addr_width = qspi->dma_cfg.dev_bus_width;
-    dmacfg.dst_maxburst = qspi->dma_cfg.dev_max_burst;
+    dmacfg.src_maxburst = qspi->dma_cfg.dev_max_burst;
+    dmacfg.dst_addr_width = qspi->dma_cfg.mem_bus_width;
+    dmacfg.dst_maxburst = qspi->dma_cfg.mem_max_burst;
 
     ret = hal_dma_chan_config(qspi->dma_rx, &dmacfg);
     if (ret < 0) {

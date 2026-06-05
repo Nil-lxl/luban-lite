@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,7 +20,7 @@
 #define TX_FIFO_SIZE                (RT_AUDIO_REPLAY_MP_BLOCK_SIZE *\
                                      TX_FIFO_PERIOD_COUNT)
 #define MIN_AUDIO_VOLUME_THRESHOLD  80
-static rt_uint8_t audio_tx_fifo[TX_FIFO_SIZE] __attribute__((aligned(64)));
+static volatile rt_uint8_t audio_tx_fifo[TX_FIFO_SIZE] __attribute__((aligned(64)));
 
 struct aic_audio
 {
@@ -29,6 +29,7 @@ struct aic_audio
     rt_uint8_t volume;
     char *pa_name;
     unsigned int gpio_pa;
+    bool is_playing;
 };
 
 static struct aic_audio snd_dev;
@@ -137,6 +138,7 @@ rt_err_t drv_audio_start(struct rt_audio_device *audio, int stream)
         if (!audio->replay->transfer_mode) {
             rt_audio_tx_complete(audio);
             hal_audio_playback_start(pcodec);
+            p_snd_dev->is_playing = true;
         }
 
         if (is_first_play) {
@@ -171,6 +173,7 @@ rt_err_t drv_audio_stop(struct rt_audio_device *audio, int stream)
     if (stream == AUDIO_STREAM_REPLAY) {
         hal_audio_playback_stop(pcodec);
         hal_audio_disable_fade(pcodec);
+        p_snd_dev->is_playing = false;
     } else {
         hal_log_err("stream error\n");
         return -RT_EINVAL;
@@ -446,44 +449,102 @@ struct rt_audio_ops aic_audio_ops =
 #ifdef RT_USING_PM
 static int aic_audio_suspend(const struct rt_device *device, rt_uint8_t mode)
 {
-    switch (mode)
-    {
-    case PM_SLEEP_MODE_IDLE:
-        break;
-    case PM_SLEEP_MODE_LIGHT:
-    case PM_SLEEP_MODE_DEEP:
-    case PM_SLEEP_MODE_STANDBY:
-        if (hal_clk_is_enabled(CLK_CODEC))
-            hal_clk_disable(CLK_CODEC);
-        break;
-    default:
-        break;
-    }
+    struct aic_audio *p_snd_dev;
+    aic_audio_ctrl *pcodec;
 
+    p_snd_dev = rt_container_of(device, struct aic_audio, audio.parent);
+    pcodec = &p_snd_dev->codec;
+    switch (mode) {
+        case PM_SLEEP_MODE_IDLE:
+            break;
+
+        case PM_SLEEP_MODE_LIGHT:
+        case PM_SLEEP_MODE_STANDBY:
+        case PM_SLEEP_MODE_DEEP:
+            if (p_snd_dev->is_playing) {
+                hal_audio_playback_stop(pcodec);
+                hal_audio_disable_fade(pcodec);
+            }
+
+            is_first_play = true;
+            /* Disable PA */
+            drv_audio_dis_pa();
+            /* Reset codec: disable clock and assert reset */
+            hal_audio_uninit(pcodec);
+            break;
+
+        default:
+            break;
+    }
     return 0;
 }
 
 static void aic_audio_resume(const struct rt_device *device, rt_uint8_t mode)
 {
-    switch (mode)
-    {
-    case PM_SLEEP_MODE_IDLE:
-        break;
-    case PM_SLEEP_MODE_LIGHT:
-    case PM_SLEEP_MODE_DEEP:
-    case PM_SLEEP_MODE_STANDBY:
-        if (!hal_clk_is_enabled(CLK_CODEC))
-            hal_clk_enable(CLK_CODEC);
-        break;
-    default:
-        break;
+    struct aic_audio *p_snd_dev;
+    aic_audio_ctrl *pcodec;
+    uint32_t reg_volume = 0;
+    uint32_t vol_value = 0;
+
+    p_snd_dev = rt_container_of(device, struct aic_audio, audio.parent);
+    pcodec = &p_snd_dev->codec;
+    switch (mode) {
+        case PM_SLEEP_MODE_IDLE:
+            break;
+
+        case PM_SLEEP_MODE_LIGHT:
+        case PM_SLEEP_MODE_STANDBY:
+        case PM_SLEEP_MODE_DEEP:
+            /* Re-initialize codec: enable clock and release reset */
+            hal_audio_init(pcodec);
+
+            if (p_snd_dev->is_playing) {
+                hal_audio_set_samplerate(pcodec, pcodec->config.samplerate);
+                /* Restore playback channel */
+                hal_audio_set_playback_channel(pcodec, pcodec->config.channel);
+                /* Restore fade volume */
+                vol_value = FADE_MAX_VOLUME - p_snd_dev->volume;
+                if (vol_value == 100)
+                    reg_volume = 0;
+                else
+                    reg_volume = FADE_MAX_CONTROL - (vol_value * FADE_STEP_VOL);
+                /* Enable fade first, then configure channels */
+                hal_audio_enable_fade(pcodec);
+                hal_audio_set_fade_volume(pcodec, reg_volume);
+                hal_audio_set_fade_control(pcodec, FADE_CTRL0_DEFAULT_SPEED,
+                                           FADE_CTRL0_DEFAULT_STEP);
+#ifdef AIC_AUDIO_SPK_0
+                hal_audio_set_playback_by_spk0(pcodec);
+                hal_audio_disable_fade_ch1(pcodec);
+#endif
+#ifdef AIC_AUDIO_SPK_1
+                hal_audio_set_playback_by_spk1(pcodec);
+                hal_audio_disable_fade_ch0(pcodec);
+#endif
+#ifdef AIC_AUDIO_SPK_0_1
+                hal_audio_set_playback_by_spk0(pcodec);
+                hal_audio_set_playback_by_spk1(pcodec);
+#ifdef AIC_AUDIO_SPK0_OUTPUT_DIFFERENTIAL
+                hal_audio_set_pwm0_differential(pcodec);
+#endif
+#ifdef AIC_AUDIO_SPK1_OUTPUT_DIFFERENTIAL
+                hal_audio_set_pwm1_differential(pcodec);
+#endif
+#endif
+                hal_audio_attach_callback(pcodec, drv_audio_callback, NULL);
+                rt_audio_tx_complete(&p_snd_dev->audio);
+                hal_audio_playback_start(pcodec);
+                drv_audio_en_pa();
+            }
+            break;
+
+        default:
+            break;
     }
 }
 
-static struct rt_device_pm_ops aic_audio_pm_ops =
-{
-    SET_DEVICE_PM_OPS(aic_audio_suspend, aic_audio_resume)
-    NULL,
+static struct rt_device_pm_ops aic_audio_pm_ops = {
+    SET_DEVICE_PM_OPS(aic_audio_suspend, aic_audio_resume) NULL,
 };
 #endif
 
@@ -509,11 +570,14 @@ int rt_hw_sound_init(void)
     hal_audio_set_fade_volume(&snd_dev.codec, FADE_MAX_CONTROL);
     hal_audio_set_fade_control(&snd_dev.codec,
                                 FADE_CTRL0_DEFAULT_SPEED, FADE_CTRL0_DEFAULT_STEP);
+    /* Sync software volume with initial value */
+    snd_dev.volume = FADE_MAX_VOLUME;
 
     ret = rt_audio_register(&snd_dev.audio, "sound0",
                             RT_DEVICE_FLAG_WRONLY, &snd_dev);
 
 #ifdef RT_USING_PM
+    gpio_pm_register(pin, RT_NULL, RT_NULL);
     rt_pm_device_register(&snd_dev.audio.parent, &aic_audio_pm_ops);
 #endif
 

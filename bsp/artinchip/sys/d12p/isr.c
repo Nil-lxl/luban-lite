@@ -13,7 +13,7 @@ extern void systick_handler(void);
 extern void xPortSysTickHandler(void);
 extern void OSTimeTick(void);
 
-void SysTick_Handler(void)
+void SysTick_Handler(int irq_num, void *data)
 {
     csi_coret_config(drv_get_sys_freq() / CONFIG_SYSTICK_HZ, CORET_IRQn);
 
@@ -29,7 +29,7 @@ void SysTick_Handler(void)
 #endif
 }
 
-void TIM4_NMIHandler(void)
+void TIM4_NMIHandler(int irq_num, void *data)
 {
 
 }

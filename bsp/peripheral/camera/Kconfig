@@ -59,6 +59,9 @@ choice
     config AIC_USING_CAMERA_N5
         bool "Using camera N5"
 
+    config AIC_USING_CAMERA_NVP6158
+        bool "Using camera NVP6158"
+
     config AIC_USING_CAMERA_XS9950
         bool "Using camera XS9950"
 endchoice

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -89,10 +89,11 @@ int efuse_read_chip_id(void *data)
         case 0x102:
         case 0x103:
         case 0x105:
+        case 0x107:
             efuse_read(0x10, data, 0x10);
             break;
         default:
-            pr_err("not support read chip id");
+            pr_err("not support read chip id, version 0x%x\n", version);
             return -1;
     }
 

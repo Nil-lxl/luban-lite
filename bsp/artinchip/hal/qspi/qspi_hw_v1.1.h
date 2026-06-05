@@ -8,6 +8,7 @@
 #define _AIC_HAL_QSPI_REGS_H_
 #include <aic_common.h>
 #include <aic_soc.h>
+#include <aic_iopoll.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -150,9 +151,9 @@ extern "C" {
 #define TCFG_BIT_TXDLY_EN_OFS           (14)
 #define TCFG_BIT_TXDLY_EN_MSK           (1UL << 14)
 #define TCFG_BIT_TXDLY_EN_VAL(v)        (((v) << TCFG_BIT_TXDLY_EN_OFS) & TCFG_BIT_TXDLY_EN_MSK)
-#define TCFG_BIT_3WIERE_EN_OFS          (25)
-#define TCFG_BIT_3WIERE_EN_MSK          (1UL << 25)
-#define TCFG_BIT_3WIERE_EN_VAL(v)       (((v) << TCFG_BIT_3WIERE_EN_OFS) & TCFG_BIT_3WIERE_EN_MSK)
+#define TCFG_BIT_3WIRE_EN_OFS          (25)
+#define TCFG_BIT_3WIRE_EN_MSK          (1UL << 25)
+#define TCFG_BIT_3WIRE_EN_VAL(v)       (((v) << TCFG_BIT_3WIRE_EN_OFS) & TCFG_BIT_3WIRE_EN_MSK)
 #define TCFG_BIT_SLV_OEN_OFS            (26)
 #define TCFG_BIT_SLV_OEN_MSK            (1UL << 26)
 #define TCFG_BIT_SLV_OEN_VAL(v)         (((v) << TCFG_BIT_SLV_OEN_OFS) & TCFG_BIT_SLV_OEN_MSK)
@@ -424,7 +425,7 @@ static inline u32 qspi_hw_index_to_base(u32 idx)
         case 3:
             return QSPI3_BASE;
         default:
-            return 0;
+            break;
     }
     return 0;
 }
@@ -441,7 +442,7 @@ static inline u32 qspi_hw_base_to_index(u32 base)
         case QSPI3_BASE:
             return 3;
         default:
-            return QSPI_INVALID_BASE;
+            break;
     }
     return QSPI_INVALID_BASE;
 }
@@ -459,6 +460,9 @@ static inline void qspi_hw_init_default(u32 base)
 
     val = CFG_BIT_CTRL_EN_MSK | CFG_BIT_RXFULL_STOP_MSK | CFG_BIT_CTRL_RST_MSK;
     writel(val, QSPI_REG_CFG(base));
+    if (readl_poll_timeout(QSPI_REG_CFG(base), val, !(val & CFG_BIT_CTRL_RST_MSK), 100000))
+        pr_warn("QSPI base 0x%lx, CFG_BIT_CTRL_RST not cleared after init_default, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 #define QSPI_CTRL_MODE_SLAVE 0
@@ -614,15 +618,15 @@ static inline u32 qspi_hw_get_lsb_en(u32 base)
 static inline void qspi_hw_set_3wire_en(u32 base, u32 en)
 {
     u32 val = readl(QSPI_REG_TCFG(base));
-    val &= ~(TCFG_BIT_3WIERE_EN_MSK);
-    val |= TCFG_BIT_3WIERE_EN_VAL(en);
+    val &= ~(TCFG_BIT_3WIRE_EN_MSK);
+    val |= TCFG_BIT_3WIRE_EN_VAL(en);
     writel(val, QSPI_REG_TCFG(base));
 }
 
 static inline u32 qspi_hw_get_3wire_en(u32 base)
 {
     u32 val = readl(QSPI_REG_TCFG(base));
-    return ((val & TCFG_BIT_3WIERE_EN_MSK) >> TCFG_BIT_3WIERE_EN_OFS);
+    return ((val & TCFG_BIT_3WIRE_EN_MSK) >> TCFG_BIT_3WIRE_EN_OFS);
 }
 
 #define QSPI_CS_LEVEL_LOW  0
@@ -662,27 +666,46 @@ static inline void qspi_hw_ctrl_reset(u32 base)
     val = readl(QSPI_REG_CFG(base));
     val |= CFG_BIT_CTRL_RST_MSK;
     writel(val, QSPI_REG_CFG(base));
+    if (readl_poll_timeout(QSPI_REG_CFG(base), val, !(val & CFG_BIT_CTRL_RST_MSK), 100000))
+        pr_warn("QSPI base 0x%lx, CFG_BIT_CTRL_RST not cleared after ctrl_reset, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 static inline void qspi_hw_reset_fifo(u32 base)
 {
-    u32 val = readl(QSPI_REG_FCTL(base));
-    val |= (FCTL_BIT_RF_RST_MSK | FCTL_BIT_TF_RST_MSK);
+    u32 val;
+    u32 mask = FCTL_BIT_RF_RST_MSK | FCTL_BIT_TF_RST_MSK;
+
+    val = readl(QSPI_REG_FCTL(base));
+    val |= mask;
     writel(val, QSPI_REG_FCTL(base));
+    if (readl_poll_timeout(QSPI_REG_FCTL(base), val, !(val & mask), 100000))
+        pr_warn("QSPI base 0x%lx, FIFO reset bits not cleared, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 static inline void qspi_hw_reset_rx_fifo(u32 base)
 {
-    u32 val = readl(QSPI_REG_FCTL(base));
+    u32 val;
+
+    val = readl(QSPI_REG_FCTL(base));
     val |= (FCTL_BIT_RF_RST_MSK);
     writel(val, QSPI_REG_FCTL(base));
+    if (readl_poll_timeout(QSPI_REG_FCTL(base), val, !(val & FCTL_BIT_RF_RST_MSK), 100000))
+        pr_warn("QSPI base 0x%lx, RX FIFO reset bit not cleared, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 static inline void qspi_hw_reset_tx_fifo(u32 base)
 {
-    u32 val = readl(QSPI_REG_FCTL(base));
+    u32 val;
+
+    val = readl(QSPI_REG_FCTL(base));
     val |= (FCTL_BIT_TF_RST_MSK);
     writel(val, QSPI_REG_FCTL(base));
+    if (readl_poll_timeout(QSPI_REG_FCTL(base), val, !(val & FCTL_BIT_TF_RST_MSK), 100000))
+        pr_warn("QSPI base 0x%lx, TX FIFO reset bit not cleared, val=0x%x\n",
+               (unsigned long)base, val);
 }
 
 #define QSPI_RX_WATERMARK 32
@@ -1202,7 +1225,7 @@ static inline u32 qspi_hw_get_idma_tx_len(u32 base)
     return readl(QSPI_REG_IDMA_TXLEN(base));
 }
 
-static inline u32 qspi_hw_bit_mode_set_cs_num(u32 chipselect, u32 base)
+static inline int qspi_hw_bit_mode_set_cs_num(u32 chipselect, u32 base)
 {
     u32 val;
 
@@ -1467,8 +1490,14 @@ static inline int qspi_hw_bit_mode_send_then_recv(u32 base, const u8 *tx_buf,
 
 #define SPI_IDMA_BL8		2
 
-#define sbit(v, addr)	(*((volatile u32 *)((uintptr_t)addr)) |=  (u32)(v))
-#define cbit(v, addr)	(*((volatile u32 *)((uintptr_t)addr)) &= ~(u32)(v))
+static inline void sbit(u32 v, volatile void *addr)
+{
+    *(volatile u32 *)addr |= v;
+}
+static inline void cbit(u32 v, volatile void *addr)
+{
+    *(volatile u32 *)addr &= ~v;
+}
 
 static inline void spi_disp_control_en(u32 base)
 {
@@ -1479,7 +1508,7 @@ static inline void spi_disp_control_en(u32 base)
 
 static inline void spi_disp_mode_choose(u32 base, u32 mode)
 {
-    if(mode == DATA_MODE_QUAD)
+    if (mode == DATA_MODE_QUAD)
         sbit(SPI_TMC_QUAD_EN, QSPI_REG_TMC(base));		//Data in Quad mode
     else if (mode == DATA_MODE_DUAL)
         sbit(SPI_TMC_DUAL_EN, QSPI_REG_TMC(base));		//Data in Dual mode
@@ -1491,22 +1520,22 @@ static inline void spi_disp_set_disp_mode(u32 base, u32 mtw, u32 vsw_en, u32 vbp
 {
     sbit(SPI_DISP_CTRL_PROC_2, SPI_DISP_MODE_REG(base));
 
-    if(mtw)
+    if (mtw)
         sbit(SPI_DISP_CMD_MTW_EN, SPI_DISP_MODE_REG(base));
     else
         cbit(SPI_DISP_CMD_MTW_EN, SPI_DISP_MODE_REG(base));
 
-    if(vsw_en)
+    if (vsw_en)
         sbit(SPI_DISP_CTRL_PROC_0, SPI_DISP_MODE_REG(base));
     else
         cbit(SPI_DISP_CTRL_PROC_0, SPI_DISP_MODE_REG(base));
 
-    if(vbp_en)
+    if (vbp_en)
         sbit(SPI_DISP_CTRL_PROC_1, SPI_DISP_MODE_REG(base));
     else
         cbit(SPI_DISP_CTRL_PROC_1, SPI_DISP_MODE_REG(base));
 
-    if(vfp_en)
+    if (vfp_en)
         sbit(SPI_DISP_CTRL_PROC_3, SPI_DISP_MODE_REG(base));
     else
         cbit(SPI_DISP_CTRL_PROC_3, SPI_DISP_MODE_REG(base));
@@ -1535,7 +1564,7 @@ static inline void spi_disp_idrq_mode(u32 base, u32 mode, u32 urg_en, u32 trig_w
 
 static inline void spi_disp_idma_burst_cfg(u32 base, u32 auto_en, u32 size, u32 txlen, u32 rxlen)
 {
-    if(auto_en) {
+    if (auto_en) {
         sbit(SPI_IDMA_BTCFG_AUTO_LEN_EN, QSPI_REG_IDMA_BCFG(base));
     } else {
         cbit(SPI_IDMA_BTCFG_AUTO_LEN_EN, QSPI_REG_IDMA_BCFG(base));
@@ -1553,15 +1582,13 @@ static inline void spi_disp_idma_burst_cfg(u32 base, u32 auto_en, u32 size, u32 
 
 static inline void spi_disp_dma_onoff(u32 base, u32 dma_en)
 {
-    if(dma_en)
+    if (dma_en)
         spi_disp_idma_burst_cfg(base, 0, 4, SPI_IDMA_BL8, SPI_IDMA_BL8);
-    else
-        pr_info("Don't use spi dma\r\n");
 }
 
 static inline void spi_disp_en(u32 base, u32 disp_on)
 {
-    if(disp_on)
+    if (disp_on)
         sbit(SPI_DISP_EN, QSPI_REG_CFG(base));
     else
         cbit(SPI_DISP_EN, QSPI_REG_CFG(base));
@@ -1612,7 +1639,7 @@ static inline void spi_disp_restart(u32 base, u32 en, u32 frm_cnt)
     u32 count = frm_cnt*freq;
 
     writel(count, SPI_DISP_FRMCNT(base));
-    if(en) {
+    if (en) {
         cbit(SPI_DISP_PARA_DECEN, SPI_DISP_MODE_REG(base));
         sbit(SPI_DISP_RESTART, SPI_DISP_MODE_REG(base));
     } else {

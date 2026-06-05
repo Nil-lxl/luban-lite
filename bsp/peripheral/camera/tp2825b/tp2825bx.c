@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2024-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -2673,6 +2673,35 @@ static const struct rt_device_ops tp2825_ops =
 };
 #endif
 
+#ifdef RT_USING_PM
+static int tp2825_pm_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    return RT_EOK;
+}
+
+static void tp2825_pm_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct tp2825_dev *sensor = (struct tp2825_dev *)device;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_LIGHT:
+        break;
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        sensor->pwdn_pin = camera_pwdn_pin_get();
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops tp2825_pm_ops =
+{
+    SET_DEVICE_PM_OPS(tp2825_pm_suspend, tp2825_pm_resume)
+    NULL,
+};
+#endif /* RT_USING_PM */
+
 int rt_hw_tp2825_init(void)
 {
 #ifdef RT_USING_DEVICE_OPS
@@ -2686,6 +2715,11 @@ int rt_hw_tp2825_init(void)
     g_tp2825_dev.dev.type = RT_Device_Class_CAMERA;
 
     rt_device_register(&g_tp2825_dev.dev, CAMERA_DEV_NAME, 0);
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&g_tp2825_dev.dev, &tp2825_pm_ops);
+#endif
+
     return SUCCESS;
 }
 INIT_DEVICE_EXPORT(rt_hw_tp2825_init);

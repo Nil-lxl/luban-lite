@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -1178,6 +1178,36 @@ static const struct rt_device_ops ov2659_ops =
 };
 #endif
 
+#ifdef RT_USING_PM
+static int ov2659_pm_suspend(const struct rt_device *device, rt_uint8_t mode)
+{
+    return RT_EOK;
+}
+
+static void ov2659_pm_resume(const struct rt_device *device, rt_uint8_t mode)
+{
+    struct ov2659_dev *sensor = (struct ov2659_dev *)device;
+
+    switch (mode) {
+    case PM_SLEEP_MODE_LIGHT:
+        break;
+    case PM_SLEEP_MODE_DEEP:
+    case PM_SLEEP_MODE_STANDBY:
+        sensor->rst_pin = camera_rst_pin_get();
+        sensor->pwdn_pin = camera_pwdn_pin_get();
+        break;
+    default:
+        break;
+    }
+}
+
+static struct rt_device_pm_ops ov2659_pm_ops =
+{
+    SET_DEVICE_PM_OPS(ov2659_pm_suspend, ov2659_pm_resume)
+    NULL,
+};
+#endif /* RT_USING_PM */
+
 int rt_hw_ov2659_init(void)
 {
 #ifdef RT_USING_DEVICE_OPS
@@ -1191,6 +1221,11 @@ int rt_hw_ov2659_init(void)
     g_ov2659_dev.dev.type = RT_Device_Class_CAMERA;
 
     rt_device_register(&g_ov2659_dev.dev, CAMERA_DEV_NAME, 0);
+
+#ifdef RT_USING_PM
+    rt_pm_device_register(&g_ov2659_dev.dev, &ov2659_pm_ops);
+#endif
+
     return 0;
 }
 INIT_DEVICE_EXPORT(rt_hw_ov2659_init);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -19,6 +19,9 @@ struct mtop_dev {
     struct rt_device dev;
     struct aic_mtop_dev mtop_handle;
     char *name;
+#ifdef RT_USING_PM
+    u8 mtop_clk_pm_flag;
+#endif
 };
 
 #endif

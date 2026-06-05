@@ -221,7 +221,7 @@ void hal_epwm_int_config(u32 ch, u8 irq_mode, u8 enable)
 
 void hal_epwm_ch_init(struct aic_epwm_arg *epwm_arg)
 {
-    struct aic_epwm_arg *arg =  NULL;
+    struct aic_epwm_arg *arg = NULL;
     u32 ch = 0;
 
     ch = epwm_arg->id;
@@ -282,6 +282,8 @@ static int hal_epwm_calculate_div(u32 ch, float tar_freq)
     }
 
     hal_log_debug("div1:%d div2:%d\n", div1, div2);
+    arg->div.div1 = div1_index;
+    arg->div.div2 = div2_index;
 
     if (div1 == 0 && div2 == 0) {
         hal_log_err("calculate div error,should adjust the EPWM_CLK_RATE.\n");
@@ -339,6 +341,7 @@ int hal_epwm_set(u32 ch, u32 duty_ns, u32 period_ns, u32 output)
         duty++;
 
     arg->duty = (u32)duty;
+    arg->output = output;
 
     switch (output) {
     case EPWM_SET_CMPA:
@@ -360,6 +363,46 @@ int hal_epwm_set(u32 ch, u32 duty_ns, u32 period_ns, u32 output)
 
     return 0;
 }
+
+int hal_epwm_ch_reconf(u32 ch)
+{
+    struct aic_epwm_arg *arg =  NULL;
+
+    if (hal_epwm_ch_check(ch) < 0)
+        return -EINVAL;
+
+    arg = &g_epwm_args[ch];
+
+    if (arg->div.div1 == 0 && arg->div.div2 == 0) {
+        epwm_writel_bits(arg->div.div1, EPWM_CLK_DIV1_MASK, EPWM_CLK_DIV1_SHIFT, EPWM_CNT_CONF(ch));
+        epwm_writel_bits(arg->div.div2, EPWM_CLK_DIV2_MASK, EPWM_CLK_DIV2_SHIFT, EPWM_CNT_CONF(ch));
+    }
+
+    if (arg->period != 0)
+        epwm_writel(arg->period, EPWM_CNT_PRDV(ch));
+
+    if (arg->duty != 0) {
+        switch (arg->output) {
+        case EPWM_SET_CMPA:
+            epwm_writel(arg->duty, EPWM_CNT_AV(ch));
+            hal_log_debug("ch%d Set CMPA %u/%u\n", ch, arg->duty, arg->period);
+            break;
+        case EPWM_SET_CMPB:
+            epwm_writel(arg->duty, EPWM_CNT_BV(ch));
+            hal_log_debug("ch%d Set CMPB %u/%u\n", ch, arg->duty, arg->period);
+            break;
+        case EPWM_SET_CMPA_CMPB:
+            epwm_writel(arg->duty, EPWM_CNT_AV(ch));
+            epwm_writel(arg->duty, EPWM_CNT_BV(ch));
+            hal_log_debug("ch%d Set CMPA&B %u/%u\n", ch, arg->duty, arg->period);
+            break;
+        default:
+            break;
+        }
+    }
+    return 0;
+}
+
 
 void hal_epwm_act_sw_ct(u32 ch, u32 output, u32 action)
 {
@@ -593,6 +636,11 @@ int hal_epwm_disable(u32 ch)
     return 0;
 }
 
+void hal_epwm_global_enable(u32 en)
+{
+    epwm_reg_enable(GLB_BASE_E + GLB_PWM_EN, GLB_EPWM_EN_B, en);
+}
+
 int hal_epwm_init(void)
 {
     int i, ret = 0;
@@ -618,19 +666,17 @@ int hal_epwm_init(void)
         return -1;
     }
 
-    ret = hal_clk_enable(CLK_PWMCS);
-    if (ret < 0) {
-        hal_log_err("Failed to enable EPWM clk\n");
-        return -1;
+    if (!hal_clk_is_enabled(CLK_PWMCS)) {
+        ret = hal_clk_enable_deassertrst(CLK_PWMCS);
+        if (ret < 0) {
+            hal_log_err("Failed to reset EPWM deassert\n");
+            return -1;
+        }
+    } else {
+        hal_log_debug("PWMCS clk has already been enabled in other sub-modules.\n");
     }
 
-    ret = hal_clk_enable_deassertrst(CLK_PWMCS);
-    if (ret < 0) {
-        hal_log_err("Failed to reset EPWM deassert\n");
-        return -1;
-    }
-
-    epwm_reg_enable(GLB_BASE_E + GLB_PWM_EN, GLB_EPWM_EN_B, 1);
+    hal_epwm_global_enable(1);
 
 #ifdef AIC_EPWM_DRV_V11
     hal_epwm_dll_ldo_en();

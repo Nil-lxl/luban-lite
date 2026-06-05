@@ -44,7 +44,9 @@ struct aic_mtop_dev {
 int hal_mtop_init(struct aic_mtop_dev *phandle);
 int hal_mtop_deinit(struct aic_mtop_dev *phandle);
 void hal_mtop_enable(struct aic_mtop_dev *phandle);
+void hal_mtop_disable(struct aic_mtop_dev *phandle);
 void hal_mtop_irq_enable(struct aic_mtop_dev *phandle, bool enable);
+void hal_mtop_clear_irq_status(struct aic_mtop_dev *phandle);
 irqreturn_t hal_mtop_irq_handler(int irq_num, void *can_handle);
 void hal_mtop_set_period_cnt(struct aic_mtop_dev *phandle, uint32_t period_cnt);
 void hal_mtop_attach_callback(struct aic_mtop_dev *phandle, void *callback, void *arg);

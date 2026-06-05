@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,6 +13,8 @@
 
 #include "hal_rtp.h"
 #include "hal_adcim.h"
+#include "hal_dma.h"
+#include "aic_dma_id.h"
 
 /* Register definition for RTP */
 #define RTP_MCR             (RTP_BASE + 0x000)
@@ -26,8 +28,14 @@
 #define RTP_FCR             (RTP_BASE + 0x020)
 #define RTP_DATA            (RTP_BASE + 0x024)
 #define RTP_DLY             (RTP_BASE + 0x028)
+#define RTP_RES             (RTP_BASE + 0x030)
+#define RTP_PRE             (RTP_BASE + 0x034)
+#define RTP_PRER1           (RTP_BASE + 0x038)
+#define RTP_PRER2           (RTP_BASE + 0x03C)
+#define RTP_PRERDIFF        (RTP_BASE + 0x040)
 #define RTP_VERSION         (RTP_BASE + 0xFFC)
 
+#define RTP_MCR_DEBC_SHARED     BIT(17)
 #define RTP_MCR_PRES_DET_BYPASS BIT(16)
 #define RTP_MCR_RISE_STS        BIT(12)
 #define RTP_MCR_PRES_DET_EN     BIT(8)
@@ -75,10 +83,12 @@
 #define RTP_FIL_XY_REL_RANGE_SHIFT      20
 #define RTP_FIL_XY_ABS_RANGE_SHIFT      16
 
-#define RTP_AMSC_PERIOD_SAMPLE_INT_SHIFT    12
-#define RTP_AMSC_PERIOD_SAMPLE_EN           BIT(1)
-#define RTP_AMSC_SINGLE_SAMPLE_EN           BIT(0)
+#define RTP_AMSC_PSI_SHIFT_V11          12
+#define RTP_AMSC_PSI_SHIFT_V20          4
+#define RTP_AMSC_PERIOD_SAMPLE_EN       BIT(1)
+#define RTP_AMSC_SINGLE_SAMPLE_EN       BIT(0)
 
+#define RTP_FCR_DMA_ENABLE              BIT(30)
 #define RTP_FCR_DAT_CNT_SHIFT           24
 #define RTP_FCR_DAT_CNT_MASK            GENMASK(28, 24)
 #define RTP_FCR_UF_FLAG                 BIT(18)
@@ -93,6 +103,19 @@
 #define RTP_DATA_CH_NUM_SHIFT           16
 #define RTP_DATA_CH_NUM_MASK            GENMASK(17, 16)
 #define RTP_DATA_DATA_MASK              GENMASK(11, 0)
+
+#define RTP_RES_RX_SHIFT                16
+#define RTP_RES_MASK                    GENMASK(15, 0)
+
+#define RTP_PRE_ENALBE                  BIT(28)
+#define RTP_PRE_CAL_SEL_ALGO2           BIT(26)
+#define RTP_PRE_CAL_SEL_ALGO1           BIT(25)
+#define RTP_PRE_CAL_SEL_ALGO0           BIT(24)
+#define RTP_PRE_UP_THD_SHIFT            12
+#define RTP_PRE_THD_MASK                GENMASK(11, 0)
+
+#define RTP_PRER_SHIFT                  16
+#define RTP_PRER_MASK                   GENMASK(15, 0)
 
 #define RTP_DOWN_PRESS_FLAG             1
 
@@ -187,9 +210,12 @@ static struct aic_rtp_dev *g_rtp_dev_of_user = NULL;
 
 static u32 rtp_ms2itv(u32 pclk_rate, u32 ms)
 {
-    u32 tmp = pclk_rate / 1000;
-
-    tmp = (tmp * ms) >> 12;
+    u32 tmp = (u64)ms * pclk_rate / 1000;
+#if defined(AIC_RTP_DRV_V20) || defined(AIC_RTP_DRV_V21)
+    tmp <<= RTP_AMSC_PSI_SHIFT_V20;
+#else
+    tmp &= GENMASK(31, RTP_AMSC_PSI_SHIFT_V11);
+#endif
     return tmp;
 }
 
@@ -224,6 +250,95 @@ static void rtp_fifo_flush(void)
     writel(sta | RTP_FCR_FLUSH, RTP_FCR);
 }
 
+#ifdef AIC_RTP_HARDWARE_PRESSURE
+static void rtp_set_resistance(struct aic_rtp_dev *rtp)
+{
+    u32 val = rtp->y_plate;
+
+    val |= (rtp->x_plate & RTP_RES_MASK) << RTP_RES_RX_SHIFT;
+    writel(val, RTP_RES);
+}
+
+static void rtp_set_hw_pressure(struct aic_rtp_dev *rtp, int en)
+{
+    u32 val = readl(RTP_PRE);
+
+    val |= RTP_PRE_CAL_SEL_ALGO0;
+    val |= (rtp->max_press & RTP_PRE_THD_MASK) << RTP_PRE_UP_THD_SHIFT;
+
+    val &= (~RTP_PRE_ENALBE);
+    if (en && rtp->pressure_det)
+        val |= RTP_PRE_ENALBE;
+    writel(val, RTP_PRE);
+    pr_debug("RTP setup hardware pressure.\n");
+}
+#endif
+
+#ifdef AIC_RTP_ENABLE_DMA
+static void rtp_report_data(struct aic_rtp_dev *rtp, u32 *data, u16 cnt);
+static void hal_rtp_dma_cb(void *arg);
+static void rtp_drq_enable(struct aic_rtp_dev *rtp, int en)
+{
+    u32 val = readl(RTP_FCR);
+
+    val &= (~RTP_FCR_DMA_ENABLE);
+    if (en)
+        val |= RTP_FCR_DMA_ENABLE;
+    writel(val, RTP_FCR);
+}
+
+static void rtp_active_dma(struct aic_rtp_dev *rtp)
+{
+    hal_dma_chan_register_cb(rtp->dma_chan, hal_rtp_dma_cb,
+                             (void *)rtp);
+    hal_dma_chan_prep_device(rtp->dma_chan, (ulong)rtp->fifo_dma_buf,
+                             RTP_DATA, rtp->fifo_thd * sizeof(u32),
+                             DMA_DEV_TO_MEM);
+    hal_dma_chan_start(rtp->dma_chan);
+}
+
+static void hal_rtp_dma_cb(void *arg)
+{
+    struct aic_rtp_dev *rtp = NULL;
+
+    pr_debug("RTP DMA callback\n");
+    rtp = (struct aic_rtp_dev *)arg;
+    aicos_dcache_invalid_range(rtp->fifo_dma_buf, rtp->fifo_thd * sizeof(u32));
+    rtp_report_data(rtp, rtp->fifo_dma_buf, rtp->fifo_thd);
+    rtp_active_dma(rtp);
+}
+
+static void rtp_request_dma(struct aic_rtp_dev *rtp)
+{
+    struct dma_slave_config config = {0};
+
+    config.direction = DMA_DEV_TO_MEM;
+    config.slave_id = DMA_ID_RTP;
+    config.src_addr = RTP_DATA;
+    config.src_maxburst = 1;
+    config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+    config.dst_addr = (ulong)rtp->fifo_dma_buf;
+    config.dst_maxburst = 16;
+
+    rtp->dma_chan = hal_request_dma_chan();
+    if (!rtp->dma_chan) {
+        hal_log_err("RTP request dma channel error\n");
+        return;
+    }
+
+    hal_dma_chan_config(rtp->dma_chan, &config);
+    rtp_drq_enable(rtp, 1);
+}
+
+static void rtp_release_dma(struct aic_rtp_dev *rtp)
+{
+    rtp_drq_enable(rtp, 0);
+
+    hal_dma_chan_stop(rtp->dma_chan);
+    hal_release_dma_chan(rtp->dma_chan);
+}
+#endif
+
 void hal_rtp_enable(struct aic_rtp_dev *rtp, int en)
 {
     if (!en) {
@@ -232,8 +347,21 @@ void hal_rtp_enable(struct aic_rtp_dev *rtp, int en)
     }
 
     if (rtp->mode != RTP_MODE_MANUAL) {
+#ifdef AIC_RTP_ENABLE_DMA
+        if (en)
+            rtp_request_dma(rtp);
+        else
+            rtp_release_dma(rtp);
+#endif
+#ifdef AIC_RTP_HARDWARE_PRESSURE
+        rtp_set_resistance(rtp);
+        rtp_set_hw_pressure(rtp, en);
+#endif
         rtp_reg_enable(RTP_MCR,
                        rtp->mode << RTR_MCR_MODE_SHIFT | RTP_MCR_PRES_DET_EN | RTP_MCR_EN, en);
+#ifdef AIC_RTP_DRV_V21
+        rtp_reg_enable(RTP_MCR, RTP_MCR_DEBC_SHARED, 0);
+#endif
     } else {
         rtp_reg_enable(RTP_MCR,
                        rtp->mode << RTR_MCR_MODE_SHIFT | RTP_MCR_EN, en);
@@ -242,8 +370,13 @@ void hal_rtp_enable(struct aic_rtp_dev *rtp, int en)
 #if defined(AIC_ADCIM_DM_DRV)
     writel(0, RTP_PDEB);
 #else
-    writel(0xffffffff , RTP_PCTL);
+#if defined(AIC_RTP_DRV_V20) || defined(AIC_RTP_DRV_V21)
+    writel(0x000100ff, RTP_PCTL);
+    writel(0x01000100, RTP_PDEB);
+#else
+    writel(0xffffffff, RTP_PCTL);
     writel(0xff0fff0f, RTP_PDEB);
+#endif
 #endif
 
     if (rtp->mode != RTP_MODE_MANUAL) {
@@ -263,13 +396,24 @@ void hal_rtp_int_enable(struct aic_rtp_dev *rtp, int en)
     if (rtp->mode == RTP_MODE_MANUAL) {
         val |= RTP_INTR_PRES_DET_IE;
         rtp->complete = aicos_sem_create(0);
+    } else {
+#ifdef AIC_RTP_ENABLE_DMA
+        val &= (~RTP_INTR_DAT_RDY_IE);
+        if (en) {
+            rtp_active_dma(rtp);
+        } else {
+            hal_dma_chan_stop(rtp->dma_chan);
+        }
+#endif
     }
 
     rtp_reg_enable(RTP_INTR, val, en);
 }
 
-static void rtp_fifo_init(enum aic_rtp_mode mode, u32 smp_period)
+static void rtp_fifo_init(struct aic_rtp_dev *rtp)
 {
+    enum aic_rtp_mode mode = rtp->mode;
+    u32 smp_period = rtp->smp_period;
     u32 thd = 0;
     int val = 0;
 
@@ -298,9 +442,14 @@ static void rtp_fifo_init(enum aic_rtp_mode mode, u32 smp_period)
         thd = 8;
         break;
     }
+#ifdef AIC_RTP_ENABLE_DMA
+    rtp->fifo_thd = thd;
+#endif
     thd <<= RTP_FCR_DAT_RDY_THD_SHIFT;
 
-    writel(thd | RTP_FCR_UF_IE | RTP_FCR_OF_IE, RTP_FCR);
+    val = readl(RTP_FCR);
+    val |= thd | RTP_FCR_UF_IE | RTP_FCR_OF_IE;
+    writel(val, RTP_FCR);
     if (mode == RTP_MODE_MANUAL) {
         rtp_reg_enable(RTP_MMSC, (thd - 1) << RTP_MMSC_SMP_CNT_PER_TRIG_SHIFT, 1);
         rtp_reg_enable(RTP_CHCFG, RTP_CHCFG_ADC_ACQ_VAL << RTP_CHCFG_ADC_ACQ_SHIFT, 1);
@@ -330,6 +479,27 @@ u16 hal_rtp_adc_soft_trigger(struct aic_rtp_dev *rtp, int ch)
     return rtp->adc_info.data;
 }
 
+#ifdef AIC_RTP_HARDWARE_PRESSURE
+static u32 rtp_read_hw_pressure(void)
+{
+#ifndef AIC_RTP_DRV_V21
+    u32 p1 = 0, p2 = 0;
+#endif
+    u32 p0 = 0;
+
+    p0 = readl(RTP_PRER1);
+#ifdef AIC_RTP_DRV_V21
+    p0 &= RTP_PRER_MASK;
+    pr_debug("Current pressure: %d\n", p0);
+#else
+    p1 = p0 >> RTP_PRER_SHIFT;
+    p0 &= RTP_PRER_MASK;
+    p2 = readl(RTP_PRER2) & RTP_PRER_MASK;
+    pr_debug("Current pressure: %d, %d, %d\n", p0, p1, p2);
+#endif
+    return p0;
+}
+#else
 static u32 rtp_press_calc_only_xplate(struct aic_rtp_dev *rtp)
 {
     struct aic_rtp_dat *dat = &rtp->latest;
@@ -380,6 +550,7 @@ static u32 rtp_press_calc_xy_plate(struct aic_rtp_dev *rtp)
     return pressure;
 #endif
 }
+#endif
 
 static void rtp_report_abs(struct aic_rtp_dev *rtp, u16 down_event)
 {
@@ -392,12 +563,15 @@ static void rtp_report_abs(struct aic_rtp_dev *rtp, u16 down_event)
 
     if (rtp->pressure_det) {
         int pressure = 0;
+#ifdef AIC_RTP_HARDWARE_PRESSURE
+        pressure = rtp_read_hw_pressure();
+#else
         if (rtp->y_plate == 0) {
             pressure = rtp_press_calc_only_xplate(rtp);
         } else {
             pressure = rtp_press_calc_xy_plate(rtp);
         }
-
+#endif
         pr_debug("[original] down %d, pressure %d\n", down_event, pressure);
 
         if (down_event == 0)
@@ -425,13 +599,14 @@ static void rtp_report_abs(struct aic_rtp_dev *rtp, u16 down_event)
         rtp->callback();
 }
 
-static void rtp_smp_period(u32 period)
+static void rtp_smp_period(struct aic_rtp_dev *rtp)
 {
+    u32 period = rtp->smp_period;
     u32 val = 0;
 
     if (period) {
-        val = period << RTP_AMSC_PERIOD_SAMPLE_INT_SHIFT
-            | RTP_AMSC_PERIOD_SAMPLE_EN;
+        val = rtp_ms2itv(rtp->pclk_rate, period);
+        val |= RTP_AMSC_PERIOD_SAMPLE_EN;
     } else {
         val = RTP_AMSC_SINGLE_SAMPLE_EN;
         writel(0, RTP_AMSC);
@@ -442,12 +617,12 @@ static void rtp_smp_period(u32 period)
 void hal_rtp_auto_mode(struct aic_rtp_dev *rtp)
 {
     writel(RTP_FILTER_4_8, RTP_FIL);
-    rtp_smp_period(rtp_ms2itv(rtp->pclk_rate, rtp->smp_period));
-    rtp_fifo_init(rtp->mode, rtp->smp_period);
+    rtp_smp_period(rtp);
+    rtp_fifo_init(rtp);
 }
 
 /* Data format: XN, YN */
-static void rtp_report_abs_auto1(struct aic_rtp_dev *rtp, u16 *ori, u32 cnt)
+static void rtp_report_abs_auto1(struct aic_rtp_dev *rtp, u32 *ori, u32 cnt)
 {
     u32 i = 0;
     struct aic_rtp_dat *latest = &rtp->latest;
@@ -463,7 +638,7 @@ static void rtp_report_abs_auto1(struct aic_rtp_dev *rtp, u16 *ori, u32 cnt)
 }
 
 /* Data format: XN, YN, ZA, ZB */
-static void rtp_report_abs_auto2(struct aic_rtp_dev *rtp, u16 *ori, u32 cnt)
+static void rtp_report_abs_auto2(struct aic_rtp_dev *rtp, u32 *ori, u32 cnt)
 {
     struct aic_rtp_dat *latest = &rtp->latest;
 
@@ -503,7 +678,7 @@ static s32 rtp_distance_is_far(struct aic_rtp_dat *latest)
 }
 
 /* Data format: XN, XP, YN, YP, ZA, ZB */
-static void rtp_report_abs_auto3(struct aic_rtp_dev *rtp, u16 *ori, u32 cnt)
+static void rtp_report_abs_auto3(struct aic_rtp_dev *rtp, u32 *ori, u32 cnt)
 {
     u32 i = 0;
     struct aic_rtp_dat *latest = &rtp->latest;
@@ -537,7 +712,7 @@ static void rtp_report_abs_auto3(struct aic_rtp_dev *rtp, u16 *ori, u32 cnt)
 }
 
 /* Data format: XN, XP, YN, YP, ZA, ZB, ZC, ZD */
-static void rtp_report_abs_auto4(struct aic_rtp_dev *rtp, u16 *ori, u32 cnt)
+static void rtp_report_abs_auto4(struct aic_rtp_dev *rtp, u32 *ori, u32 cnt)
 {
     u32 i = 0;
     struct aic_rtp_dat *latest = &rtp->latest;
@@ -583,12 +758,37 @@ static void rtp_report_abs_auto4(struct aic_rtp_dev *rtp, u16 *ori, u32 cnt)
     }
 }
 
-static void aic_rtp_read_fifo(struct aic_rtp_dev *rtp, u32 cnt)
+static void rtp_report_data(struct aic_rtp_dev *rtp, u32 *data, u16 cnt)
+{
+    rtp->latest.timestamp = aic_get_time_ms();
+
+    switch (rtp->mode) {
+    case RTP_MODE_AUTO1:
+        rtp_report_abs_auto1(rtp, data, cnt);
+        break;
+    case RTP_MODE_AUTO2:
+        rtp_report_abs_auto2(rtp, data, cnt);
+        break;
+    case RTP_MODE_AUTO3:
+        rtp_report_abs_auto3(rtp, data, cnt);
+        break;
+    case RTP_MODE_AUTO4:
+        rtp_report_abs_auto4(rtp, data, cnt);
+        break;
+    case RTP_MODE_MANUAL:
+        aicos_sem_give(rtp->complete);
+        break;
+    default:
+        return;
+    }
+}
+
+void aic_rtp_read_fifo(struct aic_rtp_dev *rtp, u32 cnt)
 {
     int i;
     u32 tmp;
     u32 adc_data = 0;
-    u16 data[AIC_RTP_FIFO_DEPTH] = {0};
+    u32 data[AIC_RTP_FIFO_DEPTH] = {0};
 
     tmp = (readl(RTP_FCR) & RTP_FCR_DAT_CNT_MASK) >> RTP_FCR_DAT_CNT_SHIFT;
     if (tmp != cnt) {
@@ -609,8 +809,6 @@ static void aic_rtp_read_fifo(struct aic_rtp_dev *rtp, u32 cnt)
         adc_data += data[i];
     }
 
-    rtp->latest.timestamp = aic_get_time_ms();
-
     tmp = readl(RTP_FCR) & RTP_FCR_DAT_CNT_MASK;
     if (tmp) {
         pr_err("FIFO is not empty! %d\n", tmp >> RTP_FCR_DAT_CNT_SHIFT);
@@ -620,26 +818,8 @@ static void aic_rtp_read_fifo(struct aic_rtp_dev *rtp, u32 cnt)
     if (tmp & (RTP_INTR_DOUR_FLG | RTP_INTR_SCI_FLG))
         pr_debug("After read FIFO, INTR %#x, FCR %#x\n", tmp, readl(RTP_FCR));
 
-    switch (rtp->mode) {
-    case RTP_MODE_AUTO1:
-        rtp_report_abs_auto1(rtp, data, cnt);
-        break;
-    case RTP_MODE_AUTO2:
-        rtp_report_abs_auto2(rtp, data, cnt);
-        break;
-    case RTP_MODE_AUTO3:
-        rtp_report_abs_auto3(rtp, data, cnt);
-        break;
-    case RTP_MODE_AUTO4:
-        rtp_report_abs_auto4(rtp, data, cnt);
-        break;
-    case RTP_MODE_MANUAL:
-        aicos_sem_give(rtp->complete);
-        rtp->adc_info.data = adc_data / cnt;
-        break;
-    default:
-        return;
-    }
+    rtp->adc_info.data = adc_data / cnt;
+    rtp_report_data(rtp, data, cnt);
 }
 
 s32 hal_rtp_register_callback(rtp_callback_t callback)
@@ -662,10 +842,13 @@ irqreturn_t hal_rtp_isr(int irq, void *arg)
     intr = readl(RTP_INTR);
     fcr = readl(RTP_FCR);
     writel(fcr, RTP_FCR);
+#if !(defined(AIC_RTP_DRV_V20) || defined(AIC_RTP_DRV_V21))
     writel(intr, RTP_INTR);
+#endif
 
     pr_debug("INTS %#x, FCR %#x\n", intr, fcr);
     if ((intr & RTP_INTR_PRES_DET_FLG) && (intr & RTP_INTR_RISE_DET_FLG)) {
+        rtp_report_abs(rtp, 0);
         pr_debug("Press&rise happened at the same time!\n");
         goto irq_clean_fifo;
     }
@@ -705,6 +888,9 @@ irq_clean_fifo:
     rtp_fifo_flush();
 
 irq_done:
+#if defined(AIC_RTP_DRV_V20) || defined(AIC_RTP_DRV_V21)
+    writel(intr, RTP_INTR);
+#endif
     return IRQ_HANDLED;
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -19,6 +19,9 @@
 #include <mtd.h>
 
 #define PARTITION_NAME "data_r"
+#ifndef AIC_NFTL_MINI_RESERVED_BLOCK
+#define AIC_NFTL_MINI_RESERVED_BLOCK 50
+#endif
 
 /* Their sum should be less than 0x10D00 */
 #define TEST_SIZE   0x10
@@ -92,6 +95,7 @@ exit:
 static int nftl_init(const char *part_name)
 {
     struct mtd_dev *mtd = NULL;
+    struct nftl_api_nand_cfg_t nftl_cfg;
     u32 part_cnt, i;
 
     mtd_probe();
@@ -134,8 +138,12 @@ static int nftl_init(const char *part_name)
     g_nftl_t->nandt->block_start = mtd->start / mtd->erasesize;
     g_nftl_t->nandt->block_end = (mtd->start + mtd->size) / mtd->erasesize;
 
+    memset(&nftl_cfg, 0, sizeof(nftl_cfg));
+    nftl_cfg.version = NFTL_NAND_CFG_VERSION;
+    nftl_cfg.free_block_reserved = AIC_NFTL_MINI_RESERVED_BLOCK;
+
     /* The second parameter is the index number of this MTD device in the MTD table. */
-    if (nftl_api_init(g_nftl_t, i)) {
+    if (nftl_api_init_ex(g_nftl_t, i, &nftl_cfg)) {
         pr_err("[NE]nftl_initialize failed\n");
         return -1;
     }

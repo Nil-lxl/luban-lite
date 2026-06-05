@@ -13,6 +13,10 @@ menu "Wlan0 Parameter"
             bool "select AIC8800D40L"
         config CHIP_SELECT_AIC8800DW
             bool "select AIC8800DW"
+        config CHIP_SELECT_AIC8800DL
+            bool "select AIC8800DL"
+        config CHIP_SELECT_AIC8800M40B
+            bool "select AIC8800M40B"
     endchoice
 
     choice
@@ -32,6 +36,12 @@ menu "Wlan0 Parameter"
         config CONFIG_AIC8800_RFTEST_MODE
             bool "select rftest mode"
     endchoice
+
+    config CONFIG_AIC8800_MAC_USE_CHIP_ID
+        bool "enable aic8800 mac use chip id"
+        default n
+        select AIC_USING_SID
+        select AIC_MAC_CHIPID_DRV
 
     config CONFIG_AIC8800_BT_SUPPORT
         bool "enable aic8800 BT support"

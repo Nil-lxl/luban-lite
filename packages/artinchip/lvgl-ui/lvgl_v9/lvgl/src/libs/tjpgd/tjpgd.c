@@ -24,11 +24,13 @@
 /                     Some performance improvement.
 /----------------------------------------------------------------------------*/
 
+#include "../../../lvgl.h"
+#if LV_USE_TJPGD
 #include "tjpgd.h"
 
 
 #if JD_FASTDECODE == 2
-    #define HUFF_BIT    10  /* Bit length to apply fast huffman decode */
+    #define HUFF_BIT    8  /* Bit length to apply fast huffman decode */
     #define HUFF_LEN    (1 << HUFF_BIT)
     #define HUFF_MASK   (HUFF_LEN - 1)
 #endif
@@ -915,9 +917,9 @@ JRESULT jd_mcu_output(
         unsigned int n = rx * ry;
 
         do {
-            w = (*s++ & 0xF8) << 8;     /* RRRRR----------- */
+            w = *s++ >> 3;              /* -----------BBBBB */
             w |= (*s++ & 0xFC) << 3;    /* -----GGGGGG----- */
-            w |= *s++ >> 3;             /* -----------BBBBB */
+            w |= (*s++ & 0xF8) << 8;    /* RRRRR----------- */
             *d++ = w;
         } while(--n);
     }
@@ -1135,3 +1137,5 @@ JRESULT jd_decomp(
 
     return rc;
 }
+
+#endif

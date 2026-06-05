@@ -9,20 +9,19 @@
 #include <aic_core.h>
 #include <aic_hal.h>
 #include "board.h"
+#include <aic_utils.h>
 
-struct aic_pinmux
-{
-    unsigned char       func;
-    unsigned char       bias;
-    unsigned char       drive;
-    char *              name;
-};
+#ifdef AIC_NO_CONSOLE_SUSPEND
+#define KEEP_CONSOLE_IN_SUSPEND     FLAG_WAKEUP_SOURCE
+#else
+#define KEEP_CONSOLE_IN_SUSPEND     0
+#endif
 
 struct aic_pinmux aic_pinmux_config[] = {
 #ifdef AIC_USING_UART0
     /* uart0 */
-    {5, PIN_PULL_DIS, 3, "PA.0"},
-    {5, PIN_PULL_UP, 3, "PA.1"},
+    {5, PIN_PULL_DIS, 3, "PA.0", KEEP_CONSOLE_IN_SUSPEND},
+    {5, PIN_PULL_UP, 3, "PA.1", KEEP_CONSOLE_IN_SUSPEND},
 #ifdef AIC_DEV_UART0_MODE_RS485
     {1, PIN_PULL_DIS, 3, AIC_UART0_PA_RS485_CTL_NAME},
 #endif
@@ -167,7 +166,7 @@ struct aic_pinmux aic_pinmux_config[] = {
     {3, PIN_PULL_UP, 3, "PC.11"},
 #endif
 #ifdef AIC_WIRELESS_LAN
-    {1, PIN_PULL_DIS, 3, AIC_WIRELESS_PWR_GPIO},  // WIFI_PWR_ON
+    {1, PIN_PULL_DIS, 3, AIC_WIRELESS_PWR_GPIO, FLAG_POWER_PIN},  // WIFI_PWR_ON
 #endif
 #ifdef AIC_USING_I2C0
     {4, PIN_PULL_DIS, 3, "PD.0"}, // SCK
@@ -384,30 +383,9 @@ struct aic_pinmux aic_pinmux_config[] = {
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_RST_PIN},
     {1, PIN_PULL_DIS, 3, AIC_TOUCH_PANEL_INT_PIN},
 #endif
-#ifdef AIC_USING_BARCODE_DEMO
+#if defined(AIC_USING_BARCODE_DEMO) && defined(AIC_BARCODE_DEMO_LED)
     {1, PIN_PULL_DIS, 3, BARCODE_DEMO_LED_GPIO},
-#endif
-#ifdef AIC_BARCODE_JTAG_DEBUG
-    {8, PIN_PULL_DIS, 3, "PA.10"},
-    {8, PIN_PULL_DIS, 3, "PA.11"},
 #endif
 };
 
-void aic_board_pinmux_init(void)
-{
-    uint32_t i = 0;
-    long pin = 0;
-    unsigned int g;
-    unsigned int p;
-
-    for (i=0; i<ARRAY_SIZE(aic_pinmux_config); i++) {
-        pin = hal_gpio_name2pin(aic_pinmux_config[i].name);
-        if (pin < 0)
-            continue;
-        g = GPIO_GROUP(pin);
-        p = GPIO_GROUP_PIN(pin);
-        hal_gpio_set_func(g, p, aic_pinmux_config[i].func);
-        hal_gpio_set_bias_pull(g, p, aic_pinmux_config[i].bias);
-        hal_gpio_set_drive_strength(g, p, aic_pinmux_config[i].drive);
-    }
-}
+uint32_t aic_pinmux_config_size = ARRAY_SIZE(aic_pinmux_config);

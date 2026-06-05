@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -245,26 +245,26 @@ err:
 struct mtd_partition *mtd_parts_parse(char *parts, u32 spi_bus)
 {
     char *p;
+    char prefix[16];
+
     p = parts;
 
     if (!p)
         return NULL;
 
-    if (spi_bus == 1) {
-        while (*p != '1')
-            p++;
-    } else if (spi_bus == 2) {
-        while (*p != '2')
-            p++;
-    }
+    /* Build the prefix string to search for, e.g. "spi0.0:" or "spi1.0:" */
+    snprintf(prefix, sizeof(prefix), "spi%u.0:", spi_bus);
 
-    while ((*p != '\0') && (*p != ':'))
-        p++;
-    if (*p != ':') {
-        printf("mtdparts is invalid: %s\n", parts);
+    /* Find the prefix in the partition string */
+    p = strstr(parts, prefix);
+    if (p == NULL) {
+        printf("mtdparts: spi_bus %u not found in: %s\n", spi_bus, parts);
         return NULL;
     }
-    p++;
+
+    /* Skip the prefix to get to the partition list */
+    p += strlen(prefix);
+
     return _part_parse(p, 0);
 }
 

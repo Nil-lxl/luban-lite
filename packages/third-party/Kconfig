@@ -8,6 +8,7 @@ source "packages/third-party/cherryusb/Kconfig"   # for CherryUSB V1.5.0
 source "packages/third-party/adbd/Kconfig"
 source "packages/third-party/lwip/Kconfig"
 source "packages/third-party/nimble/Kconfig"
+source "packages/third-party/zephyr-bluetooth/Kconfig"
 source "packages/third-party/littlefs/Kconfig"
 source "packages/third-party/benchmark/Kconfig"
 source "packages/third-party/FreeRTOS-Wrapper/Kconfig"
@@ -40,5 +41,6 @@ source "packages/third-party/ffmpeg/Kconfig"
 source "packages/third-party/fdtlib/Kconfig"
 source "packages/third-party/gif/Kconfig"
 source "packages/third-party/micropython-1.13.0/Kconfig"
+source "packages/third-party/libopus/Kconfig"
 
 endmenu

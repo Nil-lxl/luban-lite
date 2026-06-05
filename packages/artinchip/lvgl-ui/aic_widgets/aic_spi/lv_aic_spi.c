@@ -359,6 +359,7 @@ int lv_spi_display_init(int use_frame_buffer)
     void *buf1 = NULL, *buf2 = NULL;
     struct aicfb_screeninfo info;
     struct mpp_fb *fb = NULL;
+    int width, height, fb_size;
     int i;
 
     fb = mpp_fb_open();
@@ -379,9 +380,11 @@ int lv_spi_display_init(int use_frame_buffer)
     }
 
     for (i = 0; i < LV_SPI_DEV_NUM; i++) {
-        int width = spi_configs[i].width ? spi_configs[i].width : info.width;
-        int height = spi_configs[i].height ? spi_configs[i].height : info.height;
-        int fb_size = width * height * lv_color_format_get_size(cf);
+        width = spi_configs[i].width ? spi_configs[i].width : info.width;
+        height = spi_configs[i].height ? spi_configs[i].height : info.height;
+
+        width = ALIGN_8B(width);
+        fb_size = width * height * lv_color_format_get_size(cf);
 
         struct lv_spi_dev *spi_dev = lv_spi_setup(i, width, height, fb_size);
         if (!spi_dev) {

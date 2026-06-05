@@ -16,6 +16,9 @@
 
 #ifdef AIC_NFTL_SUPPORT
 #include <nftl_api.h>
+#ifndef AIC_NFTL_MINI_RESERVED_BLOCK
+#define AIC_NFTL_MINI_RESERVED_BLOCK 50
+#endif
 #endif
 
 #ifdef AIC_NFTL_SUPPORT
@@ -50,6 +53,8 @@ rt_size_t rt_spinand_write_nftl(rt_device_t dev, rt_off_t pos,
 rt_err_t rt_spinand_init_nftl(rt_device_t dev)
 {
     struct spinand_blk_device *part = (struct spinand_blk_device *)dev;
+    struct nftl_api_nand_cfg_t nftl_cfg;
+
     part->nftl_handler =
         aicos_malloc(MEM_CMA, sizeof(struct nftl_api_handler_t));
     //part->nftl_handler = (struct nftl_api_handler_t *)rt_malloc(sizeof(struct nftl_api_handler_t));
@@ -63,6 +68,10 @@ rt_err_t rt_spinand_init_nftl(rt_device_t dev)
     part->nftl_handler->priv_mtd = (void *)part->mtd_device;
     part->nftl_handler->nandt =
         aicos_malloc(MEM_CMA, sizeof(struct nftl_api_nand_t));
+    if (!part->nftl_handler->nandt) {
+        pr_err("Error: no memory for create SPI NAND block device . nandt");
+        return RT_ERROR;
+    }
 
     part->nftl_handler->nandt->page_size = part->mtd_device->page_size;
     part->nftl_handler->nandt->oob_size = part->mtd_device->oob_size;
@@ -72,7 +81,11 @@ rt_err_t rt_spinand_init_nftl(rt_device_t dev)
     part->nftl_handler->nandt->block_start = part->mtd_device->block_start;
     part->nftl_handler->nandt->block_end = part->mtd_device->block_end;
 
-    if (nftl_api_init(part->nftl_handler, dev->device_id)) {
+    memset(&nftl_cfg, 0, sizeof(nftl_cfg));
+    nftl_cfg.version = NFTL_NAND_CFG_VERSION;
+    nftl_cfg.free_block_reserved = AIC_NFTL_MINI_RESERVED_BLOCK;
+
+    if (nftl_api_init_ex(part->nftl_handler, dev->device_id, &nftl_cfg)) {
         pr_err("[NE]nftl_initialize failed\n");
         return RT_ERROR;
     }
@@ -573,14 +586,16 @@ int rt_blk_nand_register_device(const char *name,
         device->block_total * device->pages_per_block * device->page_size /
         blk_dev->geometry.bytes_per_sector;
 
-    /* Reserve 51 blocks for bad block management in NFTL blk device. */
+    /* Reserve blocks for bad block management in NFTL blk device. */
     if (blk_dev->attr == PART_ATTR_NFTL) {
-        nftl_bbm_reserver_sectors = 51 * device->pages_per_block * device->page_size /
+#ifdef AIC_NFTL_SUPPORT
+        nftl_bbm_reserver_sectors = (AIC_NFTL_MINI_RESERVED_BLOCK + 1) * device->pages_per_block * device->page_size /
                                     blk_dev->geometry.bytes_per_sector;
         if (blk_dev->geometry.sector_count < nftl_bbm_reserver_sectors) {
             pr_err("total sectors is not enough for NFTL bad block management\n");
             return -1;
         }
+#endif
         blk_dev->geometry.sector_count -= nftl_bbm_reserver_sectors;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -66,6 +66,7 @@ int hal_sdmc_idma_stop(struct aic_sdmc_host *host,
         mask = SDMC_IDMAC_INT_TI;
 
 #ifdef AIC_SDMC_IRQ_MODE
+    host->is_busy = 1;
     ret = aicos_sem_take(host->complete, 2000);
 #endif
 
@@ -74,6 +75,10 @@ int hal_sdmc_idma_stop(struct aic_sdmc_host *host,
     sdmc_writel(host, SDMC_HCTRL1, ctrl);
 
     bounce_buffer_stop(bbstate);
+
+#ifdef AIC_SDMC_IRQ_MODE
+    host->is_busy = 0;
+#endif
 
     if (ret < 0 || i == retry) {
         pr_warn("%s interrupt timeout.\n", mask == SDMC_IDMAC_INT_RI ? "Rx" : "Tx");
@@ -455,6 +460,8 @@ void hal_sdmc_init(struct aic_sdmc_host *host)
     sdmc_writel(host, SDMC_HCTRL1,
                 sdmc_readl(host, SDMC_HCTRL1) | SDMC_HCTRL1_INT_EN);
     sdmc_writel(host, SDMC_INTEN, SDMC_INT_DAT_DONE);
-    host->complete = aicos_sem_create(0);
+    if (!host->complete)
+        host->complete = aicos_sem_create(0);
+    host->is_busy = 0;
 #endif
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -173,6 +173,16 @@ int get_current_device_id(void)
     return upg_info.dev_id;
 }
 
+const char *get_upg_media_type(void)
+{
+    return upg_info.media_type;
+}
+
+u32 get_upg_media_dev_id(void)
+{
+    return upg_info.media_dev_id;
+}
+
 static struct upg_cmd *find_command(struct cmd_header *h)
 {
     struct upg_cmd *cmd = NULL;
@@ -278,61 +288,116 @@ void fwc_meta_config(struct fwc_info *fwc, struct fwc_meta *pmeta)
 }
 
 /*
- * Get memory type by header
- * - Determine the memory type of the current image
+ * Get memory type by header and flash_index
+ * - For multi-flash, media_type uses ";" as separator, e.g. "spi-nor;spi-nand"
+ * - flash_index selects which token to return
+ * - A stack-local copy is used because strtok_r modifies the string in-place
  */
-static enum upg_dev_type media_type_get(struct image_header_upgrade *header)
+static enum upg_dev_type media_type_get(struct image_header_upgrade *header, int flash_index)
 {
+    char media_type_copy[64];
+    char *token;
+    char *saveptr;
     static enum upg_dev_type type;
+    int index = 0;
 
     pr_debug("%s, %s\n", __func__, header->media_type);
-    if (strcmp(header->media_type, "mmc") == 0)
-        type = UPG_DEV_TYPE_MMC;
-    else if (strcmp(header->media_type, "spi-nand") == 0)
-        type = UPG_DEV_TYPE_SPI_NAND;
-    else if (strcmp(header->media_type, "spi-nor") == 0)
-        type = UPG_DEV_TYPE_SPI_NOR;
-    else
-        type = UPG_DEV_TYPE_UNKNOWN;
+
+    /* Copy to avoid modifying the original header string */
+    strncpy(media_type_copy, header->media_type, sizeof(media_type_copy) - 1);
+    media_type_copy[sizeof(media_type_copy) - 1] = '\0';
+
+    /* Split by ";" and walk to the flash_index-th token */
+    token = strtok_r(media_type_copy, ";", &saveptr);
+    while (token != NULL && index <= flash_index) {
+        if (index == flash_index) {
+            if (strcmp(token, "mmc") == 0)
+                type = UPG_DEV_TYPE_MMC;
+            else if (strcmp(token, "spi-nand") == 0)
+                type = UPG_DEV_TYPE_SPI_NAND;
+            else if (strcmp(token, "spi-nor") == 0)
+                type = UPG_DEV_TYPE_SPI_NOR;
+            else
+                type = UPG_DEV_TYPE_UNKNOWN;
+            break;
+        }
+        token = strtok_r(NULL, ";", &saveptr);
+        index++;
+    }
 
     return type;
 }
 
 /*
  * Prepare write data
- * - Select function based on type
+ * - For multi-flash, iterate all flashes parsed from media_type
+ * - Each flash ID is extracted from media_dev_id (1 byte per flash)
+ * - Call the corresponding prepare function for each flash
  */
 s32 media_device_prepare(struct fwc_info *fwc, struct image_header_upgrade
         *header)
 {
     enum upg_dev_type type;
     s32 ret = 0;
+    char *media_type_copy;
+    char *token;
+    char *saveptr;
+    int flash_count = 0;
+    int i;
+    u8 dev_id;
 
-    /* get device type */
-    type = media_type_get(header);
+    /* Save media_type and media_dev_id to upg_info for later use */
+    strncpy(upg_info.media_type, header->media_type, sizeof(upg_info.media_type) - 1);
+    upg_info.media_type[sizeof(upg_info.media_type) - 1] = '\0';
+    upg_info.media_dev_id = header->media_dev_id;
 
-    /* config upg_info */
-    set_current_device_type(type);
-    set_current_device_id(header->media_dev_id);
-    switch (type) {
+    /* Count how many flashes are specified in media_type (separated by ";") */
+    media_type_copy = strdup(header->media_type);
+    if (!media_type_copy) {
+        pr_err("Memory allocation failed\n");
+        return -1;
+    }
+
+    token = strtok_r(media_type_copy, ";", &saveptr);
+    while (token != NULL) {
+        flash_count++;
+        token = strtok_r(NULL, ";", &saveptr);
+    }
+    free(media_type_copy);
+
+    /* Prepare each flash in order */
+    for (i = 0; i < flash_count; i++) {
+        type = media_type_get(header, i);
+        /* Extract the i-th flash ID from media_dev_id (1 byte per flash) */
+        dev_id = (header->media_dev_id >> (i * 8)) & 0xFF;
+
+        set_current_device_type(type);
+        set_current_device_id(dev_id);
+
+        switch (type) {
 #if defined(AICUPG_MMC_ARTINCHIP)
-        case UPG_DEV_TYPE_MMC:
-            ret = mmc_fwc_prepare(fwc, header->media_dev_id);
-            break;
+            case UPG_DEV_TYPE_MMC:
+                ret = mmc_fwc_prepare(fwc, dev_id);
+                break;
 #endif
 #if defined(AICUPG_NAND_ARTINCHIP)
-        case UPG_DEV_TYPE_SPI_NAND:
-            ret = nand_fwc_prepare(fwc, header->media_dev_id);
-            break;
+            case UPG_DEV_TYPE_SPI_NAND:
+                ret = nand_fwc_prepare(fwc, dev_id);
+                break;
 #endif
 #if defined(AICUPG_NOR_ARTINCHIP)
-        case UPG_DEV_TYPE_SPI_NOR:
-            ret = nor_fwc_prepare(fwc, header->media_dev_id);
-            break;
+            case UPG_DEV_TYPE_SPI_NOR:
+                ret = nor_fwc_prepare(fwc, dev_id);
+                break;
 #endif
-        default:
-            pr_err("device type is not support!...\n");
-            ret = -1;
+            default:
+                pr_err("device type %d is not support!...\n", type);
+                ret = -1;
+                break;
+        }
+
+        /* Stop on first failure */
+        if (ret < 0)
             break;
     }
 

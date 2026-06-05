@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -35,6 +35,8 @@ struct aic_cap_data {
     u32 freq;
     float duty;
 };
+
+int hal_cap_get_clk_rate(void);
 
 void hal_cap_ch_init(u32 ch);
 void hal_cap_ch_deinit(u32 ch);

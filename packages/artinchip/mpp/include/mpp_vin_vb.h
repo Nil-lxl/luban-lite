@@ -77,6 +77,7 @@ struct vb_ops {
 
 int vin_vb_req_buf(struct vb_queue *q,
                    char *buf, u32 size, struct vin_video_buf *vbuf);
+int vin_vb_req_stitch_buf(struct vb_queue *q, struct vin_video_buf *vbuf);
 int vin_vb_q_buf(struct vb_queue *q, u32 index);
 int vin_vb_dq_buf(struct vb_queue *q, u32 *pindex);
 void vin_vb_buffer_done(struct vb_buffer *vb, enum vb_buffer_state state);

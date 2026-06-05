@@ -324,9 +324,9 @@ static s32 spl_build_page_table(struct aicupg_nand_spl *spl,
     pcnt = ROUNDUP(spl->buf_size, slice_size) / slice_size;
     pt->head.entry_cnt = pcnt + 1;
 
-    if (pt->head.entry_cnt > 2 * PAGE_TABLE_MAX_ENTRY) {
+    if (pt->head.entry_cnt > PAGE_TABLE_MAX_ENTRY) {
         pr_err("Error, SPL is too large entry cnt %d, max %d.\n",
-               pt->head.entry_cnt, 2 * PAGE_TABLE_MAX_ENTRY);
+               pt->head.entry_cnt, PAGE_TABLE_MAX_ENTRY);
         ret = -1;
         goto out;
     }

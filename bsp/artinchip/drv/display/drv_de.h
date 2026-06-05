@@ -44,6 +44,7 @@ struct aic_de_comp {
     aicos_wqueue_t vsync_queue;
     unsigned int bg_blend_ui_en;
     unsigned int accum_line;
+    u32 layer_mask;
     u32 scaler_active;
 
     /* INTERRUPT Context */

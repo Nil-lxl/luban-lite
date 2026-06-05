@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -162,16 +162,14 @@ int hal_qep_init(void)
         return -1;
     }
 #endif
-    ret = hal_clk_enable(CLK_PWMCS);
-    if (ret < 0) {
-        hal_log_err("Failed to enable QEP clk\n");
-        return -1;
-    }
-
-    ret = hal_clk_enable_deassertrst(CLK_PWMCS);
-    if (ret < 0) {
-        hal_log_err("Failed to reset QEP deassert\n");
-        return -1;
+    if (!hal_clk_is_enabled(CLK_PWMCS)) {
+        ret = hal_clk_enable_deassertrst(CLK_PWMCS);
+        if (ret < 0) {
+            hal_log_err("Failed to reset EPWM deassert\n");
+            return -1;
+        }
+    } else {
+        hal_log_debug("PWMCS clk has already been enabled in other sub-modules.\n");
     }
 
     /* default configuration */

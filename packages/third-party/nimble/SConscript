@@ -288,6 +288,16 @@ if GetDepend(['LPKG_NIMBLE_SAMPLE_PER_HR']):
         apps/blehr/src/gatt_svr.c
         """)
 
+# gatt client sample
+if GetDepend(['LPKG_NIMBLE_SAMPLE_GATT_CLIENT']):
+    path += [cwd + '/apps/gatt_client/src']
+
+    src += Split("""
+        apps/gatt_client/src/gatt_client.c
+        apps/gatt_client/src/misc.c
+        apps/gatt_client/src/peer.c
+        """)
+
 # bleprph sample
 if GetDepend(['LPKG_NIMBLE_SAMPLE_PERIPHERAL']):
     path += [cwd + '/apps/bleprph/src']

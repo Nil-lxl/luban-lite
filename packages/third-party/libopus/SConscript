@@ -1,0 +1,63 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+import os
+from building import *
+
+cwd = GetCurrentDir()
+source_root = os.path.join(cwd, 'libsrc')
+if not os.path.exists(os.path.join(source_root, 'src')):
+    source_root = cwd
+
+# libopus source files - use real implementation
+src = []
+
+
+# Include paths for complete libopus with CELT and SILK
+# Adjust the order to ensure standard headers are found before project-specific ones
+CPPPATH = [
+    'toolchain/riscv64-unknown-elf/include',  # Toolchain headers (highest priority)
+    'toolchain/riscv64-unknown-elf/include/sys',  # Toolchain sys headers
+    cwd + '/include',        # Opus public headers
+    cwd,                     # Project root (lowest priority)
+]
+
+# Preprocessor definitions for complete libopus with CELT and SILK
+# Note: HAVE_CONFIG_H removed to avoid including wpa_supplicant's config.h (name collision)
+CPPDEFINES = [
+    'OPUS_BUILD',
+    'FIXED_POINT',           # Use fixed-point arithmetic for embedded
+    'DISABLE_FLOAT_API',     # Disable floating point API
+    'USE_ALLOCA',
+    'VAR_ARRAYS',
+    'DISABLE_DRED',          # Disable DRED (Deep REDundancy)
+    'CUSTOM_MODES',          # Enable custom CELT modes
+    'CELT_ENCODER=1',        # Enable CELT encoder
+    'CELT_DECODER=1',        # Enable CELT decoder
+    'SILK_ENCODER=1',        # Enable SILK encoder
+    'SILK_DECODER=1',        # Enable SILK decoder
+    'EMBEDDED_ARM',          # Embedded ARM optimizations
+]
+
+# Compiler flags optimized for embedded systems
+# Add isolation flags to prevent conflicts with project-specific headers
+# This ensures libopus uses standard C headers instead of project-specific ones
+CFLAGS = ' -Os -ffunction-sections -fdata-sections -Wno-unused-function'
+CFLAGS += ' -idirafter toolchain/riscv64-unknown-elf/include'  # Ensure toolchain headers are found first
+CFLAGS += ' -iquote ' + cwd + '/include'     # Use quote include for opus headers
+
+if GetDepend(['PKG_USING_LIBOPUS']):
+        # Static library output under this package directory (same dir as this SConscript)
+        lib_path = cwd
+        if not GetDepend('LPKG_USING_LIBOPUS_PREBUILT'):
+            DefineGroup(os.path.join(lib_path, 'libOPUS.a'), src, depend = ['PKG_USING_LIBOPUS'],
+                        CPPPATH = CPPPATH, CPPDEFINES = CPPDEFINES, CFLAGS = CFLAGS, LIBRARY = '')
+        else:
+            print("libopus: prebuilt mode, link existing %s" % os.path.join(lib_path, 'libOPUS.a'))
+
+        src = []
+        group = DefineGroup('OPUS_lib', src, depend = ['PKG_USING_LIBOPUS'],
+                           CPPPATH = CPPPATH, LIBS = ['OPUS'], LIBPATH = [lib_path])
+else:
+    group = []
+
+Return('group')

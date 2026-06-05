@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Artinchip Technology Co., Ltd
+ * Copyright (c) 2022-2026, Artinchip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -42,10 +42,6 @@
 
 #include "rtconfig.h"
 
-#ifdef CONFIG_ENABLE_ROM_API
-INCLUDE rom_api.lds
-#endif
-
 #ifndef AIC_BOOTLOADER_RESERVE_SIZE
     #define AIC_BOOTLOADER_RESERVE_SIZE 0x40000
 #endif
@@ -65,10 +61,10 @@ MEMORY
 #else
     SRAM_S0     : ORIGIN = 0x30040000 + AIC_XIP_RAMCODE_SIZE                      , LENGTH = AIC_SRAM_TOTAL_SIZE - AIC_SRAM_RESERVE_SIZE - AIC_XIP_RAMCODE_SIZE
 #endif
-    SRAM_S1_SW  : ORIGIN = 0x40000000 - AIC_SRAM_S1_SIZE                          , LENGTH = AIC_SRAM1_SW_SIZE
-    SRAM_S1_CMA : ORIGIN = 0x40000000 - AIC_SRAM_S1_SIZE + AIC_SRAM1_SW_SIZE      , LENGTH = AIC_SRAM_S1_SIZE - AIC_SRAM1_SW_SIZE
+    SRAM_S1_CMA : ORIGIN = 0x40000000 - AIC_SRAM_S1_SIZE                          , LENGTH = AIC_SRAM_S1_SIZE - AIC_SRAM1_SW_SIZE
+    SRAM_S1_SW  : ORIGIN = 0x40000000 - AIC_SRAM1_SW_SIZE                         , LENGTH = AIC_SRAM1_SW_SIZE
 #ifdef AIC_XIP
-    FLASH_XIP   : ORIGIN = 0x60000000 + AIC_XIP_FW_OFFSET			  , LENGTH = 512M - AIC_XIP_FW_OFFSET
+    FLASH_XIP   : ORIGIN = 0x60000000 + AIC_XIP_FW_OFFSET                         , LENGTH = 512M - AIC_XIP_FW_OFFSET
 #endif
 }
 
@@ -83,10 +79,11 @@ PROVIDE (__sram_s0_end              = __dtcm_end + AIC_SRAM_TOTAL_SIZE - AIC_SRA
 PROVIDE (__sram_s0_start            = 0x30040000);
 PROVIDE (__sram_s0_end              = __sram_s0_start + AIC_SRAM_TOTAL_SIZE - AIC_SRAM_S1_SIZE);
 #endif
-PROVIDE (__sram_s1_sw_start        = 0x40000000 - AIC_SRAM_S1_SIZE);
-PROVIDE (__sram_s1_sw_end          = 0x40000000 - AIC_SRAM_S1_SIZE + AIC_SRAM1_SW_SIZE);
-PROVIDE (__sram_s1_cma_start       = __sram_s1_sw_end);
-PROVIDE (__sram_s1_cma_end         = 0x40000000);
+
+PROVIDE (__sram_s1_cma_start        = __sram_s1_cma_heap_start);
+PROVIDE (__sram_s1_cma_end          = 0x40000000 - AIC_SRAM1_SW_SIZE);
+PROVIDE (__sram_s1_sw_start         = 0x40000000 - AIC_SRAM1_SW_SIZE);
+PROVIDE (__sram_s1_sw_end           = 0x40000000);
 
 #ifdef AIC_TCM_EN
 PROVIDE (__itcm_heap_end           = __itcm_end);
@@ -97,10 +94,9 @@ PROVIDE (__sram_s1_cma_heap_end    = __sram_s1_cma_end);
 PROVIDE (__sram_s1_sw_heap_end     = __sram_s1_sw_end);
 
 PROVIDE (__min_heap_size           = 0x200);
-PROVIDE (__sram_sw_heap_start      = __sram_s0_sw_heap_start);
-PROVIDE (__sram_sw_heap_end        = __sram_s0_sw_heap_end);
 PROVIDE (__heap_start              = __sram_s0_sw_heap_start);
 PROVIDE (__heap_end                = __sram_s0_sw_heap_end);
+
 PROVIDE (__cma_heap_start          = __sram_s1_cma_heap_start);
 PROVIDE (__cma_heap_end            = __sram_s1_cma_heap_end);
 
@@ -226,6 +222,7 @@ SECTIONS
 
   __etext = . ;
  } > REGION_TEXT
+
  .eh_frame_hdr : {
   *(.eh_frame_hdr)
  } > REGION_TEXT
@@ -360,15 +357,6 @@ SECTIONS
   . = ALIGN(0x4) ;
  } > REGION_SRAM_S0_SW AT > REGION_SRAM_S0_SW
 
- .sram_s1_sw : {
-  . = ALIGN(0x4) ;
-  __sram_s1_sw_data_start = .;
-  *(.sram1_sw_data)
-  . = ALIGN(0x4) ;
-  __sram_s1_sw_data_end = .;
-  __sram_s1_sw_heap_start = .;
- } > REGION_SRAM_S1_SW AT > REGION_SRAM_S1_SW
-
  .sram_s1_cma : {
   . = ALIGN(0x4) ;
   __sram_s1_cma_data_start = .;
@@ -378,14 +366,12 @@ SECTIONS
   __sram_s1_cma_heap_start = .;
  } > REGION_SRAM_S1_CMA AT > REGION_SRAM_S1_CMA
 
- #ifdef FPGA_BOARD_ARTINCHIP
- .fpga_ext : {
+ .sram_s1_sw : {
   . = ALIGN(0x4) ;
-  __fpga_ext_data_start = .;
-  *(.fpga_ext_data)
+  __sram_s1_sw_data_start = .;
+  *(.sram1_sw_data)
   . = ALIGN(0x4) ;
-  __fpga_ext_data_end = .;
-  __fpga_ext_heap_start = .;
- } > REGION_FPGA_EXT AT > REGION_FPGA_EXT
- #endif
+  __sram_s1_sw_data_end = .;
+  __sram_s1_sw_heap_start = .;
+ } > REGION_SRAM_S1_SW AT > REGION_SRAM_S1_SW
 }

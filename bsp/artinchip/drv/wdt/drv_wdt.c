@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -22,6 +22,8 @@ struct aic_wdt_dev {
     struct aic_wdt chan;
     s32 dbg_continue;
     u32 cur_chan;
+    bool inited;
+    bool running;
 };
 static struct aic_wdt_dev g_wdt_dev = {0};
 
@@ -102,6 +104,7 @@ rt_err_t drv_wdt_set_timeout(rt_watchdog_t *wdt, uint32_t sec)
 rt_err_t drv_wdt_start(int ch)
 {
     LOG_D("Start chan0");
+    g_wdt_dev.running = true;
     if (hal_wdt_is_running())
         return aic_wdt_ping(ch);
 
@@ -155,6 +158,7 @@ static rt_err_t drv_wdt_control(rt_watchdog_t *wdt, int cmd, void *args)
 
     case RT_DEVICE_CTRL_WDT_STOP:
         drv_wdt_stop();
+        wdt_dev->running = false;
         break;
 
     case RT_DEVICE_CTRL_WDT_EN_REG:
@@ -229,28 +233,42 @@ rt_err_t drv_wdt_init(rt_watchdog_t *wdt)
 
     wdt_dev->dbg_continue = 0;
     wdt_dev->cur_chan = 0;
+    wdt_dev->inited = true;
 
     return RT_EOK;
 }
 
 void drv_wdt_deinit(rt_watchdog_t *wdt)
 {
+    struct aic_wdt_dev *wdt_dev = (struct aic_wdt_dev*)wdt;
+
     aicos_irq_disable(WDT_IRQn);
     hal_clk_disable_assertrst(CLK_WDT);
+    wdt_dev->inited = false;
 }
 
 #ifdef RT_USING_PM
 static int aic_wdt_suspend(const struct rt_device *device, rt_uint8_t mode)
 {
-    switch (mode)
-    {
-    case PM_SLEEP_MODE_IDLE:
-        break;
+    struct aic_wdt_dev *wdt_dev = (struct aic_wdt_dev*)device->user_data;
+
+    if (!wdt_dev->inited)
+        return 0;
+
+    switch (mode) {
     case PM_SLEEP_MODE_LIGHT:
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
+        if (wdt_dev->running)
+            drv_wdt_stop();
+
+#ifdef AIC_PM_DRV_V15
+        hal_clk_disable_assertrst(CLK_WDT);
+#else
         hal_clk_disable(CLK_WDT);
+#endif
         break;
+    case PM_SLEEP_MODE_IDLE:
     default:
         break;
     }
@@ -260,15 +278,28 @@ static int aic_wdt_suspend(const struct rt_device *device, rt_uint8_t mode)
 
 static void aic_wdt_resume(const struct rt_device *device, rt_uint8_t mode)
 {
-    switch (mode)
-    {
-    case PM_SLEEP_MODE_IDLE:
-        break;
+    struct aic_wdt_dev *wdt_dev = (struct aic_wdt_dev*)device->user_data;
+
+    if (!wdt_dev->inited)
+        return;
+
+    switch (mode) {
     case PM_SLEEP_MODE_LIGHT:
     case PM_SLEEP_MODE_DEEP:
     case PM_SLEEP_MODE_STANDBY:
+#ifdef AIC_PM_DRV_V15
+        hal_clk_enable_deassertrst(CLK_WDT);
+#else
         hal_clk_enable(CLK_WDT);
+#endif
+
+        if (wdt_dev->running) {
+            drv_wdt_set_timeout(&wdt_dev->wdt, wdt_dev->chan.timeout);
+            drv_wdt_start(0);
+        }
+        LOG_D("Watchdog resume, running: %d\n", wdt_dev->running);
         break;
+    case PM_SLEEP_MODE_IDLE:
     default:
         break;
     }
@@ -292,7 +323,7 @@ int rt_hw_wdt_init(void)
 
     g_wdt_dev.wdt.ops = &aic_wdt_ops;
     ret = rt_hw_watchdog_register(&g_wdt_dev.wdt, "wdt",
-                                  RT_DEVICE_FLAG_RDWR, 0);
+                                  RT_DEVICE_FLAG_RDWR, &g_wdt_dev);
     if (ret != RT_EOK)
         LOG_E("Failed to register WDT, return %d", ret);
 

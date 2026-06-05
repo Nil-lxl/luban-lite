@@ -1,0 +1,12 @@
+from building import *
+
+cwd = GetCurrentDir()
+src = []
+CPPPATH = [cwd]
+
+if GetDepend('AIC_VIN_TEST') and GetDepend('RT_USING_FINSH'):
+    src = Glob('*.c')
+
+group = DefineGroup('test-vin', src, depend=[''], CPPPATH=CPPPATH)
+
+Return('group')

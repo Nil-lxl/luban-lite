@@ -21,6 +21,9 @@
 
 #ifdef AIC_NFTL_SUPPORT
 #include <nftl_api.h>
+#ifndef AIC_NFTL_MINI_RESERVED_BLOCK
+#define AIC_NFTL_MINI_RESERVED_BLOCK 50
+#endif
 #endif
 
 #define MAX_NAND_NAME 32
@@ -75,6 +78,10 @@ static s32 nand_fwc_get_mtd_partitions(struct fwc_info *fwc,
                     priv->nftl_handler[idx]->priv_mtd = (void *)priv->mtd[idx];
 
                     priv->nftl_handler[idx]->nandt = aicos_malloc(MEM_CMA, sizeof(struct nftl_api_nand_t));
+                    if (!priv->nftl_handler[idx]->nandt) {
+                        pr_err("priv->nftl_handler[%d]->nandt Out of memory, malloc failed.\n", idx);
+                        return -1;
+                    }
 
                     priv->nftl_handler[idx]->nandt->page_size = priv->mtd[idx]->writesize;
                     priv->nftl_handler[idx]->nandt->oob_size = priv->mtd[idx]->oobsize;
@@ -89,9 +96,17 @@ static s32 nand_fwc_get_mtd_partitions(struct fwc_info *fwc,
                         offset_e += priv->mtd[idx]->erasesize;
                     }
 
-                    if (nftl_api_init(priv->nftl_handler[idx], idx)) {
-                        pr_err("[NE]nftl_initialize failed\n");
-                        return -1;
+                    {
+                        struct nftl_api_nand_cfg_t nftl_cfg;
+
+                        memset(&nftl_cfg, 0, sizeof(nftl_cfg));
+                        nftl_cfg.version = NFTL_NAND_CFG_VERSION;
+                        nftl_cfg.free_block_reserved = AIC_NFTL_MINI_RESERVED_BLOCK;
+
+                        if (nftl_api_init_ex(priv->nftl_handler[idx], idx, &nftl_cfg)) {
+                            pr_err("[NE]nftl_initialize failed\n");
+                            return -1;
+                        }
                     }
                     nftl_api_enable_oob_verify(priv->nftl_handler[idx], AIC_NFTL_OOB_VERIFY);
                 }

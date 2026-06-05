@@ -47,6 +47,17 @@ struct rt_pwm_configuration
     rt_uint32_t irq_mode;
     rt_uint32_t pul_cnt;
 #endif
+#ifdef AIC_XPWM_DRV
+    rt_uint32_t pulse_cnt; /* 0:PWM mode, 1-n:XPWM pulse cnt */
+    rt_uint32_t fifo_num;
+    rt_uint32_t fifo_index;
+    rt_uint32_t pul_num;
+    rt_uint32_t pul_prd;
+    rt_uint32_t pul_cmp;
+    rt_uint32_t *buf;
+    rt_uint32_t buf_len;
+    rt_uint32_t vol;
+#endif
 };
 
 struct rt_device_pwm;
@@ -68,7 +79,11 @@ rt_err_t rt_pwm_disable(struct rt_device_pwm *device, int channel);
 #if defined(AIC_PWM_DRV) || defined(AIC_EPWM_DRV)
 rt_err_t rt_pwm_set_pul(struct rt_device_pwm *device, int channel, rt_uint32_t irq_mode, rt_uint32_t period, rt_uint32_t pulse, rt_uint32_t pul_cnt);
 #endif
+#ifdef AIC_XPWM_DRV
+rt_err_t rt_pwm_set(struct rt_device_pwm *device, int channel, rt_uint32_t period, rt_uint32_t pulse, rt_uint32_t pulse_cnt);
+#else
 rt_err_t rt_pwm_set(struct rt_device_pwm *device, int channel, rt_uint32_t period, rt_uint32_t pulse);
+#endif
 rt_err_t rt_pwm_set_output(struct rt_device_pwm *device, int channel, rt_uint32_t period, rt_uint32_t pulse, rt_uint32_t output);
 rt_err_t rt_pwm_set_period(struct rt_device_pwm *device, int channel, rt_uint32_t period);
 rt_err_t rt_pwm_set_pulse(struct rt_device_pwm *device, int channel, rt_uint32_t pulse);

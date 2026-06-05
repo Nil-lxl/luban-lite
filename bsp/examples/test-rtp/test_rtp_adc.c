@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -211,7 +211,7 @@ static void rtp_get_panel_resistance(void)
 
     for (int i = 0; i < 2; i++) {
         if (first_min_vals[i] > 0.0001f) {
-            R[i] = (first_max_vals[i] - first_min_vals[i]) * 180.0f / first_min_vals[i];
+            R[i] = 180.0f * 3.3f / first_min_vals[i] - 2 * 180.0f;
         } else {
             R[i] = -1.0f;
         }
@@ -226,7 +226,7 @@ static void rtp_get_panel_resistance(void)
 
     for (int i = 0; i < 2; i++) {
         if (second_min_vals[i] > 0.0001f) {
-            R[i+2] = (second_max_vals[i] - second_min_vals[i]) * 180.0f / second_min_vals[i];
+            R[i+2] = 180.0f * 3.3f / second_min_vals[i] - 2 * 180.0f;
         } else {
             R[i+2] = -1.0f;
         }

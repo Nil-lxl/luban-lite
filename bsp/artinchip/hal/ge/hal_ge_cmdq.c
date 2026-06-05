@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -396,8 +396,6 @@ int hal_ge_init(void)
 
     int dither_line_size_align = ALIGN_UP((MAX_WIDTH * 4), CACHE_LINE_SIZE);
     aicos_dcache_clean_invalid_range((unsigned long *)(data->dither_line_phys), dither_line_size_align);
-
-    hal_log_info("dither line phys: 0x%08X\n", data->dither_line_phys);
 #endif
     data->ge_mode = GE_MODE_CMDQ;
     data->lock = aicos_mutex_create();
