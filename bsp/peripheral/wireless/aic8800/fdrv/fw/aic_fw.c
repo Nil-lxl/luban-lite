@@ -17,10 +17,18 @@
 #include "fw_adid_u03.h"
 #include "fw_patch_u03.h"
 #include "fw_patch_table_u03.h"
+#include "fw_adid_8800d80_u02.h"
+#include "fw_patch_8800d80_u02.h"
+#include "fw_patch_table_8800d80_u02.h"
+#include "fw_patch_8800d80_u02_ext0.h"
+#include "fw_patch_8800d80_u02_ext1.h"
 
 #include "fw_adid_8800dc_u02.h"
+#include "fw_adid_8800dc_u02h.h"
 #include "fw_patch_8800dc_u02.h"
+#include "fw_patch_8800dc_u02h.h"
 #include "fw_patch_table_8800dc_u02.h"
+#include "fw_patch_table_8800dc_u02h.h"
 #include "fw_patch_8800dc_u02_ext0.h"
 
 #include "fw_adid_8800dc_u02h.h"
@@ -34,6 +42,8 @@
 #include "aic_fw.h"
 #include "aic_plat_log.h"
 
+extern u8 chip_sub_id;
+extern u8 chip_mcu_id;
 
 void *aic_fw_ptr_get(enum aic_fw name)
 {
@@ -50,37 +60,11 @@ void *aic_fw_ptr_get(enum aic_fw name)
     case FW_PATCH_TABLE_U03:
         ptr = fw_patch_table_u03;
         break;
-
-    case FW_ADID_8800DC_U02:
-        AIC_LOG_PRINTF("FW_ADID_8800DC_U02\n");
-        ptr = fw_adid_8800dc_u02;
+#if 0
+    case FW_ADID_8800D80:
+        ptr = fw_adid_8800d80;
         break;
-    case FW_PATCH_8800DC_U02:
-        AIC_LOG_PRINTF("FW_PATCH_8800DC_U02\n");
-        ptr = fw_patch_8800dc_u02;
-        break;
-	case FW_PATCH_TABLE_8800DC_U02:
-        AIC_LOG_PRINTF("FW_PATCH_TABLE_8800DC_U02\n");
-		ptr = fw_patch_table_8800dc_u02;
-		break;
-	case FW_PATCH_8800DC_U02_EXT:
-		AIC_LOG_PRINTF("FW_PATCH_8800DC_U02_EXT\n");
-		ptr = fw_patch_8800dc_u02_ext0;
-		break;
-
-    case FW_ADID_8800DC_U02H:
-        AIC_LOG_PRINTF("FW_ADID_8800DC_U02\n");
-        ptr = fw_adid_8800dc_u02h;
-        break;
-    case FW_PATCH_8800DC_U02H:
-        AIC_LOG_PRINTF("FW_PATCH_8800DC_U02\n");
-        ptr = fw_patch_8800dc_u02h;
-        break;
-	case FW_PATCH_TABLE_8800DC_U02H:
-        AIC_LOG_PRINTF("FW_PATCH_TABLE_8800DC_U02\n");
-		ptr = fw_patch_table_8800dc_u02h;
-		break;
-
+#endif
     case FW_ADID_8800D80_U02:
         AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
         ptr = fw_adid_8800d80_u02;
@@ -89,14 +73,42 @@ void *aic_fw_ptr_get(enum aic_fw name)
         AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
         ptr = fw_patch_8800d80_u02;
         break;
-	case FW_PATCH_TABLE_8800D80_U02:
+    case FW_PATCH_TABLE_8800D80_U02:
         AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
-		ptr = fw_patch_table_8800d80_u02;
-		break;
-	case FW_PATCH_8800D80_U02_EXT:
-		AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
-		ptr = fw_patch_8800d80_u02_ext0;
-		break;
+        ptr = fw_patch_table_8800d80_u02;
+        break;
+    case FW_PATCH_8800D80_U02_EXT:
+        AIC_LOG_PRINTF("FW_ADID_8800D80_U02\n");
+        ptr = fw_patch_8800d80_u02_ext0;
+        break;
+    case FW_PATCH_8800D80_U02_EXT1:
+        ptr = fw_patch_8800d80_u02_ext1;
+        break;
+
+    case FW_ADID_8800DC_U02:
+        if (chip_sub_id == 1)
+            ptr = fw_adid_8800dc_u02;
+        else if (chip_sub_id == 2)
+            ptr = fw_adid_8800dc_u02h;
+        break;
+    case FW_PATCH_8800DC_U02:
+        if (chip_sub_id == 1)
+            ptr = fw_patch_8800dc_u02;
+        else if (chip_sub_id == 2)
+            ptr = fw_patch_8800dc_u02h;
+        break;
+    case FW_PATCH_TABLE_8800DC_U02:
+        if (chip_sub_id == 1)
+            ptr = fw_patch_table_8800dc_u02;
+        else if (chip_sub_id == 2)
+            ptr = fw_patch_table_8800dc_u02h;
+        break;
+    case FW_PATCH_8800DC_U02_EXT:
+        if (chip_sub_id == 1)
+            ptr = NULL;
+        else if (chip_sub_id == 2)
+            ptr = fw_patch_8800dc_u02_ext0;
+        break;
 #endif
     default:
         AIC_LOG_PRINTF("PTR is NULL\n");
@@ -133,12 +145,37 @@ uint32_t aic_fw_size_get(enum aic_fw name)
     case FW_PATCH_8800D80_U02:
         size = sizeof(fw_patch_8800d80_u02);
         break;
-	case FW_PATCH_TABLE_8800D80_U02:
-		size = sizeof(fw_patch_table_8800d80_u02);
-		break;
-	case FW_PATCH_8800D80_U02_EXT:
-		size = sizeof(fw_patch_8800d80_u02_ext0);
-		break;
+    case FW_PATCH_TABLE_8800D80_U02:
+        size = sizeof(fw_patch_table_8800d80_u02);
+        break;
+    case FW_PATCH_8800D80_U02_EXT:
+        size = sizeof(fw_patch_8800d80_u02_ext0);
+        break;
+
+    case FW_ADID_8800DC_U02:
+        if (chip_sub_id == 1)
+            size = sizeof(fw_adid_8800dc_u02);
+        else if (chip_sub_id == 2)
+            size = sizeof(fw_adid_8800dc_u02h);
+        break;
+    case FW_PATCH_8800DC_U02:
+        if (chip_sub_id == 1)
+            size = sizeof(fw_patch_8800dc_u02);
+        else if (chip_sub_id == 2)
+            size = sizeof(fw_patch_8800dc_u02h);
+        break;
+    case FW_PATCH_TABLE_8800DC_U02:
+        if (chip_sub_id == 1)
+            size = sizeof(fw_patch_table_8800dc_u02);
+        else if (chip_sub_id == 2)
+            size = sizeof(fw_patch_table_8800dc_u02h);
+        break;
+    case FW_PATCH_8800DC_U02_EXT:
+        if (chip_sub_id == 1)
+            size = 0;
+        else if (chip_sub_id == 2)
+            size = sizeof(fw_patch_8800dc_u02_ext0);
+        break;
 #endif
     default:
         size = 0;

@@ -27,6 +27,7 @@ enum aic_fw {
     FW_ADID_8800DC_U02,
     FW_PATCH_8800DC_U02,
     FW_PATCH_TABLE_8800DC_U02,
+    FW_PATCH_8800DC_U02_EXT,
     FW_ADID_8800D80,
     FW_ADID_8800D80_U02,
     FMACFW_8800D80,
@@ -37,12 +38,8 @@ enum aic_fw {
     FW_PATCH_8800D80_U02,
     FW_PATCH_TABLE_8800D80,
     FW_PATCH_TABLE_8800D80_U02,
-    FW_PATCH_8800DC_U02_EXT,
-	FW_PATCH_8800D80_U02_EXT,
-    FW_ADID_8800DC_U02H,
-    FW_PATCH_8800DC_U02H,
-    FW_PATCH_TABLE_8800DC_U02H,
-
+    FW_PATCH_8800D80_U02_EXT,
+    FW_PATCH_8800D80_U02_EXT1,
 };
 
 void *aic8800d_fw_ptr_get(void);
@@ -77,5 +74,7 @@ void *aic8800d80_u02_rf_fw_ptr_get(void);
 uint32_t aic8800d80_u02_rf_fw_size_get(void);
 void *aic8800m40_fw_ptr_get(void);
 uint32_t aic8800m40_fw_size_get(void);
+void *aic_fw_ptr_get(enum aic_fw name);
+uint32_t aic_fw_size_get(enum aic_fw name);
 
 #endif

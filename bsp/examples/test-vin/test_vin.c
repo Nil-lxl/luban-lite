@@ -181,7 +181,6 @@ static int vin_subdev_set_fmt(struct vin_dev_ctx *vin_ctx)
 
 static int vin_dev_cfg(struct vin_dev_ctx *vin_ctx)
 {
-    struct mpp_rect *src_size = &vin_ctx->src_size;
     struct mpp_video_fmt *src = &vin_ctx->src_fmt;
     struct vin_video_fmt *dst = &vin_ctx->dst_fmt;
     int ret = 0;
@@ -207,11 +206,11 @@ static int vin_dev_cfg(struct vin_dev_ctx *vin_ctx)
 #endif
 
     if (dst->pixelformat == MPP_FMT_NV16)
-        dst->framesize = src_size->width * src_size->height * 2;
+        dst->framesize = dst->width * dst->height * 2;
     else if (dst->pixelformat == MPP_FMT_NV12)
-        dst->framesize = (src_size->width * src_size->height * 3) >> 1;
+        dst->framesize = (dst->width * dst->height * 3) >> 1;
     else if (dst->pixelformat == MPP_FMT_YUV400)
-        dst->framesize = src_size->width * src_size->height;
+        dst->framesize = dst->width * dst->height;
 
     dst->frame_offset = 0;
 
@@ -713,11 +712,12 @@ static void vin_test_thread(void *arg)
     }
 
 exit:
+    vin_ctx->state = VIN_STATE_INIT;
+    ctx->running[ch] = false;
+
     vin_stop(ch, vin_ctx);
     vin_dev_deinit(ch, ctx);
     media_dev_deinit();
-    vin_ctx->state = VIN_STATE_INIT;
-    ctx->running[ch] = false;
 
 #ifdef RT_USING_PM
     rt_pm_module_release(PM_VIN_ID, PM_SLEEP_MODE_NONE);
@@ -820,13 +820,13 @@ static void vin_test_stitch_thread(void *arg)
     }
 
 exit:
+    vin_ctx->state = VIN_STATE_INIT;
     for (i = VIN_MAX_CHANNELS - 1; i >= 0; i--) {
+        ctx->running[i] = false;
         vin_stop(i, vin_ctx);
         vin_dev_deinit(i, ctx);
-        ctx->running[i] = false;
     }
     media_dev_deinit();
-    vin_ctx->state = VIN_STATE_INIT;
 
 #ifdef RT_USING_PM
     rt_pm_module_release(PM_VIN_ID, PM_SLEEP_MODE_NONE);
@@ -910,6 +910,52 @@ static int vin_test_stitch_mode(struct vin_test_ctx *ctx, enum vin_dev_type type
     return 0;
 }
 
+static int vin_play_ctrl(char *action)
+{
+    struct vin_test_ctx *ctx = &g_vin_test_ctx;
+    struct vin_dev_ctx *vin_ctx = &ctx->ctx;
+    int i;
+
+    if (strncasecmp(action, "r", 1) == 0) {
+        if (vin_ctx->state == VIN_STATE_STREAMING) {
+            pr_info("VIN is already playing\n");
+            return 0;
+        }
+        if (vin_ctx->state != VIN_STATE_PAUSED) {
+            pr_err("Invalid state: %d\n", vin_ctx->state);
+            return -1;
+        }
+        for (i = 0; i < VIN_MAX_CHANNELS; i++) {
+            if (ctx->running[i])
+                mpp_vin2_ioctl(VIN_STREAM_RESUME, NULL, i, vin_ctx);
+        }
+        vin_ctx->state = VIN_STATE_STREAMING;
+        pr_info("VIN resumed\n");
+        return 0;
+    }
+
+    if (strncasecmp(action, "p", 1) == 0) {
+        if (vin_ctx->state == VIN_STATE_PAUSED) {
+            pr_info("VIN is already paused\n");
+            return 0;
+        }
+        if (vin_ctx->state != VIN_STATE_STREAMING) {
+            pr_err("Invalid state: %d\n", vin_ctx->state);
+            return -1;
+        }
+        for (i = 0; i < VIN_MAX_CHANNELS; i++) {
+            if (ctx->running[i])
+                mpp_vin2_ioctl(VIN_STREAM_PAUSE, NULL, i, vin_ctx);
+        }
+        vin_ctx->state = VIN_STATE_PAUSED;
+        pr_info("VIN paused\n");
+        return 0;
+    }
+
+    printf("Invalid action: %s\n", action);
+    return -1;
+}
+
 static int cmd_test_vin(int argc, char **argv)
 {
     static const char sopts[] = "d:C:f:c:s:S:h";
@@ -929,6 +975,16 @@ static int cmd_test_vin(int argc, char **argv)
     u32 dst_fmt = MPP_FMT_NV16;
     u32 frame_cnt = 10, ch = 0;
     int ret, c;
+
+    if (g_vin_test_ctx.ctx.state == VIN_STATE_STREAMING ||
+        g_vin_test_ctx.ctx.state == VIN_STATE_PAUSED) {
+        /* VIN is running, so just do play control */
+        if (argc != 2) {
+            printf("Usage:\n\t%s [pause/resume/stop]: \n\n", argv[0]);
+            return -1;
+        }
+        return vin_play_ctrl(argv[1]);
+    }
 
     optind = 0;
     memset(&g_vin_test_ctx, 0, sizeof(g_vin_test_ctx));

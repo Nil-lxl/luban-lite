@@ -420,6 +420,147 @@ menu "SPI2 Parameter"
 
 endmenu
 
+config AIC_USING_QSPI3
+    bool "Using SPI3"
+    default n
+    select AIC_QSPI_DRV
+
+menu "SPI3 Parameter"
+    depends on AIC_USING_QSPI3
+
+    config AIC_DEV_QSPI3_MAX_SRC_FREQ_HZ
+        int "Max frequency(Hz)"
+        default 100000000
+
+    choice
+        prompt "Set SPI3 bus width"
+        default AIC_QSPI3_BUS_WIDTH_1
+        config AIC_QSPI3_BUS_WIDTH_1
+            bool "Standard"
+        config AIC_QSPI3_BUS_WIDTH_4
+            bool "Quad"
+    endchoice
+
+    config AIC_QSPI3_BUS_WIDTH
+        int
+        default 1 if AIC_QSPI3_BUS_WIDTH_1
+        default 4 if AIC_QSPI3_BUS_WIDTH_4
+
+    config AIC_DEV_QSPI3_DELAY_MODE
+        int "RX Data Sample Delay"
+        default 2
+        range 0 3
+        help
+                Rx delay mode select, 0: auto, 1: none delay,
+                                        2: delay half cycle, 3: delay one cycle
+
+    config AIC_QSPI3_DYNAMIC_DMA
+        depends on AIC_USING_DMA
+        bool "Dynamic DMA channel SPI3"
+        default n
+
+    config AIC_QSPI3_BUS_SPI
+        bool "Work in SPI BUS Mode"
+        default n
+        select AIC_QSPI_DRV
+        depends on AIC_QSPI3_BUS_WIDTH_1
+
+endmenu
+
+config AIC_USING_QSPI4
+    bool "Using SPI4"
+    default n
+    select AIC_QSPI_DRV
+
+menu "SPI4 Parameter"
+    depends on AIC_USING_QSPI4
+
+    config AIC_DEV_QSPI4_MAX_SRC_FREQ_HZ
+        int "Max frequency(Hz)"
+        default 100000000
+
+    choice
+        prompt "Set SPI4 bus width"
+        default AIC_QSPI4_BUS_WIDTH_1
+        config AIC_QSPI4_BUS_WIDTH_1
+            bool "Standard"
+        config AIC_QSPI4_BUS_WIDTH_4
+            bool "Quad"
+    endchoice
+
+    config AIC_QSPI4_BUS_WIDTH
+        int
+        default 1 if AIC_QSPI4_BUS_WIDTH_1
+        default 4 if AIC_QSPI4_BUS_WIDTH_4
+
+    config AIC_DEV_QSPI4_DELAY_MODE
+        int "RX Data Sample Delay"
+        default 2
+        range 0 3
+        help
+                Rx delay mode select, 0: auto, 1: none delay,
+                                        2: delay half cycle, 3: delay one cycle
+
+    config AIC_QSPI4_DYNAMIC_DMA
+        depends on AIC_USING_DMA
+        bool "Dynamic DMA channel SPI4"
+        default n
+
+    config AIC_QSPI4_BUS_SPI
+        bool "Work in SPI BUS Mode"
+        default n
+        select AIC_QSPI_DRV
+        depends on AIC_QSPI4_BUS_WIDTH_1
+
+endmenu
+
+config AIC_USING_QSPI5
+    bool "Using SPI5"
+    default n
+    select AIC_QSPI_DRV
+
+menu "SPI5 Parameter"
+    depends on AIC_USING_QSPI5
+
+    config AIC_DEV_QSPI5_MAX_SRC_FREQ_HZ
+        int "Max frequency(Hz)"
+        default 100000000
+
+    choice
+        prompt "Set SPI5 bus width"
+        default AIC_QSPI5_BUS_WIDTH_1
+        config AIC_QSPI5_BUS_WIDTH_1
+            bool "Standard"
+        config AIC_QSPI5_BUS_WIDTH_4
+            bool "Quad"
+    endchoice
+
+    config AIC_QSPI5_BUS_WIDTH
+        int
+        default 1 if AIC_QSPI5_BUS_WIDTH_1
+        default 4 if AIC_QSPI5_BUS_WIDTH_4
+
+    config AIC_DEV_QSPI5_DELAY_MODE
+        int "RX Data Sample Delay"
+        default 2
+        range 0 3
+        help
+                Rx delay mode select, 0: auto, 1: none delay,
+                                        2: delay half cycle, 3: delay one cycle
+
+    config AIC_QSPI5_DYNAMIC_DMA
+        depends on AIC_USING_DMA
+        bool "Dynamic DMA channel SPI5"
+        default n
+
+    config AIC_QSPI5_BUS_SPI
+        bool "Work in SPI BUS Mode"
+        default n
+        select AIC_QSPI_DRV
+        depends on AIC_QSPI5_BUS_WIDTH_1
+
+endmenu
+
 source "bsp/artinchip/drv/qspi/Kconfig.dev"
 
 #---------------------------

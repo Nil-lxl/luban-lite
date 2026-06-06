@@ -124,7 +124,7 @@ config AIC_MPP_VIN_DEV
 config AIC_MPP_VIN_BUF_SIZE
     int "Size of Video Input buffer"
     default 1843264
-    depends on LPKG_MPP && (AIC_MPP_VIN || AIC_MPP_VIN_DEV)
+    depends on LPKG_MPP && AIC_MPP_VIN_DEV
 
 config AIC_MPP_FB_TEST
     bool "Enable MPP FB test programs"
