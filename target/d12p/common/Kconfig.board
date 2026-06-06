@@ -430,18 +430,21 @@ menu "SPI3 Parameter"
 
     config AIC_DEV_QSPI3_MAX_SRC_FREQ_HZ
         int "Max frequency(Hz)"
-        default 200000000
+        default 100000000
 
     choice
         prompt "Set SPI3 bus width"
         default AIC_QSPI3_BUS_WIDTH_1
         config AIC_QSPI3_BUS_WIDTH_1
             bool "Standard"
+        config AIC_QSPI3_BUS_WIDTH_4
+            bool "Quad"
     endchoice
 
     config AIC_QSPI3_BUS_WIDTH
         int
         default 1 if AIC_QSPI3_BUS_WIDTH_1
+        default 4 if AIC_QSPI3_BUS_WIDTH_4
 
     config AIC_DEV_QSPI3_DELAY_MODE
         int "RX Data Sample Delay"
@@ -474,18 +477,21 @@ menu "SPI4 Parameter"
 
     config AIC_DEV_QSPI4_MAX_SRC_FREQ_HZ
         int "Max frequency(Hz)"
-        default 200000000
+        default 100000000
 
     choice
         prompt "Set SPI4 bus width"
         default AIC_QSPI4_BUS_WIDTH_1
         config AIC_QSPI4_BUS_WIDTH_1
             bool "Standard"
+        config AIC_QSPI4_BUS_WIDTH_4
+            bool "Quad"
     endchoice
 
     config AIC_QSPI4_BUS_WIDTH
         int
         default 1 if AIC_QSPI4_BUS_WIDTH_1
+        default 4 if AIC_QSPI4_BUS_WIDTH_4
 
     config AIC_DEV_QSPI4_DELAY_MODE
         int "RX Data Sample Delay"
@@ -518,18 +524,21 @@ menu "SPI5 Parameter"
 
     config AIC_DEV_QSPI5_MAX_SRC_FREQ_HZ
         int "Max frequency(Hz)"
-        default 200000000
+        default 100000000
 
     choice
         prompt "Set SPI5 bus width"
         default AIC_QSPI5_BUS_WIDTH_1
         config AIC_QSPI5_BUS_WIDTH_1
             bool "Standard"
+        config AIC_QSPI5_BUS_WIDTH_4
+            bool "Quad"
     endchoice
 
     config AIC_QSPI5_BUS_WIDTH
         int
         default 1 if AIC_QSPI5_BUS_WIDTH_1
+        default 4 if AIC_QSPI5_BUS_WIDTH_4
 
     config AIC_DEV_QSPI5_DELAY_MODE
         int "RX Data Sample Delay"

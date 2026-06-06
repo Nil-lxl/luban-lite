@@ -84,7 +84,6 @@ struct xs9950_dev {
     struct xs9950_bt656_cfg bt656_cfg;
     bool on;
     bool streaming;
-    bool free_run;
     volatile u8 irq_status; // Interrupt status (bit0: video loss; bit1: MIPI error; bit2: control info received)
 };
 
@@ -202,8 +201,6 @@ static int xs9950_query_status(struct xs9950_ch_status *status)
     status->hspll_locked_be   = !!(reg_val & XS9950_STS1_HSPLL_LOCKED_BE);
     status->vsync_locked      = !!(reg_val & XS9950_STS1_VSYNC_LOCKED);
     status->color_kill        = !!(reg_val & XS9950_STS1_COLOR_KILL);
-
-    g_xs_dev.free_run = status->free_run;
 
     /* 0x01: HD_VIDEO_STANDARD_READBACK */
     status->hd_std_raw    = xs9950_read_reg(XS9950_REG_HD_VIDEO_STD_RB);
@@ -1430,14 +1427,6 @@ static rt_err_t xs9950_open(rt_device_t dev, rt_uint16_t oflag)
 
     xs9950_wait_lock();
     xs9950_status(0, NULL);
-
-    if (sensor->free_run) {
-        sensor->fmt.flags &= ~MEDIA_SIGNAL_FIELD_ACTIVE_HIGH;
-        sensor->fmt.flags |= MEDIA_SIGNAL_FIELD_ACTIVE_LOW;
-    } else {
-        sensor->fmt.flags &= ~MEDIA_SIGNAL_FIELD_ACTIVE_LOW;
-        sensor->fmt.flags |= MEDIA_SIGNAL_FIELD_ACTIVE_HIGH;
-    }
 
     LOG_D("XS9950 device open done");
     return RT_EOK;
