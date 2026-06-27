@@ -147,7 +147,7 @@ lv_res_t lv_aic_camera_open(lv_obj_t * obj)
     }
 
     if (aic_ctx->status != LV_AIC_CAMERA_STATUS_INIT) {
-        LV_LOG_WARN("lv_aic_camera_open have opened, status = %ld, LV_AIC_CAMERA_STATUS_INIT = %d", aic_ctx->status, LV_AIC_CAMERA_STATUS_INIT);
+        LV_LOG_WARN("lv_aic_camera_open have opened, status = %d, LV_AIC_CAMERA_STATUS_INIT = %d", (int)aic_ctx->status, (int)LV_AIC_CAMERA_STATUS_INIT);
         return LV_RES_OK;
     }
 
@@ -250,7 +250,7 @@ lv_res_t lv_aic_camera_start(lv_obj_t * obj)
         return LV_RES_OK;
     } else {
         if (aic_ctx)
-            LV_LOG_WARN("the camera status error, status = %ld", aic_ctx->status);
+            LV_LOG_WARN("the camera status error, status = %d", (int)aic_ctx->status);
         else
             LV_LOG_WARN("the camera ctx is NULL");
     }
@@ -268,7 +268,7 @@ lv_res_t lv_aic_camera_stop(lv_obj_t * obj)
         return LV_RES_OK;
     } else {
         if (aic_ctx)
-            LV_LOG_WARN("the camera status error, status = %ld", aic_ctx->status);
+            LV_LOG_WARN("the camera status error, status = %d", (int)aic_ctx->status);
         else
             LV_LOG_WARN("the camera ctx is NULL");
     }
@@ -276,7 +276,7 @@ lv_res_t lv_aic_camera_stop(lv_obj_t * obj)
 }
 
 #if AIC_CAMERA_USE_BARCODE
-lv_res_t lv_aic_camera_barcode_enable(lv_obj_t *obj, bool enable)
+lv_res_t lv_aic_camera_barcode_enable(lv_obj_t *obj)
 {
     lv_aic_camera_t *camera = (lv_aic_camera_t *)obj;
     struct aic_camera_ctx_s * aic_ctx = camera->aic_ctx;
@@ -284,11 +284,11 @@ lv_res_t lv_aic_camera_barcode_enable(lv_obj_t *obj, bool enable)
         LV_LOG_WARN("Before enable the barcode, please make sure the camera is not opened.");
         return LV_RES_INV;
     }
-    camera->barcode_en = enable;
+    camera->barcode_en = true;
     return LV_RES_OK;
 }
 
-lv_res_t lv_aic_camera_barcode_disable(lv_obj_t *obj, bool disabled)
+lv_res_t lv_aic_camera_barcode_disable(lv_obj_t *obj)
 {
     lv_aic_camera_t *camera = (lv_aic_camera_t *)obj;
     struct aic_camera_ctx_s * aic_ctx = camera->aic_ctx;
@@ -296,7 +296,7 @@ lv_res_t lv_aic_camera_barcode_disable(lv_obj_t *obj, bool disabled)
         LV_LOG_WARN("Before enable the barcode, please make sure the camera is not opened.");
         return LV_RES_INV;
     }
-    camera->barcode_en = disabled;
+    camera->barcode_en = false;
     return LV_RES_OK;
 }
 
@@ -344,7 +344,7 @@ static void barcode_decode_create(struct aic_camera_ctx_s *aic_ctx)
     /* only malloc the Y plane to barcode buffer */
     aic_ctx->barcode_buffer = aicos_malloc_try_cma(aic_ctx->w * aic_ctx->h);
     if (aic_ctx->barcode_buffer == NULL)
-        LV_LOG_WARN("malloc barcode buffer failed, size: %d\n", aic_ctx->w * aic_ctx->h);
+        LV_LOG_WARN("malloc barcode buffer failed, size: %d\n", (int)aic_ctx->w * aic_ctx->h);
 }
 
 static void barcode_decode_delete(struct aic_camera_ctx_s *aic_ctx)

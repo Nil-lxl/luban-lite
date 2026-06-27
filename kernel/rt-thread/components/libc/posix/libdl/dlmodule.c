@@ -555,7 +555,7 @@ struct rt_dlmodule* dlmodule_exec(const char* pgname, const char* cmd, int cmd_s
 
             /* check stack size and priority */
             if (module->priority > RT_THREAD_PRIORITY_MAX) module->priority = RT_THREAD_PRIORITY_MAX - 1;
-            if (module->stack_size < 2048 || module->stack_size > (1024 * 32)) module->stack_size = 2048;
+            if (module->stack_size < 2048 || module->stack_size > (1024 * 32)) module->stack_size = RT_MODULE_STACK_SIZE;
 
             tid = rt_thread_create(module->parent.name, _dlmodule_thread_entry, (void*)module,
                 module->stack_size, module->priority, 10);

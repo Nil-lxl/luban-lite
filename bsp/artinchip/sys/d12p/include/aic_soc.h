@@ -128,9 +128,9 @@ IRQn_Type;
 #define QSPI0_BASE                  0x10400000UL /* - 0x1040FFFF, 64KB	,--	*/
 #define QSPI1_BASE                  0x10401000UL /* - 0x1041FFFF, 64KB	,256KB	*/
 #define QSPI2_BASE                  0x10402000UL /* - 0x1042FFFF, 64KB	,256KB	*/
-#define QSPI3_BASE                  0x10430000UL /* - 0x1043FFFF, 64KB	,256KB	*/
-#define QSPI4_BASE                  0x10440000UL /* - 0x1044FFFF, 64KB	,256KB	*/
-#define QSPI5_BASE                  0x10450000UL /* - 0x1045FFFF, 64KB	,256KB	*/
+#define QSPI3_BASE                  0x10403000UL /* - 0x1043FFFF, 64KB	,256KB	*/
+#define QSPI4_BASE                  0x10404000UL /* - 0x1044FFFF, 64KB	,256KB	*/
+#define QSPI5_BASE                  0x10405000UL /* - 0x1045FFFF, 64KB	,256KB	*/
 #define SPI_ENC_BASE                0x1040F000UL /* - 0x1040FFFF, 4KB */
 #define SDMC0_BASE                  0x10440000UL /* - 0x1044FFFF, 64KB	,--	*/
 #define SDMC1_BASE                  0x10450000UL /* - 0x1045FFFF, 64KB	,--	*/

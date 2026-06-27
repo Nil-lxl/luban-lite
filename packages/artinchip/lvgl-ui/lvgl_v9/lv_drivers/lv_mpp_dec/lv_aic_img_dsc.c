@@ -69,13 +69,14 @@ static lv_result_t lv_mpp_dec_frame(struct mpp_buf *buf, const char *src, uint32
     struct frame_allocator *allocator = NULL;
     bool has_frame = false;
     uint32_t read_size = 0;
+    bool is_aicp = false;
 
     if (is_file) {
         // get image info
         ptr = strrchr(src, '.');
         CHECK_PTR(ptr);
 
-        if (!strcmp(ptr, ".png")) {
+        if (!strncmp(ptr, ".png", 4)) {
             res = lv_png_decoder_info(src, &header, 0, true);
             type = MPP_CODEC_VIDEO_DECODER_PNG;
         } else if (image_suffix_is_jpg(ptr)) {
@@ -145,7 +146,11 @@ static lv_result_t lv_mpp_dec_frame(struct mpp_buf *buf, const char *src, uint32
         size_shift = header.reserved_2;
     }
 #endif
-    lv_set_frame_buf_size(&dec_frame, buf_size, 0);
+
+    if (type == MPP_CODEC_VIDEO_DECODER_AICP)
+        is_aicp = true;
+
+    lv_set_frame_buf_size(&dec_frame, buf_size, 0, is_aicp);
     if (size_shift > 0) {
         struct mpp_scale_ratio scale;
         scale.hor_scale = size_shift;

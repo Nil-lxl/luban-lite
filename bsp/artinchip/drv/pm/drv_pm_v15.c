@@ -122,6 +122,9 @@ void aic_pm_enter_deep_sleep(void)
             aicos_irq_disable(i);
     }
 
+    /* deinit all non-wakup pinmux configuration */
+    aic_board_pinmux_deinit();
+
     /* save the context and enter suspend */
     rt_memcpy((void *)&__sram_pm_start, save_context_and_suspend, save_context_and_suspend_size);
     aic_suspend_fn = (void *)&__sram_pm_start;

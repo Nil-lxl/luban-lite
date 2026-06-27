@@ -1306,7 +1306,7 @@ void aicwf_patch_config_8800dc(struct rwnx_hw *rwnx_hw)
 {
     int ret = 0;
     int cnt = 0;
-    if (rwnx_hw->mode != WIFI_MODE_RFTEST) {
+    if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) {
         const u32 cfg_base = 0x10164;
         struct dbg_mem_read_cfm cfm;
         int i = 0;

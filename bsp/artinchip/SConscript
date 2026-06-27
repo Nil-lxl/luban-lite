@@ -493,7 +493,7 @@ if GetDepend('AIC_VE_DRV'):
         src += Glob('drv/ve/*.c')
         CPPPATH.append(cwd + '/include/drv')
 
-if GetDepend('AIC_DVP_DRV_V11'):
+if GetDepend('AIC_DVP_DRV_V10') or GetDepend('AIC_DVP_DRV_V11'):
     if GetDepend('DRIVER_DRV_EN'):
         src += Glob('drv/dvp/v1/*.c')
         CPPPATH.append(cwd + '/drv/dvp/v1/')

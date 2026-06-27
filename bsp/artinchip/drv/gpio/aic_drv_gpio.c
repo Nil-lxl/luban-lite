@@ -438,8 +438,6 @@ static int drv_pin_suspend_late(const struct rt_device *dev, rt_uint8_t pm_mode)
     case PM_SLEEP_MODE_DEEP:
         /* save dynamic GPIO states */
         gpio_pm_save_states();
-        /* deinit all non-wakup pinmux configuration */
-        aic_board_pinmux_deinit();
         break;
     default:
         break;
@@ -457,8 +455,6 @@ static void drv_pin_resume_early(const struct rt_device *dev, rt_uint8_t pm_mode
         /* do nothing */
         break;
     case PM_SLEEP_MODE_DEEP:
-        /* restore all pinmux configuration */
-        aic_board_pinmux_init();
         /* restore dynamic GPIO states */
         gpio_pm_restore_states();
         break;

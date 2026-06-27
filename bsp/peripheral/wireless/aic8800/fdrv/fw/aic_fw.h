@@ -60,6 +60,8 @@ void *aic8800dc_rf_lmacfw_ptr_get(void);
 uint32_t aic8800dc_rf_lmacfw_size_get(void);
 void *aic8800dc_rf_fmacfw_ptr_get(void);
 uint32_t aic8800dc_rf_fmacfw_size_get(void);
+void *aic8800dc_ft_lmacfw_ptr_get(void);
+uint32_t aic8800dc_ft_lmacfw_size_get(void);
 void *aic8800dc_u02_patch_tbl_ptr_get(void);
 uint32_t aic8800dc_h_u02_patch_tbl_size_get(void);
 void *aic8800dc_h_u02_patch_tbl_ptr_get(void);

@@ -19,6 +19,7 @@
  * Addresses within RWNX_ADDR_CPU
  *****************************************************************************/
 #define RAM_LMAC_FW_ADDR               0x00150000
+#define RAM_FTTEST_FW_ADDR             0x00123000
 #define ROM_FMAC_FW_ADDR               0x00010000
 #define ROM_FMAC_PATCH_ADDR            0x00180000
 #define ROM_FMAC_PATCH_ADDR_U01        0x00181000

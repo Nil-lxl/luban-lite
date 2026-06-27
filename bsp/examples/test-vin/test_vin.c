@@ -52,6 +52,9 @@ struct vin_test_ctx {
 
     u32 num_buffers;
     struct vin_video_buf binfo[VIN_MAX_CHANNELS];
+#ifdef AIC_DISPLAY_DRV
+    struct aicfb_layer_data cached_layer;
+#endif
 };
 
 static struct vin_test_ctx g_vin_test_ctx = {0};
@@ -327,17 +330,37 @@ static void vin_show_size(struct vin_test_ctx *ctx)
     struct vin_dev_ctx *vin_ctx = &ctx->ctx;
     struct mpp_video_fmt *src_fmt = &vin_ctx->src_fmt;
     struct vin_video_fmt *dst_fmt = &vin_ctx->dst_fmt;
-    struct mpp_rect *dst_pos = &ctx->dst_pos;
+#ifdef AIC_DISPLAY_DRV
+    struct aicfb_layer_data *layer = &ctx->cached_layer;
+#endif
 
     printf("The stream size:\n");
     printf("\t[Camera] %s %d x %d\n"
-           "\t\t└─> [VIN] %s %d x %d (Crop: [%d, %d] %d x %d)\n"
-           "\t\t\t└─>[Panel] %d x %d (Crop: [%d, %d] %d x %d)\n\n",
+           "\t\t└─> [VIN] %s %d x %d (Crop: [%d, %d] %d x %d)\n",
            vin_ctx->camera, src_fmt->width, src_fmt->height,
            VIN_NAME(vin_ctx), dst_fmt->width, dst_fmt->height,
-           dst_fmt->crop_x, dst_fmt->crop_y, dst_fmt->width, dst_fmt->height,
+           dst_fmt->crop_x, dst_fmt->crop_y, dst_fmt->width, dst_fmt->height);
+
+#ifdef AIC_DISPLAY_DRV
+#if DE_SCALE_ENABLE
+    printf("\t\t\t└─>[Panel] %d x %d (Pos: [%d, %d] Scale: %d x %d)\n\n",
            g_fb_info.width, g_fb_info.height,
-           dst_pos->x, dst_pos->y, dst_pos->width, dst_pos->height);
+           layer->pos.x, layer->pos.y,
+           layer->scale_size.width, layer->scale_size.height);
+#elif DE_CROP_ENABLE
+    printf("\t\t\t└─>[Panel] %d x %d (Pos: [%d, %d] Crop: %d x %d)\n\n",
+           g_fb_info.width, g_fb_info.height,
+           layer->buf.crop.x, layer->buf.crop.y,
+           layer->buf.crop.width, layer->buf.crop.height);
+#else
+    printf("\t\t\t└─>[Panel] %d x %d (Pos: [%d, %d] %d x %d)\n\n",
+           g_fb_info.width, g_fb_info.height,
+           layer->pos.x, layer->pos.y,
+           layer->buf.size.width, layer->buf.size.height);
+#endif
+#endif
+
+
 }
 
 #ifdef AIC_DISPLAY_DRV
@@ -370,8 +393,6 @@ static int vin_set_output_pos(struct vin_test_ctx *ctx,
     ctx->dst_pos.y = y;
     ctx->dst_pos.width = width;
     ctx->dst_pos.height = height;
-
-    vin_show_size(ctx);
     return 0;
 }
 
@@ -402,96 +423,109 @@ static int vin_output_region_cfg(struct vin_test_ctx *ctx)
     return 0;
 }
 
-static int video_layer_set(struct vin_test_ctx *ctx, u32 ch, int index)
+/*
+ * Pre-compute static layer configuration (position, scale, crop, stride, etc.).
+ * Call once before the streaming loop; the result is cached in ctx->cached_layer.
+ */
+static int video_layer_init(struct vin_test_ctx *ctx)
 {
-    struct vin_video_buf *binfo = &ctx->binfo[ch];
     struct vin_dev_ctx *vin_ctx = &ctx->ctx;
     struct vin_video_fmt *dst_fmt = &vin_ctx->dst_fmt;
-    struct aicfb_layer_data layer = {0};
-#if DE_SCALE_ENABLE
-    u32 min_side = 0, max_side = 0;
-#endif
+    struct aicfb_layer_data *layer = &ctx->cached_layer;
 
-    layer.layer_id = AICFB_LAYER_TYPE_VIDEO;
-    layer.enable = 1;
+    memset(layer, 0, sizeof(*layer));
+    layer->layer_id = AICFB_LAYER_TYPE_VIDEO;
+    layer->enable = 1;
 
     /* Dst image */
-    layer.pos.x = ctx->dst_pos.x;
-    layer.pos.y = ctx->dst_pos.y;
+    layer->pos.x = ctx->dst_pos.x;
+    layer->pos.y = ctx->dst_pos.y;
 
 #if DE_SCALE_ENABLE
-    min_side = min(ctx->dst_pos.width, ctx->dst_pos.height);
-    max_side = max(ctx->dst_pos.width, ctx->dst_pos.height);
-    if (max_side > (min_side * 2)) {
-        /* When the aspect ratio is too high, stretch it to a square */
-        layer.scale_size.width = min_side;
-        layer.scale_size.height = min_side;
-        if (ctx->dst_pos.width > ctx->dst_pos.height)
-            layer.pos.x = min_side;
-        else
-            layer.pos.y = min_side;
-    } else {
-        layer.scale_size.width = ctx->dst_pos.width;
-        layer.scale_size.height = ctx->dst_pos.height;
-    }
+    /* Proportional scaling: fit source into dst_pos while preserving aspect ratio */
+    float ratio_w = (float)ctx->dst_pos.width / dst_fmt->width;
+    float ratio_h = (float)ctx->dst_pos.height / dst_fmt->height;
+    float scale = (ratio_w < ratio_h) ? ratio_w : ratio_h;
+
+    layer->scale_size.width = ALIGN_DOWN((u32)(dst_fmt->width * scale), 8);
+    layer->scale_size.height = ALIGN_DOWN((u32)(dst_fmt->height * scale), 8);
+    /* Center within dst_pos */
+    layer->pos.x = ctx->dst_pos.x + (ctx->dst_pos.width - layer->scale_size.width) / 2;
+    layer->pos.y = ctx->dst_pos.y + (ctx->dst_pos.height - layer->scale_size.height) / 2;
 #else
-    layer.scale_size.width = ctx->dst_pos.width;
-    layer.scale_size.height = ctx->dst_pos.height;
+    layer->scale_size.width = ctx->dst_pos.width;
+    layer->scale_size.height = ctx->dst_pos.height;
     /* Be center-aligned if screen size is bigger than VIN output */
     if (g_fb_info.width > ctx->dst_pos.width)
-        layer.pos.x = (g_fb_info.width - ctx->dst_pos.width) / 2;
+        layer->pos.x = (g_fb_info.width - ctx->dst_pos.width) / 2;
     if (g_fb_info.height > ctx->dst_pos.height)
-        layer.pos.y = (g_fb_info.height - ctx->dst_pos.height) / 2;
+        layer->pos.y = (g_fb_info.height - ctx->dst_pos.height) / 2;
 #endif
 
 #if DE_CROP_ENABLE
-    layer.buf.crop_en = 1;
-    layer.buf.crop.x = 0;
-    layer.buf.crop.y = 0;
-    layer.buf.crop.width = min(dst_fmt->width, g_fb_info.width);
-    layer.buf.crop.height = min(dst_fmt->height, g_fb_info.height);
+    layer->buf.crop_en = 1;
+    layer->buf.crop.x = 0;
+    layer->buf.crop.y = 0;
+    layer->buf.crop.width = min(dst_fmt->width, g_fb_info.width);
+    layer->buf.crop.height = min(dst_fmt->height, g_fb_info.height);
 #endif
 
     /* Src image */
     if (ctx->rotation == MPP_ROTATION_0 || ctx->rotation == MPP_ROTATION_180) {
-        layer.buf.size.width = dst_fmt->width;
+        layer->buf.size.width = dst_fmt->width;
         if (aic_dvp_sfield_mode())
-            layer.buf.size.height = dst_fmt->height / 2;
+            layer->buf.size.height = dst_fmt->height / 2;
         else
-            layer.buf.size.height = dst_fmt->height;
+            layer->buf.size.height = dst_fmt->height;
 
         if (dst_fmt->stitch_mode == MPP_STITCH_V_MODE) {
-            layer.scale_size.width /= 2;
-            layer.buf.size.height *= 2;
+            layer->scale_size.width /= 2;
+            layer->buf.size.height *= 2;
         } else if (dst_fmt->stitch_mode == MPP_STITCH_H_MODE) {
-            layer.scale_size.height /= 2;
-            layer.buf.size.width *= 2;
+            layer->scale_size.height /= 2;
+            layer->buf.size.width *= 2;
         }
     } else {
         if (aic_dvp_sfield_mode())
-            layer.buf.size.width = dst_fmt->height / 2;
+            layer->buf.size.width = dst_fmt->height / 2;
         else
-            layer.buf.size.width = dst_fmt->height;
-        layer.buf.size.height = dst_fmt->width;
+            layer->buf.size.width = dst_fmt->height;
+        layer->buf.size.height = dst_fmt->width;
     }
 
-    layer.buf.format = dst_fmt->pixelformat;
-    layer.buf.buf_type = MPP_PHY_ADDR;
+    layer->buf.format = dst_fmt->pixelformat;
+    layer->buf.buf_type = MPP_PHY_ADDR;
 
     for (int i = 0; i < VIN_MAX_PLANE_NUM; i++) {
         if (dst_fmt->stitch_mode == MPP_STITCH_H_MODE)
-            layer.buf.stride[i] = layer.buf.size.width * 2;
+            layer->buf.stride[i] = layer->buf.size.width * 2;
         else
-            layer.buf.stride[i] = layer.buf.size.width;
-
-        if (MPP_IS_STITCH(dst_fmt->stitch_mode))
-            layer.buf.phy_addr[i] = binfo->planes[index * binfo->num_planes + i].buf
-                                    + binfo->planes[index * binfo->num_planes + i].len / 2;
-        else
-            layer.buf.phy_addr[i] = binfo->planes[index * binfo->num_planes + i].buf;
+            layer->buf.stride[i] = layer->buf.size.width;
     }
 
-    if (mpp_fb_ioctl(g_fb, AICFB_UPDATE_LAYER_CONFIG, &layer) < 0) {
+    return 0;
+}
+
+/*
+ * Per-frame update: only refresh buffer physical addresses and push to FB.
+ * Must be called after video_layer_init().
+ */
+static int video_layer_update_buf(struct vin_test_ctx *ctx, u32 ch, int index)
+{
+    struct vin_video_buf *binfo = &ctx->binfo[ch];
+    struct vin_dev_ctx *vin_ctx = &ctx->ctx;
+    struct vin_video_fmt *dst_fmt = &vin_ctx->dst_fmt;
+    struct aicfb_layer_data *layer = &ctx->cached_layer;
+
+    for (int i = 0; i < VIN_MAX_PLANE_NUM; i++) {
+        if (MPP_IS_STITCH(dst_fmt->stitch_mode) && aic_dvp_sfield_mode())
+            layer->buf.phy_addr[i] = binfo->planes[index * binfo->num_planes + i].buf
+                                    + binfo->planes[index * binfo->num_planes + i].len / 2;
+        else
+            layer->buf.phy_addr[i] = binfo->planes[index * binfo->num_planes + i].buf;
+    }
+
+    if (mpp_fb_ioctl(g_fb, AICFB_UPDATE_LAYER_CONFIG, layer) < 0) {
         pr_err("[ch%d] Failed to update layer config!\n", ch);
         return -1;
     }
@@ -658,15 +692,27 @@ static void vin_test_thread(void *arg)
         goto exit;
     }
 
-    vin_show_fmt(&ctx->ctx);
-
     if (ch == ctx->show_channel) {
         if (vin_output_region_cfg(ctx) < 0)
             goto exit;
     }
 
+#ifdef AIC_DISPLAY_DRV
+    if (ch == ctx->show_channel) {
+        if (video_layer_init(ctx) < 0)
+            goto exit;
+    }
+#endif
+
+    vin_show_fmt(&ctx->ctx);
+    vin_show_size(ctx);
+
     vin_ctx->state = VIN_STATE_STREAMING;
     ctx->running[ch] = true;
+
+#ifdef AIC_DVP_NO_SIGNAL_PATTERN
+    video_layer_update_buf(ctx, ch, ctx->num_buffers - 1);
+#endif
 
     pr_info("[%s%d] Start streaming\n", VIN_NAME(vin_ctx), ch);
     gettimespec(&begin);
@@ -687,7 +733,7 @@ static void vin_test_thread(void *arg)
                  frame, ctx->frame_count, buf_index);
 
 #ifdef AIC_DISPLAY_DRV
-        if ((ch == ctx->show_channel) && (video_layer_set(ctx, ch, buf_index) < 0)) {
+        if ((ch == ctx->show_channel) && (video_layer_update_buf(ctx, ch, buf_index) < 0)) {
             pr_err("[%s%d] Failed to set video layer for buf %d\n",
                    VIN_NAME(vin_ctx), ch, buf_index);
             break;
@@ -757,9 +803,21 @@ static void vin_test_stitch_thread(void *arg)
             goto exit;
         }
     }
-    vin_show_fmt(&ctx->ctx);
+
     if (vin_output_region_cfg(ctx) < 0)
         goto exit;
+
+#ifdef AIC_DISPLAY_DRV
+    if (video_layer_init(ctx) < 0)
+        goto exit;
+#endif
+
+    vin_show_fmt(&ctx->ctx);
+    vin_show_size(ctx);
+
+#ifdef AIC_DVP_NO_SIGNAL_PATTERN
+    video_layer_update_buf(ctx, 0, ctx->num_buffers - 1);
+#endif
 
     vin_ctx->state = VIN_STATE_STREAMING;
 
@@ -796,7 +854,7 @@ static void vin_test_stitch_thread(void *arg)
                  frame, ctx->frame_count, buf_index);
 
 #ifdef AIC_DISPLAY_DRV
-        if (video_layer_set(ctx, 0, buf_index) < 0) {
+        if (video_layer_update_buf(ctx, 0, buf_index) < 0) {
             pr_err("[%s] Failed to set video layer for buf %d\n",
                    VIN_NAME(vin_ctx), buf_index);
             break;
@@ -861,6 +919,7 @@ static int vin_test_single_channel(struct vin_test_ctx *ctx, enum vin_dev_type t
     if (!ctx->thread[ch]) {
         pr_err("[%s%d] Failed to create thread\n", VIN_NAME(&ctx->ctx), ch);
         vin_dev_deinit(ch, ctx);
+        media_dev_deinit();
         return -1;
     }
 
@@ -884,6 +943,7 @@ static int vin_test_multi_channel(struct vin_test_ctx *ctx, enum vin_dev_type ty
         if (!ctx->thread[i]) {
             pr_err("Failed to create thread for channel %d\n", i);
             vin_dev_deinit(i, ctx);
+            media_dev_deinit();
             return -1;
         }
     }
@@ -904,6 +964,7 @@ static int vin_test_stitch_mode(struct vin_test_ctx *ctx, enum vin_dev_type type
     if (!ctx->thread[0]) {
         pr_err("Failed to create stitch thread\n");
         vin_dev_deinit(0, ctx);
+        media_dev_deinit();
         return -1;
     }
 
@@ -1030,6 +1091,12 @@ static int cmd_test_vin(int argc, char **argv)
                 pr_err("Invalid stitch mode: %s\n", optarg);
                 return -1;
             }
+#if !DE_SCALE_ENABLE
+            if (stitch_mode != MPP_STITCH_NONE && stitch_mode != MPP_STITCH_INVALID) {
+                pr_err("Stitch mode requires DE_SCALE_ENABLE\n");
+                return -1;
+            }
+#endif
             break;
 
         case 'S':

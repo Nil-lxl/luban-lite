@@ -155,6 +155,18 @@ uint32_t fmac_aic8800dc_rf_fmacfw_size_get(void)
 #endif /* CONFIG_WIFI_MODE_RFTEST */
 #endif
 
+#if defined(CONFIG_WIFI_MODE_FTTEST)
+void *fmac_aic8800dc_ft_lmacfw_ptr_get(void)
+{
+    return aic8800dc_ft_lmacfw_ptr_get();
+}
+
+uint32_t fmac_aic8800dc_ft_lmacfw_size_get(void)
+{
+    return aic8800dc_ft_lmacfw_size_get();
+}
+#endif /* CONFIG_WIFI_MODE_FTTEST */
+
 #if defined(CONFIG_AIC8800D80_SUPPORT)
 void *fmac_aic8800d80_fw_ptr_get(void)
 {

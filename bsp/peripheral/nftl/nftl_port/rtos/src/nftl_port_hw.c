@@ -78,7 +78,7 @@ int _nftl_port_hw_read_page(void *device, struct physical_op_info *p)
 {
     struct rt_mtd_nand_device *nand = (struct rt_mtd_nand_device *)device;
     u8 src_buf[64];
-    int ret;
+    int ret, ecc_result;
     int page =
         p->physical_page.block_num * nand->pages_per_block + p->physical_page.page_num;
     //NFTL_INFO("%s:%d ...p->physical_page.block_num=%d, p->physical_page.page_num=%d page=%d\n", __FUNCTION__, __LINE__, p->physical_page.block_num, p->physical_page.page_num, page);
@@ -90,6 +90,10 @@ int _nftl_port_hw_read_page(void *device, struct physical_op_info *p)
         PORT_HW_ERR("[NE] read page error. ret = %d!\n", ret);
         return ret;
     }
+
+    /* Save ECC status before ret is overwritten by unmap_user */
+    ecc_result = ret;
+
     memcpy(src_buf, p->spare_data_addr, 64);
     ret = rt_mtd_nand_unmap_user(nand, p->spare_data_addr, src_buf, 0, 16);
     if (ret) {
@@ -103,7 +107,7 @@ int _nftl_port_hw_read_page(void *device, struct physical_op_info *p)
     memset(p->spare_data_addr + 16, 0xFF, 8);
 
     PORT_HW_LOG("%s:%d ...\n", __FUNCTION__, __LINE__);
-    return ret;
+    return ecc_result;
 }
 
 int _nftl_port_hw_write_page(void *device, struct physical_op_info *p)

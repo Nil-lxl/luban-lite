@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -143,6 +143,15 @@ static inline int aicos_sem_give(aicos_sem_t sem)
     osal_semaphore_t sem_hdl = (osal_semaphore_t)sem;
 
     sem_hdl->count++;
+
+    return 0;
+}
+
+static inline int aicos_sem_reset(aicos_sem_t sem, unsigned long val)
+{
+    osal_semaphore_t sem_hdl = (osal_semaphore_t)sem;
+
+    sem_hdl->count = val;
 
     return 0;
 }

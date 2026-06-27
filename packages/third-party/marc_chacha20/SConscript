@@ -1,0 +1,11 @@
+
+from building import *
+
+cwd     = GetCurrentDir()
+src     = Glob('*.c')
+path    = [cwd]
+
+
+group = DefineGroup('marc_chacha20', src, depend = ['LPKG_USING_MARC_CHACHA20'], CPPPATH = path)
+
+Return('group')

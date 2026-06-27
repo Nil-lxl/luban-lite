@@ -10,6 +10,7 @@
 
 #include <drivers/mmcsd_core.h>
 #include <dfs_fs.h>
+#include <aic_drv_gpio.h>
 
 #ifdef AIC_SDMC1_USING_HOTPLUG
 #define HOTPLUG_SDMC 1
@@ -54,7 +55,9 @@ int aic_sd_hotplug_detection(void)
     rt_thread_t tid;
 
     rt_pin_mode(SD_CHECK_PIN, PIN_MODE_INPUT_PULLUP);
-
+#ifdef RT_USING_PM
+    gpio_pm_register(SD_CHECK_PIN, RT_NULL, RT_NULL);
+#endif
     tid = rt_thread_create("sd_hotplug_detection", sd_hotplug_detection_thread, RT_NULL,
                            2048, RT_THREAD_PRIORITY_MAX - 2, 20);
     if (tid != RT_NULL)

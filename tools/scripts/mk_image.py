@@ -16,21 +16,29 @@ import argparse
 import platform
 import subprocess
 from pathlib import Path
-from collections import namedtuple
-from collections import OrderedDict
-from Cryptodome.PublicKey import RSA
-from Cryptodome.Hash import MD5
-from Cryptodome.Hash import SHA256
-from Cryptodome.Hash import HMAC
-from Cryptodome.Cipher import AES
-from Cryptodome.Util import Counter
-from Cryptodome.Signature import PKCS1_v1_5
-import binascii
-import asn1crypto.core
-import gmssl.sm2 as SM2
-import gmssl.sm3 as SM3
-import gmssl.sm4 as SM4
-import gmssl.func as func
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from elf2image import elf2its  # noqa: E402
+from aic_private_resource import (  # noqa: E402
+    parse_config as _priv_parse_config,
+    build_private_data as _priv_build,
+)
+from collections import namedtuple  # noqa: E402
+from collections import OrderedDict  # noqa: E402
+from Cryptodome.PublicKey import RSA  # noqa: E402
+from Cryptodome.Hash import MD5  # noqa: E402
+from Cryptodome.Hash import SHA256  # noqa: E402
+from Cryptodome.Hash import HMAC  # noqa: E402
+from Cryptodome.Cipher import AES  # noqa: E402
+from Cryptodome.Cipher import ChaCha20  # noqa: E402
+from Cryptodome.Util import Counter  # noqa: E402
+from Cryptodome.Signature import PKCS1_v1_5  # noqa: E402
+import binascii  # noqa: E402
+import asn1crypto.core  # noqa: E402
+import gmssl.sm2 as SM2  # noqa: E402
+import gmssl.sm3 as SM3  # noqa: E402
+import gmssl.sm4 as SM4  # noqa: E402
+import gmssl.func as func  # noqa: E402
 
 DATA_ALIGNED_SIZE = 2048
 META_ALIGNED_SIZE = 512
@@ -48,6 +56,18 @@ _ENC_ALGO_MAP = {
     "sm4-ecb": 2,
     "sm4-cbc": 3,
     "aes-128-ctr": 4,
+    "chacha20": 5,
+}
+
+# Encryption algorithm to (key_size, iv_size) mapping
+_ENC_KEY_IV_MAP = {
+    "aes-128-cbc": (16, 16),
+    "aes-128-ctr": (16, 16),
+    "aes-192-cbc": (24, 16),
+    "aes-256-cbc": (32, 16),
+    "sm4-ecb": (16, 0),
+    "sm4-cbc": (16, 16),
+    "chacha20": (32, 12),
 }
 
 # Checksum algorithm to auxiliary data length mapping
@@ -283,7 +303,39 @@ def check_loader_run_in_dram(cfg):
     return True
 
 
+def _ensure_encryption_iv(cfg: dict) -> None:
+    """Auto-generate IV/nonce file when encryption is configured but none provided.
+
+    Generates a random IV/nonce whose size depends on the algorithm:
+      - ChaCha20: 12-byte nonce
+      - AES/SM4:  16-byte IV
+
+    Saves it to ``<datadir>/<imgname>.iv.bin`` and injects the path back
+    into ``cfg["encryption"]["iv"]`` so that all downstream functions
+    (size calculation, resource packing, encryption) pick it up.
+    """
+    if "encryption" not in cfg:
+        return
+    if "iv" in cfg["encryption"]:
+        return
+    datadir = cfg.get("datadir", ".")
+    outname = cfg.get("_outname", "auto")
+    algo = cfg["encryption"].get("algo", "")
+    _, iv_size = _ENC_KEY_IV_MAP.get(algo, (16, 16))
+    iv_name = os.path.splitext(outname)[0] + ".iv.bin"
+    iv_path = os.path.join(datadir, iv_name)
+    iv_data = os.urandom(iv_size)
+    with open(iv_path, "wb") as f:
+        f.write(iv_data)
+    cfg["encryption"]["iv"] = iv_path
+    if VERBOSE:
+        print("\tAuto-generated IV/nonce ({}B): {}".format(iv_size, iv_path))
+
+
 def aic_boot_get_encryption_key(cfg, ssk_derived=False):
+    algo = cfg["encryption"].get("algo", "aes-128-cbc")
+    key_size, iv_size = _ENC_KEY_IV_MAP.get(algo, (16, 16))
+
     fpath = get_file_path(cfg["encryption"]["key"], cfg["keydir"])
     if fpath is None:
         fpath = get_file_path(cfg["encryption"]["key"], cfg["datadir"])
@@ -317,20 +369,21 @@ def aic_boot_get_encryption_key(cfg, ssk_derived=False):
     else:
         try:
             with open(fpath, "rb") as f:
-                keydata = f.read(16)
+                keydata = f.read(key_size)
         except IOError:
-            print('Failed to open aes key file')
+            print('Failed to open key file')
             sys.exit(1)
 
-    fpath = get_file_path(cfg["encryption"]["iv"], cfg["keydir"])
-    if fpath is None:
-        fpath = get_file_path(cfg["encryption"]["iv"], cfg["datadir"])
-    try:
-        with open(fpath, "rb") as f:
-            ivdata = f.read(16)
-    except IOError:
-        print('Failed to open iv file')
-        sys.exit(1)
+    if iv_size > 0:
+        fpath = get_file_path(cfg["encryption"]["iv"], cfg["keydir"])
+        if fpath is None:
+            fpath = get_file_path(cfg["encryption"]["iv"], cfg["datadir"])
+        try:
+            with open(fpath, "rb") as f:
+                ivdata = f.read(iv_size)
+        except IOError:
+            print('Failed to open iv file')
+            sys.exit(1)
 
     return keydata, ivdata
 
@@ -491,6 +544,10 @@ def aic_boot_get_loader_bytes_v2(cfg, filesizes):
             cipher.set_key(keydata, SM4.SM4_ENCRYPT)
             enc_bytes = cipher.crypt_ecb(rawbytes)
             return enc_bytes[0:len(rawbytes)]
+        elif "encryption" in cfg and cfg["encryption"]["algo"] == "chacha20":
+            cipher = ChaCha20.new(key=keydata, nonce=ivdata)
+            enc_bytes = cipher.encrypt(rawbytes)
+            return enc_bytes
         else:
             print('Unknown encryption ALGO')
             sys.exit(1)
@@ -559,6 +616,15 @@ def aic_boot_pbp2_enc_and_sign(cfg, pbp_data):
         cipher.set_key(keydata, SM4.SM4_ENCRYPT)
         enc_bytes = cipher.crypt_cbc(ivdata, prog_data)
         prog_data = enc_bytes[0:len(prog_data)]
+        # Update checksum first for no signature case
+        newdata = pbp_data[0:4] + bytearray(4) + pbp_data[8:32] + enc_bytes
+        cksum = aic_calc_checksum(newdata, len(newdata))
+        out_bytes = pbp_data[0:4] + int_to_uint32_bytes(cksum) + newdata[8:]
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "chacha20":
+        keydata, ivdata = aic_boot_get_encryption_key(cfg, False)
+        cipher = ChaCha20.new(key=keydata, nonce=ivdata)
+        enc_bytes = cipher.encrypt(prog_data)
+        prog_data = enc_bytes
         # Update checksum first for no signature case
         newdata = pbp_data[0:4] + bytearray(4) + pbp_data[8:32] + enc_bytes
         cksum = aic_calc_checksum(newdata, len(newdata))
@@ -807,10 +873,11 @@ def _get_enc_info_v1(cfg, next_res_offset, filesizes, loader_length):
     iv_data_length = 0
     if "encryption" in cfg:
         algo = cfg["encryption"]["algo"]
-        if loader_length != 0 and algo in ("aes-128-cbc", "aes-128-ctr", "sm4-cbc"):
+        if loader_length != 0 and algo in ("aes-128-cbc", "aes-128-ctr", "sm4-cbc", "chacha20"):
             enc_algo = _ENC_ALGO_MAP[algo]
             iv_data_offset = next_res_offset
-            iv_data_length = 16
+            _, iv_size = _ENC_KEY_IV_MAP.get(algo, (16, 16))
+            iv_data_length = iv_size
             next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
         elif algo == "sm4-ecb":
             enc_algo = _ENC_ALGO_MAP[algo]
@@ -835,10 +902,11 @@ def _get_enc_info_v2(cfg, next_res_offset, filesizes):
     iv_data_length = 0
     if "encryption" in cfg:
         algo = cfg["encryption"]["algo"]
-        if algo in ("aes-128-cbc", "aes-128-ctr", "sm4-cbc"):
+        if algo in ("aes-128-cbc", "aes-128-ctr", "sm4-cbc", "chacha20"):
             enc_algo = _ENC_ALGO_MAP[algo]
             iv_data_offset = next_res_offset
-            iv_data_length = 16
+            _, iv_size = _ENC_KEY_IV_MAP.get(algo, (16, 16))
+            iv_data_length = iv_size
             next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
         elif algo == "sm4-ecb":
             enc_algo = _ENC_ALGO_MAP[algo]
@@ -1090,6 +1158,11 @@ def aic_boot_gen_header_for_ext(cfg, filesizes):
         iv_data_offset = next_res_offset
         iv_data_length = 16
         next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
+    if "encryption" in cfg and cfg["encryption"]["algo"] == "chacha20":
+        enc_algo = 5
+        iv_data_offset = next_res_offset
+        iv_data_length = 12
+        next_res_offset = iv_data_offset + filesizes["round(encryption/iv)"]
     pbp_data_offset = 0
     pbp_data_length = 0
     # Generate header bytes
@@ -1260,12 +1333,10 @@ def aic_boot_gen_img_md5_bytes(cfg, bootimg):
 
 
 def aic_boot_check_params(cfg):
-    if ("encryption" in cfg and
-        (cfg["encryption"]["algo"] != "aes-128-cbc" and
-         cfg["encryption"]["algo"] != "aes-128-ctr" and
-         cfg["encryption"]["algo"] != "sm4-cbc" and
-         cfg["encryption"]["algo"] != "sm4-ecb")):
-        print("Only support aes-128-cbc/aes-128-ctr/sm4-cbc/sm4-ecb encryption")
+    if ("encryption" in cfg
+            and cfg["encryption"]["algo"] not in _ENC_ALGO_MAP):
+        print("Only support {} encryption".format(
+            "/".join(_ENC_ALGO_MAP.keys())))
         return False
     # if "signature" in cfg and cfg["signature"]["algo"] != "rsa,2048":
     #     print("Only support rsa,2048 signature")
@@ -1344,6 +1415,7 @@ def aic_boot_create_image(cfg, keydir, datadir):
     """
     if aic_boot_check_params(cfg) is False:
         sys.exit(1)
+    _ensure_encryption_iv(cfg)
     filesizes = aic_boot_get_resource_file_size(cfg, keydir, datadir)
 
     loader_bytes = aic_boot_get_loader_bytes(cfg, filesizes)
@@ -1383,6 +1455,7 @@ def aic_boot_create_ext_image(cfg, keydir, datadir):
         Legacy code, will be removed in later's version
     """
 
+    _ensure_encryption_iv(cfg)
     filesizes = aic_boot_get_resource_file_size(cfg, keydir, datadir)
     loader_bytes = aic_boot_get_loader_for_ext(cfg, filesizes)
     resource_bytes = bytearray(0)
@@ -1420,6 +1493,7 @@ def aic_boot_create_image_v2(cfg, keydir, datadir):
     """
     if aic_boot_check_params(cfg) is False:
         sys.exit(1)
+    _ensure_encryption_iv(cfg)
     filesizes = aic_boot_get_resource_file_size(cfg, keydir, datadir)
 
     loader_bytes = aic_boot_get_loader_bytes_v2(cfg, filesizes)
@@ -1469,21 +1543,16 @@ def aic_boot_create_image_v2(cfg, keydir, datadir):
 
 
 def itb_create_image(itsname, itbname, keydir, dtbname, script_dir):
-    mkcmd = os.path.join(script_dir, "mkimage")
-    if os.path.exists(mkcmd) is False:
-        mkcmd = "mkimage"
-    if sys.platform == "win32":
-        mkcmd += ".exe"
-    # If the key exists, generate image signature information and write it to the itb file.
-    # If the key exists, write the public key to the dtb file.
-    if keydir is not None and dtbname is not None:
-        cmd = [mkcmd, "-E", "-B 0x800", "-f", itsname, "-k", keydir, "-K", dtbname, "-r", itbname]
-    else:
-        cmd = [mkcmd, "-E", "-B 0x800", "-f", itsname, itbname]
-
-    ret = subprocess.run(cmd, stdout=subprocess.PIPE)
-    if ret.returncode != 0:
-        sys.exit(1)
+    from itbimage import build_itb
+    build_itb(
+        its_file=itsname,
+        output_file=itbname,
+        external_data=True,
+        block_align=0x800,
+        keydir=keydir,
+        keydest=dtbname,
+        require_keys=(dtbname is not None),
+    )
 
 
 def spienc_create_image(imgcfg, script_dir):
@@ -2080,9 +2149,12 @@ def img_write_fwc_meta_section(imgfile, cfg, sect, meta_off, file_off, datadir):
                 continue
             part_size = fwcset[fwc]["part_size"]
             if file_size > part_size:
-                print("{} file_size: {} is over much than part_size: {}".format(fwcset[fwc]["file"],
-                                                                                hex(file_size),
-                                                                                hex(part_size)))
+                part_name = fwcset[fwc]["part"]
+                if isinstance(part_name, list):
+                    part_name = ";".join(part_name)
+                print("Target '{}': file '{}' size {} exceeds partition '{}' size {}".format(
+                    fwc, fwcset[fwc]["file"], hex(file_size),
+                    part_name, hex(part_size)))
                 return (-1, -1)
         if file_size <= 0:
             continue
@@ -2668,6 +2740,92 @@ def firmware_component_preproc_itb(cfg, datadir, keydir, bindir):
                 sys.exit(1)
 
 
+def firmware_component_preproc_elf2itb(cfg: dict, datadir: str,
+                                       keydir: str, bindir: str) -> None:
+    """Process elf2itb config: ELF -> ITS (via elf2image) -> ITB (via mkimage)."""
+    preproc_cfg = get_pre_process_cfg(cfg)
+    elf2itb_cfg = preproc_cfg["elf2itb"]
+
+    # Get firmware version from image config
+    version = cfg.get("image", {}).get("info", {}).get("version", "1.0.0")
+
+    for itbname, entry in elf2itb_cfg.items():
+        elf_file = entry["elf"]
+        elf_path = get_file_path(elf_file, datadir)
+        if elf_path is None:
+            print("File {} is not exist".format(elf_file))
+            sys.exit(1)
+
+        # Derive ITS filename from ITB name: d12x_os.itb -> d12x_os.its
+        its_name = itbname.replace(".itb", ".its")
+        its_path = datadir + its_name
+        itb_path = datadir + itbname
+
+        if VERBOSE:
+            print("\tCreating {} from {} ...".format(itbname, elf_file))
+
+        # Convert hash config (list of algorithm names)
+        hash_algos = entry.get("hash", None)
+
+        # Convert signature config for ITS
+        sig_cfg = None
+        sig_keydir = None
+        if "signature" in entry:
+            sig = entry["signature"]
+            key_path = sig.get("key", "")
+            key_hint = os.path.splitext(os.path.basename(key_path))[0]
+            sig_cfg = {"algo": sig["algo"], "key-name-hint": key_hint}
+            # Resolve keydir for mkimage signing
+            resolved = get_file_path(key_path, keydir)
+            sig_keydir = os.path.dirname(resolved) if resolved else keydir
+
+        # Convert encryption config for ITS
+        # mkimage cipher node expects:
+        #   algo: "aes128" / "aes192" / "aes256" (not "aes-128-cbc")
+        #   key-name-hint: basename without ext, mkimage reads {keydir}/{hint}.bin
+        #   iv-name-hint:  basename without ext, mkimage reads {keydir}/{hint}.bin
+        _ITS_ALGO_MAP = {
+            "aes-128-cbc": "aes128",
+            "aes-192-cbc": "aes192",
+            "aes-256-cbc": "aes256",
+            "chacha20": "chacha20",
+        }
+        enc_cfg = None
+        enc_keydir = None
+        if "encryption" in entry:
+            enc = entry["encryption"]
+            its_algo = _ITS_ALGO_MAP.get(enc["algo"], enc["algo"])
+            enc_cfg = {"algo": its_algo}
+            if "key" in enc:
+                key_path = enc["key"]
+                enc_cfg["key-name-hint"] = os.path.splitext(
+                    os.path.basename(key_path))[0]
+                resolved = get_file_path(key_path, keydir)
+                enc_keydir = os.path.dirname(resolved) if resolved else keydir
+            if "iv" in enc:
+                iv_path = enc["iv"]
+                enc_cfg["iv-name-hint"] = os.path.splitext(
+                    os.path.basename(iv_path))[0]
+
+        # Step 1: Generate .its + seg*.bin via elf2image
+        elf2its(
+            elf_file=elf_path,
+            version=version,
+            its_file=its_path,
+            hash_algos=hash_algos,
+            signature=sig_cfg,
+            encryption=enc_cfg,
+        )
+
+        # Step 2: Generate .itb from .its via mkimage
+        # Use enc_keydir if sig_keydir is not set (cipher needs -k too)
+        mkimage_keydir = sig_keydir if sig_keydir else enc_keydir
+        dtbfile = None
+        if "dtb" in entry:
+            dtbfile = get_file_path(entry["dtb"], datadir)
+        itb_create_image(its_path, itb_path, mkimage_keydir, dtbfile, bindir)
+
+
 def firmware_component_preproc_uboot_env(cfg, datadir, keydir, bindir):
     # Need to generate uboot env bin
     preproc_cfg = get_pre_process_cfg(cfg)
@@ -2699,6 +2857,7 @@ def firmware_component_preproc_aicboot(cfg, datadir, keydir, bindir):
         imgcfg = preproc_cfg["aicboot"][name]
         imgcfg["keydir"] = keydir
         imgcfg["datadir"] = datadir
+        imgcfg["_outname"] = name
         outname = datadir + name
         if VERBOSE:
             print("\tCreating {} ...".format(outname))
@@ -2726,6 +2885,7 @@ def firmware_component_preproc_aicimage(cfg, datadir, keydir, bindir):
         imgcfg = preproc_cfg["aicimage"][name]
         imgcfg["keydir"] = keydir
         imgcfg["datadir"] = datadir
+        imgcfg["_outname"] = name
         outname = datadir + name
         if VERBOSE:
             print("\tCreating {} ...".format(outname))
@@ -2764,6 +2924,37 @@ def firmware_component_preproc_data_crypt(cfg, datadir, keydir, bindir):
         data_crypt_create_image(imgcfg, bindir)
 
 
+def firmware_component_preproc_aicprivate(cfg: dict, datadir: str,
+                                          keydir: str, bindir: str) -> None:
+    """Process aicprivate config: generate private resource binary from JSON configs."""
+    preproc_cfg = get_pre_process_cfg(cfg)
+    aicprivate_cfg = preproc_cfg["aicprivate"]
+
+    for name, entry in aicprivate_cfg.items():
+        cfg_files = entry.get("cfg", [])
+        outpath = datadir + name
+
+        if VERBOSE:
+            print("\tCreating {} ...".format(outpath))
+
+        # Resolve each config file path relative to datadir
+        resolved: list = []
+        for cf in cfg_files:
+            p = get_file_path(cf, datadir)
+            if p is None:
+                print("File {} is not exist".format(cf))
+                sys.exit(1)
+            resolved.append(p)
+
+        # Parse, merge, build, and write
+        merged: dict = {}
+        for p in resolved:
+            merged.update(_priv_parse_config(p))
+        data = _priv_build(merged, os.path.abspath(datadir))
+        with open(outpath, "wb") as f:
+            f.write(data)
+
+
 def firmware_component_preproc_concatenate(cfg, datadir, keydir, bindir):
     preproc_cfg = get_pre_process_cfg(cfg)
     imgnames = preproc_cfg["concatenate"].keys()
@@ -2789,8 +2980,12 @@ def firmware_component_preproc(cfg, datadir, keydir, bindir):
     preproc_cfg = get_pre_process_cfg(cfg)
     if preproc_cfg is None:
         return None
+    if "aicprivate" in preproc_cfg:
+        firmware_component_preproc_aicprivate(cfg, datadir, keydir, bindir)
     if "itb" in preproc_cfg:
         firmware_component_preproc_itb(cfg, datadir, keydir, bindir)
+    if "elf2itb" in preproc_cfg:
+        firmware_component_preproc_elf2itb(cfg, datadir, keydir, bindir)
     if "uboot_env" in preproc_cfg:
         firmware_component_preproc_uboot_env(cfg, datadir, keydir, bindir)
     if "aicboot" in preproc_cfg:

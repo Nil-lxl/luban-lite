@@ -22,6 +22,15 @@ menu "AXICFG Priority setting"
             default 10
     endif
 
+    config AIC_AXICFG_PORT_AHB1_EN
+        bool "AHB1 Enable"
+        depends on AIC_CHIP_D12P
+    if AIC_AXICFG_PORT_AHB1_EN
+        config AIC_AXICFG_PORT_AHB1_PRIO
+            int "AHB1 priority"
+            default 10
+    endif
+
     config AIC_AXICFG_PORT_DE_EN
         bool "DE Enable"
     if AIC_AXICFG_PORT_DE_EN
@@ -56,6 +65,7 @@ menu "AXICFG Priority setting"
 
     config AIC_AXICFG_PORT_CE_EN
         bool "CE Enable"
+        depends on !AIC_CHIP_D12P
     if AIC_AXICFG_PORT_CE_EN
         config AIC_AXICFG_PORT_CE_PRIO
             int "CE priority"

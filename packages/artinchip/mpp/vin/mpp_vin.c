@@ -23,8 +23,6 @@
 #endif
 #include "mpp_vin.h"
 
-#define VIN_BUF_INIT_VAL            0x7C
-
 #ifdef AIC_DVP_SUPPORT_DEMUX
 #define DVP_PARAM_CH                ch
 #define DVP_PARAMS_CH               ,ch
@@ -169,9 +167,7 @@ static int mpp_vin2_req_buf(struct vin_dev_ctx *ctx, struct vin_video_buf *binfo
             pr_err("Failed to malloc %d buffer\n", buf_size);
             return -1;
         }
-#ifdef VIN_BUF_INIT_VAL
-        memset(ctx->vin_buf, VIN_BUF_INIT_VAL, buf_size);
-#endif
+
         pr_debug("MPP VIN buffer: 0x%lx, size %d\n", (ptr_t)ctx->vin_buf, buf_size);
     }
 

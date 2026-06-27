@@ -263,17 +263,24 @@ static int do_mtd_write(int argc, char *argv[])
     }
 
     start_us = aic_get_time_us();
-    while (write_len < size) {
-        err = mtd_write_oob(mtd, offset + write_len, data + write_len, mtd->writesize, NULL, 0);
-        if (err) {
-            printf("Write mtd at offset 0x%lx error, mark it.\n", offset + write_len);
-            err = mtd_block_markbad(mtd, ALIGN_DOWN(offset + write_len, mtd->erasesize));
-            if (err)
-                printf("Mark block bad error.\n");
+    if (mtd->ops.write_oob) {
+        while (write_len < size) {
+            err = mtd_write_oob(mtd, offset + write_len, data + write_len,
+                                mtd->writesize, NULL, 0);
+            if (err) {
+                printf("Write mtd at offset 0x%lx error, mark it.\n",
+                       offset + write_len);
+                err = mtd_block_markbad(mtd,
+                               ALIGN_DOWN(offset + write_len, mtd->erasesize));
+                if (err)
+                    printf("Mark block bad error.\n");
 
-            return err;
+                return err;
+            }
+            write_len += mtd->writesize;
         }
-        write_len += mtd->writesize;
+    } else {
+        err = mtd_write(mtd, offset, data, size);
     }
     show_speed("mtd_write speed", size, aic_get_time_us() - start_us);
 

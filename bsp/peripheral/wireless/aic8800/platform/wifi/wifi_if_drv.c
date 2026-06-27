@@ -7,6 +7,7 @@
 #include <drivers/pin.h>
 #include <drivers/sdio.h>
 #include <drivers/mmcsd_card.h>
+#include <drivers/mmcsd_core.h>
 #include <rtdevice.h>
 #include <rtthread.h>
 
@@ -17,8 +18,13 @@
 #include "plat_port.h"
 #include "wifi_port.h"
 
+#ifdef RT_USING_PM
+#include "general_wireless_pm.h"
+#endif
+
 struct rt_mmcsd_card *g_wifi_if_sdio = NULL;
 struct sdio_func g_wifi_if_sdio_funcs[SDIOM_MAX_FUNCS];
+static struct rt_mmcsd_host *g_wifi_host = NULL;
 
 int aic8800_reset(void)
 {
@@ -40,11 +46,14 @@ static rt_int32_t wifi_if_sdio_probe(struct rt_mmcsd_card *card)
     int idx;
     AIC_LOG_PRINTF("%s: card_type=%d, host_flags=0x%x\n", __func__, card->card_type, card->host->flags);
     g_wifi_if_sdio = card;
+    g_wifi_host = card->host;
     for (idx = 0; idx < SDIOM_MAX_FUNCS; idx++) {
         g_wifi_if_sdio_funcs[idx].num    = card->sdio_function[idx]->num;
         g_wifi_if_sdio_funcs[idx].vendor = card->sdio_function[idx]->manufacturer;
         g_wifi_if_sdio_funcs[idx].device = card->sdio_function[idx]->product;
         g_wifi_if_sdio_funcs[idx].drv_priv = card;
+        AIC_LOG_PRINTF("%s: id:%d, num:%d manid:%x product:%x\n", __func__, idx,
+            card->sdio_function[idx]->num, card->sdio_function[idx]->manufacturer, card->sdio_function[idx]->product);
     }
 
     aicwf_sdio_probe(&g_wifi_if_sdio_funcs[0]);
@@ -131,3 +140,37 @@ int wifi_if_sdio_deinit(void)
     }
     return 0;
 }
+
+#ifdef RT_USING_PM
+static struct rt_mmcsd_host *aic8800_pm_get_host(void)
+{
+    return aic_sdmc_get_rthost(AIC_WIFI_SDMC_ID);
+}
+
+static int aic8800_pm_suspend(rt_uint8_t mode)
+{
+    return 0;
+}
+
+static int aic8800_pm_resume(rt_uint8_t mode)
+{
+    if (!g_wifi_host) {
+        AIC_LOG_PRINTF("aic8800_pm_resume: wifi was not init'd, skip\n");
+        return 0;
+    }
+
+    wifi_if_sdio_deinit();
+
+    /* Mark deinit done so next resume won't try to deinit again */
+    g_wifi_host = NULL;
+
+    return 0;
+}
+
+struct aic_wlan_chip_pm_ops g_aic8800_pm_ops = {
+    .suspend   = aic8800_pm_suspend,
+    .resume    = aic8800_pm_resume,
+    .get_host  = aic8800_pm_get_host,
+};
+#endif
+

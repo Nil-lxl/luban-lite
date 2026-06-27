@@ -19,7 +19,11 @@ struct usb_otg g_usb_otg;
 static int usb_otg_get_id(void);
 static void usb_otg_sw_mode(unsigned int mode);
 
+#if defined(KERNEL_RTTHREAD)
+static void usb_otg_irq(void *data)
+#else
 static void usb_otg_irq(int irq_num, void *data)
+#endif
 {
     struct usb_otg *d = &g_usb_otg;
 
@@ -473,11 +477,11 @@ static int cmd_set_otg_mode(int argc, char **argv)
         cmd_set_otg_mode_usage();
         return -1;
     }
-    if (strcmp(argv[1], "auto") == 0) {
+    if (strncmp(argv[1], "auto", 4) == 0) {
         usb_otg_set_mode(1, 0);
-    } else if (strcmp(argv[1], "host") == 0) {
+    } else if (strncmp(argv[1], "host", 4) == 0) {
         usb_otg_set_mode(0, OTG_MODE_HOST);
-    } else if (strcmp(argv[1], "device") == 0) {
+    } else if (strncmp(argv[1], "device", 5) == 0) {
         usb_otg_set_mode(0, OTG_MODE_DEVICE);
     } else {
         cmd_set_otg_mode_usage();

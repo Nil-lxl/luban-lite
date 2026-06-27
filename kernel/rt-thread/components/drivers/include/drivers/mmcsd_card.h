@@ -123,6 +123,7 @@ struct rt_sdio_function {
     struct rt_sdio_function_tuple *tuples;
 
     void            *priv;
+    void            *curr;
 };
 
 #define SDIO_MAX_FUNCTIONS      7
@@ -163,6 +164,8 @@ struct rt_mmcsd_card {
     struct rt_sdio_function *sdio_function[SDIO_MAX_FUNCTIONS + 1]; /* SDIO functions (devices) */
     rt_list_t blk_devices;  /* for block device list */
 };
+
+void sdio_free_cis(struct rt_sdio_function *func);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, ArtInChip Technology Co., Ltd
+ * Copyright (C) 2025-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -30,4 +30,17 @@ void aic_img_usage(void)
         lv_obj_align(img_direct, LV_ALIGN_CENTER, 0, 0);
     }
 #endif
+
+#ifdef AIC_MPP_AICP_DEC_ENABLE
+    lv_obj_t *img_no_alpha = lv_img_create(lv_scr_act());
+    lv_img_set_src(img_no_alpha, LVGL_IMAGE_PATH(bird.aicp));
+    lv_obj_set_pos(img_no_alpha, 100, 0);
+#endif
+
+#if defined(AIC_MPP_AICP_DEC_ENABLE) && defined(AIC_CHIP_D12P)
+    lv_obj_t *img_has_alpha = lv_img_create(lv_scr_act());
+    lv_img_set_src(img_has_alpha, LVGL_IMAGE_PATH(flower.aicp));
+    lv_obj_set_pos(img_has_alpha, 100, 0);
+#endif
+
 }

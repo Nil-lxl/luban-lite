@@ -125,7 +125,7 @@ int usbd_controller_deinit(uint8_t busid);
 }
 #endif
 
-#ifdef LPKG_CHERRYUSB_DEVICE_SINGLE
+#if defined(LPKG_CHERRYUSB_DEVICE_SINGLE) && defined(KERNEL_RTTHREAD)
 #define USB_INIT_APP_EXPORT(fn)        INIT_APP_EXPORT(fn)
 #else
 #define USB_INIT_APP_EXPORT(fn)

@@ -80,6 +80,10 @@ if RT_USING_MODULE
         bool "Enable load dynamic module by custom"
         default n
 
+    config RT_MODULE_STACK_SIZE
+        int "Dynamic module stack size"
+        default 8192
+
     choice
         prompt "Select dynamic module use mem"
         default RT_MODULE_MEM_SYS

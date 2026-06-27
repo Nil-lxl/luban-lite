@@ -16,6 +16,23 @@
 
 ---
 
+## 配置方法
+
+| Kconfig | 说明 | 默认值 | 依赖 |
+|---------|------|--------|------|
+| `AIC_PM_DEMO` | 启用 PM 示例 | n | AIC_PM_DRV |
+| `AIC_PM_TEST` | 启用 PM 测试 | n | AIC_PM_DRV |
+| `AIC_PM_STRESS_TEST` | 启用 PM 压力测试 | n | AIC_PM_DRV && AIC_RTC_DRV_V121 |
+
+通过 `scons --menuconfig` 开启：
+
+```
+menuconfig
+  └─ Drivers options
+      └─ Drivers examples
+          └─ Power Management examples
+```
+
 ## 1. pm_demo.c — 交互式电源管理演示
 
 **功能**：上电自动运行，支持按键或触摸屏唤醒/进入睡眠。

@@ -9,6 +9,9 @@ static inline bool is_non_blocking_msg(int id)
     return ((id == MM_TIM_UPDATE_REQ) || (id == ME_RC_SET_RATE_REQ) ||
             (id == MM_BFMER_ENABLE_REQ) || (id == ME_TRAFFIC_IND_REQ) ||
             (id == TDLS_PEER_TRAFFIC_IND_REQ) ||
+#ifdef CONFIG_WIFI_MODE_FTTEST
+            (id == DBG_START_APP_REQ) ||
+#endif
             (id == SM_EXTERNAL_AUTH_REQUIRED_RSP));
 }
 

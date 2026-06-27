@@ -1,6 +1,6 @@
 {
 	"psram": {
-		"cfg0": { //OPI APS3208K 4M PSRAM
+		"cfg0": { //OPI APS3208K*1 4M PSRAM, G720AFU/G720ADU
 			"common": {
 				"clock":      "198000000",
 				"cs0_pins":   "0x0",

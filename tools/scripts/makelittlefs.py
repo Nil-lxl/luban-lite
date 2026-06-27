@@ -49,7 +49,7 @@ def mkimage_get_mtdpart_size(outfile):
             if len(parts) < 3:
                 continue
             name = parts[1].replace('"', '').replace('*', '')
-            if imgname == name:
+            if any(imgname == re.sub(pat, "", name) for pat in [".enc", ".sparse.enc", ".sparse"]):
                 size = int(parts[2])
                 return size
     print('Image {} is not used in any partition'.format(imgname))

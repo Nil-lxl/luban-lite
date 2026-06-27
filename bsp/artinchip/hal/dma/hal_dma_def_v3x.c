@@ -176,24 +176,27 @@ int aic_set_burst(struct dma_slave_config *sconfig,
     src_maxburst = sconfig->src_maxburst;
     dst_maxburst = sconfig->dst_maxburst;
 
+    /* Check and correct addr width and maxburst according device table */
     switch (direction) {
     case DMA_MEM_TO_DEV:
         aic_set_param(sconfig, sconfig->src_addr,
                     &dst_maxburst, &src_maxburst,
                     &dst_addr_width, &src_addr_width);
-        sconfig->dst_addr_width = dst_addr_width;
-        sconfig->dst_maxburst = dst_maxburst;
         break;
     case DMA_DEV_TO_MEM:
         aic_set_param(sconfig, sconfig->dst_addr,
                     &src_maxburst, &dst_maxburst,
                     &src_addr_width, &dst_addr_width);
-        sconfig->src_addr_width = src_addr_width;
-        sconfig->src_maxburst = src_maxburst;
         break;
     default:
         return -EINVAL;
     }
+
+    /* Update parameters after table checking */
+    sconfig->src_addr_width = src_addr_width;
+    sconfig->src_maxburst = src_maxburst;
+    sconfig->dst_addr_width = dst_addr_width;
+    sconfig->dst_maxburst = dst_maxburst;
 
 #ifdef AIC_DMA_CFG_TEST
     static u8 i = 0;

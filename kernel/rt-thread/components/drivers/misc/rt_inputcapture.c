@@ -193,7 +193,10 @@ void rt_hw_inputcapture_isr(struct rt_inputcapture_device *inputcapture, rt_bool
 
     receive_size =  rt_ringbuffer_data_len(inputcapture->ringbuff) / sizeof(struct rt_inputcapture_data);
 
-    if (receive_size >= inputcapture->watermark)
+    volatile rt_uint32_t recv_cnt = (rt_uint32_t)receive_size;
+    volatile rt_uint32_t wm_level = (rt_uint32_t)inputcapture->watermark;
+
+    if (recv_cnt >= wm_level)
     {
         /* indicate to upper layer application */
         if (inputcapture->parent.rx_indicate != RT_NULL)

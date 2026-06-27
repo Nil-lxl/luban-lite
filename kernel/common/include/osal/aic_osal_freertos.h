@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -116,6 +116,11 @@ static inline int aicos_sem_give(aicos_sem_t sem)
     }
 
     return (ret == pdPASS) ? 0 : -EINVAL;
+}
+
+static inline int aicos_sem_reset(aicos_sem_t sem, unsigned long val)
+{
+    return -EINVAL;
 }
 
 //--------------------------------------------------------------------+

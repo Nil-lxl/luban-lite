@@ -1182,7 +1182,7 @@ int usb_hc_deinit(struct usbh_bus *bus)
     while ((EHCI_HCOR->usbsts & (EHCI_USBSTS_PSS | EHCI_USBSTS_ASS)) || ((EHCI_HCOR->usbsts & EHCI_USBSTS_HALTED) == 0)) {
         usb_osal_msleep(1);
         timeout++;
-        if (timeout > 1000) {
+        if (timeout > 2000) {
             USB_LOG_WRN("Wait for the EHCI to stop timeout.\n");
         }
     }

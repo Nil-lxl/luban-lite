@@ -103,14 +103,14 @@ static inline int jpeg_height_limit(int height)
 
 static inline bool image_suffix_is_jpg(char *ptr)
 {
-    return ((!strcmp(ptr, ".jpg")) || (!strcmp(ptr, ".jpeg"))
-            || (!strcmp(ptr, ".JPG")) || (!strcmp(ptr, ".JPEG")));
+    return ((!strncmp(ptr, ".jpg", 4)) || (!strncmp(ptr, ".jpeg", 5))
+            || (!strncmp(ptr, ".JPG", 4)) || (!strncmp(ptr, ".JPEG", 5)));
 }
 
 #ifdef AIC_MPP_AICP_DEC_ENABLE
 static inline bool image_suffix_is_aicp(char *ptr)
 {
-    return (!strcmp(ptr, ".aicp"));
+    return (!strncmp(ptr, ".aicp", 5));
 }
 #endif
 
@@ -130,7 +130,7 @@ lv_result_t lv_frame_buf_alloc(mpp_decoder_data_t *mpp_data, struct mpp_buf *all
 
 void lv_frame_buf_free(mpp_decoder_data_t *mpp_data);
 
-void lv_set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_shift);
+void lv_set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_shift, bool is_aicp);
 
 struct frame_allocator* lv_open_allocator(struct mpp_frame* frame);
 

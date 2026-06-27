@@ -329,7 +329,7 @@ static void patch_config(struct rwnx_hw *rwnx_hw)
     int tmp_cnt = 0;
 	int adap_patch_num = 0;
 
-    if (rwnx_hw->mode == WIFI_MODE_RFTEST) {
+    if (rwnx_hw->mode == WIFI_MODE_RFTEST || rwnx_hw->mode == WIFI_MODE_FTTEST) {
         patch_addr_reg = 0x1e5304;
 		patch_num_reg = 0x1e5308;
     }
@@ -419,7 +419,7 @@ u32 patch_tbl_8800d80[][2] = {
 static int aicwifi_patch_config_8800d80(struct rwnx_hw *rwnx_hw)
 {
 	const u32 rd_patch_addr = (((rwnx_hw->chipid == PRODUCT_ID_AIC8800D80) &&
-        chip_mcu_id && (rwnx_hw->mode != WIFI_MODE_RFTEST)) ? RAM_FMAC_WD4M_FW_ADDR : RAM_FMAC_FW_ADDR) + 0x0198;
+        chip_mcu_id && (rwnx_hw->mode != WIFI_MODE_RFTEST) && (rwnx_hw->mode != WIFI_MODE_FTTEST)) ? RAM_FMAC_WD4M_FW_ADDR : RAM_FMAC_FW_ADDR) + 0x0198;
 	u32 aic_patch_addr;
 	u32 config_base, aic_patch_str_base;
 	uint32_t start_addr = 0x0016F800;
@@ -719,7 +719,7 @@ static int start_from_bootrom(struct rwnx_hw *rwnx_hw)
     u32 fw_addr = RAM_FMAC_FW_ADDR;
 #endif
     if ((rwnx_hw->chipid == PRODUCT_ID_AIC8800D80) &&
-        chip_mcu_id && (rwnx_hw->mode != WIFI_MODE_RFTEST)) {
+        chip_mcu_id && (rwnx_hw->mode != WIFI_MODE_RFTEST) && (rwnx_hw->mode != WIFI_MODE_FTTEST)) {
         rd_addr = fw_addr = RAM_FMAC_WD4M_FW_ADDR;
     }
     struct dbg_mem_read_cfm rd_cfm;
@@ -832,7 +832,11 @@ static int start_from_bootrom_8800dc(struct rwnx_hw *rwnx_hw)
     struct dbg_mem_read_cfm rd_cfm;
 
     /* memory access */
-    if(rwnx_hw->mode == WIFI_MODE_RFTEST){
+    if(rwnx_hw->mode == WIFI_MODE_FTTEST){
+        rd_addr = RAM_FTTEST_FW_ADDR;
+        fw_addr = RAM_FTTEST_FW_ADDR;
+    }
+    else if(rwnx_hw->mode == WIFI_MODE_RFTEST){
         rd_addr = RAM_LMAC_FW_ADDR;
         fw_addr = RAM_LMAC_FW_ADDR;
     }
@@ -847,7 +851,7 @@ static int start_from_bootrom_8800dc(struct rwnx_hw *rwnx_hw)
     }
     AIC_LOG_PRINTF("cfm: [%08x] = %08x\n", rd_cfm.memaddr, rd_cfm.memdata);
 
-    if(rwnx_hw->mode != WIFI_MODE_RFTEST){
+    if(rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST){
         boot_type = HOST_START_APP_DUMMY;
     } else {
         boot_type = HOST_START_APP_AUTO;
@@ -942,7 +946,7 @@ int rwnx_fdrv_init(struct rwnx_hw *rwnx_hw)
 
     // release sdio function2
     if (rwnx_hw->chipid == PRODUCT_ID_AIC8800DC || rwnx_hw->chipid == PRODUCT_ID_AIC8800DW) {
-        if ((rwnx_hw->mode != WIFI_MODE_RFTEST)) {
+        if ((rwnx_hw->mode != WIFI_MODE_RFTEST) && (rwnx_hw->mode != WIFI_MODE_FTTEST)) {
             func_flag_tx = false;
             sdio_release_func2();
         }
@@ -958,7 +962,8 @@ int rwnx_fdrv_init(struct rwnx_hw *rwnx_hw)
     }
     #endif /* USE_5G */
     else if (rwnx_hw->chipid == PRODUCT_ID_AIC8800DC || rwnx_hw->chipid == PRODUCT_ID_AIC8800DW) {
-        ret = rwnx_send_set_stack_start_req(rwnx_hw, 1, 0, 0, 0, &set_start_cfm);
+        if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST)
+            ret = rwnx_send_set_stack_start_req(rwnx_hw, 1, 0, 0, 0, &set_start_cfm);
         set_start_cfm.is_5g_support = false;
         fhost_chan.chan5G_cnt = 0;
     } else {
@@ -975,7 +980,7 @@ int rwnx_fdrv_init(struct rwnx_hw *rwnx_hw)
         if (ret) {
             goto err_platon;
         }
-        if (rwnx_hw->mode != WIFI_MODE_RFTEST) {
+        if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) {
             ret = rwnx_send_rf_calib_req(rwnx_hw, &rf_calib_cfm);
             if (ret) {
                 goto err_platon;
@@ -994,20 +999,24 @@ int rwnx_fdrv_init(struct rwnx_hw *rwnx_hw)
         }
     }
 
-    // read & set base mac address
-    rwnx_read_efuse_mac(rwnx_hw);
+    if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) {
+        // read & set base mac address
+        rwnx_read_efuse_mac(rwnx_hw);
+    }
     #ifdef CONFIG_USE_LOCAL_MAC_ADDR
     rwnx_read_local_mac();
     #endif
 
-    /* Reset FW */
-    ret = rwnx_send_reset(rwnx_hw);
-    if (ret) {
-        goto err_lmac_reqs;
-    }
-    ret = rwnx_send_version_req(rwnx_hw, &rwnx_hw->version_cfm);
-    if (ret) {
-        goto err_lmac_reqs;
+    if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) {
+        /* Reset FW */
+        ret = rwnx_send_reset(rwnx_hw);
+        if (ret) {
+            goto err_lmac_reqs;
+        }
+        ret = rwnx_send_version_req(rwnx_hw, &rwnx_hw->version_cfm);
+        if (ret) {
+            goto err_lmac_reqs;
+        }
     }
     /* Set parameters to firmware */
     fhost_config_prepare(&me_config, &start, &base_mac_addr, true);
@@ -1019,12 +1028,12 @@ int rwnx_fdrv_init(struct rwnx_hw *rwnx_hw)
     if (rwnx_hw->chipid == PRODUCT_ID_AIC8801 ||
         ((rwnx_hw->chipid == PRODUCT_ID_AIC8800DC||
         rwnx_hw->chipid == PRODUCT_ID_AIC8800DW ||
-        rwnx_hw->chipid == PRODUCT_ID_AIC8800D80) && rwnx_hw->mode != WIFI_MODE_RFTEST)){
+        rwnx_hw->chipid == PRODUCT_ID_AIC8800D80) && rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST)){
         rwnx_send_me_config_req(rwnx_hw, &me_config);
         rwnx_send_me_chan_config_req(rwnx_hw, &fhost_chan);
     }
 
-    if (rwnx_hw->mode != WIFI_MODE_RFTEST) {
+    if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) {
         rwnx_send_start(rwnx_hw, &start);
     }
 

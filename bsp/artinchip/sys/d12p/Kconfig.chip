@@ -116,7 +116,7 @@ config AIC_DMA_DRV_VER
 
 config AIC_DMA_CH_NUM
     int
-    default "4" if AIC_DMA_DRV_V30
+    default "8" if AIC_DMA_DRV_V30
 
 config AIC_DMA_ALIGN_SIZE
     int

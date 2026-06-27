@@ -220,6 +220,56 @@ static struct nvp_mode g_nvp_modes[] = {
      nvp6158_720p30_bt1120_1mux_regs, ARRAY_SIZE(nvp6158_720p30_bt1120_1mux_regs)},
 #endif
 
+    // 720p BT656 formats
+#ifdef CONFIG_NVP6158_720P25_BT656_4MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_25, NVP6158_MUX_4,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_720p25_bt656_4mux_regs, ARRAY_SIZE(nvp6158_720p25_bt656_4mux_regs)},
+#endif
+#ifdef CONFIG_NVP6158_720P25_BT656_2MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_25, NVP6158_MUX_2,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_720p25_bt656_2mux_regs, ARRAY_SIZE(nvp6158_720p25_bt656_2mux_regs)},
+#endif
+#ifdef CONFIG_NVP6158_720P25_BT656_1MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_25, NVP6158_MUX_1,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_720p25_bt656_1mux_regs, ARRAY_SIZE(nvp6158_720p25_bt656_1mux_regs)},
+#endif
+
+#ifdef CONFIG_NVP6158_720P30_BT656_4MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_30, NVP6158_MUX_4,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_720p30_bt656_4mux_regs, ARRAY_SIZE(nvp6158_720p30_bt656_4mux_regs)},
+#endif
+#ifdef CONFIG_NVP6158_720P30_BT656_2MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_30, NVP6158_MUX_2,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_720p30_bt656_2mux_regs, ARRAY_SIZE(nvp6158_720p30_bt656_2mux_regs)},
+#endif
+#ifdef CONFIG_NVP6158_720P30_BT656_1MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_30, NVP6158_MUX_1,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_720p30_bt656_1mux_regs, ARRAY_SIZE(nvp6158_720p30_bt656_1mux_regs)},
+#endif
+
+    // TVI 720p BT656 formats
+#ifdef CONFIG_NVP6158_TVI720P25_BT656_2MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_25, NVP6158_MUX_2,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_tvi720p25_bt656_2mux_regs, ARRAY_SIZE(nvp6158_tvi720p25_bt656_2mux_regs)},
+#endif
+#ifdef CONFIG_NVP6158_TVI720P25_BT656_1MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_25, NVP6158_MUX_1,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_tvi720p25_bt656_1mux_regs, ARRAY_SIZE(nvp6158_tvi720p25_bt656_1mux_regs)},
+#endif
+#ifdef CONFIG_NVP6158_TVI720P30_BT656_1MUX
+    {NVP6158_RES_720P, MEDIA_BUS_BT656, NVP6158_FPS_30, NVP6158_MUX_1,
+     false, false, HD_720_WIDTH, HD_720_HEIGHT,
+     nvp6158_tvi720p30_bt656_1mux_regs, ARRAY_SIZE(nvp6158_tvi720p30_bt656_1mux_regs)},
+#endif
+
     // 720H BT656 formats
 #ifdef CONFIG_NVP6158_720H_PAL_BT656_4MUX
     {NVP6158_RES_720H, MEDIA_BUS_BT656, NVP6158_FPS_25, NVP6158_MUX_4,
@@ -282,7 +332,7 @@ static void nvp6158_apply_cfg(struct nvp_dev *sensor, struct nvp_mode *mode)
     for (i = 0; i < mode->reg_num; i++, info++)
         nvp6158_write_reg(sensor->i2c, info->reg, info->val);
 
-    LOG_I("Current mode: %dx%d@%d, mbus %s, mux %d%s",
+    LOG_I("Mode  : %dx%d@%d, mbus %s, mux %d%s",
           mode->width, mode->height, NVP_FPS(mode->fps),
           NVP_MBUS(mode->mbus), NVP_MUX(mode->mux),
           mode->res == NVP6158_RES_720H ? (mode->is_pal ? ", PAL" : ", NTSC") : "");
@@ -306,7 +356,7 @@ static void nvp6158_apply_cfg(struct nvp_dev *sensor, struct nvp_mode *mode)
 static struct nvp_mode *nvp6158_fmt_to_mode(struct mpp_video_fmt *fmt,
                                             enum nvp6158_fps fps, enum nvp6158_mux mux)
 {
-    enum mpp_mbus_type mbus = fmt->bus_type;
+    enum mpp_mbus_type mbus = MEDIA_BUS_UNKNOWN;
     int i;
 
     if (!fmt) {
@@ -314,8 +364,9 @@ static struct nvp_mode *nvp6158_fmt_to_mode(struct mpp_video_fmt *fmt,
         return NULL;
     }
 
-    if (fmt->bus_type != MEDIA_BUS_BT1120 && fmt->bus_type != MEDIA_BUS_BT656) {
-        LOG_E("Unsupported bus type: %d", fmt->bus_type);
+    mbus = fmt->bus_type;
+    if (mbus != MEDIA_BUS_BT1120 && mbus != MEDIA_BUS_BT656) {
+        LOG_E("Unsupported bus type: %d", mbus);
         return NULL;
     }
 
@@ -336,14 +387,58 @@ static struct nvp_mode *nvp6158_fmt_to_mode(struct mpp_video_fmt *fmt,
     return NULL;
 }
 
+static void nvp6158_wait_lock(struct nvp_dev *sensor)
+{
+    u32 timeout = 100, cnt = 0;
+    u8 video_loss = 0;
+
+    nvp6158_write_reg(sensor->i2c, 0xFF, 0x00);
+    while (1) {
+        rt_thread_mdelay(10);
+
+        nvp6158_read_reg(sensor->i2c, 0xA8, &video_loss);
+        if (video_loss != 0xF)
+            break;
+
+        cnt++;
+        if (cnt > timeout) {
+            LOG_E("Wait video source timeout! 0x%x", video_loss);
+            return;
+        }
+    }
+    rt_thread_mdelay(100);
+}
+
 static void nvp6158_cur_status(struct nvp_dev *sensor)
 {
-    u8 video = 0, motion = 0;
+    u8 video = 0, motion = 0, bw = 0, fsc[4] = {0};
+    u8 fmt[4] = {0}, color[4] = {0}, pal_cm[4] = {0}, auto_nt = 0;
 
     nvp6158_write_reg(sensor->i2c, 0xFF, 0x00);
     nvp6158_read_reg(sensor->i2c, 0xA8, &video);
     nvp6158_read_reg(sensor->i2c, 0xA9, &motion);
-    LOG_I("Video Status: lost 0x%x, motion 0x%x", video, motion);
+    nvp6158_read_reg(sensor->i2c, 0xE7, &bw);    // B/W detection
+    nvp6158_read_reg(sensor->i2c, 0xEF, &auto_nt); // AUTO_NT status
+
+    /* Per-channel registers: FSC, FMT, COLOR, PAL_CM */
+    for (int i = 0; i < 4; i++) {
+        nvp6158_read_reg(sensor->i2c, 0xE8 + i, &fsc[i]);      // FSC status: CKILL[2], FSC_LOCK[1], NOVIDEO[0]
+        nvp6158_read_reg(sensor->i2c, 0x08 + i, &fmt[i]);      // Video format[4:0]
+        nvp6158_read_reg(sensor->i2c, 0x22 + i * 4, &color[i]); // Chrominance: COLOROFF[4], C_KILL[3:0]
+        nvp6158_read_reg(sensor->i2c, 0x21 + i * 4, &pal_cm[i]); // PAL compensation: PAL_CM_OFF[7]
+    }
+
+    LOG_I("Video : lost 0x%x, motion 0x%x, B/W 0x%x, AUTO_NT 0x%02x",
+          video, motion, bw, auto_nt);
+    LOG_I("FSC   : [0x%02x 0x%02x 0x%02x 0x%02x]",
+          fsc[0], fsc[1], fsc[2], fsc[3]);
+    LOG_I("Format: [0x%02x 0x%02x 0x%02x 0x%02x] (format[4:0])",
+          fmt[0] & 0x1F, fmt[1] & 0x1F,
+          fmt[2] & 0x1F, fmt[3] & 0x1F);
+    LOG_I("Color : [0x%02x 0x%02x 0x%02x 0x%02x] (COLOROFF + C_KILL)",
+          color[0], color[1], color[2], color[3]);
+    LOG_I("PAL_CM: [0x%02x 0x%02x 0x%02x 0x%02x] ([7]=1 means PAL comp OFF)",
+          pal_cm[0], pal_cm[1], pal_cm[2], pal_cm[3]);
 }
 
 static bool nvp6158_is_open(struct nvp_dev *sensor)
@@ -381,6 +476,11 @@ static int nvp6158_probe(struct nvp_dev *sensor)
 {
     u8 id = 0, rev = 0;
 
+    if (!sensor->i2c) {
+        LOG_E("I2C device not found");
+        return -1;
+    }
+
     nvp6158_power_on(sensor);
 
     nvp6158_write_reg(sensor->i2c, 0xFF, 0x00);
@@ -396,6 +496,8 @@ static int nvp6158_probe(struct nvp_dev *sensor)
     }
 
     nvp6158_apply_cfg(sensor, sensor->cur_mode);
+
+    nvp6158_wait_lock(sensor);
     nvp6158_cur_status(sensor);
 
     return 0;
@@ -498,7 +600,7 @@ static int nvp6158_set_fmt(struct nvp_dev *sensor, struct mpp_video_fmt *fmt)
     if (!new_mode) {
         LOG_E("Failed to find the mode for %dx%d@%d, mbus %s, mux %d",
               fmt->width, fmt->height, NVP_FPS(sensor->fps),
-              NVP_MBUS(fmt->bus_type), NVP_MUX(new_mode->mux));
+              NVP_MBUS(fmt->bus_type), NVP_MUX(sensor->mux));
         return -RT_ERROR;
     }
 
@@ -691,6 +793,10 @@ static int nvp6158_set_mux(struct nvp_dev *sensor, u32 mux)
 static rt_err_t nvp6158_control(rt_device_t dev, int cmd, void *args)
 {
     struct nvp_dev *sensor = (struct nvp_dev *)dev;
+
+    if ((cmd != CAMERA_CMD_START) && (cmd != CAMERA_CMD_STOP) &&
+        (cmd != CAMERA_CMD_PAUSE) && (cmd != CAMERA_CMD_RESUME) && !args)
+        return -RT_EINVAL;
 
     switch (cmd) {
     case CAMERA_CMD_START:

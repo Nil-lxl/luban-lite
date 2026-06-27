@@ -1,6 +1,6 @@
 {
 	"psram": {
-	        "cfg0": { // XCCELA AP12816*2 16M PSRAM, D125CCR/D126FCV/default
+	        "cfg0": { // XCCELA AP12816*2 16M PSRAM, D125CCS/D126FCV/default
 			"common": {
 				"clock":      "198000000", // 198000000 or 252000000
 				"cs0_pins":   "0x0",
@@ -59,7 +59,7 @@
 				"buf9": "0xFFFFFF00",
 			},
 		},
-		"cfg1": { // XCCELA AP25616*2 32M PSRAM, D125DDR/D125EDR
+		"cfg1": { // XCCELA AP25616*2 32M PSRAM, D125DDS/D125EDS
 			"common": {
 				"clock":      "198000000", // 198000000 or 252000000
 				"cs0_pins":   "0x0",
@@ -120,7 +120,7 @@
 				"buf9": "0xFFFFFF00",
 			},
 		},
-		"cfg3": { //OPI APS3208K*2 8M PSRAM, D125CBR/D126FBV
+		"cfg3": { //OPI APS3208K*2 8M PSRAM, D125CBS/D126FBV
 			"common": {
 				"clock":      "198000000",
 				"cs0_pins":   "0x0",

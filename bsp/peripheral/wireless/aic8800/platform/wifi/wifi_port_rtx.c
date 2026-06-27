@@ -4,6 +4,9 @@
 #include <rtthread.h>
 #include "wlan_dev.h"
 #include "aic_plat_log.h"
+#ifdef RT_USING_PM
+#include "general_wireless_pm.h"
+#endif
 
 #include "lmac_mac.h"
 #include "rwnx_utils.h"
@@ -391,8 +394,6 @@ void wifi_p2p_go_stopped(void)
 
 int wifi_device_reg(void)
 {
-    AIC_LOG_PRINTF("%s ctrl pwrkey\n", __func__);
-
     s_wlan_dev = rt_malloc(sizeof(struct rt_wlan_device));
     if (!s_wlan_dev){
         rt_kprintf("wlan0 devcie malloc fail!\n");
@@ -406,6 +407,11 @@ int wifi_device_reg(void)
         return -1;
     }
     rt_wlan_dev_register(s_ap_dev, RT_WLAN_DEVICE_AP_NAME, &wlan_ops, RT_WLAN_FLAG_AP_ONLY, NULL);
+
+#ifdef RT_USING_PM
+    extern struct aic_wlan_chip_pm_ops g_aic8800_pm_ops;
+    aic_wlan_pm_register(&s_wlan_dev->device, &g_aic8800_pm_ops);
+#endif
 
     return 0;
 }

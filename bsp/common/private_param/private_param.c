@@ -211,3 +211,33 @@ char *private_get_partition_string(void *res_addr)
         return NULL;
     return (char *)p;
 }
+
+struct private_security_keydata_v1 *get_security_keydata(void *res_addr, u32 ver)
+{
+    struct private_security_keydata_v1 *key;
+    u32 *p, data_len;
+
+    if (res_addr == NULL) {
+        return NULL;
+    }
+
+    /* Should be 4 byte aligned */
+    if (((unsigned long)res_addr) & 0x3) {
+        return NULL;
+    }
+
+    p = find_section(res_addr, DATA_SECT_TYPE_SEC_KEYDATA);
+    if (p == NULL) {
+        return NULL;
+    }
+    p++; // data_type
+    data_len = *p;
+    p++; // data_len
+    if (data_len < (sizeof(struct private_security_keydata_v1)))
+        return NULL;
+    key = (void *)p;
+    if (key->version != ver)
+        return NULL;
+    return key;
+}
+

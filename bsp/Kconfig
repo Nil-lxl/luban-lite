@@ -114,6 +114,7 @@ config AIC_LOG_LEVEL
 
 config SHOW_PRINT_TIME
     bool "Show timestamp in the log line"
+    default n if AIC_BOOTLOADER
     default y
 
 config AIC_CMU_DRV_DEBUG
@@ -391,7 +392,7 @@ config AIC_CAMERA_DRV_TEST
 config AIC_DVP_TEST
     bool "Enable DVP driver test command"
     default n
-    depends on AIC_DVP_DRV_V11
+    depends on AIC_DVP_DRV_V10 || AIC_DVP_DRV_V11
 
 config AIC_VIN_TEST
     bool "Enable VIN driver test command"
@@ -643,7 +644,6 @@ menu "Power Management examples"
 
     config AIC_PM_STRESS_TEST
         bool "Enable PM stress test"
-        depends on AIC_RTC_DRV_V121
         default n
 endmenu
 

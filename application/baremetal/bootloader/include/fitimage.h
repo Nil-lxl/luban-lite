@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2022-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -62,6 +62,32 @@ struct spl_load_info {
 #define FIT_HASH_ALGO_PROP  "algo"
 #define FIT_HASH_VALUE_PROP "value"
 
+/* cipher node */
+#define FIT_CIPHER_NODE_PROP    "cipher"
+#define FIT_CIPHER_ALGO_PROP    "algo"
+#define FIT_CIPHER_IV_PROP      "iv"
+#define FIT_CIPHER_KEY_HINT_PROP "key-name-hint"
+
+/* Cipher algorithm parameters */
+#define FIT_CIPHER_AES128_KEY_SIZE  16
+#define FIT_CIPHER_AES192_KEY_SIZE  24
+#define FIT_CIPHER_AES256_KEY_SIZE  32
+#define FIT_CIPHER_AES_IV_SIZE      16
+#define FIT_CIPHER_CHACHA20_KEY_SIZE 32
+#define FIT_CIPHER_CHACHA20_IV_SIZE  12
+#define FIT_CIPHER_MAX_KEY_SIZE     32
+#define FIT_CIPHER_MAX_IV_SIZE      16
+
+/* Parsed cipher metadata from FIT image node */
+struct fit_cipher_info {
+    const char *algo;
+    const char *key_hint;
+    u8  iv[FIT_CIPHER_MAX_IV_SIZE];
+    u8  key[FIT_CIPHER_MAX_KEY_SIZE];
+    int key_len;
+    int iv_len;
+};
+
 /* configuration node */
 #define FIT_KERNEL_PROP     "kernel"
 #define FIT_RAMDISK_PROP    "ramdisk"
@@ -83,5 +109,20 @@ static inline const char *fit_get_name(const void *fit_hdr,
 #define FIT_ALIGN(size, align)      (((size) + (align) - 1) & ~((align) - 1))
 
 int spl_load_simple_fit(struct spl_load_info *info, ulong *entry_point);
+
+/* Cipher node lookup, metadata extraction and decryption */
+int fit_image_get_cipher_node(const void *fit, int noffset);
+int fit_image_get_cipher_info(const void *fit, int cipher_node,
+                              struct fit_cipher_info *ci);
+int fit_image_decrypt_data(const struct fit_cipher_info *ci,
+                           u8 *data, unsigned int length);
+
+/* Weak functions for cipher operations (override in platform code) */
+int fit_image_get_cipher_key(const char *algo, const char *key_name_hint,
+                             u8 *key, int key_len);
+int fit_image_aes_128_cbc_decrypt(const u8 *key, const u8 *iv, u8 *data, unsigned int len);
+int fit_image_aes_192_cbc_decrypt(const u8 *key, const u8 *iv, u8 *data, unsigned int len);
+int fit_image_aes_256_cbc_decrypt(const u8 *key, const u8 *iv, u8 *data, unsigned int len);
+int fit_image_chacha20_decrypt(const u8 *key, const u8 *nonce, u8 *data, unsigned int len);
 
 #endif

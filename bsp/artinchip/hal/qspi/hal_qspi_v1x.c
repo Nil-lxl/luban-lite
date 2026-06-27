@@ -295,7 +295,7 @@ int qspi_wait_transfer_done(u32 base, u32 tmo)
     return 0;
 }
 
-int qspi_fifo_write_read(u32 base, u8 *tx, u8 *rx, u32 len, u32 tmo)
+static int qspi_fifo_write_read(u32 base, u8 *tx, u8 *rx, u32 len, u32 tmo)
 {
     u32 free_len, dolen, cnt = 0;
 
@@ -333,7 +333,7 @@ int qspi_fifo_write_read(u32 base, u8 *tx, u8 *rx, u32 len, u32 tmo)
     return 0;
 }
 
-int qspi_fifo_write_data(u32 base, u8 *data, u32 len, u32 tmo)
+static int qspi_fifo_write_data(u32 base, u8 *data, u32 len, u32 tmo)
 {
     u32 dolen, free_len, cnt = 0;
 
@@ -921,7 +921,23 @@ static int qspi_master_transfer_cpu_async(struct qspi_master_state *qspi,
     qspi_hw_reset_fifo(base);
     qspi_hw_interrupt_disable(base, ICR_BIT_CPU_MSK);
     qspi->status = HAL_QSPI_STATUS_IN_PROGRESS;
-    if (t->tx_data) {
+    if (t->tx_data && t->rx_data) {
+        if (qspi_hw_get_bus_width(base) != QSPI_BUS_WIDTH_SINGLE) {
+            hal_log_err("Full duplex mode did not support.\n");
+            qspi->status = HAL_QSPI_STATUS_OK;
+            ret = -1;
+        } else {
+            qspi->work_mode = QSPI_WORK_MODE_ASYNC_DUPLEX_CPU;
+            qspi->done_mask = HAL_QSPI_STATUS_ASYNC_TDONE;
+            qspi->async_tx = t->tx_data;
+            qspi->async_tx_remain = t->data_len;
+            qspi->async_rx = t->rx_data;
+            qspi->async_rx_remain = t->data_len;
+            qspi_hw_set_transfer_cnt(base, t->data_len, t->data_len, 0, 0);
+            qspi_hw_drop_invalid_data(base, QSPI_RECV_ALL_INPUT_DATA);
+            qspi_hw_start_transfer(base);
+        }
+    } else if (t->tx_data) {
         txlen = t->data_len;
         tx_1line_cnt = 0;
         if (qspi_hw_get_bus_width(base) == QSPI_BUS_WIDTH_SINGLE)
@@ -957,6 +973,9 @@ static void qspi_master_dma_tx_callback(void *h)
     struct aic_dma_chan *dma_tx = qspi->dma_tx;
     u32 base;
 
+    if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_DUPLEX_DMA)
+        return;
+
     qspi->status |= HAL_QSPI_STATUS_ASYNC_DMA_DONE;
     if (QSPI_IS_ASYNC_ALL_DONE(qspi->status, qspi->done_mask)) {
         base = qspi_hw_index_to_base(qspi->idx);
@@ -974,20 +993,34 @@ static void qspi_master_dma_rx_callback(void *h)
     struct qspi_master_state *qspi = h;
     struct aic_dma_chan *dma_rx = qspi->dma_rx;
     struct aic_dma_task *task = NULL;
+    unsigned long dst;
+    u32 len;
     u32 base;
 
     qspi->status |= HAL_QSPI_STATUS_ASYNC_DMA_DONE;
-    if (QSPI_IS_ASYNC_ALL_DONE(qspi->status, qspi->done_mask)) {
-        base = qspi_hw_index_to_base(qspi->idx);
-        qspi_hw_rx_dma_disable(base);
-        hal_dma_chan_stop(dma_rx);
-        task = dma_rx->desc;
-        aicos_dcache_invalid_range((void *)(unsigned long)task->dst, task->len);
-        if (qspi_master_dynamic_dma(qspi))
-            hal_release_dma_chan(dma_rx);
-        if (qspi->cb)
-            qspi->cb(h, qspi->cb_priv);
+    if (!QSPI_IS_ASYNC_ALL_DONE(qspi->status, qspi->done_mask))
+        return;
+
+    base = qspi_hw_index_to_base(qspi->idx);
+    qspi_hw_rx_dma_disable(base);
+    task = dma_rx->desc;
+    dst = task->dst;
+    len = task->len;
+    hal_dma_chan_stop(dma_rx);
+    aicos_dcache_invalid_range((void *)dst, len);
+    if (qspi_master_dynamic_dma(qspi))
+        hal_release_dma_chan(dma_rx);
+
+    if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_DUPLEX_DMA) {
+        if (qspi->status == HAL_QSPI_STATUS_IN_PROGRESS)
+            qspi->status = HAL_QSPI_STATUS_OK;
+        else
+            qspi->status &= ~HAL_QSPI_STATUS_IN_PROGRESS;
+        qspi->status &= ~HAL_QSPI_STATUS_ASYNC_TDONE;
     }
+
+    if (qspi->cb)
+        qspi->cb(h, qspi->cb_priv);
 }
 
 static int qspi_master_transfer_dma_async(struct qspi_master_state *qspi,
@@ -1008,7 +1041,75 @@ static int qspi_master_transfer_dma_async(struct qspi_master_state *qspi,
     qspi_hw_reset_fifo(base);
     qspi_hw_interrupt_disable(base, ICR_BIT_DMA_MSK);
     qspi->status = HAL_QSPI_STATUS_IN_PROGRESS;
-    if (t->tx_data) {
+    if (t->tx_data && t->rx_data) {
+        if (qspi_hw_get_bus_width(base) != QSPI_BUS_WIDTH_SINGLE) {
+            hal_log_err("Full duplex mode did not support.\n");
+            ret = -1;
+            goto out;
+        }
+        qspi->work_mode = QSPI_WORK_MODE_ASYNC_DUPLEX_DMA;
+        qspi->done_mask = HAL_QSPI_STATUS_ASYNC_ALL_DONE;
+        qspi_hw_tx_dma_enable(base);
+        qspi_hw_rx_dma_enable(base);
+        qspi_hw_set_transfer_cnt(base, t->data_len, t->data_len, 0, 0);
+        qspi_hw_drop_invalid_data(base, QSPI_RECV_ALL_INPUT_DATA);
+
+        /* config tx DMA channel */
+        dma_tx = qspi->dma_tx;
+        dmacfg.direction = DMA_MEM_TO_DEV;
+        dmacfg.slave_id = qspi->dma_cfg.port_id;
+        dmacfg.src_addr = (unsigned long)t->tx_data;
+        dmacfg.dst_addr = (unsigned long)QSPI_REG_TXD(base);
+        dmacfg.src_addr_width = qspi->dma_cfg.mem_bus_width;
+        dmacfg.src_maxburst = qspi->dma_cfg.mem_max_burst;
+        if (!(t->data_len % HAL_QSPI_DMA_4BYTES_LINE))
+            dmacfg.dst_addr_width = qspi->dma_cfg.dev_bus_width;
+        else
+            dmacfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+        dmacfg.dst_maxburst = qspi->dma_cfg.dev_max_burst;
+
+        ret = hal_dma_chan_config(dma_tx, &dmacfg);
+        if (ret)
+            goto out;
+        hal_dma_chan_register_cb(dma_tx, qspi_master_dma_tx_callback, qspi);
+        ret = hal_dma_chan_prep_device(dma_tx, PTR2U32(QSPI_REG_TXD(base)),
+                                       PTR2U32(t->tx_data), t->data_len,
+                                       DMA_MEM_TO_DEV);
+        if (ret)
+            goto out;
+        ret = hal_dma_chan_start(dma_tx);
+        if (ret)
+            goto out;
+
+        /* config rx DMA channel */
+        dma_rx = qspi->dma_rx;
+        dmacfg.direction = DMA_DEV_TO_MEM;
+        dmacfg.slave_id = qspi->dma_cfg.port_id;
+        dmacfg.src_addr = (unsigned long)QSPI_REG_RXD(base);
+        dmacfg.dst_addr = (unsigned long)t->rx_data;
+        if (!(t->data_len % HAL_QSPI_DMA_4BYTES_LINE))
+            dmacfg.src_addr_width = qspi->dma_cfg.dev_bus_width;
+        else
+            dmacfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+        dmacfg.src_maxburst = qspi->dma_cfg.dev_max_burst;
+        dmacfg.dst_addr_width = qspi->dma_cfg.mem_bus_width;
+        dmacfg.dst_maxburst = qspi->dma_cfg.mem_max_burst;
+
+        ret = hal_dma_chan_config(dma_rx, &dmacfg);
+        if (ret)
+            goto out;
+        hal_dma_chan_register_cb(dma_rx, qspi_master_dma_rx_callback, qspi);
+        ret = hal_dma_chan_prep_device(dma_rx, PTR2U32(t->rx_data),
+                                       PTR2U32(QSPI_REG_RXD(base)), t->data_len,
+                                       DMA_DEV_TO_MEM);
+        if (ret)
+            goto out;
+        ret = hal_dma_chan_start(dma_rx);
+        if (ret)
+            goto out;
+
+        qspi_hw_start_transfer(base);
+    } else if (t->tx_data) {
         txlen = t->data_len;
         tx_1line_cnt = 0;
         if (qspi_hw_get_bus_width(base) == QSPI_BUS_WIDTH_SINGLE)
@@ -1074,8 +1175,8 @@ static int qspi_master_transfer_dma_async(struct qspi_master_state *qspi,
             goto out;
         qspi_hw_start_transfer(base);
     }
-    qspi_hw_interrupt_enable(base, ICR_BIT_DMA_MSK);
 out:
+    qspi_hw_interrupt_enable(base, ICR_BIT_DMA_MSK);
     return ret;
 }
 #endif
@@ -1096,12 +1197,126 @@ int hal_qspi_master_transfer_async(qspi_master_handle *h,
     return qspi_master_transfer_cpu_async(qspi, t);
 }
 
-void hal_qspi_master_irq_handler(qspi_master_handle *h)
+static void handle_tx_fifo_irq(struct qspi_master_state *qspi, u32 base, u32 sts)
 {
+    u32 dolen, free_len;
+
+    if (!(sts & ISTS_BIT_TF_EMP) && !(sts & ISTS_BIT_TF_RDY))
+        return;
+    if (!(qspi->work_mode == QSPI_WORK_MODE_ASYNC_TX_CPU ||
+          qspi->work_mode == QSPI_WORK_MODE_ASYNC_DUPLEX_CPU))
+        return;
+    if (!qspi->async_tx || !qspi->async_tx_remain)
+        return;
+
+    free_len = QSPI_FIFO_DEPTH - qspi_hw_get_tx_fifo_cnt(base);
+    dolen = min(free_len, qspi->async_tx_remain);
+    qspi_hw_write_fifo(base, qspi->async_tx, dolen);
+    qspi->async_tx += dolen;
+    qspi->async_tx_remain -= dolen;
+}
+
+static void handle_rx_fifo_irq(struct qspi_master_state *qspi, u32 base, u32 sts)
+{
+    u32 dolen;
+
+    if (!(sts & ISTS_BIT_RF_FUL) && !(sts & ISTS_BIT_RF_RDY) && !(sts & ISTS_BIT_TDONE))
+        return;
+    if (!(qspi->work_mode == QSPI_WORK_MODE_ASYNC_RX_CPU ||
+          qspi->work_mode == QSPI_WORK_MODE_ASYNC_DUPLEX_CPU))
+        return;
+    if (!qspi->async_rx || !qspi->async_rx_remain)
+        return;
+
+    dolen = qspi_hw_get_rx_fifo_cnt(base);
+    if (dolen > qspi->async_rx_remain)
+        dolen = qspi->async_rx_remain;
+    qspi_hw_read_fifo(base, qspi->async_rx, dolen);
+    qspi->async_rx += dolen;
+    qspi->async_rx_remain -= dolen;
+}
+
+static void handle_async_tdone(qspi_master_handle *h, u32 base)
+{
+    struct qspi_master_state *qspi = (struct qspi_master_state *)h;
 #ifdef AIC_DMA_DRV
     struct aic_dma_chan *dma_rx = NULL;
     struct aic_dma_task *task = NULL;
+    unsigned long dst;
+    u32 len;
 #endif
+
+    if (qspi->work_mode == QSPI_WORK_MODE_FLUSH_DISPLAY) {
+        if (qspi->cb)
+            qspi->cb(h, qspi->cb_priv);
+        return;
+    }
+
+    if (qspi->work_mode != QSPI_WORK_MODE_ASYNC_DUPLEX_DMA) {
+        if (qspi->status == HAL_QSPI_STATUS_IN_PROGRESS)
+            qspi->status = HAL_QSPI_STATUS_OK;
+        else
+            qspi->status &= ~HAL_QSPI_STATUS_IN_PROGRESS;
+    }
+    qspi_hw_interrupt_disable(base, ICR_BIT_ALL_MSK);
+    qspi->async_rx = NULL;
+    qspi->async_rx_remain = 0;
+    qspi->async_tx = NULL;
+    qspi->async_tx_remain = 0;
+    qspi->status |= HAL_QSPI_STATUS_ASYNC_TDONE;
+#ifdef AIC_DMA_DRV
+    if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_DUPLEX_DMA) {
+        qspi_hw_drop_invalid_data(base, QSPI_DROP_INVALID_DATA);
+        qspi_hw_tx_dma_disable(base);
+        hal_dma_chan_stop(qspi->dma_tx);
+        if (qspi_master_dynamic_dma(qspi))
+            hal_release_dma_chan(qspi->dma_tx);
+    }
+#endif
+    if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_DUPLEX_CPU)
+        qspi_hw_drop_invalid_data(base, QSPI_DROP_INVALID_DATA);
+    if (QSPI_IS_ASYNC_ALL_DONE(qspi->status, qspi->done_mask)) {
+#ifdef AIC_DMA_DRV
+        if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_TX_DMA) {
+            hal_dma_chan_stop(qspi->dma_tx);
+            if (qspi_master_dynamic_dma(qspi))
+                hal_release_dma_chan(qspi->dma_tx);
+        }
+        if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_RX_DMA) {
+            dma_rx = qspi->dma_rx;
+            task = dma_rx->desc;
+            dst = task->dst;
+            len = task->len;
+            hal_dma_chan_stop(qspi->dma_rx);
+            aicos_dcache_invalid_range((void *)dst, len);
+            if (qspi_master_dynamic_dma(qspi))
+                hal_release_dma_chan(qspi->dma_rx);
+        }
+        if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_DUPLEX_DMA) {
+            qspi_hw_rx_dma_disable(base);
+            dma_rx = qspi->dma_rx;
+            task = dma_rx->desc;
+            dst = task->dst;
+            len = task->len;
+            hal_dma_chan_stop(qspi->dma_rx);
+            aicos_dcache_invalid_range((void *)dst, len);
+            if (qspi_master_dynamic_dma(qspi)) {
+                hal_release_dma_chan(qspi->dma_rx);
+            }
+            if (qspi->status == HAL_QSPI_STATUS_IN_PROGRESS)
+                qspi->status = HAL_QSPI_STATUS_OK;
+            else
+                qspi->status &= ~HAL_QSPI_STATUS_IN_PROGRESS;
+            qspi->status &= ~HAL_QSPI_STATUS_ASYNC_TDONE;
+        }
+#endif
+        if (qspi->cb)
+            qspi->cb(h, qspi->cb_priv);
+    }
+}
+
+void hal_qspi_master_irq_handler(qspi_master_handle *h)
+{
     struct qspi_master_state *qspi;
     u32 base, sts;
 
@@ -1115,72 +1330,17 @@ void hal_qspi_master_irq_handler(qspi_master_handle *h)
     if (sts & ISTS_BIT_TF_OVF)
         qspi->status |= HAL_QSPI_STATUS_TX_OVER_FLOW;
 
-    if ((sts & ISTS_BIT_TF_EMP) || (sts & ISTS_BIT_TF_RDY)) {
-        u32 dolen, free_len;
-        if ((qspi->work_mode == QSPI_WORK_MODE_ASYNC_TX_CPU) &&
-            qspi->async_tx && qspi->async_tx_remain) {
-            free_len = QSPI_FIFO_DEPTH - qspi_hw_get_tx_fifo_cnt(base);
-            dolen = min(free_len, qspi->async_tx_remain);
-            qspi_hw_write_fifo(base, qspi->async_tx, dolen);
-            qspi->async_tx += dolen;
-            qspi->async_tx_remain -= dolen;
-        }
-    }
+    handle_tx_fifo_irq(qspi, base, sts);
 
     if (sts & ISTS_BIT_RF_UDR)
         qspi->status |= HAL_QSPI_STATUS_RX_UNDER_RUN;
     if (sts & ISTS_BIT_RF_OVF)
         qspi->status |= HAL_QSPI_STATUS_RX_OVER_FLOW;
-    if ((sts & ISTS_BIT_RF_FUL) || (sts & ISTS_BIT_RF_RDY) ||
-        (sts & ISTS_BIT_TDONE)) {
-        u32 dolen;
-        if ((qspi->work_mode == QSPI_WORK_MODE_ASYNC_RX_CPU) &&
-            qspi->async_rx && qspi->async_rx_remain) {
-            dolen = qspi_hw_get_rx_fifo_cnt(base);
-            if (dolen > qspi->async_rx_remain)
-                dolen = qspi->async_rx_remain;
-            qspi_hw_read_fifo(base, qspi->async_rx, dolen);
-            qspi->async_rx += dolen;
-            qspi->async_rx_remain -= dolen;
-        }
-    }
-    if (sts & ISTS_BIT_TDONE) {
-        if (qspi->work_mode == QSPI_WORK_MODE_FLUSH_DISPLAY) {
-            if (qspi->cb) {
-                qspi->cb(h, qspi->cb_priv);
-            }
-        } else {
-            if (qspi->status == HAL_QSPI_STATUS_IN_PROGRESS)
-                qspi->status = HAL_QSPI_STATUS_OK;
-            else
-                qspi->status &= ~HAL_QSPI_STATUS_IN_PROGRESS;
-            qspi_hw_interrupt_disable(base, ICR_BIT_ALL_MSK);
-            qspi->async_rx = NULL;
-            qspi->async_rx_remain = 0;
-            qspi->async_tx = NULL;
-            qspi->async_tx_remain = 0;
-            qspi->status |= HAL_QSPI_STATUS_ASYNC_TDONE;
-            if (QSPI_IS_ASYNC_ALL_DONE(qspi->status, qspi->done_mask)) {
-#ifdef AIC_DMA_DRV
-                if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_TX_DMA) {
-                    hal_dma_chan_stop(qspi->dma_tx);
-                    if (qspi_master_dynamic_dma(qspi))
-                        hal_release_dma_chan(qspi->dma_tx);
-                }
-                if (qspi->work_mode == QSPI_WORK_MODE_ASYNC_RX_DMA) {
-                    hal_dma_chan_stop(qspi->dma_rx);
-                    dma_rx = qspi->dma_rx;
-                    task = dma_rx->desc;
-                    aicos_dcache_invalid_range((void *)(unsigned long)task->dst, task->len);
-                    if (qspi_master_dynamic_dma(qspi))
-                        hal_release_dma_chan(qspi->dma_rx);
-                }
-#endif
-                if (qspi->cb)
-                    qspi->cb(h, qspi->cb_priv);
-            }
-        }
-    }
+    handle_rx_fifo_irq(qspi, base, sts);
+
+    if (sts & ISTS_BIT_TDONE)
+        handle_async_tdone(h, base);
+
     qspi_hw_clear_interrupt_status(base, sts);
 }
 

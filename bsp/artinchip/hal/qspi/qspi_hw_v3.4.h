@@ -428,6 +428,8 @@ extern "C" {
 #define QSPI_MAX_XFER_SIZE              (0xFFFFFF)
 #define QSPI_FIFO_DEPTH                 64
 #define QSPI_HALF_FIFO_DEPTH            (QSPI_FIFO_DEPTH >> 1)
+#define QSPI_FIFO_DEPTH_V3LITE          32
+#define QSPI_HALF_FIFO_DEPTH_V3LITE     (QSPI_FIFO_DEPTH_V3LITE >> 1)
 #define QSPI_ONE_BYTE_WATERMARK         1
 #define QSPI_INVALID_BASE               (0xFFFFFFFF)
 
@@ -467,6 +469,10 @@ static inline u32 qspi_hw_base_to_index(u32 base)
             return 2;
         case QSPI3_BASE:
             return 3;
+        case QSPI4_BASE:
+            return 4;
+        case QSPI5_BASE:
+            return 5;
 
         default:
             break;

@@ -1,0 +1,6 @@
+
+# Kconfig file for package marc_chacha20
+config LPKG_USING_MARC_CHACHA20
+    bool "ChaCha20 Encryption Algorithm."
+    default n
+

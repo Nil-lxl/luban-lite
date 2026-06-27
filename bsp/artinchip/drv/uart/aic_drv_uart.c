@@ -835,7 +835,7 @@ static void aic_usart_resume(const struct rt_device *device, rt_uint8_t mode)
 
 static struct rt_device_pm_ops aic_usart_pm_ops =
 {
-    SET_DEVICE_PM_OPS(aic_usart_suspend, aic_usart_resume)
+    SET_LATE_DEVICE_PM_OPS(aic_usart_suspend, aic_usart_resume)
     NULL,
 };
 #endif

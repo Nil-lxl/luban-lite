@@ -628,15 +628,15 @@ int aicwf_set_rf_config_8800dc(struct rwnx_hw *rwnx_hw, struct mm_set_rf_calib_c
 {
     int ret = 0;
 
-    if ((ret = rwnx_send_txpwr_lvl_req(rwnx_hw))) {
-        return -1;
-    }
+    if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) {
+        if ((ret = rwnx_send_txpwr_lvl_req(rwnx_hw))) {
+            return -1;
+        }
 
-    if ((ret = rwnx_send_txpwr_ofst_req(rwnx_hw))) {
-        return -1;
-    }
+        if ((ret = rwnx_send_txpwr_ofst_req(rwnx_hw))) {
+            return -1;
+        }
 
-    if (rwnx_hw->mode != WIFI_MODE_RFTEST) {
         if (IS_CHIP_ID_H()) {
             if ((ret = rwnx_send_rf_config_req(rwnx_hw, 0,    1, (u8_l *)wifi_txgain_table_24g_8800dcdw_h, 128)))
                 return -1;
@@ -660,7 +660,7 @@ int aicwf_set_rf_config_8800dc(struct rwnx_hw *rwnx_hw, struct mm_set_rf_calib_c
         if ((ret = rwnx_send_rf_calib_req(rwnx_hw, cfm))) {
             return -1;
         }
-    } else if (rwnx_hw->mode == WIFI_MODE_RFTEST) {
+    } else if (rwnx_hw->mode == WIFI_MODE_RFTEST || rwnx_hw->mode == WIFI_MODE_FTTEST) {
 		if (chip_sub_id >= 1) {
 #ifdef CONFIG_DPD
 #ifndef CONFIG_FORCE_DPD_CALIB
@@ -689,14 +689,16 @@ int aicwf_set_rf_config_8800dc(struct rwnx_hw *rwnx_hw, struct mm_set_rf_calib_c
                 }
             }
 #endif
-	   		//ret = rwnx_send_rf_calib_req(rwnx_hw, &cfm);
-	   		ret = rwnx_send_rf_calib_req(rwnx_hw, cfm);
-			if (ret) {
-				AIC_LOG_PRINTF("rf calib req fail: %d\n", ret);
-		   		return -1;
-	   		}
-	   }
-	}
+            if (rwnx_hw->mode == WIFI_MODE_RFTEST) {
+                //ret = rwnx_send_rf_calib_req(rwnx_hw, &cfm);
+                ret = rwnx_send_rf_calib_req(rwnx_hw, cfm);
+                if (ret) {
+                    AIC_LOG_PRINTF("rf calib req fail: %d\n", ret);
+                    return -1;
+                }
+            }
+        }
+    }
 
     return 0 ;
 }
@@ -713,7 +715,7 @@ int aicwf_set_rf_config_8800d80(struct rwnx_hw *rwnx_hw, struct mm_set_rf_calib_
         return -1;
     }
 
-    if (rwnx_hw->mode != WIFI_MODE_RFTEST) {
+    if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) {
         if ((ret = rwnx_send_rf_calib_req(rwnx_hw, cfm))) {
             return -1;
         }
@@ -947,7 +949,7 @@ int rwnx_send_txpwr_lvl_req(struct rwnx_hw *rwnx_hw)
         AIC_LOG_PRINTF("%s:lvl_11ax_mcs10_2g4:%d\r\n",   __func__, txpwr_lvl_v2->pwrlvl_11ax_2g4[10]);
         AIC_LOG_PRINTF("%s:lvl_11ax_mcs11_2g4:%d\r\n",   __func__, txpwr_lvl_v2->pwrlvl_11ax_2g4[11]);
 
-        if ((rwnx_hw->mode != WIFI_MODE_RFTEST) && (chip_sub_id == 0)) {
+        if ((rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) && (chip_sub_id == 0)) {
             txpwr_lvl_req->txpwr_lvl.enable         = txpwr_lvl_v2->enable;
             txpwr_lvl_req->txpwr_lvl.dsss           = txpwr_lvl_v2->pwrlvl_11b_11ag_2g4[3]; // 11M
             txpwr_lvl_req->txpwr_lvl.ofdmlowrate_2g4= txpwr_lvl_v2->pwrlvl_11ax_2g4[4]; // MCS4
@@ -1037,7 +1039,7 @@ int aicwf_send_txpwr_lvl_req(txpwr_lvl_conf_v2_t *txpwrlvl)
         AIC_LOG_PRINTF("%s:lvl_11ax_mcs10_2g4:%d\r\n",   __func__, txpwr_lvl_v2->pwrlvl_11ax_2g4[10]);
         AIC_LOG_PRINTF("%s:lvl_11ax_mcs11_2g4:%d\r\n",   __func__, txpwr_lvl_v2->pwrlvl_11ax_2g4[11]);
 
-        if ((rwnx_hw->mode != WIFI_MODE_RFTEST) && (chip_sub_id == 0)) {
+        if ((rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) && (chip_sub_id == 0)) {
             txpwr_lvl_req->txpwr_lvl.enable         = txpwr_lvl_v2->enable;
             txpwr_lvl_req->txpwr_lvl.dsss           = txpwr_lvl_v2->pwrlvl_11b_11ag_2g4[3]; // 11M
             txpwr_lvl_req->txpwr_lvl.ofdmlowrate_2g4= txpwr_lvl_v2->pwrlvl_11ax_2g4[4]; // MCS4
@@ -1494,6 +1496,12 @@ int rwnx_send_dbg_start_app_req(struct rwnx_hw *rwnx_hw, u32 boot_addr,
     start_app_req->boottype = boot_type;
 
     /* Send the DBG_START_APP_REQ message to LMAC FW */
+#ifdef CONFIG_WIFI_MODE_FTTEST
+    if (rwnx_hw->mode == WIFI_MODE_FTTEST) {
+        int ret = rwnx_host_send_msg(rwnx_hw, start_app_req, 0, 0, NULL);
+        return ret;
+    }
+#endif
     return rwnx_host_send_msg(rwnx_hw, start_app_req, 1, DBG_START_APP_CFM, NULL);
 }
 

@@ -24,6 +24,9 @@ struct aic_sysclk aic_sysclk_config[] = {
     {AIC_CLK_PLL_FRA1_FREQ, CLK_PLL_FRA1, 0},           /* default: 396MHz */
     {AIC_CLK_PLL_FRA2_FREQ, CLK_PLL_FRA2, 0},           /* default: 1188MHz */
     {AIC_CLK_CPU_FREQ,      CLK_CPU,      CLK_PLL_INT0},           /* default: 480MHz */
+#ifdef AIC_USING_CLK_OUT0
+    {AIC_CLK_OUT0_FREQ, CLK_OUT0, 0},
+#endif /* AIC_USING_CLK_OUT0 */
 };
 
 void aic_board_sysclk_init(void)

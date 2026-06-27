@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -225,6 +225,7 @@ static void jpeg_init_hvcount(struct jpeg_ctx* s)
 
 static void set_quality(struct jpeg_ctx* s)
 {
+	int quality;
 	int i;
 	if (s->quality <= 0)
 		s->quality = 1;
@@ -235,19 +236,19 @@ static void set_quality(struct jpeg_ctx* s)
 	// 2. quality = 50, produce "good" quality, std_quant_table
 	// 3. quality =100, produce "best" quality, the value of table are all 1
 	if (s->quality < 50) {
-		s->quality = 5000 / s->quality;
+		quality = 5000 / s->quality;
 	} else {
-		s->quality = 200 - s->quality * 2;
+		quality = 200 - s->quality * 2;
 	}
 
 	for (i=0; i<64; i++) {
-		s->luma_quant_table[i] = (std_luma_quant_table[i] * s->quality + 50) / 100;
+		s->luma_quant_table[i] = (std_luma_quant_table[i] * quality + 50) / 100;
 		if (s->luma_quant_table[i] <= 0)
 			s->luma_quant_table[i] = 1;
 		if (s->luma_quant_table[i] > 255)
 			s->luma_quant_table[i] = 255;
 
-		s->chroma_quant_table[i] = (std_chroma_quant_table[i] * s->quality + 50) / 100;
+		s->chroma_quant_table[i] = (std_chroma_quant_table[i] * quality + 50) / 100;
 		if (s->chroma_quant_table[i] <= 0)
 			s->chroma_quant_table[i] = 1;
 		if (s->chroma_quant_table[i] > 255)

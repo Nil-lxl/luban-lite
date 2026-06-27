@@ -15,58 +15,24 @@
 
 ```
 test-vin/
-├── test_vin_dev.h    # 设备抽象层头文件
-├── test_vin_dev.c    # 设备抽象层实现
-├── test_vin_dvp.c    # DVP 设备驱动实现
 ├── test_vin.c        # 主测试程序
 ├── SConscript        # 编译脚本
 └── README.md         # 本文件
 ```
 
-## 设计说明
+## 配置方法
 
-### 设备抽象层
+| Kconfig | 说明 | 默认值 | 依赖 |
+|---------|------|--------|------|
+| `AIC_VIN_TEST` | 启用 VIN 驱动测试命令 | n | AIC_DVP_DRV_V22 |
 
-设备抽象层为不同的视频输入设备提供统一接口：
+通过 `scons --menuconfig` 开启：
 
-```c
-struct vin_dev_ops {
-    int (*init)(void *priv);
-    void (*deinit)(void *priv);
-    int (*get_fmt)(void *priv, struct vin_video_fmt *fmt);
-    int (*set_fmt)(void *priv, struct vin_video_fmt *fmt);
-    int (*req_bufs)(void *priv, u32 *count);
-    int (*qbuf)(void *priv, u32 index);
-    int (*dqbuf)(void *priv, u32 *index);
-    int (*stream_on)(void *priv);
-    int (*stream_off)(void *priv);
-    // ...
-};
 ```
-
-### 多通道支持
-
-每个通道都有独立的上下文和状态管理：
-
-```c
-struct vin_channel {
-    u32 id;
-    struct vin_video_buf vbuf;
-    void *priv;
-};
-
-struct vin_device {
-    enum vin_dev_type type;
-    const char *name;
-    const char *camera_name;
-    struct vin_dev_ops *ops;
-    u32 num_channels;
-    void *priv;
-    enum vin_state state;
-    struct vin_video_fmt fmt;
-    struct mpp_rect crop;
-    struct vin_channel channels[VIN_MAX_CHANNELS];
-};
+menuconfig
+  └─ Drivers options
+      └─ Drivers examples
+          └─ Enable VIN driver test command
 ```
 
 ## 使用方法
@@ -151,16 +117,9 @@ test_vin -d csi -C 0 -c 10
    - CH0 在左，CH1 在右
    - 两个通道的图像在水平方向拼接
 
-## 支持的格式
+## 支持的输出格式
 
 - **NV12**：YUV 4:2:0 格式
 - **NV16**：YUV 4:2:2 格式
 - **YUV400**：仅 Y 分量格式（灰度图）
 
-## 扩展新设备
-
-要添加对新视频输入设备的支持（例如 CSI）：
-
-1. 在新文件中实现设备操作（例如 `test_vin_csi.c`）
-2. 使用 `vin_dev_register()` 注册设备
-3. 在 `test_vin_dev.h` 的 `enum vin_dev_type` 中添加新设备类型

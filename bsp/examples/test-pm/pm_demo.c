@@ -30,13 +30,6 @@ static rt_bool_t sleep_req = RT_FALSE;
 static volatile rt_uint8_t use_deep_sleep_mode = 0;
 #endif
 
-static void pm_reset_sleep_req(void)
-{
-    sleep_req = RT_FALSE;
-    rt_kprintf("sleep_req has been reset to FALSE.\n");
-}
-MSH_CMD_EXPORT(pm_reset_sleep_req, Reset sleep request flag);
-
 #if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
 int pm_rtc_io_irq_callback(void)
 {
@@ -55,11 +48,12 @@ void pm_key_irq_callback(void *args)
     rt_event_send(&pm_event, BUTTON_FLAG);
 }
 
+extern volatile uint32_t stress_test_running;
+
 static void pm_thread(void *parameter)
 {
     rt_uint8_t current_mode, touch_int_occurred = 0;
     rt_uint32_t e;
-    unsigned long level;
 
     while (1)
     {
@@ -84,13 +78,14 @@ static void pm_thread(void *parameter)
                 }
             } else {
                 /* current mode is NONE mode */
-                if ((e & BUTTON_FLAG) || (e & TOUCH_TIMEOUT)) {
+                if (((e & BUTTON_FLAG) || (e & TOUCH_TIMEOUT)) && !stress_test_running) {
                     if (!sleep_req) {
                         #if defined(AIC_PM_INDEPENDENT_POWER_KEY) && defined(AIC_DISPLAY_DRV)
                         panel_backlight_disable(0, 0);
                         #endif
 
                         #if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
+                        unsigned long level;
                         /* Set the default sleep mode based on the flag */
                         aicos_local_irq_save(&level);
                         if (use_deep_sleep_mode)
@@ -162,23 +157,22 @@ void pm_key_init(void)
     gpio_pm_register(pin, RT_NULL, RT_NULL);
 }
 
-#if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
 static void pm_demo_notify_callback(rt_uint8_t event, rt_uint8_t pm_mode, void *data)
 {
-    unsigned long level;
-
     /* When waking up from sleep, reset the default mode to LIGHT */
     if (event == RT_PM_EXIT_SLEEP)
     {
+        sleep_req = RT_FALSE;
+        #if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
+        unsigned long level;
         aicos_local_irq_save(&level);
         use_deep_sleep_mode = 0;
         aicos_local_irq_restore(level);
-
-        sleep_req = RT_FALSE;
         rt_pm_default_set(PM_SLEEP_MODE_LIGHT);
+        #endif
     }
 }
-
+#if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
 void pm_rtc_io_init(void)
 {
 #define RTC_CTL_IO0_WAKE_HIZ_SLEEP_LOW  3
@@ -202,9 +196,8 @@ int pm_demo(void)
     rt_thread_t thread;
 
     pm_key_init();
-#if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
     rt_pm_notify_set(pm_demo_notify_callback, RT_NULL);
-
+#if defined(AIC_RTC_DRV_V121) && defined(AIC_PM_DRV_V15)
     rt_device_t rtc_dev = rt_device_find("rtc");
     if (rtc_dev == NULL) {
         rt_kprintf("can't find rtc device!\n");

@@ -20,6 +20,7 @@ include_path +=[cwd + '/inc']
 include_path +=[cwd + '/utils/inc']
 include_path +=[cwd + '/inc']
 include_path +=[cwd + '/../config']
+include_path +=[cwd + '/../../../artinchip_general_platform']
 
 src += Glob('netif/*.c')
 src += Glob('rtos/*.c')

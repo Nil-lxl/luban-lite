@@ -462,6 +462,7 @@ err1:
 err2:
     if (file_buf)
         aicos_free_align(0, file_buf);
+    dfs_unmount("/");
 #endif
 
     return ret;

@@ -40,8 +40,8 @@ void show_freq(char *msg, u32 id, u32 hz);
 u32 qspi_calc_timeout(u32 bus_hz, u32 len);
 u32 qspi_master_get_best_div_param(u32 sclk, u32 bus_hz, u32 *div);
 
-int qspi_fifo_write_data(u32 base, u8 *data, u32 len, u32 tmo);
 int qspi_fifo_read_data(u32 base, u8 *data, u32 len, u32 tmo_us);
+
 int qspi_wait_transfer_done(u32 base, u32 tmo);
 
 #ifdef __cplusplus

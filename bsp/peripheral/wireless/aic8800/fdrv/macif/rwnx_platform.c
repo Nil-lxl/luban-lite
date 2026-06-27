@@ -56,7 +56,7 @@ int aicwf_misc_ram_init_8800dc(struct rwnx_hw *rwnx_hw)
     uint32_t misc_ram_addr;
     uint32_t misc_ram_size = 12;
     int i;
-	if (rwnx_hw->mode == WIFI_MODE_RFTEST) {
+	if (rwnx_hw->mode == WIFI_MODE_RFTEST || rwnx_hw->mode == WIFI_MODE_FTTEST) {
 		cfg_base = RAM_LMAC_FW_ADDR + 0x0164;
 	}
     // init misc ram
@@ -81,9 +81,17 @@ int aicwf_misc_ram_init_8800dc(struct rwnx_hw *rwnx_hw)
 static int rwnx_request_firmware_common(struct rwnx_hw *rwnx_hw, u32** buffer)
 {
     int size = 0;
-    if (rwnx_hw->fw_patch == 0)
-        size = rwnx_load_firmware(rwnx_hw->chipid, rwnx_hw->mode, buffer);
-    else if (rwnx_hw->fw_patch == 1)
+    if (rwnx_hw->fw_patch == 0) {
+#if defined(CONFIG_WIFI_MODE_FTTEST)
+        if (rwnx_hw->mode == WIFI_MODE_FTTEST) {
+            *buffer = (u32 *)fmac_aic8800dc_ft_lmacfw_ptr_get();
+            size = fmac_aic8800dc_ft_lmacfw_size_get();
+        } else
+#endif
+        {
+            size = rwnx_load_firmware(rwnx_hw->chipid, rwnx_hw->mode, buffer);
+        }
+    } else if (rwnx_hw->fw_patch == 1)
         size = rwnx_load_patch_tbl(rwnx_hw->chipid, buffer);
     else if (rwnx_hw->fw_patch == 2)
         size = rwnx_load_calib(rwnx_hw->chipid, buffer);
@@ -246,7 +254,7 @@ int aicwf_plat_patch_load_8800dc(struct rwnx_hw *rwnx_hw)
     int ret = 0;
     //RWNX_DBG(RWNX_FN_ENTRY_STR);
 
-    if (rwnx_hw->mode != WIFI_MODE_RFTEST) {
+    if (rwnx_hw->mode != WIFI_MODE_RFTEST && rwnx_hw->mode != WIFI_MODE_FTTEST) {
         #if !defined(CONFIG_FPGA_VERIFICATION)
         if (chip_sub_id == 0) {
             AIC_LOG_PRINTF("dcdw_u01 is loaing ###############\n");
@@ -299,6 +307,16 @@ int aicwf_plat_patch_load_8800dc(struct rwnx_hw *rwnx_hw)
             AIC_LOG_PRINTF("unsupported id: %d\n", chip_sub_id);
         }
         #endif /* CONFIG_FPGA_VERIFICATION */
+#if defined(CONFIG_WIFI_MODE_FTTEST)
+    } else if (rwnx_hw->mode == WIFI_MODE_FTTEST) {
+		AIC_LOG_PRINTF("fttest: load product firmware ###############\n");
+		rwnx_hw->fw_patch = 0;
+        ret = rwnx_plat_bin_fw_upload_2(rwnx_hw, RAM_FTTEST_FW_ADDR);
+		if (ret) {
+			AIC_LOG_PRINTF("fttest fw upload fail: %d\n", ret);
+			return ret;
+		}
+#endif
     } else if (rwnx_hw->mode == WIFI_MODE_RFTEST) {
         #ifdef CONFIG_LOAD_FW_FROM_FLASH
     	if((!(get_wifi_fw_type() & 0x02)) || (get_wifi_fw_type() & 0x08))

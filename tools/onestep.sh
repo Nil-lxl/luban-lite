@@ -629,15 +629,17 @@ function build_check_all()
 	SOLUTION_TOTAL=$(echo $SOLUTION_LIST_WITH_BOOT | grep -o defconfig | wc -l)
 	SOLUTION_CNT=0
 	SOLUTION_OK_CNT=0
+	WAR_SUM=0
 	for app in $SOLUTION_LIST_WITH_BOOT
 	do
 		SOLUTION_CNT=$(expr $SOLUTION_CNT + 1)
 		checkout_binary
 		build_one_solution $app $1
+		WAR_SUM=$(expr $WAR_SUM + $WAR_CNT)
 	done
 	echo -------------------------------------------------------------- >> $RESULT_FILE
-	printf "Total: %d, Success: %d, Failed: %d\n" \
-		$SOLUTION_TOTAL $SOLUTION_OK_CNT "$(expr $SOLUTION_TOTAL - $SOLUTION_OK_CNT)" >> $RESULT_FILE
+	printf "Total: %d, Success: %d, Failed: %d, Warning: %d\n" \
+		$SOLUTION_TOTAL $SOLUTION_OK_CNT "$(expr $SOLUTION_TOTAL - $SOLUTION_OK_CNT)" $WAR_SUM >> $RESULT_FILE
 
 	echo
 	echo --------------------------------------------------------------

@@ -35,6 +35,8 @@ menu "Wlan0 Parameter"
             bool "select normal mode"
         config CONFIG_AIC8800_RFTEST_MODE
             bool "select rftest mode"
+        config CONFIG_AIC8800_FTTEST_MODE
+            bool "select fttest mode"
     endchoice
 
     config CONFIG_AIC8800_MAC_USE_CHIP_ID

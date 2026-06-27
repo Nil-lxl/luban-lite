@@ -392,7 +392,7 @@ static lv_result_t lv_mpp_dec_info(lv_image_decoder_t *decoder, const void *src,
         ptr = strrchr(src, '.');
         if (!ptr)
             return LV_RESULT_INVALID;
-        if (!strcmp(ptr, ".png")) {
+        if (!strncmp(ptr, ".png", 4)) {
             return lv_png_decoder_info(src, header, 0, true);
         } else if (image_suffix_is_jpg(ptr)) {
             return lv_jpeg_decoder_info(src, header, 0, true, false);
@@ -400,10 +400,10 @@ static lv_result_t lv_mpp_dec_info(lv_image_decoder_t *decoder, const void *src,
         } else if (image_suffix_is_aicp(ptr)) {
             return lv_jpeg_decoder_info(src, header, 0, true, true);
 #endif
-        } else if (!strcmp(ptr, ".fake")) {
+        } else if (!strncmp(ptr, ".fake", 5)) {
             return fake_decoder_info(src, header);
 #if LV_USE_AIC_BMP
-        } else if (!strcmp(ptr, ".bmp") || !strcmp(ptr, ".BMP")) {
+        } else if (!strncmp(ptr, ".bmp", 4) || !strncmp(ptr, ".BMP", 4)) {
             return lv_bmp_decoder_info(src, header, 0, true);
 #endif
         } else {
@@ -540,7 +540,7 @@ alloc_error:
     return LV_RESULT_INVALID;
 }
 
-void lv_set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_shift)
+void lv_set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_shift, bool is_aicp)
 {
     int height_align;
     int width = frame->buf.size.width;
@@ -612,8 +612,14 @@ void lv_set_frame_buf_size(struct mpp_frame *frame, int *buf_size, int size_shif
             frame->buf.stride[0] =  ALIGN_16B(ALIGN_16B(width) >> size_shift) * 4;
             buf_size[0] = frame->buf.stride[0] * height_align;
         } else {
-            frame->buf.stride[0] =  ALIGN_16B(width * 4);
-            buf_size[0] = ALIGN_UP(frame->buf.stride[0] * height, CACHE_LINE_SIZE);
+            if (is_aicp) {
+                // Use 8-byte alignment for AICP format as requested
+                frame->buf.stride[0] =  ALIGN_UP(width, 8) * 4;
+                buf_size[0] = frame->buf.stride[0] * ALIGN_UP(height, 8);
+            } else {
+                frame->buf.stride[0] =  ALIGN_16B(width * 4);
+                buf_size[0] = ALIGN_UP(frame->buf.stride[0] * height, CACHE_LINE_SIZE);
+            }
         }
         break;
     default:
@@ -676,6 +682,8 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
     int buf_size[3] = { 0 };
     struct mpp_decoder *dec = NULL;
     struct frame_allocator *allocator = NULL;
+    int size_shift = 0;
+    bool is_aicp = false;
 
 #if LV_USE_AIC_BMP
     if (lv_image_src_get_type(dsc->src) == LV_IMAGE_SRC_FILE) {
@@ -689,6 +697,8 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
 
         if (lv_check_bmp_header(&stream) == LV_RESULT_OK)
             return lv_bmp_dec_open(decoder, dsc);
+
+        lv_aic_stream_close(&stream);
     }
 #endif
 
@@ -720,12 +730,16 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
     dec_frame.buf.format = config.pix_fmt;
     dec_frame.buf.buf_type = MPP_PHY_ADDR;
 
-    int size_shift = 0;
 #if defined(MPP_JPEG_DEC_OUT_SIZE_LIMIT_ENABLE)
     if (type == MPP_CODEC_VIDEO_DECODER_MJPEG)
         size_shift = dsc->header.reserved_2;
 #endif
-    lv_set_frame_buf_size(&dec_frame, buf_size, 0);
+
+    if (type == MPP_CODEC_VIDEO_DECODER_AICP)
+        is_aicp = true;
+
+    lv_set_frame_buf_size(&dec_frame, buf_size, 0, is_aicp);
+
     if (size_shift > 0) {
         struct mpp_scale_ratio scale;
         scale.hor_scale = size_shift;
@@ -756,9 +770,9 @@ static lv_result_t lv_mpp_dec_open(lv_image_decoder_t *decoder, lv_image_decoder
     struct mpp_frame frame;
     memset(&frame, 0, sizeof(struct mpp_frame));
     mpp_decoder_get_frame(dec, &frame);
-    mpp_decoder_put_frame(dec, &frame);
 
     memcpy(&mpp_data->dec_buf, &frame.buf, sizeof(struct mpp_buf));
+    mpp_decoder_put_frame(dec, &frame);
     dsc->decoded = &mpp_data->decoded;
 
 #if LV_CACHE_DEF_SIZE > 0

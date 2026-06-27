@@ -36,7 +36,7 @@ struct rt_inputcapture_device
 
     const struct rt_inputcapture_ops    *ops;
     struct rt_ringbuffer                *ringbuff;
-    rt_size_t                           watermark;
+    volatile rt_size_t                  watermark;
 };
 
 #if defined (AIC_INPUTCAP_DRV) && defined (AIC_DMA_DRV)

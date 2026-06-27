@@ -196,10 +196,6 @@ struct aic_pinmux aic_pinmux_config[] = {
 #ifdef AIC_USING_XPWM4
     {3, PIN_PULL_DIS, 3, "PE.13"},
 #endif
-#ifdef AIC_USING_I2C1
-    {4, PIN_PULL_DIS, 3, "PE.14"},  // SCK
-    {4, PIN_PULL_DIS, 3, "PE.15"},  // SDA
-#endif
 #ifdef AIC_USING_XPWM6
     {3, PIN_PULL_DIS, 3, "PE.17"},
 #endif

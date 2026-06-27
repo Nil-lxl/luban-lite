@@ -10,7 +10,7 @@
 
 int hal_audio_init(aic_audio_ctrl *codec)
 {
-    int ret;
+    int ret = 0;
     codec->reg_base = AUDIO_BASE;
     codec->irq_num = AUDIO_IRQn;
     codec->clk_id = CLK_CODEC;
@@ -28,7 +28,7 @@ int hal_audio_init(aic_audio_ctrl *codec)
 
 int hal_audio_uninit(aic_audio_ctrl *codec)
 {
-    int ret;
+    int ret = 0;
 
     ret = hal_clk_disable_assertrst(codec->clk_id);
     if (ret)
@@ -64,7 +64,7 @@ static int hal_audio_get_hw_rate(aic_audio_ctrl *codec, uint32_t samplerate)
 static uint32_t hal_audio_get_module_freq(aic_audio_ctrl *codec,
                                           uint32_t samplerate)
 {
-    uint32_t reg_val;
+    uint32_t reg_val = 0;
 
     switch (samplerate)
     {
@@ -110,9 +110,9 @@ static uint32_t hal_audio_get_module_freq(aic_audio_ctrl *codec,
 
 void hal_audio_set_samplerate(aic_audio_ctrl *codec, uint32_t samplerate)
 {
-    int hw_rate;
-    uint32_t reg_val, module_freq;
-    unsigned int pclk_id;
+    int hw_rate = 0;
+    uint32_t reg_val = 0, module_freq = 0;
+    unsigned int pclk_id = 0;
 
     hw_rate = hal_audio_get_hw_rate(codec, samplerate);
     if (hw_rate < 0) {
@@ -149,7 +149,7 @@ void hal_audio_set_samplerate(aic_audio_ctrl *codec, uint32_t samplerate)
 
 void hal_audio_set_playback_channel(aic_audio_ctrl *codec, uint32_t ch)
 {
-    uint32_t reg_val;
+    uint32_t reg_val = 0;
 
     if (ch == 1)
     {
@@ -171,7 +171,7 @@ void hal_audio_set_playback_channel(aic_audio_ctrl *codec, uint32_t ch)
 
 void hal_audio_set_playback_by_spk0(aic_audio_ctrl *codec)
 {
-    uint32_t reg_val;
+    uint32_t reg_val = 0;
 
     /* Enable DVC3 */
     reg_val = readl(codec->reg_base + TX_DVC_3_4_CTRL_REG);
@@ -208,7 +208,7 @@ void hal_audio_set_playback_by_spk0(aic_audio_ctrl *codec)
 
 void hal_audio_set_playback_by_spk1(aic_audio_ctrl *codec)
 {
-    uint32_t reg_val;
+    uint32_t reg_val = 0;
 
     /* Enable DVC4 */
     reg_val = readl(codec->reg_base + TX_DVC_3_4_CTRL_REG);
@@ -245,7 +245,7 @@ void hal_audio_set_playback_by_spk1(aic_audio_ctrl *codec)
 
 void hal_audio_set_dmic_channel(aic_audio_ctrl *codec, uint32_t ch)
 {
-    uint32_t reg_val;
+    uint32_t reg_val = 0;
 
     if (ch == 1)
     {
@@ -295,7 +295,7 @@ void hal_audio_set_dmic_channel(aic_audio_ctrl *codec, uint32_t ch)
 
 void hal_audio_set_amic_channel(aic_audio_ctrl *codec)
 {
-    uint32_t reg_val;
+    uint32_t reg_val = 0;
 
     /* Enable HPF0 */
     reg_val = readl(codec->reg_base + ADC_HPF0_CTRL_REG);
@@ -325,8 +325,8 @@ void hal_audio_set_amic_channel(aic_audio_ctrl *codec)
 
 static void dma_transfer_period_callback(void *arg)
 {
-    struct aic_audio_transfer_info *info;
-    aic_audio_ctrl *codec;
+    struct aic_audio_transfer_info *info = NULL;
+    aic_audio_ctrl *codec = NULL;
 
     info = (struct aic_audio_transfer_info *)arg;
 
@@ -352,8 +352,8 @@ static void dma_transfer_period_callback(void *arg)
 
 void hal_audio_playback_start(aic_audio_ctrl *codec)
 {
-    struct dma_slave_config config;
-    struct aic_audio_transfer_info *info;
+    struct dma_slave_config config = {0};
+    struct aic_audio_transfer_info *info = NULL;
 
     config.direction = DMA_MEM_TO_DEV;
     config.dst_addr = codec->reg_base + TXFIFO_DATA_REG;
@@ -374,6 +374,7 @@ void hal_audio_playback_start(aic_audio_ctrl *codec)
     }
 
     info = &codec->tx_info;
+    config.src_addr = (ulong)info->buf_info.buf;
 
     info->transfer_type = AUDIO_TRANSFER_TYPE_TX;
 
@@ -399,8 +400,8 @@ void hal_audio_playback_start(aic_audio_ctrl *codec)
 
 void hal_audio_playback_start_single(aic_audio_ctrl *codec)
 {
-    struct dma_slave_config config;
-    struct aic_audio_transfer_info *info;
+    struct dma_slave_config config = {0};
+    struct aic_audio_transfer_info *info = NULL;
 
     config.direction = DMA_MEM_TO_DEV;
     config.dst_addr = codec->reg_base + TXFIFO_DATA_REG;
@@ -421,6 +422,7 @@ void hal_audio_playback_start_single(aic_audio_ctrl *codec)
     }
 
     info = &codec->tx_info;
+    config.src_addr = (ulong)info->buf_info.buf;
 
     info->transfer_type = AUDIO_TRANSFER_TYPE_TX;
 
@@ -454,8 +456,8 @@ void hal_audio_playback_start_single(aic_audio_ctrl *codec)
 
 void hal_audio_dmic_start(aic_audio_ctrl *codec)
 {
-    struct dma_slave_config config;
-    struct aic_audio_transfer_info *info;
+    struct dma_slave_config config = {0};
+    struct aic_audio_transfer_info *info = NULL;
 
     config.direction = DMA_DEV_TO_MEM;
     config.src_addr = codec->reg_base + DMIC_RXFIFO_DATA_REG;
@@ -476,6 +478,7 @@ void hal_audio_dmic_start(aic_audio_ctrl *codec)
     }
 
     info = &codec->dmic_info;
+    config.dst_addr = (ulong)info->buf_info.buf;
 
     info->transfer_type = AUDIO_TRANSFER_TYPE_DMIC;
 
@@ -505,8 +508,8 @@ void hal_audio_dmic_start(aic_audio_ctrl *codec)
 
 void hal_audio_amic_start(aic_audio_ctrl *codec)
 {
-    struct dma_slave_config config;
-    struct aic_audio_transfer_info *info;
+    struct dma_slave_config config = {0};
+    struct aic_audio_transfer_info *info = NULL;
 
     config.direction = DMA_DEV_TO_MEM;
     config.src_addr = codec->reg_base + ADC_RXFIFO_DATA_REG;
@@ -519,6 +522,7 @@ void hal_audio_amic_start(aic_audio_ctrl *codec)
     config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
 
     info = &codec->amic_info;
+    config.dst_addr = (ulong)info->buf_info.buf;
 
     info->transfer_type = AUDIO_TRANSFER_TYPE_AMIC;
 
@@ -547,7 +551,7 @@ void hal_audio_amic_start(aic_audio_ctrl *codec)
 
 void hal_audio_playback_stop(aic_audio_ctrl *codec)
 {
-    struct aic_audio_transfer_info *info;
+    struct aic_audio_transfer_info *info = NULL;
 
     info = &codec->tx_info;
 
@@ -559,7 +563,7 @@ void hal_audio_playback_stop(aic_audio_ctrl *codec)
 
 void hal_audio_dmic_stop(aic_audio_ctrl *codec)
 {
-    struct aic_audio_transfer_info *info;
+    struct aic_audio_transfer_info *info = NULL;
 
     info = &codec->dmic_info;
 
@@ -571,7 +575,7 @@ void hal_audio_dmic_stop(aic_audio_ctrl *codec)
 
 void hal_audio_amic_stop(aic_audio_ctrl *codec)
 {
-    struct aic_audio_transfer_info *info;
+    struct aic_audio_transfer_info *info = NULL;
 
     info = &codec->amic_info;
 

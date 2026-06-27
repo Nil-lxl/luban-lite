@@ -36,7 +36,12 @@
 //// firmware bin file
 #define     CONFIG_DOWNLOAD_FW
 //#define     CONFIG_LOAD_FW_FROM_FLASH
+#ifdef CONFIG_AIC8800_RFTEST_MODE
 #define     CONFIG_WIFI_MODE_RFTEST
+#endif
+#ifdef CONFIG_AIC8800_FTTEST_MODE
+#define     CONFIG_WIFI_MODE_FTTEST
+#endif
 
 //// wifi setting
 #define     CONFIG_RWNX_FULLMAC

@@ -180,6 +180,7 @@ void hal_dvp_set_frame_offset(u32 num)
 
 void hal_dvp_qos_cfg(u32 high, u32 low, u32 inc_thd, u32 dec_thd)
 {
+#ifndef AIC_DVP_DRV_V10
     u32 val = DVP_QOS_CUSTOM;
 
     val |= (inc_thd << DVP_QOS_INC_THR_SHIFT) & DVP_QOS_INC_THR_MASK;
@@ -188,6 +189,7 @@ void hal_dvp_qos_cfg(u32 high, u32 low, u32 inc_thd, u32 dec_thd)
     val |= low & DVP_QOS_LOW_MASK;
     hal_log_info("DVP QoS is enable: 0x%x\n", val);
     dvp_writel(val, DVP_QOS_CFG);
+#endif
 }
 
 static int g_top_field = 0;

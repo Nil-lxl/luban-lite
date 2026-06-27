@@ -29,6 +29,7 @@
 #endif
 
 #define AIC_DVP_SUPPORT_DEMUX
+#define AIC_DVP_NO_SIGNAL_PATTERN
 
 extern const struct v4l2_subdev_ops aic_dvp_subdev_ops;
 

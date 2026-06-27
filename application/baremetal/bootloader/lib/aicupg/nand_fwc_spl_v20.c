@@ -21,7 +21,7 @@
 #undef SPL_NAND_IMAGE_BACKUP_NUM
 #undef PAGE_TABLE_MAX_ENTRY
 #define SPL_NAND_IMAGE_BACKUP_NUM 2
-#define PAGE_TABLE_MAX_ENTRY     127
+#define PAGE_TABLE_MAX_ENTRY     (PAGE_CNT_PER_BLOCK * 2 - 1) // 127 * 2k = 254k
 #define SPL_NAND_GOOD_BLOCKS_NUM 4
 
 struct nand_page_table_head {

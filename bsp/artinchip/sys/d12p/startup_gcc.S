@@ -158,10 +158,6 @@ Reset_Handler:
 .option norelax
     j       save_boot_params
 save_boot_params_ret:
-    /* Reloc private params */
-    la      a5, reloc_private_params
-    jalr    a5
-
     la      gp, __global_pointer$
 .option pop
     la      a0, Default_Handler
@@ -177,6 +173,10 @@ save_boot_params_ret:
 #ifdef KERNEL_BAREMETAL
     la      sp, g_top_normalstack
 #endif
+
+    /* Reloc private params */
+    la      a5, reloc_private_params
+    jalr    a5
 
     la      a5, icache_enable
     jalr    a5

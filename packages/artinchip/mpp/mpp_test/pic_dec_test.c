@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2025 ArtInChip Technology Co. Ltd
+ * Copyright (C) 2020-2026 ArtInChip Technology Co. Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -26,6 +26,31 @@
 #include "mpp_log.h"
 #include "mpp_ge.h"
 
+static int find_jpeg_frame(const uint8_t* buf, int len, int* start, int* end)
+{
+    int i = 0;
+    *start = -1;
+    *end = -1;
+
+    for (i = 0; i < len - 1; i++) {
+        if (buf[i] == 0xFF && buf[i+1] == 0xD8) {
+            *start = i;
+            break;
+        }
+    }
+
+    if (*start == -1) return -1;
+
+    for (i = *start + 2; i < len - 1; i++) {
+        if (buf[i] == 0xFF && buf[i+1] == 0xD9) {
+            *end = i + 2;
+            break;
+        }
+    }
+
+    return (*end == -1) ? -1 : 0;
+}
+
 static struct aicfb_screeninfo g_screen_info = {0};
 
 #ifdef AIC_CHIP_D13X
@@ -36,6 +61,17 @@ static struct aicfb_screeninfo g_screen_info = {0};
 struct file_list {
     char *file_path[FILE_MAX_NUM];
     int file_num;
+};
+
+struct pic_input {
+    char *input_path;
+    int is_dir;
+    int type;
+    int input_fd;
+    int file_len;
+    char *ptr;
+    struct file_list files;
+    int is_mjpeg;
 };
 
 
@@ -122,7 +158,7 @@ static struct frame_allocator *allocator_open(u8 *buf, u32 x, u32 y)
 static void print_help(char *program)
 {
     printf("Usage: %s [options]\n", program);
-    printf("\t -i, --input: \t\t input stream file name\n");
+    printf("\t -i, --input: \t\t input stream file or directory name\n");
     printf("\t -r, --rotate: \t\t enable clockwise rotate(0/90/180/270)\n");
     printf("\t -s, --scale: \t\t enable scale(1- 1/2 scale; 2- 1/4 scale; 3- 1/8 scale)\n");
     printf("\t -l, --flip: \t\t enable flip(1-horizontal flip; 2-vertical flip; 3-ver & hor flip)\n");
@@ -135,11 +171,14 @@ static void print_help(char *program)
 static int get_file_size(int fd, char* path)
 {
     struct stat st;
-    stat(path, &st);
+    if (stat(path, &st) < 0) {
+        loge("stat %s failed\n", path);
+        return -1;
+    }
 
     logi("mode: %"PRIu32", size: %ld", st.st_mode, st.st_size);
 
-	return st.st_size;
+    return st.st_size;
 }
 
 static int ge_bitblt(struct ge_bitblt *blt)
@@ -149,29 +188,30 @@ static int ge_bitblt(struct ge_bitblt *blt)
 
     if (!ge) {
         loge("open ge device error\n");
+        return -1;
     }
 
     ret = mpp_ge_bitblt(ge, blt);
     if (ret < 0) {
         loge("bitblt task failed\n");
-        return ret;
+        goto out;
     }
 
     ret = mpp_ge_emit(ge);
     if (ret < 0) {
         loge("emit task failed\n");
-        return ret;
+        goto out;
     }
 
     ret = mpp_ge_sync(ge);
     if (ret < 0) {
         loge("ge sync fail\n");
-        return ret;
+        goto out;
     }
 
+out:
     mpp_ge_close(ge);
-
-    return 0;
+    return ret;
 }
 
 static u32 *g_vlayer_addr = NULL;
@@ -194,6 +234,7 @@ static struct aicfb_screeninfo *get_screen_info(void)
     ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &g_screen_info);
     if (ret) {
         loge("get screen info failed\n");
+        mpp_fb_close(fb);
         return NULL;
     }
 
@@ -302,7 +343,7 @@ static void render_frame(struct mpp_fb* fb, struct mpp_frame* frame,
     blt.dst_buf.crop.height = blt.src_buf.crop.height;
 
     logi("phy_addr: %x, stride: %d", blt.src_buf.phy_addr[0], blt.src_buf.stride[0]);
-    logi("width: %d, height: %d, format: %d", blt.src_buf.size.width, blt.src_buf.size.height, blt.src_buf.format);
+    printf("width: %d, height: %d, format: %d\n", blt.src_buf.size.width, blt.src_buf.size.height, blt.src_buf.format);
 
     ge_bitblt(&blt);
 
@@ -378,6 +419,8 @@ void video_layer_init(void)
 
     if (mpp_fb_ioctl(fb, AICFB_UPDATE_LAYER_CONFIG, &vlayer) < 0) {
         loge("set video layer config failed\n");
+        aicos_free_align(0, addr);
+        g_vlayer_addr = NULL;
         goto out;
     }
 
@@ -426,20 +469,25 @@ int decode_pic(uint8_t* pic, int len, u32 offset_x, u32 offset_y,
                u32 width, u32 height, u32 layer_id)
 {
     struct mpp_fb *fb = mpp_fb_open();
+    struct mpp_decoder* dec = NULL;
     int ret = 0;
 #ifdef USE_VE_FILL_FB
     struct frame_allocator *allocator = NULL;
     struct aicfb_screeninfo *info = get_screen_info();
+    if (!info) {
+        loge("get screen info failed\n");
+        ret = -1;
+        goto out;
+    }
 #endif
 
     if (pic == NULL || len <= 0) {
         loge("Invalid parameter. pic 0x%lx, len %d\n", (ptr_t)pic, len);
-        return -1;
+        ret = -1;
+        goto out;
     }
 
     // 1. create mpp_decoder
-    struct mpp_decoder* dec = NULL;
-
     struct decode_config config;
     config.bitstream_buffer_size = (len + 1023) & (~1023);
     config.extra_frame_num = 0;
@@ -454,19 +502,29 @@ int decode_pic(uint8_t* pic, int len, u32 offset_x, u32 offset_y,
         dec = mpp_decoder_create(MPP_CODEC_VIDEO_DECODER_MJPEG);
     } else if (pic[1] == 'P' && pic[2] == 'N' && pic[3] == 'G') {
         if (config.pix_fmt == MPP_FMT_RGB_565 || config.pix_fmt == MPP_FMT_BGR_565) {
-            loge("PNG decode does nor support RGB565\n");
-            return -1;
+            loge("PNG decode does not support RGB565\n");
+            ret = -1;
+            goto out;
         }
         dec = mpp_decoder_create(MPP_CODEC_VIDEO_DECODER_PNG);
     } else {
-         loge("Invaild pic data\n");
+         loge("Invalid pic data\n");
+         ret = -1;
+         goto out;
     }
 
-    if (!dec)
-        return -1;
+    if (!dec) {
+        ret = -1;
+        goto out;
+    }
 
 #ifdef USE_VE_FILL_FB
     allocator = allocator_open(info->framebuffer, offset_x, offset_y);
+    if (!allocator) {
+        loge("allocator_open failed\n");
+        ret = -1;
+        goto out;
+    }
     mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_EXT_FRAME_ALLOCATOR, (void*)allocator);
 #endif
 
@@ -517,6 +575,11 @@ out:
     if (fb)
         mpp_fb_close(fb);
 
+#ifdef USE_VE_FILL_FB
+    if (allocator)
+        allocator_close(allocator);
+#endif
+
     return ret;
 }
 
@@ -528,13 +591,13 @@ int decode_jpeg(uint8_t* pic, int len, u32 offset_x, u32 offset_y,
 
 static int parse_rotation(char *str)
 {
-    if (!strcmp(optarg, "90"))
+    if (!strncmp(str, "90", strlen("90")))
         return MPP_ROTATION_90;
 
-    if (!strcmp(optarg, "180"))
+    if (!strncmp(str, "180", strlen("180")))
         return MPP_ROTATION_180;
 
-    if (!strcmp(optarg, "270"))
+    if (!strncmp(str, "270", strlen("270")))
         return MPP_ROTATION_270;
 
     return MPP_ROTATION_0;
@@ -542,13 +605,13 @@ static int parse_rotation(char *str)
 
 static int parse_flip(char *str)
 {
-    if (!strcmp(optarg, "1"))
+    if (!strncmp(str, "1", strlen("1")))
         return MPP_FLIP_H;
 
-    if (!strcmp(optarg, "2"))
+    if (!strncmp(str, "2", strlen("2")))
         return MPP_FLIP_V;
 
-    if (!strcmp(optarg, "3"))
+    if (!strncmp(str, "3", strlen("3")))
         return MPP_FLIP_H | MPP_FLIP_V;
 
     return 0;
@@ -613,18 +676,280 @@ static int parse_format(char *str)
     return str_to_format(str);
 }
 
+static int read_dir(char* path, struct file_list *files);
+
+static int get_type_from_ext(char *path)
+{
+    char *ptr = strrchr(path, '.');
+    if (!ptr)
+        return -1;
+
+    if (!strncmp(ptr, ".jpg", strlen(".jpg")) || !strncmp(ptr, ".jpeg", strlen(".jpeg")))
+        return MPP_CODEC_VIDEO_DECODER_MJPEG;
+    if (!strncmp(ptr, ".png", strlen(".png")))
+        return MPP_CODEC_VIDEO_DECODER_PNG;
+    if (!strncmp(ptr, ".aicp", strlen(".aicp")))
+        return MPP_CODEC_VIDEO_DECODER_AICP;
+
+    return -1;
+}
+
+static int decode_mjpeg_stream(struct mpp_fb *fb, char *path, int out_format,
+                               int rot_flip_flag, int ver_scale, int hor_scale)
+{
+    #define CHUNK_SIZE (256 * 1024)
+    struct mpp_decoder *dec = NULL;
+    struct decode_config config;
+    int input_fd = -1;
+    int r_len = 0;
+    int ret = 0;
+    uint8_t *work_buf = NULL;
+    int total = 0;
+    int frame_count = 0;
+
+    input_fd = open(path, O_RDONLY);
+    if (input_fd < 0) {
+        loge("open file(%s) failed, %d", path, input_fd);
+        return -1;
+    }
+    logi("Read mjpeg stream from %s", path);
+
+    dec = mpp_decoder_create(MPP_CODEC_VIDEO_DECODER_MJPEG);
+    if (!dec) {
+        loge("create decoder fail");
+        ret = -1;
+        goto out;
+    }
+
+    config.bitstream_buffer_size = CHUNK_SIZE;
+    config.extra_frame_num = 0;
+    config.packet_count = 1;
+    config.pix_fmt = out_format;
+
+    if (rot_flip_flag)
+        mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_ROT_FLIP_FLAG, &rot_flip_flag);
+
+    if (ver_scale || hor_scale) {
+        struct mpp_scale_ratio scale;
+        scale.hor_scale = hor_scale;
+        scale.ver_scale = ver_scale;
+        mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_SCALE, &scale);
+    }
+
+    mpp_decoder_init(dec, &config);
+
+    work_buf = (uint8_t *)mpp_alloc(CHUNK_SIZE * 2);
+    if (!work_buf) {
+        loge("Failed to allocate work buffer");
+        ret = -1;
+        goto out;
+    }
+
+    while ((r_len = read(input_fd, work_buf + total, CHUNK_SIZE)) > 0) {
+        total += r_len;
+        int offset = 0;
+        int start, end;
+
+        while (find_jpeg_frame(work_buf + offset, total - offset, &start, &end) == 0) {
+            int frame_size = end - start;
+
+            struct mpp_packet pkt;
+            memset(&pkt, 0, sizeof(struct mpp_packet));
+            mpp_decoder_get_packet(dec, &pkt, frame_size);
+            memcpy(pkt.data, work_buf + offset + start, frame_size);
+            pkt.size = frame_size;
+            pkt.flag = 0;
+            mpp_decoder_put_packet(dec, &pkt);
+
+            if (mpp_decoder_decode(dec) < 0) {
+                loge("Decode frame %d failed", frame_count);
+                break;
+            }
+
+            struct mpp_frame frm;
+            memset(&frm, 0, sizeof(struct mpp_frame));
+            if (mpp_decoder_get_frame(dec, &frm) == 0) {
+                render_frame(fb, &frm, 0, 0, 0, 0, AICFB_LAYER_TYPE_UI);
+                mpp_decoder_put_frame(dec, &frm);
+                frame_count++;
+            }
+
+            offset += start + frame_size;
+            aicos_msleep(33);
+        }
+
+        if (offset < total) {
+            memmove(work_buf, work_buf + offset, total - offset);
+            total -= offset;
+        } else {
+            total = 0;
+        }
+    }
+
+    logi("MJPEG stream decoded: %d frames", frame_count);
+
+out:
+    if (work_buf)
+        mpp_free(work_buf);
+    if (dec)
+        mpp_decoder_destory(dec);
+    if (input_fd > 0)
+        close(input_fd);
+    return ret;
+}
+
+static int decode_one_pic(struct mpp_fb *fb, char *path, int type,
+                          int out_format, int rot_flip_flag,
+                          int ver_scale, int hor_scale, char *buf_ptr,
+                          int buf_size)
+{
+    struct mpp_decoder *dec = NULL;
+    struct decode_config config;
+    struct mpp_packet packet;
+    struct mpp_frame frame;
+    int input_fd = -1;
+    int file_len = 0, r_len = 0;
+    int ret = 0;
+
+    if (path) {
+        input_fd = open(path, O_RDONLY);
+        if (input_fd < 0) {
+            loge("open file(%s) failed, %d", path, input_fd);
+            return -1;
+        }
+        file_len = get_file_size(input_fd, path);
+    } else {
+        file_len = buf_size;
+    }
+    logi("Read image from %s, length %d", path ? path : "buffer", file_len);
+
+    dec = mpp_decoder_create(type);
+    if (!dec) {
+        loge("create decoder fail");
+        ret = -1;
+        goto out;
+    }
+
+    config.bitstream_buffer_size = (file_len + 1023) & (~1023);
+    config.extra_frame_num = 0;
+    config.packet_count = 1;
+    config.pix_fmt = out_format;
+
+#ifdef AIC_VE_DRV_V10
+    if (type == MPP_CODEC_VIDEO_DECODER_MJPEG)
+        config.pix_fmt = MPP_FMT_NV12;
+#endif
+
+    if (rot_flip_flag) {
+        logw("rot_flip_flag: %d", rot_flip_flag);
+        mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_ROT_FLIP_FLAG, &rot_flip_flag);
+    }
+
+    if (ver_scale || hor_scale) {
+        struct mpp_scale_ratio scale;
+        scale.hor_scale = hor_scale;
+        scale.ver_scale = ver_scale;
+        mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_SCALE, &scale);
+    }
+
+    mpp_decoder_init(dec, &config);
+
+    memset(&packet, 0, sizeof(struct mpp_packet));
+    mpp_decoder_get_packet(dec, &packet, file_len);
+
+    if (input_fd > 0) {
+        r_len = read(input_fd, packet.data, file_len);
+    } else {
+        memcpy(packet.data, buf_ptr, file_len);
+        r_len = file_len;
+        logw("Read image from 0x%lx, length %d", (long)buf_ptr, file_len);
+    }
+    packet.size = r_len;
+    packet.flag = PACKET_FLAG_EOS;
+    logi("read len: %d, file_len: %d\n", r_len, file_len);
+
+    mpp_decoder_put_packet(dec, &packet);
+
+    ret = mpp_decoder_decode(dec);
+    if (ret < 0) {
+        loge("decode error");
+        goto out;
+    }
+
+    memset(&frame, 0, sizeof(struct mpp_frame));
+    mpp_decoder_get_frame(dec, &frame);
+
+    render_frame(fb, &frame, 0, 0, 0, 0, AICFB_LAYER_TYPE_UI);
+
+    mpp_decoder_put_frame(dec, &frame);
+
+out:
+    if (dec)
+        mpp_decoder_destory(dec);
+    if (input_fd > 0)
+        close(input_fd);
+    return ret;
+}
+
+static int parse_input_option(char *optarg, struct pic_input *input)
+{
+    DIR *d = opendir(optarg);
+    if (d) {
+        input->is_dir = 1;
+        closedir(d);
+        read_dir(optarg, &input->files);
+        if (input->files.file_num <= 0) {
+            loge("no valid image files in directory %s\n", optarg);
+            return -1;
+        }
+        logi("Found %d image files in directory %s\n", input->files.file_num, optarg);
+    } else {
+        input->is_mjpeg = 0;
+        input->ptr = strrchr(optarg, '.');
+        if (!input->ptr) {
+            loge("file has no extension: %s\n", optarg);
+            return -1;
+        }
+
+        if (!strncmp(input->ptr, ".jpg", strlen(".jpg"))) {
+            input->type = MPP_CODEC_VIDEO_DECODER_MJPEG;
+        }
+        if (!strncmp(input->ptr, ".png", strlen(".png"))) {
+            input->type = MPP_CODEC_VIDEO_DECODER_PNG;
+        }
+        if (!strncmp(input->ptr, ".aicp", strlen(".aicp"))) {
+            input->type = MPP_CODEC_VIDEO_DECODER_AICP;
+        }
+        if (!strncmp(input->ptr, ".mjpeg", strlen(".mjpeg"))) {
+            input->is_mjpeg = 1;
+            input->type = MPP_CODEC_VIDEO_DECODER_MJPEG;
+        }
+        logd("decode type: 0x%02X", input->type);
+        logd("optarg: %s", optarg);
+
+        input->input_fd = open(optarg, O_RDONLY);
+        if (input->input_fd < 0) {
+            loge("open file(%s) failed, %d", optarg, input->input_fd);
+            return -1;
+        }
+
+        input->file_len = get_file_size(input->input_fd, optarg);
+        logi("Read image from %s, length %d", optarg, input->file_len);
+    }
+
+    input->input_path = (char *)optarg;
+    return 0;
+}
+
 void pic_test(int argc, char **argv)
 {
     int out_format = MPP_FMT_ABGR_8888;
-    int ret = 0;
-    int file_len = 0, r_len = 0;
-    int input_fd = 0;
-    int type = MPP_CODEC_VIDEO_DECODER_MJPEG;
     int rot_flip_flag = 0;
     int ver_scale = 0;
     int hor_scale = 0;
     struct mpp_fb *fb = NULL;
-    char *ptr = NULL;
+    struct pic_input input = {0};
+    int i, ret = 0;
 
     if(argc < 2) {
         print_help(argv[0]);
@@ -636,40 +961,19 @@ void pic_test(int argc, char **argv)
     while ((c = getopt(argc, argv, "i:f:r:l:s:a:z:h")) != -1) {
         switch (c) {
         case 'i':
-            ptr = strrchr(optarg, '.');
-
-            if (!strcmp(ptr, ".jpg")) {
-                type = MPP_CODEC_VIDEO_DECODER_MJPEG;
-            }
-            if (!strcmp(ptr, ".png")) {
-                type = MPP_CODEC_VIDEO_DECODER_PNG;
-            }
-            if (!strcmp(ptr, ".aicp")) {
-                type = MPP_CODEC_VIDEO_DECODER_AICP;
-            }
-            LOG_I("decode type: 0x%02X", type);
-            LOG_I("optarg: %s", optarg);
-
-            input_fd = open(optarg, O_RDONLY);
-            if(input_fd < 0) {
-                LOG_I("open file(%s) failed, %d", optarg, input_fd);
+            if (parse_input_option(optarg, &input) < 0)
                 return;
-            }
-
-            file_len = get_file_size(input_fd, optarg);
-            LOG_I("Read image from %s, length %d", optarg, file_len);
             continue;
-
         case 'a':
-            ptr = (char *)strtol(optarg, NULL, 16);
-            if ((*ptr == 0xFF) && (*(ptr + 1) == 0xD8))
-                type = MPP_CODEC_VIDEO_DECODER_MJPEG;
+            input.ptr = (char *)strtol(optarg, NULL, 16);
+            if ((*input.ptr == 0xFF) && (*(input.ptr + 1) == 0xD8))
+                input.type = MPP_CODEC_VIDEO_DECODER_MJPEG;
             else
-                type = MPP_CODEC_VIDEO_DECODER_PNG;
+                input.type = MPP_CODEC_VIDEO_DECODER_PNG;
             continue;
 
         case 'z':
-            file_len = atoi(optarg);
+            input.file_len = atoi(optarg);
             continue;
         case 'f':
             out_format = parse_format(optarg);
@@ -689,87 +993,49 @@ void pic_test(int argc, char **argv)
             return print_help(argv[0]);
         }
     }
+    printf("out_fmt: %d\n", out_format);
 
     fb = mpp_fb_open();
-
-    // 1. create mpp_decoder
-    struct mpp_decoder* dec = mpp_decoder_create(type);
-
-    struct decode_config config;
-    config.bitstream_buffer_size = (file_len + 1023) & (~1023);
-    config.extra_frame_num = 0;
-    config.packet_count = 1;
-    config.pix_fmt = out_format;
-
-#ifdef AIC_VE_DRV_V10
-    if(type == MPP_CODEC_VIDEO_DECODER_MJPEG)
-        config.pix_fmt = MPP_FMT_NV12;
-#endif
-
-    if(rot_flip_flag) {
-        logw("rot_flip_flag: %d", rot_flip_flag);
-        mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_ROT_FLIP_FLAG, &rot_flip_flag);
-    }
-
-    if(ver_scale || hor_scale) {
-        struct mpp_scale_ratio scale;
-        scale.hor_scale = hor_scale;
-        scale.ver_scale = ver_scale;
-        mpp_decoder_control(dec, MPP_DEC_INIT_CMD_SET_SCALE, &scale);
-    }
-
-    // 2. init mpp_decoder
-    mpp_decoder_init(dec, &config);
-
-    // 3. get an empty packet from mpp_decoder
-    struct mpp_packet packet;
-    memset(&packet, 0, sizeof(struct mpp_packet));
-    mpp_decoder_get_packet(dec, &packet, file_len);
-
-    // 4. copy data to packet
-    if (input_fd > 0) {
-        r_len = read(input_fd, packet.data, file_len);
-    } else {
-        memcpy(packet.data, ptr, file_len);
-        r_len = file_len;
-        logw("Read image from 0x%lx, length %d", (long)ptr, file_len);
-    }
-    packet.size = r_len;
-    packet.flag = PACKET_FLAG_EOS;
-    logi("read len: %d, file_len: %d\n", r_len, file_len);
-
-    // 5. put the packet to mpp_decoder
-    mpp_decoder_put_packet(dec, &packet);
-
-    // 6. decode
-    //time_start(mpp_decoder_decode);
-    ret = mpp_decoder_decode(dec);
-    if(ret < 0) {
-        loge("decode error");
+    if (!fb) {
+        loge("mpp_fb_open error!\n");
         goto out;
     }
-    //time_end(mpp_decoder_decode);
 
-    // 7. get a decoded frame
-    struct mpp_frame frame;
-    memset(&frame, 0, sizeof(struct mpp_frame));
-    mpp_decoder_get_frame(dec, &frame);
-
-    // 8. Render the data to Framebuffer
-    render_frame(fb, &frame, 0, 0, 0, 0, AICFB_LAYER_TYPE_UI);
-
-    // 9. return this frame
-    mpp_decoder_put_frame(dec, &frame);
+    if (input.is_dir) {
+        for (i = 0; i < input.files.file_num; i++) {
+            int file_type = get_type_from_ext(input.files.file_path[i]);
+            if (file_type < 0) {
+                logw("skip unknown file type: %s\n", input.files.file_path[i]);
+                continue;
+            }
+            logi("[%d/%d] decoding %s\n", i + 1, input.files.file_num, input.files.file_path[i]);
+            ret = decode_one_pic(fb, input.files.file_path[i], file_type,
+                                 out_format, rot_flip_flag,
+                                 ver_scale, hor_scale, NULL, 0);
+            if (ret < 0)
+                loge("decode %s failed\n", input.files.file_path[i]);
+        }
+    } else {
+        if (input.is_mjpeg) {
+            decode_mjpeg_stream(fb, input.input_path, out_format, rot_flip_flag,
+                                ver_scale, hor_scale);
+        } else {
+            decode_one_pic(fb, input.input_path, input.type, out_format, rot_flip_flag,
+                           ver_scale, hor_scale, input.ptr, input.file_len);
+        }
+    }
 
 out:
-    // 10. destroy mpp_decoder
-    mpp_decoder_destory(dec);
-
     if (fb)
         mpp_fb_close(fb);
 
-    if(input_fd > 0)
-        close(input_fd);
+    if (input.input_fd > 0)
+        close(input.input_fd);
+
+    for (i = 0; i < input.files.file_num; i++) {
+        if (input.files.file_path[i])
+            mpp_free(input.files.file_path[i]);
+    }
 }
 
 static int read_dir(char* path, struct file_list *files)
@@ -788,23 +1054,30 @@ static int read_dir(char* path, struct file_list *files)
         ptr = strrchr(dir_file->d_name, '.');
         if (ptr == NULL)
             continue;
-        if (strcmp(ptr, ".png") != 0)
+        if (strncmp(ptr, ".png", strlen(".png")) != 0 && strncmp(ptr, ".jpg", strlen(".jpg")) != 0
+            && strncmp(ptr, ".jpeg", strlen(".jpeg")) != 0 && strncmp(ptr, ".aicp", strlen(".aicp")) != 0) {
             continue;
+        }
+
 
         file_path_len = 0;
         file_path_len += strlen(path);
         file_path_len += 1;
         file_path_len += strlen(dir_file->d_name);
         logd("file_path_len:%d\n",file_path_len);
-        if (file_path_len > FILE_MAX_NUM-1) {
-            loge("%s too long \n",dir_file->d_name);
-            continue;
+        if (files->file_num >= FILE_MAX_NUM) {
+            loge("too many files, max %d\n", FILE_MAX_NUM);
+            break;
         }
         files->file_path[files->file_num] = (char *)mpp_alloc(file_path_len+1);
+        if (!files->file_path[files->file_num]) {
+            loge("mpp_alloc failed\n");
+            break;
+        }
         files->file_path[files->file_num][file_path_len] = '\0';
-        strcpy(files->file_path[files->file_num], path);
-        strcat(files->file_path[files->file_num], "/");
-        strcat(files->file_path[files->file_num], dir_file->d_name);
+        strncpy(files->file_path[files->file_num], path, file_path_len);
+        strncat(files->file_path[files->file_num], "/", file_path_len - strlen(files->file_path[files->file_num]));
+        strncat(files->file_path[files->file_num], dir_file->d_name, file_path_len - strlen(files->file_path[files->file_num]));
         logd("i: %d, filename: %s", files->file_num, files->file_path[files->file_num]);
         files->file_num ++;
     }
@@ -871,6 +1144,7 @@ void apng_test(int argc, char **argv)
     config.extra_frame_num = 0;
     config.packet_count = 1;
     config.pix_fmt = info->format;
+    printf("pix_fmt: %d\n", info->format);
 
     // 1. create mpp_decoder
     dec = mpp_decoder_create(type);
@@ -903,6 +1177,10 @@ void apng_test(int argc, char **argv)
         // 4. copy data to packet
         r_len = read(input_fd, packet.data, file_len);
         close(input_fd);
+        if (r_len < 0) {
+            loge("read file failed, %d\n", r_len);
+            break;
+        }
 
         packet.size = r_len;
         packet.flag = PACKET_FLAG_EOS;

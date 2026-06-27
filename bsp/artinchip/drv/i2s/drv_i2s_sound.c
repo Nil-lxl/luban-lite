@@ -37,6 +37,8 @@ struct aic_i2s_sound
     char *name;
     uint32_t i2s_idx;
     uint8_t record_idx;
+    bool is_rx_active;
+    bool is_tx_active;
 };
 
 static struct aic_i2s_sound snd_dev[] =
@@ -113,6 +115,7 @@ rt_err_t drv_i2s_sound_start(struct rt_audio_device *audio, int stream)
         rt_audio_tx_complete(audio);
         if (!audio->replay->transfer_mode) {
             hal_i2s_playback_start(pi2s, pformat);
+            p_snd_dev->is_tx_active = true;
         }
         codec_start(p_snd_dev->codec, I2S_STREAM_PLAYBACK);
         /* for debug */
@@ -154,10 +157,12 @@ rt_err_t drv_i2s_sound_stop(struct rt_audio_device *audio, int stream)
         codec_pa_power(p_snd_dev->codec, 1);
 #endif
         hal_i2s_playback_stop(pi2s);
+        p_snd_dev->is_tx_active = false;
     }
     else if (stream == AUDIO_STREAM_RECORD)
     {
         hal_i2s_record_stop(pi2s);
+        p_snd_dev->is_rx_active = false;
     }
     else
     {
@@ -291,6 +296,7 @@ rt_err_t drv_i2s_sound_configure(struct rt_audio_device *audio,
         {
             hal_i2s_record_start(pi2s, pformat);
             codec_start(codec, I2S_STREAM_RECORD);
+            p_snd_dev->is_rx_active = true;
             /* for debug */
             //codec_dump_reg(codec);
         }
@@ -505,21 +511,29 @@ struct rt_audio_ops aic_i2s_ops =
 static int aic_i2s_suspend(const struct rt_device *device, rt_uint8_t mode)
 {
     struct aic_i2s_sound *p_snd_dev;
+    aic_i2s_ctrl *pi2s;
 
     p_snd_dev = rt_container_of(device, struct aic_i2s_sound, audio.parent);
+    pi2s = &p_snd_dev->i2s;
+    switch (mode) {
+        case PM_SLEEP_MODE_IDLE:
+            break;
 
-    switch (mode)
-    {
-    case PM_SLEEP_MODE_IDLE:
-        break;
-    case PM_SLEEP_MODE_LIGHT:
-    case PM_SLEEP_MODE_DEEP:
-    case PM_SLEEP_MODE_STANDBY:
-        if (hal_clk_is_enabled(CLK_I2S0 + p_snd_dev->i2s_idx))
-            hal_clk_disable(CLK_I2S0 + p_snd_dev->i2s_idx);
-        break;
-    default:
-        break;
+        case PM_SLEEP_MODE_LIGHT:
+        case PM_SLEEP_MODE_STANDBY:
+        case PM_SLEEP_MODE_DEEP:
+            /* Block sleep when playback or record is active */
+            if (p_snd_dev->is_tx_active || p_snd_dev->is_rx_active) {
+                pr_warn("I2S%ld busy, block sleep\n",
+                        (long)p_snd_dev->i2s_idx);
+                return -EBUSY;
+            }
+            /* Power off I2S: disable clock and assert reset */
+            hal_i2s_uninit(pi2s);
+            break;
+
+        default:
+            break;
     }
 
     return 0;
@@ -528,28 +542,40 @@ static int aic_i2s_suspend(const struct rt_device *device, rt_uint8_t mode)
 static void aic_i2s_resume(const struct rt_device *device, rt_uint8_t mode)
 {
     struct aic_i2s_sound *p_snd_dev;
+    aic_i2s_ctrl *pi2s;
+    i2s_format_t *pformat;
 
     p_snd_dev = rt_container_of(device, struct aic_i2s_sound, audio.parent);
+    pi2s = &p_snd_dev->i2s;
+    pformat = &p_snd_dev->format;
+    switch (mode) {
+        case PM_SLEEP_MODE_IDLE:
+            break;
 
-    switch (mode)
-    {
-    case PM_SLEEP_MODE_IDLE:
-        break;
-    case PM_SLEEP_MODE_LIGHT:
-    case PM_SLEEP_MODE_DEEP:
-    case PM_SLEEP_MODE_STANDBY:
-        if (!hal_clk_is_enabled(CLK_I2S0 + p_snd_dev->i2s_idx))
-            hal_clk_enable(CLK_I2S0 + p_snd_dev->i2s_idx);
-        break;
-    default:
-        break;
+        case PM_SLEEP_MODE_LIGHT:
+        case PM_SLEEP_MODE_STANDBY:
+        case PM_SLEEP_MODE_DEEP:
+            /* Restore I2S clock and deassert reset */
+            hal_i2s_init(pi2s, p_snd_dev->i2s_idx);
+            /* Restore I2S registers lost during SoC power-down */
+            if (pformat->rate != 0) {
+                hal_i2s_protocol_select(pi2s, pformat->protocol);
+                hal_i2s_polarity_set(pi2s, pformat->polarity);
+                hal_i2s_sample_width_select(pi2s, pformat->width);
+                hal_i2s_slot_width_select(pi2s, pformat->slot_width);
+                hal_i2s_channel_select(pi2s, pformat->channel, pformat->stream);
+                hal_i2s_mclk_set(pi2s, pformat->rate, pformat->mclk_nfs);
+                hal_i2s_sclk_set(pi2s, pformat->rate, pformat->sclk_nfs);
+            }
+            break;
+
+        default:
+            break;
     }
 }
 
-static struct rt_device_pm_ops aic_i2s_pm_ops =
-{
-    SET_LATE_DEVICE_PM_OPS(aic_i2s_suspend, aic_i2s_resume)
-    NULL,
+static struct rt_device_pm_ops aic_i2s_pm_ops = {
+    SET_LATE_DEVICE_PM_OPS(aic_i2s_suspend, aic_i2s_resume) NULL,
 };
 #endif
 

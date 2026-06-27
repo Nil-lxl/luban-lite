@@ -50,7 +50,7 @@ int fit_find_config_node(const void *fdt)
 
         if (dflt_conf_name) {
             const char *node_name = fdt_get_name(fdt, node, NULL);
-            if (strcmp(dflt_conf_name, node_name) == 0) {
+            if (strncmp(dflt_conf_name, node_name, strlen(dflt_conf_name) + 1) == 0) {
                 dflt_conf_node = node;
                 dflt_conf_desc = name;
             }
@@ -303,48 +303,173 @@ int fit_image_get_hash_crc32(const void *fit, int noffset, u32 *crc32)
     return 0;
 }
 
-int fit_image_get_hash_md5(const void *fit, int noffset, u32 *md5)
+static void fit_cipher_get_sizes(const char *algo, int *key_len, int *iv_len)
 {
-    int node, ret = 0;
-    int len, index;
-    const char *algo;
-    const fdt32_t *cell;
+    if (strncmp(algo, "aes128", 6) == 0) {
+        *key_len = FIT_CIPHER_AES128_KEY_SIZE;
+        *iv_len  = FIT_CIPHER_AES_IV_SIZE;
+    } else if (strncmp(algo, "aes192", 6) == 0) {
+        *key_len = FIT_CIPHER_AES192_KEY_SIZE;
+        *iv_len  = FIT_CIPHER_AES_IV_SIZE;
+    } else if (strncmp(algo, "aes256", 6) == 0) {
+        *key_len = FIT_CIPHER_AES256_KEY_SIZE;
+        *iv_len  = FIT_CIPHER_AES_IV_SIZE;
+    } else if (strncmp(algo, "chacha20", 8) == 0) {
+        *key_len = FIT_CIPHER_CHACHA20_KEY_SIZE;
+        *iv_len  = FIT_CIPHER_CHACHA20_IV_SIZE;
+    } else {
+        *key_len = 0;
+        *iv_len  = 0;
+    }
+}
 
-    if (!fit || !md5)
+static int fit_image_get_cipher_iv(const void *fit, int cipher_node,
+                                   u8 *iv, int iv_len)
+{
+    int len;
+    const void *data;
+
+    data = fdt_getprop(fit, cipher_node, FIT_CIPHER_IV_PROP, &len);
+    if (!data || len != iv_len)
         return -1;
 
-    index = 1;
-    do {
-        node = fit_image_get_hash_node(fit, noffset, index);
-        if (node < 0) {
-            ret = -1;
-            break;
-        }
-        algo = fdt_getprop(fit, node, "algo", &len);
-        if (algo == NULL) {
-            ret = -1;
-            break;
-        }
-        if (memcmp(algo, "md5", 3) == 0) {
-            ret = 0;
-            break;
-        }
-        index++;
-    } while(1);
-    if (ret)
-        return ret;
+    memcpy(iv, data, iv_len);
+    return 0;
+}
 
-    cell = fdt_getprop(fit, node, "value", &len);
-    if (cell == NULL || len != 16) {
-        fit_get_debug(fit, node, "value", len);
+static void fit_image_get_cipher_key_hint(const void *fit, int cipher_node,
+                                          const char **hint)
+{
+    *hint = fdt_getprop(fit, cipher_node, FIT_CIPHER_KEY_HINT_PROP, NULL);
+}
+
+/*
+ * Find cipher sub-node in a FIT image node.
+ *
+ * Returns:
+ *  >= 0 - cipher node offset
+ *  <  0 - no cipher node (not encrypted)
+ */
+int fit_image_get_cipher_node(const void *fit, int noffset)
+{
+    return fdt_subnode_offset(fit, noffset, FIT_CIPHER_NODE_PROP);
+}
+
+/*
+ * Parse cipher metadata from an already-located cipher node.
+ *
+ * Returns:
+ *   0  - success
+ *  -1  - error (unsupported algo, missing IV/key, etc.)
+ */
+int fit_image_get_cipher_info(const void *fit, int cipher_node,
+                              struct fit_cipher_info *ci)
+{
+    memset(ci, 0, sizeof(*ci));
+
+    ci->algo = fdt_getprop(fit, cipher_node, FIT_CIPHER_ALGO_PROP, NULL);
+    if (!ci->algo) {
+        printf("Cannot get cipher algo\n");
         return -1;
     }
 
-    md5[0] = *cell++;
-    md5[1] = *cell++;
-    md5[2] = *cell++;
-    md5[3] = *cell++;
+    fit_cipher_get_sizes(ci->algo, &ci->key_len, &ci->iv_len);
+    if (ci->key_len == 0) {
+        printf("Unsupported cipher algo: %s\n", ci->algo);
+        return -1;
+    }
 
+    if (fit_image_get_cipher_iv(fit, cipher_node, ci->iv, ci->iv_len) < 0) {
+        printf("Cannot get cipher IV/nonce from ITB\n");
+        return -1;
+    }
+
+    fit_image_get_cipher_key_hint(fit, cipher_node, &ci->key_hint);
+
+    if (fit_image_get_cipher_key(ci->algo, ci->key_hint,
+                                 ci->key, ci->key_len) < 0) {
+        printf("Cannot get cipher key\n");
+        return -1;
+    }
+
+    return 0; /* success */
+}
+
+/*
+ * Weak function to get cipher decryption key.
+ * Override in platform-specific code to provide the actual key
+ * (e.g. from eFuse, secure storage, spienc, etc.).
+ */
+__attribute__((weak))
+int fit_image_get_cipher_key(const char *algo, const char *key_name_hint,
+                             u8 *key, int key_len)
+{
+    (void)algo;
+    (void)key_name_hint;
+    memset(key, 0, key_len);
+    return 0;
+}
+
+/*
+ * Weak functions for cipher decryption.
+ * Override in platform-specific code to use a different crypto backend
+ * (e.g. hardware CE, mbedtls, ChaCha20 library, etc.).
+ */
+__attribute__((weak))
+int fit_image_aes_128_cbc_decrypt(const u8 *key, const u8 *iv, u8 *data,
+                                  unsigned int length)
+{
+    (void)key; (void)iv; (void)data; (void)length;
+    return -1;
+}
+
+__attribute__((weak))
+int fit_image_aes_192_cbc_decrypt(const u8 *key, const u8 *iv, u8 *data,
+                                  unsigned int length)
+{
+    (void)key; (void)iv; (void)data; (void)length;
+    return -1;
+}
+
+__attribute__((weak))
+int fit_image_aes_256_cbc_decrypt(const u8 *key, const u8 *iv, u8 *data,
+                                  unsigned int length)
+{
+    (void)key; (void)iv; (void)data; (void)length;
+    return -1;
+}
+
+__attribute__((weak))
+int fit_image_chacha20_decrypt(const u8 *key, const u8 *nonce, u8 *data,
+                               unsigned int length)
+{
+    (void)key; (void)nonce; (void)data; (void)length;
+    return -1;
+}
+
+int fit_image_decrypt_data(const struct fit_cipher_info *ci,
+                           u8 *data, unsigned int length)
+{
+    int ret;
+
+    /* Dispatch to algorithm-specific decryption */
+    if (strncmp(ci->algo, "aes128", 6) == 0)
+        ret = fit_image_aes_128_cbc_decrypt(ci->key, ci->iv, data, length);
+    else if (strncmp(ci->algo, "aes192", 6) == 0)
+        ret = fit_image_aes_192_cbc_decrypt(ci->key, ci->iv, data, length);
+    else if (strncmp(ci->algo, "aes256", 6) == 0)
+        ret = fit_image_aes_256_cbc_decrypt(ci->key, ci->iv, data, length);
+    else if (strncmp(ci->algo, "chacha20", 8) == 0)
+        ret = fit_image_chacha20_decrypt(ci->key, ci->iv, data, length);
+    else
+        ret = -1;
+
+    if (ret != 0) {
+        printf("%s decryption failed: %d\n", ci->algo, ret);
+        return -1;
+    }
+
+    printf("%s decrypt OK, length: %u\n", ci->algo, length);
     return 0;
 }
 
@@ -404,6 +529,7 @@ int spl_load_fit_image(struct spl_load_info *info, struct spl_fit_info *ctx, int
     const void *fit = ctx->fit;
     bool external_data = false;
     u64 start_us;
+    int cipher_node;
 #ifdef LPKG_USING_FDTLIB_CRC32_VERIFY
     u32 crc1, crc2;
 #endif
@@ -454,6 +580,7 @@ int spl_load_fit_image(struct spl_load_info *info, struct spl_fit_info *ctx, int
                 printf("spl read external_data error\n");
                 return -1;
             }
+
 #ifdef LPKG_USING_FDTLIB_CRC32_VERIFY
             if (crc1 != 0) {
                 crc2 = crc32(0, (u8 *)load_addr, length);
@@ -466,6 +593,26 @@ int spl_load_fit_image(struct spl_load_info *info, struct spl_fit_info *ctx, int
 #else
             printf("CRC32 verify is disabled.\n");
 #endif
+
+            /* Decrypt data if cipher node is present in ITB.
+             * CRC32 is verified on ciphertext first, then decrypt.
+             */
+            cipher_node = fit_image_get_cipher_node(fit, node);
+            if (cipher_node >= 0) {
+                struct fit_cipher_info ci;
+
+                if (fit_image_get_cipher_info(fit, cipher_node, &ci) < 0) {
+                    printf("fit image get cipher info error\n");
+                    return -1;
+                }
+                ret = fit_image_decrypt_data(&ci, (u8 *)load_addr, length);
+                memset(&ci, 0, sizeof(ci));
+                if (ret < 0)
+                {
+                    printf("fit image decrypt error\n");
+                    return -1;
+                }
+            }
         }
     }
     else
@@ -520,12 +667,12 @@ int spl_load_simple_fit(struct spl_load_info *info, ulong *entry_point)
     size = FIT_ALIGN(fdt_totalsize(header), 4);
     ctx.ext_data_offset = size;
 
+    buf_size = size;
     if (info->dev_type == DEVICE_MMC) {
         buf_size = ROUNDUP(size, info->bl_len);
-        size = buf_size;
     }
 
-    buf = aicos_malloc(MEM_DEFAULT, size);
+    buf = aicos_malloc(MEM_DEFAULT, buf_size);
     if (!buf)
     {
         printf("No space to malloc for itb\n");
@@ -533,7 +680,7 @@ int spl_load_simple_fit(struct spl_load_info *info, ulong *entry_point)
     }
 
     /* read itb tree */
-    ret = spl_read(info, 0, buf, size);
+    ret = spl_read(info, 0, buf, buf_size);
     if (ret < 0)
     {
         printf("mtd read itb error\n");

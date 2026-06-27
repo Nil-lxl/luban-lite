@@ -234,6 +234,45 @@ static void aic_dvp_split_plane(struct vin_video_buf *vbuf,
     memcpy(&vbuf->planes[PLANE_NUM * VBUF_NUM], planes1, VBUF_S_SIZE * VBUF_NUM);
 }
 
+#ifdef AIC_DVP_NO_SIGNAL_PATTERN
+static void dvp_fill_no_signal_pattern(struct vin_video_buf *vbuf,
+                                       struct aic_dvp_config *cfg, bool stitch)
+{
+    u32 nf = vbuf->num_buffers;
+    u32 width  = cfg->width;
+    u32 height = cfg->height;
+    u32 block_height = 100;
+    u32 r, c, i, p;
+    u8 *y, *uv;
+
+    if (aic_dvp_sfield_mode())
+        block_height /= 2;
+
+    if (stitch)
+        nf *= 2;
+
+    for (i = 0; i < nf; i++) {
+        /* Y plane: checkerboard */
+        y = (u8 *)(ptr_t)vbuf->planes[i * vbuf->num_planes].buf;
+        if (y && vbuf->planes[i * vbuf->num_planes].len) {
+            for (r = 0; r < height; r++)
+                for (c = 0; c < width; c++)
+                    y[r * width + c] = ((r / block_height + c / 100) & 1) ? 0x1C : 0xA1;
+            aicos_dcache_clean_invalid_range(y, vbuf->planes[i * vbuf->num_planes].len);
+        }
+
+        /* UV plane: neutral gray (0x80) */
+        for (p = 1; p < vbuf->num_planes; p++) {
+            uv = (u8 *)(ptr_t)vbuf->planes[i * vbuf->num_planes + p].buf;
+            if (uv && vbuf->planes[i * vbuf->num_planes + p].len) {
+                memset(uv, 0x80, vbuf->planes[i * vbuf->num_planes + p].len);
+                aicos_dcache_clean_invalid_range(uv, vbuf->planes[i * vbuf->num_planes + p].len);
+            }
+        }
+    }
+}
+#endif
+
 int aic_dvp_req_buf(char *buf, u32 size, struct vin_video_buf *vbuf, u32 ch)
 {
     struct aic_dvp_config *cfg = &g_dvp.cfg;
@@ -259,6 +298,9 @@ int aic_dvp_req_buf(char *buf, u32 size, struct vin_video_buf *vbuf, u32 ch)
     }
 
     ret = vin_vb_req_buf(&g_dvp.ch[ch].queue, buf, size, vbuf);
+    if (ret < 0)
+        return ret;
+
     if (MPP_IS_STITCH(stitch)) { /* It's surely CH0 */
         /* Revert the size of all planes */
         for (i = 0; i < PLANE_NUM * VBUF_NUM; i++)
@@ -266,6 +308,11 @@ int aic_dvp_req_buf(char *buf, u32 size, struct vin_video_buf *vbuf, u32 ch)
 
         aic_dvp_split_plane(vbuf, stitch, cfg);
     }
+
+#ifdef AIC_DVP_NO_SIGNAL_PATTERN
+    dvp_fill_no_signal_pattern(vbuf, cfg, MPP_IS_STITCH(stitch));
+#endif
+
     return ret;
 }
 

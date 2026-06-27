@@ -115,6 +115,24 @@ static struct aic_qspi spi_controller[] = {
 #endif
     },
 #endif
+#if defined(AIC_USING_QSPI5) && defined(AIC_QSPI5_BUS_SPI)
+    {
+        .name = "spi5",
+        .idx = 5,
+        .clk_id = CLK_QSPI5,
+        .clk_in_hz = AIC_DEV_QSPI5_MAX_SRC_FREQ_HZ,
+        .dma_port_id = DMA_ID_SPI5,
+        .irq_num = QSPI5_IRQn,
+#if defined(AIC_QSPI_MULTIPLE_CS_NUM)
+        .cs_num = AIC_QSPI5_CS_NUM,
+#endif
+        .rxd_dlymode = AIC_DEV_QSPI5_DELAY_MODE,
+#if defined(AIC_QSPI_DRV_V20)
+        .txd_dlymode = AIC_DEV_QSPI5_TXD_DELAY_MODE,
+        .txc_dlymode = AIC_DEV_QSPI5_TX_CLK_DELAY_MODE,
+#endif
+    },
+#endif
 };
 
 static const u32 bit_mode_table[] = {
@@ -194,14 +212,17 @@ static rt_uint32_t drv_spi_receive(struct aic_qspi *qspi,
 static rt_uint32_t drv_spi_transfer(struct aic_qspi *qspi,
                              struct rt_spi_message *message)
 {
-    u32 ret = 0;
     struct qspi_transfer t;
 
     t.tx_data = (u8 *)message->send_buf;
     t.rx_data = message->recv_buf;
     t.data_len = message->length;
-    ret = hal_qspi_master_transfer_sync(&qspi->handle, &t);
-    return ret;
+
+    if (qspi->nonblock) {
+        rt_completion_init(qspi->completion);
+        return hal_qspi_master_transfer_async(&qspi->handle, &t);
+    }
+    return hal_qspi_master_transfer_sync(&qspi->handle, &t);
 }
 
 static void spi_set_cs_before(struct rt_spi_device *device,
@@ -301,7 +322,8 @@ static void qspi_master_async_callback(qspi_master_handle *h, void *priv)
 #if defined(AIC_QSPI_MULTIPLE_CS_NUM)
         cs_num = qspi->cs_num;
 #endif
-    rt_sem_release(qspi->xfer_sem);
+    if (qspi->xfer_sem)
+        rt_sem_release(qspi->xfer_sem);
     hal_qspi_master_set_cs(&qspi->handle, cs_num, false);
     rt_completion_done(qspi->completion);
 }
@@ -587,17 +609,18 @@ static rt_err_t spi_nonblock_set(struct rt_spi_device *device,
 
     qspi = (struct aic_qspi *)device->bus;
 
-    if (nonblock)
-        qspi->nonblock = true;
-    else
-        qspi->nonblock = false;
-
     if (nonblock) {
+        qspi->nonblock = true;
         if (!qspi->completion)
             qspi->completion = (struct rt_completion *)rt_malloc(sizeof(struct rt_completion));
-
         if (!qspi->completion)
             return -RT_ERROR;
+    } else {
+        qspi->nonblock = false;
+        if (qspi->completion) {
+            rt_free(qspi->completion);
+            qspi->completion = NULL;
+        }
     }
 
     return RT_EOK;

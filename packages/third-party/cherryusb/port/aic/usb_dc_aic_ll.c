@@ -20,8 +20,8 @@ void usb_dc_sync_dma(void)
     asm volatile("sw t0, (%0)" : : "r"(dma_sync_buffer));
     csi_dcache_clean_range((phy_addr_t)(ptr_t)dma_sync_buffer, CACHE_LINE_SIZE);
 }
-
-int usb_wait_pll_locked(void)
+#ifndef AIC_USB_DEVICE_DRV_V10
+int usbd_wait_pll_locked(void)
 {
     uint32_t i = 0;
 
@@ -33,6 +33,7 @@ int usb_wait_pll_locked(void)
     }
     return 0;
 }
+#endif
 
 void usb_dc_low_level_init(void)
 {
@@ -57,7 +58,7 @@ void usb_dc_low_level_init(void)
     hal_reset_deassert(CONFIG_USB_AIC_DC_RESET);
     aicos_udelay(300);
 #ifndef AIC_USB_DEVICE_DRV_V10
-    if (usb_wait_pll_locked() < 0)
+    if (usbd_wait_pll_locked() < 0)
         USB_LOG_ERR("usb pll unlock :%#lx \n", (long)(readl(PLL_COM)));
 
 #endif

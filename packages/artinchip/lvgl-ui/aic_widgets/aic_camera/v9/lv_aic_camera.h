@@ -98,9 +98,9 @@ lv_res_t lv_aic_camera_stop(lv_obj_t * obj);
  /* only decode barcode, no need to draw */
 lv_res_t lv_aic_camera_barcode_only(lv_obj_t *obj);
 
-lv_res_t lv_aic_camera_barcode_enable(lv_obj_t *obj, bool enable);
+lv_res_t lv_aic_camera_barcode_enable(lv_obj_t *obj);
 
-lv_res_t lv_aic_camera_barcode_disable(lv_obj_t *obj, bool disabled);
+lv_res_t lv_aic_camera_barcode_disable(lv_obj_t *obj);
 
 lv_res_t lv_aic_camera_barcode_callback(lv_obj_t *obj, lv_aic_camera_barcode_cb_t cb, char *data, int data_size);
 #endif

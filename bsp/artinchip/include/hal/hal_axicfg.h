@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ArtInChip Technology Co., Ltd
+ * Copyright (c) 2023-2026, ArtInChip Technology Co., Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -32,6 +32,18 @@ extern "C" {
 
 #define HAL_AXICFG_BASE 0x184FE000
 
+#ifdef AIC_CHIP_D12P
+typedef enum hal_axicfg_port_e {
+    HAL_AXICFG_PORT_CPU = 0,
+    HAL_AXICFG_PORT_AHB = 1,
+    HAL_AXICFG_PORT_AHB1 = 2,
+    HAL_AXICFG_PORT_DE = 3,
+    HAL_AXICFG_PORT_GE = 4,
+    HAL_AXICFG_PORT_VE = 5,
+    HAL_AXICFG_PORT_DVP = 6,
+    HAL_AXICFG_PORT_MAX
+} hal_axicfg_port_t;
+#else
 typedef enum hal_axicfg_port_e {
     HAL_AXICFG_PORT_CPU = 0,
     HAL_AXICFG_PORT_AHB = 1,
@@ -43,7 +55,7 @@ typedef enum hal_axicfg_port_e {
     HAL_AXICFG_PORT_CE = 6,
     HAL_AXICFG_PORT_MAX
 } hal_axicfg_port_t;
-
+#endif
 #ifndef AIC_AXICFG_PORT_CPU_EN
 #define AXICFG_CPU_EN            0
 #define AIC_AXICFG_PORT_CPU_PRIO 0
@@ -56,6 +68,13 @@ typedef enum hal_axicfg_port_e {
 #define AIC_AXICFG_PORT_AHB_PRIO 0
 #else
 #define AXICFG_AHB_EN 1
+#endif
+
+#ifndef AIC_AXICFG_PORT_AHB1_EN
+#define AXICFG_AHB1_EN            0
+#define AIC_AXICFG_PORT_AHB1_PRIO 0
+#else
+#define AXICFG_AHB1_EN 1
 #endif
 
 #ifndef AIC_AXICFG_PORT_DE_EN

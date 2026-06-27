@@ -43,6 +43,11 @@ int hal_i2s_init(aic_i2s_ctrl *i2s, uint32_t i2s_idx)
     i2s->irq_num = I2S0_IRQn + i2s_idx;
     i2s->clk_id = CLK_I2S0 + i2s_idx;
     i2s->idx = i2s_idx;
+    i2s->start_flag = 0;
+    i2s->callback = NULL;
+    i2s->arg = NULL;
+    memset(&i2s->tx_info, 0, sizeof(i2s->tx_info));
+    memset(&i2s->rx_info, 0, sizeof(i2s->rx_info));
 
     ret = hal_clk_enable_deassertrst(i2s->clk_id);
     if (ret)
@@ -53,7 +58,7 @@ int hal_i2s_init(aic_i2s_ctrl *i2s, uint32_t i2s_idx)
 
 int hal_i2s_uninit(aic_i2s_ctrl *i2s)
 {
-    int ret;
+    int ret = 0;
 
     ret = hal_clk_disable_assertrst(i2s->clk_id);
     if (ret)
@@ -64,7 +69,7 @@ int hal_i2s_uninit(aic_i2s_ctrl *i2s)
 
 int hal_i2s_protocol_select(aic_i2s_ctrl *i2s, i2s_protocol_t protocol)
 {
-    uint32_t reg_val, tx_offset, rx_offset;
+    uint32_t reg_val = 0, tx_offset = 0, rx_offset = 0;
     int ret = 0;
 
     reg_val = readl(i2s->reg_base + I2S_CTL_REG);
@@ -142,7 +147,7 @@ int hal_i2s_sample_width_select(aic_i2s_ctrl *i2s, i2s_sample_width_t width)
     CHECK_PARAM(!(width < 8 || width > 32), -EINVAL);
     CHECK_PARAM(!(width % 4), -EINVAL);
 
-    uint8_t reg_val, width_select;
+    uint32_t reg_val = 0, width_select = 0;
 
     reg_val = readl(i2s->reg_base + I2S_FMT0_REG);
     reg_val &= ~(I2S_FMT0_SR_MASK);
@@ -158,7 +163,7 @@ int hal_i2s_slot_width_select(aic_i2s_ctrl *i2s, i2s_sample_width_t slot_width)
     CHECK_PARAM(!(slot_width < 8 || slot_width > 32), -EINVAL);
     CHECK_PARAM(!(slot_width % 4), -EINVAL);
 
-    uint8_t reg_val, width_select;
+    uint32_t reg_val = 0, width_select = 0;
 
     reg_val = readl(i2s->reg_base + I2S_FMT0_REG);
     reg_val &= ~(I2S_FMT0_SW_MASK);
@@ -198,8 +203,8 @@ static uint32_t hal_i2s_get_module_rate_by_sample(i2s_sample_rate_t sample_rate)
 
 static int hal_i2s_sample_rate_set(aic_i2s_ctrl *i2s, i2s_sample_rate_t sample_rate)
 {
-    uint32_t module_rate;
-    unsigned int pclk_id;
+    uint32_t module_rate = 0;
+    unsigned int pclk_id = 0;
 
     module_rate = hal_i2s_get_module_rate_by_sample(sample_rate);
 
@@ -219,7 +224,7 @@ static int hal_i2s_sample_rate_set(aic_i2s_ctrl *i2s, i2s_sample_rate_t sample_r
 int hal_i2s_mclk_set(aic_i2s_ctrl *i2s, i2s_sample_rate_t sample_rate,
                      uint32_t mclk_nfs)
 {
-    uint32_t mclk_div, module_rate, reg_val, i;
+    uint32_t mclk_div = 0, module_rate = 0, reg_val = 0, i = 0;
 
     hal_i2s_sample_rate_set(i2s, sample_rate);
 
@@ -248,7 +253,7 @@ int hal_i2s_mclk_set(aic_i2s_ctrl *i2s, i2s_sample_rate_t sample_rate,
 
 void hal_i2s_polarity_set(aic_i2s_ctrl *i2s, i2s_polarity_t polarity)
 {
-    uint32_t reg_val;
+    uint32_t reg_val = 0;
 
     reg_val = readl(i2s->reg_base + I2S_FMT0_REG);
     reg_val &= ~I2S_FMT0_LRCK_POL_MASK;
@@ -261,7 +266,7 @@ void hal_i2s_polarity_set(aic_i2s_ctrl *i2s, i2s_polarity_t polarity)
 int hal_i2s_sclk_set(aic_i2s_ctrl *i2s, i2s_sample_rate_t sample_rate,
                      uint32_t sclk_nfs)
 {
-    uint32_t module_rate, reg_val, bclk_div, i;
+    uint32_t module_rate = 0, reg_val = 0, bclk_div = 0, i = 0;
 
     hal_i2s_sample_rate_set(i2s, sample_rate);
 
@@ -308,7 +313,7 @@ int hal_i2s_sclk_set(aic_i2s_ctrl *i2s, i2s_sample_rate_t sample_rate,
 void hal_i2s_channel_select(aic_i2s_ctrl *i2s,
                             i2s_sound_channel_t channel, i2s_stream_t stream)
 {
-    uint32_t reg_val;
+    uint32_t reg_val = 0;
 
     if (!stream)
     {
@@ -348,7 +353,7 @@ void hal_i2s_channel_select(aic_i2s_ctrl *i2s,
 
 int hal_i2s_set_format(aic_i2s_ctrl *i2s, i2s_format_t *fmt)
 {
-    int ret;
+    int ret = 0;
 
     hal_i2s_master_mode(i2s);
     ret = hal_i2s_protocol_select(i2s, fmt->protocol);
@@ -370,8 +375,8 @@ int hal_i2s_set_format(aic_i2s_ctrl *i2s, i2s_format_t *fmt)
 
 static void i2s_dma_transfer_period_callback(void *arg)
 {
-    struct aic_i2s_transfer_info *info;
-    aic_i2s_ctrl *i2s;
+    struct aic_i2s_transfer_info *info = NULL;
+    aic_i2s_ctrl *i2s = NULL;
 
     info = (struct aic_i2s_transfer_info *)arg;
 
@@ -391,10 +396,12 @@ static void i2s_dma_transfer_period_callback(void *arg)
 
 void hal_i2s_playback_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
 {
-    struct dma_slave_config config;
-    struct aic_i2s_transfer_info *info;
+    struct dma_slave_config config = {0};
+    struct aic_i2s_transfer_info *info = NULL;
 
+    info = &i2s->tx_info;
     config.direction = DMA_MEM_TO_DEV;
+    config.src_addr = (ulong)info->buf_info.buf;
     config.dst_addr = i2s->reg_base + I2S_TXFIFO_REG;
     config.slave_id = DMA_ID_I2S0 + i2s->idx;
     config.src_maxburst = 1;
@@ -423,8 +430,6 @@ void hal_i2s_playback_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
                     (long)i2s->idx, format->width);
         return;
     }
-
-    info = &i2s->tx_info;
 
     info->transfer_type = I2S_TRANSFER_TYPE_TX;
 
@@ -458,10 +463,12 @@ void hal_i2s_playback_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
 
 void hal_i2s_playback_start_single(aic_i2s_ctrl *i2s, i2s_format_t *format)
 {
-    struct dma_slave_config config;
-    struct aic_i2s_transfer_info *info;
+    struct dma_slave_config config = {0};
+    struct aic_i2s_transfer_info *info = NULL;
 
+    info = &i2s->tx_info;
     config.direction = DMA_MEM_TO_DEV;
+    config.src_addr = (ulong)info->buf_info.buf;
     config.dst_addr = i2s->reg_base + I2S_TXFIFO_REG;
     config.slave_id = DMA_ID_I2S0 + i2s->idx;
     config.src_maxburst = 1;
@@ -490,8 +497,6 @@ void hal_i2s_playback_start_single(aic_i2s_ctrl *i2s, i2s_format_t *format)
                     (long)i2s->idx, format->width);
         return;
     }
-
-    info = &i2s->tx_info;
 
     info->transfer_type = I2S_TRANSFER_TYPE_TX;
 
@@ -531,11 +536,13 @@ void hal_i2s_playback_start_single(aic_i2s_ctrl *i2s, i2s_format_t *format)
 
 void hal_i2s_record_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
 {
-    struct dma_slave_config config;
-    struct aic_i2s_transfer_info *info;
+    struct dma_slave_config config = {0};
+    struct aic_i2s_transfer_info *info = NULL;
 
+    info = &i2s->rx_info;
     config.direction = DMA_DEV_TO_MEM;
     config.src_addr = i2s->reg_base + I2S_RXFIFO_REG;
+    config.dst_addr = (ulong)info->buf_info.buf;
     config.slave_id = DMA_ID_I2S0 + i2s->idx;
     config.src_maxburst = 1;
     config.dst_maxburst = 1;
@@ -563,8 +570,6 @@ void hal_i2s_record_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
                     (long)i2s->idx, format->width);
         return;
     }
-
-    info = &i2s->rx_info;
 
     info->transfer_type = I2S_TRANSFER_TYPE_RX;
 
@@ -599,7 +604,7 @@ void hal_i2s_record_start(aic_i2s_ctrl *i2s, i2s_format_t *format)
 
 void hal_i2s_playback_stop(aic_i2s_ctrl *i2s)
 {
-    struct aic_i2s_transfer_info *info;
+    struct aic_i2s_transfer_info *info = NULL;
 
     info = &i2s->tx_info;
 
@@ -612,7 +617,7 @@ void hal_i2s_playback_stop(aic_i2s_ctrl *i2s)
 
 void hal_i2s_record_stop(aic_i2s_ctrl *i2s)
 {
-    struct aic_i2s_transfer_info *info;
+    struct aic_i2s_transfer_info *info = NULL;
 
     info = &i2s->rx_info;
 

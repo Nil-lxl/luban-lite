@@ -73,7 +73,7 @@ aic_ehci_config_t config[] = {
 #define PLL_COM                         (USB_HOST0_BASE + 0x878)
 #define PLL_LOCKED                      BIT(23)
 
-int usb_wait_pll_locked(void)
+int usbh_wait_pll_locked(void)
 {
     uint32_t i = 0;
 
@@ -119,7 +119,7 @@ void usb_hc_low_level_init(struct usbh_bus *bus)
     aicos_udelay(300);
 
 #if defined(AIC_SYSCFG_DRV_V16)
-    if (usb_wait_pll_locked() < 0)
+    if (usbh_wait_pll_locked() < 0)
         USB_LOG_ERR("usb pll unlock :%#lx \n", (long)(readl(PLL_COM)));
 #endif
 

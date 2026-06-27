@@ -84,6 +84,7 @@ int hal_qspi_master_init(qspi_master_handle *h, struct qspi_master_config *cfg)
     else if (sclk < HAL_QSPI_INPUT_MIN_FREQ_HZ_V2)
         sclk = HAL_QSPI_INPUT_MIN_FREQ_HZ_V2;
     qspi->idx = cfg->idx;
+    qspi->fifo_depth = (cfg->idx >= 3) ? QSPI_FIFO_DEPTH_V3LITE : QSPI_FIFO_DEPTH;
 
     tmp_sclk = sclk + HAL_QSPI_HZ_PER_MHZ;
     do {
@@ -126,8 +127,7 @@ int hal_qspi_master_init(qspi_master_handle *h, struct qspi_master_config *cfg)
         qspi_hw_set_cs_owner(base, QSPI_CS_CTL_BY_SW);
     qspi_hw_drop_invalid_data(base, QSPI_DROP_INVALID_DATA);
     qspi_hw_reset_fifo(base);
-    qspi_hw_set_fifo_watermark(base, QSPI_HALF_FIFO_DEPTH, QSPI_HALF_FIFO_DEPTH);
-
+    qspi_hw_set_fifo_watermark(base, qspi->fifo_depth >> 1, qspi->fifo_depth >> 1);
     qspi->clk_id = cfg->clk_id;
     qspi->cb = NULL;
     qspi->cb_priv = NULL;
@@ -321,15 +321,15 @@ int qspi_wait_gpdma_rx_done(u32 base, u32 tmo)
 }
 #endif
 
-int qspi_fifo_write_read(u32 base, u8 *tx, u8 *rx, u32 len, u32 tmo)
+int qspi_fifo_write_read(u32 base, u8 *tx, u8 *rx, u32 len, u32 tmo, u32 fifo_depth)
 {
     u32 free_len, dolen, cnt = 0;
 
     while (len) {
-        free_len = QSPI_FIFO_DEPTH - qspi_hw_get_tx_fifo_cnt(base);
-        while (free_len <= (QSPI_FIFO_DEPTH >> 3)) {
+        free_len = fifo_depth - qspi_hw_get_tx_fifo_cnt(base);
+        while (free_len <= (fifo_depth >> 3)) {
             aic_udelay(HAL_QSPI_WAIT_DELAY_US);
-            free_len = QSPI_FIFO_DEPTH - qspi_hw_get_tx_fifo_cnt(base);
+            free_len = fifo_depth - qspi_hw_get_tx_fifo_cnt(base);
             cnt++;
             if (cnt > tmo)
                 return -ETIMEDOUT;
@@ -359,13 +359,13 @@ int qspi_fifo_write_read(u32 base, u8 *tx, u8 *rx, u32 len, u32 tmo)
     return 0;
 }
 
-int qspi_fifo_write_data(u32 base, u8 *data, u32 len, u32 tmo)
+int qspi_fifo_write_data(u32 base, u8 *data, u32 len, u32 tmo, u32 fifo_depth)
 {
     u32 dolen, free_len, cnt = 0;
 
     while (len) {
-        free_len = QSPI_FIFO_DEPTH - qspi_hw_get_tx_fifo_cnt(base);
-        if (free_len <= (QSPI_FIFO_DEPTH >> 3)) {
+        free_len = fifo_depth - qspi_hw_get_tx_fifo_cnt(base);
+        if (free_len <= (fifo_depth >> 3)) {
             aic_udelay(HAL_QSPI_WAIT_DELAY_US);
             cnt++;
             if (cnt > tmo)
@@ -469,7 +469,7 @@ static int qspi_master_transfer_cpu_sync(qspi_master_handle *h,
         qspi_hw_set_transfer_cnt(base, t->data_len, t->data_len, 0, 0);
         qspi_hw_drop_invalid_data(base, QSPI_RECV_ALL_INPUT_DATA);
         qspi_hw_start_transfer(base);
-        ret = qspi_fifo_write_read(base, t->tx_data, t->rx_data, t->data_len, tmo_cnt);
+        ret = qspi_fifo_write_read(base, t->tx_data, t->rx_data, t->data_len, tmo_cnt, qspi->fifo_depth);
         if (ret < 0) {
             hal_log_err("read write fifo failure.\n");
             goto out;
@@ -482,7 +482,7 @@ static int qspi_master_transfer_cpu_sync(qspi_master_handle *h,
         qspi->work_mode = QSPI_WORK_MODE_SYNC_TX_CPU;
         qspi_hw_set_transfer_cnt(base, txlen, tx_1line_cnt, 0, 0);
         qspi_hw_start_transfer(base);
-        ret = qspi_fifo_write_data(base, t->tx_data, txlen, tmo_cnt);
+        ret = qspi_fifo_write_data(base, t->tx_data, txlen, tmo_cnt, qspi->fifo_depth);
         if (ret < 0) {
             hal_log_err("TX write fifo failure.\n");
             goto out;
@@ -521,6 +521,12 @@ static const u32 dynamic_dma_table[] = {
 #ifdef AIC_QSPI3_DYNAMIC_DMA
     3,
 #endif
+#ifdef AIC_QSPI4_DYNAMIC_DMA
+    4,
+#endif
+#ifdef AIC_QSPI5_DYNAMIC_DMA
+    5,
+#endif
 };
 static bool qspi_master_dynamic_dma(struct qspi_master_state *qspi)
 {
@@ -555,7 +561,6 @@ int hal_qspi_master_dma_config(qspi_master_handle *h,
         hal_log_err("Request dma chan error.\n");
         goto err;
     }
-
     tx_chan = hal_request_dma_chan();
     if (!tx_chan) {
         hal_log_err("Request dma chan error.\n");
@@ -584,7 +589,13 @@ err:
 static int qspi_master_can_dma(struct qspi_master_state *qspi,
                                struct qspi_transfer *t)
 {
-    if (t->data_len <= QSPI_FIFO_DEPTH)
+    /* If DMA channels are not available, fall back to CPU mode */
+    if (qspi->dma_tx == NULL && qspi->dma_rx == NULL) {
+        if (!qspi_master_dynamic_dma(qspi))
+            return 0;
+    }
+
+    if (t->data_len <= qspi->fifo_depth)
         return 0;
     if (t->data_len % AIC_DMA_ALIGN_SIZE)
         return 0;
@@ -708,12 +719,12 @@ static int qspi_txrx_dma_sync(qspi_master_handle *h,
     if (!(t->data_len % HAL_QSPI_DMA_4BYTES_LINE)) {
         dmacfg.src_addr_width = qspi->dma_cfg.dev_bus_width;
         dmacfg.src_maxburst = qspi->dma_cfg.dev_max_burst;
-        qspi_hw_set_fifo_watermark(base, QSPI_HALF_FIFO_DEPTH, QSPI_HALF_FIFO_DEPTH);
+        qspi_hw_set_fifo_watermark(base, qspi->fifo_depth >> 1, qspi->fifo_depth >> 1);
         qspi_hw_dma_word_enable(base, true);
     } else {
         dmacfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
         dmacfg.src_maxburst = HAL_QSPI_DMA_DEV_BURST_ONE;
-        qspi_hw_set_fifo_watermark(base, QSPI_HALF_FIFO_DEPTH, QSPI_ONE_BYTE_WATERMARK);
+        qspi_hw_set_fifo_watermark(base, qspi->fifo_depth >> 1, QSPI_ONE_BYTE_WATERMARK);
         qspi_hw_dma_word_enable(base, false);
     }
     dmacfg.dst_addr_width = qspi->dma_cfg.mem_bus_width;
@@ -810,6 +821,10 @@ static int qspi_master_transfer_dma_sync(qspi_master_handle *h,
         else
             dmacfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
         dmacfg.dst_maxburst = qspi->dma_cfg.dev_max_burst;
+        if (qspi->idx >= 3) {
+            dmacfg.dst_maxburst = 1;
+            qspi_hw_set_fifo_watermark(base, qspi->fifo_depth >> 3, qspi->fifo_depth >> 1);
+        }
 
         ret = hal_dma_chan_config(dma_tx, &dmacfg);
         if (ret < 0) {
@@ -858,12 +873,14 @@ static int qspi_master_transfer_dma_sync(qspi_master_handle *h,
         if (!(rxlen % HAL_QSPI_DMA_4BYTES_LINE)) {
             dmacfg.src_addr_width = qspi->dma_cfg.dev_bus_width;
             dmacfg.src_maxburst = qspi->dma_cfg.dev_max_burst;
-            qspi_hw_set_fifo_watermark(base, QSPI_HALF_FIFO_DEPTH, QSPI_HALF_FIFO_DEPTH);
+            if (qspi->idx >= 3)
+                dmacfg.src_maxburst = 1;
+            qspi_hw_set_fifo_watermark(base, qspi->fifo_depth >> 1, qspi->fifo_depth >> 1);
             qspi_hw_dma_word_enable(base, true);
         } else {
             dmacfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
             dmacfg.src_maxburst = HAL_QSPI_DMA_DEV_BURST_ONE;
-            qspi_hw_set_fifo_watermark(base, QSPI_HALF_FIFO_DEPTH, QSPI_ONE_BYTE_WATERMARK);
+            qspi_hw_set_fifo_watermark(base, qspi->fifo_depth >> 1, QSPI_ONE_BYTE_WATERMARK);
             qspi_hw_dma_word_enable(base, false);
         }
         dmacfg.dst_addr_width = qspi->dma_cfg.mem_bus_width;
@@ -1064,6 +1081,10 @@ static int qspi_master_transfer_dma_async(struct qspi_master_state *qspi,
         dmacfg.src_maxburst = qspi->dma_cfg.mem_max_burst;
         dmacfg.dst_addr_width = qspi->dma_cfg.dev_bus_width;
         dmacfg.dst_maxburst = qspi->dma_cfg.dev_max_burst;
+        if (qspi->idx >= 3) {
+            dmacfg.dst_maxburst = 1;
+            qspi_hw_set_fifo_watermark(base, qspi->fifo_depth >> 3, qspi->fifo_depth >> 1);
+        }
 
         ret = hal_dma_chan_config(dma_tx, &dmacfg);
         if (ret)
@@ -1092,8 +1113,11 @@ static int qspi_master_transfer_dma_async(struct qspi_master_state *qspi,
 
         dmacfg.src_addr_width = qspi->dma_cfg.dev_bus_width;
         dmacfg.src_maxburst = qspi->dma_cfg.dev_max_burst;
+        if (qspi->idx >= 3)
+            dmacfg.src_maxburst = 1;
         dmacfg.dst_addr_width = qspi->dma_cfg.mem_bus_width;
         dmacfg.dst_maxburst = qspi->dma_cfg.mem_max_burst;
+        qspi_hw_set_fifo_watermark(base, qspi->fifo_depth >> 1, qspi->fifo_depth >> 1);
         ret = hal_dma_chan_config(dma_rx, &dmacfg);
         if (ret)
             goto out;
@@ -1157,7 +1181,7 @@ void hal_qspi_master_irq_handler(qspi_master_handle *h)
         u32 dolen, free_len;
         if ((qspi->work_mode == QSPI_WORK_MODE_ASYNC_TX_CPU) &&
             qspi->async_tx && qspi->async_tx_remain) {
-            free_len = QSPI_FIFO_DEPTH - qspi_hw_get_tx_fifo_cnt(base);
+            free_len = qspi->fifo_depth - qspi_hw_get_tx_fifo_cnt(base);
             dolen = min(free_len, qspi->async_tx_remain);
             qspi_hw_write_fifo(base, qspi->async_tx, dolen);
             qspi->async_tx += dolen;

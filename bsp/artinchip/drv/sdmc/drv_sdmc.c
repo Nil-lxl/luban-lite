@@ -695,10 +695,20 @@ static void aic_sdmc_resume(const struct rt_device *device, rt_uint8_t mode)
 
 static struct rt_device_pm_ops aic_sdmc_pm_ops =
 {
-    SET_DEVICE_PM_OPS(aic_sdmc_suspend, aic_sdmc_resume)
-    NULL,
+    SET_LATE_DEVICE_PM_OPS(aic_sdmc_suspend, aic_sdmc_resume)
 };
 #endif /* RT_USING_PM */
+
+struct rt_mmcsd_host *aic_sdmc_get_rthost(int id)
+{
+    if (id < 0 || id >= MAX_MMC_DEV_NUM)
+        return NULL;
+
+    if (g_aic_sdmc_host[id])
+        return g_aic_sdmc_host[id]->rthost;
+
+    return NULL;
+}
 
 static struct aic_sdmc_pdata sdmc_pdata[] = {
 #ifdef AIC_USING_SDMC0

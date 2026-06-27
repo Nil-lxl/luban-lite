@@ -581,6 +581,8 @@ static rt_int32_t sdio_read_cis(struct rt_sdio_function *func)
             break;
         }
 
+        func->curr = curr;
+
         switch (tpl_code)
         {
         case CISTPL_MANFID:
@@ -607,6 +609,7 @@ static rt_int32_t sdio_read_cis(struct rt_sdio_function *func)
             }
 
             rt_free(curr);
+            func->curr = NULL;
             break;
         case CISTPL_FUNCE:
             if (func->num != 0)
@@ -805,19 +808,16 @@ static rt_int32_t sdio_set_bus_wide(struct rt_mmcsd_card *card)
 
 static rt_int32_t sdio_register_card(struct rt_mmcsd_card *card)
 {
-    struct sdio_card *sc;
+    static struct sdio_card sc;
+    static int flag = 0;
     struct sdio_driver *sd;
     rt_list_t *l;
 
-    sc = rt_malloc(sizeof(struct sdio_card));
-    if (sc == RT_NULL)
-    {
-        LOG_E("malloc sdio card failed");
-        return -RT_ENOMEM;
+    sc.card = card;
+    if (!flag) {
+        flag = 1;
+        rt_list_insert_after(&sdio_cards, &sc.list);
     }
-
-    sc->card = card;
-    rt_list_insert_after(&sdio_cards, &sc->list);
 
     if (rt_list_isempty(&sdio_drivers))
     {

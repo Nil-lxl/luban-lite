@@ -8,6 +8,7 @@
 #include "fmacfw_patch_tbl_8800dc_h_u02.h"
 #include "fmacfw_calib_8800dc_h_u02.h"
 #include "lmacfw_rf_8800dc.h"
+#include "lmacfw_product_8818.h"
 #include "fmacfw_8800d80_u02.h"
 #include "fmacfw_8800d80_h_u02.h"
 #include "lmacfw_rf_8800d80_u02.h"
@@ -301,6 +302,18 @@ uint32_t aic8800dc_rf_fmacfw_size_get(void)
 }
 #endif /* CONFIG_WIFI_MODE_RFTEST */
 #endif
+
+#if defined(CONFIG_WIFI_MODE_FTTEST)
+void *aic8800dc_ft_lmacfw_ptr_get(void)
+{
+    return (void *)lmacfw_product_8818;
+}
+
+uint32_t aic8800dc_ft_lmacfw_size_get(void)
+{
+    return sizeof(lmacfw_product_8818);
+}
+#endif /* CONFIG_WIFI_MODE_FTTEST */
 
 #if defined(CONFIG_AIC8800D80_SUPPORT)
 void *aic8800d80_fw_ptr_get(void)

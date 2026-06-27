@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2020-2023 ArtInChip Technology Co., Ltd. All rights reserved.
+ * Copyright (c) 2020-2026 ArtInChip Technology Co., Ltd. All rights reserved.
  *
- * Dehuang Wu <dehuang.wu@artinchip.com>
+ * SPDX-License-Identifier: Apache-2.0
  */
 #ifndef _PRIVATE_PARAM_H_
 #define _PRIVATE_PARAM_H_
@@ -12,7 +12,10 @@
 #define DATA_SECT_TYPE_SYS_JTAG    0x41490003
 #define DATA_SECT_TYPE_SYS_UPGMODE 0x41490004
 #define DATA_SECT_TYPE_PARTITION   0x41490005
+#define DATA_SECT_TYPE_SEC_KEYDATA 0x41490008
 #define DATA_SECT_TYPE_END         0x4149FFFF
+
+#define KEYDATA_VERSION_V1 1
 
 struct private_dram_param {
 	u32 type;
@@ -84,10 +87,17 @@ struct private_system_jtag_head {
 	struct private_system_jtag_param param;
 };
 
+struct private_security_keydata_v1 {
+	u32 version;
+	u8 seed[64];
+	u8 key_enc[64];
+};
+
 struct private_dram_param *private_get_ddr_init_param(void *res_addr, u32 type);
 struct private_system_uart_param *private_get_system_uart_param(void *res_addr);
 struct private_system_jtag_head *private_get_system_jtag_param(void *res_addr);
 struct private_system_upgmode_pin_param *private_get_system_upgmode_pin_param(void *res_addr);
+struct private_security_keydata_v1 *get_security_keydata(void *res_addr, u32 ver);
 char *private_get_partition_string(void *res_addr);
 
 #endif /* _PRIVATE_PARAM_H_ */

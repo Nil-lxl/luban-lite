@@ -11,6 +11,12 @@ if AIC_WIRELESS_LAN
         config AIC_WIRELESS_WIFI_WK_HOST_GPIO
             string "wifi wakeup host gpio"
             depends on AIC_WIRELESS_LAN
+
+        config AIC_WIFI_SDMC_ID
+            int "SDMC host index for WiFi chip"
+            depends on AIC_WIRELESS_LAN
+            range 0 2
+            default 1
     endmenu
 endif
 

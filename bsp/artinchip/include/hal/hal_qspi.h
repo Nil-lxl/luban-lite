@@ -17,7 +17,7 @@ extern "C" {
 #define HAL_QSPI_BUS_WIDTH_SINGLE    1
 #define HAL_QSPI_BUS_WIDTH_DUAL      2
 #define HAL_QSPI_BUS_WIDTH_QUAD      4
-#define HAL_QSPI_MAX_FREQ_HZ         100000000
+#define HAL_QSPI_MAX_FREQ_HZ         200000000
 #define HAL_QSPI_FPGA_MAX_FREQ_HZ    24000000
 #define HAL_QSPI_INPUT_MIN_FREQ_HZ   32000000
 #define HAL_QSPI_MIN_FREQ_HZ         100000
@@ -150,21 +150,22 @@ struct qspi_transfer {
  */
 struct qspi_master_state {
     u32 idx;
+    u32 fifo_depth;
     qspi_master_async_cb cb;
     void *cb_priv;
-    u32 status;
+    volatile u32 status;
     u32 clk_id;
     u32 bus_hz;
     u32 bus_width;
     struct qspi_master_dma_config dma_cfg;
     void *dma_tx;
     void *dma_rx;
-    u8 *async_tx; /* Used in Async Non-DMA mode */
-    u8 *async_rx; /* Used in Async Non-DMA mode */
-    u32 async_tx_remain; /* Used in Async Non-DMA mode */
-    u32 async_rx_remain; /* Used in Async Non-DMA mode */
-    u32 work_mode;
-    u32 done_mask;
+    u8 * volatile async_tx; /* Used in Async Non-DMA mode */
+    u8 * volatile async_rx; /* Used in Async Non-DMA mode */
+    volatile u32 async_tx_remain; /* Used in Async Non-DMA mode */
+    volatile u32 async_rx_remain; /* Used in Async Non-DMA mode */
+    volatile u32 work_mode;
+    volatile u32 done_mask;
     bool bit_mode;
 };
 
