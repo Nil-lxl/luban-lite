@@ -256,7 +256,7 @@ static struct display_timing h013a08_timing = {
 };
 
 struct panel_dsi dsi = {
-    .mode = DSI_MOD_VID_BURST,
+    .mode = DSI_MOD_VID_HBP,
     .format = DSI_FMT_RGB888,
     .lane_num = 1,
 };

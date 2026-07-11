@@ -7,9 +7,12 @@
 #define ST7123_MAX_TOUCH        10
 #define ST7123_REGISTER_LEN     2
 
+#define ST7123_FW_VERSION       0x0000
 #define ST7123_DEV_STATUS       0x0001
 #define ST7123_DEV_CONTROL      0x0002
+#define ST7123_MAX_X_COORD      0x0005
 #define ST7123_TOUCH_INFO       0x0010
+
 
 // #define ST7123_TOUCH1_XH        0x03
 // #define ST7123_TOUCH1_XL        0x04

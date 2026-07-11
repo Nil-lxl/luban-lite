@@ -54,6 +54,10 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd MIPI DSI H034A01 panel"
         depends on AIC_DISP_MIPI_DSI
 
+    config AIC_PANEL_DSI_H034A03
+        bool "Hotlcd MIPI DSI H034A03 panel"
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_H035A27
         bool "Hotlcd MIPI DSI H035A27 panel"
         depends on AIC_DISP_MIPI_DSI
@@ -80,6 +84,10 @@ if !AIC_DISP_PQ_TOOL
 
     config AIC_PANEL_DSI_H050A20
         bool "Hotlcd MIPI DSI H050A20 panel"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H050A27
+        bool "Hotlcd MIPI DSI H050A27 panel"
         depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H055A03
@@ -114,8 +122,16 @@ if !AIC_DISP_PQ_TOOL
         bool "Hotlcd MIPI DSI H080A11 panel"
         depends on AIC_DISP_MIPI_DSI
 
+    config AIC_PANEL_DSI_H080B7
+        bool "Hotlcd MIPI DSI H080B7 panel"
+        depends on AIC_DISP_MIPI_DSI
+
     config AIC_PANEL_DSI_H080D16
         bool "Hotlcd MIPI DSI H080D16 panel(Conversion)"
+        depends on AIC_DISP_MIPI_DSI
+
+    config AIC_PANEL_DSI_H089A1
+        bool "Hotlcd MIPI DSI H089A1 panel"
         depends on AIC_DISP_MIPI_DSI
 
     config AIC_PANEL_DSI_H103W01
@@ -136,6 +152,10 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_MIPI_DBI
         help
             MIPI-DBI Type B, I8080_RGB565_8BIT
+
+    config AIC_PANEL_DBI_H027A01
+        bool "Hotlcd MIPI DBI H027A01 panel"
+        depends on AIC_DISP_MIPI_DBI
 
     config AIC_PANEL_DBI_H040A12
         bool "Hotlcd MIPI DBI H040A12 panel"
@@ -183,6 +203,11 @@ if !AIC_DISP_PQ_TOOL
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 
+    config AIC_PANEL_RGB_H028A21
+        bool "Hotlcd RGB H028A21 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+
     config AIC_PANEL_RGB_H030A8
         bool "Hotlcd RGB H030A8 panel"
         depends on AIC_DISP_RGB
@@ -210,6 +235,11 @@ if !AIC_DISP_PQ_TOOL
 
     config AIC_PANEL_RGB_H040A18
         bool "Hotlcd RGB H040A18 panel"
+        depends on AIC_DISP_RGB
+        select AIC_PANEL_SPI_EMULATION
+    
+    config AIC_PANEL_RGB_H040A20
+        bool "Hotlcd RGB H040A20 panel"
         depends on AIC_DISP_RGB
         select AIC_PANEL_SPI_EMULATION
 

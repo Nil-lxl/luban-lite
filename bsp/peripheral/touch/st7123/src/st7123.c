@@ -1,4 +1,3 @@
-#include "string.h"
 #include <string.h>
 #include <rtthread.h>
 #include <rtdevice.h>
@@ -28,6 +27,7 @@ static rt_err_t st7123_write_reg(struct rt_i2c_client *dev, rt_uint8_t *data, rt
         return -RT_ERROR;
     }
 }
+
 static rt_err_t st7123_read_reg(struct rt_i2c_client *dev, rt_uint8_t *reg, rt_uint8_t *data, rt_uint8_t len) {
     struct rt_i2c_msg msgs[2];
     rt_size_t read_size;
@@ -47,16 +47,31 @@ static rt_err_t st7123_read_reg(struct rt_i2c_client *dev, rt_uint8_t *reg, rt_u
         LOG_D("I2c read reg success\n");
         return RT_EOK;
     } else {
-        // LOG_E("I2C read reg error\n");
+        LOG_E("I2C read reg error\n");
         return -RT_ERROR;
     }
 }
-static rt_err_t st77922_get_info(struct rt_i2c_client *dev, struct rt_touch_info *info) {
-    rt_uint8_t reg[2];
-    rt_uint8_t read_buf[16];
 
-    reg[0] = (rt_uint8_t)(0x0000 >> 8);
-    reg[1] = (rt_uint8_t)(0x0000 & 0xFF);
+static rt_err_t st7123_get_info(struct rt_i2c_client *dev, struct rt_touch_info *info) {
+    rt_uint8_t reg[2];
+    rt_uint8_t info_buf[5];
+
+    if (info == RT_NULL)
+        return -RT_EINVAL;
+
+    reg[0] = (rt_uint8_t)(ST7123_MAX_X_COORD >> 8);
+    reg[1] = (rt_uint8_t)(ST7123_MAX_X_COORD & 0xFF);
+
+    if (st7123_read_reg(dev, reg, info_buf, sizeof(info_buf)) != RT_EOK) {
+        rt_kprintf("read info failed!\n");
+        return -RT_ERROR;
+    }
+
+    info->range_x = ((info_buf[0] & 0x3f) << 8 | info_buf[1]);
+    info->range_y = ((info_buf[2] & 0x3f) << 8 | info_buf[3]);
+    info->point_num = info_buf[4];
+    info->type = RT_TOUCH_TYPE_CAPACITANCE;
+    info->vendor = RT_TOUCH_VENDOR_UNKNOWN;
 
     return RT_EOK;
 }
@@ -77,13 +92,12 @@ static void st7123_touch_up(void *buf, int8_t id) {
     }
 
     read_data[id].timestamp = rt_touch_get_ts();
-
     read_data[id].x_coordinate = pre_x[id];
     read_data[id].y_coordinate = pre_y[id];
     read_data[id].track_id = id;
 
-    pre_x[id] = 0; /* last point is none */
-    pre_y[id] = 0;
+    pre_x[id] = -1; /* last point is none */
+    pre_y[id] = -1;
 }
 
 static void st7123_touch_down(void *buf, int8_t id, int16_t x, int16_t y) {
@@ -97,7 +111,6 @@ static void st7123_touch_down(void *buf, int8_t id, int16_t x, int16_t y) {
     }
 
     read_data[id].timestamp = rt_touch_get_ts();
-
     read_data[id].x_coordinate = x;
     read_data[id].y_coordinate = y;
     read_data[id].track_id = id;
@@ -106,105 +119,141 @@ static void st7123_touch_down(void *buf, int8_t id, int16_t x, int16_t y) {
     pre_y[id] = y;
 }
 
-rt_uint8_t st7123_get_touch_num(rt_uint8_t *buf, touch_point_t *touch_point) {
+static rt_size_t st7123_read_point(struct rt_touch_device *touch,
+    void *buf, rt_size_t read_num) {
+    rt_uint8_t point_status = 0;
     rt_uint8_t touch_num = 0;
-    for (int i = 0;i < ST7123_MAX_TOUCH; i++) {
-        touch_point[i].id = i;
-        touch_point[i].status = buf[4 + i * 7] >> 7;
-        if (touch_point[i].status == 1) {
-            touch_num++;
-        }
+    rt_uint8_t cmd[2], i, num_valid;
+    rt_uint8_t read_buf[7 * ST7123_MAX_TOUCH + 5] = { 0 };
+    rt_uint8_t read_index;
+    rt_uint8_t dev_status;
+    rt_uint8_t error_code;
+    int8_t read_id = 0;
+    int16_t input_x = 0;
+    int16_t input_y = 0;
+    rt_uint8_t id[5] = { 0 };
+    static rt_uint8_t pre_touch = 0;
+    static int8_t pre_id[ST7123_MAX_TOUCH] = { 0 };
+
+    rt_memset(buf, 0, sizeof(struct rt_touch_data) * read_num);
+
+    /* point status register */
+    cmd[0] = (rt_uint8_t)((ST7123_DEV_STATUS >> 8) & 0xFF);
+    cmd[1] = (rt_uint8_t)(ST7123_DEV_STATUS & 0xFF);
+
+    if (st7123_read_reg(&st7123_client, cmd, &point_status, 1) != RT_EOK) {
+        rt_kprintf("read point status fail\n");
+        read_num = 0;
+        goto __exit;
     }
 
-    return touch_num;
-}
-static void st7123_read_point(struct rt_touch_device *touch, void *buf, rt_size_t read_num) {
-    rt_uint8_t touch_num = 0;
-    rt_uint8_t reg[2];
-    rt_uint8_t read_buf[ST7123_MAX_TOUCH * 7 + 5] = { 0 };
-    touch_point_t *touch_point;
-
-    reg[0] = (rt_uint8_t)((ST7123_TOUCH_INFO >> 8) & 0xff);
-    reg[1] = (rt_uint8_t)(ST7123_TOUCH_INFO & 0xff);
-
-    if (st7123_read_reg(&st7123_client, reg, read_buf, sizeof(read_buf)) == RT_EOK) {
-        LOG_D("read touch data :");
-    } else {
-        // LOG_E("read touch data failed");
+    dev_status = point_status & 0x0f;
+    if (dev_status != 0) {
+        rt_kprintf("tp status is error, status mode:%d\n", dev_status);
+        read_num = 0;
+        goto __exit;
     }
 
-    touch_num = st7123_get_touch_num(&read_buf, touch_point);
+    error_code = (point_status & 0xf0) >> 4;
+    if (error_code != 0) {
+        rt_kprintf("tp status is error, error code:%d\n", error_code);
+        read_num = 0;
+        goto __exit;
+    }
 
-    if (touch_num) {
+    cmd[0] = (rt_uint8_t)((ST7123_TOUCH_INFO >> 8) & 0xFF);
+    cmd[1] = (rt_uint8_t)(ST7123_TOUCH_INFO & 0xFF);
+    /* read point num is touch_num */
+    if (st7123_read_reg(&st7123_client, cmd, read_buf, sizeof(read_buf)) != RT_EOK) {
+        rt_kprintf("read point failed\n");
+        read_num = 0;
+        goto __exit;
+    }
 
-        for (int i = 0;i < ST7123_MAX_TOUCH;i++) {
-            touch_point[i].touch_x = 0;
-            touch_point[i].touch_y = 0;     //init point
+    for (i = 0; i < ST7123_MAX_TOUCH; i++) {
+        num_valid = ((read_buf[7 * i + 4] & 0x80) != 0) ? 1 : 0;
+        touch_num += num_valid;
+    }
 
-            touch_point[i].touch_x = ((read_buf[touch_point[i].id * 7 + 4] & 0x0f) << 8) | read_buf[touch_point[i].id * 7 + 5];
-            touch_point[i].touch_y = ((read_buf[touch_point[i].id * 7 + 6] & 0x0f) << 8) | read_buf[touch_point[i].id * 7 + 7];
+    if (touch_num > ST7123_MAX_TOUCH) {
+        touch_num = 0;
+        goto __exit;
+    }
 
-            aic_touch_flip(&touch_point[i].touch_x, &touch_point[i].touch_y);
-            aic_touch_rotate(&touch_point[i].touch_x, &touch_point[i].touch_y);
-            aic_touch_scale(&touch_point[i].touch_x, &touch_point[i].touch_y);
-            // if (!aic_touch_crop(&touch_point[i].touch_x, &touch_point[i].touch_y))
-            //     continue;
+    for (int8_t i = 0; i < touch_num; i++) {
+        id[i] = i;
+    }
 
-            if (touch_point[i].status == 1) {
-                st7123_touch_down(buf, touch_point[i].id, touch_point[i].touch_x, touch_point[i].touch_y);
+    if (pre_touch > touch_num) /* point up */
+    {
+        for (read_index = 0; read_index < pre_touch; read_index++) {
+            rt_uint8_t j;
+
+            for (j = 0; j < touch_num; j++) {
+                read_id = id[read_index];
+
+                if (pre_id[read_index] == read_id) /* this id is not free */
+                    break;
+
+                if (j >= touch_num - 1) {
+                    rt_uint8_t up_id;
+                    up_id = pre_id[read_index];
+                    st7123_touch_up(buf, up_id);
+                }
             }
-            if (touch_point[i].status == 0) {
-                st7123_touch_up(buf, touch_point[i].id);
-            }
-        }
-    } else {
-        for (int i = 0; i < ST7123_MAX_TOUCH; i++) {
-            st7123_touch_up(buf, touch_point[i].id);
         }
     }
 
+    if (touch_num) /* point down */
+    {
+        rt_uint8_t off_set;
+
+        for (read_index = 0; read_index < touch_num; read_index++) {
+            off_set = read_index * 7;
+
+            read_id = id[read_index];
+            pre_id[read_index] = read_id;
+
+            input_x = ((read_buf[off_set + 4] & 0x3f) << 8) | read_buf[off_set + 5];
+            input_y = ((read_buf[off_set + 6] & 0x3f) << 8) | read_buf[off_set + 7];
+
+            aic_touch_flip(&input_x, &input_y);
+            aic_touch_rotate(&input_x, &input_y);
+            aic_touch_scale(&input_x, &input_y);
+            if (!aic_touch_crop(&input_x, &input_y))
+                continue;
+
+            st7123_touch_down(buf, read_id, input_x, input_y);
+        }
+    } else if (pre_touch) {
+        for (read_index = 0; read_index < pre_touch; read_index++) {
+            st7123_touch_up(buf, pre_id[read_index]);
+        }
+    }
+
+    pre_touch = touch_num;
+
+__exit:
+    return read_num;
 }
 
-static rt_err_t st7123_control(struct rt_touch_device *touch, int cmd, void *data) {
-    struct rt_touch_info *info = RT_NULL;
-
+static rt_err_t st7123_control(struct rt_touch_device *touch, int cmd, void *arg) {
     if (cmd == RT_TOUCH_CTRL_GET_INFO) {
-
-        // return st7123_get_info(&st7123_client, data);
-
-        info = (struct rt_touch_info *)data;
-        if (info == RT_NULL)
-            return -RT_EINVAL;
-
-        info->point_num = touch->info.point_num;
-        info->range_x = touch->info.range_x;
-        info->range_y = touch->info.range_y;
-        info->type = touch->info.type;
-        info->vendor = touch->info.vendor;
+        return st7123_get_info(&st7123_client, arg);
     }
 
     return RT_EOK;
 }
 
-const struct rt_touch_ops st7123_touch_ops = {
+static struct rt_touch_ops st7123_touch_ops = {
     .touch_readpoint = st7123_read_point,
     .touch_control = st7123_control,
 };
 
-struct rt_touch_info st7123_info = {
-    .type = RT_TOUCH_TYPE_CAPACITANCE,
-    .vendor = RT_TOUCH_VENDOR_UNKNOWN,
-    .range_x = (rt_int32_t)AIC_TOUCH_X_COORDINATE_RANGE,
-    .range_y = (rt_int32_t)AIC_TOUCH_Y_COORDINATE_RANGE,
-    .point_num = 10,
-};
-
-
 static int st7123_hw_init(const char *name, struct rt_touch_config *cfg) {
-    rt_touch_t touch_device = NULL;
-    rt_uint8_t cmd[3] = { 0 };
+    struct rt_touch_device *touch_device = RT_NULL;
 
-    touch_device = (rt_touch_t)rt_malloc(sizeof(struct rt_touch_device));
+    touch_device = (struct rt_touch_device *)rt_malloc(sizeof(struct rt_touch_device));
     if (touch_device == RT_NULL) {
         LOG_E("touch device malloc fail");
         return -RT_ERROR;
@@ -212,23 +261,19 @@ static int st7123_hw_init(const char *name, struct rt_touch_config *cfg) {
     rt_memset((void *)touch_device, 0, sizeof(struct rt_touch_device));
 
     st7123_client.bus = (struct rt_i2c_bus_device *)rt_device_find(cfg->dev_name);
-    if (st7123_client.bus) {
-        LOG_D("found %s device.", cfg->dev_name);
-    } else {
+    if (st7123_client.bus == RT_NULL) {
         LOG_E("Can't find %s device", cfg->dev_name);
         return -RT_ERROR;
     }
 
-    if (rt_device_open((rt_device_t)st7123_client.bus, RT_DEVICE_FLAG_RDWR) == RT_EOK) {
-        LOG_D("opened %s device.", cfg->dev_name);
-    } else {
-        LOG_E("open %s device failed.", cfg->dev_name);
+    if (rt_device_open((rt_device_t)st7123_client.bus, RT_DEVICE_FLAG_RDWR) !=
+        RT_EOK) {
+        LOG_E("open %s device failed", cfg->dev_name);
         return -RT_ERROR;
     }
 
     st7123_client.client_addr = ST7123_SLAVE_ADDR;
 
-    touch_device->info = st7123_info;
     rt_memcpy(&touch_device->config, cfg, sizeof(struct rt_touch_config));
     touch_device->ops = &st7123_touch_ops;
 
@@ -236,42 +281,44 @@ static int st7123_hw_init(const char *name, struct rt_touch_config *cfg) {
         LOG_E("touch device st7123 init failed !!!");
         return -RT_ERROR;
     }
-    LOG_I("touch device st7123 init success");
 
+    LOG_I("touch device st7123 init success");
     return RT_EOK;
 }
 
-static int st7123_gpio_cfg() {
-    unsigned int g, p;
-    long pin;
+static void st7123_gpio_init(struct rt_touch_config *cfg) {
 
-    // RST
-    pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-    hal_gpio_direction_input(g, p);
+    rt_thread_mdelay(20);
 
-    // INT
-    pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-    hal_gpio_direction_input(g, p);
-    hal_gpio_set_irq_mode(g, p, 0);
+    /* rst output 0 */
+    rt_pin_mode(cfg->rst_pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->rst_pin, PIN_HIGH);
+    rt_thread_mdelay(5);
 
-    return 0;
+    /* irq output 0 */
+    // rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_OUTPUT);
+    // rt_pin_write(cfg->irq_pin.pin, PIN_LOW);
+    // rt_thread_mdelay(10);
+
+    /* rst output 1 */
+    rt_pin_mode(cfg->rst_pin, PIN_MODE_OUTPUT);
+    rt_pin_write(cfg->rst_pin, PIN_HIGH);
+    rt_thread_mdelay(10);
+
+    /* irq input float */
+    rt_pin_mode(cfg->irq_pin.pin, PIN_MODE_INPUT);
 }
 
 static int rt_hw_st7123_port(void) {
     struct rt_touch_config cfg;
     rt_uint8_t rst_pin;
 
-    st7123_gpio_cfg();
-
-    rst_pin = rt_pin_get(AIC_TOUCH_PANEL_RST_PIN);
     cfg.dev_name = AIC_TOUCH_PANEL_I2C_CHAN;
-    cfg.irq_pin.pin = rt_pin_get(AIC_TOUCH_PANEL_INT_PIN);
+    cfg.irq_pin.pin = drv_pin_get(AIC_TOUCH_PANEL_INT_PIN);
     cfg.irq_pin.mode = PIN_MODE_INPUT;
-    cfg.user_data = &rst_pin;
+    cfg.rst_pin = drv_pin_get(AIC_TOUCH_PANEL_RST_PIN);
+
+    st7123_gpio_init(&cfg);
 
     st7123_hw_init(AIC_TOUCH_PANEL_NAME, &cfg);
 

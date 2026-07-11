@@ -437,6 +437,8 @@ static void fps_callback(lv_timer_t *tmr)
 
 void meter_ui_init()
 {
+    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), 0);
+
     img_bg = lv_img_create(lv_scr_act());
     lv_img_set_src(img_bg, LVGL_PATH(bg/bg_red.jpg));
     lv_obj_set_pos(img_bg, 0, 0);

@@ -196,6 +196,32 @@ struct aic_pinmux aic_pinmux_config[] = {
     {4, PIN_PULL_DIS, 3, "PD.26"},
     {4, PIN_PULL_DIS, 3, "PD.27"},
 #endif
+#if defined AIC_DISP_MIPI_DBI && !defined(LV_USE_SPI_REPLACE_MIPI_DBI)
+    {1, PIN_PULL_DIS, 3, "PB.1"},   //LCD RESET
+
+    {2, PIN_PULL_DIS, 3, "PD.8"},
+    {2, PIN_PULL_DIS, 3, "PD.9"},
+    {2, PIN_PULL_DIS, 3, "PD.10"},
+    {2, PIN_PULL_DIS, 3, "PD.11"},
+    {2, PIN_PULL_DIS, 3, "PD.12"},
+    {2, PIN_PULL_DIS, 3, "PD.13"},
+    {2, PIN_PULL_DIS, 3, "PD.14"},
+    {2, PIN_PULL_DIS, 3, "PD.15"},
+
+    {2, PIN_PULL_DIS, 3, "PD.16"},
+    {2, PIN_PULL_DIS, 3, "PD.17"},
+    {2, PIN_PULL_DIS, 3, "PD.18"},
+    {2, PIN_PULL_DIS, 3, "PD.19"},
+    {2, PIN_PULL_DIS, 3, "PD.20"},
+    {2, PIN_PULL_DIS, 3, "PD.21"},
+    {2, PIN_PULL_DIS, 3, "PD.22"},
+    {2, PIN_PULL_DIS, 3, "PD.23"},
+    
+    {2, PIN_PULL_DIS, 3, "PD.24"},  //WR
+    {2, PIN_PULL_DIS, 3, "PD.25"},  //RD
+    {2, PIN_PULL_DIS, 3, "PD.26"},  //CS
+    {2, PIN_PULL_DIS, 3, "PD.27"},  //DC/RS
+#endif
 #ifdef AIC_USING_GMAC0
     /* gmac0 */
     {2, PIN_PULL_DIS, 3, "PE.0"},

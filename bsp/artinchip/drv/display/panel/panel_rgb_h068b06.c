@@ -16,7 +16,7 @@ static void panel_gpio_init(void) {
     panel_gpio_set_value(&reset_gpio, 0);
     aic_delay_ms(20);
     panel_gpio_set_value(&reset_gpio, 1);
-    aic_delay_ms(1500);
+    aic_delay_ms(120);
 }
 #endif
 

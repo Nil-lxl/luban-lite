@@ -46,6 +46,8 @@ void aic_ui_init() {
     lv_demo_widgets();
 #elif defined AIC_LVGL_DEMO_BENCHMARK
     lv_demo_benchmark();
+#elif defined AIC_LVGL_DEMO_MUSIC
+    lv_demo_music();
 #else
     extern void ui_init(void);
     ui_init();

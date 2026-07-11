@@ -50,6 +50,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DSI_H034A01
     &dsi_h034a01,
 #endif
+#ifdef AIC_PANEL_DSI_H034A03
+    &dsi_h034a03,
+#endif
 #ifdef AIC_PANEL_DSI_H035A27
     &dsi_h035a27,
 #endif
@@ -70,6 +73,9 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_DSI_H050A20
     &dsi_h050a20,
+#endif
+#ifdef AIC_PANEL_DSI_H050A27
+    &dsi_h050a27,
 #endif
 #ifdef AIC_PANEL_DSI_H055A03
     &dsi_h055a03,
@@ -95,8 +101,14 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_DSI_H080A11
     &dsi_h080a11,
 #endif
+#ifdef AIC_PANEL_DSI_H080B7
+    &dsi_h080b7,
+#endif
 #ifdef AIC_PANEL_DSI_H080D16
     &dsi_h080d16,
+#endif
+#ifdef AIC_PANEL_DSI_H089A1
+    &dsi_h089a1,
 #endif
 #ifdef AIC_PANEL_DSI_H103W01
     &dsi_h103w01,
@@ -108,6 +120,9 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_DBI_ST7789
     &dbi_st7789,
+#endif
+#ifdef AIC_PANEL_DBI_H027A01
+    &dbi_h027a01,
 #endif
 #ifdef AIC_PANEL_DBI_H040A12
     &dbi_h040a12,
@@ -131,6 +146,9 @@ static struct aic_panel *panels[] = {
 #ifdef AIC_PANEL_RGB_H028A19
     &rgb_h028a19,
 #endif
+#ifdef AIC_PANEL_RGB_H028A21
+    &rgb_h028a21,
+#endif
 #ifdef AIC_PANEL_RGB_H030A8
     &rgb_h030a8,
 #endif
@@ -148,6 +166,9 @@ static struct aic_panel *panels[] = {
 #endif
 #ifdef AIC_PANEL_RGB_H040A18
     &rgb_h040a18,
+#endif
+#ifdef AIC_PANEL_RGB_H040A20
+    &rgb_h040a20,
 #endif
 #ifdef AIC_PANEL_RGB_H043A7
     &rgb_h043a7,
@@ -375,10 +396,12 @@ int panel_default_enable(struct aic_panel *panel)
     static struct gpio_desc reset_gpio;
     panel_get_gpio(&reset_gpio, RESET_PIN);
 
+#if 0
     aic_delay_ms(1);
     panel_gpio_set_value(&reset_gpio, 0);
     aic_delay_ms(10);
-    panel_gpio_set_value(&reset_gpio, 1);
+#endif
+    panel_gpio_set_value(&reset_gpio, 1);  //直接拉高复位io
     aic_delay_ms(120);
 
     panel_di_enable(panel, 0);

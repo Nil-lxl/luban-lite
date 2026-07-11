@@ -7,16 +7,16 @@
             "env_r":      { "size": "256k" },
             "os":         { "size": "4m" },
             "os_r":       { "size": "4m" },
-            "rodata":     { "size": "16m" },
-            "rodata_r":   { "size": "16m" },
+            "rodata":     { "size": "32m" },
+            "rodata_r":   { "size": "32m" },
             "data": {
-                "size": "40m",
+                "size": "20m",
                 "nftl": { // Volume in NFTL device
                     "data": { "size": "-" },
                 },
             },
             "data_r": {
-                "size": "40m",
+                "size": "20m",
                 "nftl": { // Volume in NFTL device
                     "data": { "size": "-" },
                 },

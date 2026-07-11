@@ -32,7 +32,7 @@ static int count = 0;
 void player_ui_init() {
     aicos_msleep(1500);     //等待sdcard挂载成功
     scr = lv_scr_act();
-    // lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
+    lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
 
 #if 0
     // gif = lv_gif_create(scr);
@@ -45,8 +45,10 @@ void player_ui_init() {
 #else
     player = lv_aic_player_create(scr);
     lv_obj_center(player);
-    // lv_aic_player_set_src(player, SD_VIDEO_PATH(video.mp4));
-    lv_aic_player_set_src(player, LVGL_VIDEO_PATH(video640.mp4));
+    lv_aic_player_set_src(player, SD_VIDEO_PATH(video.mp4));
+    // lv_aic_player_set_src(player, LVGL_VIDEO_PATH(video640.mp4));
+    // lv_aic_player_set_src(player, UDISK_VIDEO_PATH(video.mp4));
+    
 
     lv_aic_player_set_auto_restart(player, true);
     lv_aic_player_set_cmd(player, LV_AIC_PLAYER_CMD_START, NULL);

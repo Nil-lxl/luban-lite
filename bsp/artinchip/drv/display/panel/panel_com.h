@@ -35,6 +35,7 @@ extern struct aic_panel dsi_h028a29;
 extern struct aic_panel dsi_h030b07;
 extern struct aic_panel dsi_h032a06;
 extern struct aic_panel dsi_h034a01;
+extern struct aic_panel dsi_h034a03;
 extern struct aic_panel dsi_h035a27;
 extern struct aic_panel dsi_h035b16;
 extern struct aic_panel dsi_h035b22;
@@ -42,6 +43,7 @@ extern struct aic_panel dsi_h040b24;
 extern struct aic_panel dsi_h042a01;
 extern struct aic_panel dsi_h043a8;
 extern struct aic_panel dsi_h050a20;
+extern struct aic_panel dsi_h050a27;
 extern struct aic_panel dsi_h055a03;
 extern struct aic_panel dsi_h055a05;
 extern struct aic_panel dsi_h062a02;
@@ -50,7 +52,9 @@ extern struct aic_panel dsi_h070a21;
 extern struct aic_panel dsi_h070a27;
 extern struct aic_panel dsi_h078b06;
 extern struct aic_panel dsi_h080a11;
+extern struct aic_panel dsi_h080b7;
 extern struct aic_panel dsi_h080d16;
+extern struct aic_panel dsi_h089a1;
 extern struct aic_panel dsi_h103w01;
 
 
@@ -59,6 +63,7 @@ extern struct aic_panel dsi_h103w01;
  */
 extern struct aic_panel dbi_ili9488;
 extern struct aic_panel dbi_st7789;
+extern struct aic_panel dbi_h027a01;
 extern struct aic_panel dbi_h040a12;
 extern struct aic_panel dbi_h040a27;
 
@@ -76,12 +81,14 @@ extern struct aic_panel spi_general;
 extern struct aic_panel rgb_st7701s;
 extern struct aic_panel rgb_h024a13;
 extern struct aic_panel rgb_h028a19;
+extern struct aic_panel rgb_h028a21;
 extern struct aic_panel rgb_h030a8;
 extern struct aic_panel rgb_h030a10;
 extern struct aic_panel rgb_h034a02;
 extern struct aic_panel rgb_h035a17;
 extern struct aic_panel rgb_h035a24;
 extern struct aic_panel rgb_h040a18;
+extern struct aic_panel rgb_h040a20;
 extern struct aic_panel rgb_h043a7;
 extern struct aic_panel rgb_h043a34;
 extern struct aic_panel rgb_h043b32;

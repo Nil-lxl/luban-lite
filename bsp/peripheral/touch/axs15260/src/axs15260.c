@@ -70,7 +70,7 @@ static rt_size_t axs15260_readpoint(struct rt_touch_device *touch, void *data, r
         goto __exit;
     }
 
-    if (axs15260_read_regs(&axs15260_client, 14, buf) != RT_EOK) {
+    if (axs15260_read_regs(&axs15260_client, 0x0D, buf) != RT_EOK) {
         rt_kprintf("read point fail\n");
         goto __exit;
     }

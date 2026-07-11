@@ -288,6 +288,9 @@ if GetDepend('AIC_PANEL_DSI_H032A06'):
 if GetDepend('AIC_PANEL_DSI_H034A01'):
     src += Glob('drv/display/panel/panel_dsi_h034a01.c')
 
+if GetDepend('AIC_PANEL_DSI_H034A03'):
+    src += Glob('drv/display/panel/panel_dsi_h034a03.c')
+
 if GetDepend('AIC_PANEL_DSI_H035A27'):
     src += Glob('drv/display/panel/panel_dsi_h035a27.c')
 
@@ -308,6 +311,9 @@ if GetDepend('AIC_PANEL_DSI_H043A8'):
 
 if GetDepend('AIC_PANEL_DSI_H050A20'):
     src += Glob('drv/display/panel/panel_dsi_h050a20.c')
+
+if GetDepend('AIC_PANEL_DSI_H050A27'):
+    src += Glob('drv/display/panel/panel_dsi_h050a27.c')
 
 if GetDepend('AIC_PANEL_DSI_H055A03'):
     src += Glob('drv/display/panel/panel_dsi_h055a03.c')
@@ -333,8 +339,14 @@ if GetDepend('AIC_PANEL_DSI_H078B06'):
 if GetDepend('AIC_PANEL_DSI_H080A11'):
     src += Glob('drv/display/panel/panel_dsi_h080a11.c')
 
+if GetDepend('AIC_PANEL_DSI_H080B7'):
+    src += Glob('drv/display/panel/panel_dsi_h080b7.c')
+
 if GetDepend('AIC_PANEL_DSI_H080D16'):
     src += Glob('drv/display/panel/panel_dsi_h080d16.c')
+
+if GetDepend('AIC_PANEL_DSI_H089A1'):
+    src += Glob('drv/display/panel/panel_dsi_h089a1.c')
 
 if GetDepend('AIC_PANEL_DSI_H103W01'):
     src += Glob('drv/display/panel/panel_dsi_h103w01.c')
@@ -344,6 +356,9 @@ if GetDepend('AIC_PANEL_DSI_H103W01'):
 #
 if GetDepend('AIC_PANEL_DBI_ST7789'):
     src += Glob('drv/display/panel/panel_dbi_st7789.c')
+
+if GetDepend('AIC_PANEL_DBI_H027A01'):
+    src += Glob('drv/display/panel/panel_dbi_h027a01.c')
 
 if GetDepend('AIC_PANEL_DBI_H040A12'):
     src += Glob('drv/display/panel/panel_dbi_h040a12.c')
@@ -378,6 +393,9 @@ if GetDepend('AIC_PANEL_RGB_H024A13'):
 if GetDepend('AIC_PANEL_RGB_H028A19'):
     src += Glob('drv/display/panel/panel_rgb_h028a19.c')
 
+if GetDepend('AIC_PANEL_RGB_H028A21'):
+    src += Glob('drv/display/panel/panel_rgb_h028a21.c')
+
 if GetDepend('AIC_PANEL_RGB_H030A8'):
     src += Glob('drv/display/panel/panel_rgb_h030a8.c')
 
@@ -395,6 +413,9 @@ if GetDepend('AIC_PANEL_RGB_H035A24'):
 
 if GetDepend('AIC_PANEL_RGB_H040A18'):
     src += Glob('drv/display/panel/panel_rgb_h040a18.c')
+
+if GetDepend('AIC_PANEL_RGB_H040A20'):
+    src += Glob('drv/display/panel/panel_rgb_h040a20.c')
 
 if GetDepend('AIC_PANEL_RGB_H043A7'):
     src += Glob('drv/display/panel/panel_rgb_h043a7.c')

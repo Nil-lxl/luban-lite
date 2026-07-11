@@ -18,10 +18,7 @@ static void panel_gpio_init(void) {
     panel_gpio_set_value(&reset_gpio, 1);
     aic_delay_ms(120);
 }
-// void spi_init_seq_single(u8 cmd, u8 data) {
-//     panel_spi_cmd_wr(cmd);
-//     panel_spi_data_wr(data);
-// }
+
 static int panel_enable(struct aic_panel *panel) {
     panel_gpio_init();
 
