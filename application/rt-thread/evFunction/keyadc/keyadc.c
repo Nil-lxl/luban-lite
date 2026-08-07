@@ -9,7 +9,7 @@
 
 #define LOG_TAG "KEYADC"
 
-#ifdef AIC_USING_HOT68_DEMO_A01_V0
+#ifdef AIC_USING_HT68_DEMO_A01
 #define KEYADC_TEST_CHANNLE     5
 #else 
 #define KEYADC_TEST_CHANNLE     7
@@ -25,7 +25,7 @@ static int keyadc_voltage[] = { 400, 1100, 2000, 2680 };
 // static int keyadc_voltage[] = { 460, 1160, 2090, 2740 };
 #elif defined AIC_USING_H215_DEMO_A02_V0
 static int keyadc_voltage[] = { 340, 700, 1240, 1560 };
-#elif defined AIC_USING_HOT68_DEMO_A01_V0
+#elif defined AIC_USING_HT68_DEMO_A01
 static int keyadc_voltage[] = { 540, 1030, 1810, 2280 };
 #elif defined AIC_USING_HT68_DEMO_A02_V1
 static int keyadc_voltage[] = { 540, 1030, 1810, 2280 };

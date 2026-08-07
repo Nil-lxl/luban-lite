@@ -91,6 +91,6 @@ struct aic_panel dsi_h024b12 = {
     .name = "panel-h024b12",
     .timings = &h024b12_timing,
     .funcs = &paenl_funcs,
-    .dbi = &dsi,
+    .dsi = &dsi,
     .connector_type = AIC_MIPI_COM,
 };

@@ -4,7 +4,7 @@ source "packages/third-party/cpu_load/Kconfig"
 source "packages/third-party/cpu_usage/Kconfig"
 source "packages/third-party/ramdisk/Kconfig"
 source "packages/third-party/cherryusb/Kconfig"   # for CherryUSB V1.5.0
-#source "packages/third-party/cherryusb-1.0.0/Kconfig"   # for CherryUSB V1.0.0
+# source "packages/third-party/cherryusb-1.0.0/Kconfig"   # for CherryUSB V1.0.0
 source "packages/third-party/adbd/Kconfig"
 source "packages/third-party/lwip/Kconfig"
 source "packages/third-party/nimble/Kconfig"

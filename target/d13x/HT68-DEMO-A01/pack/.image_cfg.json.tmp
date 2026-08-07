@@ -13,7 +13,7 @@
     "image": {
         "info": { // Header information about image
             "platform": "d13x",
-            "product": "HOT68-DEMO-A01-V0",
+            "product": "HT68-DEMO-A01",
             "version": "1.0.0",
             "media": {
                 "type": "spi-nor",
@@ -87,8 +87,8 @@
                 "head_ver": "0x00010001",
                 "loader": {
                     "file": "bootloader.bin",
-                    "load address": "CONFIG_AIC_BOOTLOADER_LOAD_BASE",
-                    "entry point": "CONFIG_AIC_BOOTLOADER_TEXT_BASE", // 256 byte aic header
+                    "load address": "0x406c0000",
+                    "entry point": "0x406c0100", // 256 byte aic header
                 },
                 "resource": {
                     "private": "pbp_cfg.bin",

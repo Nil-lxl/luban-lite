@@ -39,16 +39,8 @@ choice
         bool "H215_DEMO_A02_V0"
         depends on AIC_CHIP_D21X
 
-    config AIC_USING_JYX68_RGB01
-        bool "JYX68_RGB01"
-        depends on AIC_CHIP_D13X
-
-    config AIC_USING_JYX68_MIPI01
-        bool "JYX68_MIPI01"
-        depends on AIC_CHIP_D13X
-
-    config AIC_USING_HOT68_DEMO_A01_V0
-        bool "HOT68_DEMO_A01_V0"
+    config AIC_USING_HT68_DEMO_A01
+        bool "HT68_DEMO_A01"
         depends on AIC_CHIP_D13X
 
     config AIC_USING_HT68_DEMO_A02_V1

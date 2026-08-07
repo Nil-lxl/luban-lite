@@ -145,7 +145,7 @@ static int panel_enable(struct aic_panel *panel) {
     panel_dsi_dcs_send_seq(panel, 0x8A, 0x02);
     //CMD PAGE 4
     panel_dsi_dcs_send_seq(panel, 0xFF, 0x98, 0x81, 0x04);
-    panel_dsi_dcs_send_seq(panel, 0x00, 0x80);  //MIPI_LANE_SEL
+    // panel_dsi_dcs_send_seq(panel, 0x00, 0x80);  //MIPI_LANE_SEL
     panel_dsi_dcs_send_seq(panel, 0x6E, 0x1A);
     panel_dsi_dcs_send_seq(panel, 0x6F, 0x37);
     panel_dsi_dcs_send_seq(panel, 0x3A, 0xA4);
@@ -192,6 +192,12 @@ static int panel_enable(struct aic_panel *panel) {
     // panel_dsi_dcs_send_seq(panel, 0xB6, 0x90);  //software polarity
     panel_dsi_dcs_send_seq(panel, 0xB7, 0x02);  //MIPI_LANE num
 
+    /**
+     * 4lane:Page4_00h  80  Page1_B6h 90 Page1_B7h 02
+     * 3lane:Page4_00h  00  Page1_B6h 90 Page1_B7h 02
+     * 2lnae:Page4_00h  80  Page1_B6h 90 Page1_B7h 03 
+     */
+
     panel_dsi_dcs_send_seq(panel, 0xC0, 0x00);
     panel_dsi_dcs_send_seq(panel, 0xC1, 0x21);
     panel_dsi_dcs_send_seq(panel, 0xC2, 0x35);
@@ -219,7 +225,7 @@ static int panel_enable(struct aic_panel *panel) {
     panel_dsi_dcs_send_seq(panel, 0x11, 0x00);
     aic_delay_ms(120);
     panel_dsi_dcs_send_seq(panel, 0x29, 0x00);
-    aic_delay_ms(5);
+    aic_delay_ms(50);
 
     panel_dsi_setup_realmode(panel);
 
@@ -258,6 +264,6 @@ struct aic_panel dsi_h070b13 = {
     .name = "panel-h070b13",
     .timings = &h070b13_timing,
     .funcs = &paenl_funcs,
-    .dbi = &dsi,
+    .dsi = &dsi,
     .connector_type = AIC_MIPI_COM,
 };

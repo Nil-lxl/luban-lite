@@ -501,28 +501,33 @@ static void touchscreen_test(lcd_test_param_t param) {
  *       img_path(图片路径)，gray_level_num(灰阶级数)
  */
 static const lcd_test_item_t test_items[] = {
-    // {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      1000, true},
+    {"边框",       fill_border,         .param.border = { BLACK, WHITE, 2 },      1000, true},
     {"红色",       fill_color,          .param.color = { RED, 0, 0 },             1000, true},
     {"绿色",       fill_color,          .param.color = { GREEN, 0, 0 },           1000, true},
     {"蓝色",       fill_color,          .param.color = { BLUE, 0, 0 },            1000, true},
+    {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           1000, true},
     // {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
-    // {"白色",       fill_color,          .param.color = { WHITE, 0, 0 },           1000, true},
     // {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           1000, true},
     {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
     {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/1024x600.jpg", 1000, true},
-    // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/1024x600-1.jpg", 2000, true},
-    // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/1024x600-2.jpg", 2000, true},
-    // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/1024x600-3.jpg", 2000, true},
-    // {"图片5",      decode_img,          .param.img_path = "rodata/lcd_test/image/1024x600-4.jpg", 2000, true},
-    // {"图片6",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x800-5.jpg", 2000, true},
-    // {"图片7",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x800-6.jpg", 60000, true},
-    // {"图片8",      decode_img,          .param.img_path = "rodata/lcd_test/image/720x720-7.png", 3000, true},
-    // {"图片9",      decode_img,          .param.img_path = "rodata/lcd_test/image/800x1280-8.jpg", 3000, true},
-    // {"图片10",     decode_img,          .param.img_path = "rodata/lcd_test/image/800x1280-9.jpg", 3000, true},
-    // {"图片10",     decode_img,          .param.img_path = "rodata/lcd_test/image/800x1280-10.jpg", 3000, true},
-    // {"图片11",     decode_img,          .param.img_path = "rodata/lcd_test/image/800x1280-11.jpg", 3000, true},
+    // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-1.png", 2000, true},
+    // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-2.png", 2000, true},
+    // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-3.png", 2000, true},
+    // {"图片5",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-4.png", 2000, true},
+    // {"图片6",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-5.png", 2000, true},
+    // {"图片7",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-6.png", 2000, true},
+    // {"图片8",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-7.png", 2000, true},
+    // {"图片9",      decode_img,          .param.img_path = "sdcard/image/img02.png", 2000, true},
+    // {"图片10",     decode_img,          .param.img_path = "sdcard/image/img03.png", 2000, true},
+    // {"图片10",     decode_img,          .param.img_path = "sdcard/image/img04.png", 2000, true},
+    // {"图片11",     decode_img,          .param.img_path = "sdcard/image/img05.png", 2000, true},
+    // {"图片12",     decode_img,          .param.img_path = "sdcard/image/img06.png", 2000, true},
+    // {"图片13",     decode_img,          .param.img_path = "sdcard/image/img07.png", 2000, true},
+    // {"图片14",     decode_img,          .param.img_path = "sdcard/image/img08.png", 2000, true},
+    // {"图片15",     decode_img,          .param.img_path = "sdcard/image/img09.png", 2000, true},
+    // {"图片16",     decode_img,          .param.img_path = "sdcard/image/img10.png", 2000, true},
 
-    {"触摸测试",      touchscreen_test,    .param = {0},                             10000, true},
+    // {"触摸测试",      touchscreen_test,    .param = {0},                             10000, true},
 
 };
 
@@ -556,6 +561,8 @@ int brightness = 20;
 
 /* 启动LCD测试线程,主函数调用 */
 void lcd_test_start(void) {
+    // aicos_mdelay(1000);
+
     lcd_test_thread = rt_thread_create("display_test", lcd_test_entry, NULL, 8 * 1024, 25, 5);
     if (lcd_test_thread != RT_NULL) {
         rt_thread_startup(lcd_test_thread);

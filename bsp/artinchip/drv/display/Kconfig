@@ -203,7 +203,7 @@ endchoice
 config AIC_BACKLIGHT_ENABLE_GPIO
     string "panel backlight enable pin"
     default "PC.7" if AIC_USING_D213ECV_EzUIX1_DEMO_V1
-    default "PE.14" if AIC_USING_HOT68_DEMO_A01_V0
+    default "PE.14" if AIC_USING_HT68_DEMO_A01
     default "PE.11" if AIC_USING_HT68_DEMO_A02_V1
 
 config AIC_BACKLIGHT_ENABLE_GPIO_LOW
