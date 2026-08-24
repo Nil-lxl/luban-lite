@@ -38,14 +38,27 @@ typedef struct {
     bool enabled;                   //是否启用
 }lcd_test_item_t;
 
+#ifdef AIC_USING_HT68_DEMO_A01
+#define KEYADC_TEST_CHANNLE     5
+#else 
+#define KEYADC_TEST_CHANNLE     7
+#endif 
+
+typedef enum KEY_FLAG {
+    KEY_NONE = 0,
+    KEY_UP = 1,
+    KEY_DOWN,
+    KEY_LEFT,
+    KEY_RIGHT,
+}key_flag_t;
+
+#define LCD_EVENT_MODE      (1u << 1)   // UP：切 自动/手动
+#define LCD_EVENT_NEXT      (1u << 2)   // DOWN：下一画面
+#define LCD_EVENT_PREV      (1u << 3)   // 上一画面（可选）
+#define LCD_EVENT_BRIGHT    (1u << 4)   // 上一画面（可选）
 
 static void lcd_decode_img_path(char *file_path);
 
 void lcd_test_start(void);
 
-static void pause_key_config(void);
-
-static void pause_key_input_irq_handler(void *args);
-
 int lcd_ge_begin(void);
-

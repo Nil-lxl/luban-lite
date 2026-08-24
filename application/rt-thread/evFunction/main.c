@@ -30,7 +30,7 @@ int main(void) {
  * @brief 应用程序实现入口
  */
 void FunctionImp(void) {
-    rt_thread_mdelay(500);    
+    rt_thread_mdelay(500);
     LOG_I("--------------Function Implement--------------\n");
 
 #ifdef APP_USE_LCD_TEST

@@ -29,7 +29,7 @@ static int panel_enable(struct aic_panel *panel) {
 
     panel_di_enable(panel, 0);
     panel_dsi_send_perpare(panel);
-#if 0 //H043A8_V4
+#if 1 //H043A8_V4
     panel_dsi_generic_send_seq(panel, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x13);
     panel_dsi_generic_send_seq(panel, 0xEF, 0x08);
     panel_dsi_generic_send_seq(panel, 0xFF, 0x77, 0x01, 0x00, 0x00, 0x10);

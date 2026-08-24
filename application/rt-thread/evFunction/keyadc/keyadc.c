@@ -9,6 +9,7 @@
 
 #define LOG_TAG "KEYADC"
 
+#if 0
 #ifdef AIC_USING_HT68_DEMO_A01
 #define KEYADC_TEST_CHANNLE     5
 #else 
@@ -47,50 +48,51 @@ void keyadc_device_disable(int channel) {
 }
 
 key_flag_t keyadc_get_flag(int channel, int scale) {
-    int adc_value;
-
-    while (1) {
-        adc_value = rt_adc_read(gpai_device, channel);
-        for (int i = 0;i < sizeof(keyadc_voltage) / sizeof(keyadc_voltage[0]);i++) {
-            // rt_kprintf("adc_value:%d\n", adc_value);
-            if ((keyadc_voltage[i] - scale <= adc_value) && (adc_value <= keyadc_voltage[i] + scale)) {
-                rt_thread_mdelay(300);
-                return keyadc_flag[i];
-            }
+    int adc_value = rt_adc_read(gpai_device, channel);
+    for (int i = 0;i < sizeof(keyadc_voltage) / sizeof(keyadc_voltage[0]);i++) {
+        // rt_kprintf("adc_value:%d\n", adc_value);
+        if ((keyadc_voltage[i] - scale <= adc_value) && (adc_value <= keyadc_voltage[i] + scale)) {
+            return keyadc_flag[i];
         }
     }
-
+    return KEY_NONE;
 }
 
-void keyadc_scan(int channel, int scale) {
-    int key_flag;
-    while (1) {
-        key_flag = keyadc_get_flag(channel, scale);
-        switch (key_flag) {
-            case KEY_UP:
-                rt_kprintf("KEY UP");
-                break;
-            case KEY_DOWN:
-                rt_kprintf("KEY DOWN");
-                break;
-            case KEY_LEFT:
-                rt_kprintf("KEY LEFT");
-                break;
-            case KEY_RIGHT:
-                rt_kprintf("KEY RIGHT");
-                break;
-            default:
-                break;
-        }
-    }
-}
 
 void keyadc_test_thread_entry(void *param) {
     int channel = KEYADC_TEST_CHANNLE;
     int scale = KEYADC_TEST_SCALE;
     keyadc_device_enable(channel);
-    keyadc_scan(channel, scale);
 
+    key_flag_t cur_key, last_key = KEY_NONE;
+    
+    while (1) {
+        cur_key = keyadc_get_flag(channel, scale);
+
+        /* 避免长按重复 */
+        if (cur_key != KEY_NONE && cur_key != last_key) {
+            switch (cur_key) {
+            case KEY_UP:
+                LOG_I("KEY UP");
+                break;
+            case KEY_DOWN:
+                LOG_I("KEY DOWN");
+                break;
+            case KEY_LEFT:
+                LOG_I("KEY LEFT");
+                break;
+            case KEY_RIGHT:
+                LOG_I("KEY RIGHT");
+                break;
+            default:
+                break;
+            }
+        }
+        last_key = cur_key;
+
+        rt_thread_mdelay(100);
+
+    }
 }
 
 void keyadc_test(void) {
@@ -115,6 +117,7 @@ void keyadc_test_off(void) {
 MSH_CMD_EXPORT(keyadc_test, keyadc_test_cmd);
 MSH_CMD_EXPORT(keyadc_test_off, keyadc_test_off_cmd);
 
+#endif
 
 #if 0   //use psadc
 

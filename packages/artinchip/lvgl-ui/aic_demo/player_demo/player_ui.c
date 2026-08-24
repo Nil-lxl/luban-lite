@@ -35,17 +35,14 @@ void player_ui_init() {
     lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
 
 #if 0
-    // gif = lv_gif_create(scr);
-    // lv_gif_set_src(gif, LVGL_PATH(black360.gif));
-    // lv_gif_set_loop_count(gif, 1);
-    // lv_obj_align(gif, LV_ALIGN_CENTER, 0, 0);
-    img = lv_img_create(scr);
-    lv_img_set_src(img, LVGL_IMAGE_PATH(fruit540x540.jpg));
-    lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
+    gif = lv_gif_create(scr);
+    lv_gif_set_src(gif, LVGL_IMAGE_PATH(img2.gif));
+    lv_gif_set_loop_count(gif, 100);
+    lv_obj_align(gif, LV_ALIGN_CENTER, 0, 0);
 #else
     player = lv_aic_player_create(scr);
     lv_obj_center(player);
-    lv_aic_player_set_src(player, SD_VIDEO_PATH(video.mp4));
+    lv_aic_player_set_src(player, LVGL_VIDEO_PATH(video.mp4));
     // lv_aic_player_set_src(player, LVGL_VIDEO_PATH(video640.mp4));
     // lv_aic_player_set_src(player, UDISK_VIDEO_PATH(video.mp4));
     

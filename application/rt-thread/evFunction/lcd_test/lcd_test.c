@@ -37,24 +37,24 @@ static int ge_bitblt(struct ge_bitblt *blt) {
     struct mpp_ge *ge = mpp_ge_open();
 
     if (!ge) {
-        loge("open ge device error\n");
+        LOG_E("open ge device error\n");
     }
 
     ret = mpp_ge_bitblt(ge, blt);
     if (ret < 0) {
-        loge("bitblt task failed\n");
+        LOG_E("bitblt task failed\n");
         return ret;
     }
 
     ret = mpp_ge_emit(ge);
     if (ret < 0) {
-        loge("emit task failed\n");
+        LOG_E("emit task failed\n");
         return ret;
     }
 
     ret = mpp_ge_sync(ge);
     if (ret < 0) {
-        loge("ge sync fail\n");
+        LOG_E("ge sync fail\n");
         return ret;
     }
 
@@ -81,7 +81,7 @@ static struct aicfb_screeninfo *get_screen_info(void) {
 
     ret = mpp_fb_ioctl(fb, AICFB_GET_SCREENINFO, &screen_info);
     if (ret) {
-        loge("get screen info failed\n");
+        LOG_E("get screen info failed\n");
         return NULL;
     }
 
@@ -143,7 +143,7 @@ static void render_frame(struct mpp_fb *fb, struct mpp_frame *frame,
         layer.layer_id = AICFB_LAYER_TYPE_UI;
         layer.rect_id = 0;
         if (mpp_fb_ioctl(fb, AICFB_GET_LAYER_CONFIG, &layer) < 0) {
-            loge("get ui layer config failed\n");
+            LOG_E("get ui layer config failed\n");
             return;
         }
 
@@ -164,12 +164,12 @@ static void render_frame(struct mpp_fb *fb, struct mpp_frame *frame,
     } else {
         layer.layer_id = AICFB_LAYER_TYPE_VIDEO;
         if (mpp_fb_ioctl(fb, AICFB_GET_LAYER_CONFIG, &layer) < 0) {
-            loge("get video layer config failed\n");
+            LOG_E("get video layer config failed\n");
             return;
         }
         dst_buf_addr = layer.buf.phy_addr[0];
     }
-    logi("Render to buf 0x%08x\n", dst_buf_addr);
+    LOG_D("Render to buf 0x%08x\n", dst_buf_addr);
 
     memset(&blt, 0, sizeof(struct ge_bitblt));
     memcpy(&blt.src_buf, &frame->buf, sizeof(struct mpp_buf));
@@ -187,8 +187,8 @@ static void render_frame(struct mpp_fb *fb, struct mpp_frame *frame,
     blt.dst_buf.crop.width = blt.src_buf.crop.width;
     blt.dst_buf.crop.height = blt.src_buf.crop.height;
 
-    logi("phy_addr: %x, stride: %d", blt.src_buf.phy_addr[0], blt.src_buf.stride[0]);
-    logi("width: %d, height: %d, format: %d", blt.src_buf.size.width, blt.src_buf.size.height, blt.src_buf.format);
+    LOG_D("phy_addr: %x, stride: %d", blt.src_buf.phy_addr[0], blt.src_buf.stride[0]);
+    LOG_D("width: %d, height: %d, format: %d", blt.src_buf.size.width, blt.src_buf.size.height, blt.src_buf.format);
 
     ge_bitblt(&blt);
 
@@ -309,6 +309,8 @@ static void lcd_decode_img_path(char *file_path) {
     int ret = mpp_decoder_decode(decoder);
     if (ret < 0) {
         LOG_E("decode error");
+        mpp_ge_close(ge);
+        mpp_fb_close(fb);
         return;
     }
 
@@ -509,7 +511,7 @@ static const lcd_test_item_t test_items[] = {
     // {"黄色",       fill_color,          .param.color = { YELLOW, 0, 0 },          1000, true},
     // {"黑色",       fill_color,          .param.color = { BLACK, 0, 0 },           1000, true},
     {"灰阶",       fill_gray_level,     .param.gray_level_num = 16,               1000, true},
-    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/1024x600.jpg", 1000, true},
+    {"图片1",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x800.jpg", 1000, true},
     // {"图片2",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-1.png", 2000, true},
     // {"图片3",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-2.png", 2000, true},
     // {"图片4",      decode_img,          .param.img_path = "rodata/lcd_test/image/480x272-3.png", 2000, true},
@@ -527,97 +529,141 @@ static const lcd_test_item_t test_items[] = {
     // {"图片15",     decode_img,          .param.img_path = "sdcard/image/img09.png", 2000, true},
     // {"图片16",     decode_img,          .param.img_path = "sdcard/image/img10.png", 2000, true},
 
-    // {"触摸测试",      touchscreen_test,    .param = {0},                             10000, true},
+    {"触摸测试",      touchscreen_test,    .param = {0},                             1000000, true},
 
 };
 
+static rt_adc_device_t gpai_device;
+
 static rt_thread_t lcd_test_thread = RT_NULL;
+static rt_thread_t lcd_key_thread = RT_NULL;
 
-/* LCD测试线程入口 */
-static void lcd_test_entry(void *param) {
 
-    while (1) {
-        for (int i = 0;i < sizeof(test_items) / sizeof(test_items[0]);i++) {
-            if (test_items[i].enabled) {
-                if (test_items[i].func == touchscreen_test) {
-                    test_items[i].func(test_items[i].param);
-                    // 触摸测试项执行一次后退出循环，避免重复创建触摸测试线程
-                    LOG_I("Touchscreen test executed, exiting test loop");
-                    return;
-                }
-                test_items[i].func(test_items[i].param);
-                aic_mdelay(test_items[i].delay_ms);
-            }
+static rt_event_t lcd_test_event;
 
-        }
+static int cur_index = 0;
+static bool auto_play = true;
+
+static void lcd_goto_index(int idx) {
+    int n = sizeof(test_items) / sizeof(test_items[0]);
+    int cnt = 0;
+
+    idx = (idx % n + n) % n;                       /* 环形回绕，支持 PREV 负索引 */
+    while (!test_items[idx].enabled && cnt < n) {  /* 跳过被禁用的测试项 */
+        idx = (idx + 1) % n;
+        cnt++;
     }
-
+    test_items[idx].func(test_items[idx].param);
+    cur_index = idx;
 }
 
-static unsigned int init_pin_status;
-static int thread_suspended = 0;
+/* LCD测试线程入口：事件驱动，支持自动/手动播放 */
+static void lcd_test_entry(void *param) {
+    lcd_goto_index(0);                             /* 先播第一项 */
+
+    rt_uint32_t recved = 0;
+    while (1) {
+        /* 自动模式：timeout=当前项延时；手动模式：timeout=FOREVER */
+        rt_tick_t timeout = auto_play ? rt_tick_from_millisecond(test_items[cur_index].delay_ms) : RT_WAITING_FOREVER;
+
+        rt_err_t res = rt_event_recv(lcd_test_event,
+            LCD_EVENT_MODE | LCD_EVENT_NEXT | LCD_EVENT_PREV,
+            RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,
+            timeout, &recved);
+
+        if (res == -RT_ETIMEOUT) {
+            lcd_goto_index(cur_index + 1);         /* 仅自动模式会走到（手动模式 timeout=FOREVER）*/
+        } else if (res == RT_EOK) {
+            if (recved & LCD_EVENT_MODE) {
+                auto_play = !auto_play;
+                LOG_I("MODE switched -> %s index:%d", auto_play ? "AUTO" : "MANUAL", cur_index);
+                lcd_goto_index(cur_index);
+            }
+            if (recved & LCD_EVENT_NEXT) lcd_goto_index(cur_index + 1);
+            if (recved & LCD_EVENT_PREV) lcd_goto_index(cur_index - 1);
+        }
+    }
+}
+
+static int keyadc_voltage[] = { 400, 1100, 2000, 2680 };
+static int keyadc_flag[] = { 1, 2, 3, 4 };
+
+key_flag_t keyadc_get_flag(int channel, int scale) {
+    int adc_value = rt_adc_read(gpai_device, channel);
+    for (int i = 0;i < sizeof(keyadc_voltage) / sizeof(keyadc_voltage[0]);i++) {
+        // rt_kprintf("adc_value:%d\n", adc_value);
+        if ((keyadc_voltage[i] - scale <= adc_value) && (adc_value <= keyadc_voltage[i] + scale)) {
+            return keyadc_flag[i];
+        }
+    }
+    return KEY_NONE;
+}
+
+static void keyadc_send_entry(void *param) {
+    int channel = KEYADC_TEST_CHANNLE;
+    int scale = 200;
+
+    gpai_device = (rt_adc_device_t)rt_device_find("gpai");
+    if (gpai_device == RT_NULL) {
+        LOG_E("GPAI设备未找到!\n");
+    }
+    rt_adc_enable(gpai_device, channel);
+    key_flag_t cur_key, last_key = KEY_NONE;
+
+    while (1) {
+        cur_key = keyadc_get_flag(channel, scale);
+
+        /* 避免长按重复 */
+        if (cur_key != KEY_NONE && cur_key != last_key) {
+            switch (cur_key) {
+            case KEY_UP:
+                rt_event_send(lcd_test_event, LCD_EVENT_MODE);
+                break;
+            case KEY_DOWN:
+                rt_event_send(lcd_test_event, LCD_EVENT_NEXT);
+                break;
+            case KEY_LEFT:
+                rt_event_send(lcd_test_event, LCD_EVENT_PREV);
+                break;
+            case KEY_RIGHT:
+                break;
+            default:
+                break;
+            }
+        }
+        last_key = cur_key;
+
+        rt_thread_mdelay(100);
+
+    }
+}
+
+
 struct rt_device_pwm *pwm_dev;
 int brightness = 20;
 
 /* 启动LCD测试线程,主函数调用 */
 void lcd_test_start(void) {
     // aicos_mdelay(1000);
+    lcd_test_event = rt_event_create("lcd_test_event", RT_IPC_FLAG_FIFO);
+    if (lcd_test_event == RT_NULL) {
+        LOG_E("lcd_test_event create failed!\n");
+        return;
+    }
 
     lcd_test_thread = rt_thread_create("display_test", lcd_test_entry, NULL, 8 * 1024, 25, 5);
     if (lcd_test_thread != RT_NULL) {
         rt_thread_startup(lcd_test_thread);
     }
-
-    // pause_key_config();
+#ifdef AIC_USING_GPAI
+    lcd_key_thread = rt_thread_create("display_key", keyadc_send_entry, NULL, 4 * 1024, 24, 10);
+    if (lcd_key_thread != RT_NULL) {
+        rt_thread_startup(lcd_key_thread);
+    }
+#endif
     // pwm_dev = (struct rt_device_pwm *)rt_device_find("pwm");
 }
 
-static void pwm_config(void) {
-
-}
-
-static void pause_key_config(void) {
-    // 配置按键输入中断 使用PA.0作为按键输入
-    u32 pin;
-    unsigned int g, p;
-    pin = rt_pin_get("PA.0");
-    g = GPIO_GROUP(pin);
-    p = GPIO_GROUP_PIN(pin);
-
-    rt_pin_mode(pin, PIN_MODE_INPUT_PULLUP);
-    // 获取按钮未被按下时引脚电平的初始状态
-    hal_gpio_get_value(g, p, &init_pin_status);
-    rt_kprintf("Current pin status: %d\n", init_pin_status);
-    rt_pin_attach_irq(pin, PIN_IRQ_MODE_RISING, pause_key_input_irq_handler, &pin);
-    rt_pin_irq_enable(pin, PIN_IRQ_ENABLE);
-}
-
-/**
- * @brief 按键输入中断处理函数
- * @param args 中断处理函数参数，包含按键引脚信息
- */
-static void pause_key_input_irq_handler(void *args) {
-    unsigned int value;
-    unsigned int g, p;
-    u32 pin = *((u32 *)(args));
-
-    // rt_kprintf("Key Pressed, pause or resume the LCD test thread\n");
-
-    if (!thread_suspended) {
-        //暂停LCD测试线程
-        rt_thread_suspend(lcd_test_thread);
-        thread_suspended = 1;
-        rt_kprintf("LCD test thread suspended\n");
-    } else {
-        //恢复LCD测试线程
-        rt_thread_resume(lcd_test_thread);
-        thread_suspended = 0;
-        rt_kprintf("LCD test thread resumed\n");
-    }
-    // rt_pwm_set(pwm_dev, 1, 10000, 100 * brightness);
-    // brightness += 10;
-
-}
 
 
 
